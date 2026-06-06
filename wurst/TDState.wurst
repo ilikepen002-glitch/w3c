@@ -1,0 +1,40 @@
+package TDState
+import TDConfig
+
+int tdLives = TD_STARTING_LIVES
+int tdGold = TD_STARTING_GOLD
+int tdCurrentWave = 0
+boolean tdGameOver = false
+
+public function tdResetState()
+	tdLives = TD_STARTING_LIVES
+	tdGold = TD_STARTING_GOLD
+	tdCurrentWave = 0
+	tdGameOver = false
+
+public function tdGetLives() returns int
+	return tdLives
+
+public function tdGetGold() returns int
+	return tdGold
+
+public function tdGetCurrentWave() returns int
+	return tdCurrentWave
+
+public function tdSetCurrentWave(int wave)
+	tdCurrentWave = wave
+
+public function tdSpendGold(int amount)
+	tdGold -= amount
+
+public function tdGainGold(int amount)
+	tdGold += amount
+
+public function tdLoseLife(int amount)
+	tdLives -= amount
+
+public function tdIsGameOver() returns boolean
+	return tdGameOver
+
+public function tdSetGameOver(boolean value)
+	tdGameOver = value

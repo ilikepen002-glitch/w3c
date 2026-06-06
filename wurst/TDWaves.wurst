@@ -1,0 +1,44 @@
+package TDWaves
+
+public function tdWaveCount() returns int
+	return 5
+
+public function tdWaveUnitId(int wave) returns int
+	if wave == 1
+		return 'hfoo'
+	if wave == 2
+		return 'hrif'
+	if wave == 3
+		return 'ogru'
+	if wave == 4
+		return 'orai'
+	return 'otau'
+
+public function tdWaveEnemyCount(int wave) returns int
+	if wave == 1
+		return 6
+	if wave == 2
+		return 8
+	if wave == 3
+		return 10
+	if wave == 4
+		return 12
+	return 14
+
+public function tdWaveSpawnInterval(int wave) returns real
+	if wave <= 2
+		return 1.00
+	if wave <= 4
+		return 0.85
+	return 0.70
+
+public function tdWaveReward(int wave) returns int
+	if wave == 1
+		return 60
+	if wave == 2
+		return 80
+	if wave == 3
+		return 100
+	if wave == 4
+		return 125
+	return 160

@@ -1,0 +1,19 @@
+package TDStateTests
+import TDState
+import TDConfig
+
+@Test function resetRestoresDefaults()
+	tdResetState()
+	tdGetLives().assertEquals(TD_STARTING_LIVES)
+	tdGetGold().assertEquals(TD_STARTING_GOLD)
+	tdGetCurrentWave().assertEquals(0)
+
+@Test function spendGoldReducesBalance()
+	tdResetState()
+	tdSpendGold(50)
+	tdGetGold().assertEquals(TD_STARTING_GOLD - 50)
+
+@Test function losingLifeReducesLives()
+	tdResetState()
+	tdLoseLife(2)
+	tdGetLives().assertEquals(TD_STARTING_LIVES - 2)

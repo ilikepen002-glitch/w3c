@@ -1,0 +1,12 @@
+package TDWavesTests
+import TDWaves
+
+@Test function waveCountIsFive()
+	tdWaveCount().assertEquals(5)
+
+@Test function waveOneSpawnsEnemies()
+	tdWaveEnemyCount(1).assertGreaterThan(0)
+	tdWaveReward(1).assertGreaterThan(0)
+
+@Test function waveFiveIsHarderThanWaveOne()
+	tdWaveEnemyCount(5).assertGreaterThan(tdWaveEnemyCount(1))
