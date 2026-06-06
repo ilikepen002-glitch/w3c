@@ -1,0 +1,12 @@
+---
+projectName: MyFirstWurstMap
+dependencies:
+  - https://github.com/wurstscript/WurstStdlib2:pre1.29
+buildMapData:
+  name: My First Wurst Map
+  fileName: MyFirstWurstMap.w3x
+  author: huawei
+  scenarioData:
+    suggestedPlayers: "1"
+scriptMode: JASS
+wc3Patch: pre1.29
