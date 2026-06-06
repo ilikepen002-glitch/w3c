@@ -1,0 +1,13 @@
+{
+  "wurst.javaOpts": ["-XX:+UseStringDeduplication", "-Xmx4G"],
+  "wurst.wc3path": "D:\\War3_1.27a\\Warcraft III Frozen Throne 1.27a publish",
+  "wurst.gameExePath": "D:\\War3_1.27a\\Warcraft III Frozen Throne 1.27a publish\\Frozen Throne.exe",
+  "wurst.mapDocumentPath": "D:\\War3_1.27a\\Warcraft III Frozen Throne 1.27a publish\\Maps\\Test",
+  "files.associations": {
+    "wurst.build": "yaml"
+  },
+  "search.useIgnoreFiles": false,
+  "yaml.schemas": {
+    "./.vscode/wbschema.json": "/wurst.build"
+  }
+}

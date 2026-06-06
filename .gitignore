@@ -1,0 +1,10 @@
+/_build/*
+!/_build/dependencies/
+/_build/dependencies/*
+!/_build/dependencies/pre1.29/
+/_build/dependencies/pre1.29/*
+!/_build/dependencies/pre1.29/WurstStdlib2/
+!/_build/dependencies/pre1.29/WurstStdlib2/**
+wurst.dependencies
+/.vscode/*
+!/.vscode/settings.json
