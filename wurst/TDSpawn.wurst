@@ -1,0 +1,18 @@
+package TDSpawn
+import TDConfig
+import TDWaves
+import ClosureTimers
+
+public function tdOrderEnemyToExit(unit enemy)
+	enemy.issuePointOrderById(OrderId("move"), TD_END_POS)
+
+public function tdCreateEnemy(int wave) returns unit
+	let enemy = createUnit(Player(TD_ENEMY_PLAYER_ID), tdWaveUnitId(wave), TD_SPAWN_POS, 0 .fromDeg())
+	tdOrderEnemyToExit(enemy)
+	return enemy
+
+public function tdSpawnWave(int wave)
+	let count = tdWaveEnemyCount(wave)
+	let interval = tdWaveSpawnInterval(wave)
+	doPeriodicallyCounted(interval, count) cb ->
+		tdCreateEnemy(wave)

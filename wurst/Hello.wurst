@@ -1,4 +1,5 @@
 package Hello
+import TDGame
 
 init
-	print("TD project bootstrap loaded.")
+	tdStartLeakWatcher()

@@ -1,0 +1,29 @@
+package TDGame
+import TDConfig
+import TDState
+import ClosureTimers
+
+rect tdEndRect = Rect(TD_END_POS.x - 96, TD_END_POS.y - 96, TD_END_POS.x + 96, TD_END_POS.y + 96)
+
+function tdHandleLeakingEnumUnit()
+	let u = GetEnumUnit()
+	if GetOwningPlayer(u) == Player(TD_ENEMY_PLAYER_ID)
+		tdHandleEnemyLeak(u)
+
+public function tdRefreshHud()
+	DisplayTimedTextToPlayer(Player(TD_PLAYER_ID), 0, 0, 1.0, "Lives: " + tdGetLives().toString() + " Gold: " + tdGetGold().toString() + " Wave: " + tdGetCurrentWave().toString())
+
+public function tdHandleEnemyLeak(unit enemy)
+	if enemy != null and enemy.isAlive()
+		tdLoseLife(1)
+		enemy.kill()
+		tdRefreshHud()
+
+public function tdStartLeakWatcher()
+	doPeriodically(0.25) cb ->
+		let g = CreateGroup()
+		g.enumUnitsInRect(tdEndRect)
+		ForGroup(g, () -> tdHandleLeakingEnumUnit())
+		g.destr()
+		if tdIsGameOver()
+			destroy cb
