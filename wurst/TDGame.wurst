@@ -1,6 +1,8 @@
 package TDGame
 import TDConfig
 import TDState
+import TDWaves
+import TDSpawn
 import ClosureTimers
 
 rect tdEndRect = Rect(TD_END_POS.x - 96, TD_END_POS.y - 96, TD_END_POS.x + 96, TD_END_POS.y + 96)
@@ -18,6 +20,7 @@ public function tdHandleEnemyLeak(unit enemy)
 		tdLoseLife(1)
 		enemy.kill()
 		tdRefreshHud()
+		tdHandleDefeat()
 
 public function tdStartLeakWatcher()
 	doPeriodically(0.25) cb ->
@@ -27,3 +30,27 @@ public function tdStartLeakWatcher()
 		g.destr()
 		if tdIsGameOver()
 			destroy cb
+
+public function tdStartNextWave()
+	if tdIsGameOver()
+		return
+	let nextWave = tdGetCurrentWave() + 1
+	tdSetCurrentWave(nextWave)
+	tdRefreshHud()
+	DisplayTimedTextToPlayer(Player(TD_PLAYER_ID), 0, 0, 5.0, "Wave " + nextWave.toString() + " begins!")
+	tdSpawnWave(nextWave)
+
+public function tdHandleWaveFinished(int wave)
+	if wave >= tdWaveCount()
+		tdSetGameOver(true)
+		DisplayTimedTextToPlayer(Player(TD_PLAYER_ID), 0, 0, 20.0, "Victory!")
+		return
+	tdGainGold(tdWaveReward(wave))
+	tdRefreshHud()
+	doAfter(TD_TIME_BETWEEN_WAVES) ->
+		tdStartNextWave()
+
+public function tdHandleDefeat()
+	if tdGetLives() <= 0 and not tdIsGameOver()
+		tdSetGameOver(true)
+		DisplayTimedTextToPlayer(Player(TD_PLAYER_ID), 0, 0, 20.0, "Defeat!")

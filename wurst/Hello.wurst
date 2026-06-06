@@ -1,5 +1,5 @@
 package Hello
-import TDGame
+import TDInit
 
 init
-	tdStartLeakWatcher()
+	tdStartGame()

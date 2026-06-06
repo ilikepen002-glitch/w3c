@@ -1,0 +1,18 @@
+package TDInit
+import TDState
+import TDGame
+import TDTowers
+import TDConfig
+import ClosureTimers
+
+public function tdStartGame()
+	tdResetState()
+	tdCreatePads()
+	tdSetupBuildDialog()
+	tdSetupPadSelection()
+	tdSetupDialogTrigger()
+	tdStartLeakWatcher()
+	tdRefreshHud()
+	DisplayTimedTextToPlayer(Player(TD_PLAYER_ID), 0, 0, 8.0, "Build your first towers.")
+	doAfter(3.0) ->
+		tdStartNextWave()
