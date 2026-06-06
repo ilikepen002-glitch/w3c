@@ -1,0 +1,33 @@
+package TDConfig
+
+public constant int TD_STARTING_LIVES = 20
+public constant int TD_STARTING_GOLD = 300
+public constant int TD_TOWER_CHOICE_COUNT = 3
+public constant int TD_PAD_COUNT = 5
+public constant real TD_TIME_BETWEEN_WAVES = 8.00
+
+public constant int TD_PLAYER_ID = 0
+public constant int TD_ENEMY_PLAYER_ID = PLAYER_NEUTRAL_AGGRESSIVE
+public constant int TD_PAD_UNIT_ID = 'hhou'
+
+public constant int TD_ARROW_TOWER_ID = 'hgtw'
+public constant int TD_CANNON_TOWER_ID = 'hctw'
+public constant int TD_LONG_RANGE_TOWER_ID = 'hatw'
+
+public constant int TD_ARROW_TOWER_COST = 80
+public constant int TD_CANNON_TOWER_COST = 125
+public constant int TD_LONG_RANGE_TOWER_COST = 110
+
+public constant vec2 TD_SPAWN_POS = vec2(-1024, 0)
+public constant vec2 TD_END_POS = vec2(1024, 0)
+
+public function tdPadPosition(int index) returns vec2
+	if index == 0
+		return vec2(-512, 256)
+	if index == 1
+		return vec2(-256, -256)
+	if index == 2
+		return vec2(0, 256)
+	if index == 3
+		return vec2(256, -256)
+	return vec2(512, 256)

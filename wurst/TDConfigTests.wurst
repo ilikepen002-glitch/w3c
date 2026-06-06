@@ -1,0 +1,12 @@
+package TDConfigTests
+import TDConfig
+
+@Test function startingValuesArePositive()
+	TD_STARTING_LIVES.assertGreaterThan(0)
+	TD_STARTING_GOLD.assertGreaterThan(0)
+
+@Test function towerChoiceCountIsThree()
+	TD_TOWER_CHOICE_COUNT.assertEquals(3)
+
+@Test function padCountIsAtLeastThree()
+	TD_PAD_COUNT.assertGreaterThanOrEqual(3)
