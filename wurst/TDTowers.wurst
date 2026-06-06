@@ -1,0 +1,88 @@
+package TDTowers
+import TDConfig
+import TDState
+
+unit array tdPads
+dialog tdBuildDialog = DialogCreate()
+button tdArrowButton = null
+button tdCannonButton = null
+button tdLongRangeButton = null
+int tdSelectedPad = -1
+trigger tdDialogTrigger = CreateTrigger()
+trigger tdPadSelectTrigger = CreateTrigger()
+
+public function tdTowerUnitId(int choice) returns int
+	if choice == 1
+		return TD_ARROW_TOWER_ID
+	if choice == 2
+		return TD_CANNON_TOWER_ID
+	if choice == 3
+		return TD_LONG_RANGE_TOWER_ID
+	return 0
+
+public function tdTowerCost(int choice) returns int
+	if choice == 1
+		return TD_ARROW_TOWER_COST
+	if choice == 2
+		return TD_CANNON_TOWER_COST
+	if choice == 3
+		return TD_LONG_RANGE_TOWER_COST
+	return 0
+
+public function tdCanAffordTower(int choice) returns boolean
+	return tdGetGold() >= tdTowerCost(choice)
+
+public function tdCreatePads()
+	for i = 0 to TD_PAD_COUNT - 1
+		tdPads[i] = createUnit(Player(PLAYER_NEUTRAL_PASSIVE), TD_PAD_UNIT_ID, tdPadPosition(i), 0 .fromDeg())
+
+public function tdBuildTowerAtPad(int padIndex, int towerChoice) returns boolean
+	if padIndex < 0 or padIndex >= TD_PAD_COUNT
+		return false
+	if tdPads[padIndex] == null
+		return false
+	if not tdCanAffordTower(towerChoice)
+		return false
+	let towerUnitId = tdTowerUnitId(towerChoice)
+	if towerUnitId == 0
+		return false
+	let pos = tdPads[padIndex].getPos()
+	tdPads[padIndex].kill()
+	tdPads[padIndex] = null
+	createUnit(Player(TD_PLAYER_ID), towerUnitId, pos, 0 .fromDeg())
+	tdSpendGold(tdTowerCost(towerChoice))
+	return true
+
+public function tdSetupBuildDialog()
+	DialogSetMessage(tdBuildDialog, "Choose a tower")
+	tdArrowButton = DialogAddButton(tdBuildDialog, "Arrow Tower", 0)
+	tdCannonButton = DialogAddButton(tdBuildDialog, "Cannon Tower", 0)
+	tdLongRangeButton = DialogAddButton(tdBuildDialog, "Long Range Tower", 0)
+
+public function tdShowBuildDialogForPad(int padIndex)
+	tdSelectedPad = padIndex
+	DialogDisplay(Player(TD_PLAYER_ID), tdBuildDialog, true)
+
+function tdHandlePadSelection()
+	let selected = GetTriggerUnit()
+	for i = 0 to TD_PAD_COUNT - 1
+		if tdPads[i] == selected
+			tdShowBuildDialogForPad(i)
+
+public function tdSetupPadSelection()
+	TriggerRegisterPlayerUnitEvent(tdPadSelectTrigger, Player(TD_PLAYER_ID), EVENT_PLAYER_UNIT_SELECTED, null)
+	TriggerAddAction(tdPadSelectTrigger, function tdHandlePadSelection)
+
+function tdHandleDialogClick()
+	let clicked = GetClickedButton()
+	if clicked == tdArrowButton
+		tdBuildTowerAtPad(tdSelectedPad, 1)
+	if clicked == tdCannonButton
+		tdBuildTowerAtPad(tdSelectedPad, 2)
+	if clicked == tdLongRangeButton
+		tdBuildTowerAtPad(tdSelectedPad, 3)
+	DialogDisplay(Player(TD_PLAYER_ID), tdBuildDialog, false)
+
+public function tdSetupDialogTrigger()
+	TriggerRegisterDialogEvent(tdDialogTrigger, tdBuildDialog)
+	TriggerAddAction(tdDialogTrigger, function tdHandleDialogClick)

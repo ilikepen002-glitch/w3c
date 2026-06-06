@@ -1,0 +1,16 @@
+package TDTowersTests
+import TDTowers
+import TDConfig
+import TDState
+
+@Test function towerChoiceMapsToExpectedCost()
+	tdTowerCost(1).assertEquals(TD_ARROW_TOWER_COST)
+	tdTowerCost(2).assertEquals(TD_CANNON_TOWER_COST)
+	tdTowerCost(3).assertEquals(TD_LONG_RANGE_TOWER_COST)
+
+@Test function playerCanAffordCheapTowerAtStart()
+	tdResetState()
+	tdCanAffordTower(1).assertTrue()
+
+@Test function impossibleTowerChoiceReturnsZeroCost()
+	tdTowerCost(999).assertEquals(0)
