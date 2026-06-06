@@ -1,21 +1,129 @@
 package TDSpawn
 import TDConfig
+import TDState
 import initlater TDGame
 import TDWaves
 import ClosureTimers
 
-public function tdOrderEnemyToExit(unit enemy)
-	enemy.issuePointOrderById(OrderId("move"), TD_END_POS)
+rect tdWorldRect = GetWorldBounds()
+int tdLaneEnemyCheckPlayer = -1
+boolean tdLaneEnemyCheckFound = false
 
-public function tdCreateEnemy(int wave) returns unit
-	let enemy = createUnit(Player(TD_ENEMY_PLAYER_ID), tdWaveUnitId(wave), TD_SPAWN_POS, 0 .fromDeg())
-	tdOrderEnemyToExit(enemy)
+// 把“属于哪一路、哪一波、是否已经按漏怪结算”编码进单位的 user data，
+// 这样奖励和扣命都能直接从单位本身取回上下文。
+function tdEncodeEnemyData(int playerId, int wave, int state) returns int
+	return playerId * 10000 + wave * 100 + state
+
+public function tdEnemyLaneId(unit enemy) returns int
+	return enemy.getUserData() div 10000
+
+public function tdEnemyWave(unit enemy) returns int
+	return (enemy.getUserData() div 100) mod 100
+
+function tdEnemyState(unit enemy) returns int
+	return enemy.getUserData() mod 100
+
+function tdSetEnemyData(unit enemy, int playerId, int wave, int state)
+	enemy.setUserData(tdEncodeEnemyData(playerId, wave, state))
+
+public function tdEnemyWasLeaked(unit enemy) returns boolean
+	return tdEnemyState(enemy) >= 99
+
+public function tdMarkEnemyLeaked(unit enemy)
+	tdSetEnemyData(enemy, tdEnemyLaneId(enemy), tdEnemyWave(enemy), 99)
+
+// 单通道路线上直接把敌人下令走向终点。
+public function tdOrderEnemyAlongLane(unit enemy)
+	let playerId = tdEnemyLaneId(enemy)
+	if not tdIsLaneActive(playerId)
+		return
+	enemy.issuePointOrderById(OrderId("move"), tdLaneExitPosition(playerId))
+
+// 为指定路线生成一个敌人，并立刻把路线元数据绑定到它身上。
+public function tdCreateEnemy(int playerId, int wave) returns unit
+	let enemy = createUnit(Player(TD_ENEMY_PLAYER_ID), tdWaveUnitId(wave), tdLaneSpawnPosition(playerId), 0 .fromDeg())
+	tdSetEnemyData(enemy, playerId, wave, 0)
+	tdOrderEnemyAlongLane(enemy)
 	return enemy
 
-public function tdSpawnWave(int wave)
+function tdEnemyHealthPips(real ratio) returns string
+	var filled = R2I(ratio * 8.0 + 0.5)
+	if filled < 0
+		filled = 0
+	if filled > 8
+		filled = 8
+	var result = "["
+	for i = 1 to 8
+		if i <= filled
+			result += "|"
+		else
+			result += "."
+	result += "]"
+	return result
+
+function tdShowEnemyHealthEnum()
+	let enemy = GetEnumUnit()
+	if enemy == null or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID)
+		return
+	let maxLife = GetUnitState(enemy, UNIT_STATE_MAX_LIFE)
+	if maxLife <= 0.405
+		return
+	let currentLife = enemy.getLife()
+	let ratio = currentLife / maxLife
+	let tag = CreateTextTag()
+	tag.setText(tdEnemyHealthPips(ratio) + " " + R2I(currentLife).toString(), 7.0)
+	tag.setPos(enemy.getPos().withZ(135.))
+	if ratio >= 0.66
+		tag.setColor(80, 255, 80, 255)
+	else if ratio >= 0.33
+		tag.setColor(255, 220, 60, 255)
+	else
+		tag.setColor(255, 90, 90, 255)
+	tag.setVelocity(0., 0.)
+	tag.setLifespan(0.55)
+	tag.setFadepoint(0.35)
+	tag.setPermanent(false)
+	tag.matchVisibility(enemy)
+
+function tdLaneEnemyCheckEnum()
+	let enemy = GetEnumUnit()
+	if not tdLaneEnemyCheckFound and enemy != null and enemy.isAlive() and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == tdLaneEnemyCheckPlayer
+		tdLaneEnemyCheckFound = true
+
+public function tdLaneHasLivingEnemies(int playerId) returns boolean
+	tdLaneEnemyCheckPlayer = playerId
+	tdLaneEnemyCheckFound = false
+	let g = CreateGroup()
+	g.enumUnitsInRect(tdWorldRect)
+	ForGroup(g, function tdLaneEnemyCheckEnum)
+	g.destr()
+	return tdLaneEnemyCheckFound
+
+function tdWaitForLaneToClear(int playerId, int wave)
+	doPeriodically(0.40) cb ->
+		if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId)
+			destroy cb
+		else if not tdLaneHasLivingEnemies(playerId)
+			destroy cb
+			tdHandleWaveFinished(playerId, wave)
+
+// 按时间间隔逐个刷出这一波的怪，等该路所有存活敌人都消失后，
+// 再由 TDGame 决定发奖励还是开启下一波。
+public function tdSpawnWave(int playerId, int wave)
+	if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId)
+		return
 	let count = tdWaveEnemyCount(wave)
 	let interval = tdWaveSpawnInterval(wave)
 	doPeriodicallyCounted(interval, count) cb ->
-		tdCreateEnemy(wave)
-	doAfter(interval * count + 12.0) ->
-		tdHandleWaveFinished(wave)
+		tdCreateEnemy(playerId, wave)
+	doAfter(interval * count + 0.25) ->
+		tdWaitForLaneToClear(playerId, wave)
+
+public function tdStartEnemyHealthWatcher()
+	doPeriodically(0.50) cb ->
+		let g = CreateGroup()
+		g.enumUnitsInRect(tdWorldRect)
+		ForGroup(g, function tdShowEnemyHealthEnum)
+		g.destr()
+		if tdIsGameOver()
+			destroy cb

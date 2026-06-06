@@ -1,0 +1,8 @@
+package TDInitTests
+import TDInit
+
+@Test function staticMapStartupNeedsNoRuntimeBootstrapDelay()
+	tdMapBootstrapDelay().assertEquals(0.0)
+
+@Test function startupRevealsTheWholeMap()
+	tdShouldRevealWholeMap().assertTrue()

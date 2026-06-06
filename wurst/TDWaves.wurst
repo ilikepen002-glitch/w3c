@@ -1,44 +1,235 @@
 package TDWaves
+import UnitObjEditing
+
+constant int TD_WAVE_1_UNIT_ID = 'uE01'
+constant int TD_WAVE_2_UNIT_ID = 'uE02'
+constant int TD_WAVE_3_UNIT_ID = 'uE03'
+constant int TD_WAVE_4_UNIT_ID = 'uE04'
+constant int TD_WAVE_5_UNIT_ID = 'uE05'
+constant int TD_WAVE_6_UNIT_ID = 'uE06'
+constant int TD_WAVE_7_UNIT_ID = 'uE07'
+constant int TD_WAVE_8_UNIT_ID = 'uE08'
+constant int TD_WAVE_9_UNIT_ID = 'uE09'
+constant int TD_WAVE_10_UNIT_ID = 'uE0A'
+
+function UnitDefinition.tdApplyEscaperStats(string name, int hitPoints, int armor, int speed) returns UnitDefinition
+	this
+	..setName(name)
+	..setDescription("只会沿路逃跑，不会反击。")
+	..setHitPointsMaximumBase(hitPoints)
+	..setDefenseBase(armor)
+	..setSpeedBase(speed)
+	..setSpeedMinimum(speed)
+	..setSpeedMaximum(speed)
+	..setAttacksEnabled(0)
+	..setAcquisitionRange(0)
+	..setCanFlee(false)
+	..setCollisionSize(12)
+	..setPointValue(20)
+	return this
+
+public function tdWaveBaseHitPoints(int wave) returns int
+	if wave == 1
+		return 70
+	if wave == 2
+		return 95
+	if wave == 3
+		return 125
+	if wave == 4
+		return 165
+	if wave == 5
+		return 220
+	if wave == 6
+		return 300
+	if wave == 7
+		return 410
+	if wave == 8
+		return 560
+	if wave == 9
+		return 760
+	return 1020
+
+function tdWaveBaseArmor(int wave) returns int
+	if wave <= 2
+		return 0
+	if wave <= 4
+		return 1
+	if wave <= 6
+		return 2
+	if wave <= 8
+		return 3
+	if wave == 9
+		return 4
+	return 5
+
+function tdWaveBaseSpeed(int wave) returns int
+	if wave == 1
+		return 240
+	if wave == 2
+		return 245
+	if wave == 3
+		return 250
+	if wave == 4
+		return 255
+	if wave == 5
+		return 260
+	if wave == 6
+		return 265
+	if wave == 7
+		return 270
+	if wave == 8
+		return 275
+	if wave == 9
+		return 280
+	return 285
+
+@compiletime function tdGenerateEscaperObjects()
+	new UnitDefinition(TD_WAVE_1_UNIT_ID, 'hpea')
+		..tdApplyEscaperStats("逃兵", tdWaveBaseHitPoints(1), tdWaveBaseArmor(1), tdWaveBaseSpeed(1))
+	new UnitDefinition(TD_WAVE_2_UNIT_ID, 'hfoo')
+		..tdApplyEscaperStats("步兵队", tdWaveBaseHitPoints(2), tdWaveBaseArmor(2), tdWaveBaseSpeed(2))
+	new UnitDefinition(TD_WAVE_3_UNIT_ID, 'ugho')
+		..tdApplyEscaperStats("食尸小队", tdWaveBaseHitPoints(3), tdWaveBaseArmor(3), tdWaveBaseSpeed(3))
+	new UnitDefinition(TD_WAVE_4_UNIT_ID, 'hrif')
+		..tdApplyEscaperStats("火枪逃兵", tdWaveBaseHitPoints(4), tdWaveBaseArmor(4), tdWaveBaseSpeed(4))
+	new UnitDefinition(TD_WAVE_5_UNIT_ID, 'ogru')
+		..tdApplyEscaperStats("兽人冲锋者", tdWaveBaseHitPoints(5), tdWaveBaseArmor(5), tdWaveBaseSpeed(5))
+	new UnitDefinition(TD_WAVE_6_UNIT_ID, 'edry')
+		..tdApplyEscaperStats("森林信使", tdWaveBaseHitPoints(6), tdWaveBaseArmor(6), tdWaveBaseSpeed(6))
+	new UnitDefinition(TD_WAVE_7_UNIT_ID, 'esen')
+		..tdApplyEscaperStats("月刃猎手", tdWaveBaseHitPoints(7), tdWaveBaseArmor(7), tdWaveBaseSpeed(7))
+	new UnitDefinition(TD_WAVE_8_UNIT_ID, 'uabo')
+		..tdApplyEscaperStats("缝合怪", tdWaveBaseHitPoints(8), tdWaveBaseArmor(8), tdWaveBaseSpeed(8))
+	new UnitDefinition(TD_WAVE_9_UNIT_ID, 'okod')
+		..tdApplyEscaperStats("科多巨兽", tdWaveBaseHitPoints(9), tdWaveBaseArmor(9), tdWaveBaseSpeed(9))
+	new UnitDefinition(TD_WAVE_10_UNIT_ID, 'otau')
+		..tdApplyEscaperStats("牛头督军", tdWaveBaseHitPoints(10), tdWaveBaseArmor(10), tdWaveBaseSpeed(10))
 
 public function tdWaveCount() returns int
-	return 5
+	return 10
 
 public function tdWaveUnitId(int wave) returns int
 	if wave == 1
-		return 'hfoo'
+		return TD_WAVE_1_UNIT_ID
 	if wave == 2
-		return 'hrif'
+		return TD_WAVE_2_UNIT_ID
 	if wave == 3
-		return 'ogru'
+		return TD_WAVE_3_UNIT_ID
 	if wave == 4
-		return 'orai'
-	return 'otau'
+		return TD_WAVE_4_UNIT_ID
+	if wave == 5
+		return TD_WAVE_5_UNIT_ID
+	if wave == 6
+		return TD_WAVE_6_UNIT_ID
+	if wave == 7
+		return TD_WAVE_7_UNIT_ID
+	if wave == 8
+		return TD_WAVE_8_UNIT_ID
+	if wave == 9
+		return TD_WAVE_9_UNIT_ID
+	return TD_WAVE_10_UNIT_ID
 
 public function tdWaveEnemyCount(int wave) returns int
 	if wave == 1
-		return 6
+		return 5
 	if wave == 2
-		return 8
+		return 6
 	if wave == 3
-		return 10
+		return 7
 	if wave == 4
+		return 8
+	if wave == 5
+		return 9
+	if wave == 6
+		return 10
+	if wave == 7
+		return 11
+	if wave == 8
 		return 12
-	return 14
+	if wave == 9
+		return 13
+	return 15
 
 public function tdWaveSpawnInterval(int wave) returns real
-	if wave <= 2
-		return 1.00
-	if wave <= 4
-		return 0.85
-	return 0.70
+	if wave == 1
+		return 1.15
+	if wave == 2
+		return 1.05
+	if wave == 3
+		return 0.95
+	if wave == 4
+		return 0.88
+	if wave == 5
+		return 0.82
+	if wave == 6
+		return 0.76
+	if wave == 7
+		return 0.71
+	if wave == 8
+		return 0.66
+	if wave == 9
+		return 0.61
+	return 0.56
 
 public function tdWaveReward(int wave) returns int
 	if wave == 1
-		return 60
+		return 30
 	if wave == 2
-		return 80
+		return 40
 	if wave == 3
-		return 100
+		return 50
 	if wave == 4
+		return 65
+	if wave == 5
+		return 80
+	if wave == 6
+		return 100
+	if wave == 7
 		return 125
-	return 160
+	if wave == 8
+		return 150
+	if wave == 9
+		return 185
+	return 240
+
+public function tdWaveKillGold(int wave) returns int
+	if wave == 1
+		return 2
+	if wave == 2
+		return 3
+	if wave == 3
+		return 4
+	if wave == 4
+		return 4
+	if wave == 5
+		return 5
+	if wave == 6
+		return 6
+	if wave == 7
+		return 7
+	if wave == 8
+		return 8
+	if wave == 9
+		return 9
+	return 11
+
+public function tdWaveScoreValue(int wave) returns int
+	if wave == 1
+		return 2
+	if wave == 2
+		return 3
+	if wave == 3
+		return 4
+	if wave == 4
+		return 6
+	if wave == 5
+		return 8
+	if wave == 6
+		return 10
+	if wave == 7
+		return 12
+	if wave == 8
+		return 15
+	if wave == 9
+		return 18
+	return 24

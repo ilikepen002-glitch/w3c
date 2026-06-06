@@ -1,37 +1,93 @@
 package TDState
 import TDConfig
 
-int tdLives = TD_STARTING_LIVES
-int tdGold = TD_STARTING_GOLD
-int tdCurrentWave = 0
+int array tdLives
+int array tdGold
+int array tdCurrentWave
+int array tdLaneScore
+boolean array tdLaneActive
+boolean array tdLaneDefeated
+boolean array tdLaneFinished
 boolean tdGameOver = false
+int tdTeamScore = 0
 
+function tdSyncPlayerResources(int playerId)
+	if not compiletime
+		SetPlayerState(Player(playerId), PLAYER_STATE_RESOURCE_GOLD, tdGold[playerId])
+		SetPlayerState(Player(playerId), PLAYER_STATE_RESOURCE_LUMBER, 0)
+
+// 重置本局里所有会变化的状态，避免一次测试的结果污染下一次测试。
 public function tdResetState()
-	tdLives = TD_STARTING_LIVES
-	tdGold = TD_STARTING_GOLD
-	tdCurrentWave = 0
+	tdTeamScore = 0
 	tdGameOver = false
+	for i = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdLives[i] = TD_STARTING_LIVES
+		tdGold[i] = TD_STARTING_GOLD
+		tdCurrentWave[i] = 0
+		tdLaneScore[i] = 0
+		tdLaneActive[i] = false
+		tdLaneDefeated[i] = false
+		tdLaneFinished[i] = false
+		tdSyncPlayerResources(i)
 
-public function tdGetLives() returns int
-	return tdLives
+public function tdGetLives(int playerId) returns int
+	return tdLives[playerId]
 
-public function tdGetGold() returns int
-	return tdGold
+public function tdGetGold(int playerId) returns int
+	return tdGold[playerId]
 
-public function tdGetCurrentWave() returns int
-	return tdCurrentWave
+public function tdGetCurrentWave(int playerId) returns int
+	return tdCurrentWave[playerId]
 
-public function tdSetCurrentWave(int wave)
-	tdCurrentWave = wave
+public function tdGetLaneScore(int playerId) returns int
+	return tdLaneScore[playerId]
 
-public function tdSpendGold(int amount)
-	tdGold -= amount
+public function tdGetTeamScore() returns int
+	return tdTeamScore
 
-public function tdGainGold(int amount)
-	tdGold += amount
+public function tdIsLaneActive(int playerId) returns boolean
+	return tdIsLanePlayer(playerId) and tdLaneActive[playerId]
 
-public function tdLoseLife(int amount)
-	tdLives -= amount
+public function tdSetLaneActive(int playerId, boolean value)
+	if tdIsLanePlayer(playerId)
+		tdLaneActive[playerId] = value
+
+public function tdCountActiveLanes() returns int
+	var count = 0
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdLaneActive[playerId]
+			count += 1
+	return count
+
+public function tdSetCurrentWave(int playerId, int wave)
+	tdCurrentWave[playerId] = wave
+
+public function tdSpendGold(int playerId, int amount)
+	tdGold[playerId] -= amount
+	tdSyncPlayerResources(playerId)
+
+public function tdGainGold(int playerId, int amount)
+	tdGold[playerId] += amount
+	tdSyncPlayerResources(playerId)
+
+public function tdLoseLife(int playerId, int amount)
+	tdLives[playerId] -= amount
+
+public function tdAddScore(int playerId, int amount)
+	tdLaneScore[playerId] += amount
+	tdTeamScore += amount
+
+public function tdIsLaneDefeated(int playerId) returns boolean
+	return tdLaneDefeated[playerId]
+
+public function tdSetLaneDefeated(int playerId, boolean value)
+	tdLaneDefeated[playerId] = value
+
+public function tdIsLaneFinished(int playerId) returns boolean
+	return tdLaneFinished[playerId]
+
+public function tdSetLaneFinished(int playerId, boolean value)
+	tdLaneFinished[playerId] = value
 
 public function tdIsGameOver() returns boolean
 	return tdGameOver

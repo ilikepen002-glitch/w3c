@@ -1,33 +1,167 @@
 package TDConfig
 
+public constant int TD_ACTIVE_PLAYER_COUNT = 4
 public constant int TD_STARTING_LIVES = 20
-public constant int TD_STARTING_GOLD = 300
-public constant int TD_TOWER_CHOICE_COUNT = 3
-public constant int TD_PAD_COUNT = 5
-public constant real TD_TIME_BETWEEN_WAVES = 8.00
+public constant int TD_STARTING_GOLD = 100
+public constant int TD_TOWER_CHOICE_COUNT = 5
+public constant int TD_BUILD_PLOTS_PER_LANE = 10
+public constant int TD_MAX_TOWER_LEVEL = 5
+public constant real TD_TIME_BETWEEN_WAVES = 7.00
+
+public constant int TD_TOWER_CHOICE_ARCHER = 1
+public constant int TD_TOWER_CHOICE_ORC = 2
+public constant int TD_TOWER_CHOICE_FOOTMAN = 3
+public constant int TD_TOWER_CHOICE_DRYAD = 4
+public constant int TD_TOWER_CHOICE_GHOUL = 5
 
 public constant int TD_PLAYER_ID = 0
 public constant int TD_ENEMY_PLAYER_ID = PLAYER_NEUTRAL_AGGRESSIVE
-public constant int TD_PAD_UNIT_ID = 'hhou'
+public constant int TD_BUILD_PLOT_UNIT_ID = 'uP01'
+public constant int TD_FARMER_UNIT_ID = 'uF01'
 
-public constant int TD_ARROW_TOWER_ID = 'hgtw'
-public constant int TD_CANNON_TOWER_ID = 'hctw'
-public constant int TD_LONG_RANGE_TOWER_ID = 'hatw'
+public constant int TD_PAD_COUNT = TD_ACTIVE_PLAYER_COUNT * TD_BUILD_PLOTS_PER_LANE
 
-public constant int TD_ARROW_TOWER_COST = 80
-public constant int TD_CANNON_TOWER_COST = 125
-public constant int TD_LONG_RANGE_TOWER_COST = 110
+public function tdIsLanePlayer(int playerId) returns boolean
+	return playerId >= 0 and playerId < TD_ACTIVE_PLAYER_COUNT
 
-public constant vec2 TD_SPAWN_POS = vec2(-1024, 0)
-public constant vec2 TD_END_POS = vec2(1024, 0)
+function tdRectCenter(rect r) returns vec2
+	return vec2((GetRectMinX(r) + GetRectMaxX(r)) / 2.0, (GetRectMinY(r) + GetRectMaxY(r)) / 2.0)
+
+function tdRectCenterOrFallback(rect r, real fallbackX, real fallbackY) returns vec2
+	if r != null
+		return tdRectCenter(r)
+	return vec2(fallbackX, fallbackY)
+
+function tdLaneSpawnRect(int playerId) returns rect
+	if playerId == 0
+		return gg_rct_td_spawn_p1
+	if playerId == 1
+		return gg_rct_td_spawn_p2
+	if playerId == 2
+		return gg_rct_td_spawn_p3
+	return gg_rct_td_spawn_p4
+
+function tdFarmerSpawnRect(int playerId) returns rect
+	if playerId == 0
+		return gg_rct_td_farmer_p1
+	if playerId == 1
+		return gg_rct_td_farmer_p2
+	if playerId == 2
+		return gg_rct_td_farmer_p3
+	return gg_rct_td_farmer_p4
+
+public function tdLaneExitRect() returns rect
+	return gg_rct_td_exit_center
+
+public function tdLaneSpawnPosition(int playerId) returns vec2
+	if playerId == 0
+		return tdRectCenterOrFallback(tdLaneSpawnRect(playerId), -2320., 2672.)
+	if playerId == 1
+		return tdRectCenterOrFallback(tdLaneSpawnRect(playerId), 2448., 2704.)
+	if playerId == 2
+		return tdRectCenterOrFallback(tdLaneSpawnRect(playerId), 2352., -3056.)
+	return tdRectCenterOrFallback(tdLaneSpawnRect(playerId), -2320., -3056.)
+
+public function tdLaneExitPosition(int _playerId) returns vec2
+	return tdRectCenterOrFallback(tdLaneExitRect(), -16., -192.)
+
+public function tdFarmerSpawnPosition(int playerId) returns vec2
+	if playerId == 0
+		return tdRectCenterOrFallback(tdFarmerSpawnRect(playerId), -1616., 2064.)
+	if playerId == 1
+		return tdRectCenterOrFallback(tdFarmerSpawnRect(playerId), 1936., 2128.)
+	if playerId == 2
+		return tdRectCenterOrFallback(tdFarmerSpawnRect(playerId), 1840., -2480.)
+	return tdRectCenterOrFallback(tdFarmerSpawnRect(playerId), -1936., -2384.)
+
+public function tdLaneWaypointCount(int playerId) returns int
+	return 0
+
+public function tdLaneWaypointPosition(int _playerId, int _index) returns vec2
+	return tdLaneExitPosition(0)
+
+public function tdBuildPlotPosition(int playerId, int plotIndex) returns vec2
+	if playerId == 0
+		if plotIndex == 0
+			return vec2(-1220, 980)
+		if plotIndex == 1
+			return vec2(-1220, 80)
+		if plotIndex == 2
+			return vec2(-900, 980)
+		if plotIndex == 3
+			return vec2(-520, 600)
+		if plotIndex == 4
+			return vec2(-900, 160)
+		if plotIndex == 5
+			return vec2(-500, 520)
+		if plotIndex == 6
+			return vec2(-500, -40)
+		if plotIndex == 7
+			return vec2(-80, 320)
+		if plotIndex == 8
+			return vec2(260, 100)
+		return vec2(260, -300)
+	if playerId == 1
+		if plotIndex == 0
+			return vec2(980, 1220)
+		if plotIndex == 1
+			return vec2(600, 1220)
+		if plotIndex == 2
+			return vec2(980, 900)
+		if plotIndex == 3
+			return vec2(600, 520)
+		if plotIndex == 4
+			return vec2(160, 900)
+		if plotIndex == 5
+			return vec2(520, 500)
+		if plotIndex == 6
+			return vec2(-40, 500)
+		if plotIndex == 7
+			return vec2(320, 80)
+		if plotIndex == 8
+			return vec2(100, -260)
+		return vec2(-300, -260)
+	if playerId == 2
+		if plotIndex == 0
+			return vec2(1220, -980)
+		if plotIndex == 1
+			return vec2(1220, -600)
+		if plotIndex == 2
+			return vec2(900, -980)
+		if plotIndex == 3
+			return vec2(520, -600)
+		if plotIndex == 4
+			return vec2(900, -160)
+		if plotIndex == 5
+			return vec2(500, -520)
+		if plotIndex == 6
+			return vec2(500, 40)
+		if plotIndex == 7
+			return vec2(80, -320)
+		if plotIndex == 8
+			return vec2(-260, -100)
+		return vec2(-260, 300)
+	if plotIndex == 0
+		return vec2(-980, -1220)
+	if plotIndex == 1
+		return vec2(-600, -1220)
+	if plotIndex == 2
+		return vec2(-980, -900)
+	if plotIndex == 3
+		return vec2(-600, -520)
+	if plotIndex == 4
+		return vec2(-160, -900)
+	if plotIndex == 5
+		return vec2(-520, -500)
+	if plotIndex == 6
+		return vec2(40, -500)
+	if plotIndex == 7
+		return vec2(-320, -80)
+	if plotIndex == 8
+		return vec2(-100, 260)
+	return vec2(300, 260)
 
 public function tdPadPosition(int index) returns vec2
-	if index == 0
-		return vec2(-512, 256)
-	if index == 1
-		return vec2(-256, -256)
-	if index == 2
-		return vec2(0, 256)
-	if index == 3
-		return vec2(256, -256)
-	return vec2(512, 256)
+	let playerId = index div TD_BUILD_PLOTS_PER_LANE
+	let plotIndex = index mod TD_BUILD_PLOTS_PER_LANE
+	return tdBuildPlotPosition(playerId, plotIndex)

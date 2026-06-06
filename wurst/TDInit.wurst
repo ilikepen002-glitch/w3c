@@ -1,18 +1,55 @@
 package TDInit
 import TDState
 import TDGame
+import TDSpawn
 import TDTowers
 import TDConfig
 import ClosureTimers
 
-public function tdStartGame()
-	tdResetState()
+public function tdMapBootstrapDelay() returns real
+	return 0.0
+
+public function tdShouldRevealWholeMap() returns boolean
+	return true
+
+function tdRevealWholeMap()
+	if tdShouldRevealWholeMap()
+		FogEnableOff()
+		FogMaskEnableOff()
+
+function tdShouldEnableLaneForPlayer(int playerId) returns boolean
+	return GetPlayerController(Player(playerId)) == MAP_CONTROL_USER and GetPlayerSlotState(Player(playerId)) == PLAYER_SLOT_STATE_PLAYING
+
+function tdDetectActiveLanes()
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdSetLaneActive(playerId, tdShouldEnableLaneForPlayer(playerId))
+
+function tdRunGameplayStartup()
+	// 在静态地图模式下，地形、路口、传送门和装饰都由 World Editor 维护。
+	// Wurst 这里只接管运行时状态、单位和波次系统。
 	tdCreatePads()
 	tdSetupBuildDialog()
 	tdSetupPadSelection()
 	tdSetupDialogTrigger()
+	tdSetupLaneRects()
+	tdStartEnemyHealthWatcher()
+	tdStartEnemyDeathWatcher()
 	tdStartLeakWatcher()
 	tdRefreshHud()
-	DisplayTimedTextToPlayer(Player(TD_PLAYER_ID), 0, 0, 8.0, "Build your first towers.")
-	doAfter(3.0) ->
-		tdStartNextWave()
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(playerId)
+			DisplayTimedTextToPlayer(Player(playerId), 0, 0, 10.0, "Static map mode. Terrain and lanes come from World Editor. Start with 100 gold, build on the prepared grass plots, and stop creeps from reaching the center portal.")
+	doAfter(6.0) ->
+		for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			if tdIsLaneActive(playerId)
+				tdStartNextWave(playerId)
+
+// 游戏主启动流程。静态地图模式下不再在运行时删单位或重刷地形，
+// 只做状态重置和玩法系统初始化。
+public function tdStartGame()
+	tdResetState()
+	tdRevealWholeMap()
+	tdDetectActiveLanes()
+	let setupDelay = tdMapBootstrapDelay()
+	doAfter(setupDelay) ->
+		tdRunGameplayStartup()

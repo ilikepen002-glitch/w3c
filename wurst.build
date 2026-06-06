@@ -7,6 +7,51 @@ buildMapData:
   fileName: MyFirstWurstMap.w3x
   author: huawei
   scenarioData:
-    suggestedPlayers: "1"
+    suggestedPlayers: "4"
+  optionsFlags:
+    forcesFixed: true
+  players:
+    - id: 0
+      name: Player 1
+      race: HUMAN
+      controller: USER
+      fixedStartLoc: true
+    - id: 1
+      name: Player 2
+      race: HUMAN
+      controller: USER
+      fixedStartLoc: true
+    - id: 2
+      name: Player 3
+      race: HUMAN
+      controller: USER
+      fixedStartLoc: true
+    - id: 3
+      name: Player 4
+      race: HUMAN
+      controller: USER
+      fixedStartLoc: true
+    - id: 4
+      name: Enemy Slot
+      race: ORC
+      controller: COMPUTER
+      fixedStartLoc: true
+  forces:
+    - name: Defenders
+      flags:
+        allied: true
+        alliedVictory: true
+        sharedVision: true
+        sharedControl: false
+        sharedControlAdvanced: false
+      playerIds: [0, 1, 2, 3]
+    - name: Enemy
+      flags:
+        allied: false
+        alliedVictory: false
+        sharedVision: false
+        sharedControl: false
+        sharedControlAdvanced: false
+      playerIds: [4]
 scriptMode: JASS
 wc3Patch: pre1.29
