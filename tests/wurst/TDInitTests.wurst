@@ -1,0 +1,36 @@
+package TDInitTests
+import TDInit
+import TDState
+import TDConfig
+
+@Test function staticMapStartupNeedsNoRuntimeBootstrapDelay()
+	tdMapBootstrapDelay().assertEquals(0.0)
+
+@Test function startupRevealsTheWholeMap()
+	tdShouldRevealWholeMap().assertTrue()
+
+@Test function startupGuideTextUsesChinese()
+	tdStartupGuideMessage().contains("100 金币").assertTrue()
+	tdStartupGuideMessage().contains("草地").assertTrue()
+	tdStartupGuideMessage().contains("传送门").assertTrue()
+	tdStartupGuideMessage().contains("滚轮").assertTrue()
+	tdStartupGuideMessage().contains("Static map mode").assertFalse()
+
+@Test function startupCameraStartsHigherAndAllowsThreeExtraWheelHeights()
+	tdDefaultCameraTargetDistance().assertEquals(3200.0)
+	tdDefaultCameraAngleOfAttack().assertEquals(338.0)
+	tdCameraWheelLiftStepCount().assertEquals(3)
+	tdCameraWheelLiftDistancePerStep().assertEquals(400.0)
+	tdCameraTargetDistanceForWheelLift(0).assertEquals(3200.0)
+	tdCameraTargetDistanceForWheelLift(3).assertEquals(4400.0)
+
+@Test function addMoneyCommandGivesGoldToTheTriggeringPlayer()
+	tdResetState()
+	tdTryHandleAddMoneyCommand(0, "-addMoney 1000").assertTrue()
+	tdGetGold(0).assertEquals(TD_STARTING_GOLD + 1000)
+	tdGetGold(1).assertEquals(TD_STARTING_GOLD)
+
+@Test function addMoneyCommandRejectsInvalidAmounts()
+	tdResetState()
+	tdTryHandleAddMoneyCommand(0, "-addMoney nope").assertFalse()
+	tdGetGold(0).assertEquals(TD_STARTING_GOLD)

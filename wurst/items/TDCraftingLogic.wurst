@@ -1,0 +1,39 @@
+package TDCraftingLogic
+import TDItemData
+
+public constant int TD_CRAFT_MODE_NONE = 0
+public constant int TD_CRAFT_MODE_TWO = 2
+public constant int TD_CRAFT_MODE_THREE = 3
+
+public function tdCraftModeForQualities(int quality1, int quality2, int quality3) returns int
+	if quality1 > 0 and quality1 == quality2 and quality2 == quality3
+		return TD_CRAFT_MODE_THREE
+	if quality1 > 0 and quality1 == quality2
+		return TD_CRAFT_MODE_TWO
+	if quality1 > 0 and quality1 == quality3
+		return TD_CRAFT_MODE_TWO
+	if quality2 > 0 and quality2 == quality3
+		return TD_CRAFT_MODE_TWO
+	return TD_CRAFT_MODE_NONE
+
+public function tdCraftConsumesSlot(int quality1, int quality2, int quality3, int slot) returns boolean
+	let mode = tdCraftModeForQualities(quality1, quality2, quality3)
+	if mode == TD_CRAFT_MODE_THREE
+		return slot >= 0 and slot <= 2
+	if mode != TD_CRAFT_MODE_TWO
+		return false
+	if quality1 == quality2
+		return slot == 0 or slot == 1
+	if quality1 == quality3
+		return slot == 0 or slot == 2
+	return slot == 1 or slot == 2
+
+public function tdCraftSucceeds(int mode, int rollPercent) returns boolean
+	if mode == TD_CRAFT_MODE_THREE
+		return true
+	if mode == TD_CRAFT_MODE_TWO
+		return rollPercent <= 65
+	return false
+
+public function tdCraftResultQuality(int sourceQuality) returns int
+	return tdNextItemQuality(sourceQuality)

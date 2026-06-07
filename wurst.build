@@ -1,57 +1,60 @@
 ---
 projectName: MyFirstWurstMap
 dependencies:
-  - https://github.com/wurstscript/WurstStdlib2:pre1.29
+- https://github.com/wurstscript/WurstStdlib2:pre1.29
 buildMapData:
-  name: My First Wurst Map
+  name: 深渊守望
   fileName: MyFirstWurstMap.w3x
-  author: huawei
+  author: 留白散人
   scenarioData:
-    suggestedPlayers: "4"
+    description: 四路黑潮同时压向中央裂隙。选择你的塔系，守住最后的门户，在精英与首领压境前撑到终局。
+    suggestedPlayers: 1-4
+    loadingScreen:
+      model: ui\Glues\Loading\Load-Generic\Load-Generic.mdx
+      title: 深渊守望
+      subTitle: 作者：留白散人
+      text: 四路敌潮同时压境，中央门户一旦失守，全线都会崩塌。合理搭配不同塔系，扛过黑潮与首领的最终冲击。
   optionsFlags:
     forcesFixed: true
   players:
-    - id: 0
-      name: Player 1
-      race: HUMAN
-      controller: USER
-      fixedStartLoc: true
-    - id: 1
-      name: Player 2
-      race: HUMAN
-      controller: USER
-      fixedStartLoc: true
-    - id: 2
-      name: Player 3
-      race: HUMAN
-      controller: USER
-      fixedStartLoc: true
-    - id: 3
-      name: Player 4
-      race: HUMAN
-      controller: USER
-      fixedStartLoc: true
-    - id: 4
-      name: Enemy Slot
-      race: ORC
-      controller: COMPUTER
-      fixedStartLoc: true
+  - id: 0
+    name: Player 1
+    race: HUMAN
+    controller: USER
+    fixedStartLoc: true
+  - id: 1
+    name: Player 2
+    race: HUMAN
+    controller: USER
+    fixedStartLoc: true
+  - id: 2
+    name: Player 3
+    race: HUMAN
+    controller: USER
+    fixedStartLoc: true
+  - id: 3
+    name: Player 4
+    race: HUMAN
+    controller: USER
+    fixedStartLoc: true
+  - id: 4
+    name: Enemy Slot
+    race: ORC
+    controller: COMPUTER
+    fixedStartLoc: true
   forces:
-    - name: Defenders
-      flags:
-        allied: true
-        alliedVictory: true
-        sharedVision: true
-        sharedControl: false
-        sharedControlAdvanced: false
-      playerIds: [0, 1, 2, 3]
-    - name: Enemy
-      flags:
-        allied: false
-        alliedVictory: false
-        sharedVision: false
-        sharedControl: false
-        sharedControlAdvanced: false
-      playerIds: [4]
+  - name: Defenders
+    playerIds:
+    - 0
+    - 1
+    - 2
+    - 3
+  - name: Enemy
+    flags:
+      allied: false
+      alliedVictory: false
+      sharedVision: false
+    playerIds:
+    - 4
 scriptMode: JASS
-wc3Patch: pre1.29
+wc3Patch: v1.28

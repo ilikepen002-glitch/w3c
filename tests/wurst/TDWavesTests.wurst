@@ -1,0 +1,127 @@
+package TDWavesTests
+import TDWaves
+import TDConfig
+
+function tdAccumulatedGoldThroughWaveForTest(int lastWave) returns int
+	var total = TD_STARTING_GOLD
+	for wave = 1 to lastWave
+		total += tdWaveEnemyCount(wave) * tdWaveKillGold(wave)
+		total += tdWaveReward(wave)
+	return total
+
+function tdArmorFactorForTest(int armor) returns real
+	return 1.0 + armor * 0.06
+
+function tdWavePressureProxyForTest(int wave) returns real
+	let normalPressure = tdWaveNormalEnemyCount(wave) * tdWaveBaseHitPoints(wave) * tdArmorFactorForTest(tdWaveBaseArmor(wave)) * (tdWaveBaseSpeed(wave) / 240.0)
+	let elitePressure = tdWaveEliteEnemyCount(wave) * tdWaveEliteHitPoints(wave) * tdArmorFactorForTest(tdWaveEliteArmor(wave)) * (tdWaveEliteSpeed(wave) / 240.0)
+	let bossPressure = tdWaveBossEnemyCount(wave) * tdWaveBossHitPoints(wave) * tdArmorFactorForTest(tdWaveBossArmor(wave)) * (tdWaveBossSpeed(wave) / 240.0)
+	return normalPressure + elitePressure + bossPressure
+
+@Test function waveCountMatchesBalanceSpec()
+	tdWaveCount().assertEquals(32)
+
+@Test function openingWaveMatchesTeachingBaseline()
+	tdWaveNormalEnemyCount(1).assertEquals(8)
+	tdWaveEliteEnemyCount(1).assertEquals(0)
+	tdWaveBossEnemyCount(1).assertEquals(0)
+	tdWaveEnemyCount(1).assertEquals(8)
+	tdWaveBaseHitPoints(1).assertEquals(90)
+	tdWaveBaseArmor(1).assertEquals(0)
+	tdWaveBaseSpeed(1).assertEquals(240)
+	tdWaveKillGold(1).assertEquals(3)
+	tdWaveReward(1).assertEquals(10)
+
+@Test function eliteAndBossWavesMatchThirtyTwoWaveSpec()
+	for wave = 1 to tdWaveCount()
+		let shouldBeElite = wave == 4 or wave == 12 or wave == 20 or wave == 28
+		let shouldBeBoss = wave == 8 or wave == 16 or wave == 24 or wave == 32
+		(tdWaveEliteEnemyCount(wave) > 0).assertEquals(shouldBeElite)
+		(tdWaveBossEnemyCount(wave) > 0).assertEquals(shouldBeBoss)
+		if shouldBeBoss
+			tdWaveEliteEnemyCount(wave).assertEquals(0)
+			(tdWaveBossGuardEnemyCount(wave) >= 1).assertTrue()
+		else
+			tdWaveBossGuardEnemyCount(wave).assertEquals(0)
+
+@Test function bossBenchmarksMatchStageTargets()
+	tdWaveBossHitPoints(8).assertEquals(1800)
+	tdWaveBossArmor(8).assertEquals(2)
+	tdWaveBossHitPoints(16).assertEquals(4500)
+	tdWaveBossArmor(16).assertEquals(6)
+	tdWaveBossHitPoints(24).assertEquals(9500)
+	tdWaveBossArmor(24).assertEquals(9)
+	tdWaveBossHitPoints(32).assertEquals(18000)
+	tdWaveBossArmor(32).assertEquals(12)
+
+@Test function firstEliteIsHighHealthLowSpeedStump()
+	tdWaveNormalEnemyCount(4).assertEquals(9)
+	tdWaveEliteEnemyCount(4).assertEquals(1)
+	(tdWaveEliteHitPoints(4) > tdWaveBaseHitPoints(4) * 3).assertTrue()
+	(tdWaveEliteSpeed(4) <= 240).assertTrue()
+	tdWaveEliteArmor(4).assertEquals(1)
+
+@Test function economyCurveMatchesBalanceSpec()
+	tdWaveReward(2).assertEquals(10)
+	tdWaveReward(8).assertEquals(34)
+	tdWaveReward(12).assertEquals(24)
+	tdWaveReward(16).assertEquals(58)
+	tdWaveKillGold(4).assertEquals(4)
+	tdWaveKillGold(10).assertEquals(5)
+	tdWaveKillGold(16).assertEquals(6)
+	tdWaveKillGold(24).assertEquals(8)
+	tdWaveKillGold(32).assertEquals(10)
+
+@Test function killIncomeStaysPrimaryWhileClearGoldActsAsAuxiliary()
+	(tdWaveEnemyCount(1) * tdWaveKillGold(1) > tdWaveReward(1)).assertTrue()
+	(tdWaveEnemyCount(8) * tdWaveKillGold(8) > tdWaveReward(8)).assertTrue()
+	(tdWaveEnemyCount(16) * tdWaveKillGold(16) > tdWaveReward(16)).assertTrue()
+
+@Test function cumulativeEconomyReturnsToHealthyRangeCheckpoints()
+	(tdAccumulatedGoldThroughWaveForTest(8) >= 520).assertTrue()
+	(tdAccumulatedGoldThroughWaveForTest(16) >= 1300).assertTrue()
+	(tdAccumulatedGoldThroughWaveForTest(24) >= 2800).assertTrue()
+	(tdAccumulatedGoldThroughWaveForTest(32) >= 5000).assertTrue()
+
+@Test function lateGameThreeWaveIncomeCoversTypicalUltimateUpgrade()
+	for startWave = 17 to 19
+		var total = 0
+		for wave = startWave to startWave + 2
+			total += tdWaveEnemyCount(wave) * tdWaveKillGold(wave)
+			total += tdWaveReward(wave)
+		(total >= 540).assertTrue()
+		(total <= 660).assertTrue()
+	for startWave = 25 to 29
+		var total = 0
+		for wave = startWave to startWave + 2
+			total += tdWaveEnemyCount(wave) * tdWaveKillGold(wave)
+			total += tdWaveReward(wave)
+		(total >= 660).assertTrue()
+
+@Test function stageBPressureKeepsRisingIntoTheEliteCheckpoint()
+	(tdWavePressureProxyForTest(6) > tdWavePressureProxyForTest(5)).assertTrue()
+	(tdWavePressureProxyForTest(7) > tdWavePressureProxyForTest(6)).assertTrue()
+	(tdWavePressureProxyForTest(8) > tdWavePressureProxyForTest(7)).assertTrue()
+
+@Test function spawnIntervalsStillAccelerateThroughTheSession()
+	(tdWaveSpawnInterval(16) < tdWaveSpawnInterval(1)).assertTrue()
+	(tdWaveSpawnInterval(10) <= tdWaveSpawnInterval(6)).assertTrue()
+
+@Test function laterWavesIncreaseScorePressure()
+	(tdWaveScoreValue(tdWaveCount()) > tdWaveScoreValue(1)).assertTrue()
+	(tdWaveScoreValue(24) > tdWaveScoreValue(16)).assertTrue()
+
+@Test function finalWaveHasFarMorePressureThanOpeningWave()
+	(tdWaveEnemyCount(tdWaveCount()) > tdWaveEnemyCount(1)).assertTrue()
+	(tdWaveBaseHitPoints(31) > tdWaveBaseHitPoints(1)).assertTrue()
+
+@Test function bossGuardsUseIndependentClassification()
+	tdIsBossGuardUnitTypeId(tdWaveBossGuardUnitId(8)).assertTrue()
+	tdIsBossGuardUnitTypeId(tdWaveBossGuardUnitId(32)).assertTrue()
+	tdIsEliteUnitTypeId(tdWaveBossGuardUnitId(16)).assertFalse()
+	tdIsBossUnitTypeId(tdWaveBossGuardUnitId(24)).assertFalse()
+
+@Test function lateBossesHaveSpellDamageEhpGuardrails()
+	tdWaveBossSpellDamageTakenFactor(8).assertEquals(1.00)
+	(tdWaveBossSpellDamageTakenFactor(24) < tdWaveBossSpellDamageTakenFactor(16)).assertTrue()
+	(tdWaveBossSpellDamageTakenFactor(32) < tdWaveBossSpellDamageTakenFactor(24)).assertTrue()

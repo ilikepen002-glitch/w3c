@@ -1,0 +1,212 @@
+package TDInventoryRuntime
+import TDItemData
+import TDConfig
+import TDCraftingLogic
+import RegisterEvents
+import TDTowerData
+
+trigger tdTowerItemPickupTrigger = CreateTrigger()
+trigger tdTowerItemDropTrigger = CreateTrigger()
+
+public function tdTowerEquipmentSlotCount() returns int
+	return 3
+
+public function tdTowerEquipmentDuplicateFactor(int copyIndex) returns real
+	if copyIndex >= 3
+		return 0.5
+	return 1.0
+
+public function tdTowerEquipmentCooldownCap() returns real
+	return 0.40
+
+public function tdTowerEquipmentRangeCap() returns real
+	return 500.0
+
+function tdItemEffectContribution(int itemId, int effectKind) returns real
+	if tdItemPrimaryEffectKind(itemId) == effectKind
+		return tdItemPrimaryEffectValue(itemId)
+	if tdItemSecondaryEffectKind(itemId) == effectKind
+		return tdItemSecondaryEffectValue(itemId)
+	return 0.0
+
+function tdInventoryItemAt(int item1, int item2, int item3, int slot) returns int
+	if slot == 0
+		return item1
+	if slot == 1
+		return item2
+	return item3
+
+function tdCraftVisibleInventorySlot(int visibleSlot) returns int
+	if visibleSlot == 0
+		return 0
+	if visibleSlot == 1
+		return 1
+	return 3
+
+function tdInventorySlotItemId(int slot0, int slot1, int slot2, int slot3, int slot4, int slot5, int slot) returns int
+	if slot == 0
+		return slot0
+	if slot == 1
+		return slot1
+	if slot == 2
+		return slot2
+	if slot == 3
+		return slot3
+	if slot == 4
+		return slot4
+	return slot5
+
+function tdInventoryItemQualityFromTypeId(int itemId) returns int
+	if itemId != 0 and tdItemIsEquipment(itemId)
+		return tdItemQuality(itemId)
+	return 0
+
+public function tdCraftModeForInventorySlots(int slot0, int slot1, int slot2, int slot3, int slot4, int slot5) returns int
+	let visibleItem1 = tdInventorySlotItemId(slot0, slot1, slot2, slot3, slot4, slot5, tdCraftVisibleInventorySlot(0))
+	let visibleItem2 = tdInventorySlotItemId(slot0, slot1, slot2, slot3, slot4, slot5, tdCraftVisibleInventorySlot(1))
+	let visibleItem3 = tdInventorySlotItemId(slot0, slot1, slot2, slot3, slot4, slot5, tdCraftVisibleInventorySlot(2))
+	return tdCraftModeForQualities(tdInventoryItemQualityFromTypeId(visibleItem1), tdInventoryItemQualityFromTypeId(visibleItem2), tdInventoryItemQualityFromTypeId(visibleItem3))
+
+function tdAccumulatedEffectForItems(int item1, int item2, int item3, int effectKind) returns real
+	int array seenCounts
+	var total = 0.0
+	for slot = 0 to 2
+		let itemId = tdInventoryItemAt(item1, item2, item3, slot)
+		if itemId != 0
+			seenCounts[itemId] += 1
+			let copyIndex = seenCounts[itemId]
+			total += tdItemEffectContribution(itemId, effectKind) * tdTowerEquipmentDuplicateFactor(copyIndex)
+	return total
+
+function tdRoundEquipmentReal(real value) returns real
+	return R2I(value * 100.0 + 0.5) / 100.0
+
+public function tdEquipmentAttackBonusForItems(int item1, int item2, int item3) returns real
+	return tdAccumulatedEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_ATTACK)
+
+public function tdEquipmentAttackSpeedBonusForItems(int item1, int item2, int item3) returns real
+	return tdRoundEquipmentReal(tdAccumulatedEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_ATTACK_SPEED))
+
+public function tdEquipmentCooldownReductionForItems(int item1, int item2, int item3) returns real
+	let total = tdRoundEquipmentReal(tdAccumulatedEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_COOLDOWN))
+	if total > tdTowerEquipmentCooldownCap()
+		return tdTowerEquipmentCooldownCap()
+	return total
+
+public function tdEquipmentRangeBonusForItems(int item1, int item2, int item3) returns real
+	let total = tdAccumulatedEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_RANGE)
+	if total > tdTowerEquipmentRangeCap()
+		return tdTowerEquipmentRangeCap()
+	return total
+
+public function tdEquipmentKillGoldBonusForItems(int item1, int item2, int item3) returns int
+	return R2I(tdAccumulatedEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_KILL_GOLD))
+
+public function tdEquipmentDropBonusRollsForItems(int item1, int item2, int item3) returns int
+	return R2I(tdAccumulatedEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_DROP_BONUS))
+
+function tdClampEquipmentAbilityLevel(int level, int maxLevel) returns int
+	if level < 0
+		return 0
+	if level > maxLevel
+		return maxLevel
+	return level
+
+public function tdTowerAttackBonusAbilityLevelForItems(int item1, int item2, int item3) returns int
+	return tdClampEquipmentAbilityLevel(R2I(tdEquipmentAttackBonusForItems(item1, item2, item3) + 0.5), TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL)
+
+public function tdTowerAttackSpeedAbilityLevelForItems(int item1, int item2, int item3) returns int
+	return tdClampEquipmentAbilityLevel(R2I(tdEquipmentAttackSpeedBonusForItems(item1, item2, item3) * 100.0 + 0.5), TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL)
+
+function tdTowerEquipmentItemId(unit tower, int slot) returns int
+	if tower == null
+		return 0
+	let itm = tower.itemInSlot(slot)
+	if itm == null or not tdItemIsEquipment(itm.getTypeId())
+		return 0
+	return itm.getTypeId()
+
+function tdSetTowerEquipmentAbilityLevel(unit tower, int abilityId, int level)
+	if tower == null
+		return
+	if level <= 0
+		if tower.getAbilityLevel(abilityId) > 0
+			tower.removeAbility(abilityId)
+		return
+	if tower.getAbilityLevel(abilityId) == 0
+		tower.addPermanentAbility(abilityId, level)
+		return
+	tower.setAbilityLevel(abilityId, level)
+
+public function tdRefreshTowerEquipmentBonuses(unit tower)
+	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return
+	let item1 = tdTowerEquipmentItemId(tower, 0)
+	let item2 = tdTowerEquipmentItemId(tower, 1)
+	let item3 = tdTowerEquipmentItemId(tower, 2)
+	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID, tdTowerAttackBonusAbilityLevelForItems(item1, item2, item3))
+	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID, tdTowerAttackSpeedAbilityLevelForItems(item1, item2, item3))
+
+boolean tdInventoryRuntimeReady = false
+
+function tdFarmerCraftSourceQuality(int quality1, int quality2, int quality3) returns int
+	let mode = tdCraftModeForQualities(quality1, quality2, quality3)
+	if mode == TD_CRAFT_MODE_THREE or quality1 == quality2
+		return quality1
+	if quality1 == quality3
+		return quality1
+	if quality2 == quality3
+		return quality2
+	return 0
+
+function tdConsumeCraftItem(unit farmer, item itm)
+	if itm == null
+		return
+	farmer.removeItem(itm)
+	itm.remove()
+
+function tdHandleFarmerCraftCast() returns boolean
+	let farmer = GetTriggerUnit()
+	if farmer == null or GetUnitTypeId(farmer) != TD_FARMER_UNIT_ID
+		return false
+	let item1 = farmer.itemInSlot(tdCraftVisibleInventorySlot(0))
+	let item2 = farmer.itemInSlot(tdCraftVisibleInventorySlot(1))
+	let item3 = farmer.itemInSlot(tdCraftVisibleInventorySlot(2))
+	let quality1 = item1 != null and tdItemIsEquipment(item1.getTypeId()) ? tdItemQuality(item1.getTypeId()) : 0
+	let quality2 = item2 != null and tdItemIsEquipment(item2.getTypeId()) ? tdItemQuality(item2.getTypeId()) : 0
+	let quality3 = item3 != null and tdItemIsEquipment(item3.getTypeId()) ? tdItemQuality(item3.getTypeId()) : 0
+	let mode = tdCraftModeForQualities(quality1, quality2, quality3)
+	if mode == TD_CRAFT_MODE_NONE
+		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 3.0, "前 3 格没有可合成的同品质装备。")
+		return false
+	let sourceQuality = tdFarmerCraftSourceQuality(quality1, quality2, quality3)
+	if sourceQuality >= TD_ITEM_QUALITY_PURPLE
+		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 3.0, "紫装已经是终点，不能继续合成。")
+		return false
+	if tdCraftConsumesSlot(quality1, quality2, quality3, 2)
+		tdConsumeCraftItem(farmer, item3)
+	if tdCraftConsumesSlot(quality1, quality2, quality3, 1)
+		tdConsumeCraftItem(farmer, item2)
+	if tdCraftConsumesSlot(quality1, quality2, quality3, 0)
+		tdConsumeCraftItem(farmer, item1)
+	if not tdCraftSucceeds(mode, GetRandomInt(1, 100))
+		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 4.0, "合成失败：" + tdItemQualityName(sourceQuality) + "材料已损毁。")
+		return false
+	let resultQuality = tdCraftResultQuality(sourceQuality)
+	let resultItemId = tdRandomItemIdForQuality(resultQuality)
+	farmer.addItemById(resultItemId)
+	DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 4.0, "合成成功：" + tdItemQualityName(sourceQuality) + " -> " + tdItemName(resultItemId))
+	return false
+
+function tdHandleTowerInventoryChanged()
+	tdRefreshTowerEquipmentBonuses(GetManipulatingUnit())
+
+public function tdSetupInventoryRuntime()
+	if tdInventoryRuntimeReady
+		return
+	tdInventoryRuntimeReady = true
+	registerSpellEffectEvent(TD_FARMER_CRAFT_ABILITY_ID, function tdHandleFarmerCraftCast)
+	tdTowerItemPickupTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
+	tdTowerItemDropTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DROP_ITEM)
+	tdTowerItemPickupTrigger.addAction(function tdHandleTowerInventoryChanged)
+	tdTowerItemDropTrigger.addAction(function tdHandleTowerInventoryChanged)

@@ -1,0 +1,31 @@
+package TDEconomyTests
+import TDState
+import TDTowers
+import TDWaves
+
+@Test function goldReadsFromNativePlayerStateAtRuntime()
+	tdResetState()
+	tdSetNativeGoldStateForTest(0, 37)
+	tdGetGold(0).assertEquals(37)
+
+@Test function gainGoldBuildsOnLatestNativePlayerState()
+	tdResetState()
+	tdSetNativeGoldStateForTest(1, 24)
+	tdGainGold(1, 11)
+	tdGetGold(1).assertEquals(35)
+	tdNativeGoldStateForTest(1).assertEquals(35)
+
+@Test function spendingGoldAlsoUpdatesNativePlayerState()
+	tdResetState()
+	tdSetNativeGoldStateForTest(2, 41)
+	tdSpendGold(2, 9)
+	tdGetGold(2).assertEquals(32)
+	tdNativeGoldStateForTest(2).assertEquals(32)
+
+@Test function wageFormulaStaysMinorComparedToWaveRewards()
+	tdFarmerWageCooldown().assertEquals(180.0)
+	tdFarmerWageGoldForWaveAndBonus(0, 1).assertEquals(4)
+	tdFarmerWageGoldForWaveAndBonus(4, 3).assertEquals(10)
+	tdFarmerWageMinimumGold(8).assertEquals(12)
+	tdFarmerWageMaximumGold(8).assertEquals(14)
+	(tdFarmerWageMaximumGold(8) < tdWaveReward(8)).assertTrue()

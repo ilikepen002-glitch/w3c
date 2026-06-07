@@ -3,13 +3,68 @@ import TDState
 import TDGame
 import TDSpawn
 import TDTowers
+import TDItems
+import TDInventory
 import TDConfig
 import ClosureTimers
+
+trigger tdChatCommandTrigger = CreateTrigger()
 
 public function tdMapBootstrapDelay() returns real
 	return 0.0
 
 public function tdShouldRevealWholeMap() returns boolean
+	return true
+
+public function tdDefaultCameraTargetDistance() returns real
+	return 3200.0
+
+public function tdDefaultCameraAngleOfAttack() returns real
+	return 338.0
+
+public function tdCameraWheelLiftStepCount() returns int
+	return 3
+
+public function tdCameraWheelLiftDistancePerStep() returns real
+	return 400.0
+
+public function tdCameraTargetDistanceForWheelLift(int extraSteps) returns real
+	var clampedSteps = extraSteps
+	if clampedSteps < 0
+		clampedSteps = 0
+	if clampedSteps > tdCameraWheelLiftStepCount()
+		clampedSteps = tdCameraWheelLiftStepCount()
+	return tdDefaultCameraTargetDistance() + clampedSteps * tdCameraWheelLiftDistancePerStep()
+
+public function tdStartupGuideMessage() returns string
+	return "静态地图模式：地形和路线由 World Editor 预先摆好。开局有 100 金币，请在准备好的草地塔位上建塔，阻止敌人进入中央传送门。鼠标滚轮可拉高/拉低镜头，TD工人可用 " + tdFarmerBlinkHotkey() + " 闪烁快速换位。首发装备池共 " + tdItemDefinitionCount().toString() + " 件。"
+
+function tdAddMoneyCommandPrefix() returns string
+	return "-addMoney "
+
+function tdAddMoneyCommandUsage() returns string
+	return "用法: -addMoney 1000"
+
+function tdStartsWith(string value, string prefix) returns boolean
+	let prefixLength = StringLength(prefix)
+	return StringLength(value) >= prefixLength and SubString(value, 0, prefixLength) == prefix
+
+function tdParseAddMoneyAmount(string message) returns int
+	let prefix = tdAddMoneyCommandPrefix()
+	if not tdStartsWith(message, prefix)
+		return 0
+	let amount = S2I(SubString(message, StringLength(prefix), StringLength(message)))
+	if amount <= 0
+		return 0
+	return amount
+
+public function tdTryHandleAddMoneyCommand(int playerId, string message) returns boolean
+	if not tdIsLanePlayer(playerId)
+		return false
+	let amount = tdParseAddMoneyAmount(message)
+	if amount <= 0
+		return false
+	tdGainGold(playerId, amount)
 	return true
 
 function tdRevealWholeMap()
@@ -24,6 +79,35 @@ function tdDetectActiveLanes()
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		tdSetLaneActive(playerId, tdShouldEnableLaneForPlayer(playerId))
 
+function tdApplyStartingCamera()
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(playerId)
+			Player(playerId).setCameraField(CAMERA_FIELD_TARGET_DISTANCE, tdCameraTargetDistanceForWheelLift(0), 0.0)
+			Player(playerId).setCameraField(CAMERA_FIELD_ANGLE_OF_ATTACK, tdDefaultCameraAngleOfAttack(), 0.0)
+
+function tdLiftStartingCameraAgain()
+	doAfter(0.15) ->
+		tdApplyStartingCamera()
+
+function tdHandleChatCommand()
+	let triggeringPlayer = GetTriggerPlayer()
+	let playerId = GetPlayerId(triggeringPlayer)
+	let message = GetEventPlayerChatString()
+	if not tdIsLaneActive(playerId)
+		return
+	let amount = tdParseAddMoneyAmount(message)
+	if amount <= 0
+		DisplayTimedTextToPlayer(triggeringPlayer, 0, 0, 4.0, tdAddMoneyCommandUsage())
+		return
+	tdTryHandleAddMoneyCommand(playerId, message)
+	tdRefreshHud()
+	DisplayTimedTextToPlayer(triggeringPlayer, 0, 0, 4.0, "已增加 " + amount.toString() + " 金币。当前金币：" + tdGetGold(playerId).toString())
+
+function tdSetupChatCommands()
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		TriggerRegisterPlayerChatEvent(tdChatCommandTrigger, Player(playerId), "-addMoney", false)
+	TriggerAddAction(tdChatCommandTrigger, function tdHandleChatCommand)
+
 function tdRunGameplayStartup()
 	// 在静态地图模式下，地形、路口、传送门和装饰都由 World Editor 维护。
 	// Wurst 这里只接管运行时状态、单位和波次系统。
@@ -31,18 +115,18 @@ function tdRunGameplayStartup()
 	tdSetupBuildDialog()
 	tdSetupPadSelection()
 	tdSetupDialogTrigger()
+	tdSetupInventoryRuntime()
 	tdSetupLaneRects()
+	tdStartLaneWaypointWatcher()
 	tdStartEnemyHealthWatcher()
 	tdStartEnemyDeathWatcher()
 	tdStartLeakWatcher()
+	tdSetupChatCommands()
 	tdRefreshHud()
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		if tdIsLaneActive(playerId)
-			DisplayTimedTextToPlayer(Player(playerId), 0, 0, 10.0, "Static map mode. Terrain and lanes come from World Editor. Start with 100 gold, build on the prepared grass plots, and stop creeps from reaching the center portal.")
-	doAfter(6.0) ->
-		for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-			if tdIsLaneActive(playerId)
-				tdStartNextWave(playerId)
+			DisplayTimedTextToPlayer(Player(playerId), 0, 0, 10.0, tdStartupGuideMessage())
+	tdStartWaveSchedule()
 
 // 游戏主启动流程。静态地图模式下不再在运行时删单位或重刷地形，
 // 只做状态重置和玩法系统初始化。
@@ -50,6 +134,8 @@ public function tdStartGame()
 	tdResetState()
 	tdRevealWholeMap()
 	tdDetectActiveLanes()
+	tdApplyStartingCamera()
+	tdLiftStartingCameraAgain()
 	let setupDelay = tdMapBootstrapDelay()
 	doAfter(setupDelay) ->
 		tdRunGameplayStartup()

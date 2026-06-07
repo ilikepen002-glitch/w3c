@@ -1,0 +1,114 @@
+package TDConfigTests
+import TDConfig
+import TerrainUtils
+
+@Test function startingValuesArePositive()
+	TD_STARTING_LIVES.assertGreaterThan(0)
+	TD_STARTING_GOLD.assertEquals(100)
+	TD_FIRST_WAVE_DELAY.assertEquals(30.0)
+	TD_TIME_BETWEEN_WAVES.assertEquals(20.0)
+
+@Test function balanceMultipliersDefaultToNeutralValues()
+	tdEnemyHealthMultiplier().assertEquals(1.0)
+	tdEnemyArmorMultiplier().assertEquals(1.0)
+	tdEnemySpeedMultiplier().assertEquals(1.0)
+	tdEconomyMultiplier().assertEquals(1.0)
+
+@Test function activePlayerCountIsFour()
+	TD_ACTIVE_PLAYER_COUNT.assertEquals(4)
+
+@Test function towerChoiceCountIsThree()
+	TD_TOWER_CHOICE_COUNT.assertEquals(5)
+
+@Test function builderAndPlotMarkersUseCustomObjects()
+	(TD_FARMER_UNIT_ID != 'hpea').assertTrue()
+	(TD_BUILD_PLOT_UNIT_ID != 'hhou').assertTrue()
+
+@Test function eachLaneKeepsEnoughGrassBuildSpace()
+	TD_BUILD_PLOTS_PER_LANE.assertGreaterThanOrEqual(10)
+	(tdBuildPlotPosition(0, 0).y != tdBuildPlotPosition(0, 1).y).assertTrue()
+	(tdBuildPlotPosition(0, 9).x > tdBuildPlotPosition(0, 0).x).assertTrue()
+
+@Test function buildPlotsSnapToStableTileCenters()
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for plotIndex = 0 to TD_BUILD_PLOTS_PER_LANE - 1
+			tdBuildPlotCenter(playerId, plotIndex).assertEquals(tdBuildPlotPosition(playerId, plotIndex).toTileCenter())
+
+@Test function buildPlotsStaySeparatedByAtLeastOneBuildCell()
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for leftIndex = 0 to TD_BUILD_PLOTS_PER_LANE - 1
+			for rightIndex = leftIndex + 1 to TD_BUILD_PLOTS_PER_LANE - 1
+				let leftPlot = tdBuildPlotCenter(playerId, leftIndex)
+				let rightPlot = tdBuildPlotCenter(playerId, rightIndex)
+				(leftPlot.distanceTo(rightPlot) >= tdBuildPlotMinimumSpacing()).assertTrue()
+
+@Test function exactBuildPlotCentersResolveBackToTheirOwnSlot()
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for plotIndex = 0 to TD_BUILD_PLOTS_PER_LANE - 1
+			tdFindBuildPlotIndex(playerId, tdBuildPlotCenter(playerId, plotIndex)).assertEquals(plotIndex)
+
+@Test function offLanePositionsDoNotResolveToAnyBuildPlot()
+	tdFindBuildPlotIndex(0, tdLaneExitPosition(0)).assertEquals(-1)
+
+@Test function everyLaneUsesMultipleWaypointsBeforeCenterExit()
+	tdLaneWaypointCount(0).assertEquals(3)
+	tdLaneWaypointCount(1).assertEquals(3)
+	tdLaneWaypointCount(2).assertEquals(3)
+	tdLaneWaypointCount(3).assertEquals(3)
+
+@Test function waypointRegionsExposeStableRouteCenters()
+	let lane0Turn = tdLaneWaypointRect(0, 1)
+	let lane1Turn = tdLaneWaypointRect(1, 1)
+	let lane2Turn = tdLaneWaypointRect(2, 1)
+	let lane3Turn = tdLaneWaypointRect(3, 1)
+	R2I((GetRectMinX(lane0Turn) + GetRectMaxX(lane0Turn)) / 2.0).assertEquals(-980)
+	R2I((GetRectMinY(lane0Turn) + GetRectMaxY(lane0Turn)) / 2.0).assertEquals(760)
+	R2I((GetRectMinX(lane1Turn) + GetRectMaxX(lane1Turn)) / 2.0).assertEquals(980)
+	R2I((GetRectMinY(lane1Turn) + GetRectMaxY(lane1Turn)) / 2.0).assertEquals(760)
+	R2I((GetRectMinX(lane2Turn) + GetRectMaxX(lane2Turn)) / 2.0).assertEquals(980)
+	R2I((GetRectMinY(lane2Turn) + GetRectMaxY(lane2Turn)) / 2.0).assertEquals(-760)
+	R2I((GetRectMinX(lane3Turn) + GetRectMaxX(lane3Turn)) / 2.0).assertEquals(-980)
+	R2I((GetRectMinY(lane3Turn) + GetRectMaxY(lane3Turn)) / 2.0).assertEquals(-760)
+
+@Test function waypointRegionsAreWiderThanSinglePointTargets()
+	let firstRegion = tdLaneWaypointRect(0, 0)
+	(GetRectMaxX(firstRegion) - GetRectMinX(firstRegion) >= 128.0).assertTrue()
+	(GetRectMaxY(firstRegion) - GetRectMinY(firstRegion) >= 128.0).assertTrue()
+
+@Test function laneWaypointsStayOutOnTheirOwnApproachBeforeMerging()
+	let lane0First = tdLaneWaypointPosition(0, 0)
+	let lane1First = tdLaneWaypointPosition(1, 0)
+	let lane2First = tdLaneWaypointPosition(2, 0)
+	let lane3First = tdLaneWaypointPosition(3, 0)
+	(lane0First.x < -1000.).assertTrue()
+	(lane0First.y > 1000.).assertTrue()
+	(lane1First.x > 1000.).assertTrue()
+	(lane1First.y > 1000.).assertTrue()
+	(lane2First.x > 1000.).assertTrue()
+	(lane2First.y < -1000.).assertTrue()
+	(lane3First.x < -1000.).assertTrue()
+	(lane3First.y < -1000.).assertTrue()
+
+@Test function allLanesMergeIntoSharedCenterExit()
+	let exit0 = tdLaneExitPosition(0)
+	let exit1 = tdLaneExitPosition(1)
+	let exit2 = tdLaneExitPosition(2)
+	let exit3 = tdLaneExitPosition(3)
+	exit0.x.assertEquals(exit1.x)
+	exit0.y.assertEquals(exit1.y)
+	exit0.x.assertEquals(exit2.x)
+	exit0.y.assertEquals(exit2.y)
+	exit0.x.assertEquals(exit3.x)
+	exit0.y.assertEquals(exit3.y)
+
+@Test function staticRegionAnchorsDriveLaneEndpoints()
+	R2I(tdLaneSpawnPosition(0).x).assertEquals(-2320)
+	R2I(tdLaneSpawnPosition(0).y).assertEquals(2672)
+	R2I(tdLaneSpawnPosition(1).x).assertEquals(2448)
+	R2I(tdLaneSpawnPosition(1).y).assertEquals(2704)
+	R2I(tdFarmerSpawnPosition(0).x).assertEquals(-1616)
+	R2I(tdFarmerSpawnPosition(0).y).assertEquals(2064)
+	R2I(tdFarmerSpawnPosition(3).x).assertEquals(-1936)
+	R2I(tdFarmerSpawnPosition(3).y).assertEquals(-2384)
+	R2I(tdLaneExitPosition(0).x).assertEquals(-16)
+	R2I(tdLaneExitPosition(0).y).assertEquals(-192)

@@ -1,0 +1,385 @@
+package TDTowerBalanceData
+import TDConfig
+import TDTowerCommonData
+import Icons
+import ObjEditingCommons
+import Units
+import Abilities
+
+public function tdTowerSelectionScale(int _towerChoice, int _level) returns real
+	return tdTowerNormalSelectionScale()
+
+public function tdTowerRangeIndicatorDiameter(int towerChoice, int level) returns real
+	return tdTowerBaseRange(towerChoice, level) * 2.0
+
+public function tdTowerAcquisitionRange(int towerChoice, int level) returns real
+	return tdTowerBaseRange(towerChoice, level).toReal()
+
+public function tdPerfectUpgradeMessage(int towerChoice) returns string
+	return "完美升级！" + tdTowerChoiceLabel(towerChoice) + " 获得了额外的终极强化。"
+
+public function tdPerfectUpgradeEffectPath(int towerChoice) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return "Abilities\\Spells\\NightElf\\BattleRoar\\RoarCaster.mdl"
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return "Abilities\\Spells\\Orc\\MirrorImage\\MirrorImageDeathCaster.mdl"
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return "Abilities\\Spells\\Human\\Defend\\DefendCaster.mdl"
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return "Abilities\\Spells\\NightElf\\Tranquility\\TranquilityCaster.mdl"
+	return "Abilities\\Spells\\Undead\\DeathCoil\\DeathCoilSpecialArt.mdl"
+
+public function tdTowerChoiceLabel(int towerChoice) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return "弓箭手"
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return "兽人战士"
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return "人族步兵"
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return "小鹿"
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		return "食尸鬼"
+	return "未知塔"
+
+public function tdTowerTooltipExtended(int towerChoice, int level) returns string
+	return tdTowerLore(towerChoice, level) + "|n" + tdTowerTalentSummary(towerChoice, level) + "|n伤害: " + tdTowerBaseDamage(towerChoice, level).toString() + " 射程: " + tdTowerBaseRange(towerChoice, level).toString() + "|n建在草地上，自动攻击沟壑中的逃跑怪。"
+
+public function tdTowerIconPath(int towerChoice) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return Icons.bTNArcher
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return Icons.bTNGrunt
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return Icons.bTNFootman
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return Icons.bTNDryad
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		return Icons.bTNGhoul
+	return ""
+
+public function tdTowerRequirementsRawcodes(int _towerChoice, int _level) returns string
+	return ""
+
+public function tdTowerRequirementsLevelsRawcodes(int _towerChoice, int _level) returns string
+	return ""
+
+public function tdTowerDependencyEquivalentsRawcodes(int _towerChoice, int _level) returns string
+	return ""
+
+public function tdTowerUpgradesUsedRawcodes(int _towerChoice, int _level) returns string
+	return ""
+
+public function tdRomanLevel(int level) returns string
+	if level == 1
+		return "I"
+	if level == 2
+		return "II"
+	if level == 3
+		return "III"
+	if level == 4
+		return "IV"
+	return "V"
+
+public function tdTowerDisplayName(int towerChoice, int level) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER and level == TD_MAX_TOWER_LEVEL
+		return "白虎"
+	if towerChoice == TD_TOWER_CHOICE_ORC and level == TD_MAX_TOWER_LEVEL
+		return "剑圣"
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN and level == TD_MAX_TOWER_LEVEL
+		return "圣骑士"
+	if towerChoice == TD_TOWER_CHOICE_DRYAD and level == TD_MAX_TOWER_LEVEL
+		return "丛林守护者"
+	if towerChoice == TD_TOWER_CHOICE_GHOUL and level == TD_MAX_TOWER_LEVEL
+		return "狂热憎恶"
+	return tdTowerChoiceLabel(towerChoice) + " " + tdRomanLevel(level)
+
+public function tdTowerCost(int towerChoice) returns int
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return 50
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return 60
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return 55
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return 60
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		return 50
+	return 0
+
+public function tdTowerUpgradeCost(int towerChoice, int currentLevel) returns int
+	if currentLevel < 1 or currentLevel >= TD_MAX_TOWER_LEVEL
+		return 0
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		if currentLevel == 1
+			return 45
+		if currentLevel == 2
+			return 65
+		if currentLevel == 3
+			return 90
+		return 140
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		if currentLevel == 1
+			return 55
+		if currentLevel == 2
+			return 75
+		if currentLevel == 3
+			return 100
+		return 120
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		if currentLevel == 1
+			return 50
+		if currentLevel == 2
+			return 65
+		if currentLevel == 3
+			return 90
+		return 125
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		if currentLevel == 1
+			return 55
+		if currentLevel == 2
+			return 75
+		if currentLevel == 3
+			return 90
+		return 120
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		if currentLevel == 1
+			return 45
+		if currentLevel == 2
+			return 60
+		if currentLevel == 3
+			return 85
+		return 130
+	return 0
+
+public function tdTowerGoldCostForLevel(int towerChoice, int level) returns int
+	if level <= 1
+		return tdTowerCost(towerChoice)
+	return tdTowerUpgradeCost(towerChoice, level - 1)
+
+public function tdTowerTotalGoldCost(int towerChoice) returns int
+	var total = tdTowerCost(towerChoice)
+	for level = 1 to TD_MAX_TOWER_LEVEL - 1
+		total += tdTowerUpgradeCost(towerChoice, level)
+	return total
+
+public function tdTowerBaseDamage(int towerChoice, int level) returns int
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		if level == 1
+			return 24
+		if level == 2
+			return 36
+		if level == 3
+			return 52
+		if level == 4
+			return 74
+		return 102
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		if level == 1
+			return 32
+		if level == 2
+			return 48
+		if level == 3
+			return 70
+		if level == 4
+			return 98
+		return 138
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		if level == 1
+			return 22
+		if level == 2
+			return 34
+		if level == 3
+			return 49
+		if level == 4
+			return 70
+		return 96
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		if level == 1
+			return 18
+		if level == 2
+			return 28
+		if level == 3
+			return 40
+		if level == 4
+			return 57
+		return 88
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		if level == 1
+			return 20
+		if level == 2
+			return 31
+		if level == 3
+			return 45
+		if level == 4
+			return 63
+		return 86
+	return 0
+
+public function tdTowerBaseHitPoints(int towerChoice, int level) returns int
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return 650 + level * 180
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return 900 + level * 260
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return 820 + level * 240
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		if level == TD_MAX_TOWER_LEVEL
+			return 1560
+		return 560 + level * 170
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		return 720 + level * 220
+	return 500
+
+public function tdTowerBaseArmor(int towerChoice, int level) returns int
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		if level == TD_MAX_TOWER_LEVEL
+			return 6
+		return level
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return level + 1
+	return level + 2
+
+public function tdTowerBaseCooldown(int towerChoice, int level) returns real
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return 1.14 - level * 0.05
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return 1.18 - level * 0.05
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return 1.08 - level * 0.04
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return 1.00 - level * 0.04
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		return 0.82 - level * 0.04
+	return 1.0
+
+public function tdTowerBaseRange(int towerChoice, int level) returns int
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return 520 + level * 30
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return 480 + level * 25
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		if level == TD_MAX_TOWER_LEVEL
+			return 800
+		return 620 + level * 30
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		return 450 + level * 25
+	return 700 + level * 35
+
+public function tdTowerLore(int towerChoice, int level) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		if level == TD_MAX_TOWER_LEVEL
+			return "白虎形态，月刃箭雨覆盖整段沟壑。"
+		return "远程压制，站位安全，后期成长稳定。"
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		if level == TD_MAX_TOWER_LEVEL
+			return "剑圣成型后，致命一击和剑刃风暴一起爆发。"
+		return "暴击重斩，适合拦腰斩断高血量怪。"
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		if level == TD_MAX_TOWER_LEVEL
+			return "圣骑士用神圣盾击守住路口，并以统帅光环带动整线输出。"
+		return "稳定单点，兼顾控制，适合守拐角。"
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		if level == TD_MAX_TOWER_LEVEL
+			return "丛林守护者用毒镖钉住关键怪，并以缓速光环拖慢周围敌军。"
+		return "毒伤减速，专打长沟壑拖行路线。"
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		if level == TD_MAX_TOWER_LEVEL
+			return "狂热憎恶在高速补刀外，还会用尸爆清掉残血扎堆的敌人。"
+		return "高攻速补刀塔，适合扫尾。"
+	return "TD塔"
+
+public function tdTowerTalentSummary(int towerChoice, int level) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return "天赋: 分裂箭，总计命中" + tdArcherSplitArrowTargetCount(level).toString() + "个目标。"
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		if level == TD_MAX_TOWER_LEVEL
+			return "天赋: 致命一击，终阶追加剑刃风暴溅射。"
+		return "天赋: 致命一击，专打高血量目标。"
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		if level == TD_MAX_TOWER_LEVEL
+			return "天赋: 神圣盾击，终阶提供统帅光环。"
+		return "天赋: 盾击，稳定打断关键怪。"
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		if level == TD_MAX_TOWER_LEVEL
+			return "天赋: 丛林毒镖与缓速光环，同时提供单体减速与范围减速。"
+		return "天赋: 毒镖，附带减速和持续伤害。"
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		return "天赋: 狂热与尸爆，收残血时炸伤附近敌人。"
+	return "天赋: 无"
+
+public function tdTowerModelPath(int towerChoice, int level) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		if level == TD_MAX_TOWER_LEVEL
+			return Units.heroMoonPriestess
+		return Units.archer
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		if level == TD_MAX_TOWER_LEVEL
+			return Units.heroBladeMaster1
+		return Units.grunt1
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		if level == TD_MAX_TOWER_LEVEL
+			return Units.heroPaladin
+		return Units.footman1
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		if level == TD_MAX_TOWER_LEVEL
+			return Units.heroKeeperoftheGrove
+		return Units.dryad1
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		if level == TD_MAX_TOWER_LEVEL
+			return Units.abomination1
+		return Units.ghoul1
+	return Units.footman1
+
+public function tdTowerAttackType(int towerChoice) returns AttackType
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return AttackType.Pierce
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return AttackType.Magic
+	return AttackType.Normal
+
+public function tdTowerWeaponType(int towerChoice) returns WeaponType
+	if towerChoice == TD_TOWER_CHOICE_ARCHER or towerChoice == TD_TOWER_CHOICE_DRYAD
+		return WeaponType.Missile
+	return WeaponType.Instant
+
+public function tdTowerProjectileArt(int towerChoice) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return Abilities.arrowMissile1
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return Abilities.dryadmissile
+	return ""
+
+public function tdTowerProjectileSpeed(int towerChoice) returns int
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return 1100
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return 1250
+	return 0
+
+public function tdTowerButtonX(int towerChoice) returns int
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return 0
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return 1
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return 2
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return 0
+	return 1
+
+public function tdTowerButtonY(int towerChoice) returns int
+	if towerChoice <= TD_TOWER_CHOICE_FOOTMAN
+		return 2
+	return 1
+
+public function tdTowerHotkey(int towerChoice) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return "Q"
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return "W"
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return "E"
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return "A"
+	return "S"

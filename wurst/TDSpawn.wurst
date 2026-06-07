@@ -32,63 +32,78 @@ public function tdEnemyWasLeaked(unit enemy) returns boolean
 public function tdMarkEnemyLeaked(unit enemy)
 	tdSetEnemyData(enemy, tdEnemyLaneId(enemy), tdEnemyWave(enemy), 99)
 
+function tdEnemyWaypointIndex(unit enemy) returns int
+	return tdEnemyState(enemy)
+
+function tdSetEnemyWaypointIndex(unit enemy, int index)
+	tdSetEnemyData(enemy, tdEnemyLaneId(enemy), tdEnemyWave(enemy), index)
+
+public function tdEnemyUsesCreepGuard() returns boolean
+	return false
+
+function tdEnemyNeedsLaneOrderRefresh(int currentOrder, int moveOrderId) returns boolean
+	return currentOrder != moveOrderId
+
+public function tdEnemyNeedsLaneOrderRefreshForTest(int currentOrder, int moveOrderId) returns boolean
+	return tdEnemyNeedsLaneOrderRefresh(currentOrder, moveOrderId)
+
 // 单通道路线上直接把敌人下令走向终点。
 public function tdOrderEnemyAlongLane(unit enemy)
 	let playerId = tdEnemyLaneId(enemy)
 	if not tdIsLaneActive(playerId)
 		return
-	enemy.issuePointOrderById(OrderId("move"), tdLaneExitPosition(playerId))
+	let waypointIndex = tdEnemyWaypointIndex(enemy)
+	if waypointIndex < tdLaneWaypointCount(playerId)
+		enemy.issuePointOrderById(OrderId("move"), tdLaneWaypointPosition(playerId, waypointIndex))
+	else
+		enemy.issuePointOrderById(OrderId("move"), tdLaneExitPosition(playerId))
 
 // 为指定路线生成一个敌人，并立刻把路线元数据绑定到它身上。
-public function tdCreateEnemy(int playerId, int wave) returns unit
-	let enemy = createUnit(Player(TD_ENEMY_PLAYER_ID), tdWaveUnitId(wave), tdLaneSpawnPosition(playerId), 0 .fromDeg())
+public function tdCreateEnemy(int playerId, int wave, int unitId) returns unit
+	let enemy = createUnit(Player(TD_ENEMY_PLAYER_ID), unitId, tdLaneSpawnPosition(playerId), 0 .fromDeg())
+	SetUnitCreepGuard(enemy, tdEnemyUsesCreepGuard())
 	tdSetEnemyData(enemy, playerId, wave, 0)
 	tdOrderEnemyAlongLane(enemy)
 	return enemy
 
-function tdEnemyHealthPips(real ratio) returns string
-	var filled = R2I(ratio * 8.0 + 0.5)
-	if filled < 0
-		filled = 0
-	if filled > 8
-		filled = 8
-	var result = "["
-	for i = 1 to 8
-		if i <= filled
-			result += "|"
-		else
-			result += "."
-	result += "]"
-	return result
+function tdEnemyReachedWaypointRect(unit enemy, rect waypointRect) returns boolean
+	let position = enemy.getPos()
+	return position.x >= GetRectMinX(waypointRect) and position.x <= GetRectMaxX(waypointRect) and position.y >= GetRectMinY(waypointRect) and position.y <= GetRectMaxY(waypointRect)
 
-function tdShowEnemyHealthEnum()
-	let enemy = GetEnumUnit()
-	if enemy == null or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID)
+function tdAdvanceEnemyWaypoint(unit enemy)
+	if enemy == null or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdEnemyWasLeaked(enemy)
 		return
-	let maxLife = GetUnitState(enemy, UNIT_STATE_MAX_LIFE)
-	if maxLife <= 0.405
-		return
-	let currentLife = enemy.getLife()
-	let ratio = currentLife / maxLife
-	let tag = CreateTextTag()
-	tag.setText(tdEnemyHealthPips(ratio) + " " + R2I(currentLife).toString(), 7.0)
-	tag.setPos(enemy.getPos().withZ(135.))
-	if ratio >= 0.66
-		tag.setColor(80, 255, 80, 255)
-	else if ratio >= 0.33
-		tag.setColor(255, 220, 60, 255)
-	else
-		tag.setColor(255, 90, 90, 255)
-	tag.setVelocity(0., 0.)
-	tag.setLifespan(0.55)
-	tag.setFadepoint(0.35)
-	tag.setPermanent(false)
-	tag.matchVisibility(enemy)
+	let playerId = tdEnemyLaneId(enemy)
+	let waypointIndex = tdEnemyWaypointIndex(enemy)
+	if waypointIndex < tdLaneWaypointCount(playerId)
+		let waypointRect = tdLaneWaypointRect(playerId, waypointIndex)
+		if tdEnemyReachedWaypointRect(enemy, waypointRect)
+			tdSetEnemyWaypointIndex(enemy, waypointIndex + 1)
+	tdOrderEnemyAlongLane(enemy)
+
+function tdEnemyUsesNativeLifeBar() returns boolean
+	return true
+
+function tdEnemyUsesCustomHealthText() returns boolean
+	return false
+
+public function tdEnemyUsesNativeLifeBarForTest() returns boolean
+	return tdEnemyUsesNativeLifeBar()
+
+public function tdEnemyUsesCustomHealthTextForTest() returns boolean
+	return tdEnemyUsesCustomHealthText()
+
+public function tdClearEnemyHealthTag(unit _enemy)
+	skip
 
 function tdLaneEnemyCheckEnum()
 	let enemy = GetEnumUnit()
 	if not tdLaneEnemyCheckFound and enemy != null and enemy.isAlive() and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == tdLaneEnemyCheckPlayer
 		tdLaneEnemyCheckFound = true
+
+function tdWaypointAdvanceEnum()
+	let enemy = GetEnumUnit()
+	tdAdvanceEnemyWaypoint(enemy)
 
 public function tdLaneHasLivingEnemies(int playerId) returns boolean
 	tdLaneEnemyCheckPlayer = playerId
@@ -115,15 +130,18 @@ public function tdSpawnWave(int playerId, int wave)
 	let count = tdWaveEnemyCount(wave)
 	let interval = tdWaveSpawnInterval(wave)
 	doPeriodicallyCounted(interval, count) cb ->
-		tdCreateEnemy(playerId, wave)
+		tdCreateEnemy(playerId, wave, tdWaveSpawnUnitId(wave, cb.getCount()))
 	doAfter(interval * count + 0.25) ->
 		tdWaitForLaneToClear(playerId, wave)
 
 public function tdStartEnemyHealthWatcher()
-	doPeriodically(0.50) cb ->
+	skip
+
+public function tdStartLaneWaypointWatcher()
+	doPeriodically(0.20) cb ->
 		let g = CreateGroup()
 		g.enumUnitsInRect(tdWorldRect)
-		ForGroup(g, function tdShowEnemyHealthEnum)
+		ForGroup(g, function tdWaypointAdvanceEnum)
 		g.destr()
 		if tdIsGameOver()
 			destroy cb

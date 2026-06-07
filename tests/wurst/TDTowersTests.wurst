@@ -1,0 +1,275 @@
+package TDTowersTests
+import TDTowers
+import TDConfig
+import TDState
+import ObjectIds
+
+@Test function towerChoiceMapsToExpectedCost()
+	tdTowerCost(TD_TOWER_CHOICE_ARCHER).assertEquals(50)
+	tdTowerCost(TD_TOWER_CHOICE_ORC).assertEquals(60)
+	tdTowerCost(TD_TOWER_CHOICE_FOOTMAN).assertEquals(55)
+	tdTowerCost(TD_TOWER_CHOICE_DRYAD).assertEquals(60)
+	tdTowerCost(TD_TOWER_CHOICE_GHOUL).assertEquals(50)
+
+@Test function playerCanAffordTwoCheapTowersAtStart()
+	tdResetState()
+	(TD_STARTING_GOLD / tdTowerCost(1)).assertEquals(2)
+	tdCanAffordTower(0, 1).assertTrue()
+
+@Test function impossibleTowerChoiceReturnsZeroCost()
+	tdTowerCost(999).assertEquals(0)
+
+@Test function farmerUsesNativeBuildMenuForFiveBaseTowers()
+	tdFarmerBuildAbilityId().assertEquals('AHbu')
+	tdFarmerBuildableTowerCount().assertEquals(5)
+
+@Test function openingTowersHaveEnoughRangeToCoverGrassBesideRoad()
+	for towerChoice = 1 to TD_TOWER_CHOICE_COUNT
+		(tdTowerBaseRange(towerChoice, 1) >= 450).assertTrue()
+
+@Test function everyTowerFamilyHasFiveCoreLevelsAndTwoUltimateBranches()
+	for towerChoice = 1 to TD_TOWER_CHOICE_COUNT
+		tdTowerMaxLevel(towerChoice).assertEquals(6)
+		tdTowerUltimateBranchCount(towerChoice).assertEquals(2)
+		(tdTowerUnitIdForLevel(towerChoice, 1) > 0).assertTrue()
+		(tdTowerUnitIdForLevel(towerChoice, 5) > 0).assertTrue()
+		(tdTowerUnitIdForLevelBranch(towerChoice, 6, TD_TOWER_BRANCH_A) > 0).assertTrue()
+		(tdTowerUnitIdForLevelBranch(towerChoice, 6, TD_TOWER_BRANCH_B) > 0).assertTrue()
+		(tdTowerUnitIdForLevelBranch(towerChoice, 6, TD_TOWER_BRANCH_A) != tdTowerUnitIdForLevelBranch(towerChoice, 6, TD_TOWER_BRANCH_B)).assertTrue()
+
+@Test function upgradeCostsRiseTowardFinalForms()
+	(tdTowerUpgradeCost(1, 4) > tdTowerUpgradeCost(1, 1)).assertTrue()
+	(tdTowerUpgradeCost(2, 4) > tdTowerUpgradeCost(2, 1)).assertTrue()
+	(tdTowerUpgradeCost(5, 4) > tdTowerUpgradeCost(5, 1)).assertTrue()
+
+@Test function towerFamiliesStayNearTargetTotalInvestment()
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_ARCHER).assertEquals(970)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_ORC).assertEquals(1050)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_FOOTMAN).assertEquals(910)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_DRYAD).assertEquals(950)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_GHOUL).assertEquals(890)
+
+@Test function towerProgressionKeepsEarlyLevelsAffordable()
+	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 1).assertEquals(45)
+	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 2).assertEquals(65)
+	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 3).assertEquals(90)
+	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 4).assertEquals(140)
+
+@Test function ultimatePerfectUpgradeAndGhoulSplashExposeTuningKnobs()
+	tdPerfectUpgradeChance().assertEquals(0.10)
+	tdPerfectUpgradeSourceLevel().assertEquals(5)
+	tdPerfectUpgradeTargetLevel().assertEquals(6)
+	tdRefinePerfectUpgradeGoldCost().assertEquals(150)
+	tdPerfectUpgradeScaleMultiplier().assertEquals(1.18)
+	tdPerfectUpgradeSkillMultiplier().assertEquals(1.20)
+	tdPerfectUpgradeWingEffectPath().assertEquals("Doodads\\Cinematic\\IllidanVictoryCinematic\\IllidanVictoryCinematic.mdx")
+	tdPerfectUpgradeWingAttachmentPoint().assertEquals("chest")
+	tdPerfectUpgradeGlowEffectPath().assertEquals("Abilities\\Spells\\NightElf\\SpiritOfVengeance\\SpiritOfVengeanceOrbs6.mdx")
+	tdPerfectUpgradeGlowAttachmentPoint().assertEquals("origin")
+	tdGhoulCorpseExplosionLifeThreshold().assertEquals(0.25)
+	tdGhoulCorpseExplosionDamage().assertEquals(36.0)
+	tdGhoulCorpseExplosionRadius().assertEquals(180.0)
+
+@Test function perfectUpgradeWingUsesLoopingModelInsteadOfOneShotCasterArt()
+	(tdPerfectUpgradeWingEffectPath() != "Abilities\\Spells\\Human\\Resurrect\\Resurrectcaster.mdx").assertTrue()
+
+@Test function roleDefiningSkillValuesMatchBalancePlan()
+	tdArcherAuraDamageBonus().assertEquals(0.18)
+	tdOrcCriticalStrikeChance().assertEquals(0.25)
+	tdOrcCriticalStrikeMultiplier().assertEquals(2.20)
+	tdOrcCleaveFactor().assertEquals(0.42)
+	tdFootmanBashChance().assertEquals(0.22)
+	tdFootmanCommandAuraDamageBonus().assertEquals(0.16)
+	tdDryadPoisonDps().assertEquals(12.0)
+	tdDryadSlowFactor().assertEquals(0.78)
+	tdGhoulFrenzyAttackSpeedBonus().assertEquals(0.42)
+
+@Test function towerUpgradeStopsAtLevelCap()
+	tdCanUpgradeTowerLevel(1, 1).assertTrue()
+	tdCanUpgradeTowerLevel(3, 5).assertTrue()
+	tdCanUpgradeTowerLevel(3, 6).assertFalse()
+
+@Test function farmerBuildMenuUsesRawcodeStructureList()
+	tdFarmerBuildMenuRawcodes().assertEquals("uA11,uO11,uH11,uD11,uG11")
+
+@Test function towerUpgradeLinksUseRawcodeIds()
+	tdTowerUpgradeRawcode(1, 1).assertEquals("uA12")
+	tdTowerUpgradeRawcode(2, 4).assertEquals("uO15")
+	tdTowerUpgradeRawcode(5, 5).assertEquals("uG6A,uG6B")
+	tdTowerUpgradeRawcode(5, 6).assertEquals("")
+
+@Test function towerSkillBarsExposeFamilyDefiningEffects()
+	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_ARCHER, 5).assertEquals("A100,A101")
+	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_FOOTMAN, 5).assertEquals("A104,A105")
+	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_DRYAD, 5).assertEquals("A106,A110")
+	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_GHOUL, 5).assertEquals("A107,A116")
+	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_ARCHER, 6).contains(TD_TOWER_REFINE_ABILITY_ID.toRawCode()).assertTrue()
+
+@Test function farmerMobilityAndUtilityValuesMatchDesign()
+	tdFarmerUsesFlyingMovement().assertTrue()
+	tdFarmerBaseMoveSpeed().assertEquals(522)
+	tdFarmerBlinkMaxRange().assertGreaterThan(9000.0)
+	tdFarmerBlinkCooldown().assertEquals(0.0)
+	tdFarmerWageCooldown().assertEquals(180.0)
+	tdFarmerWageUnlockWave().assertEquals(1)
+
+@Test function wageFormulaUsesGlobalWaveAndRandomBonusBounds()
+	tdFarmerWageGoldForWaveAndBonus(0, 1).assertEquals(4)
+	tdFarmerWageGoldForWaveAndBonus(2, 3).assertEquals(8)
+	tdFarmerWageMinimumGold(4).assertEquals(8)
+	tdFarmerWageMaximumGold(4).assertEquals(10)
+
+@Test function towerTooltipsStayChineseAndDoNotAdvertiseExtraRequirements()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_ORC, 1).contains("暴击重斩").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_ORC, 1).contains("需要").assertFalse()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_GHOUL, 1).contains("伤害").assertTrue()
+
+@Test function archerTooltipsDescribeSplitArrowScaling()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_ARCHER, 1).contains("分裂箭").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_ARCHER, 1).contains("2个").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_ARCHER, 3).contains("4个").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_ARCHER, 5).contains("6个").assertTrue()
+
+@Test function archerSplitArrowUsesPassiveMultishotInsteadOfBounceDamage()
+	tdArcherSplitArrowUsesBounceDamageForTest().assertFalse()
+
+@Test function workersAndTowersAreConfiguredToBeInvulnerable()
+	tdFarmersShouldBeInvulnerableForTest().assertTrue()
+	tdTowersShouldBeInvulnerableForTest().assertTrue()
+
+@Test function towerButtonsUseFamilySpecificIcons()
+	tdTowerIconPath(TD_TOWER_CHOICE_ARCHER).assertEquals("ReplaceableTextures\\CommandButtons\\BTNArcher.blp")
+	tdTowerIconPath(TD_TOWER_CHOICE_ORC).assertEquals("ReplaceableTextures\\CommandButtons\\BTNGrunt.blp")
+	tdTowerIconPath(TD_TOWER_CHOICE_FOOTMAN).assertEquals("ReplaceableTextures\\CommandButtons\\BTNFootman.blp")
+	tdTowerIconPath(TD_TOWER_CHOICE_DRYAD).assertEquals("ReplaceableTextures\\CommandButtons\\BTNDryad.blp")
+	tdTowerIconPath(TD_TOWER_CHOICE_GHOUL).assertEquals("ReplaceableTextures\\CommandButtons\\BTNGhoul.blp")
+
+@Test function towersOnlyRequireGoldToBuildAndUpgrade()
+	tdTowerRequirementsRawcodes(TD_TOWER_CHOICE_ORC, 1).assertEquals("")
+	tdTowerRequirementsLevelsRawcodes(TD_TOWER_CHOICE_ORC, 1).assertEquals("")
+	tdTowerDependencyEquivalentsRawcodes(TD_TOWER_CHOICE_ORC, 1).assertEquals("")
+	tdTowerUpgradesUsedRawcodes(TD_TOWER_CHOICE_ORC, 1).assertEquals("")
+
+@Test function dryadFinalFormUsesJungleGuardianIdentityAndTuning()
+	tdTowerDisplayName(TD_TOWER_CHOICE_DRYAD, 5).assertEquals("丛林守护者")
+	tdTowerBaseDamage(TD_TOWER_CHOICE_DRYAD, 5).assertEquals(88)
+	tdTowerBaseRange(TD_TOWER_CHOICE_DRYAD, 5).assertEquals(800)
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_DRYAD, 5).contains("伤害: 88 射程: 800").assertTrue()
+
+@Test function footmanFinalFormUsesPaladinIdentity()
+	tdTowerDisplayName(TD_TOWER_CHOICE_FOOTMAN, 5).assertEquals("圣骑士")
+
+@Test function dryadFinalFormTooltipCallsOutSingleTargetSlow()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_DRYAD, 5).contains("单体减速").assertTrue()
+
+@Test function whiteTigerAuraUsesValidNightElfAuraIcons()
+	tdArcherAuraIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNStrengthOfTheMoon.blp")
+	tdArcherPerfectAuraIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNImprovedStrengthOfTheMoon.blp")
+
+@Test function towerDamageAurasCanBuffStructures()
+	tdTowerAuraTargetsAllowed().contains("structure").assertTrue()
+	tdTowerAuraTargetsAllowed().contains("friend").assertTrue()
+
+@Test function dryadFinalFormAddsAreaSlowAura()
+	tdDryadAuraSlowRadius().assertEquals(225.0)
+	tdDryadAuraSlowFactor().assertEquals(0.82)
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_DRYAD, 5).contains("范围减速").assertTrue()
+
+@Test function towerSelectionCircleStaysUnitSizedInsteadOfShowingAttackRange()
+	tdTowerSelectionScale(TD_TOWER_CHOICE_GHOUL, 1).assertEquals(tdTowerNormalSelectionScale())
+	tdTowerSelectionScale(TD_TOWER_CHOICE_ARCHER, 5).assertEquals(tdTowerNormalSelectionScale())
+	(tdTowerSelectionScale(TD_TOWER_CHOICE_ARCHER, 5) <= 2.0).assertTrue()
+
+@Test function towerRangeIndicatorUsesIndependentGroundImage()
+	tdTowerRangeIndicatorTexturePath().assertEquals("ReplaceableTextures\\Selection\\SpellAreaOfEffect.blp")
+	tdTowerRangeIndicatorDiameter(TD_TOWER_CHOICE_GHOUL, 1).assertEquals(tdTowerBaseRange(TD_TOWER_CHOICE_GHOUL, 1) * 2.0)
+	tdTowerRangeIndicatorDiameter(TD_TOWER_CHOICE_ARCHER, 5).assertEquals(tdTowerBaseRange(TD_TOWER_CHOICE_ARCHER, 5) * 2.0)
+
+@Test function towersHaveRealBuildFootprintsAndExactAttackBuffers()
+	tdTowerPathingMap().assertEquals("PathTextures\\2x2Default.tga")
+	tdTowerPlacementRequires().assertEquals("buildable")
+	tdTowerPlacementPreventedBy().assertEquals("unbuildable")
+	tdTowerCollisionSize().assertEquals(64.0)
+	tdTowerAttackRangeMotionBuffer().assertEquals(0.0)
+	tdTowerAcquisitionRange(TD_TOWER_CHOICE_ORC, 1).assertEquals(tdTowerBaseRange(TD_TOWER_CHOICE_ORC, 1).toReal())
+
+@Test function orcLevelFourUsesBuildingParentForStableUpgradeChain()
+	tdTowerObjectParentId(TD_TOWER_CHOICE_ORC, 4).assertEquals('ndt2')
+
+@Test function orcLevelOneUsesAutoAttackingTowerParent()
+	tdTowerObjectParentId(TD_TOWER_CHOICE_ORC, 1).assertEquals('owtw')
+
+@Test function towerRawcodesMapBackToExpectedFamilyAndLevel()
+	tdTowerChoiceForUnitTypeId('uA11').assertEquals(TD_TOWER_CHOICE_ARCHER)
+	tdTowerChoiceForUnitTypeId('uO15').assertEquals(TD_TOWER_CHOICE_ORC)
+	tdTowerChoiceForUnitTypeId('uH13').assertEquals(TD_TOWER_CHOICE_FOOTMAN)
+	tdTowerChoiceForUnitTypeId('uD14').assertEquals(TD_TOWER_CHOICE_DRYAD)
+	tdTowerChoiceForUnitTypeId('uG12').assertEquals(TD_TOWER_CHOICE_GHOUL)
+	tdTowerLevelForUnitTypeId('uA11').assertEquals(1)
+	tdTowerLevelForUnitTypeId('uO15').assertEquals(5)
+	tdTowerLevelForUnitTypeId('uO6B').assertEquals(6)
+	tdTowerBranchForUnitTypeId('uO6B').assertEquals(TD_TOWER_BRANCH_B)
+	tdTowerLevelForUnitTypeId('uH13').assertEquals(3)
+	tdTowerLevelForUnitTypeId('uD14').assertEquals(4)
+	tdTowerLevelForUnitTypeId('uG12').assertEquals(2)
+
+@Test function towerBuildGridAndHotkeysStayStableAcrossFamilies()
+	tdTowerButtonX(TD_TOWER_CHOICE_ARCHER).assertEquals(0)
+	tdTowerButtonX(TD_TOWER_CHOICE_ORC).assertEquals(1)
+	tdTowerButtonX(TD_TOWER_CHOICE_FOOTMAN).assertEquals(2)
+	tdTowerButtonX(TD_TOWER_CHOICE_DRYAD).assertEquals(0)
+	tdTowerButtonX(TD_TOWER_CHOICE_GHOUL).assertEquals(1)
+	tdTowerButtonY(TD_TOWER_CHOICE_ARCHER).assertEquals(2)
+	tdTowerButtonY(TD_TOWER_CHOICE_GHOUL).assertEquals(1)
+	tdTowerHotkey(TD_TOWER_CHOICE_ARCHER).assertEquals("Q")
+	tdTowerHotkey(TD_TOWER_CHOICE_ORC).assertEquals("W")
+	tdTowerHotkey(TD_TOWER_CHOICE_FOOTMAN).assertEquals("E")
+	tdTowerHotkey(TD_TOWER_CHOICE_DRYAD).assertEquals("A")
+	tdTowerHotkey(TD_TOWER_CHOICE_GHOUL).assertEquals("S")
+
+@Test function everyTowerFamilyKeepsExpectedLevelRawcodeSequence()
+	tdTowerUnitIdForLevel(TD_TOWER_CHOICE_ARCHER, 1).assertEquals('uA11')
+	tdTowerUnitIdForLevel(TD_TOWER_CHOICE_ARCHER, 5).assertEquals('uA15')
+	tdTowerUnitIdForLevel(TD_TOWER_CHOICE_ORC, 1).assertEquals('uO11')
+	tdTowerUnitIdForLevel(TD_TOWER_CHOICE_ORC, 5).assertEquals('uO15')
+	tdTowerUnitIdForLevel(TD_TOWER_CHOICE_FOOTMAN, 1).assertEquals('uH11')
+	tdTowerUnitIdForLevel(TD_TOWER_CHOICE_FOOTMAN, 5).assertEquals('uH15')
+	tdTowerUnitIdForLevel(TD_TOWER_CHOICE_DRYAD, 1).assertEquals('uD11')
+	tdTowerUnitIdForLevel(TD_TOWER_CHOICE_DRYAD, 5).assertEquals('uD15')
+	tdTowerUnitIdForLevel(TD_TOWER_CHOICE_GHOUL, 1).assertEquals('uG11')
+	tdTowerUnitIdForLevel(TD_TOWER_CHOICE_GHOUL, 5).assertEquals('uG15')
+	tdTowerUnitIdForLevelBranch(TD_TOWER_CHOICE_ARCHER, 6, TD_TOWER_BRANCH_A).assertEquals('uA6A')
+	tdTowerUnitIdForLevelBranch(TD_TOWER_CHOICE_ARCHER, 6, TD_TOWER_BRANCH_B).assertEquals('uA6B')
+	tdTowerUnitIdForLevelBranch(TD_TOWER_CHOICE_GHOUL, 6, TD_TOWER_BRANCH_A).assertEquals('uG6A')
+	tdTowerUnitIdForLevelBranch(TD_TOWER_CHOICE_GHOUL, 6, TD_TOWER_BRANCH_B).assertEquals('uG6B')
+
+@Test function everyTowerFamilyKeepsContiguousUpgradeChain()
+	for towerChoice = 1 to TD_TOWER_CHOICE_COUNT
+		for level = 1 to 4
+			tdTowerUpgradeRawcode(towerChoice, level).assertEquals(tdTowerUnitIdForLevel(towerChoice, level + 1).toRawCode())
+		tdTowerUpgradeRawcode(towerChoice, 5).assertEquals(commaList(tdTowerUnitIdForLevelBranch(towerChoice, 6, TD_TOWER_BRANCH_A), tdTowerUnitIdForLevelBranch(towerChoice, 6, TD_TOWER_BRANCH_B)))
+		tdTowerUpgradeRawcode(towerChoice, 6).assertEquals("")
+
+@Test function ultimateBranchButtonsStaySeparatedFromRefineSlot()
+	for towerChoice = 1 to TD_TOWER_CHOICE_COUNT
+		tdTowerLevelButtonX(towerChoice, 6, TD_TOWER_BRANCH_A).assertEquals(0)
+		tdTowerLevelButtonY(towerChoice, 6, TD_TOWER_BRANCH_A).assertEquals(2)
+		tdTowerLevelButtonX(towerChoice, 6, TD_TOWER_BRANCH_B).assertEquals(1)
+		tdTowerLevelButtonY(towerChoice, 6, TD_TOWER_BRANCH_B).assertEquals(2)
+	tdTowerRefineButtonX().assertEquals(2)
+	tdTowerRefineButtonY().assertEquals(2)
+
+@Test function ultimateUpgradeCostsUseHighGoldGate()
+	for towerChoice = 1 to TD_TOWER_CHOICE_COUNT
+		for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+			(tdTowerUltimateUpgradeCost(towerChoice, branch) >= 500).assertTrue()
+			(tdTowerUltimateUpgradeCost(towerChoice, branch) <= 650).assertTrue()
+
+@Test function perfectUpgradeOnlyTriggersFromFiveToSix()
+	tdShouldRollPerfectUpgrade(4, 5).assertFalse()
+	tdShouldRollPerfectUpgrade(5, 6).assertTrue()
+	tdShouldRollPerfectUpgrade(6, 6).assertFalse()
+
+@Test function allTowersCostOnePopulationButFarmerDoesNot()
+	tdTowerFoodCostForObjectGen().assertEquals(1)
+	tdFarmerFoodCostForObjectGen().assertEquals(0)

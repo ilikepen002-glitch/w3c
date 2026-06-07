@@ -1,0 +1,183 @@
+package TDTowerCommonData
+import TDConfig
+import Icons
+import TDTowerCatalogData
+
+public function tdFarmerBuildAbilityId() returns int
+	return TD_FARMER_BUILD_ABILITY_ID
+
+public function tdFarmerBuildableTowerCount() returns int
+	return TD_TOWER_CHOICE_COUNT
+
+public function tdFarmersShouldBeInvulnerable() returns boolean
+	return true
+
+public function tdTowersShouldBeInvulnerable() returns boolean
+	return true
+
+public function tdFarmersShouldBeInvulnerableForTest() returns boolean
+	return tdFarmersShouldBeInvulnerable()
+
+public function tdTowersShouldBeInvulnerableForTest() returns boolean
+	return tdTowersShouldBeInvulnerable()
+
+public function tdTowerNormalSelectionScale() returns real
+	return 1.35
+
+public function tdTowerCollisionSize() returns real
+	return 64.0
+
+public function tdTowerPathingMap() returns string
+	return "PathTextures\\2x2Default.tga"
+
+public function tdTowerPlacementRequires() returns string
+	return "buildable"
+
+public function tdTowerPlacementPreventedBy() returns string
+	return "unbuildable"
+
+public function tdTowerAttackRangeMotionBuffer() returns real
+	return 0.0
+
+public function tdTowerRangeIndicatorTexturePath() returns string
+	return "ReplaceableTextures\\Selection\\SpellAreaOfEffect.blp"
+
+public function tdTowerRangeIndicatorColor() returns colorA
+	return colorA(80, 255, 80, 135)
+
+public function tdFarmerUsesFlyingMovement() returns boolean
+	return true
+
+public function tdFarmerBaseMoveSpeed() returns int
+	return 522
+
+public function tdFarmerBlinkMaxRange() returns real
+	return 99999.0
+
+public function tdFarmerBlinkCooldown() returns real
+	return 0.0
+
+public function tdFarmerBlinkHotkey() returns string
+	return "F"
+
+public function tdFarmerWageCooldown() returns real
+	return 180.0
+
+public function tdFarmerWageUnlockWave() returns int
+	return 1
+
+public function tdFarmerWageGoldForWaveAndBonus(int wave, int bonus) returns int
+	return 3 + wave + bonus
+
+public function tdFarmerWageMinimumGold(int wave) returns int
+	return tdFarmerWageGoldForWaveAndBonus(wave, 1)
+
+public function tdFarmerWageMaximumGold(int wave) returns int
+	return tdFarmerWageGoldForWaveAndBonus(wave, 3)
+
+public function tdRollFarmerWageGold(int wave) returns int
+	return tdFarmerWageGoldForWaveAndBonus(wave, GetRandomInt(1, 3))
+
+public function tdPerfectUpgradeChance() returns real
+	return 0.10
+
+public function tdPerfectUpgradeScaleMultiplier() returns real
+	return 1.18
+
+public function tdPerfectUpgradeSkillMultiplier() returns real
+	return 1.20
+
+public function tdPerfectUpgradeWingEffectPath() returns string
+	return "Doodads\\Cinematic\\IllidanVictoryCinematic\\IllidanVictoryCinematic.mdx"
+
+public function tdPerfectUpgradeWingAttachmentPoint() returns string
+	return "chest"
+
+public function tdPerfectUpgradeGlowEffectPath() returns string
+	return "Abilities\\Spells\\NightElf\\SpiritOfVengeance\\SpiritOfVengeanceOrbs6.mdx"
+
+public function tdPerfectUpgradeGlowAttachmentPoint() returns string
+	return "origin"
+
+public function tdGhoulCorpseExplosionLifeThreshold() returns real
+	return 0.25
+
+public function tdGhoulCorpseExplosionDamage() returns real
+	return 36.0
+
+public function tdGhoulCorpseExplosionRadius() returns real
+	return 180.0
+
+public function tdArcherAuraDamageBonus() returns real
+	return 0.18
+
+public function tdArcherAuraIconPath() returns string
+	return Icons.bTNStrengthOfTheMoon
+
+public function tdArcherPerfectAuraIconPath() returns string
+	return Icons.bTNImprovedStrengthOfTheMoon
+
+public function tdArcherSplitArrowTargetCount(int level) returns int
+	if level < 1
+		return 0
+	var clampedLevel = level
+	if level > TD_MAX_TOWER_LEVEL
+		clampedLevel = TD_MAX_TOWER_LEVEL
+	return clampedLevel + 1
+
+public function tdArcherSplitArrowBounceRange() returns real
+	return 250.0
+
+public function tdArcherSplitArrowUsesBounceDamageForTest() returns boolean
+	return false
+
+public function tdOrcCriticalStrikeChance() returns real
+	return 0.25
+
+public function tdOrcCriticalStrikeMultiplier() returns real
+	return 2.20
+
+public function tdOrcCriticalStrikeDamageBonus() returns real
+	return 18
+
+public function tdOrcCleaveFactor() returns real
+	return 0.42
+
+public function tdFootmanBashChance() returns real
+	return 0.22
+
+public function tdFootmanBashDamageMultiplier() returns real
+	return 1.45
+
+public function tdFootmanBashDamageBonus() returns real
+	return 20
+
+public function tdFootmanCommandAuraDamageBonus() returns real
+	return 0.16
+
+public function tdTowerAuraTargetsAllowed() returns string
+	return "friend,ground,air,structure,mechanical,organic,vulnerable"
+
+public function tdDryadPoisonDps() returns real
+	return 12.0
+
+public function tdDryadSlowFactor() returns real
+	return 0.78
+
+public function tdDryadAuraSlowFactor() returns real
+	return 0.82
+
+public function tdDryadAuraSlowRadius() returns real
+	return 225.0
+
+public function tdDryadAttackSlowFactor() returns real
+	return 0.84
+
+public function tdGhoulFrenzyAttackSpeedBonus() returns real
+	return 0.42
+
+public function tdBonusPercentString(real bonus) returns string
+	return (bonus * 100.0 + 0.5).toInt().toString() + "%"
+
+public function tdSlowPercentString(real remainingFactor) returns string
+	return ((1.0 - remainingFactor) * 100.0 + 0.5).toInt().toString() + "%"

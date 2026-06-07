@@ -3,6 +3,7 @@ import TDConfig
 import TDState
 import TDWaves
 import TDSpawn
+import TDDrops
 import ClosureTimers
 
 rect array tdLaneEndRects
@@ -11,15 +12,18 @@ int tdLeakCheckLane = -1
 int tdClearLanePlayer = -1
 
 function tdLaneStatusText(int playerId) returns string
-	if not tdIsLaneActive(playerId)
-		return "Closed"
-	if tdGetCurrentWave(playerId) == 0
-		return "Ready"
-	if tdIsLaneFinished(playerId)
-		return "Finished"
-	if tdIsLaneDefeated(playerId)
-		return "Defeated"
-	return "Wave " + tdGetCurrentWave(playerId).toString() + "/" + tdWaveCount().toString()
+	return tdLaneStatusTextForTest(tdIsLaneActive(playerId), tdIsLaneFinished(playerId), tdIsLaneDefeated(playerId), tdGetGlobalWave(), tdWaveCount())
+
+public function tdLaneStatusTextForTest(boolean isActive, boolean isFinished, boolean isDefeated, int wave, int waveCount) returns string
+	if not isActive
+		return "未开启"
+	if isFinished
+		return "已完成"
+	if isDefeated
+		return "已失守"
+	if wave == 0
+		return "待命"
+	return "第 " + wave.toString() + "/" + waveCount.toString() + " 波"
 
 function tdBroadcast(string message)
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
@@ -34,16 +38,16 @@ public function tdSetupLaneRects()
 
 // 一个轻量级文字 HUD，把全队当前的生命、金币、分数和波次状态显示出来。
 public function tdRefreshHud()
-	var message = "Team Score: " + tdGetTeamScore().toString()
+	var message = "队伍分数: " + tdGetTeamScore().toString()
 	for lanePlayer = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		message += "\nP" + (lanePlayer + 1).toString()
+		message += "\n玩家" + (lanePlayer + 1).toString()
 		if tdIsLaneActive(lanePlayer)
-			message += " L:" + tdGetLives(lanePlayer).toString()
-			message += " G:" + tdGetGold(lanePlayer).toString()
-			message += " S:" + tdGetLaneScore(lanePlayer).toString()
+			message += " 命:" + tdGetLives(lanePlayer).toString()
+			message += " 金:" + tdGetGold(lanePlayer).toString()
+			message += " 分:" + tdGetLaneScore(lanePlayer).toString()
 			message += " " + tdLaneStatusText(lanePlayer)
 		else
-			message += " Closed"
+			message += " 未开启"
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		if tdIsLaneActive(playerId)
 			DisplayTimedTextToPlayer(Player(playerId), 0, 0, 1.2, message)
@@ -63,15 +67,17 @@ function tdAnyLaneFinished() returns boolean
 function tdHandleGameResolved()
 	if not tdAllLanesResolved() or tdIsGameOver()
 		return
+	tdClearQueuedWave()
 	tdSetGameOver(true)
 	if tdAnyLaneFinished()
-		tdBroadcast("Victory! Final team score: " + tdGetTeamScore().toString())
+		tdBroadcast("胜利！最终队伍分数：" + tdGetTeamScore().toString())
 	else
-		tdBroadcast("Defeat! Every lane collapsed.")
+		tdBroadcast("失败！所有路线都失守了。")
 
 function tdClearLaneEnemiesEnum()
 	let enemy = GetEnumUnit()
 	if enemy != null and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == tdClearLanePlayer
+		tdClearEnemyHealthTag(enemy)
 		enemy.remove()
 
 function tdClearLaneEnemies(int playerId)
@@ -87,17 +93,21 @@ public function tdHandleEnemyLeak(unit enemy)
 	if enemy == null or not enemy.isAlive()
 		return
 	let playerId = tdEnemyLaneId(enemy)
+	let wave = tdEnemyWave(enemy)
 	if not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId)
 		return
 	tdLoseLife(playerId, 1)
 	tdMarkEnemyLeaked(enemy)
+	tdClearEnemyHealthTag(enemy)
 	enemy.kill()
 	if tdGetLives(playerId) <= 0
+		tdSetResolvedWave(playerId, wave)
 		tdSetLaneDefeated(playerId, true)
 		tdClearLaneEnemies(playerId)
-		tdBroadcast("Player " + (playerId + 1).toString() + "'s lane has fallen.")
+		tdBroadcast("玩家" + (playerId + 1).toString() + "的路线失守了。")
 	tdRefreshHud()
 	tdHandleGameResolved()
+	tdTryScheduleNextWave(wave)
 
 function tdHandleLeakingEnumUnit()
 	let enemy = GetEnumUnit()
@@ -128,8 +138,10 @@ function tdHandleEnemyDeath()
 		return
 	let wave = tdEnemyWave(enemy)
 	// 这里只结算真正被击杀的怪；漏怪会走另一套逻辑，不给奖励。
+	tdClearEnemyHealthTag(enemy)
 	tdGainGold(playerId, tdWaveKillGold(wave))
 	tdAddScore(playerId, tdWaveScoreValue(wave))
+	tdHandleEnemyDrop(enemy, playerId, wave)
 	tdRefreshHud()
 
 // 注册一个全局死亡触发器，统一监听中立敌对方刷出来的怪物死亡事件。
@@ -137,27 +149,77 @@ public function tdStartEnemyDeathWatcher()
 	TriggerRegisterPlayerUnitEvent(tdEnemyDeathTrigger, Player(TD_ENEMY_PLAYER_ID), EVENT_PLAYER_UNIT_DEATH, null)
 	TriggerAddAction(tdEnemyDeathTrigger, function tdHandleEnemyDeath)
 
-// 推进某一路进入下一波，真正的刷怪节奏交给 TDSpawn 处理。
-public function tdStartNextWave(int playerId)
-	if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId)
+function tdLaneCanSpawnWave(int playerId) returns boolean
+	return tdIsLaneActive(playerId) and not tdIsLaneDefeated(playerId) and not tdIsLaneFinished(playerId)
+
+public function tdWaveClearDelay(int wave) returns real
+	if tdWaveBossEnemyCount(wave) > 0
+		return 30.0
+	return TD_TIME_BETWEEN_WAVES
+
+public function tdWaveForceStartDelay(int wave) returns real
+	if tdWaveBossEnemyCount(wave) > 0
+		return 90.0
+	return 60.0
+
+function tdScheduleForcedNextWave(int wave)
+	if wave >= tdWaveCount()
 		return
-	let nextWave = tdGetCurrentWave(playerId) + 1
-	tdSetCurrentWave(playerId, nextWave)
+	let nextWave = wave + 1
+	doAfter(tdWaveForceStartDelay(wave)) ->
+		if tdIsGameOver() or tdGetGlobalWave() != wave or not tdHasContinuingLanes()
+			return
+		tdBroadcast("第 " + nextWave.toString() + "/" + tdWaveCount().toString() + " 波时间到，敌军继续压上！")
+		tdStartGlobalWave(nextWave)
+
+function tdTryScheduleNextWave(int wave)
+	if tdIsGameOver() or wave != tdGetGlobalWave() or wave >= tdWaveCount() or tdIsNextWaveQueued()
+		return
+	if not tdAllContinuingLanesResolved(wave) or not tdHasContinuingLanes()
+		return
+	let nextWave = wave + 1
+	tdQueueNextWave(nextWave)
+	let delay = tdWaveClearDelay(wave)
+	tdBroadcast("第 " + nextWave.toString() + "/" + tdWaveCount().toString() + " 波将在 " + R2I(delay).toString() + " 秒后开始。")
+	doAfter(delay) ->
+		if tdIsGameOver() or not tdIsNextWaveQueued() or tdGetQueuedWave() != nextWave
+			return
+		tdClearQueuedWave()
+		if tdGetGlobalWave() == wave and tdAllContinuingLanesResolved(wave) and tdHasContinuingLanes()
+			tdStartGlobalWave(nextWave)
+
+public function tdStartGlobalWave(int wave)
+	if tdIsGameOver() or wave < 1 or wave > tdWaveCount()
+		return
+	tdClearQueuedWave()
+	tdSetGlobalWave(wave)
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdLaneCanSpawnWave(playerId)
+			tdSetCurrentWave(playerId, wave)
 	tdRefreshHud()
-	DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, "Lane " + (playerId + 1).toString() + " Wave " + nextWave.toString() + " begins. Hold the center!")
-	tdSpawnWave(playerId, nextWave)
+	tdBroadcast("第 " + wave.toString() + "/" + tdWaveCount().toString() + " 波开始，守住中央传送门！")
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdLaneCanSpawnWave(playerId)
+			tdSpawnWave(playerId, wave)
+	tdScheduleForcedNextWave(wave)
+
+public function tdStartWaveSchedule()
+	doAfter(TD_FIRST_WAVE_DELAY) ->
+		tdStartGlobalWave(1)
 
 public function tdHandleWaveFinished(int playerId, int wave)
 	if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId)
 		return
+	if tdIsWaveResolved(playerId, wave)
+		return
+	tdMarkWaveResolved(playerId, wave)
 	// 只有这一波的怪已经全部清空，才发放通关奖励。
 	tdGainGold(playerId, tdWaveReward(wave))
-	if wave >= tdWaveCount()
+	if tdGetResolvedWave(playerId) >= tdWaveCount()
 		tdSetLaneFinished(playerId, true)
 		tdRefreshHud()
-		DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, "Your lane is secure.")
+		DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, "你的路线已经守住了。")
 		tdHandleGameResolved()
 		return
 	tdRefreshHud()
-	doAfter(TD_TIME_BETWEEN_WAVES) ->
-		tdStartNextWave(playerId)
+	tdTryScheduleNextWave(wave)

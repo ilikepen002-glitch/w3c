@@ -1,4 +1,5 @@
 package TDWaves
+import TDConfig
 import UnitObjEditing
 
 constant int TD_WAVE_1_UNIT_ID = 'uE01'
@@ -11,6 +12,37 @@ constant int TD_WAVE_7_UNIT_ID = 'uE07'
 constant int TD_WAVE_8_UNIT_ID = 'uE08'
 constant int TD_WAVE_9_UNIT_ID = 'uE09'
 constant int TD_WAVE_10_UNIT_ID = 'uE0A'
+constant int TD_WAVE_11_UNIT_ID = 'uE0B'
+constant int TD_WAVE_12_UNIT_ID = 'uE0C'
+constant int TD_WAVE_13_UNIT_ID = 'uE0D'
+constant int TD_WAVE_14_UNIT_ID = 'uE0E'
+constant int TD_WAVE_15_UNIT_ID = 'uE0F'
+constant int TD_WAVE_16_UNIT_ID = 'uE10'
+
+constant int TD_WAVE_8_ELITE_UNIT_ID = 'uS08'
+constant int TD_WAVE_12_ELITE_UNIT_ID = 'uS12'
+constant int TD_WAVE_15_ELITE_UNIT_ID = 'uS15'
+constant int TD_WAVE_16_BOSS_UNIT_ID = 'uB16'
+
+function tdScaledEnemyStat(int baseValue, real multiplier) returns int
+	if baseValue <= 0
+		return 0
+	return R2I(baseValue * multiplier + 0.5)
+
+function tdScaledEconomyValue(int baseValue) returns int
+	return tdScaledEnemyStat(baseValue, tdEconomyMultiplier())
+
+public function tdEnemySleepsAtNight() returns boolean
+	return false
+
+public function tdEnemyNativeGoldBountyBase() returns int
+	return 0
+
+public function tdEnemyNativeGoldBountyDice() returns int
+	return 0
+
+public function tdEnemyNativeGoldBountySides() returns int
+	return 0
 
 function UnitDefinition.tdApplyEscaperStats(string name, int hitPoints, int armor, int speed) returns UnitDefinition
 	this
@@ -24,89 +56,312 @@ function UnitDefinition.tdApplyEscaperStats(string name, int hitPoints, int armo
 	..setAttacksEnabled(0)
 	..setAcquisitionRange(0)
 	..setCanFlee(false)
+	..setSleeps(tdEnemySleepsAtNight())
+	..setGoldBountyAwardedBase(tdEnemyNativeGoldBountyBase())
+	..setGoldBountyAwardedNumberofDice(tdEnemyNativeGoldBountyDice())
+	..setGoldBountyAwardedSidesperDie(tdEnemyNativeGoldBountySides())
+	..setLumberBountyAwardedBase(0)
+	..setLumberBountyAwardedNumberofDice(0)
+	..setLumberBountyAwardedSidesperDie(0)
 	..setCollisionSize(12)
 	..setPointValue(20)
 	return this
 
+function tdWaveNormalName(int wave) returns string
+	if wave == 1
+		return "教学杂兵"
+	if wave == 2
+		return "学徒步卒"
+	if wave == 3
+		return "数量施压者"
+	if wave == 4
+		return "铁盾杂兵"
+	if wave == 5
+		return "疾行掠夺者"
+	if wave == 6
+		return "厚皮蛮兵"
+	if wave == 7
+		return "护甲卫兵"
+	if wave == 8
+		return "检定步卒"
+	if wave == 9
+		return "回压战群"
+	if wave == 10
+		return "夜刃快袭者"
+	if wave == 11
+		return "厚血重兵"
+	if wave == 12
+		return "双压战团"
+	if wave == 13
+		return "混编攻城者"
+	if wave == 14
+		return "重甲卫队"
+	if wave == 15
+		return "决战先遣队"
+	return "Boss护卫"
+
+function tdWaveSpecialName(int wave) returns string
+	if wave == 8
+		return "阶段精英"
+	if wave == 12
+		return "双生精英"
+	if wave == 15
+		return "决战精英"
+	return "中路统领"
+
+public function tdWaveCount() returns int
+	return 16
+
+public function tdWaveNormalEnemyCount(int wave) returns int
+	if wave == 1
+		return 8
+	if wave == 2
+		return 10
+	if wave == 3
+		return 12
+	if wave == 4
+		return 10
+	if wave == 5
+		return 14
+	if wave == 6
+		return 10
+	if wave == 7
+		return 12
+	if wave == 8
+		return 10
+	if wave == 9
+		return 16
+	if wave == 10
+		return 14
+	if wave == 11
+		return 12
+	if wave == 12
+		return 10
+	if wave == 13
+		return 18
+	if wave == 14
+		return 14
+	if wave == 15
+		return 12
+	if wave == 16
+		return 14
+	return 0
+
+public function tdWaveEliteEnemyCount(int wave) returns int
+	if wave == 8
+		return 1
+	if wave == 12
+		return 2
+	if wave == 15
+		return 3
+	return 0
+
+public function tdWaveBossEnemyCount(int wave) returns int
+	if wave == 16
+		return 1
+	return 0
+
+public function tdIsEliteUnitTypeId(int unitTypeId) returns boolean
+	return unitTypeId == TD_WAVE_8_ELITE_UNIT_ID or unitTypeId == TD_WAVE_12_ELITE_UNIT_ID or unitTypeId == TD_WAVE_15_ELITE_UNIT_ID
+
+public function tdIsBossUnitTypeId(int unitTypeId) returns boolean
+	return unitTypeId == TD_WAVE_16_BOSS_UNIT_ID
+
+function tdWaveSpecialEnemyCount(int wave) returns int
+	return tdWaveEliteEnemyCount(wave) + tdWaveBossEnemyCount(wave)
+
+public function tdWaveEnemyCount(int wave) returns int
+	return tdWaveNormalEnemyCount(wave) + tdWaveSpecialEnemyCount(wave)
+
 public function tdWaveBaseHitPoints(int wave) returns int
 	if wave == 1
-		return 70
+		return tdScaledEnemyStat(90, tdEnemyHealthMultiplier())
 	if wave == 2
-		return 95
+		return tdScaledEnemyStat(120, tdEnemyHealthMultiplier())
 	if wave == 3
-		return 125
+		return tdScaledEnemyStat(150, tdEnemyHealthMultiplier())
 	if wave == 4
-		return 165
+		return tdScaledEnemyStat(210, tdEnemyHealthMultiplier())
 	if wave == 5
-		return 220
+		return tdScaledEnemyStat(190, tdEnemyHealthMultiplier())
 	if wave == 6
-		return 300
+		return tdScaledEnemyStat(320, tdEnemyHealthMultiplier())
 	if wave == 7
-		return 410
+		return tdScaledEnemyStat(290, tdEnemyHealthMultiplier())
 	if wave == 8
-		return 560
+		return tdScaledEnemyStat(260, tdEnemyHealthMultiplier())
 	if wave == 9
-		return 760
-	return 1020
+		return tdScaledEnemyStat(330, tdEnemyHealthMultiplier())
+	if wave == 10
+		return tdScaledEnemyStat(360, tdEnemyHealthMultiplier())
+	if wave == 11
+		return tdScaledEnemyStat(520, tdEnemyHealthMultiplier())
+	if wave == 12
+		return tdScaledEnemyStat(340, tdEnemyHealthMultiplier())
+	if wave == 13
+		return tdScaledEnemyStat(430, tdEnemyHealthMultiplier())
+	if wave == 14
+		return tdScaledEnemyStat(620, tdEnemyHealthMultiplier())
+	if wave == 15
+		return tdScaledEnemyStat(420, tdEnemyHealthMultiplier())
+	if wave == 16
+		return tdScaledEnemyStat(500, tdEnemyHealthMultiplier())
+	return 0
 
-function tdWaveBaseArmor(int wave) returns int
-	if wave <= 2
-		return 0
-	if wave <= 4
-		return 1
-	if wave <= 6
-		return 2
-	if wave <= 8
-		return 3
-	if wave == 9
-		return 4
-	return 5
-
-function tdWaveBaseSpeed(int wave) returns int
+public function tdWaveBaseArmor(int wave) returns int
 	if wave == 1
-		return 240
+		return tdScaledEnemyStat(0, tdEnemyArmorMultiplier())
 	if wave == 2
-		return 245
+		return tdScaledEnemyStat(0, tdEnemyArmorMultiplier())
 	if wave == 3
-		return 250
+		return tdScaledEnemyStat(0, tdEnemyArmorMultiplier())
 	if wave == 4
-		return 255
+		return tdScaledEnemyStat(1, tdEnemyArmorMultiplier())
 	if wave == 5
-		return 260
+		return tdScaledEnemyStat(0, tdEnemyArmorMultiplier())
 	if wave == 6
-		return 265
+		return tdScaledEnemyStat(1, tdEnemyArmorMultiplier())
 	if wave == 7
-		return 270
+		return tdScaledEnemyStat(2, tdEnemyArmorMultiplier())
 	if wave == 8
-		return 275
+		return tdScaledEnemyStat(2, tdEnemyArmorMultiplier())
 	if wave == 9
-		return 280
-	return 285
+		return tdScaledEnemyStat(1, tdEnemyArmorMultiplier())
+	if wave == 10
+		return tdScaledEnemyStat(2, tdEnemyArmorMultiplier())
+	if wave == 11
+		return tdScaledEnemyStat(3, tdEnemyArmorMultiplier())
+	if wave == 12
+		return tdScaledEnemyStat(3, tdEnemyArmorMultiplier())
+	if wave == 13
+		return tdScaledEnemyStat(2, tdEnemyArmorMultiplier())
+	if wave == 14
+		return tdScaledEnemyStat(5, tdEnemyArmorMultiplier())
+	if wave == 15
+		return tdScaledEnemyStat(4, tdEnemyArmorMultiplier())
+	if wave == 16
+		return tdScaledEnemyStat(3, tdEnemyArmorMultiplier())
+	return 0
+
+public function tdWaveBaseSpeed(int wave) returns int
+	if wave == 1
+		return tdScaledEnemyStat(240, tdEnemySpeedMultiplier())
+	if wave == 2
+		return tdScaledEnemyStat(245, tdEnemySpeedMultiplier())
+	if wave == 3
+		return tdScaledEnemyStat(250, tdEnemySpeedMultiplier())
+	if wave == 4
+		return tdScaledEnemyStat(250, tdEnemySpeedMultiplier())
+	if wave == 5
+		return tdScaledEnemyStat(290, tdEnemySpeedMultiplier())
+	if wave == 6
+		return tdScaledEnemyStat(255, tdEnemySpeedMultiplier())
+	if wave == 7
+		return tdScaledEnemyStat(255, tdEnemySpeedMultiplier())
+	if wave == 8
+		return tdScaledEnemyStat(265, tdEnemySpeedMultiplier())
+	if wave == 9
+		return tdScaledEnemyStat(270, tdEnemySpeedMultiplier())
+	if wave == 10
+		return tdScaledEnemyStat(305, tdEnemySpeedMultiplier())
+	if wave == 11
+		return tdScaledEnemyStat(265, tdEnemySpeedMultiplier())
+	if wave == 12
+		return tdScaledEnemyStat(270, tdEnemySpeedMultiplier())
+	if wave == 13
+		return tdScaledEnemyStat(285, tdEnemySpeedMultiplier())
+	if wave == 14
+		return tdScaledEnemyStat(260, tdEnemySpeedMultiplier())
+	if wave == 15
+		return tdScaledEnemyStat(290, tdEnemySpeedMultiplier())
+	if wave == 16
+		return tdScaledEnemyStat(285, tdEnemySpeedMultiplier())
+	return 0
+
+public function tdWaveEliteHitPoints(int wave) returns int
+	if wave == 8
+		return tdScaledEnemyStat(1000, tdEnemyHealthMultiplier())
+	if wave == 12
+		return tdScaledEnemyStat(1300, tdEnemyHealthMultiplier())
+	if wave == 15
+		return tdScaledEnemyStat(1700, tdEnemyHealthMultiplier())
+	return 0
+
+public function tdWaveEliteArmor(int wave) returns int
+	if wave == 8
+		return tdScaledEnemyStat(2, tdEnemyArmorMultiplier())
+	if wave == 12
+		return tdScaledEnemyStat(3, tdEnemyArmorMultiplier())
+	if wave == 15
+		return tdScaledEnemyStat(4, tdEnemyArmorMultiplier())
+	return 0
+
+public function tdWaveEliteSpeed(int wave) returns int
+	if wave == 8
+		return tdScaledEnemyStat(265, tdEnemySpeedMultiplier())
+	if wave == 12
+		return tdScaledEnemyStat(270, tdEnemySpeedMultiplier())
+	if wave == 15
+		return tdScaledEnemyStat(290, tdEnemySpeedMultiplier())
+	return 0
+
+public function tdWaveBossHitPoints(int wave) returns int
+	if wave == 16
+		return tdScaledEnemyStat(4200, tdEnemyHealthMultiplier())
+	return 0
+
+public function tdWaveBossArmor(int wave) returns int
+	if wave == 16
+		return tdScaledEnemyStat(6, tdEnemyArmorMultiplier())
+	return 0
+
+public function tdWaveBossSpeed(int wave) returns int
+	if wave == 16
+		return tdScaledEnemyStat(250, tdEnemySpeedMultiplier())
+	return 0
 
 @compiletime function tdGenerateEscaperObjects()
 	new UnitDefinition(TD_WAVE_1_UNIT_ID, 'hpea')
-		..tdApplyEscaperStats("逃兵", tdWaveBaseHitPoints(1), tdWaveBaseArmor(1), tdWaveBaseSpeed(1))
+		..tdApplyEscaperStats(tdWaveNormalName(1), tdWaveBaseHitPoints(1), tdWaveBaseArmor(1), tdWaveBaseSpeed(1))
 	new UnitDefinition(TD_WAVE_2_UNIT_ID, 'hfoo')
-		..tdApplyEscaperStats("步兵队", tdWaveBaseHitPoints(2), tdWaveBaseArmor(2), tdWaveBaseSpeed(2))
+		..tdApplyEscaperStats(tdWaveNormalName(2), tdWaveBaseHitPoints(2), tdWaveBaseArmor(2), tdWaveBaseSpeed(2))
 	new UnitDefinition(TD_WAVE_3_UNIT_ID, 'ugho')
-		..tdApplyEscaperStats("食尸小队", tdWaveBaseHitPoints(3), tdWaveBaseArmor(3), tdWaveBaseSpeed(3))
+		..tdApplyEscaperStats(tdWaveNormalName(3), tdWaveBaseHitPoints(3), tdWaveBaseArmor(3), tdWaveBaseSpeed(3))
 	new UnitDefinition(TD_WAVE_4_UNIT_ID, 'hrif')
-		..tdApplyEscaperStats("火枪逃兵", tdWaveBaseHitPoints(4), tdWaveBaseArmor(4), tdWaveBaseSpeed(4))
+		..tdApplyEscaperStats(tdWaveNormalName(4), tdWaveBaseHitPoints(4), tdWaveBaseArmor(4), tdWaveBaseSpeed(4))
 	new UnitDefinition(TD_WAVE_5_UNIT_ID, 'ogru')
-		..tdApplyEscaperStats("兽人冲锋者", tdWaveBaseHitPoints(5), tdWaveBaseArmor(5), tdWaveBaseSpeed(5))
+		..tdApplyEscaperStats(tdWaveNormalName(5), tdWaveBaseHitPoints(5), tdWaveBaseArmor(5), tdWaveBaseSpeed(5))
 	new UnitDefinition(TD_WAVE_6_UNIT_ID, 'edry')
-		..tdApplyEscaperStats("森林信使", tdWaveBaseHitPoints(6), tdWaveBaseArmor(6), tdWaveBaseSpeed(6))
+		..tdApplyEscaperStats(tdWaveNormalName(6), tdWaveBaseHitPoints(6), tdWaveBaseArmor(6), tdWaveBaseSpeed(6))
 	new UnitDefinition(TD_WAVE_7_UNIT_ID, 'esen')
-		..tdApplyEscaperStats("月刃猎手", tdWaveBaseHitPoints(7), tdWaveBaseArmor(7), tdWaveBaseSpeed(7))
-	new UnitDefinition(TD_WAVE_8_UNIT_ID, 'uabo')
-		..tdApplyEscaperStats("缝合怪", tdWaveBaseHitPoints(8), tdWaveBaseArmor(8), tdWaveBaseSpeed(8))
+		..tdApplyEscaperStats(tdWaveNormalName(7), tdWaveBaseHitPoints(7), tdWaveBaseArmor(7), tdWaveBaseSpeed(7))
+	new UnitDefinition(TD_WAVE_8_UNIT_ID, 'uaco')
+		..tdApplyEscaperStats(tdWaveNormalName(8), tdWaveBaseHitPoints(8), tdWaveBaseArmor(8), tdWaveBaseSpeed(8))
 	new UnitDefinition(TD_WAVE_9_UNIT_ID, 'okod')
-		..tdApplyEscaperStats("科多巨兽", tdWaveBaseHitPoints(9), tdWaveBaseArmor(9), tdWaveBaseSpeed(9))
-	new UnitDefinition(TD_WAVE_10_UNIT_ID, 'otau')
-		..tdApplyEscaperStats("牛头督军", tdWaveBaseHitPoints(10), tdWaveBaseArmor(10), tdWaveBaseSpeed(10))
+		..tdApplyEscaperStats(tdWaveNormalName(9), tdWaveBaseHitPoints(9), tdWaveBaseArmor(9), tdWaveBaseSpeed(9))
+	new UnitDefinition(TD_WAVE_10_UNIT_ID, 'nfel')
+		..tdApplyEscaperStats(tdWaveNormalName(10), tdWaveBaseHitPoints(10), tdWaveBaseArmor(10), tdWaveBaseSpeed(10))
+	new UnitDefinition(TD_WAVE_11_UNIT_ID, 'otau')
+		..tdApplyEscaperStats(tdWaveNormalName(11), tdWaveBaseHitPoints(11), tdWaveBaseArmor(11), tdWaveBaseSpeed(11))
+	new UnitDefinition(TD_WAVE_12_UNIT_ID, 'uabo')
+		..tdApplyEscaperStats(tdWaveNormalName(12), tdWaveBaseHitPoints(12), tdWaveBaseArmor(12), tdWaveBaseSpeed(12))
+	new UnitDefinition(TD_WAVE_13_UNIT_ID, 'ncen')
+		..tdApplyEscaperStats(tdWaveNormalName(13), tdWaveBaseHitPoints(13), tdWaveBaseArmor(13), tdWaveBaseSpeed(13))
+	new UnitDefinition(TD_WAVE_14_UNIT_ID, 'hkni')
+		..tdApplyEscaperStats(tdWaveNormalName(14), tdWaveBaseHitPoints(14), tdWaveBaseArmor(14), tdWaveBaseSpeed(14))
+	new UnitDefinition(TD_WAVE_15_UNIT_ID, 'nbal')
+		..tdApplyEscaperStats(tdWaveNormalName(15), tdWaveBaseHitPoints(15), tdWaveBaseArmor(15), tdWaveBaseSpeed(15))
+	new UnitDefinition(TD_WAVE_16_UNIT_ID, 'opeo')
+		..tdApplyEscaperStats(tdWaveNormalName(16), tdWaveBaseHitPoints(16), tdWaveBaseArmor(16), tdWaveBaseSpeed(16))
 
-public function tdWaveCount() returns int
-	return 10
+	new UnitDefinition(TD_WAVE_8_ELITE_UNIT_ID, 'nfel')
+		..tdApplyEscaperStats(tdWaveSpecialName(8), tdWaveEliteHitPoints(8), tdWaveEliteArmor(8), tdWaveEliteSpeed(8))
+	new UnitDefinition(TD_WAVE_12_ELITE_UNIT_ID, 'nbst')
+		..tdApplyEscaperStats(tdWaveSpecialName(12), tdWaveEliteHitPoints(12), tdWaveEliteArmor(12), tdWaveEliteSpeed(12))
+	new UnitDefinition(TD_WAVE_15_ELITE_UNIT_ID, 'ordr')
+		..tdApplyEscaperStats(tdWaveSpecialName(15), tdWaveEliteHitPoints(15), tdWaveEliteArmor(15), tdWaveEliteSpeed(15))
+	new UnitDefinition(TD_WAVE_16_BOSS_UNIT_ID, 'Ocbh')
+		..tdApplyEscaperStats(tdWaveSpecialName(16), tdWaveBossHitPoints(16), tdWaveBossArmor(16), tdWaveBossSpeed(16))
 
 public function tdWaveUnitId(int wave) returns int
 	if wave == 1
@@ -127,109 +382,140 @@ public function tdWaveUnitId(int wave) returns int
 		return TD_WAVE_8_UNIT_ID
 	if wave == 9
 		return TD_WAVE_9_UNIT_ID
-	return TD_WAVE_10_UNIT_ID
+	if wave == 10
+		return TD_WAVE_10_UNIT_ID
+	if wave == 11
+		return TD_WAVE_11_UNIT_ID
+	if wave == 12
+		return TD_WAVE_12_UNIT_ID
+	if wave == 13
+		return TD_WAVE_13_UNIT_ID
+	if wave == 14
+		return TD_WAVE_14_UNIT_ID
+	if wave == 15
+		return TD_WAVE_15_UNIT_ID
+	return TD_WAVE_16_UNIT_ID
 
-public function tdWaveEnemyCount(int wave) returns int
-	if wave == 1
-		return 5
-	if wave == 2
-		return 6
-	if wave == 3
-		return 7
-	if wave == 4
-		return 8
-	if wave == 5
-		return 9
-	if wave == 6
-		return 10
-	if wave == 7
-		return 11
+public function tdWaveSpecialUnitId(int wave) returns int
 	if wave == 8
-		return 12
-	if wave == 9
-		return 13
-	return 15
+		return TD_WAVE_8_ELITE_UNIT_ID
+	if wave == 12
+		return TD_WAVE_12_ELITE_UNIT_ID
+	if wave == 15
+		return TD_WAVE_15_ELITE_UNIT_ID
+	if wave == 16
+		return TD_WAVE_16_BOSS_UNIT_ID
+	return 0
+
+public function tdWaveSpawnUnitId(int wave, int remainingCount) returns int
+	if tdWaveSpecialEnemyCount(wave) > 0 and remainingCount > tdWaveNormalEnemyCount(wave)
+		return tdWaveSpecialUnitId(wave)
+	return tdWaveUnitId(wave)
 
 public function tdWaveSpawnInterval(int wave) returns real
 	if wave == 1
-		return 1.15
-	if wave == 2
 		return 1.05
+	if wave == 2
+		return 1.00
 	if wave == 3
-		return 0.95
+		return 0.94
 	if wave == 4
-		return 0.88
+		return 0.90
 	if wave == 5
-		return 0.82
+		return 0.72
 	if wave == 6
-		return 0.76
+		return 0.86
 	if wave == 7
-		return 0.71
+		return 0.82
 	if wave == 8
-		return 0.66
+		return 0.80
 	if wave == 9
-		return 0.61
-	return 0.56
+		return 0.72
+	if wave == 10
+		return 0.64
+	if wave == 11
+		return 0.78
+	if wave == 12
+		return 0.76
+	if wave == 13
+		return 0.62
+	if wave == 14
+		return 0.74
+	if wave == 15
+		return 0.68
+	return 0.60
 
 public function tdWaveReward(int wave) returns int
 	if wave == 1
-		return 30
+		return tdScaledEconomyValue(10)
 	if wave == 2
-		return 40
+		return tdScaledEconomyValue(10)
 	if wave == 3
-		return 50
+		return tdScaledEconomyValue(12)
 	if wave == 4
-		return 65
+		return tdScaledEconomyValue(12)
 	if wave == 5
-		return 80
+		return tdScaledEconomyValue(14)
 	if wave == 6
-		return 100
+		return tdScaledEconomyValue(15)
 	if wave == 7
-		return 125
+		return tdScaledEconomyValue(16)
 	if wave == 8
-		return 150
+		return tdScaledEconomyValue(18)
 	if wave == 9
-		return 185
-	return 240
+		return tdScaledEconomyValue(20)
+	if wave == 10
+		return tdScaledEconomyValue(22)
+	if wave == 11
+		return tdScaledEconomyValue(24)
+	if wave == 12
+		return tdScaledEconomyValue(24)
+	if wave == 13
+		return tdScaledEconomyValue(26)
+	if wave == 14
+		return tdScaledEconomyValue(28)
+	if wave == 15
+		return tdScaledEconomyValue(32)
+	return tdScaledEconomyValue(36)
 
 public function tdWaveKillGold(int wave) returns int
-	if wave == 1
-		return 2
-	if wave == 2
-		return 3
-	if wave == 3
-		return 4
-	if wave == 4
-		return 4
-	if wave == 5
-		return 5
-	if wave == 6
-		return 6
-	if wave == 7
-		return 7
-	if wave == 8
-		return 8
-	if wave == 9
-		return 9
-	return 11
+	if wave <= 3
+		return tdScaledEconomyValue(3)
+	if wave <= 7
+		return tdScaledEconomyValue(4)
+	if wave <= 15
+		return tdScaledEconomyValue(5)
+	return tdScaledEconomyValue(6)
 
 public function tdWaveScoreValue(int wave) returns int
 	if wave == 1
 		return 2
 	if wave == 2
-		return 3
+		return 2
 	if wave == 3
-		return 4
+		return 3
 	if wave == 4
-		return 6
+		return 4
 	if wave == 5
-		return 8
+		return 5
 	if wave == 6
-		return 10
+		return 6
 	if wave == 7
-		return 12
+		return 7
 	if wave == 8
-		return 15
+		return 9
 	if wave == 9
-		return 18
-	return 24
+		return 10
+	if wave == 10
+		return 11
+	if wave == 11
+		return 13
+	if wave == 12
+		return 15
+	if wave == 13
+		return 17
+	if wave == 14
+		return 19
+	if wave == 15
+		return 22
+	return 26

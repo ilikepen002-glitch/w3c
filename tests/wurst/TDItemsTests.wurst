@@ -1,0 +1,24 @@
+package TDItemsTests
+import TDItems
+
+@Test function launchCatalogKeepsExpectedQualitySpread()
+	tdItemDefinitionCount().assertEquals(28)
+	tdItemQualityCount(TD_ITEM_QUALITY_WHITE).assertEquals(10)
+	tdItemQualityCount(TD_ITEM_QUALITY_GREEN).assertEquals(8)
+	tdItemQualityCount(TD_ITEM_QUALITY_BLUE).assertEquals(6)
+	tdItemQualityCount(TD_ITEM_QUALITY_PURPLE).assertEquals(4)
+
+@Test function qualityProgressionStopsAtPurple()
+	tdNextItemQuality(TD_ITEM_QUALITY_WHITE).assertEquals(TD_ITEM_QUALITY_GREEN)
+	tdNextItemQuality(TD_ITEM_QUALITY_GREEN).assertEquals(TD_ITEM_QUALITY_BLUE)
+	tdNextItemQuality(TD_ITEM_QUALITY_BLUE).assertEquals(TD_ITEM_QUALITY_PURPLE)
+	tdNextItemQuality(TD_ITEM_QUALITY_PURPLE).assertEquals(TD_ITEM_QUALITY_PURPLE)
+
+@Test function launchWhiteAndBlueItemsExposeStableMetadata()
+	tdItemIsEquipment(TD_ITEM_SHORT_BOW_ID).assertTrue()
+	tdItemName(TD_ITEM_SHORT_BOW_ID).assertEquals("短弓")
+	tdItemQuality(TD_ITEM_SHORT_BOW_ID).assertEquals(TD_ITEM_QUALITY_WHITE)
+	tdItemPrimaryEffectKind(TD_ITEM_SHORT_BOW_ID).assertEquals(TD_ITEM_EFFECT_ATTACK)
+	tdItemPrimaryEffectValue(TD_ITEM_SHORT_BOW_ID).assertEquals(8.0)
+	tdItemName(TD_ITEM_BOUNTY_CONTRACT_ID).assertEquals("赏金契约")
+	tdItemQuality(TD_ITEM_BOUNTY_CONTRACT_ID).assertEquals(TD_ITEM_QUALITY_BLUE)

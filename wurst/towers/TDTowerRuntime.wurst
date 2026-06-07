@@ -1,0 +1,347 @@
+package TDTowerRuntime
+import TDConfig
+import TDState
+import TDSpawn
+import RegisterEvents
+import initlater TDGame
+import DamageEvent
+import Table
+import TDTowerData
+import TDInventory
+import ClosureTimers
+
+unit array tdFarmers
+constant Table tdPerfectUpgradeVisualEffects = new Table()
+constant Table tdBuildPlotClaims = new Table()
+constant Table tdTowerBuildPlotSlots = new Table()
+image array tdTowerRangeIndicatorImages
+unit array tdTowerRangeIndicatorTowers
+
+boolean tdTowerGameplayEventsReady = false
+boolean tdTowerSelectionEventsReady = false
+boolean tdFarmerWageUnlocked = false
+trigger tdTowerConstructionStartTrigger = CreateTrigger()
+trigger tdTowerConstructionFinishTrigger = CreateTrigger()
+trigger tdTowerConstructionCancelTrigger = CreateTrigger()
+trigger tdTowerUpgradeTrigger = CreateTrigger()
+trigger tdTowerDeathTrigger = CreateTrigger()
+trigger tdTowerSelectionTrigger = CreateTrigger()
+trigger tdTowerDeselectionTrigger = CreateTrigger()
+
+function tdPerfectUpgradeVisualEffectTableKey(unit tower, int effectKey) returns int
+	return tower.getHandleId() * 10 + effectKey
+
+function tdHasPerfectUpgradeVisualEffect(unit tower, int effectKey) returns boolean
+	return tdPerfectUpgradeVisualEffects.loadEffect(tdPerfectUpgradeVisualEffectTableKey(tower, effectKey)) != null
+
+function tdAttachPerfectUpgradeVisualEffect(unit tower, int effectKey, string modelPath, string attachmentPoint)
+	if tdHasPerfectUpgradeVisualEffect(tower, effectKey)
+		return
+	tdPerfectUpgradeVisualEffects.saveEffect(tdPerfectUpgradeVisualEffectTableKey(tower, effectKey), tower.addEffect(modelPath, attachmentPoint))
+
+function tdAttachPerfectUpgradeVisuals(unit tower)
+	tdAttachPerfectUpgradeVisualEffect(tower, TD_PERFECT_UPGRADE_WING_EFFECT_KEY, tdPerfectUpgradeWingEffectPath(), tdPerfectUpgradeWingAttachmentPoint())
+	tdAttachPerfectUpgradeVisualEffect(tower, TD_PERFECT_UPGRADE_GLOW_EFFECT_KEY, tdPerfectUpgradeGlowEffectPath(), tdPerfectUpgradeGlowAttachmentPoint())
+
+function tdValidRangeIndicatorPlayerId(int playerId) returns boolean
+	return playerId >= 0 and playerId < bj_MAX_PLAYER_SLOTS
+
+function tdCreateTowerRangeIndicatorImage(unit tower) returns image
+	let towerChoice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
+	let level = tdTowerLevelForUnitTypeId(GetUnitTypeId(tower))
+	let diameter = tdTowerRangeIndicatorDiameter(towerChoice, level)
+	let indicator = createImage(tdTowerRangeIndicatorTexturePath(), tower.getPos(), diameter, diameter, ImageLayer.L2)
+	indicator.setColor(tdTowerRangeIndicatorColor())
+	indicator.wrap()
+	indicator.hide()
+	return indicator
+
+function tdClearTowerRangeIndicator(int playerId)
+	if not tdValidRangeIndicatorPlayerId(playerId)
+		return
+	if tdTowerRangeIndicatorImages[playerId] != null
+		tdTowerRangeIndicatorImages[playerId].remove()
+		tdTowerRangeIndicatorImages[playerId] = null
+	tdTowerRangeIndicatorTowers[playerId] = null
+
+function tdClearTowerRangeIndicatorsForTower(unit tower)
+	if tower == null
+		return
+	for playerId = 0 to bj_MAX_PLAYER_SLOTS - 1
+		if tdTowerRangeIndicatorTowers[playerId] == tower
+			tdClearTowerRangeIndicator(playerId)
+
+function tdShowTowerRangeIndicatorForPlayer(player p, unit tower)
+	let playerId = GetPlayerId(p)
+	if tower == null or not tdValidRangeIndicatorPlayerId(playerId)
+		return
+	if tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		tdClearTowerRangeIndicator(playerId)
+		return
+	tdClearTowerRangeIndicator(playerId)
+	let indicator = tdCreateTowerRangeIndicatorImage(tower)
+	tdTowerRangeIndicatorImages[playerId] = indicator
+	tdTowerRangeIndicatorTowers[playerId] = tower
+	indicator.showForPlayer(p)
+
+function tdRefreshTowerRangeIndicatorsForTower(unit tower)
+	if tower == null
+		return
+	for playerId = 0 to bj_MAX_PLAYER_SLOTS - 1
+		if tdTowerRangeIndicatorTowers[playerId] == tower
+			tdShowTowerRangeIndicatorForPlayer(Player(playerId), tower)
+
+public function tdCanAffordTower(int playerId, int towerChoice) returns boolean
+	return tdGetGold(playerId) >= tdTowerCost(towerChoice)
+
+public function tdGetFarmer(int playerId) returns unit
+	return tdFarmers[playerId]
+
+function tdBuildPlotSlot(int playerId, int plotIndex) returns int
+	return playerId * TD_BUILD_PLOTS_PER_LANE + plotIndex
+
+function tdTowerBuildPlotSlot(unit tower) returns int
+	if tower != null and tdTowerBuildPlotSlots.hasInt(tower.getHandleId())
+		return tdTowerBuildPlotSlots.loadInt(tower.getHandleId())
+	return -1
+
+function tdReleaseTowerBuildPlot(unit tower)
+	let slot = tdTowerBuildPlotSlot(tower)
+	if slot < 0
+		return
+	tdTowerBuildPlotSlots.removeInt(tower.getHandleId())
+	let claimedTower = tdBuildPlotClaims.loadUnit(slot)
+	if claimedTower == tower
+		tdBuildPlotClaims.removeHandle(slot)
+
+function tdClaimTowerBuildPlot(unit tower, int slot)
+	tdBuildPlotClaims.saveUnit(slot, tower)
+	tdTowerBuildPlotSlots.saveInt(tower.getHandleId(), slot)
+
+function tdRejectTowerConstruction(unit tower, int playerId, int towerChoice, string message)
+	tdClearTowerRangeIndicatorsForTower(tower)
+	tdReleaseTowerBuildPlot(tower)
+	tower.remove()
+	tdGainGold(playerId, tdTowerCost(towerChoice))
+	tdRefreshHud()
+	DisplayTimedTextToPlayer(Player(playerId), 0, 0, 4.0, message)
+
+function tdTryReserveTowerBuildPlot(unit tower) returns boolean
+	if tower == null
+		return false
+	let towerChoice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
+	if towerChoice == 0
+		return false
+	let playerId = GetPlayerId(GetOwningPlayer(tower))
+	if not tdIsLaneActive(playerId)
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "当前路线未启用，无法在这里建塔。")
+		return false
+	let plotIndex = tdFindBuildPlotIndex(playerId, tower.getPos())
+	if plotIndex < 0
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "只能在草地塔位上建造，不能重叠占格。")
+		return false
+	let plotCenter = tdBuildPlotCenter(playerId, plotIndex)
+	if not tdBuildPlotHasValidTerrain(plotCenter) or not tdBuildPlotIsFlat(plotCenter)
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "这个塔位不在平整地面上，请换到可建造的草地格子。")
+		return false
+	let slot = tdBuildPlotSlot(playerId, plotIndex)
+	let claimedTower = tdBuildPlotClaims.loadUnit(slot)
+	if claimedTower != null and claimedTower != tower
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "这个塔位已经被占用，请换一个格子建造。")
+		return false
+	tdClaimTowerBuildPlot(tower, slot)
+	return true
+
+function tdHandleTowerSelected()
+	let tower = GetTriggerUnit()
+	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return
+	tdShowTowerRangeIndicatorForPlayer(GetTriggerPlayer(), tower)
+
+function tdHandleTowerDeselected()
+	let tower = GetTriggerUnit()
+	let playerId = GetPlayerId(GetTriggerPlayer())
+	if tdValidRangeIndicatorPlayerId(playerId) and tdTowerRangeIndicatorTowers[playerId] == tower
+		tdClearTowerRangeIndicator(playerId)
+
+// 虽然名字还是 createPads，但目前这里实际做的是给每个玩家生成建造农民。
+// 玩家就是通过这个农民的建造菜单来放置 1 阶塔。
+public function tdCreatePads()
+	tdFarmerWageUnlocked = false
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(playerId)
+			tdFarmers[playerId] = createUnit(Player(playerId), TD_FARMER_UNIT_ID, tdFarmerSpawnPosition(playerId), 0 .fromDeg())
+			if tdFarmersShouldBeInvulnerable()
+				tdFarmers[playerId].setInvulnerable(true)
+			Player(playerId).setAbilityAvailable(TD_FARMER_WAGE_ABILITY_ID, false)
+		else
+			tdFarmers[playerId] = null
+	tdStartFarmerWageUnlockWatcher()
+
+// 预留给“对话框式建造 UI”的启动入口。
+// 当前原型直接用农民自带的建造菜单，所以这里先留空。
+public function tdSetupBuildDialog()
+
+// 预留给塔位选择逻辑的启动入口。
+public function tdSetupPadSelection()
+	if tdTowerSelectionEventsReady
+		return
+	tdTowerSelectionEventsReady = true
+	tdTowerSelectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SELECTED)
+	tdTowerDeselectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DESELECTED)
+	tdTowerSelectionTrigger.addAction(function tdHandleTowerSelected)
+	tdTowerDeselectionTrigger.addAction(function tdHandleTowerDeselected)
+
+function tdApplyTowerPersistentState(unit tower)
+	if tower == null or not tdTowersShouldBeInvulnerable()
+		return
+	tower.setInvulnerable(true)
+
+function tdHandleTowerConstructionStarted()
+	let tower = GetConstructedStructure()
+	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return
+	tdTryReserveTowerBuildPlot(tower)
+
+function tdHandleTowerConstructionFinished()
+	let tower = GetConstructedStructure()
+	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return
+	tdApplyTowerPersistentState(tower)
+	tdRefreshTowerEquipmentBonuses(tower)
+
+function tdHandleTowerConstructionCancelled()
+	let tower = GetCancelledStructure()
+	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return
+	tdReleaseTowerBuildPlot(tower)
+
+function tdApplyPerfectUpgrade(unit tower, int towerChoice)
+	let baseAbilityId = tdTowerBaseSkillAbilityId(towerChoice)
+	let perfectAbilityId = tdTowerPerfectSkillAbilityId(towerChoice)
+	if perfectAbilityId == 0 or tower.getAbilityLevel(perfectAbilityId) > 0
+		return
+	if baseAbilityId > 0
+		tower.removeAbility(baseAbilityId)
+	tower.addPermanentAbility(perfectAbilityId, 1)
+	tower.setScale(tdPerfectUpgradeScaleMultiplier())
+	tower.flashEffect(tdPerfectUpgradeEffectPath(towerChoice), "origin")
+	tdAttachPerfectUpgradeVisuals(tower)
+	DisplayTimedTextToPlayer(GetOwningPlayer(tower), 0, 0, 4.0, tdPerfectUpgradeMessage(towerChoice))
+
+function tdHandleTowerUpgradeFinished()
+	let tower = GetTriggerUnit()
+	if tower == null
+		return
+	let towerChoice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
+	if towerChoice == 0
+		return
+	tdApplyTowerPersistentState(tower)
+	tdRefreshTowerEquipmentBonuses(tower)
+	tdRefreshTowerRangeIndicatorsForTower(tower)
+	if tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)) != TD_MAX_TOWER_LEVEL
+		return
+	if GetRandomReal(0.0, 1.0) > tdPerfectUpgradeChance()
+		return
+	tdApplyPerfectUpgrade(tower, towerChoice)
+
+function tdHandleTowerDeath()
+	let tower = GetTriggerUnit()
+	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return
+	tdClearTowerRangeIndicatorsForTower(tower)
+	tdReleaseTowerBuildPlot(tower)
+
+function tdHandleGhoulCorpseExplosionDamage()
+	if DamageEvent.isSpell() or DamageEvent.isCode()
+		return
+	let source = DamageEvent.getSource()
+	let target = DamageEvent.getTarget()
+	if source == null or target == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != TD_TOWER_CHOICE_GHOUL
+		return
+	let maxLife = GetUnitState(target, UNIT_STATE_MAX_LIFE)
+	if maxLife <= 0.405 or target.getLife() / maxLife > tdGhoulCorpseExplosionLifeThreshold()
+		return
+	if target.getLife() > DamageEvent.getAmount() + 0.405
+		return
+	let center = target.getPos()
+	let laneId = tdEnemyLaneId(target)
+	let g = CreateGroup()
+	g.enumUnitsInRange(center, tdGhoulCorpseExplosionRadius())
+	for victim in g
+		if victim != target and victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == laneId
+			DamageEvent.setNextDamageFromCode()
+			source.damageTarget(victim, tdGhoulCorpseExplosionDamage())
+	g.destr()
+	AddSpecialEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayDamage.mdl", center.x, center.y)
+
+function tdHandleArcherSplitArrowDamage()
+	if DamageEvent.isSpell() or DamageEvent.isCode()
+		return
+	let source = DamageEvent.getSource()
+	let target = DamageEvent.getTarget()
+	if source == null or target == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != TD_TOWER_CHOICE_ARCHER
+		return
+	let level = tdTowerLevelForUnitTypeId(GetUnitTypeId(source))
+	var remainingTargets = tdArcherSplitArrowTargetCount(level) - 1
+	if remainingTargets <= 0
+		return
+	let center = source.getPos()
+	let laneId = tdEnemyLaneId(target)
+	let g = CreateGroup()
+	g.enumUnitsInRange(center, tdTowerBaseRange(TD_TOWER_CHOICE_ARCHER, level) + tdArcherSplitArrowBounceRange())
+	for victim in g
+		if remainingTargets > 0 and victim != target and victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == laneId
+			remainingTargets -= 1
+			DamageEvent.setNextDamageFromCode()
+			source.damageTarget(victim, DamageEvent.getAmount())
+	g.destr()
+
+function tdUnlockFarmerWageAbility()
+	if tdFarmerWageUnlocked
+		return
+	tdFarmerWageUnlocked = true
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(playerId)
+			Player(playerId).setAbilityAvailable(TD_FARMER_WAGE_ABILITY_ID, true)
+
+function tdStartFarmerWageUnlockWatcher()
+	doPeriodically(0.25) cb ->
+		if tdIsGameOver()
+			destroy cb
+		else if tdGetGlobalWave() >= tdFarmerWageUnlockWave()
+			tdUnlockFarmerWageAbility()
+			destroy cb
+
+// 预留给建造/选择相关触发器注册的启动入口。
+public function tdSetupDialogTrigger()
+	if tdTowerGameplayEventsReady
+		return
+	tdTowerGameplayEventsReady = true
+	registerSpellEffectEvent(TD_FARMER_WAGE_ABILITY_ID, function tdHandleFarmerWageCast)
+	tdTowerConstructionStartTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_START)
+	tdTowerConstructionFinishTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_FINISH)
+	tdTowerConstructionCancelTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL)
+	tdTowerUpgradeTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_UPGRADE_FINISH)
+	tdTowerDeathTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
+	tdTowerConstructionStartTrigger.addAction(function tdHandleTowerConstructionStarted)
+	tdTowerConstructionFinishTrigger.addAction(function tdHandleTowerConstructionFinished)
+	tdTowerConstructionCancelTrigger.addAction(function tdHandleTowerConstructionCancelled)
+	tdTowerUpgradeTrigger.addAction(function tdHandleTowerUpgradeFinished)
+	tdTowerDeathTrigger.addAction(function tdHandleTowerDeath)
+	DamageEvent.addListener() ->
+		tdHandleArcherSplitArrowDamage()
+		tdHandleGhoulCorpseExplosionDamage()
+
+function tdHandleFarmerWageCast() returns boolean
+	let farmer = GetTriggerUnit()
+	if farmer == null or GetUnitTypeId(farmer) != TD_FARMER_UNIT_ID
+		return false
+	let playerId = GetPlayerId(GetOwningPlayer(farmer))
+	if not tdIsLaneActive(playerId)
+		return false
+	let wage = tdRollFarmerWageGold(tdGetGlobalWave())
+	tdGainGold(playerId, wage)
+	tdRefreshHud()
+	DisplayTimedTextToPlayer(Player(playerId), 0, 0, 4.0, "领取工资：+" + wage.toString() + " 金币。")
+	return false

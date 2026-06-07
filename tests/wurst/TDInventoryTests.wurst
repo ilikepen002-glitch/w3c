@@ -1,0 +1,23 @@
+package TDInventoryTests
+import TDInventory
+import TDItems
+
+@Test function towersKeepThreeSlotsAndThirdDuplicateIsPenalized()
+	tdTowerEquipmentSlotCount().assertEquals(3)
+	tdTowerEquipmentDuplicateFactor(1).assertEquals(1.0)
+	tdTowerEquipmentDuplicateFactor(2).assertEquals(1.0)
+	tdTowerEquipmentDuplicateFactor(3).assertEquals(0.5)
+	tdEquipmentAttackBonusForItems(TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID).assertEquals(20.0)
+	tdTowerAttackBonusAbilityLevelForItems(TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID).assertEquals(20)
+
+@Test function cooldownAndRangeBonusesRespectCaps()
+	tdTowerEquipmentCooldownCap().assertEquals(0.40)
+	tdTowerEquipmentRangeCap().assertEquals(500.0)
+	tdEquipmentCooldownReductionForItems(TD_ITEM_COOLING_RUNE_ID, TD_ITEM_COOLING_RUNE_ID, TD_ITEM_COOLING_RUNE_ID).assertEquals(0.20)
+	tdEquipmentRangeBonusForItems(TD_ITEM_EAGLE_SCOPE_ID, TD_ITEM_EAGLE_SCOPE_ID, TD_ITEM_EAGLE_SCOPE_ID).assertEquals(225.0)
+	tdEquipmentRangeBonusForItems(TD_ITEM_WHITE_TIGER_BANNER_ID, TD_ITEM_WHITE_TIGER_BANNER_ID, TD_ITEM_WHITE_TIGER_BANNER_ID).assertEquals(500.0)
+	tdTowerAttackSpeedAbilityLevelForItems(TD_ITEM_SWIFT_GLOVES_ID, TD_ITEM_SWIFT_GLOVES_ID, TD_ITEM_SWIFT_GLOVES_ID).assertEquals(30)
+
+@Test function economicAndDropBonusesAggregatePerTower()
+	tdEquipmentKillGoldBonusForItems(TD_ITEM_GOLD_RING_ID, TD_ITEM_MERCENARY_PURSE_ID, 0).assertEquals(3)
+	tdEquipmentDropBonusRollsForItems(TD_ITEM_SCAVENGER_BAG_ID, TD_ITEM_MERCENARY_PURSE_ID, 0).assertEquals(2)

@@ -7,5 +7,6 @@
 !/_build/dependencies/pre1.29/WurstStdlib2/**
 wurst.dependencies
 wurst/war3map.j
+wurst/_tests/
 /.vscode/*
 !/.vscode/settings.json

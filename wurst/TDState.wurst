@@ -5,13 +5,52 @@ int array tdLives
 int array tdGold
 int array tdCurrentWave
 int array tdLaneScore
+int array tdResolvedWave
 boolean array tdLaneActive
 boolean array tdLaneDefeated
 boolean array tdLaneFinished
 boolean tdGameOver = false
 int tdTeamScore = 0
+int tdGlobalWave = 0
+boolean tdNextWaveQueued = false
+int tdQueuedWave = 0
+boolean array tdWaveResolvedFlags
+int array tdLaneWaveDropCounts
+int array tdNativeGoldStateSnapshots
+boolean array tdHasNativeGoldStateSnapshot
+int tdTowerPopulationLimit = 4
+int tdUnlockedPopulationStage = 1
+
+constant int TD_TRACKED_WAVE_LIMIT = 40
+
+function tdWaveResolutionKey(int playerId, int wave) returns int
+	return playerId * TD_TRACKED_WAVE_LIMIT + wave
+
+function tdLaneWaveDropKey(int playerId, int wave) returns int
+	return playerId * TD_TRACKED_WAVE_LIMIT + wave
+
+function tdRebuildResolvedWaveProgress(int playerId)
+	var resolved = 0
+	for wave = 1 to TD_TRACKED_WAVE_LIMIT - 1
+		if tdWaveResolvedFlags[tdWaveResolutionKey(playerId, wave)]
+			resolved = wave
+		else
+			break
+	tdResolvedWave[playerId] = resolved
+
+function tdReadPlayerGoldState(int playerId) returns int
+	if tdHasNativeGoldStateSnapshot[playerId]
+		return tdNativeGoldStateSnapshots[playerId]
+	if compiletime
+		return tdGold[playerId]
+	return GetPlayerState(Player(playerId), PLAYER_STATE_RESOURCE_GOLD)
+
+function tdSyncGoldFromPlayerState(int playerId)
+	tdGold[playerId] = tdReadPlayerGoldState(playerId)
 
 function tdSyncPlayerResources(int playerId)
+	if tdHasNativeGoldStateSnapshot[playerId]
+		tdNativeGoldStateSnapshots[playerId] = tdGold[playerId]
 	if not compiletime
 		SetPlayerState(Player(playerId), PLAYER_STATE_RESOURCE_GOLD, tdGold[playerId])
 		SetPlayerState(Player(playerId), PLAYER_STATE_RESOURCE_LUMBER, 0)
@@ -20,20 +59,32 @@ function tdSyncPlayerResources(int playerId)
 public function tdResetState()
 	tdTeamScore = 0
 	tdGameOver = false
+	tdGlobalWave = 0
+	tdNextWaveQueued = false
+	tdQueuedWave = 0
+	tdTowerPopulationLimit = tdPopulationLimitForStage(1)
+	tdUnlockedPopulationStage = 1
 	for i = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		tdLives[i] = TD_STARTING_LIVES
 		tdGold[i] = TD_STARTING_GOLD
 		tdCurrentWave[i] = 0
 		tdLaneScore[i] = 0
+		tdResolvedWave[i] = 0
 		tdLaneActive[i] = false
 		tdLaneDefeated[i] = false
 		tdLaneFinished[i] = false
+		tdNativeGoldStateSnapshots[i] = 0
+		tdHasNativeGoldStateSnapshot[i] = false
+		for wave = 0 to TD_TRACKED_WAVE_LIMIT - 1
+			tdWaveResolvedFlags[tdWaveResolutionKey(i, wave)] = false
+			tdLaneWaveDropCounts[tdLaneWaveDropKey(i, wave)] = 0
 		tdSyncPlayerResources(i)
 
 public function tdGetLives(int playerId) returns int
 	return tdLives[playerId]
 
 public function tdGetGold(int playerId) returns int
+	tdSyncGoldFromPlayerState(playerId)
 	return tdGold[playerId]
 
 public function tdGetCurrentWave(int playerId) returns int
@@ -42,8 +93,74 @@ public function tdGetCurrentWave(int playerId) returns int
 public function tdGetLaneScore(int playerId) returns int
 	return tdLaneScore[playerId]
 
+public function tdGetResolvedWave(int playerId) returns int
+	return tdResolvedWave[playerId]
+
+public function tdSetNativeGoldStateForTest(int playerId, int amount)
+	tdNativeGoldStateSnapshots[playerId] = amount
+	tdHasNativeGoldStateSnapshot[playerId] = true
+
+public function tdNativeGoldStateForTest(int playerId) returns int
+	return tdReadPlayerGoldState(playerId)
+
+public function tdIsWaveResolved(int playerId, int wave) returns boolean
+	if wave <= 0 or wave >= TD_TRACKED_WAVE_LIMIT
+		return false
+	return tdWaveResolvedFlags[tdWaveResolutionKey(playerId, wave)]
+
+public function tdGetLaneWaveDropCount(int playerId, int wave) returns int
+	if wave < 0 or wave >= TD_TRACKED_WAVE_LIMIT
+		return 0
+	return tdLaneWaveDropCounts[tdLaneWaveDropKey(playerId, wave)]
+
+public function tdMarkLaneWaveDrop(int playerId, int wave)
+	if wave < 0 or wave >= TD_TRACKED_WAVE_LIMIT
+		return
+	tdLaneWaveDropCounts[tdLaneWaveDropKey(playerId, wave)] += 1
+
 public function tdGetTeamScore() returns int
 	return tdTeamScore
+
+public function tdGetGlobalWave() returns int
+	return tdGlobalWave
+
+public function tdIsNextWaveQueued() returns boolean
+	return tdNextWaveQueued
+
+public function tdGetQueuedWave() returns int
+	return tdQueuedWave
+
+public function tdPopulationLimitForStage(int stage) returns int
+	if stage <= 1
+		return 4
+	if stage == 2
+		return 6
+	if stage == 3
+		return 8
+	return 10
+
+function tdPopulationStageForCompletedWave(int wave) returns int
+	if wave >= 24
+		return 4
+	if wave >= 16
+		return 3
+	if wave >= 8
+		return 2
+	return 1
+
+public function tdGetTowerPopulationLimit() returns int
+	return tdTowerPopulationLimit
+
+public function tdGetUnlockedPopulationStage() returns int
+	return tdUnlockedPopulationStage
+
+public function tdUnlockPopulationForCompletedWave(int wave) returns boolean
+	let nextStage = tdPopulationStageForCompletedWave(wave)
+	if nextStage <= tdUnlockedPopulationStage
+		return false
+	tdUnlockedPopulationStage = nextStage
+	tdTowerPopulationLimit = tdPopulationLimitForStage(nextStage)
+	return true
 
 public function tdIsLaneActive(int playerId) returns boolean
 	return tdIsLanePlayer(playerId) and tdLaneActive[playerId]
@@ -62,11 +179,38 @@ public function tdCountActiveLanes() returns int
 public function tdSetCurrentWave(int playerId, int wave)
 	tdCurrentWave[playerId] = wave
 
+public function tdSetResolvedWave(int playerId, int wave)
+	for currentWave = 0 to TD_TRACKED_WAVE_LIMIT - 1
+		tdWaveResolvedFlags[tdWaveResolutionKey(playerId, currentWave)] = currentWave > 0 and currentWave <= wave
+	tdRebuildResolvedWaveProgress(playerId)
+
+public function tdMarkWaveResolved(int playerId, int wave)
+	if wave <= 0 or wave >= TD_TRACKED_WAVE_LIMIT or tdIsWaveResolved(playerId, wave)
+		return
+	tdWaveResolvedFlags[tdWaveResolutionKey(playerId, wave)] = true
+	tdRebuildResolvedWaveProgress(playerId)
+
+public function tdSetGlobalWave(int wave)
+	tdGlobalWave = wave
+
+public function tdQueueNextWave(int wave)
+	tdNextWaveQueued = wave > 0
+	if tdNextWaveQueued
+		tdQueuedWave = wave
+	else
+		tdQueuedWave = 0
+
+public function tdClearQueuedWave()
+	tdNextWaveQueued = false
+	tdQueuedWave = 0
+
 public function tdSpendGold(int playerId, int amount)
+	tdSyncGoldFromPlayerState(playerId)
 	tdGold[playerId] -= amount
 	tdSyncPlayerResources(playerId)
 
 public function tdGainGold(int playerId, int amount)
+	tdSyncGoldFromPlayerState(playerId)
 	tdGold[playerId] += amount
 	tdSyncPlayerResources(playerId)
 
@@ -88,6 +232,18 @@ public function tdIsLaneFinished(int playerId) returns boolean
 
 public function tdSetLaneFinished(int playerId, boolean value)
 	tdLaneFinished[playerId] = value
+
+public function tdHasContinuingLanes() returns boolean
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(playerId) and not tdIsLaneDefeated(playerId) and not tdIsLaneFinished(playerId)
+			return true
+	return false
+
+public function tdAllContinuingLanesResolved(int wave) returns boolean
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(playerId) and not tdIsLaneDefeated(playerId) and not tdIsLaneFinished(playerId) and not tdIsWaveResolved(playerId, wave)
+			return false
+	return true
 
 public function tdIsGameOver() returns boolean
 	return tdGameOver

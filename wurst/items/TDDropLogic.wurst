@@ -1,0 +1,125 @@
+package TDDropLogic
+import TDItemData
+import TDState
+import TDWaves
+
+public function tdLaneDropBudgetForWave(int wave) returns int
+	if wave <= 3
+		return 1
+	if wave <= 7
+		return 2
+	if wave <= 11
+		return 3
+	return 4
+
+public function tdNormalDropChanceBasisPointsForWave(int wave) returns int
+	if wave <= 1
+		return 1000
+	if wave == 2
+		return 1200
+	if wave == 3
+		return 1400
+	if wave == 4
+		return 1500
+	if wave == 5
+		return 1700
+	if wave == 6
+		return 1800
+	if wave == 7
+		return 2000
+	if wave == 8
+		return 2000
+	if wave == 9
+		return 2200
+	if wave == 10
+		return 2300
+	if wave == 11
+		return 2400
+	if wave == 12
+		return 2400
+	if wave == 13
+		return 2500
+	if wave == 14
+		return 2700
+	if wave == 15
+		return 2800
+	return 3000
+
+function tdBaseDropQualityForRoll(int wave, boolean elite, boolean boss, int rollBasisPoints) returns int
+	if boss
+		if rollBasisPoints <= 1500
+			return TD_ITEM_QUALITY_PURPLE
+		return TD_ITEM_QUALITY_BLUE
+	if elite
+		if wave >= 12 and rollBasisPoints <= 2500
+			return TD_ITEM_QUALITY_BLUE
+		return TD_ITEM_QUALITY_GREEN
+	if wave >= 13
+		if rollBasisPoints <= 250
+			return TD_ITEM_QUALITY_BLUE
+		if rollBasisPoints <= 1600
+			return TD_ITEM_QUALITY_GREEN
+		return TD_ITEM_QUALITY_WHITE
+	if wave >= 9
+		if rollBasisPoints <= 1200
+			return TD_ITEM_QUALITY_GREEN
+		return TD_ITEM_QUALITY_WHITE
+	if wave >= 5
+		if rollBasisPoints <= 900
+			return TD_ITEM_QUALITY_GREEN
+		return TD_ITEM_QUALITY_WHITE
+	return TD_ITEM_QUALITY_WHITE
+
+public function tdDropQualityForRoll(int wave, boolean elite, boolean boss, int rollBasisPoints) returns int
+	return tdBaseDropQualityForRoll(wave, elite, boss, rollBasisPoints)
+
+public function tdDropQualityWithBonusRoll(int wave, boolean elite, boolean boss, int rollBasisPoints, int bonusSteps) returns int
+	let baseQuality = tdBaseDropQualityForRoll(wave, elite, boss, rollBasisPoints)
+	var boosted = baseQuality
+	for _step = 1 to bonusSteps
+		boosted = tdNextItemQuality(boosted)
+	return boosted
+
+function tdCanSpendLaneDropBudget(int playerId, int wave) returns boolean
+	return tdGetLaneWaveDropCount(playerId, wave) < tdLaneDropBudgetForWave(wave)
+
+function tdSpawnEquipmentDrop(unit enemy, int playerId, int wave, int quality, boolean ignoreBudget)
+	if enemy == null or quality <= 0
+		return
+	if not ignoreBudget and not tdCanSpendLaneDropBudget(playerId, wave)
+		return
+	let itemId = tdRandomItemIdForQuality(quality)
+	if itemId == 0
+		return
+	createItem(itemId, enemy.getPos())
+	tdMarkLaneWaveDrop(playerId, wave)
+	if quality >= TD_ITEM_QUALITY_GREEN
+		DisplayTimedTextToPlayer(Player(playerId), 0, 0, 4.0, "掉落：" + tdItemQualityName(quality) + " " + tdItemName(itemId))
+
+function tdTryNormalEnemyDrop(unit enemy, int playerId, int wave)
+	if GetRandomInt(1, 10000) > tdNormalDropChanceBasisPointsForWave(wave)
+		return
+	let quality = tdDropQualityForRoll(wave, false, false, GetRandomInt(1, 10000))
+	tdSpawnEquipmentDrop(enemy, playerId, wave, quality, false)
+
+function tdTryEliteEnemyDrop(unit enemy, int playerId, int wave)
+	let quality = tdDropQualityForRoll(wave, true, false, GetRandomInt(1, 10000))
+	tdSpawnEquipmentDrop(enemy, playerId, wave, quality, true)
+
+function tdTryBossEnemyDrop(unit enemy, int playerId, int wave)
+	tdSpawnEquipmentDrop(enemy, playerId, wave, tdDropQualityForRoll(wave, false, true, GetRandomInt(1, 10000)), true)
+	if GetRandomInt(1, 100) <= 50
+		tdSpawnEquipmentDrop(enemy, playerId, wave, TD_ITEM_QUALITY_BLUE, true)
+	if GetRandomInt(1, 10000) <= 1200
+		tdSpawnEquipmentDrop(enemy, playerId, wave, TD_ITEM_QUALITY_PURPLE, true)
+
+public function tdHandleEnemyDrop(unit enemy, int playerId, int wave)
+	if enemy == null
+		return
+	let unitTypeId = GetUnitTypeId(enemy)
+	if tdIsBossUnitTypeId(unitTypeId)
+		tdTryBossEnemyDrop(enemy, playerId, wave)
+	else if tdIsEliteUnitTypeId(unitTypeId)
+		tdTryEliteEnemyDrop(enemy, playerId, wave)
+	else
+		tdTryNormalEnemyDrop(enemy, playerId, wave)

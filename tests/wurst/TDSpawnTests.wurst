@@ -1,0 +1,16 @@
+package TDSpawnTests
+import TDSpawn
+import TDWaves
+
+@Test function spawnedEnemiesDoNotUseCreepGuard()
+	tdEnemyUsesCreepGuard().assertFalse()
+	tdEnemySleepsAtNight().assertFalse()
+	tdEnemyNativeGoldBountyBase().assertEquals(0)
+	tdEnemyNativeGoldBountyDice().assertEquals(0)
+	tdEnemyNativeGoldBountySides().assertEquals(0)
+	tdEnemyNeedsLaneOrderRefreshForTest(7, 7).assertFalse()
+	tdEnemyNeedsLaneOrderRefreshForTest(0, 7).assertTrue()
+
+@Test function enemiesUseNativeLifeBarsInsteadOfCustomTextTags()
+	tdEnemyUsesNativeLifeBarForTest().assertTrue()
+	tdEnemyUsesCustomHealthTextForTest().assertFalse()

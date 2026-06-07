@@ -1,0 +1,96 @@
+package TDItemObjectGen
+import TDItemData
+import ChannelAbilityPreset
+import AbilityObjEditing
+import ItemObjEditing
+
+function tdGenerateInventoryAbility(int abilityId, int slotCount, boolean canUseItems)
+	new AbilityDefinitionInventory(abilityId)
+	..setCanDropItems(1, true)
+	..setCanGetItems(1, true)
+	..setCanUseItems(1, canUseItems)
+	..setDropItemsOnDeath(1, false)
+	..setItemCapacity(1, slotCount)
+
+function tdGenerateCraftAbility()
+	let craft = new ChannelAbilityPreset(TD_FARMER_CRAFT_ABILITY_ID, 1, true)
+	craft
+	..setName("合成")
+	..setTooltipNormal(1, "合成")
+	..setTooltipNormalExtended(1, "检查工人物品栏前 3 格，执行 2 合 1 或 3 合 1 升阶。")
+	..presetIcon("BTNChestOfGold")
+	..presetHotkey("C")
+	..presetButtonPosNormal(0, 1)
+	..presetTargetTypes(Targettype.NONE)
+	..makeUnitSpell(0, 0.50)
+	..setCheckDependencies(false)
+
+function tdGenerateAttackBonusAbility(int abilityId, int bonus)
+	new AbilityDefinitionAttackBonus(abilityId)
+	..setAttackBonus(1, bonus)
+	..setItemAbility(true)
+	..setCheckDependencies(false)
+
+function tdGenerateAttackSpeedAbility(int abilityId, real bonus)
+	new AbilityDefinitionAIas(abilityId)
+	..setAttackSpeedIncrease(1, bonus)
+	..setItemAbility(true)
+	..setCheckDependencies(false)
+
+function tdGenerateTowerAttackBonusSyncAbility()
+	let bonusAbility = new AbilityDefinitionAttackBonus(TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID)
+	bonusAbility.setLevels(TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL)
+	bonusAbility.setItemAbility(true)
+	bonusAbility.setCheckDependencies(false)
+	for level = 1 to TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL
+		bonusAbility.setAttackBonus(level, level)
+
+function tdGenerateTowerAttackSpeedSyncAbility()
+	let speedAbility = new AbilityDefinitionAIas(TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID)
+	speedAbility.setLevels(TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL)
+	speedAbility.setItemAbility(true)
+	speedAbility.setCheckDependencies(false)
+	for level = 1 to TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL
+		speedAbility.setAttackSpeedIncrease(level, level / 100.0)
+
+function tdGenerateEquipmentItem(int itemId)
+	new ItemDefinition(itemId, 'ratf')
+	..setName(tdItemName(itemId))
+	..setTooltipBasic(tdItemName(itemId))
+	..setTooltipExtended(tdItemTooltip(itemId))
+	..setDescription(tdItemQualityName(tdItemQuality(itemId)) + "装备")
+	..setLevel(tdItemLevel(itemId))
+	..setClassification("Permanent")
+	..setAbilities(tdItemPassiveAbilityRawcodes(itemId))
+	..setInterfaceIcon(tdItemIconPath(itemId))
+	..setIncludeAsRandomChoice(false)
+	..setUseAutomaticallyWhenAcquired(false)
+	..setActivelyUsed(false)
+	..setCanBeDropped(true)
+	..setDroppedWhenCarrierDies(true)
+	..setCanBeSoldByMerchants(false)
+	..setCanBeSoldToMerchants(false)
+	..setGoldCost(0)
+	..setLumberCost(0)
+	..setPriority(1)
+	..setScalingValue(1.0)
+
+@compiletime function tdGenerateEquipmentSupportObjects()
+	tdGenerateInventoryAbility(TD_FARMER_INVENTORY_ABILITY_ID, 6, false)
+	tdGenerateInventoryAbility(TD_TOWER_INVENTORY_ABILITY_ID, 3, false)
+	tdGenerateCraftAbility()
+	tdGenerateAttackBonusAbility(TD_ITEM_ATTACK_BONUS_WHITE_ABILITY_ID, 8)
+	tdGenerateAttackBonusAbility(TD_ITEM_ATTACK_BONUS_GREEN_ABILITY_ID, 14)
+	tdGenerateAttackBonusAbility(TD_ITEM_ATTACK_BONUS_BLUE_ABILITY_ID, 22)
+	tdGenerateAttackBonusAbility(TD_ITEM_ATTACK_BONUS_PURPLE_ABILITY_ID, 34)
+	tdGenerateAttackSpeedAbility(TD_ITEM_ATTACK_SPEED_WHITE_ABILITY_ID, 0.12)
+	tdGenerateAttackSpeedAbility(TD_ITEM_ATTACK_SPEED_GREEN_ABILITY_ID, 0.20)
+	tdGenerateAttackSpeedAbility(TD_ITEM_ATTACK_SPEED_BLUE_ABILITY_ID, 0.32)
+	tdGenerateAttackSpeedAbility(TD_ITEM_ATTACK_SPEED_PURPLE_ABILITY_ID, 0.48)
+	tdGenerateTowerAttackBonusSyncAbility()
+	tdGenerateTowerAttackSpeedSyncAbility()
+	for index = 1 to tdItemDefinitionCount()
+		tdGenerateEquipmentItem(tdItemIdForCatalogIndex(index))
+
+// 物编生成和运行时接线会在后续实现中继续扩充；
+// 先保留独立包边界，避免把装备数据和 compiletime 代码混在一起。

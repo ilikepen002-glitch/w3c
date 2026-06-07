@@ -1,0 +1,44 @@
+package TDDropsTests
+import TDDrops
+import TDItems
+
+@Test function laneBudgetStepsUpByWaveBand()
+	tdLaneDropBudgetForWave(1).assertEquals(1)
+	tdLaneDropBudgetForWave(4).assertEquals(2)
+	tdLaneDropBudgetForWave(8).assertEquals(3)
+	tdLaneDropBudgetForWave(12).assertEquals(4)
+	tdLaneDropBudgetForWave(16).assertEquals(4)
+	tdLaneDropBudgetForWave(24).assertEquals(6)
+	tdLaneDropBudgetForWave(32).assertEquals(8)
+
+@Test function normalDropChanceRampsThroughTheMatch()
+	tdNormalDropChanceBasisPointsForWave(1).assertEquals(1000)
+	tdNormalDropChanceBasisPointsForWave(3).assertEquals(1400)
+	tdNormalDropChanceBasisPointsForWave(7).assertEquals(2000)
+	tdNormalDropChanceBasisPointsForWave(11).assertEquals(2400)
+	tdNormalDropChanceBasisPointsForWave(15).assertEquals(2800)
+	tdNormalDropChanceBasisPointsForWave(24).assertEquals(3600)
+	tdNormalDropChanceBasisPointsForWave(32).assertEquals(4200)
+
+@Test function eliteAndBossRewardsUseHigherQualityFloors()
+	tdDropQualityForRoll(8, true, false, 1).assertEquals(TD_ITEM_QUALITY_GREEN)
+	tdDropQualityForRoll(12, true, false, 1000).assertEquals(TD_ITEM_QUALITY_BLUE)
+	tdDropQualityForRoll(16, false, true, 1).assertEquals(TD_ITEM_QUALITY_PURPLE)
+	tdDropQualityForRoll(16, false, true, 2000).assertEquals(TD_ITEM_QUALITY_BLUE)
+	tdDropQualityForRoll(24, false, true, 1).assertEquals(TD_ITEM_QUALITY_PURPLE)
+	tdDropQualityForRoll(32, false, true, 2000).assertEquals(TD_ITEM_QUALITY_PURPLE)
+
+@Test function normalDropsCanUpgradeBeyondWhiteAsTheMatchProgresses()
+	tdDropQualityForRoll(5, false, false, 900).assertEquals(TD_ITEM_QUALITY_GREEN)
+	tdDropQualityForRoll(10, false, false, 1200).assertEquals(TD_ITEM_QUALITY_GREEN)
+	tdDropQualityForRoll(13, false, false, 250).assertEquals(TD_ITEM_QUALITY_BLUE)
+	tdDropQualityForRoll(25, false, false, 500).assertEquals(TD_ITEM_QUALITY_BLUE)
+
+@Test function scavengerBagAddsOneExtraQualityRollStep()
+	tdDropQualityWithBonusRoll(9, false, false, 9500, 0).assertEquals(TD_ITEM_QUALITY_WHITE)
+	tdDropQualityWithBonusRoll(9, false, false, 9500, 1).assertEquals(TD_ITEM_QUALITY_GREEN)
+
+@Test function bossGuardsSkipIndependentDropBudgetAndEliteGuarantees()
+	tdBossGuardSkipsIndependentDropForUnitTypeId(tdWaveBossGuardUnitId(8)).assertTrue()
+	tdBossGuardSkipsIndependentDropForUnitTypeId(tdWaveBossGuardUnitId(32)).assertTrue()
+	tdBossGuardSkipsIndependentDropForUnitTypeId(tdWaveSpecialUnitId(4)).assertFalse()

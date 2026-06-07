@@ -1,0 +1,18 @@
+package TDGameTests
+import TDGame
+import TDState
+import TDConfig
+
+@Test function laneStatusTextUsesChineseLabels()
+	tdResetState()
+	tdLaneStatusTextForTest(false, false, false, 0, 5).assertEquals("未开启")
+	tdLaneStatusTextForTest(true, false, false, 0, 5).assertEquals("待命")
+	tdLaneStatusTextForTest(true, true, false, 0, 5).assertEquals("已完成")
+	tdLaneStatusTextForTest(true, false, true, 0, 5).assertEquals("已失守")
+	tdLaneStatusTextForTest(true, false, false, 3, 5).assertEquals("第 3/5 波")
+
+@Test function waveCadenceSupportsEarlyClearAndForcedAdvance()
+	tdWaveClearDelay(5).assertEquals(TD_TIME_BETWEEN_WAVES)
+	tdWaveForceStartDelay(5).assertEquals(60.0)
+	tdWaveClearDelay(16).assertEquals(30.0)
+	tdWaveForceStartDelay(16).assertEquals(90.0)
