@@ -22,3 +22,10 @@ import TDItems
 	tdItemPrimaryEffectValue(TD_ITEM_SHORT_BOW_ID).assertEquals(8.0)
 	tdItemName(TD_ITEM_BOUNTY_CONTRACT_ID).assertEquals("赏金契约")
 	tdItemQuality(TD_ITEM_BOUNTY_CONTRACT_ID).assertEquals(TD_ITEM_QUALITY_BLUE)
+
+@Test function equipmentTitleNamesUseQualityColorsWithoutChangingPlainNames()
+	tdItemName(TD_ITEM_BOUNTY_CONTRACT_ID).assertEquals("赏金契约")
+	tdItemTitleName(TD_ITEM_SHORT_BOW_ID).assertEquals("|cffffffff短弓|r")
+	tdItemTitleName(TD_ITEM_STEEL_LONGBOW_ID).assertEquals("|cff00ff00精钢长弓|r")
+	tdItemTitleName(TD_ITEM_BOUNTY_CONTRACT_ID).assertEquals("|cff3399ff赏金契约|r")
+	tdItemTitleName(TD_ITEM_WHITE_TIGER_BANNER_ID).assertEquals("|cffcc66ff白虎战旗|r")

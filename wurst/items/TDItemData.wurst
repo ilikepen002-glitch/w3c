@@ -216,6 +216,20 @@ public function tdItemQualityName(int quality) returns string
 		return "紫装"
 	return "未知"
 
+public function tdItemQualityTitleColor(int quality) returns string
+	if quality == TD_ITEM_QUALITY_WHITE
+		return "|cffffffff"
+	if quality == TD_ITEM_QUALITY_GREEN
+		return "|cff00ff00"
+	if quality == TD_ITEM_QUALITY_BLUE
+		return "|cff3399ff"
+	if quality == TD_ITEM_QUALITY_PURPLE
+		return "|cffcc66ff"
+	return "|cffffffff"
+
+public function tdItemTitleName(int itemId) returns string
+	return tdItemQualityTitleColor(tdItemQuality(itemId)) + tdItemName(itemId) + "|r"
+
 function tdItemEffectText(int effectKind, real value) returns string
 	if effectKind == TD_ITEM_EFFECT_ATTACK
 		return "攻击 +" + R2I(value + 0.5).toString()

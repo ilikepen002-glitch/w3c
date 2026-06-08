@@ -10,7 +10,13 @@ public function tdLaneDropBudgetForWave(int wave) returns int
 		return 2
 	if wave <= 11
 		return 3
-	return 4
+	if wave <= 16
+		return 4
+	if wave <= 20
+		return 5
+	if wave <= 28
+		return 6
+	return 8
 
 public function tdNormalDropChanceBasisPointsForWave(int wave) returns int
 	if wave <= 1
@@ -43,10 +49,20 @@ public function tdNormalDropChanceBasisPointsForWave(int wave) returns int
 		return 2700
 	if wave == 15
 		return 2800
-	return 3000
+	if wave <= 20
+		return 3200
+	if wave <= 24
+		return 3600
+	if wave <= 28
+		return 3900
+	return 4200
 
 function tdBaseDropQualityForRoll(int wave, boolean elite, boolean boss, int rollBasisPoints) returns int
 	if boss
+		if wave >= 32 and rollBasisPoints <= 3000
+			return TD_ITEM_QUALITY_PURPLE
+		if wave >= 24 and rollBasisPoints <= 2400
+			return TD_ITEM_QUALITY_PURPLE
 		if rollBasisPoints <= 1500
 			return TD_ITEM_QUALITY_PURPLE
 		return TD_ITEM_QUALITY_BLUE
@@ -55,6 +71,8 @@ function tdBaseDropQualityForRoll(int wave, boolean elite, boolean boss, int rol
 			return TD_ITEM_QUALITY_BLUE
 		return TD_ITEM_QUALITY_GREEN
 	if wave >= 13
+		if wave >= 25 and rollBasisPoints <= 500
+			return TD_ITEM_QUALITY_BLUE
 		if rollBasisPoints <= 250
 			return TD_ITEM_QUALITY_BLUE
 		if rollBasisPoints <= 1600
@@ -79,6 +97,9 @@ public function tdDropQualityWithBonusRoll(int wave, boolean elite, boolean boss
 	for _step = 1 to bonusSteps
 		boosted = tdNextItemQuality(boosted)
 	return boosted
+
+public function tdBossGuardSkipsIndependentDropForUnitTypeId(int unitTypeId) returns boolean
+	return tdIsBossGuardUnitTypeId(unitTypeId)
 
 function tdCanSpendLaneDropBudget(int playerId, int wave) returns boolean
 	return tdGetLaneWaveDropCount(playerId, wave) < tdLaneDropBudgetForWave(wave)
@@ -117,6 +138,8 @@ public function tdHandleEnemyDrop(unit enemy, int playerId, int wave)
 	if enemy == null
 		return
 	let unitTypeId = GetUnitTypeId(enemy)
+	if tdBossGuardSkipsIndependentDropForUnitTypeId(unitTypeId)
+		return
 	if tdIsBossUnitTypeId(unitTypeId)
 		tdTryBossEnemyDrop(enemy, playerId, wave)
 	else if tdIsEliteUnitTypeId(unitTypeId)

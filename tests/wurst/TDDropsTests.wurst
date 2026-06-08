@@ -1,6 +1,7 @@
 package TDDropsTests
 import TDDrops
 import TDItems
+import TDWaves
 
 @Test function laneBudgetStepsUpByWaveBand()
 	tdLaneDropBudgetForWave(1).assertEquals(1)

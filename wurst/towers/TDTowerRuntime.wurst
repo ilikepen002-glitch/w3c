@@ -11,7 +11,7 @@ import TDInventory
 import ClosureTimers
 
 unit array tdFarmers
-constant Table tdPerfectUpgradeVisualEffects = new Table()
+constant Table tdPerfectUpgradeAvatarRefreshers = new Table()
 constant Table tdBuildPlotClaims = new Table()
 constant Table tdTowerBuildPlotSlots = new Table()
 image array tdTowerRangeIndicatorImages
@@ -27,21 +27,30 @@ trigger tdTowerUpgradeTrigger = CreateTrigger()
 trigger tdTowerDeathTrigger = CreateTrigger()
 trigger tdTowerSelectionTrigger = CreateTrigger()
 trigger tdTowerDeselectionTrigger = CreateTrigger()
+int tdTowerCountPlayerId = -1
+int tdTowerCountResult = 0
 
-function tdPerfectUpgradeVisualEffectTableKey(unit tower, int effectKey) returns int
-	return tower.getHandleId() * 10 + effectKey
+function tdPerfectUpgradeAvatarRefresherKey(unit tower) returns int
+	return tower.getHandleId()
 
-function tdHasPerfectUpgradeVisualEffect(unit tower, int effectKey) returns boolean
-	return tdPerfectUpgradeVisualEffects.loadEffect(tdPerfectUpgradeVisualEffectTableKey(tower, effectKey)) != null
+function tdHasPerfectUpgradeAvatarRefresher(unit tower) returns boolean
+	return tdPerfectUpgradeAvatarRefreshers.hasBoolean(tdPerfectUpgradeAvatarRefresherKey(tower))
 
-function tdAttachPerfectUpgradeVisualEffect(unit tower, int effectKey, string modelPath, string attachmentPoint)
-	if tdHasPerfectUpgradeVisualEffect(tower, effectKey)
+function tdShowPerfectUpgradeAvatarEffect(unit tower)
+	tower.flashEffect(tdPerfectUpgradeAvatarEffectPath(), tdPerfectUpgradeAvatarAttachmentPoint())
+
+function tdStartPerfectUpgradeAvatarRefresher(unit tower, int towerChoice)
+	if tdHasPerfectUpgradeAvatarRefresher(tower)
 		return
-	tdPerfectUpgradeVisualEffects.saveEffect(tdPerfectUpgradeVisualEffectTableKey(tower, effectKey), tower.addEffect(modelPath, attachmentPoint))
-
-function tdAttachPerfectUpgradeVisuals(unit tower)
-	tdAttachPerfectUpgradeVisualEffect(tower, TD_PERFECT_UPGRADE_WING_EFFECT_KEY, tdPerfectUpgradeWingEffectPath(), tdPerfectUpgradeWingAttachmentPoint())
-	tdAttachPerfectUpgradeVisualEffect(tower, TD_PERFECT_UPGRADE_GLOW_EFFECT_KEY, tdPerfectUpgradeGlowEffectPath(), tdPerfectUpgradeGlowAttachmentPoint())
+	let key = tdPerfectUpgradeAvatarRefresherKey(tower)
+	tdPerfectUpgradeAvatarRefreshers.saveBoolean(key, true)
+	tdShowPerfectUpgradeAvatarEffect(tower)
+	doPeriodically(tdPerfectUpgradeAvatarRefreshInterval()) cb ->
+		if tower == null or not tower.isAlive() or not tdTowerAlreadyPerfect(tower, towerChoice)
+			tdPerfectUpgradeAvatarRefreshers.removeBoolean(key)
+			destroy cb
+		else
+			tdShowPerfectUpgradeAvatarEffect(tower)
 
 function tdValidRangeIndicatorPlayerId(int playerId) returns boolean
 	return playerId >= 0 and playerId < bj_MAX_PLAYER_SLOTS
@@ -49,7 +58,8 @@ function tdValidRangeIndicatorPlayerId(int playerId) returns boolean
 function tdCreateTowerRangeIndicatorImage(unit tower) returns image
 	let towerChoice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
 	let level = tdTowerLevelForUnitTypeId(GetUnitTypeId(tower))
-	let diameter = tdTowerRangeIndicatorDiameter(towerChoice, level)
+	let branch = tdTowerBranchForUnitTypeId(GetUnitTypeId(tower))
+	let diameter = tdTowerRangeIndicatorDiameterForBranch(towerChoice, level, branch)
 	let indicator = createImage(tdTowerRangeIndicatorTexturePath(), tower.getPos(), diameter, diameter, ImageLayer.L2)
 	indicator.setColor(tdTowerRangeIndicatorColor())
 	indicator.wrap()
@@ -114,6 +124,26 @@ function tdReleaseTowerBuildPlot(unit tower)
 	if claimedTower == tower
 		tdBuildPlotClaims.removeHandle(slot)
 
+function tdCountPlayerTowerEnum()
+	let tower = GetEnumUnit()
+	if tower != null and tower.isAlive() and GetOwningPlayer(tower) == Player(tdTowerCountPlayerId) and tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) != 0
+		tdTowerCountResult += 1
+
+function tdCountLivingPlayerTowers(int playerId) returns int
+	tdTowerCountPlayerId = playerId
+	tdTowerCountResult = 0
+	let g = CreateGroup()
+	g.enumUnitsInRect(GetWorldBounds())
+	ForGroup(g, function tdCountPlayerTowerEnum)
+	g.destr()
+	return tdTowerCountResult
+
+function tdAlignPlayerTowerPopulation(int playerId)
+	if compiletime or not tdIsLanePlayer(playerId)
+		return
+	SetPlayerState(Player(playerId), PLAYER_STATE_RESOURCE_FOOD_CAP, tdGetTowerPopulationLimit())
+	SetPlayerState(Player(playerId), PLAYER_STATE_RESOURCE_FOOD_USED, tdCountLivingPlayerTowers(playerId))
+
 function tdClaimTowerBuildPlot(unit tower, int slot)
 	tdBuildPlotClaims.saveUnit(slot, tower)
 	tdTowerBuildPlotSlots.saveInt(tower.getHandleId(), slot)
@@ -135,6 +165,10 @@ function tdTryReserveTowerBuildPlot(unit tower) returns boolean
 	let playerId = GetPlayerId(GetOwningPlayer(tower))
 	if not tdIsLaneActive(playerId)
 		tdRejectTowerConstruction(tower, playerId, towerChoice, "当前路线未启用，无法在这里建塔。")
+		return false
+	if tdCountLivingPlayerTowers(playerId) > tdGetTowerPopulationLimit()
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "已达到当前阶段人口上限，先升级已有防御塔。")
+		tdAlignPlayerTowerPopulation(playerId)
 		return false
 	let plotIndex = tdFindBuildPlotIndex(playerId, tower.getPos())
 	if plotIndex < 0
@@ -174,6 +208,7 @@ public function tdCreatePads()
 			if tdFarmersShouldBeInvulnerable()
 				tdFarmers[playerId].setInvulnerable(true)
 			Player(playerId).setAbilityAvailable(TD_FARMER_WAGE_ABILITY_ID, false)
+			tdAlignPlayerTowerPopulation(playerId)
 		else
 			tdFarmers[playerId] = null
 	tdStartFarmerWageUnlockWatcher()
@@ -209,12 +244,14 @@ function tdHandleTowerConstructionFinished()
 		return
 	tdApplyTowerPersistentState(tower)
 	tdRefreshTowerEquipmentBonuses(tower)
+	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
 
 function tdHandleTowerConstructionCancelled()
 	let tower = GetCancelledStructure()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	tdReleaseTowerBuildPlot(tower)
+	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
 
 function tdApplyPerfectUpgrade(unit tower, int towerChoice)
 	let baseAbilityId = tdTowerBaseSkillAbilityId(towerChoice)
@@ -223,10 +260,11 @@ function tdApplyPerfectUpgrade(unit tower, int towerChoice)
 		return
 	if baseAbilityId > 0
 		tower.removeAbility(baseAbilityId)
+	tower.removeAbility(TD_TOWER_REFINE_ABILITY_ID)
 	tower.addPermanentAbility(perfectAbilityId, 1)
 	tower.setScale(tdPerfectUpgradeScaleMultiplier())
 	tower.flashEffect(tdPerfectUpgradeEffectPath(towerChoice), "origin")
-	tdAttachPerfectUpgradeVisuals(tower)
+	tdStartPerfectUpgradeAvatarRefresher(tower, towerChoice)
 	DisplayTimedTextToPlayer(GetOwningPlayer(tower), 0, 0, 4.0, tdPerfectUpgradeMessage(towerChoice))
 
 function tdHandleTowerUpgradeFinished()
@@ -239,7 +277,9 @@ function tdHandleTowerUpgradeFinished()
 	tdApplyTowerPersistentState(tower)
 	tdRefreshTowerEquipmentBonuses(tower)
 	tdRefreshTowerRangeIndicatorsForTower(tower)
-	if tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)) != TD_MAX_TOWER_LEVEL
+	let newLevel = tdTowerLevelForUnitTypeId(GetUnitTypeId(tower))
+	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
+	if not tdShouldRollPerfectUpgrade(tdPerfectUpgradeSourceLevel(), newLevel)
 		return
 	if GetRandomReal(0.0, 1.0) > tdPerfectUpgradeChance()
 		return
@@ -251,6 +291,28 @@ function tdHandleTowerDeath()
 		return
 	tdClearTowerRangeIndicatorsForTower(tower)
 	tdReleaseTowerBuildPlot(tower)
+	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
+
+function tdTowerAlreadyPerfect(unit tower, int towerChoice) returns boolean
+	return tower != null and tdTowerPerfectSkillAbilityId(towerChoice) > 0 and tower.getAbilityLevel(tdTowerPerfectSkillAbilityId(towerChoice)) > 0
+
+function tdHandleTowerRefineCast() returns boolean
+	let tower = GetTriggerUnit()
+	if tower == null
+		return false
+	let towerChoice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
+	if towerChoice == 0 or tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)) != TD_MAX_TOWER_LEVEL
+		return false
+	if tdTowerAlreadyPerfect(tower, towerChoice)
+		return false
+	let playerId = GetPlayerId(GetOwningPlayer(tower))
+	if tdGetGold(playerId) < tdRefinePerfectUpgradeGoldCost()
+		DisplayTimedTextToPlayer(Player(playerId), 0, 0, 4.0, "金币不足，无法精炼。")
+		return false
+	tdSpendGold(playerId, tdRefinePerfectUpgradeGoldCost())
+	tdApplyPerfectUpgrade(tower, towerChoice)
+	tdRefreshHud()
+	return false
 
 function tdHandleGhoulCorpseExplosionDamage()
 	if DamageEvent.isSpell() or DamageEvent.isCode()
@@ -258,6 +320,8 @@ function tdHandleGhoulCorpseExplosionDamage()
 	let source = DamageEvent.getSource()
 	let target = DamageEvent.getTarget()
 	if source == null or target == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != TD_TOWER_CHOICE_GHOUL
+		return
+	if source.getAbilityLevel(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID) <= 0
 		return
 	let maxLife = GetUnitState(target, UNIT_STATE_MAX_LIFE)
 	if maxLife <= 0.405 or target.getLife() / maxLife > tdGhoulCorpseExplosionLifeThreshold()
@@ -282,14 +346,17 @@ function tdHandleArcherSplitArrowDamage()
 	let target = DamageEvent.getTarget()
 	if source == null or target == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != TD_TOWER_CHOICE_ARCHER
 		return
+	if source.getAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID) <= 0
+		return
 	let level = tdTowerLevelForUnitTypeId(GetUnitTypeId(source))
+	let branch = tdTowerBranchForUnitTypeId(GetUnitTypeId(source))
 	var remainingTargets = tdArcherSplitArrowTargetCount(level) - 1
 	if remainingTargets <= 0
 		return
 	let center = source.getPos()
 	let laneId = tdEnemyLaneId(target)
 	let g = CreateGroup()
-	g.enumUnitsInRange(center, tdTowerBaseRange(TD_TOWER_CHOICE_ARCHER, level) + tdArcherSplitArrowBounceRange())
+	g.enumUnitsInRange(center, tdTowerBaseRangeForBranch(TD_TOWER_CHOICE_ARCHER, level, branch) + tdArcherSplitArrowBounceRange())
 	for victim in g
 		if remainingTargets > 0 and victim != target and victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == laneId
 			remainingTargets -= 1
@@ -319,6 +386,7 @@ public function tdSetupDialogTrigger()
 		return
 	tdTowerGameplayEventsReady = true
 	registerSpellEffectEvent(TD_FARMER_WAGE_ABILITY_ID, function tdHandleFarmerWageCast)
+	registerSpellEffectEvent(TD_TOWER_REFINE_ABILITY_ID, function tdHandleTowerRefineCast)
 	tdTowerConstructionStartTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_START)
 	tdTowerConstructionFinishTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_FINISH)
 	tdTowerConstructionCancelTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL)

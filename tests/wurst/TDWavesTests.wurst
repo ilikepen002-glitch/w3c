@@ -107,6 +107,13 @@ function tdWavePressureProxyForTest(int wave) returns real
 	(tdWaveSpawnInterval(16) < tdWaveSpawnInterval(1)).assertTrue()
 	(tdWaveSpawnInterval(10) <= tdWaveSpawnInterval(6)).assertTrue()
 
+@Test function escaperObjectStatsKeepNativeLifeBarsAndAvoidRetaliation()
+	tdEnemyAttacksEnabled().assertEquals(0)
+	tdEnemyAcquisitionRange().assertEquals(0.0)
+	tdEnemyCollisionSize().assertEquals(0.0)
+	tdEnemySelectionScale().assertEquals(1.0)
+	tdEnemyNormalAbilities().assertEquals("")
+
 @Test function laterWavesIncreaseScorePressure()
 	(tdWaveScoreValue(tdWaveCount()) > tdWaveScoreValue(1)).assertTrue()
 	(tdWaveScoreValue(24) > tdWaveScoreValue(16)).assertTrue()

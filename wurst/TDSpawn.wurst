@@ -4,6 +4,7 @@ import TDState
 import initlater TDGame
 import TDWaves
 import ClosureTimers
+import Orders
 
 rect tdWorldRect = GetWorldBounds()
 int tdLaneEnemyCheckPlayer = -1
@@ -41,27 +42,55 @@ function tdSetEnemyWaypointIndex(unit enemy, int index)
 public function tdEnemyUsesCreepGuard() returns boolean
 	return false
 
-function tdEnemyNeedsLaneOrderRefresh(int currentOrder, int moveOrderId) returns boolean
-	return currentOrder != moveOrderId
+function tdEnemyRuntimePathingEnabled() returns boolean
+	return false
 
-public function tdEnemyNeedsLaneOrderRefreshForTest(int currentOrder, int moveOrderId) returns boolean
-	return tdEnemyNeedsLaneOrderRefresh(currentOrder, moveOrderId)
+public function tdEnemyRuntimePathingEnabledForTest() returns boolean
+	return tdEnemyRuntimePathingEnabled()
+
+function tdEnemyLaneOrderId() returns int
+	return Orders.move
+
+public function tdEnemyLaneOrderIdForTest() returns int
+	return tdEnemyLaneOrderId()
+
+public function tdEnemyLaneOrderNameForTest() returns string
+	return "move"
+
+function tdEnemyNeedsLaneOrderRefresh(int currentOrder, int laneOrderId) returns boolean
+	return currentOrder != laneOrderId
+
+public function tdEnemyNeedsLaneOrderRefreshForTest(int currentOrder, int laneOrderId) returns boolean
+	return tdEnemyNeedsLaneOrderRefresh(currentOrder, laneOrderId)
+
+function tdEnemyShouldIssueLaneOrder(int currentOrder, int laneOrderId, boolean waypointAdvanced) returns boolean
+	return waypointAdvanced or tdEnemyNeedsLaneOrderRefresh(currentOrder, laneOrderId)
+
+public function tdEnemyShouldIssueLaneOrderForTest(int currentOrder, int laneOrderId, boolean waypointAdvanced) returns boolean
+	return tdEnemyShouldIssueLaneOrder(currentOrder, laneOrderId, waypointAdvanced)
 
 // 单通道路线上直接把敌人下令走向终点。
-public function tdOrderEnemyAlongLane(unit enemy)
+function tdOrderEnemyAlongLane(unit enemy, boolean waypointAdvanced)
 	let playerId = tdEnemyLaneId(enemy)
 	if not tdIsLaneActive(playerId)
 		return
+	let laneOrderId = tdEnemyLaneOrderId()
+	if not tdEnemyShouldIssueLaneOrder(enemy.getCurrentOrder(), laneOrderId, waypointAdvanced)
+		return
 	let waypointIndex = tdEnemyWaypointIndex(enemy)
 	if waypointIndex < tdLaneWaypointCount(playerId)
-		enemy.issuePointOrderById(OrderId("move"), tdLaneWaypointPosition(playerId, waypointIndex))
+		enemy.issuePointOrderById(laneOrderId, tdLaneWaypointPosition(playerId, waypointIndex))
 	else
-		enemy.issuePointOrderById(OrderId("move"), tdLaneExitPosition(playerId))
+		enemy.issuePointOrderById(laneOrderId, tdLaneExitPosition(playerId))
+
+public function tdOrderEnemyAlongLane(unit enemy)
+	tdOrderEnemyAlongLane(enemy, false)
 
 // 为指定路线生成一个敌人，并立刻把路线元数据绑定到它身上。
 public function tdCreateEnemy(int playerId, int wave, int unitId) returns unit
 	let enemy = createUnit(Player(TD_ENEMY_PLAYER_ID), unitId, tdLaneSpawnPosition(playerId), 0 .fromDeg())
 	SetUnitCreepGuard(enemy, tdEnemyUsesCreepGuard())
+	enemy.setPathing(tdEnemyRuntimePathingEnabled())
 	tdSetEnemyData(enemy, playerId, wave, 0)
 	tdOrderEnemyAlongLane(enemy)
 	return enemy
@@ -75,11 +104,13 @@ function tdAdvanceEnemyWaypoint(unit enemy)
 		return
 	let playerId = tdEnemyLaneId(enemy)
 	let waypointIndex = tdEnemyWaypointIndex(enemy)
+	var waypointAdvanced = false
 	if waypointIndex < tdLaneWaypointCount(playerId)
 		let waypointRect = tdLaneWaypointRect(playerId, waypointIndex)
 		if tdEnemyReachedWaypointRect(enemy, waypointRect)
 			tdSetEnemyWaypointIndex(enemy, waypointIndex + 1)
-	tdOrderEnemyAlongLane(enemy)
+			waypointAdvanced = true
+	tdOrderEnemyAlongLane(enemy, waypointAdvanced)
 
 function tdEnemyUsesNativeLifeBar() returns boolean
 	return true

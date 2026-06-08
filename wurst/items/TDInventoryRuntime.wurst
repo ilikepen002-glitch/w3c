@@ -41,7 +41,7 @@ function tdCraftVisibleInventorySlot(int visibleSlot) returns int
 		return 0
 	if visibleSlot == 1
 		return 1
-	return 3
+	return 2
 
 function tdInventorySlotItemId(int slot0, int slot1, int slot2, int slot3, int slot4, int slot5, int slot) returns int
 	if slot == 0

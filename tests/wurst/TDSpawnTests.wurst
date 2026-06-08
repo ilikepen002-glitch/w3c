@@ -1,15 +1,21 @@
 package TDSpawnTests
 import TDSpawn
 import TDWaves
+import Orders
 
 @Test function spawnedEnemiesDoNotUseCreepGuard()
-	tdEnemyUsesCreepGuard().assertFalse()
-	tdEnemySleepsAtNight().assertFalse()
+	tdEnemyUsesCreepGuard().assertEquals(false)
+	tdEnemyRuntimePathingEnabledForTest().assertEquals(false)
+	tdEnemySleepsAtNight().assertEquals(false)
 	tdEnemyNativeGoldBountyBase().assertEquals(0)
 	tdEnemyNativeGoldBountyDice().assertEquals(0)
 	tdEnemyNativeGoldBountySides().assertEquals(0)
-	tdEnemyNeedsLaneOrderRefreshForTest(7, 7).assertFalse()
-	tdEnemyNeedsLaneOrderRefreshForTest(0, 7).assertTrue()
+	tdEnemyLaneOrderNameForTest().assertEquals("move")
+	tdEnemyLaneOrderIdForTest().assertEquals(Orders.move)
+	tdEnemyNeedsLaneOrderRefreshForTest(Orders.move, Orders.move).assertEquals(false)
+	tdEnemyNeedsLaneOrderRefreshForTest(Orders.patrol, Orders.move).assertTrue()
+	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, false).assertEquals(false)
+	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, true).assertTrue()
 
 @Test function enemiesUseNativeLifeBarsInsteadOfCustomTextTags()
 	tdEnemyUsesNativeLifeBarForTest().assertTrue()

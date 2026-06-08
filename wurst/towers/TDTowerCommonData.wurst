@@ -2,6 +2,7 @@ package TDTowerCommonData
 import TDConfig
 import Icons
 import TDTowerCatalogData
+import ObjEditingCommons
 
 public function tdFarmerBuildAbilityId() returns int
 	return TD_FARMER_BUILD_ABILITY_ID
@@ -31,10 +32,19 @@ public function tdTowerPathingMap() returns string
 	return "PathTextures\\2x2Default.tga"
 
 public function tdTowerPlacementRequires() returns string
-	return "buildable"
+	return ""
 
 public function tdTowerPlacementPreventedBy() returns string
-	return "unbuildable"
+	return "unbuildable,unwalkable,unflyable,blighted,water"
+
+public function tdTowerRaceForObjectGen() returns Race
+	return Race.Human
+
+public function tdTowerRaceObjectStringForTest() returns string
+	return tdTowerRaceForObjectGen().toObjectString()
+
+public function tdTowerGroundTexture() returns string
+	return ""
 
 public function tdTowerAttackRangeMotionBuffer() returns real
 	return 0.0
@@ -81,23 +91,38 @@ public function tdRollFarmerWageGold(int wave) returns int
 public function tdPerfectUpgradeChance() returns real
 	return 0.10
 
+public function tdPerfectUpgradeSourceLevel() returns int
+	return 5
+
+public function tdPerfectUpgradeTargetLevel() returns int
+	return 6
+
+public function tdShouldRollPerfectUpgrade(int oldLevel, int newLevel) returns boolean
+	return oldLevel == tdPerfectUpgradeSourceLevel() and newLevel == tdPerfectUpgradeTargetLevel()
+
+public function tdRefinePerfectUpgradeGoldCost() returns int
+	return 150
+
+public function tdTowerFoodCostForObjectGen() returns int
+	return 1
+
+public function tdFarmerFoodCostForObjectGen() returns int
+	return 0
+
 public function tdPerfectUpgradeScaleMultiplier() returns real
 	return 1.18
 
 public function tdPerfectUpgradeSkillMultiplier() returns real
 	return 1.20
 
-public function tdPerfectUpgradeWingEffectPath() returns string
-	return "Doodads\\Cinematic\\IllidanVictoryCinematic\\IllidanVictoryCinematic.mdx"
+public function tdPerfectUpgradeAvatarEffectPath() returns string
+	return "Abilities\\Spells\\Human\\Avatar\\AvatarCaster.mdx"
 
-public function tdPerfectUpgradeWingAttachmentPoint() returns string
-	return "chest"
-
-public function tdPerfectUpgradeGlowEffectPath() returns string
-	return "Abilities\\Spells\\NightElf\\SpiritOfVengeance\\SpiritOfVengeanceOrbs6.mdx"
-
-public function tdPerfectUpgradeGlowAttachmentPoint() returns string
+public function tdPerfectUpgradeAvatarAttachmentPoint() returns string
 	return "origin"
+
+public function tdPerfectUpgradeAvatarRefreshInterval() returns real
+	return 0.50
 
 public function tdGhoulCorpseExplosionLifeThreshold() returns real
 	return 0.25

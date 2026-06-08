@@ -26,5 +26,5 @@ import TDItems
 	tdCraftResultQuality(TD_ITEM_QUALITY_PURPLE).assertEquals(TD_ITEM_QUALITY_PURPLE)
 
 @Test function craftingReadsVisibleFrontThreeInventorySlots()
-	tdCraftModeForInventorySlots(TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, 0, TD_ITEM_SHORT_BOW_ID, 0, 0).assertEquals(TD_CRAFT_MODE_THREE)
+	tdCraftModeForInventorySlots(TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, 0, 0, 0).assertEquals(TD_CRAFT_MODE_THREE)
 	tdCraftModeForInventorySlots(TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, 0, TD_ITEM_STEEL_LONGBOW_ID, 0, 0).assertEquals(TD_CRAFT_MODE_TWO)

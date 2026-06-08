@@ -30,6 +30,20 @@ function tdBroadcast(string message)
 		if tdIsLaneActive(playerId)
 			DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, message)
 
+function tdSyncNativeFoodCapForActivePlayers()
+	if compiletime
+		return
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(playerId)
+			SetPlayerState(Player(playerId), PLAYER_STATE_RESOURCE_FOOD_CAP, tdGetTowerPopulationLimit())
+
+function tdTryUnlockPopulationAfterWave(int wave)
+	if not tdAllContinuingLanesResolved(wave)
+		return
+	if tdUnlockPopulationForCompletedWave(wave)
+		tdSyncNativeFoodCapForActivePlayers()
+		tdBroadcast("阶段人口上限提升至 " + tdGetTowerPopulationLimit().toString() + "。")
+
 // 在每一路终点附近做一个小矩形区域，用区域检测来判断漏怪，
 // 比直接比对精确坐标更稳。
 public function tdSetupLaneRects()
@@ -44,6 +58,7 @@ public function tdRefreshHud()
 		if tdIsLaneActive(lanePlayer)
 			message += " 命:" + tdGetLives(lanePlayer).toString()
 			message += " 金:" + tdGetGold(lanePlayer).toString()
+			message += " 人口:" + GetPlayerState(Player(lanePlayer), PLAYER_STATE_RESOURCE_FOOD_USED).toString() + "/" + tdGetTowerPopulationLimit().toString()
 			message += " 分:" + tdGetLaneScore(lanePlayer).toString()
 			message += " " + tdLaneStatusText(lanePlayer)
 		else
@@ -215,6 +230,7 @@ public function tdHandleWaveFinished(int playerId, int wave)
 	tdMarkWaveResolved(playerId, wave)
 	// 只有这一波的怪已经全部清空，才发放通关奖励。
 	tdGainGold(playerId, tdWaveReward(wave))
+	tdTryUnlockPopulationAfterWave(wave)
 	if tdGetResolvedWave(playerId) >= tdWaveCount()
 		tdSetLaneFinished(playerId, true)
 		tdRefreshHud()

@@ -6,34 +6,44 @@ public constant int TD_FARMER_BUILD_ABILITY_ID = 'AHbu'
 public constant int TD_FARMER_REPAIR_ABILITY_ID = 'Ahrp'
 public constant int TD_FARMER_BLINK_ABILITY_ID = 'A108'
 public constant int TD_FARMER_WAGE_ABILITY_ID = 'A109'
-public constant int TD_PERFECT_UPGRADE_WING_EFFECT_KEY = 1
-public constant int TD_PERFECT_UPGRADE_GLOW_EFFECT_KEY = 2
+public constant int TD_TOWER_BRANCH_A = 1
+public constant int TD_TOWER_BRANCH_B = 2
 
 public constant int TD_ARCHER_LEVEL_1_ID = 'uA11'
 public constant int TD_ARCHER_LEVEL_2_ID = 'uA12'
 public constant int TD_ARCHER_LEVEL_3_ID = 'uA13'
 public constant int TD_ARCHER_LEVEL_4_ID = 'uA14'
 public constant int TD_ARCHER_LEVEL_5_ID = 'uA15'
+public constant int TD_ARCHER_LEVEL_6_A_ID = 'uA6A'
+public constant int TD_ARCHER_LEVEL_6_B_ID = 'uA6B'
 public constant int TD_ORC_LEVEL_1_ID = 'uO11'
 public constant int TD_ORC_LEVEL_2_ID = 'uO12'
 public constant int TD_ORC_LEVEL_3_ID = 'uO13'
 public constant int TD_ORC_LEVEL_4_ID = 'uO14'
 public constant int TD_ORC_LEVEL_5_ID = 'uO15'
+public constant int TD_ORC_LEVEL_6_A_ID = 'uO6A'
+public constant int TD_ORC_LEVEL_6_B_ID = 'uO6B'
 public constant int TD_FOOT_LEVEL_1_ID = 'uH11'
 public constant int TD_FOOT_LEVEL_2_ID = 'uH12'
 public constant int TD_FOOT_LEVEL_3_ID = 'uH13'
 public constant int TD_FOOT_LEVEL_4_ID = 'uH14'
 public constant int TD_FOOT_LEVEL_5_ID = 'uH15'
+public constant int TD_FOOT_LEVEL_6_A_ID = 'uH6A'
+public constant int TD_FOOT_LEVEL_6_B_ID = 'uH6B'
 public constant int TD_DRYAD_LEVEL_1_ID = 'uD11'
 public constant int TD_DRYAD_LEVEL_2_ID = 'uD12'
 public constant int TD_DRYAD_LEVEL_3_ID = 'uD13'
 public constant int TD_DRYAD_LEVEL_4_ID = 'uD14'
 public constant int TD_DRYAD_LEVEL_5_ID = 'uD15'
+public constant int TD_DRYAD_LEVEL_6_A_ID = 'uD6A'
+public constant int TD_DRYAD_LEVEL_6_B_ID = 'uD6B'
 public constant int TD_GHOUL_LEVEL_1_ID = 'uG11'
 public constant int TD_GHOUL_LEVEL_2_ID = 'uG12'
 public constant int TD_GHOUL_LEVEL_3_ID = 'uG13'
 public constant int TD_GHOUL_LEVEL_4_ID = 'uG14'
 public constant int TD_GHOUL_LEVEL_5_ID = 'uG15'
+public constant int TD_GHOUL_LEVEL_6_A_ID = 'uG6A'
+public constant int TD_GHOUL_LEVEL_6_B_ID = 'uG6B'
 
 public constant int TD_ARCHER_SPLIT_ARROW_ABILITY_ID = 'A100'
 public constant int TD_ARCHER_TRUESHOT_ABILITY_ID = 'A101'
@@ -45,6 +55,7 @@ public constant int TD_DRYAD_POISON_ABILITY_ID = 'A106'
 public constant int TD_GHOUL_FRENZY_ABILITY_ID = 'A107'
 public constant int TD_DRYAD_SLOW_AURA_ABILITY_ID = 'A110'
 public constant int TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID = 'A116'
+public constant int TD_TOWER_REFINE_ABILITY_ID = 'A130'
 
 public constant int TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID = 'A111'
 public constant int TD_ORC_PERFECT_CRIT_ABILITY_ID = 'A112'
@@ -57,10 +68,15 @@ public function tdTowerMaxLevel(int towerChoice) returns int
 		return TD_MAX_TOWER_LEVEL
 	return 0
 
+public function tdTowerUltimateBranchCount(int towerChoice) returns int
+	if towerChoice >= TD_TOWER_CHOICE_ARCHER and towerChoice <= TD_TOWER_CHOICE_GHOUL
+		return 2
+	return 0
+
 public function tdCanUpgradeTowerLevel(int towerChoice, int currentLevel) returns boolean
 	return tdTowerMaxLevel(towerChoice) > 0 and currentLevel > 0 and currentLevel < tdTowerMaxLevel(towerChoice)
 
-public function tdTowerUnitIdForLevel(int towerChoice, int level) returns int
+public function tdTowerUnitIdForLevelBranch(int towerChoice, int level, int branch) returns int
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		if level == 1
 			return TD_ARCHER_LEVEL_1_ID
@@ -70,7 +86,11 @@ public function tdTowerUnitIdForLevel(int towerChoice, int level) returns int
 			return TD_ARCHER_LEVEL_3_ID
 		if level == 4
 			return TD_ARCHER_LEVEL_4_ID
-		return TD_ARCHER_LEVEL_5_ID
+		if level == 5
+			return TD_ARCHER_LEVEL_5_ID
+		if branch == TD_TOWER_BRANCH_B
+			return TD_ARCHER_LEVEL_6_B_ID
+		return TD_ARCHER_LEVEL_6_A_ID
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if level == 1
 			return TD_ORC_LEVEL_1_ID
@@ -80,7 +100,11 @@ public function tdTowerUnitIdForLevel(int towerChoice, int level) returns int
 			return TD_ORC_LEVEL_3_ID
 		if level == 4
 			return TD_ORC_LEVEL_4_ID
-		return TD_ORC_LEVEL_5_ID
+		if level == 5
+			return TD_ORC_LEVEL_5_ID
+		if branch == TD_TOWER_BRANCH_B
+			return TD_ORC_LEVEL_6_B_ID
+		return TD_ORC_LEVEL_6_A_ID
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if level == 1
 			return TD_FOOT_LEVEL_1_ID
@@ -90,7 +114,11 @@ public function tdTowerUnitIdForLevel(int towerChoice, int level) returns int
 			return TD_FOOT_LEVEL_3_ID
 		if level == 4
 			return TD_FOOT_LEVEL_4_ID
-		return TD_FOOT_LEVEL_5_ID
+		if level == 5
+			return TD_FOOT_LEVEL_5_ID
+		if branch == TD_TOWER_BRANCH_B
+			return TD_FOOT_LEVEL_6_B_ID
+		return TD_FOOT_LEVEL_6_A_ID
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if level == 1
 			return TD_DRYAD_LEVEL_1_ID
@@ -100,7 +128,11 @@ public function tdTowerUnitIdForLevel(int towerChoice, int level) returns int
 			return TD_DRYAD_LEVEL_3_ID
 		if level == 4
 			return TD_DRYAD_LEVEL_4_ID
-		return TD_DRYAD_LEVEL_5_ID
+		if level == 5
+			return TD_DRYAD_LEVEL_5_ID
+		if branch == TD_TOWER_BRANCH_B
+			return TD_DRYAD_LEVEL_6_B_ID
+		return TD_DRYAD_LEVEL_6_A_ID
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if level == 1
 			return TD_GHOUL_LEVEL_1_ID
@@ -110,10 +142,28 @@ public function tdTowerUnitIdForLevel(int towerChoice, int level) returns int
 			return TD_GHOUL_LEVEL_3_ID
 		if level == 4
 			return TD_GHOUL_LEVEL_4_ID
-		return TD_GHOUL_LEVEL_5_ID
+		if level == 5
+			return TD_GHOUL_LEVEL_5_ID
+		if branch == TD_TOWER_BRANCH_B
+			return TD_GHOUL_LEVEL_6_B_ID
+		return TD_GHOUL_LEVEL_6_A_ID
 	return 0
 
+public function tdTowerUnitIdForLevel(int towerChoice, int level) returns int
+	return tdTowerUnitIdForLevelBranch(towerChoice, level, TD_TOWER_BRANCH_A)
+
 public function tdTowerObjectParentId(int towerChoice, int level) returns int
+	if level >= TD_MAX_TOWER_LEVEL
+		if towerChoice == TD_TOWER_CHOICE_ARCHER
+			return 'nwe2'
+		if towerChoice == TD_TOWER_CHOICE_ORC
+			return 'otrb'
+		if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+			return 'hctw'
+		if towerChoice == TD_TOWER_CHOICE_DRYAD
+			return 'ntkt'
+		if towerChoice == TD_TOWER_CHOICE_GHOUL
+			return 'uzig'
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		if level == 1
 			return 'hwtw'
@@ -167,15 +217,15 @@ public function tdTowerObjectParentId(int towerChoice, int level) returns int
 	return 'hwtw'
 
 public function tdTowerChoiceForUnitTypeId(int unitTypeId) returns int
-	if unitTypeId == TD_ARCHER_LEVEL_1_ID or unitTypeId == TD_ARCHER_LEVEL_2_ID or unitTypeId == TD_ARCHER_LEVEL_3_ID or unitTypeId == TD_ARCHER_LEVEL_4_ID or unitTypeId == TD_ARCHER_LEVEL_5_ID
+	if unitTypeId == TD_ARCHER_LEVEL_1_ID or unitTypeId == TD_ARCHER_LEVEL_2_ID or unitTypeId == TD_ARCHER_LEVEL_3_ID or unitTypeId == TD_ARCHER_LEVEL_4_ID or unitTypeId == TD_ARCHER_LEVEL_5_ID or unitTypeId == TD_ARCHER_LEVEL_6_A_ID or unitTypeId == TD_ARCHER_LEVEL_6_B_ID
 		return TD_TOWER_CHOICE_ARCHER
-	if unitTypeId == TD_ORC_LEVEL_1_ID or unitTypeId == TD_ORC_LEVEL_2_ID or unitTypeId == TD_ORC_LEVEL_3_ID or unitTypeId == TD_ORC_LEVEL_4_ID or unitTypeId == TD_ORC_LEVEL_5_ID
+	if unitTypeId == TD_ORC_LEVEL_1_ID or unitTypeId == TD_ORC_LEVEL_2_ID or unitTypeId == TD_ORC_LEVEL_3_ID or unitTypeId == TD_ORC_LEVEL_4_ID or unitTypeId == TD_ORC_LEVEL_5_ID or unitTypeId == TD_ORC_LEVEL_6_A_ID or unitTypeId == TD_ORC_LEVEL_6_B_ID
 		return TD_TOWER_CHOICE_ORC
-	if unitTypeId == TD_FOOT_LEVEL_1_ID or unitTypeId == TD_FOOT_LEVEL_2_ID or unitTypeId == TD_FOOT_LEVEL_3_ID or unitTypeId == TD_FOOT_LEVEL_4_ID or unitTypeId == TD_FOOT_LEVEL_5_ID
+	if unitTypeId == TD_FOOT_LEVEL_1_ID or unitTypeId == TD_FOOT_LEVEL_2_ID or unitTypeId == TD_FOOT_LEVEL_3_ID or unitTypeId == TD_FOOT_LEVEL_4_ID or unitTypeId == TD_FOOT_LEVEL_5_ID or unitTypeId == TD_FOOT_LEVEL_6_A_ID or unitTypeId == TD_FOOT_LEVEL_6_B_ID
 		return TD_TOWER_CHOICE_FOOTMAN
-	if unitTypeId == TD_DRYAD_LEVEL_1_ID or unitTypeId == TD_DRYAD_LEVEL_2_ID or unitTypeId == TD_DRYAD_LEVEL_3_ID or unitTypeId == TD_DRYAD_LEVEL_4_ID or unitTypeId == TD_DRYAD_LEVEL_5_ID
+	if unitTypeId == TD_DRYAD_LEVEL_1_ID or unitTypeId == TD_DRYAD_LEVEL_2_ID or unitTypeId == TD_DRYAD_LEVEL_3_ID or unitTypeId == TD_DRYAD_LEVEL_4_ID or unitTypeId == TD_DRYAD_LEVEL_5_ID or unitTypeId == TD_DRYAD_LEVEL_6_A_ID or unitTypeId == TD_DRYAD_LEVEL_6_B_ID
 		return TD_TOWER_CHOICE_DRYAD
-	if unitTypeId == TD_GHOUL_LEVEL_1_ID or unitTypeId == TD_GHOUL_LEVEL_2_ID or unitTypeId == TD_GHOUL_LEVEL_3_ID or unitTypeId == TD_GHOUL_LEVEL_4_ID or unitTypeId == TD_GHOUL_LEVEL_5_ID
+	if unitTypeId == TD_GHOUL_LEVEL_1_ID or unitTypeId == TD_GHOUL_LEVEL_2_ID or unitTypeId == TD_GHOUL_LEVEL_3_ID or unitTypeId == TD_GHOUL_LEVEL_4_ID or unitTypeId == TD_GHOUL_LEVEL_5_ID or unitTypeId == TD_GHOUL_LEVEL_6_A_ID or unitTypeId == TD_GHOUL_LEVEL_6_B_ID
 		return TD_TOWER_CHOICE_GHOUL
 	return 0
 
@@ -190,6 +240,15 @@ public function tdTowerLevelForUnitTypeId(int unitTypeId) returns int
 		return 4
 	if unitTypeId == TD_ARCHER_LEVEL_5_ID or unitTypeId == TD_ORC_LEVEL_5_ID or unitTypeId == TD_FOOT_LEVEL_5_ID or unitTypeId == TD_DRYAD_LEVEL_5_ID or unitTypeId == TD_GHOUL_LEVEL_5_ID
 		return 5
+	if unitTypeId == TD_ARCHER_LEVEL_6_A_ID or unitTypeId == TD_ARCHER_LEVEL_6_B_ID or unitTypeId == TD_ORC_LEVEL_6_A_ID or unitTypeId == TD_ORC_LEVEL_6_B_ID or unitTypeId == TD_FOOT_LEVEL_6_A_ID or unitTypeId == TD_FOOT_LEVEL_6_B_ID or unitTypeId == TD_DRYAD_LEVEL_6_A_ID or unitTypeId == TD_DRYAD_LEVEL_6_B_ID or unitTypeId == TD_GHOUL_LEVEL_6_A_ID or unitTypeId == TD_GHOUL_LEVEL_6_B_ID
+		return 6
+	return 0
+
+public function tdTowerBranchForUnitTypeId(int unitTypeId) returns int
+	if unitTypeId == TD_ARCHER_LEVEL_6_A_ID or unitTypeId == TD_ORC_LEVEL_6_A_ID or unitTypeId == TD_FOOT_LEVEL_6_A_ID or unitTypeId == TD_DRYAD_LEVEL_6_A_ID or unitTypeId == TD_GHOUL_LEVEL_6_A_ID
+		return TD_TOWER_BRANCH_A
+	if unitTypeId == TD_ARCHER_LEVEL_6_B_ID or unitTypeId == TD_ORC_LEVEL_6_B_ID or unitTypeId == TD_FOOT_LEVEL_6_B_ID or unitTypeId == TD_DRYAD_LEVEL_6_B_ID or unitTypeId == TD_GHOUL_LEVEL_6_B_ID
+		return TD_TOWER_BRANCH_B
 	return 0
 
 public function tdTowerBaseSkillAbilityId(int towerChoice) returns int
@@ -218,28 +277,53 @@ public function tdTowerPerfectSkillAbilityId(int towerChoice) returns int
 		return TD_GHOUL_PERFECT_FRENZY_ABILITY_ID
 	return 0
 
-public function tdTowerNormalAbilitiesRawcodes(int towerChoice, int level) returns string
+public function tdTowerNormalAbilitiesRawcodesForBranch(int towerChoice, int level, int branch) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		if level == TD_MAX_TOWER_LEVEL
+		if level >= 5
+			if level >= TD_MAX_TOWER_LEVEL
+				if branch == TD_TOWER_BRANCH_B
+					return commaList(TD_ARCHER_TRUESHOT_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
+				return commaList(TD_ARCHER_SPLIT_ARROW_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
 			return commaList(TD_ARCHER_SPLIT_ARROW_ABILITY_ID, TD_ARCHER_TRUESHOT_ABILITY_ID)
 		return TD_ARCHER_SPLIT_ARROW_ABILITY_ID.toRawCode()
 	if towerChoice == TD_TOWER_CHOICE_ORC
-		if level == TD_MAX_TOWER_LEVEL
+		if level >= 5
+			if level >= TD_MAX_TOWER_LEVEL
+				if branch == TD_TOWER_BRANCH_B
+					return commaList(TD_ORC_CLEAVE_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
+				return commaList(TD_ORC_CRIT_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
 			return commaList(TD_ORC_CRIT_ABILITY_ID, TD_ORC_CLEAVE_ABILITY_ID)
 		return TD_ORC_CRIT_ABILITY_ID.toRawCode()
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
-		if level == TD_MAX_TOWER_LEVEL
+		if level >= 5
+			if level >= TD_MAX_TOWER_LEVEL
+				if branch == TD_TOWER_BRANCH_B
+					return commaList(TD_FOOT_COMMAND_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
+				return commaList(TD_FOOT_BASH_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
 			return commaList(TD_FOOT_BASH_ABILITY_ID, TD_FOOT_COMMAND_ABILITY_ID)
 		return TD_FOOT_BASH_ABILITY_ID.toRawCode()
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
-		if level == TD_MAX_TOWER_LEVEL
+		if level >= 5
+			if level >= TD_MAX_TOWER_LEVEL
+				if branch == TD_TOWER_BRANCH_B
+					return commaList(TD_DRYAD_SLOW_AURA_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
+				return commaList(TD_DRYAD_POISON_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
 			return commaList(TD_DRYAD_POISON_ABILITY_ID, TD_DRYAD_SLOW_AURA_ABILITY_ID)
 		return TD_DRYAD_POISON_ABILITY_ID.toRawCode()
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		if level >= TD_MAX_TOWER_LEVEL
+			if branch == TD_TOWER_BRANCH_B
+				return commaList(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
+			return commaList(TD_GHOUL_FRENZY_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
 		return commaList(TD_GHOUL_FRENZY_ABILITY_ID, TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID)
 	return ""
 
+public function tdTowerNormalAbilitiesRawcodes(int towerChoice, int level) returns string
+	return tdTowerNormalAbilitiesRawcodesForBranch(towerChoice, level, TD_TOWER_BRANCH_A)
+
 public function tdTowerUpgradeRawcode(int towerChoice, int level) returns string
+	if level == 5 and tdTowerUltimateBranchCount(towerChoice) == 2
+		return commaList(tdTowerUnitIdForLevelBranch(towerChoice, 6, TD_TOWER_BRANCH_A), tdTowerUnitIdForLevelBranch(towerChoice, 6, TD_TOWER_BRANCH_B))
 	if tdCanUpgradeTowerLevel(towerChoice, level)
 		return tdTowerUnitIdForLevel(towerChoice, level + 1).toRawCode()
 	return ""

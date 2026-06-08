@@ -28,6 +28,12 @@ public function tdCameraWheelLiftStepCount() returns int
 public function tdCameraWheelLiftDistancePerStep() returns real
 	return 400.0
 
+public function tdStartingCameraReapplyDelay() returns real
+	return 0.10
+
+public function tdCameraDistanceClampInterval() returns real
+	return 0.15
+
 public function tdCameraTargetDistanceForWheelLift(int extraSteps) returns real
 	var clampedSteps = extraSteps
 	if clampedSteps < 0
@@ -35,6 +41,19 @@ public function tdCameraTargetDistanceForWheelLift(int extraSteps) returns real
 	if clampedSteps > tdCameraWheelLiftStepCount()
 		clampedSteps = tdCameraWheelLiftStepCount()
 	return tdDefaultCameraTargetDistance() + clampedSteps * tdCameraWheelLiftDistancePerStep()
+
+public function tdCameraTargetDistanceMin() returns real
+	return tdCameraTargetDistanceForWheelLift(0)
+
+public function tdCameraTargetDistanceMax() returns real
+	return tdCameraTargetDistanceForWheelLift(tdCameraWheelLiftStepCount())
+
+public function tdClampCameraTargetDistance(real distance) returns real
+	if distance < tdCameraTargetDistanceMin()
+		return tdCameraTargetDistanceMin()
+	if distance > tdCameraTargetDistanceMax()
+		return tdCameraTargetDistanceMax()
+	return distance
 
 public function tdStartupGuideMessage() returns string
 	return "静态地图模式：地形和路线由 World Editor 预先摆好。开局有 100 金币，请在准备好的草地塔位上建塔，阻止敌人进入中央传送门。鼠标滚轮可拉高/拉低镜头，TD工人可用 " + tdFarmerBlinkHotkey() + " 闪烁快速换位。首发装备池共 " + tdItemDefinitionCount().toString() + " 件。"
@@ -86,8 +105,23 @@ function tdApplyStartingCamera()
 			Player(playerId).setCameraField(CAMERA_FIELD_ANGLE_OF_ATTACK, tdDefaultCameraAngleOfAttack(), 0.0)
 
 function tdLiftStartingCameraAgain()
-	doAfter(0.15) ->
+	doAfter(tdStartingCameraReapplyDelay()) ->
 		tdApplyStartingCamera()
+
+function tdClampLocalCameraDistance()
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(playerId) and localPlayer == Player(playerId)
+			let currentDistance = GetCameraField(CAMERA_FIELD_TARGET_DISTANCE)
+			let clampedDistance = tdClampCameraTargetDistance(currentDistance)
+			if clampedDistance != currentDistance
+				SetCameraField(CAMERA_FIELD_TARGET_DISTANCE, clampedDistance, 0.20)
+
+function tdStartCameraDistanceClamp()
+	doPeriodically(tdCameraDistanceClampInterval()) cb ->
+		if tdIsGameOver()
+			destroy cb
+		else
+			tdClampLocalCameraDistance()
 
 function tdHandleChatCommand()
 	let triggeringPlayer = GetTriggerPlayer()
@@ -136,6 +170,7 @@ public function tdStartGame()
 	tdDetectActiveLanes()
 	tdApplyStartingCamera()
 	tdLiftStartingCameraAgain()
+	tdStartCameraDistanceClamp()
 	let setupDelay = tdMapBootstrapDelay()
 	doAfter(setupDelay) ->
 		tdRunGameplayStartup()

@@ -4,19 +4,19 @@ import TDTowerData
 import TDItemData
 import ChannelAbilityPreset
 
-function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level, string abilities) returns BuildingDefinition
+function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level, int branch, string abilities) returns BuildingDefinition
 	this
-	..setName(tdTowerDisplayName(towerChoice, level))
-	..setTooltipBasic(tdTowerDisplayName(towerChoice, level))
-	..setTooltipExtended(tdTowerTooltipExtended(towerChoice, level))
-	..setDescription(tdTowerLore(towerChoice, level))
-	..setHitPointsMaximumBase(tdTowerBaseHitPoints(towerChoice, level))
-	..setDefenseBase(tdTowerBaseArmor(towerChoice, level))
-	..setAttack1DamageBase(tdTowerBaseDamage(towerChoice, level))
+	..setName(tdTowerDisplayNameForBranch(towerChoice, level, branch))
+	..setTooltipBasic(tdTowerDisplayNameForBranch(towerChoice, level, branch))
+	..setTooltipExtended(tdTowerTooltipExtendedForBranch(towerChoice, level, branch))
+	..setDescription(tdTowerLoreForBranch(towerChoice, level, branch))
+	..setHitPointsMaximumBase(tdTowerBaseHitPointsForBranch(towerChoice, level, branch))
+	..setDefenseBase(tdTowerBaseArmorForBranch(towerChoice, level, branch))
+	..setAttack1DamageBase(tdTowerBaseDamageForBranch(towerChoice, level, branch))
 	..setAttack1DamageNumberofDice(1)
 	..setAttack1DamageSidesperDie(6 + level)
-	..setAttack1CooldownTime(tdTowerBaseCooldown(towerChoice, level))
-	..setAttack1Range(tdTowerBaseRange(towerChoice, level))
+	..setAttack1CooldownTime(tdTowerBaseCooldownForBranch(towerChoice, level, branch))
+	..setAttack1Range(tdTowerBaseRangeForBranch(towerChoice, level, branch))
 	..setAttack1RangeMotionBuffer(tdTowerAttackRangeMotionBuffer())
 	..setAttacksEnabled(1)
 	..setAttack1AttackType(tdTowerAttackType(towerChoice))
@@ -32,11 +32,11 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setCanFlee(false)
 	..setCollisionSize(tdTowerCollisionSize())
 	..setPathingMap(tdTowerPathingMap())
-	..setAcquisitionRange(tdTowerAcquisitionRange(towerChoice, level))
+	..setAcquisitionRange(tdTowerAcquisitionRangeForBranch(towerChoice, level, branch))
 	..setAttack1TargetsAllowed("enemy,ground,air,organic")
-	..setGoldCost(tdTowerGoldCostForLevel(towerChoice, level))
+	..setGoldCost(tdTowerGoldCostForLevelBranch(towerChoice, level, branch))
 	..setLumberCost(0)
-	..setFoodCost(0)
+	..setFoodCost(tdTowerFoodCostForObjectGen())
 	..setFoodProduced(0)
 	..setBuildTime(2 + level)
 	..setRepairGoldCost(0)
@@ -45,11 +45,13 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setRequirementsLevels(tdTowerRequirementsLevelsRawcodes(towerChoice, level))
 	..setDependencyEquivalents(tdTowerDependencyEquivalentsRawcodes(towerChoice, level))
 	..setUpgradesUsed(tdTowerUpgradesUsedRawcodes(towerChoice, level))
+	..setRace(tdTowerRaceForObjectGen())
 	..setPlacementRequires(tdTowerPlacementRequires())
 	..setPlacementPreventedBy(tdTowerPlacementPreventedBy())
 	..setUnitsTrained("")
 	..setResearchesAvailable("")
 	..setItemsMade("")
+	..setGroundTexture(tdTowerGroundTexture())
 	..setNormalAbilities(abilities + "," + TD_TOWER_INVENTORY_ABILITY_ID.toRawCode())
 	..setIconGameInterface(tdTowerIconPath(towerChoice))
 	..setIconScoreScreen(tdTowerIconPath(towerChoice))
@@ -57,8 +59,8 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setSelectionScale(tdTowerSelectionScale(towerChoice, level))
 	..setSelectionCircleOnWater(true)
 	..setScalingValue(0.95 + level * 0.03)
-	..setButtonPositionX(tdTowerButtonX(towerChoice))
-	..setButtonPositionY(tdTowerButtonY(towerChoice))
+	..setButtonPositionX(tdTowerLevelButtonX(towerChoice, level, branch))
+	..setButtonPositionY(tdTowerLevelButtonY(towerChoice, level, branch))
 	..setHotkey(tdTowerHotkey(towerChoice))
 	return this
 
@@ -333,6 +335,18 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..makeUnitSpell(0, tdFarmerWageCooldown())
 	..setCheckDependencies(false)
 
+	let refineAbility = new ChannelAbilityPreset(TD_TOWER_REFINE_ABILITY_ID, 1, true)
+	refineAbility
+	..setName("确定性精炼")
+	..setTooltipNormal(1, "确定性精炼")
+	..setTooltipNormalExtended(1, "消耗 " + tdRefinePerfectUpgradeGoldCost().toString() + " 金币，将普通 6 级塔精炼为完美 6 级。")
+	..presetIcon("BTNMarksmanship")
+	..presetHotkey("R")
+	..presetButtonPosNormal(tdTowerRefineButtonX(), tdTowerRefineButtonY())
+	..presetTargetTypes(Targettype.NONE)
+	..makeUnitSpell(0, 0.0)
+	..setCheckDependencies(false)
+
 // 在编译期生成农民单位对应的物编数据，
 // 这样地图就不依赖于编辑器里手工做好的自定义单位。
 @compiletime function tdGenerateBuilderObjects()
@@ -345,6 +359,8 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setStructuresBuilt(tdFarmerBuildMenuRawcodes())
 	..setGoldCost(0)
 	..setLumberCost(0)
+	..setFoodCost(tdFarmerFoodCostForObjectGen())
+	..setFoodProduced(0)
 	..setAttacksEnabled(0)
 	..setAcquisitionRange(0)
 	..setCanFlee(false)
@@ -356,16 +372,18 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setSpeedMaximum(tdFarmerBaseMoveSpeed())
 	..setHotkey("B")
 
-function tdGenerateTowerLevelObject(int towerChoice, int level)
-	let definition = new BuildingDefinition(tdTowerUnitIdForLevel(towerChoice, level), tdTowerObjectParentId(towerChoice, level))
+function tdGenerateTowerLevelObject(int towerChoice, int level, int branch)
+	let definition = new BuildingDefinition(tdTowerUnitIdForLevelBranch(towerChoice, level, branch), tdTowerObjectParentId(towerChoice, level))
 	definition
-	..tdApplyTowerBuildingStats(towerChoice, level, tdTowerNormalAbilitiesRawcodes(towerChoice, level))
+	..tdApplyTowerBuildingStats(towerChoice, level, branch, tdTowerNormalAbilitiesRawcodesForBranch(towerChoice, level, branch))
 	if tdCanUpgradeTowerLevel(towerChoice, level)
 		definition.setUpgradesTo(tdTowerUpgradeRawcode(towerChoice, level))
 
 function tdGenerateTowerFamilyObjects(int towerChoice)
-	for level = 1 to tdTowerMaxLevel(towerChoice)
-		tdGenerateTowerLevelObject(towerChoice, level)
+	for level = 1 to 5
+		tdGenerateTowerLevelObject(towerChoice, level, TD_TOWER_BRANCH_A)
+	tdGenerateTowerLevelObject(towerChoice, 6, TD_TOWER_BRANCH_A)
+	tdGenerateTowerLevelObject(towerChoice, 6, TD_TOWER_BRANCH_B)
 
 // 在编译期根据代码里的数值批量生成所有塔的等级和升级链。
 @compiletime function tdGenerateTowerObjects()
