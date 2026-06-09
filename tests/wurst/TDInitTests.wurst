@@ -10,9 +10,9 @@ import TDConfig
 	tdShouldRevealWholeMap().assertTrue()
 
 @Test function startupGuideTextUsesChinese()
-	tdStartupGuideMessage().contains("100 金币").assertTrue()
+	tdStartupGuideMessage().contains("建塔").assertTrue()
 	tdStartupGuideMessage().contains("草地").assertTrue()
-	tdStartupGuideMessage().contains("传送门").assertTrue()
+	tdStartupGuideMessage().contains("白色坑道").assertTrue()
 	tdStartupGuideMessage().contains("滚轮").assertTrue()
 	tdStartupGuideMessage().contains("Static map mode").assertFalse()
 

@@ -32,6 +32,7 @@ public constant int TD_PLAYER_ID = 0
 public constant int TD_ENEMY_PLAYER_ID = PLAYER_NEUTRAL_AGGRESSIVE
 public constant int TD_BUILD_PLOT_UNIT_ID = 'uP01'
 public constant int TD_FARMER_UNIT_ID = 'uF01'
+public constant int TD_LANE_TERRAIN_TYPE_ID = 'Lrok'
 
 public constant int TD_PAD_COUNT = TD_ACTIVE_PLAYER_COUNT * TD_BUILD_PLOTS_PER_LANE
 constant int TD_WAYPOINTS_PER_LANE = 3
@@ -42,6 +43,9 @@ public function tdBuildPlotMinimumSpacing() returns real
 
 public function tdBuildPlotClaimRadius() returns real
 	return 64.0
+
+public function tdLaneBuildZoneRadius() returns real
+	return 224.0
 
 function tdBuildPlotFlatnessSampleOffset() returns real
 	return 96.0
@@ -234,12 +238,18 @@ public function tdPadPosition(int index) returns vec2
 public function tdBuildPlotCenter(int playerId, int plotIndex) returns vec2
 	return tdBuildPlotPosition(playerId, plotIndex).toTileCenter()
 
+public function tdTerrainTypeIsLane(int terrainType) returns boolean
+	return terrainType == TD_LANE_TERRAIN_TYPE_ID
+
+public function tdIsLaneTerrain(vec2 position) returns boolean
+	return tdTerrainTypeIsLane(position.toTileCenter().getTerrainType())
+
 function tdBuildPlotHeightDelta(vec2 center, vec2 sample) returns real
 	return (center.getTerrainZ() - sample.getTerrainZ()).abs()
 
 public function tdBuildPlotHasValidTerrain(vec2 position) returns boolean
 	let center = position.toTileCenter()
-	return center.isTerrainLand() and center.isTerrainWalkable()
+	return center.isTerrainLand() and center.isTerrainWalkable() and not tdIsLaneTerrain(center)
 
 public function tdBuildPlotIsFlat(vec2 position) returns boolean
 	let center = position.toTileCenter()
@@ -268,3 +278,12 @@ public function tdFindBuildPlotIndex(int playerId, vec2 position) returns int
 			nearestIndex = plotIndex
 			nearestDistance = distance
 	return nearestIndex
+
+public function tdIsInLaneBuildZone(int playerId, vec2 position) returns boolean
+	if not tdIsLanePlayer(playerId)
+		return false
+	let center = position.toTileCenter()
+	for plotIndex = 0 to TD_BUILD_PLOTS_PER_LANE - 1
+		if tdBuildPlotCenter(playerId, plotIndex).distanceTo(center) <= tdLaneBuildZoneRadius()
+			return true
+	return false

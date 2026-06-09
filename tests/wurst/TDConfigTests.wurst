@@ -50,6 +50,17 @@ import TerrainUtils
 @Test function offLanePositionsDoNotResolveToAnyBuildPlot()
 	tdFindBuildPlotIndex(0, tdLaneExitPosition(0)).assertEquals(-1)
 
+@Test function whiteLaneTerrainIsRejectedAsBuildableGround()
+	tdTerrainTypeIsLane(TD_LANE_TERRAIN_TYPE_ID).assertTrue()
+	tdTerrainTypeIsLane('Ldrg').assertFalse()
+
+@Test function buildZonesStayScopedToEachPlayerLane()
+	tdLaneBuildZoneRadius().assertGreaterThanOrEqual(128.0)
+	tdIsInLaneBuildZone(0, tdBuildPlotCenter(0, 0)).assertTrue()
+	tdIsInLaneBuildZone(0, tdBuildPlotCenter(1, 0)).assertFalse()
+	tdIsInLaneBuildZone(2, tdBuildPlotCenter(2, 9)).assertTrue()
+	tdIsInLaneBuildZone(2, tdBuildPlotCenter(0, 0)).assertFalse()
+
 @Test function everyLaneUsesMultipleWaypointsBeforeCenterExit()
 	tdLaneWaypointCount(0).assertEquals(3)
 	tdLaneWaypointCount(1).assertEquals(3)

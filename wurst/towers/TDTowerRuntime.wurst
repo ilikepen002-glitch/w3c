@@ -9,6 +9,7 @@ import Table
 import TDTowerData
 import TDInventory
 import ClosureTimers
+import TerrainUtils
 
 unit array tdFarmers
 constant Table tdPerfectUpgradeAvatarRefreshers = new Table()
@@ -170,20 +171,16 @@ function tdTryReserveTowerBuildPlot(unit tower) returns boolean
 		tdRejectTowerConstruction(tower, playerId, towerChoice, "已达到当前阶段人口上限，先升级已有防御塔。")
 		tdAlignPlayerTowerPopulation(playerId)
 		return false
-	let plotIndex = tdFindBuildPlotIndex(playerId, tower.getPos())
-	if plotIndex < 0
-		tdRejectTowerConstruction(tower, playerId, towerChoice, "只能在草地塔位上建造，不能重叠占格。")
+	let buildCenter = tower.getPos().toTileCenter()
+	if not tdIsInLaneBuildZone(playerId, buildCenter)
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "只能在自己路线旁的草地建造区里建塔。")
 		return false
-	let plotCenter = tdBuildPlotCenter(playerId, plotIndex)
-	if not tdBuildPlotHasValidTerrain(plotCenter) or not tdBuildPlotIsFlat(plotCenter)
-		tdRejectTowerConstruction(tower, playerId, towerChoice, "这个塔位不在平整地面上，请换到可建造的草地格子。")
+	if not tdBuildPlotHasValidTerrain(buildCenter)
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "白色坑道已经被代码锁定为禁建区，请把塔移到旁边的草地上。")
 		return false
-	let slot = tdBuildPlotSlot(playerId, plotIndex)
-	let claimedTower = tdBuildPlotClaims.loadUnit(slot)
-	if claimedTower != null and claimedTower != tower
-		tdRejectTowerConstruction(tower, playerId, towerChoice, "这个塔位已经被占用，请换一个格子建造。")
+	if not tdBuildPlotIsFlat(buildCenter)
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "这个位置不够平整，请换到同一路线旁更平整的草地。")
 		return false
-	tdClaimTowerBuildPlot(tower, slot)
 	return true
 
 function tdHandleTowerSelected()
