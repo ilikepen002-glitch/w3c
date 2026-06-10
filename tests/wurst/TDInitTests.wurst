@@ -3,8 +3,24 @@ import TDInit
 import TDState
 import TDConfig
 
-@Test function staticMapStartupNeedsNoRuntimeBootstrapDelay()
-	tdMapBootstrapDelay().assertEquals(0.0)
+@Test function startupWaitsBrieflyBeforeRuntimeBootstrap()
+	tdMapBootstrapDelay().assertGreaterThan(0.0)
+	tdMapBootstrapDelay().assertEquals(0.10)
+
+@Test function startupRetryPolicyAllowsLatePlayerSlotActivation()
+	tdMapBootstrapRetryInterval().assertEquals(0.25)
+	tdMapBootstrapMaxRetries().assertEquals(8)
+
+@Test function startupFallbackActivatesPlayerOneWhenNoLaneWasDetected()
+	tdResetState()
+	tdEnsureStartupFallbackLane()
+	tdIsLaneActive(0).assertTrue()
+	tdCountActiveLanes().assertEquals(1)
+
+@Test function laneTerrainOverridesRunInSmallChunks()
+	tdShouldRunLaneTerrainOverridesAsynchronously().assertTrue()
+	tdLaneTerrainOverrideTilesPerTick().assertGreaterThan(0)
+	tdLaneTerrainOverrideTilesPerTick().assertLessThan(256)
 
 @Test function startupRevealsTheWholeMap()
 	tdShouldRevealWholeMap().assertTrue()
@@ -29,6 +45,9 @@ import TDConfig
 	tdCameraTargetDistanceForWheelLift(3).assertEquals(4400.0)
 	tdClampCameraTargetDistance(2000.0).assertEquals(3200.0)
 	tdClampCameraTargetDistance(5000.0).assertEquals(4400.0)
+
+@Test function startupFocusesCameraOnThePlayersFarmer()
+	tdShouldFocusStartingCameraOnFarmer().assertTrue()
 
 @Test function addMoneyCommandGivesGoldToTheTriggeringPlayer()
 	tdResetState()

@@ -10,9 +10,18 @@ import ClosureTimers
 import TerrainUtils
 
 trigger tdChatCommandTrigger = CreateTrigger()
+boolean tdGameplayStartupCompleted = false
+boolean tdLaneTerrainOverrideRunning = false
+int tdLaneTerrainOverrideNextTile = 0
 
 public function tdMapBootstrapDelay() returns real
-	return 0.0
+	return 0.10
+
+public function tdMapBootstrapRetryInterval() returns real
+	return 0.25
+
+public function tdMapBootstrapMaxRetries() returns int
+	return 8
 
 public function tdShouldRevealWholeMap() returns boolean
 	return true
@@ -34,6 +43,18 @@ public function tdStartingCameraReapplyDelay() returns real
 
 public function tdCameraDistanceClampInterval() returns real
 	return 0.15
+
+public function tdShouldFocusStartingCameraOnFarmer() returns boolean
+	return true
+
+public function tdShouldRunLaneTerrainOverridesAsynchronously() returns boolean
+	return true
+
+public function tdLaneTerrainOverrideTilesPerTick() returns int
+	return 64
+
+public function tdLaneTerrainOverrideInterval() returns real
+	return 0.03
 
 public function tdCameraTargetDistanceForWheelLift(int extraSteps) returns real
 	var clampedSteps = extraSteps
@@ -99,15 +120,35 @@ function tdDetectActiveLanes()
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		tdSetLaneActive(playerId, tdShouldEnableLaneForPlayer(playerId))
 
+public function tdStartupFallbackPlayerId() returns int
+	return 0
+
+public function tdEnsureStartupFallbackLane()
+	if tdCountActiveLanes() == 0
+		tdSetLaneActive(tdStartupFallbackPlayerId(), true)
+
 function tdApplyStartingCamera()
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		if tdIsLaneActive(playerId)
 			Player(playerId).setCameraField(CAMERA_FIELD_TARGET_DISTANCE, tdCameraTargetDistanceForWheelLift(0), 0.0)
 			Player(playerId).setCameraField(CAMERA_FIELD_ANGLE_OF_ATTACK, tdDefaultCameraAngleOfAttack(), 0.0)
 
+function tdFocusStartingCameraOnFarmers()
+	if not tdShouldFocusStartingCameraOnFarmer()
+		return
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(playerId) and localPlayer == Player(playerId)
+			let farmer = tdGetFarmer(playerId)
+			if farmer != null
+				let pos = farmer.getPos()
+				SetCameraPosition(pos.x, pos.y)
+				ClearSelection()
+				SelectUnit(farmer, true)
+
 function tdLiftStartingCameraAgain()
 	doAfter(tdStartingCameraReapplyDelay()) ->
 		tdApplyStartingCamera()
+		tdFocusStartingCameraOnFarmers()
 
 function tdClampLocalCameraDistance()
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
@@ -143,16 +184,35 @@ function tdSetupChatCommands()
 		TriggerRegisterPlayerChatEvent(tdChatCommandTrigger, Player(playerId), "-addMoney", false)
 	TriggerAddAction(tdChatCommandTrigger, function tdHandleChatCommand)
 
-function tdApplyLaneTerrainOverrides()
-	for tileX = 0 to TILES_X - 1
-		for tileY = 0 to TILES_Y - 1
-			let currentTile = tile(tileX, tileY)
-			if tdIsLaneTerrain(currentTile.toVec2())
-				// 白色坑道统一改成“可走但不可建”，避免继续依赖手工摆阻挡。
-				currentTile.setPathing(PATHING_TYPE_WALKABILITY, false)
-				currentTile.setPathing(PATHING_TYPE_BUILDABILITY, true)
+function tdApplyLaneTerrainOverrideTile(tile currentTile)
+	if tdIsLaneTerrain(currentTile.toVec2())
+		// 白色坑道统一改成“可走但不可建”，避免继续依赖手工摆阻挡。
+		currentTile.setPathing(PATHING_TYPE_WALKABILITY, false)
+		currentTile.setPathing(PATHING_TYPE_BUILDABILITY, true)
+
+function tdApplyLaneTerrainOverrideChunk() returns boolean
+	var processed = 0
+	let maxTiles = tdLaneTerrainOverrideTilesPerTick()
+	while processed < maxTiles and tdLaneTerrainOverrideNextTile < TILES_COUNT
+		tdApplyLaneTerrainOverrideTile(tile(tdLaneTerrainOverrideNextTile))
+		tdLaneTerrainOverrideNextTile += 1
+		processed += 1
+	return tdLaneTerrainOverrideNextTile >= TILES_COUNT
+
+function tdStartLaneTerrainOverrides()
+	if tdLaneTerrainOverrideRunning
+		return
+	tdLaneTerrainOverrideRunning = true
+	tdLaneTerrainOverrideNextTile = 0
+	doPeriodically(tdLaneTerrainOverrideInterval()) cb ->
+		if tdApplyLaneTerrainOverrideChunk()
+			tdLaneTerrainOverrideRunning = false
+			destroy cb
 
 function tdRunGameplayStartup()
+	if tdGameplayStartupCompleted
+		return
+	tdGameplayStartupCompleted = true
 	// 地形美术和路线纹理仍由地图文件提供，但禁建/可走规则在开局统一由代码覆盖。
 	tdCreatePads()
 	tdSetupBuildDialog()
@@ -171,15 +231,28 @@ function tdRunGameplayStartup()
 			DisplayTimedTextToPlayer(Player(playerId), 0, 0, 10.0, tdStartupGuideMessage())
 	tdStartWaveSchedule()
 
+function tdFinalizeGameplayBootstrap()
+	tdApplyStartingCamera()
+	tdStartCameraDistanceClamp()
+	tdRunGameplayStartup()
+	tdFocusStartingCameraOnFarmers()
+	tdLiftStartingCameraAgain()
+
+function tdBootstrapGameplayWhenPlayersReady(int retryCount)
+	tdDetectActiveLanes()
+	if tdCountActiveLanes() > 0 or retryCount >= tdMapBootstrapMaxRetries()
+		tdEnsureStartupFallbackLane()
+		tdFinalizeGameplayBootstrap()
+		return
+	doAfter(tdMapBootstrapRetryInterval()) ->
+		tdBootstrapGameplayWhenPlayersReady(retryCount + 1)
+
 // 游戏主启动流程。地图文件保留原始美术布局，但白色坑道的 pathing 由代码统一接管。
 public function tdStartGame()
 	tdResetState()
-	tdApplyLaneTerrainOverrides()
+	tdGameplayStartupCompleted = false
 	tdRevealWholeMap()
-	tdDetectActiveLanes()
-	tdApplyStartingCamera()
-	tdLiftStartingCameraAgain()
-	tdStartCameraDistanceClamp()
 	let setupDelay = tdMapBootstrapDelay()
 	doAfter(setupDelay) ->
-		tdRunGameplayStartup()
+		tdBootstrapGameplayWhenPlayersReady(0)
+	tdStartLaneTerrainOverrides()

@@ -4,10 +4,18 @@ setlocal
 cd /d "%~dp0"
 
 set "TARGET_DIR=D:\War3_1.27a\Warcraft III Frozen Throne 1.27a publish\Maps\Test"
+set "MAP_TIMESTAMP="
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "tools\Sync-WurstTests.ps1" -Mode Clean >nul
 if errorlevel 1 (
 	echo Failed to clean staged Wurst tests.
+	pause
+	exit /b 1
+)
+
+for /f "usebackq delims=" %%F in (`powershell -NoProfile -Command "Get-Date -Format 'HHmm'"`) do set "MAP_TIMESTAMP=%%F"
+if not defined MAP_TIMESTAMP (
+	echo Failed to generate the temporary map timestamp.
 	pause
 	exit /b 1
 )
@@ -30,12 +38,27 @@ if not defined SOURCE_MAP (
 	exit /b 1
 )
 
-echo [2/3] Copying "%SOURCE_MAP%"
+echo [2/3] Patching map display name with timestamp %MAP_TIMESTAMP%...
+javac -cp "C:\Users\huawei\.wurst\wurst-compiler\wurstscript.jar" "tools\PatchMapDisplayName.java"
+if errorlevel 1 (
+	echo Failed to compile tools\PatchMapDisplayName.java.
+	pause
+	exit /b 1
+)
+
+java -cp "tools;C:\Users\huawei\.wurst\wurst-compiler\wurstscript.jar" PatchMapDisplayName "%SOURCE_MAP%" "%MAP_TIMESTAMP%"
+if errorlevel 1 (
+	echo Failed to patch the built map display name.
+	pause
+	exit /b 1
+)
+
+echo [3/3] Copying "%SOURCE_MAP%"
 for /f "usebackq delims=" %%F in (`powershell -NoProfile -Command "$sourceMap = '%SOURCE_MAP%'; (Get-Item -LiteralPath $sourceMap).LastWriteTime.ToString('yyyy-MM-dd HH:mm:ss')"`) do set "SOURCE_TIME=%%F"
 echo Source map time:
 echo   %SOURCE_TIME%
 set "COPY_TARGET="
-for /f "usebackq delims=" %%F in (`powershell -NoProfile -Command "$ErrorActionPreference = 'Stop'; $sourceMap = '%SOURCE_MAP%'; $targetDir = '%TARGET_DIR%'; $targetName = [string]([char]0x6DF1) + [char]0x6E0A + [char]0x5B88 + [char]0x671B + '.w3x'; if (-not (Test-Path -LiteralPath $targetDir)) { New-Item -ItemType Directory -Path $targetDir | Out-Null }; $targetMap = Join-Path $targetDir $targetName; Copy-Item -LiteralPath $sourceMap -Destination $targetMap -Force; if (-not (Test-Path -LiteralPath $targetMap)) { throw 'Target map was not created.' }; $targetMap"`) do set "COPY_TARGET=%%F"
+for /f "usebackq delims=" %%F in (`powershell -NoProfile -Command "$ErrorActionPreference = 'Stop'; $sourceMap = '%SOURCE_MAP%'; $targetDir = '%TARGET_DIR%'; $mapBaseName = [string]([char]0x6DF1) + [char]0x6E0A + [char]0x5B88 + [char]0x671B; if (-not (Test-Path -LiteralPath $targetDir)) { New-Item -ItemType Directory -Path $targetDir | Out-Null }; Get-ChildItem -LiteralPath $targetDir -File -Filter ($mapBaseName + '*.w3x') -ErrorAction SilentlyContinue | Remove-Item -Force; $targetName = $mapBaseName + '.w3x'; $targetMap = Join-Path $targetDir $targetName; Copy-Item -LiteralPath $sourceMap -Destination $targetMap -Force; if (-not (Test-Path -LiteralPath $targetMap)) { throw 'Target map was not created.' }; $targetMap"`) do set "COPY_TARGET=%%F"
 if errorlevel 1 (
 	echo Copy failed.
 	echo The target map is probably open in Warcraft III or World Editor.

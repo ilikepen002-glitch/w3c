@@ -1,0 +1,59 @@
+﻿---
+projectName: MyFirstWurstMap
+dependencies:
+- https://github.com/wurstscript/WurstStdlib2:pre1.29
+buildMapData:
+  name: "深渊守望 2044"
+  fileName: MyFirstWurstMap.w3x
+  author: 鐣欑櫧鏁ｄ汉
+  scenarioData:
+    description: 鍥涜矾榛戞疆鍚屾椂鍘嬪悜涓ぎ瑁傞殭銆傞€夋嫨浣犵殑濉旂郴锛屽畧浣忔渶鍚庣殑闂ㄦ埛锛屽湪绮捐嫳涓庨棰嗗帇澧冨墠鎾戝埌缁堝眬銆?    suggestedPlayers: 1-4
+    loadingScreen:
+      model: ui\Glues\Loading\Load-Generic\Load-Generic.mdx
+      title: "深渊守望 2044"
+      subTitle: 浣滆€咃細鐣欑櫧鏁ｄ汉
+      text: 鍥涜矾鏁屾疆鍚屾椂鍘嬪锛屼腑澶棬鎴蜂竴鏃﹀け瀹堬紝鍏ㄧ嚎閮戒細宕╁銆傚悎鐞嗘惌閰嶄笉鍚屽绯伙紝鎵涜繃榛戞疆涓庨棰嗙殑鏈€缁堝啿鍑汇€?  optionsFlags:
+    forcesFixed: true
+  players:
+  - id: 0
+    name: Player 1
+    race: HUMAN
+    controller: USER
+    fixedStartLoc: true
+  - id: 1
+    name: Player 2
+    race: HUMAN
+    controller: USER
+    fixedStartLoc: true
+  - id: 2
+    name: Player 3
+    race: HUMAN
+    controller: USER
+    fixedStartLoc: true
+  - id: 3
+    name: Player 4
+    race: HUMAN
+    controller: USER
+    fixedStartLoc: true
+  - id: 4
+    name: Enemy Slot
+    race: ORC
+    controller: COMPUTER
+    fixedStartLoc: true
+  forces:
+  - name: Defenders
+    playerIds:
+    - 0
+    - 1
+    - 2
+    - 3
+  - name: Enemy
+    flags:
+      allied: false
+      alliedVictory: false
+      sharedVision: false
+    playerIds:
+    - 4
+scriptMode: JASS
+wc3Patch: v1.28
+
