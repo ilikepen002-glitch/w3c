@@ -255,4 +255,4 @@ public function tdStartGame()
 	let setupDelay = tdMapBootstrapDelay()
 	doAfter(setupDelay) ->
 		tdBootstrapGameplayWhenPlayersReady(0)
-	tdStartLaneTerrainOverrides()
+	// tdStartLaneTerrainOverrides()
