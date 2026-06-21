@@ -32,11 +32,10 @@ public constant int TD_PLAYER_ID = 0
 public constant int TD_ENEMY_PLAYER_ID = PLAYER_NEUTRAL_AGGRESSIVE
 public constant int TD_BUILD_PLOT_UNIT_ID = 'uP01'
 public constant int TD_FARMER_UNIT_ID = 'uF01'
-public constant int TD_LANE_TERRAIN_TYPE_ID = 'Lrok'
 
 public constant int TD_PAD_COUNT = TD_ACTIVE_PLAYER_COUNT * TD_BUILD_PLOTS_PER_LANE
-constant int TD_WAYPOINTS_PER_LANE = 3
-rect array tdLaneWaypointRects
+// 当前只有玩家 1 路线保留多段 waypoint，其它路线先直接汇入中心终点。
+constant int TD_PLAYER_ONE_WAYPOINT_COUNT = 5
 
 public function tdBuildPlotMinimumSpacing() returns real
 	return 128.0
@@ -62,38 +61,8 @@ function tdRectCenter(rect r) returns vec2
 function tdRectCenterOrFallback(rect r, real fallbackX, real fallbackY) returns vec2
 	if r != null
 		return tdRectCenter(r)
+	// 测试环境或地图区域未同步时，保留一组手写坐标让逻辑仍可验证。
 	return vec2(fallbackX, fallbackY)
-
-function tdCreateWaypointRect(real centerX, real centerY, real halfWidth, real halfHeight) returns rect
-	return Rect(centerX - halfWidth, centerY - halfHeight, centerX + halfWidth, centerY + halfHeight)
-
-function tdLaneWaypointRectSlot(int playerId, int index) returns int
-	return playerId * TD_WAYPOINTS_PER_LANE + index
-
-function tdBuildLaneWaypointRect(int playerId, int index) returns rect
-	if playerId == 0
-		if index == 0
-			return tdCreateWaypointRect(-1800., 1680., 160., 160.)
-		if index == 1
-			return tdCreateWaypointRect(-980., 760., 224., 224.)
-		return tdCreateWaypointRect(-280., 120., 224., 192.)
-	if playerId == 1
-		if index == 0
-			return tdCreateWaypointRect(1800., 1680., 160., 160.)
-		if index == 1
-			return tdCreateWaypointRect(980., 760., 224., 224.)
-		return tdCreateWaypointRect(280., 120., 224., 192.)
-	if playerId == 2
-		if index == 0
-			return tdCreateWaypointRect(1800., -1680., 160., 160.)
-		if index == 1
-			return tdCreateWaypointRect(980., -760., 224., 224.)
-		return tdCreateWaypointRect(280., -520., 224., 192.)
-	if index == 0
-		return tdCreateWaypointRect(-1800., -1680., 160., 160.)
-	if index == 1
-		return tdCreateWaypointRect(-980., -760., 224., 224.)
-	return tdCreateWaypointRect(-280., -520., 224., 192.)
 
 function tdLaneSpawnRect(int playerId) returns rect
 	if playerId == 0
@@ -116,6 +85,8 @@ function tdFarmerSpawnRect(int playerId) returns rect
 public function tdLaneExitRect() returns rect
 	return gg_rct_td_exit_center
 
+// 出生点、终点和农民出生点优先读取 World Editor 区域，
+// fallback 坐标只用于没有区域句柄的测试/损坏地图兜底。
 public function tdLaneSpawnPosition(int playerId) returns vec2
 	if playerId == 0
 		return tdRectCenterOrFallback(tdLaneSpawnRect(playerId), -2320., 2672.)
@@ -137,17 +108,38 @@ public function tdFarmerSpawnPosition(int playerId) returns vec2
 		return tdRectCenterOrFallback(tdFarmerSpawnRect(playerId), 1840., -2480.)
 	return tdRectCenterOrFallback(tdFarmerSpawnRect(playerId), -1936., -2384.)
 
-public function tdLaneWaypointCount(int _playerId) returns int
-	return TD_WAYPOINTS_PER_LANE
+public function tdLaneWaypointCount(int playerId) returns int
+	if playerId == 0
+		return TD_PLAYER_ONE_WAYPOINT_COUNT
+	return 0
 
 public function tdLaneWaypointRect(int playerId, int index) returns rect
-	let slot = tdLaneWaypointRectSlot(playerId, index)
-	if tdLaneWaypointRects[slot] == null
-		tdLaneWaypointRects[slot] = tdBuildLaneWaypointRect(playerId, index)
-	return tdLaneWaypointRects[slot]
+	// 非 P1 或越界 waypoint 没有中继区域，调用方会退回共享终点。
+	if index < 0 or index >= tdLaneWaypointCount(playerId)
+		return null
+	if index == 0
+		return gg_rct_td_spawn_p1_1
+	if index == 1
+		return gg_rct_td_spawn_p1_2
+	if index == 2
+		return gg_rct_td_spawn_p1_3
+	if index == 3
+		return gg_rct_td_spawn_p1_4
+	return gg_rct_td_spawn_p1_5
 
 public function tdLaneWaypointPosition(int playerId, int index) returns vec2
-	return tdRectCenter(tdLaneWaypointRect(playerId, index))
+	if playerId == 0
+		if index == 0
+			return tdRectCenterOrFallback(tdLaneWaypointRect(playerId, index), -1168., 2672.)
+		if index == 1
+			return tdRectCenterOrFallback(tdLaneWaypointRect(playerId, index), -1168., 1424.)
+		if index == 2
+			return tdRectCenterOrFallback(tdLaneWaypointRect(playerId, index), -2800., 1392.)
+		if index == 3
+			return tdRectCenterOrFallback(tdLaneWaypointRect(playerId, index), -2800., 400.)
+		if index == 4
+			return tdRectCenterOrFallback(tdLaneWaypointRect(playerId, index), -1168., 336.)
+	return tdLaneExitPosition(playerId)
 
 public function tdBuildPlotPosition(int playerId, int plotIndex) returns vec2
 	if playerId == 0
@@ -238,18 +230,13 @@ public function tdPadPosition(int index) returns vec2
 public function tdBuildPlotCenter(int playerId, int plotIndex) returns vec2
 	return tdBuildPlotPosition(playerId, plotIndex).toTileCenter()
 
-public function tdTerrainTypeIsLane(int terrainType) returns boolean
-	return terrainType == TD_LANE_TERRAIN_TYPE_ID
-
-public function tdIsLaneTerrain(vec2 position) returns boolean
-	return tdTerrainTypeIsLane(position.toTileCenter().getTerrainType())
-
 function tdBuildPlotHeightDelta(vec2 center, vec2 sample) returns real
 	return (center.getTerrainZ() - sample.getTerrainZ()).abs()
 
 public function tdBuildPlotHasValidTerrain(vec2 position) returns boolean
 	let center = position.toTileCenter()
-	return center.isTerrainLand() and center.isTerrainWalkable() and not tdIsLaneTerrain(center)
+	// 禁建判断只看编辑器最终 pathing；路线纹理不再由代码硬编码识别。
+	return center.isTerrainLand() and center.isTerrainWalkable()
 
 public function tdBuildPlotIsFlat(vec2 position) returns boolean
 	let center = position.toTileCenter()

@@ -17,6 +17,5 @@ import Orders
 	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, false).assertEquals(false)
 	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, true).assertTrue()
 
-@Test function enemiesUseNativeLifeBarsInsteadOfCustomTextTags()
-	tdEnemyUsesNativeLifeBarForTest().assertTrue()
-	tdEnemyUsesCustomHealthTextForTest().assertFalse()
+@Test function enemyHealthDisplayIsNotManagedByRuntime()
+	tdEnemyHealthDisplayManagedByRuntimeForTest().assertFalse()

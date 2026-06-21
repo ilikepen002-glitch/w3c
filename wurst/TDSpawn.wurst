@@ -43,6 +43,7 @@ public function tdEnemyUsesCreepGuard() returns boolean
 	return false
 
 function tdEnemyRuntimePathingEnabled() returns boolean
+	// 敌人按地图路线和点命令移动，不启用单位自身寻路来抢控制权。
 	return false
 
 public function tdEnemyRuntimePathingEnabledForTest() returns boolean
@@ -69,7 +70,6 @@ function tdEnemyShouldIssueLaneOrder(int currentOrder, int laneOrderId, boolean 
 public function tdEnemyShouldIssueLaneOrderForTest(int currentOrder, int laneOrderId, boolean waypointAdvanced) returns boolean
 	return tdEnemyShouldIssueLaneOrder(currentOrder, laneOrderId, waypointAdvanced)
 
-// 单通道路线上直接把敌人下令走向终点。
 function tdOrderEnemyAlongLane(unit enemy, boolean waypointAdvanced)
 	let playerId = tdEnemyLaneId(enemy)
 	if not tdIsLaneActive(playerId)
@@ -79,6 +79,7 @@ function tdOrderEnemyAlongLane(unit enemy, boolean waypointAdvanced)
 		return
 	let waypointIndex = tdEnemyWaypointIndex(enemy)
 	if waypointIndex < tdLaneWaypointCount(playerId)
+		// 只有进入当前 waypoint 区域后才推进到下一点，避免频繁重下同一个移动命令。
 		enemy.issuePointOrderById(laneOrderId, tdLaneWaypointPosition(playerId, waypointIndex))
 	else
 		enemy.issuePointOrderById(laneOrderId, tdLaneExitPosition(playerId))
@@ -95,7 +96,14 @@ public function tdCreateEnemy(int playerId, int wave, int unitId) returns unit
 	tdOrderEnemyAlongLane(enemy)
 	return enemy
 
+public function tdEnemyHealthDisplayManagedByRuntimeForTest() returns boolean
+	// 血条表现交给魔兽原生 UI，运行时不再维护 texttag 生命周期。
+	return false
+
 function tdEnemyReachedWaypointRect(unit enemy, rect waypointRect) returns boolean
+	if waypointRect == null
+		// 没有摆区域的路线不会被误判为“已到达中继点”。
+		return false
 	let position = enemy.getPos()
 	return position.x >= GetRectMinX(waypointRect) and position.x <= GetRectMaxX(waypointRect) and position.y >= GetRectMinY(waypointRect) and position.y <= GetRectMaxY(waypointRect)
 
@@ -106,26 +114,10 @@ function tdAdvanceEnemyWaypoint(unit enemy)
 	let waypointIndex = tdEnemyWaypointIndex(enemy)
 	var waypointAdvanced = false
 	if waypointIndex < tdLaneWaypointCount(playerId)
-		let waypointRect = tdLaneWaypointRect(playerId, waypointIndex)
-		if tdEnemyReachedWaypointRect(enemy, waypointRect)
+		if tdEnemyReachedWaypointRect(enemy, tdLaneWaypointRect(playerId, waypointIndex))
 			tdSetEnemyWaypointIndex(enemy, waypointIndex + 1)
 			waypointAdvanced = true
 	tdOrderEnemyAlongLane(enemy, waypointAdvanced)
-
-function tdEnemyUsesNativeLifeBar() returns boolean
-	return true
-
-function tdEnemyUsesCustomHealthText() returns boolean
-	return false
-
-public function tdEnemyUsesNativeLifeBarForTest() returns boolean
-	return tdEnemyUsesNativeLifeBar()
-
-public function tdEnemyUsesCustomHealthTextForTest() returns boolean
-	return tdEnemyUsesCustomHealthText()
-
-public function tdClearEnemyHealthTag(unit _enemy)
-	skip
 
 function tdLaneEnemyCheckEnum()
 	let enemy = GetEnumUnit()
@@ -165,10 +157,8 @@ public function tdSpawnWave(int playerId, int wave)
 	doAfter(interval * count + 0.25) ->
 		tdWaitForLaneToClear(playerId, wave)
 
-public function tdStartEnemyHealthWatcher()
-	skip
-
 public function tdStartLaneWaypointWatcher()
+	// 用轻量轮询检测区域进入，避免每个 waypoint 都单独创建触发器和状态。
 	doPeriodically(0.20) cb ->
 		let g = CreateGroup()
 		g.enumUnitsInRect(tdWorldRect)
