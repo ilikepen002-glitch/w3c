@@ -5,7 +5,9 @@ import Orders
 
 @Test function spawnedEnemiesDoNotUseCreepGuard()
 	tdEnemyUsesCreepGuard().assertEquals(false)
-	tdEnemyRuntimePathingEnabledForTest().assertEquals(false)
+	tdEnemyRemovesGuardPositionForTest().assertEquals(true)
+	tdEnemyRuntimePathingEnabledForTest().assertEquals(true)
+	tdEnemyWaypointArrivalRadiusForTest().assertGreaterThanOrEqual(150.0)
 	tdEnemySleepsAtNight().assertEquals(false)
 	tdEnemyNativeGoldBountyBase().assertEquals(0)
 	tdEnemyNativeGoldBountyDice().assertEquals(0)

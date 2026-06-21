@@ -9,6 +9,7 @@ import Orders
 rect tdWorldRect = GetWorldBounds()
 int tdLaneEnemyCheckPlayer = -1
 boolean tdLaneEnemyCheckFound = false
+constant real TD_WAYPOINT_ARRIVAL_RADIUS = 150.0
 
 // 把“属于哪一路、哪一波、是否已经按漏怪结算”编码进单位的 user data，
 // 这样奖励和扣命都能直接从单位本身取回上下文。
@@ -42,12 +43,20 @@ function tdSetEnemyWaypointIndex(unit enemy, int index)
 public function tdEnemyUsesCreepGuard() returns boolean
 	return false
 
+function tdEnemyRemovesGuardPosition() returns boolean
+	return true
+
+public function tdEnemyRemovesGuardPositionForTest() returns boolean
+	return tdEnemyRemovesGuardPosition()
+
 function tdEnemyRuntimePathingEnabled() returns boolean
-	// 敌人按地图路线和点命令移动，不启用单位自身寻路来抢控制权。
-	return false
+	return true
 
 public function tdEnemyRuntimePathingEnabledForTest() returns boolean
 	return tdEnemyRuntimePathingEnabled()
+
+public function tdEnemyWaypointArrivalRadiusForTest() returns real
+	return TD_WAYPOINT_ARRIVAL_RADIUS
 
 function tdEnemyLaneOrderId() returns int
 	return Orders.move
@@ -92,6 +101,8 @@ public function tdCreateEnemy(int playerId, int wave, int unitId) returns unit
 	let enemy = createUnit(Player(TD_ENEMY_PLAYER_ID), unitId, tdLaneSpawnPosition(playerId), 0 .fromDeg())
 	SetUnitCreepGuard(enemy, tdEnemyUsesCreepGuard())
 	enemy.setPathing(tdEnemyRuntimePathingEnabled())
+	if tdEnemyRemovesGuardPosition()
+		enemy.removeGuardPosition()
 	tdSetEnemyData(enemy, playerId, wave, 0)
 	tdOrderEnemyAlongLane(enemy)
 	return enemy
@@ -100,12 +111,8 @@ public function tdEnemyHealthDisplayManagedByRuntimeForTest() returns boolean
 	// 血条表现交给魔兽原生 UI，运行时不再维护 texttag 生命周期。
 	return false
 
-function tdEnemyReachedWaypointRect(unit enemy, rect waypointRect) returns boolean
-	if waypointRect == null
-		// 没有摆区域的路线不会被误判为“已到达中继点”。
-		return false
-	let position = enemy.getPos()
-	return position.x >= GetRectMinX(waypointRect) and position.x <= GetRectMaxX(waypointRect) and position.y >= GetRectMinY(waypointRect) and position.y <= GetRectMaxY(waypointRect)
+function tdEnemyReachedWaypoint(unit enemy, int playerId, int waypointIndex) returns boolean
+	return enemy.getPos().distanceTo(tdLaneWaypointPosition(playerId, waypointIndex)) <= TD_WAYPOINT_ARRIVAL_RADIUS
 
 function tdAdvanceEnemyWaypoint(unit enemy)
 	if enemy == null or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdEnemyWasLeaked(enemy)
@@ -114,7 +121,7 @@ function tdAdvanceEnemyWaypoint(unit enemy)
 	let waypointIndex = tdEnemyWaypointIndex(enemy)
 	var waypointAdvanced = false
 	if waypointIndex < tdLaneWaypointCount(playerId)
-		if tdEnemyReachedWaypointRect(enemy, tdLaneWaypointRect(playerId, waypointIndex))
+		if tdEnemyReachedWaypoint(enemy, playerId, waypointIndex)
 			tdSetEnemyWaypointIndex(enemy, waypointIndex + 1)
 			waypointAdvanced = true
 	tdOrderEnemyAlongLane(enemy, waypointAdvanced)
