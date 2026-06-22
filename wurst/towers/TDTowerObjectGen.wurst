@@ -5,6 +5,7 @@ import TDItemData
 import ChannelAbilityPreset
 
 function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level, int branch, string abilities) returns BuildingDefinition
+	let weaponType = tdTowerWeaponTypeForBranch(towerChoice, level, branch)
 	this
 	..setName(tdTowerDisplayNameForBranch(towerChoice, level, branch))
 	..setTooltipBasic(tdTowerDisplayNameForBranch(towerChoice, level, branch))
@@ -20,10 +21,10 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setAttack1RangeMotionBuffer(tdTowerAttackRangeMotionBuffer())
 	..setAttacksEnabled(1)
 	..setAttack1AttackType(tdTowerAttackType(towerChoice))
-	..setAttack1WeaponType(tdTowerWeaponType(towerChoice))
+	..setAttack1WeaponType(weaponType)
 	..setAttack1ProjectileArt(tdTowerProjectileArt(towerChoice))
 	..setAttack1ProjectileSpeed(tdTowerProjectileSpeed(towerChoice))
-	..setAttack1ProjectileHomingEnabled(tdTowerWeaponType(towerChoice) == WeaponType.Missile)
+	..setAttack1ProjectileHomingEnabled(weaponType == WeaponType.Missile or weaponType == WeaponType.MissileBounce)
 	..setModelFile(tdTowerModelPath(towerChoice, level))
 	..setMovementType(MovementType.None)
 	..setSpeedBase(0)
@@ -62,6 +63,10 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setButtonPositionX(tdTowerLevelButtonX(towerChoice, level, branch))
 	..setButtonPositionY(tdTowerLevelButtonY(towerChoice, level, branch))
 	..setHotkey(tdTowerHotkey(towerChoice))
+	if weaponType == WeaponType.MissileBounce
+		this
+		..setAttack1MaximumNumberofTargets(tdArcherSplitArrowTargetCount(level))
+		..setAttack1DamageLossFactor(1.0)
 	return this
 
 // 这些 compiletime 定义会直接生成最终地图里的物编数据，
@@ -89,7 +94,7 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	new AbilityDefinitionBladeMasterCriticalStrike(TD_ARCHER_SPLIT_ARROW_ABILITY_ID)
 	..setName("分裂箭")
 	..setTooltipNormal(1, "分裂箭")
-	..setTooltipNormalExtended(1, "普通攻击会同时射向多个目标。1级总计2个目标，每升1级额外+1个目标，5级总计6个目标。")
+	..setTooltipNormalExtended(1, "普通攻击命中主目标后会继续弹射。1级总计2个目标，每升1级额外+1个目标，5级总计6个目标。")
 	..setIconResearch(tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_ARCHER))
 	..setIconNormal(tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_ARCHER))
 	..setButtonPositionNormalX(0)

@@ -174,7 +174,7 @@ public function tdTowerSupportSkillIconPath(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		return tdArcherAuraIconPath()
 	if towerChoice == TD_TOWER_CHOICE_ORC
-		return Icons.bTNWhirlwind
+		return tdOrcBladestormIconPath()
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		return Icons.bTNCommand
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
@@ -204,11 +204,15 @@ public function tdArcherSplitArrowTargetCount(int level) returns int
 		clampedLevel = TD_MAX_TOWER_LEVEL
 	return clampedLevel + 1
 
-public function tdArcherSplitArrowBounceRange() returns real
-	return 250.0
+public function tdArcherHasSplitArrowAtLevelBranch(int level, int branch) returns boolean
+	if level < 1
+		return false
+	if level < TD_MAX_TOWER_LEVEL
+		return true
+	return branch == TD_TOWER_BRANCH_A
 
 public function tdArcherSplitArrowUsesBounceDamageForTest() returns boolean
-	return false
+	return true
 
 public function tdOrcCriticalStrikeChance() returns real
 	return 0.25
@@ -219,8 +223,47 @@ public function tdOrcCriticalStrikeMultiplier() returns real
 public function tdOrcCriticalStrikeDamageBonus() returns real
 	return 18
 
-public function tdOrcCleaveFactor() returns real
-	return 0.42
+public function tdOrcSwordDanceAttackSpeedBonus() returns real
+	return 0.30
+
+public function tdOrcBloodlustAttackSpeedBonus() returns real
+	return 0.35
+
+public function tdOrcBloodlustMoveSpeedBonus() returns real
+	return 0.0
+
+public function tdOrcBloodlustCooldown() returns real
+	return 12.0
+
+public function tdOrcBloodlustDuration() returns real
+	return 5.0
+
+public function tdOrcSwordDanceIconPath() returns string
+	return Icons.bTNMirrorImage
+
+public function tdOrcBloodlustIconPath() returns string
+	return Icons.bTNBloodLust
+
+public function tdOrcBladestormIconPath() returns string
+	return Icons.bTNWhirlwind
+
+public function tdOrcBladestormCooldown() returns real
+	return 9.0
+
+public function tdOrcBladestormDuration() returns real
+	return 2.5
+
+public function tdOrcBladestormTickInterval() returns real
+	return 0.5
+
+public function tdOrcBladestormDamagePerSecond() returns real
+	return 70.0
+
+public function tdOrcBladestormRadius() returns real
+	return 200.0
+
+public function tdOrcBladestormEffectPath() returns string
+	return "Abilities\\Spells\\Orc\\Whirlwind\\Whirlwind.mdl"
 
 public function tdFootmanBashChance() returns real
 	return 0.22

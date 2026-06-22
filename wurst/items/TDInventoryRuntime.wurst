@@ -36,6 +36,16 @@ function tdInventoryItemAt(int item1, int item2, int item3, int slot) returns in
 		return item2
 	return item3
 
+function tdInventoryDuplicateCopyIndex(int item1, int item2, int item3, int slot) returns int
+	let currentItemId = tdInventoryItemAt(item1, item2, item3, slot)
+	if currentItemId == 0
+		return 0
+	var copyIndex = 0
+	for previousSlot = 0 to slot
+		if tdInventoryItemAt(item1, item2, item3, previousSlot) == currentItemId
+			copyIndex += 1
+	return copyIndex
+
 function tdCraftVisibleInventorySlot(int visibleSlot) returns int
 	if visibleSlot == 0
 		return 0
@@ -68,13 +78,11 @@ public function tdCraftModeForInventorySlots(int slot0, int slot1, int slot2, in
 	return tdCraftModeForQualities(tdInventoryItemQualityFromTypeId(visibleItem1), tdInventoryItemQualityFromTypeId(visibleItem2), tdInventoryItemQualityFromTypeId(visibleItem3))
 
 function tdAccumulatedEffectForItems(int item1, int item2, int item3, int effectKind) returns real
-	int array seenCounts
 	var total = 0.0
 	for slot = 0 to 2
 		let itemId = tdInventoryItemAt(item1, item2, item3, slot)
 		if itemId != 0
-			seenCounts[itemId] += 1
-			let copyIndex = seenCounts[itemId]
+			let copyIndex = tdInventoryDuplicateCopyIndex(item1, item2, item3, slot)
 			total += tdItemEffectContribution(itemId, effectKind) * tdTowerEquipmentDuplicateFactor(copyIndex)
 	return total
 

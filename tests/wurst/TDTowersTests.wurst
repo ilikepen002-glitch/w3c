@@ -5,6 +5,7 @@ import TDItems
 import TDConfig
 import TDState
 import ObjectIds
+import ObjEditingCommons
 
 @Test function towerChoiceMapsToExpectedCost()
 	tdTowerCost(TD_TOWER_CHOICE_ARCHER).assertEquals(50)
@@ -94,7 +95,9 @@ import ObjectIds
 	tdArcherAuraDamageBonus().assertEquals(0.18)
 	tdOrcCriticalStrikeChance().assertEquals(0.25)
 	tdOrcCriticalStrikeMultiplier().assertEquals(2.20)
-	tdOrcCleaveFactor().assertEquals(0.42)
+	tdOrcSwordDanceAttackSpeedBonus().assertEquals(0.30)
+	tdOrcBloodlustAttackSpeedBonus().assertEquals(0.35)
+	tdOrcBladestormDamagePerSecond().assertEquals(70.0)
 	tdFootmanBashChance().assertEquals(0.22)
 	tdFootmanCommandAuraDamageBonus().assertEquals(0.16)
 	tdDryadPoisonDps().assertEquals(12.0)
@@ -117,6 +120,9 @@ import ObjectIds
 
 @Test function towerSkillBarsExposeFamilyDefiningEffects()
 	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_ARCHER, 5).assertEquals("A100,A101")
+	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_ORC, 5).assertEquals("A102,A103")
+	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_A).assertEquals("A102,A131,A130")
+	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B).assertEquals("A102,A132,A130")
 	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_FOOTMAN, 5).assertEquals("A104,A105")
 	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_DRYAD, 5).assertEquals("A106,A110")
 	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_GHOUL, 5).assertEquals("A107,A116")
@@ -154,8 +160,9 @@ import ObjectIds
 	tdTowerTooltipExtended(TD_TOWER_CHOICE_ARCHER, 3).contains("4个").assertTrue()
 	tdTowerTooltipExtended(TD_TOWER_CHOICE_ARCHER, 5).contains("6个").assertTrue()
 
-@Test function archerSplitArrowUsesPassiveMultishotInsteadOfBounceDamage()
-	tdArcherSplitArrowUsesBounceDamageForTest().assertFalse()
+@Test function archerSplitArrowUsesBounceDamageInsteadOfPassiveMultishot()
+	tdArcherSplitArrowUsesBounceDamageForTest().assertTrue()
+	(tdTowerWeaponType(TD_TOWER_CHOICE_ARCHER) == WeaponType.MissileBounce).assertTrue()
 
 @Test function workersAndTowersAreConfiguredToBeInvulnerable()
 	tdFarmersShouldBeInvulnerableForTest().assertTrue()
@@ -200,6 +207,18 @@ import ObjectIds
 	(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_DRYAD) != tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_DRYAD)).assertTrue()
 	(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_GHOUL) != tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_GHOUL)).assertTrue()
 
+@Test function orcSkillIconsMatchSwordDanceBloodlustAndBladestormRoles()
+	tdOrcSwordDanceIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNMirrorImage.blp")
+	tdOrcBloodlustIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNBloodLust.blp")
+	tdOrcBladestormIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNWhirlwind.blp")
+
+@Test function orcBranchSkillsExposeCooldownAndAutocastTuning()
+	tdOrcBloodlustCooldown().assertEquals(12.0)
+	tdOrcBladestormCooldown().assertEquals(9.0)
+	tdOrcBladestormDuration().assertEquals(2.5)
+	tdOrcBladestormTickInterval().assertEquals(0.5)
+	tdOrcBladestormRadius().assertEquals(200.0)
+
 @Test function towerDamageAurasCanBuffStructures()
 	tdTowerAuraTargetsAllowed().contains("structure").assertTrue()
 	tdTowerAuraTargetsAllowed().contains("friend").assertTrue()
@@ -236,6 +255,11 @@ import ObjectIds
 
 @Test function orcLevelOneUsesAutoAttackingTowerParent()
 	tdTowerObjectParentId(TD_TOWER_CHOICE_ORC, 1).assertEquals('owtw')
+
+@Test function orcTooltipsDescribeSwordDanceAndUltimateSplit()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_ORC, 5).contains("剑舞").assertTrue()
+	tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_A).contains("嗜血").assertTrue()
+	tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B).contains("剑刃风暴").assertTrue()
 
 @Test function towerRawcodesMapBackToExpectedFamilyAndLevel()
 	tdTowerChoiceForUnitTypeId('uA11').assertEquals(TD_TOWER_CHOICE_ARCHER)

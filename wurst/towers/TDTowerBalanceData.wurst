@@ -609,9 +609,16 @@ public function tdTowerAttackType(int towerChoice) returns AttackType
 	return AttackType.Normal
 
 public function tdTowerWeaponType(int towerChoice) returns WeaponType
-	if towerChoice == TD_TOWER_CHOICE_ARCHER or towerChoice == TD_TOWER_CHOICE_DRYAD
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return WeaponType.MissileBounce
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		return WeaponType.Missile
 	return WeaponType.Instant
+
+public function tdTowerWeaponTypeForBranch(int towerChoice, int level, int branch) returns WeaponType
+	if towerChoice == TD_TOWER_CHOICE_ARCHER and not tdArcherHasSplitArrowAtLevelBranch(level, branch)
+		return WeaponType.Missile
+	return tdTowerWeaponType(towerChoice)
 
 public function tdTowerProjectileArt(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER

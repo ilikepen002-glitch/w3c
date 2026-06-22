@@ -9,7 +9,9 @@ import Orders
 rect tdWorldRect = GetWorldBounds()
 int tdLaneEnemyCheckPlayer = -1
 boolean tdLaneEnemyCheckFound = false
-constant real TD_WAYPOINT_ARRIVAL_RADIUS = 150.0
+// 测试环境可能缺少 World Editor rect 句柄；兜底时用接近 32x32 路点的半径，
+// 避免在拐角前过早切到下一个 waypoint。
+constant real TD_WAYPOINT_ARRIVAL_RADIUS = 16.0
 
 // 把“属于哪一路、哪一波、是否已经按漏怪结算”编码进单位的 user data，
 // 这样奖励和扣命都能直接从单位本身取回上下文。
@@ -67,8 +69,11 @@ public function tdEnemyLaneOrderIdForTest() returns int
 public function tdEnemyLaneOrderNameForTest() returns string
 	return "move"
 
+function tdEnemyPinsLaneOrder() returns boolean
+	return true
+
 function tdEnemyNeedsLaneOrderRefresh(int currentOrder, int laneOrderId) returns boolean
-	return currentOrder != laneOrderId
+	return currentOrder != laneOrderId or tdEnemyPinsLaneOrder()
 
 public function tdEnemyNeedsLaneOrderRefreshForTest(int currentOrder, int laneOrderId) returns boolean
 	return tdEnemyNeedsLaneOrderRefresh(currentOrder, laneOrderId)
@@ -88,7 +93,8 @@ function tdOrderEnemyAlongLane(unit enemy, boolean waypointAdvanced)
 		return
 	let waypointIndex = tdEnemyWaypointIndex(enemy)
 	if waypointIndex < tdLaneWaypointCount(playerId)
-		// 只有进入当前 waypoint 区域后才推进到下一点，避免频繁重下同一个移动命令。
+		// 魔兽原生受击反应可能在保留 move order 的同时把怪物朝向拉回攻击者，
+		// 所以这里持续重下路线命令，把逃跑朝向钉在当前 waypoint 上。
 		enemy.issuePointOrderById(laneOrderId, tdLaneWaypointPosition(playerId, waypointIndex))
 	else
 		enemy.issuePointOrderById(laneOrderId, tdLaneExitPosition(playerId))
@@ -111,8 +117,24 @@ public function tdEnemyHealthDisplayManagedByRuntimeForTest() returns boolean
 	// 血条表现交给魔兽原生 UI，运行时不再维护 texttag 生命周期。
 	return false
 
+function tdPositionIsInsideRect(vec2 position, rect area) returns boolean
+	return area != null
+		and position.x >= GetRectMinX(area)
+		and position.x <= GetRectMaxX(area)
+		and position.y >= GetRectMinY(area)
+		and position.y <= GetRectMaxY(area)
+
+function tdEnemyReachedWaypointPosition(int playerId, int waypointIndex, vec2 position) returns boolean
+	let waypointRect = tdLaneWaypointRect(playerId, waypointIndex)
+	if waypointRect != null
+		return tdPositionIsInsideRect(position, waypointRect)
+	return position.distanceTo(tdLaneWaypointPosition(playerId, waypointIndex)) <= TD_WAYPOINT_ARRIVAL_RADIUS
+
+public function tdEnemyReachedWaypointPositionForTest(int playerId, int waypointIndex, vec2 position) returns boolean
+	return tdEnemyReachedWaypointPosition(playerId, waypointIndex, position)
+
 function tdEnemyReachedWaypoint(unit enemy, int playerId, int waypointIndex) returns boolean
-	return enemy.getPos().distanceTo(tdLaneWaypointPosition(playerId, waypointIndex)) <= TD_WAYPOINT_ARRIVAL_RADIUS
+	return tdEnemyReachedWaypointPosition(playerId, waypointIndex, enemy.getPos())
 
 function tdAdvanceEnemyWaypoint(unit enemy)
 	if enemy == null or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdEnemyWasLeaked(enemy)

@@ -202,7 +202,8 @@ function tdHandleTowerEquipmentVisualChanged()
 	let tower = GetManipulatingUnit()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
-	tdRefreshTowerRangeIndicatorsForTower(tower)
+	// 装备事件里反复销毁/重建范围图片会放大内存抖动；改为清掉旧图，等下次选中时再按最新范围重建。
+	tdClearTowerRangeIndicatorsForTower(tower)
 
 // 虽然名字还是 createPads，但目前这里实际做的是给每个玩家生成建造农民。
 // 玩家就是通过这个农民的建造菜单来放置 1 阶塔。
@@ -343,32 +344,8 @@ function tdHandleGhoulCorpseExplosionDamage()
 			DamageEvent.setNextDamageFromCode()
 			source.damageTarget(victim, tdGhoulCorpseExplosionDamage())
 	g.destr()
-	AddSpecialEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayDamage.mdl", center.x, center.y)
-
-function tdHandleArcherSplitArrowDamage()
-	if DamageEvent.isSpell() or DamageEvent.isCode()
-		return
-	let source = DamageEvent.getSource()
-	let target = DamageEvent.getTarget()
-	if source == null or target == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != TD_TOWER_CHOICE_ARCHER
-		return
-	if source.getAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID) <= 0
-		return
-	let level = tdTowerLevelForUnitTypeId(GetUnitTypeId(source))
-	let branch = tdTowerBranchForUnitTypeId(GetUnitTypeId(source))
-	var remainingTargets = tdArcherSplitArrowTargetCount(level) - 1
-	if remainingTargets <= 0
-		return
-	let center = source.getPos()
-	let laneId = tdEnemyLaneId(target)
-	let g = CreateGroup()
-	g.enumUnitsInRange(center, tdTowerBaseRangeForBranch(TD_TOWER_CHOICE_ARCHER, level, branch) + tdArcherSplitArrowBounceRange())
-	for victim in g
-		if remainingTargets > 0 and victim != target and victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == laneId
-			remainingTargets -= 1
-			DamageEvent.setNextDamageFromCode()
-			source.damageTarget(victim, DamageEvent.getAmount())
-	g.destr()
+	let corpseExplosionEffect = AddSpecialEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayDamage.mdl", center.x, center.y)
+	DestroyEffect(corpseExplosionEffect)
 
 function tdUnlockFarmerWageAbility()
 	if tdFarmerWageUnlocked
@@ -408,7 +385,6 @@ public function tdSetupDialogTrigger()
 	tdTowerItemPickupVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)
 	tdTowerItemDropVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)
 	DamageEvent.addListener() ->
-		tdHandleArcherSplitArrowDamage()
 		tdHandleGhoulCorpseExplosionDamage()
 
 function tdHandleFarmerWageCast() returns boolean

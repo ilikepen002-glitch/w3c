@@ -48,7 +48,7 @@ public constant int TD_GHOUL_LEVEL_6_B_ID = 'uG6B'
 public constant int TD_ARCHER_SPLIT_ARROW_ABILITY_ID = 'A100'
 public constant int TD_ARCHER_TRUESHOT_ABILITY_ID = 'A101'
 public constant int TD_ORC_CRIT_ABILITY_ID = 'A102'
-public constant int TD_ORC_CLEAVE_ABILITY_ID = 'A103'
+public constant int TD_ORC_SWORD_DANCE_ABILITY_ID = 'A103'
 public constant int TD_FOOT_BASH_ABILITY_ID = 'A104'
 public constant int TD_FOOT_COMMAND_ABILITY_ID = 'A105'
 public constant int TD_DRYAD_POISON_ABILITY_ID = 'A106'
@@ -56,6 +56,8 @@ public constant int TD_GHOUL_FRENZY_ABILITY_ID = 'A107'
 public constant int TD_DRYAD_SLOW_AURA_ABILITY_ID = 'A110'
 public constant int TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID = 'A116'
 public constant int TD_TOWER_REFINE_ABILITY_ID = 'A130'
+public constant int TD_ORC_BLOODLUST_ABILITY_ID = 'A131'
+public constant int TD_ORC_BLADESTORM_ABILITY_ID = 'A132'
 
 public constant int TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID = 'A111'
 public constant int TD_ORC_PERFECT_CRIT_ABILITY_ID = 'A112'
@@ -290,9 +292,9 @@ public function tdTowerNormalAbilitiesRawcodesForBranch(int towerChoice, int lev
 		if level >= 5
 			if level >= TD_MAX_TOWER_LEVEL
 				if branch == TD_TOWER_BRANCH_B
-					return commaList(TD_ORC_CLEAVE_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
-				return commaList(TD_ORC_CRIT_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
-			return commaList(TD_ORC_CRIT_ABILITY_ID, TD_ORC_CLEAVE_ABILITY_ID)
+					return commaList(TD_ORC_CRIT_ABILITY_ID, TD_ORC_BLADESTORM_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
+				return commaList(TD_ORC_CRIT_ABILITY_ID, TD_ORC_BLOODLUST_ABILITY_ID, TD_TOWER_REFINE_ABILITY_ID)
+			return commaList(TD_ORC_CRIT_ABILITY_ID, TD_ORC_SWORD_DANCE_ABILITY_ID)
 		return TD_ORC_CRIT_ABILITY_ID.toRawCode()
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if level >= 5
