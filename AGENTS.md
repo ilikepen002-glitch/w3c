@@ -9,6 +9,17 @@
 - 用统一方式验证结果
 - 避免破坏构建、测试和地图部署流程
 
+## 30 秒速查
+
+- 改源码，不改 `_build/`、`_build/dependencies/`、`war3map.j`
+- 测试源码只放 `tests/wurst/`，不要手工维护 `wurst/_tests/`
+- 常规检查跑 `tools\Run-WurstChecks.bat`
+- 涉及物编、构建、核心玩法或实际可玩性时，加跑 `build-and-deploy-test-map.bat`
+- 默认工作流是 `Codex 实现 -> Gemini 审查 -> Codex 修复/交付`
+- 只有用户明确说“跳过 Gemini / 这次不审查 / skip review”时，才允许跳过审查
+- Gemini 统一走 `tools\Invoke-GeminiReview.ps1`
+- 看不清需求落点时，先查 `wurst/`、`wurst/towers/`、`tests/wurst/`、`wurst.build`
+
 ## 默认双 Agent 协作模式
 
 本仓库默认使用：
