@@ -55,6 +55,12 @@ public function tdTowerRangeIndicatorTexturePath() returns string
 public function tdTowerRangeIndicatorColor() returns colorA
 	return colorA(80, 255, 80, 135)
 
+public function tdTowerRangeIndicatorEnabled() returns boolean
+	return true
+
+public function tdTowerRangeIndicatorEnabledForTest() returns boolean
+	return tdTowerRangeIndicatorEnabled()
+
 public function tdFarmerUsesFlyingMovement() returns boolean
 	return true
 
@@ -70,11 +76,17 @@ public function tdFarmerBlinkCooldown() returns real
 public function tdFarmerBlinkHotkey() returns string
 	return "F"
 
+public function tdFarmerBlinkIconPath() returns string
+	return Icons.bTNBlink
+
 public function tdFarmerWageCooldown() returns real
 	return 180.0
 
 public function tdFarmerWageUnlockWave() returns int
 	return 1
+
+public function tdFarmerWageIconPath() returns string
+	return Icons.bTNChestOfGold
 
 public function tdFarmerWageGoldForWaveAndBonus(int wave, int bonus) returns int
 	return 3 + wave + bonus
@@ -102,6 +114,9 @@ public function tdShouldRollPerfectUpgrade(int oldLevel, int newLevel) returns b
 
 public function tdRefinePerfectUpgradeGoldCost() returns int
 	return 150
+
+public function tdTowerRefineIconPath() returns string
+	return Icons.bTNEngineeringUpgrade
 
 public function tdTowerFoodCostForObjectGen() returns int
 	return 1
@@ -141,6 +156,45 @@ public function tdArcherAuraIconPath() returns string
 
 public function tdArcherPerfectAuraIconPath() returns string
 	return Icons.bTNImprovedStrengthOfTheMoon
+
+public function tdTowerBaseSkillIconPath(int towerChoice) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return Icons.bTNSearingArrows
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return Icons.bTNCriticalStrike
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return Icons.bTNBash
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return Icons.bTNSlowPoison
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		return Icons.bTNUnholyFrenzy
+	return ""
+
+public function tdTowerSupportSkillIconPath(int towerChoice) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return tdArcherAuraIconPath()
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return Icons.bTNWhirlwind
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return Icons.bTNCommand
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return Icons.bTNEntanglingRoots
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		return Icons.bTNCorpseExplode
+	return ""
+
+public function tdTowerPerfectSkillIconPath(int towerChoice) returns string
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return tdArcherPerfectAuraIconPath()
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return Icons.bTNBattleRoar
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return Icons.bTNStormHammer
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return Icons.bTNPoisonSting
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		return Icons.bTNBerserk
+	return ""
 
 public function tdArcherSplitArrowTargetCount(int level) returns int
 	if level < 1

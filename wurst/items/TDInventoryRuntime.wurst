@@ -20,7 +20,7 @@ public function tdTowerEquipmentCooldownCap() returns real
 	return 0.40
 
 public function tdTowerEquipmentRangeCap() returns real
-	return 500.0
+	return TD_TOWER_EQUIPMENT_RANGE_CAP
 
 function tdItemEffectContribution(int itemId, int effectKind) returns real
 	if tdItemPrimaryEffectKind(itemId) == effectKind
@@ -118,6 +118,9 @@ public function tdTowerAttackBonusAbilityLevelForItems(int item1, int item2, int
 public function tdTowerAttackSpeedAbilityLevelForItems(int item1, int item2, int item3) returns int
 	return tdClampEquipmentAbilityLevel(R2I(tdEquipmentAttackSpeedBonusForItems(item1, item2, item3) * 100.0 + 0.5), TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL)
 
+public function tdTowerEffectiveRangeForLoadout(int towerChoice, int level, int branch, int item1, int item2, int item3) returns real
+	return tdTowerBaseRangeForBranch(towerChoice, level, branch).toReal() + tdEquipmentRangeBonusForItems(item1, item2, item3)
+
 function tdTowerEquipmentItemId(unit tower, int slot) returns int
 	if tower == null
 		return 0
@@ -125,6 +128,19 @@ function tdTowerEquipmentItemId(unit tower, int slot) returns int
 	if itm == null or not tdItemIsEquipment(itm.getTypeId())
 		return 0
 	return itm.getTypeId()
+
+public function tdTowerEffectiveRangeForTower(unit tower) returns real
+	if tower == null
+		return 0.0
+	let towerChoice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
+	if towerChoice == 0
+		return 0.0
+	let level = tdTowerLevelForUnitTypeId(GetUnitTypeId(tower))
+	let branch = tdTowerBranchForUnitTypeId(GetUnitTypeId(tower))
+	let item1 = tdTowerEquipmentItemId(tower, 0)
+	let item2 = tdTowerEquipmentItemId(tower, 1)
+	let item3 = tdTowerEquipmentItemId(tower, 2)
+	return tdTowerEffectiveRangeForLoadout(towerChoice, level, branch, item1, item2, item3)
 
 function tdSetTowerEquipmentAbilityLevel(unit tower, int abilityId, int level)
 	if tower == null
@@ -146,6 +162,7 @@ public function tdRefreshTowerEquipmentBonuses(unit tower)
 	let item3 = tdTowerEquipmentItemId(tower, 2)
 	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID, tdTowerAttackBonusAbilityLevelForItems(item1, item2, item3))
 	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID, tdTowerAttackSpeedAbilityLevelForItems(item1, item2, item3))
+	SetUnitAcquireRange(tower, tdTowerEffectiveRangeForLoadout(tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)), tdTowerBranchForUnitTypeId(GetUnitTypeId(tower)), item1, item2, item3))
 
 boolean tdInventoryRuntimeReady = false
 

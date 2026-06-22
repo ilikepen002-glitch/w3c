@@ -2,6 +2,7 @@ package TDTowerBalanceData
 import TDConfig
 import TDTowerCatalogData
 import TDTowerCommonData
+import TDItemData
 import Icons
 import ObjEditingCommons
 import Units
@@ -21,6 +22,12 @@ public function tdTowerAcquisitionRangeForBranch(int towerChoice, int level, int
 
 public function tdTowerAcquisitionRange(int towerChoice, int level) returns real
 	return tdTowerAcquisitionRangeForBranch(towerChoice, level, TD_TOWER_BRANCH_A)
+
+public function tdTowerObjectAttackRangeForBranch(int towerChoice, int level, int branch) returns int
+	return tdTowerBaseRangeForBranch(towerChoice, level, branch) + R2I(TD_TOWER_EQUIPMENT_RANGE_CAP + 0.5)
+
+public function tdTowerObjectAttackRange(int towerChoice, int level) returns int
+	return tdTowerObjectAttackRangeForBranch(towerChoice, level, TD_TOWER_BRANCH_A)
 
 public function tdPerfectUpgradeMessage(int towerChoice) returns string
 	return "完美升级！" + tdTowerChoiceLabel(towerChoice) + " 获得了额外的终极强化。"

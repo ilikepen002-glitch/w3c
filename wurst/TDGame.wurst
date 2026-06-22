@@ -54,15 +54,13 @@ public function tdSetupLaneRects()
 public function tdRefreshHud()
 	var message = "队伍分数: " + tdGetTeamScore().toString()
 	for lanePlayer = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		message += "\n玩家" + (lanePlayer + 1).toString()
 		if tdIsLaneActive(lanePlayer)
+			message += "\n玩家" + (lanePlayer + 1).toString()
 			message += " 命:" + tdGetLives(lanePlayer).toString()
 			message += " 金:" + tdGetGold(lanePlayer).toString()
 			message += " 人口:" + GetPlayerState(Player(lanePlayer), PLAYER_STATE_RESOURCE_FOOD_USED).toString() + "/" + tdGetTowerPopulationLimit().toString()
 			message += " 分:" + tdGetLaneScore(lanePlayer).toString()
 			message += " " + tdLaneStatusText(lanePlayer)
-		else
-			message += " 未开启"
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		if tdIsLaneActive(playerId)
 			DisplayTimedTextToPlayer(Player(playerId), 0, 0, 1.2, message)
@@ -92,7 +90,7 @@ function tdHandleGameResolved()
 function tdClearLaneEnemiesEnum()
 	let enemy = GetEnumUnit()
 	if enemy != null and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == tdClearLanePlayer
-		tdClearEnemyHealthTag(enemy)
+		// 敌人表现不再挂自定义血条，清线时只需要移除单位本体。
 		enemy.remove()
 
 function tdClearLaneEnemies(int playerId)
@@ -113,7 +111,7 @@ public function tdHandleEnemyLeak(unit enemy)
 		return
 	tdLoseLife(playerId, 1)
 	tdMarkEnemyLeaked(enemy)
-	tdClearEnemyHealthTag(enemy)
+	// 漏怪用 kill 进入死亡流程，但 tdEnemyWasLeaked 会阻止重复发击杀奖励。
 	enemy.kill()
 	if tdGetLives(playerId) <= 0
 		tdSetResolvedWave(playerId, wave)
@@ -153,7 +151,6 @@ function tdHandleEnemyDeath()
 		return
 	let wave = tdEnemyWave(enemy)
 	// 这里只结算真正被击杀的怪；漏怪会走另一套逻辑，不给奖励。
-	tdClearEnemyHealthTag(enemy)
 	tdGainGold(playerId, tdWaveKillGold(wave))
 	tdAddScore(playerId, tdWaveScoreValue(wave))
 	tdHandleEnemyDrop(enemy, playerId, wave)

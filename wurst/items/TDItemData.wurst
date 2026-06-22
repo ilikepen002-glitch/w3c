@@ -1,4 +1,5 @@
 package TDItemData
+import Icons
 import ObjectIds
 
 public constant int TD_ITEM_QUALITY_WHITE = 1
@@ -34,6 +35,7 @@ public constant int TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID = 'A128'
 public constant int TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID = 'A129'
 public constant int TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL = 128
 public constant int TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL = 120
+public constant real TD_TOWER_EQUIPMENT_RANGE_CAP = 500.0
 
 public constant int TD_ITEM_SHORT_BOW_ID = 'iW01'
 public constant int TD_ITEM_EAGLE_SCOPE_ID = 'iW02'
@@ -79,21 +81,20 @@ int array tdItemPrimaryEffectKinds
 real array tdItemPrimaryEffectValues
 int array tdItemSecondaryEffectKinds
 real array tdItemSecondaryEffectValues
-boolean array tdEquipmentItems
 
 function tdItemQualityPoolKey(int quality, int index) returns int
 	return quality * TD_ITEM_POOL_STRIDE + index
 
 function tdRegisterItem(int itemId, int quality, string name, int primaryKind, real primaryValue, int secondaryKind, real secondaryValue)
 	tdItemDefinitionTotal += 1
-	tdItemCatalog[tdItemDefinitionTotal] = itemId
-	tdItemNames[itemId] = name
-	tdItemQualities[itemId] = quality
-	tdItemPrimaryEffectKinds[itemId] = primaryKind
-	tdItemPrimaryEffectValues[itemId] = primaryValue
-	tdItemSecondaryEffectKinds[itemId] = secondaryKind
-	tdItemSecondaryEffectValues[itemId] = secondaryValue
-	tdEquipmentItems[itemId] = true
+	let definitionIndex = tdItemDefinitionTotal
+	tdItemCatalog[definitionIndex] = itemId
+	tdItemNames[definitionIndex] = name
+	tdItemQualities[definitionIndex] = quality
+	tdItemPrimaryEffectKinds[definitionIndex] = primaryKind
+	tdItemPrimaryEffectValues[definitionIndex] = primaryValue
+	tdItemSecondaryEffectKinds[definitionIndex] = secondaryKind
+	tdItemSecondaryEffectValues[definitionIndex] = secondaryValue
 	tdItemQualitySizes[quality] += 1
 	tdItemQualityPools[tdItemQualityPoolKey(quality, tdItemQualitySizes[quality])] = itemId
 
@@ -142,6 +143,13 @@ function tdEnsureItemCatalog()
 	tdRegisterLaunchBlueItems()
 	tdRegisterLaunchPurpleItems()
 
+function tdItemDefinitionIndex(int itemId) returns int
+	// Rawcodes collide in Jass arrays, so item metadata must be resolved through the catalog.
+	for index = 1 to tdItemDefinitionTotal
+		if tdItemCatalog[index] == itemId
+			return index
+	return 0
+
 public function tdItemDefinitionCount() returns int
 	tdEnsureItemCatalog()
 	return tdItemDefinitionTotal
@@ -159,31 +167,49 @@ public function tdNextItemQuality(int quality) returns int
 
 public function tdItemIsEquipment(int itemId) returns boolean
 	tdEnsureItemCatalog()
-	return tdEquipmentItems[itemId]
+	return tdItemDefinitionIndex(itemId) > 0
 
 public function tdItemName(int itemId) returns string
 	tdEnsureItemCatalog()
-	return tdItemNames[itemId]
+	let definitionIndex = tdItemDefinitionIndex(itemId)
+	if definitionIndex == 0
+		return ""
+	return tdItemNames[definitionIndex]
 
 public function tdItemQuality(int itemId) returns int
 	tdEnsureItemCatalog()
-	return tdItemQualities[itemId]
+	let definitionIndex = tdItemDefinitionIndex(itemId)
+	if definitionIndex == 0
+		return 0
+	return tdItemQualities[definitionIndex]
 
 public function tdItemPrimaryEffectKind(int itemId) returns int
 	tdEnsureItemCatalog()
-	return tdItemPrimaryEffectKinds[itemId]
+	let definitionIndex = tdItemDefinitionIndex(itemId)
+	if definitionIndex == 0
+		return TD_ITEM_EFFECT_NONE
+	return tdItemPrimaryEffectKinds[definitionIndex]
 
 public function tdItemPrimaryEffectValue(int itemId) returns real
 	tdEnsureItemCatalog()
-	return tdItemPrimaryEffectValues[itemId]
+	let definitionIndex = tdItemDefinitionIndex(itemId)
+	if definitionIndex == 0
+		return 0.0
+	return tdItemPrimaryEffectValues[definitionIndex]
 
 public function tdItemSecondaryEffectKind(int itemId) returns int
 	tdEnsureItemCatalog()
-	return tdItemSecondaryEffectKinds[itemId]
+	let definitionIndex = tdItemDefinitionIndex(itemId)
+	if definitionIndex == 0
+		return TD_ITEM_EFFECT_NONE
+	return tdItemSecondaryEffectKinds[definitionIndex]
 
 public function tdItemSecondaryEffectValue(int itemId) returns real
 	tdEnsureItemCatalog()
-	return tdItemSecondaryEffectValues[itemId]
+	let definitionIndex = tdItemDefinitionIndex(itemId)
+	if definitionIndex == 0
+		return 0.0
+	return tdItemSecondaryEffectValues[definitionIndex]
 
 public function tdItemIdForCatalogIndex(int index) returns int
 	tdEnsureItemCatalog()
@@ -278,6 +304,9 @@ public function tdItemLevel(int itemId) returns int
 	if quality == TD_ITEM_QUALITY_PURPLE
 		return 7
 	return 1
+
+public function tdFarmerCraftIconPath() returns string
+	return Icons.bTNTransmute
 
 public function tdItemIconPath(int itemId) returns string
 	if itemId == TD_ITEM_SHORT_BOW_ID or itemId == TD_ITEM_STEEL_LONGBOW_ID or itemId == TD_ITEM_WINDRUNNER_BOW_ID or itemId == TD_ITEM_WHITE_TIGER_BANNER_ID

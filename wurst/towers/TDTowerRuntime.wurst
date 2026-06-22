@@ -28,6 +28,8 @@ trigger tdTowerUpgradeTrigger = CreateTrigger()
 trigger tdTowerDeathTrigger = CreateTrigger()
 trigger tdTowerSelectionTrigger = CreateTrigger()
 trigger tdTowerDeselectionTrigger = CreateTrigger()
+trigger tdTowerItemPickupVisualTrigger = CreateTrigger()
+trigger tdTowerItemDropVisualTrigger = CreateTrigger()
 int tdTowerCountPlayerId = -1
 int tdTowerCountResult = 0
 
@@ -57,10 +59,7 @@ function tdValidRangeIndicatorPlayerId(int playerId) returns boolean
 	return playerId >= 0 and playerId < bj_MAX_PLAYER_SLOTS
 
 function tdCreateTowerRangeIndicatorImage(unit tower) returns image
-	let towerChoice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
-	let level = tdTowerLevelForUnitTypeId(GetUnitTypeId(tower))
-	let branch = tdTowerBranchForUnitTypeId(GetUnitTypeId(tower))
-	let diameter = tdTowerRangeIndicatorDiameterForBranch(towerChoice, level, branch)
+	let diameter = tdTowerEffectiveRangeForTower(tower) * 2.0
 	let indicator = createImage(tdTowerRangeIndicatorTexturePath(), tower.getPos(), diameter, diameter, ImageLayer.L2)
 	indicator.setColor(tdTowerRangeIndicatorColor())
 	indicator.wrap()
@@ -85,6 +84,9 @@ function tdClearTowerRangeIndicatorsForTower(unit tower)
 function tdShowTowerRangeIndicatorForPlayer(player p, unit tower)
 	let playerId = GetPlayerId(p)
 	if tower == null or not tdValidRangeIndicatorPlayerId(playerId)
+		return
+	if not tdTowerRangeIndicatorEnabled()
+		tdClearTowerRangeIndicator(playerId)
 		return
 	if tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		tdClearTowerRangeIndicator(playerId)
@@ -176,7 +178,8 @@ function tdTryReserveTowerBuildPlot(unit tower) returns boolean
 		tdRejectTowerConstruction(tower, playerId, towerChoice, "只能在自己路线旁的草地建造区里建塔。")
 		return false
 	if not tdBuildPlotHasValidTerrain(buildCenter)
-		tdRejectTowerConstruction(tower, playerId, towerChoice, "白色坑道已经被代码锁定为禁建区，请把塔移到旁边的草地上。")
+		// 具体可建/不可建由地图 pathing 决定，运行时只给统一的建造失败反馈。
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "这个位置不可建造，请换到同一路线旁的有效草地。")
 		return false
 	if not tdBuildPlotIsFlat(buildCenter)
 		tdRejectTowerConstruction(tower, playerId, towerChoice, "这个位置不够平整，请换到同一路线旁更平整的草地。")
@@ -194,6 +197,12 @@ function tdHandleTowerDeselected()
 	let playerId = GetPlayerId(GetTriggerPlayer())
 	if tdValidRangeIndicatorPlayerId(playerId) and tdTowerRangeIndicatorTowers[playerId] == tower
 		tdClearTowerRangeIndicator(playerId)
+
+function tdHandleTowerEquipmentVisualChanged()
+	let tower = GetManipulatingUnit()
+	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return
+	tdRefreshTowerRangeIndicatorsForTower(tower)
 
 // 虽然名字还是 createPads，但目前这里实际做的是给每个玩家生成建造农民。
 // 玩家就是通过这个农民的建造菜单来放置 1 阶塔。
@@ -216,7 +225,7 @@ public function tdSetupBuildDialog()
 
 // 预留给塔位选择逻辑的启动入口。
 public function tdSetupPadSelection()
-	if tdTowerSelectionEventsReady
+	if tdTowerSelectionEventsReady or not tdTowerRangeIndicatorEnabled()
 		return
 	tdTowerSelectionEventsReady = true
 	tdTowerSelectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SELECTED)
@@ -389,11 +398,15 @@ public function tdSetupDialogTrigger()
 	tdTowerConstructionCancelTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL)
 	tdTowerUpgradeTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_UPGRADE_FINISH)
 	tdTowerDeathTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
+	tdTowerItemPickupVisualTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
+	tdTowerItemDropVisualTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DROP_ITEM)
 	tdTowerConstructionStartTrigger.addAction(function tdHandleTowerConstructionStarted)
 	tdTowerConstructionFinishTrigger.addAction(function tdHandleTowerConstructionFinished)
 	tdTowerConstructionCancelTrigger.addAction(function tdHandleTowerConstructionCancelled)
 	tdTowerUpgradeTrigger.addAction(function tdHandleTowerUpgradeFinished)
 	tdTowerDeathTrigger.addAction(function tdHandleTowerDeath)
+	tdTowerItemPickupVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)
+	tdTowerItemDropVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)
 	DamageEvent.addListener() ->
 		tdHandleArcherSplitArrowDamage()
 		tdHandleGhoulCorpseExplosionDamage()

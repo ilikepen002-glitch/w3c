@@ -28,3 +28,6 @@ import TDItems
 @Test function craftingReadsVisibleFrontThreeInventorySlots()
 	tdCraftModeForInventorySlots(TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, 0, 0, 0).assertEquals(TD_CRAFT_MODE_THREE)
 	tdCraftModeForInventorySlots(TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, 0, TD_ITEM_STEEL_LONGBOW_ID, 0, 0).assertEquals(TD_CRAFT_MODE_TWO)
+
+@Test function craftingTreatsDifferentWhiteRawcodesAsSameQuality()
+	tdCraftModeForInventorySlots(TD_ITEM_EAGLE_SCOPE_ID, TD_ITEM_ARMOR_SPIKE_ID, TD_ITEM_SWIFT_GLOVES_ID, 0, 0, 0).assertEquals(TD_CRAFT_MODE_THREE)

@@ -17,18 +17,14 @@ import TDConfig
 	tdIsLaneActive(0).assertTrue()
 	tdCountActiveLanes().assertEquals(1)
 
-@Test function laneTerrainOverridesRunInSmallChunks()
-	tdShouldRunLaneTerrainOverridesAsynchronously().assertTrue()
-	tdLaneTerrainOverrideTilesPerTick().assertGreaterThan(0)
-	tdLaneTerrainOverrideTilesPerTick().assertLessThan(256)
-
 @Test function startupRevealsTheWholeMap()
 	tdShouldRevealWholeMap().assertTrue()
 
 @Test function startupGuideTextUsesChinese()
 	tdStartupGuideMessage().contains("建塔").assertTrue()
-	tdStartupGuideMessage().contains("草地").assertTrue()
-	tdStartupGuideMessage().contains("白色坑道").assertTrue()
+	tdStartupGuideMessage().contains("白色坑道").assertFalse()
+	tdStartupGuideMessage().contains("起点").assertTrue()
+	tdStartupGuideMessage().contains("终点").assertTrue()
 	tdStartupGuideMessage().contains("滚轮").assertTrue()
 	tdStartupGuideMessage().contains("Static map mode").assertFalse()
 
@@ -48,6 +44,11 @@ import TDConfig
 
 @Test function startupFocusesCameraOnThePlayersFarmer()
 	tdShouldFocusStartingCameraOnFarmer().assertTrue()
+	tdShouldSelectStartingFarmer().assertFalse()
+
+@Test function closedPlayersAreOnlyMentionedInOneStartupNotice()
+	tdInactiveLaneNoticeForTest(true, false, false, true).assertEquals("未开启玩家：2、3。本局只启动已进入游戏的路线。")
+	tdInactiveLaneNoticeForTest(true, true, true, true).assertEquals("")
 
 @Test function addMoneyCommandGivesGoldToTheTriggeringPlayer()
 	tdResetState()

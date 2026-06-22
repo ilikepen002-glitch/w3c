@@ -7,12 +7,9 @@ import TDItems
 import TDInventory
 import TDConfig
 import ClosureTimers
-import TerrainUtils
 
 trigger tdChatCommandTrigger = CreateTrigger()
 boolean tdGameplayStartupCompleted = false
-boolean tdLaneTerrainOverrideRunning = false
-int tdLaneTerrainOverrideNextTile = 0
 
 public function tdMapBootstrapDelay() returns real
 	return 0.10
@@ -47,14 +44,8 @@ public function tdCameraDistanceClampInterval() returns real
 public function tdShouldFocusStartingCameraOnFarmer() returns boolean
 	return true
 
-public function tdShouldRunLaneTerrainOverridesAsynchronously() returns boolean
-	return true
-
-public function tdLaneTerrainOverrideTilesPerTick() returns int
-	return 64
-
-public function tdLaneTerrainOverrideInterval() returns real
-	return 0.03
+public function tdShouldSelectStartingFarmer() returns boolean
+	return false
 
 public function tdCameraTargetDistanceForWheelLift(int extraSteps) returns real
 	var clampedSteps = extraSteps
@@ -78,7 +69,33 @@ public function tdClampCameraTargetDistance(real distance) returns real
 	return distance
 
 public function tdStartupGuideMessage() returns string
-	return "代码接管路线模式：白色坑道会在开局被运行时锁定为禁建通道，只能在自己路线旁的草地上建塔。鼠标滚轮可拉高/拉低镜头，TD工人可用 " + tdFarmerBlinkHotkey() + " 闪烁快速换位。首发装备池共 " + tdItemDefinitionCount().toString() + " 件。"
+	// 文案保持和当前实现一致：路线区域来自地图静态布局，运行时只处理规则和提示。
+	return "当前路线只保留起点到终点的区域逻辑。请在自己路线旁的草地上建塔。鼠标滚轮可拉高/拉低镜头，TD工人可用 " + tdFarmerBlinkHotkey() + " 闪烁快速换位。首发装备池共 " + tdItemDefinitionCount().toString() + " 件。"
+
+function tdInactiveLaneNoticePlayerActiveForTest(int playerId, boolean lane0Active, boolean lane1Active, boolean lane2Active, boolean lane3Active) returns boolean
+	if playerId == 0
+		return lane0Active
+	if playerId == 1
+		return lane1Active
+	if playerId == 2
+		return lane2Active
+	return lane3Active
+
+public function tdInactiveLaneNoticeForTest(boolean lane0Active, boolean lane1Active, boolean lane2Active, boolean lane3Active) returns string
+	var inactiveCount = 0
+	var message = "未开启玩家："
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if not tdInactiveLaneNoticePlayerActiveForTest(playerId, lane0Active, lane1Active, lane2Active, lane3Active)
+			if inactiveCount > 0
+				message += "、"
+			message += (playerId + 1).toString()
+			inactiveCount += 1
+	if inactiveCount == 0
+		return ""
+	return message + "。本局只启动已进入游戏的路线。"
+
+function tdInactiveLaneNoticeMessage() returns string
+	return tdInactiveLaneNoticeForTest(tdIsLaneActive(0), tdIsLaneActive(1), tdIsLaneActive(2), tdIsLaneActive(3))
 
 function tdAddMoneyCommandPrefix() returns string
 	return "-addMoney "
@@ -125,6 +142,7 @@ public function tdStartupFallbackPlayerId() returns int
 
 public function tdEnsureStartupFallbackLane()
 	if tdCountActiveLanes() == 0
+		// 单人测试或异常槽位状态下仍启动 P1，保证地图能被本地快速验证。
 		tdSetLaneActive(tdStartupFallbackPlayerId(), true)
 
 function tdApplyStartingCamera()
@@ -142,8 +160,9 @@ function tdFocusStartingCameraOnFarmers()
 			if farmer != null
 				let pos = farmer.getPos()
 				SetCameraPosition(pos.x, pos.y)
-				ClearSelection()
-				SelectUnit(farmer, true)
+				if tdShouldSelectStartingFarmer()
+					ClearSelection()
+					SelectUnit(farmer, true)
 
 function tdLiftStartingCameraAgain()
 	doAfter(tdStartingCameraReapplyDelay()) ->
@@ -184,36 +203,11 @@ function tdSetupChatCommands()
 		TriggerRegisterPlayerChatEvent(tdChatCommandTrigger, Player(playerId), "-addMoney", false)
 	TriggerAddAction(tdChatCommandTrigger, function tdHandleChatCommand)
 
-function tdApplyLaneTerrainOverrideTile(tile currentTile)
-	if tdIsLaneTerrain(currentTile.toVec2())
-		// 白色坑道统一改成“可走但不可建”，避免继续依赖手工摆阻挡。
-		currentTile.setPathing(PATHING_TYPE_WALKABILITY, false)
-		currentTile.setPathing(PATHING_TYPE_BUILDABILITY, true)
-
-function tdApplyLaneTerrainOverrideChunk() returns boolean
-	var processed = 0
-	let maxTiles = tdLaneTerrainOverrideTilesPerTick()
-	while processed < maxTiles and tdLaneTerrainOverrideNextTile < TILES_COUNT
-		tdApplyLaneTerrainOverrideTile(tile(tdLaneTerrainOverrideNextTile))
-		tdLaneTerrainOverrideNextTile += 1
-		processed += 1
-	return tdLaneTerrainOverrideNextTile >= TILES_COUNT
-
-function tdStartLaneTerrainOverrides()
-	if tdLaneTerrainOverrideRunning
-		return
-	tdLaneTerrainOverrideRunning = true
-	tdLaneTerrainOverrideNextTile = 0
-	doPeriodically(tdLaneTerrainOverrideInterval()) cb ->
-		if tdApplyLaneTerrainOverrideChunk()
-			tdLaneTerrainOverrideRunning = false
-			destroy cb
-
 function tdRunGameplayStartup()
 	if tdGameplayStartupCompleted
 		return
 	tdGameplayStartupCompleted = true
-	// 地形美术和路线纹理仍由地图文件提供，但禁建/可走规则在开局统一由代码覆盖。
+	// 这里以后只装配运行时系统；地形/pathing 之类的可视布局仍由地图文件维护。
 	tdCreatePads()
 	tdSetupBuildDialog()
 	tdSetupPadSelection()
@@ -221,7 +215,6 @@ function tdRunGameplayStartup()
 	tdSetupInventoryRuntime()
 	tdSetupLaneRects()
 	tdStartLaneWaypointWatcher()
-	tdStartEnemyHealthWatcher()
 	tdStartEnemyDeathWatcher()
 	tdStartLeakWatcher()
 	tdSetupChatCommands()
@@ -229,9 +222,15 @@ function tdRunGameplayStartup()
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		if tdIsLaneActive(playerId)
 			DisplayTimedTextToPlayer(Player(playerId), 0, 0, 10.0, tdStartupGuideMessage())
+	let inactiveLaneNotice = tdInactiveLaneNoticeMessage()
+	if inactiveLaneNotice != ""
+		for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			if tdIsLaneActive(playerId)
+				DisplayTimedTextToPlayer(Player(playerId), 0, 0, 8.0, inactiveLaneNotice)
 	tdStartWaveSchedule()
 
 function tdFinalizeGameplayBootstrap()
+	// 镜头先落到稳定距离，再启动玩法，最后重新聚焦工人，减少开局镜头被初始化覆盖。
 	tdApplyStartingCamera()
 	tdStartCameraDistanceClamp()
 	tdRunGameplayStartup()
@@ -244,10 +243,11 @@ function tdBootstrapGameplayWhenPlayersReady(int retryCount)
 		tdEnsureStartupFallbackLane()
 		tdFinalizeGameplayBootstrap()
 		return
+	// 玩家槽位在地图加载早期可能还没稳定，短暂重试后再走 P1 fallback。
 	doAfter(tdMapBootstrapRetryInterval()) ->
 		tdBootstrapGameplayWhenPlayersReady(retryCount + 1)
 
-// 游戏主启动流程。地图文件保留原始美术布局，但白色坑道的 pathing 由代码统一接管。
+// 游戏主启动流程。路线本身交给地图静态布局，只保留起点/终点等区域驱动的运行时逻辑。
 public function tdStartGame()
 	tdResetState()
 	tdGameplayStartupCompleted = false
@@ -255,4 +255,3 @@ public function tdStartGame()
 	let setupDelay = tdMapBootstrapDelay()
 	doAfter(setupDelay) ->
 		tdBootstrapGameplayWhenPlayersReady(0)
-	// tdStartLaneTerrainOverrides()

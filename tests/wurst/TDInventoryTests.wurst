@@ -1,6 +1,8 @@
 package TDInventoryTests
 import TDInventory
 import TDItems
+import TDConfig
+import TDTowers
 
 @Test function towersKeepThreeSlotsAndThirdDuplicateIsPenalized()
 	tdTowerEquipmentSlotCount().assertEquals(3)
@@ -21,3 +23,7 @@ import TDItems
 @Test function economicAndDropBonusesAggregatePerTower()
 	tdEquipmentKillGoldBonusForItems(TD_ITEM_GOLD_RING_ID, TD_ITEM_MERCENARY_PURSE_ID, 0).assertEquals(3)
 	tdEquipmentDropBonusRollsForItems(TD_ITEM_SCAVENGER_BAG_ID, TD_ITEM_MERCENARY_PURSE_ID, 0).assertEquals(2)
+
+@Test function towerEffectiveRangeAddsEquipmentBonusOnTopOfBaseRange()
+	let baseRange = tdTowerBaseRangeForBranch(TD_TOWER_CHOICE_ARCHER, 5, TD_TOWER_BRANCH_A).toReal()
+	tdTowerEffectiveRangeForLoadout(TD_TOWER_CHOICE_ARCHER, 5, TD_TOWER_BRANCH_A, TD_ITEM_EAGLE_SCOPE_ID, TD_ITEM_FOCUS_STONE_ID, 0).assertEquals(baseRange + 240.0)

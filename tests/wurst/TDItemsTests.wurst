@@ -29,3 +29,6 @@ import TDItems
 	tdItemTitleName(TD_ITEM_STEEL_LONGBOW_ID).assertEquals("|cff00ff00精钢长弓|r")
 	tdItemTitleName(TD_ITEM_BOUNTY_CONTRACT_ID).assertEquals("|cff3399ff赏金契约|r")
 	tdItemTitleName(TD_ITEM_WHITE_TIGER_BANNER_ID).assertEquals("|cffcc66ff白虎战旗|r")
+
+@Test function farmerCraftUsesDistinctTransmuteIcon()
+	tdFarmerCraftIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNTransmute.blp")

@@ -1,7 +1,6 @@
 package TDItemObjectGen
 import TDItemData
 import ChannelAbilityPreset
-import AbilityObjEditing
 import ItemObjEditing
 
 function tdGenerateInventoryAbility(int abilityId, int slotCount, boolean canUseItems)
@@ -18,7 +17,7 @@ function tdGenerateCraftAbility()
 	..setName("合成")
 	..setTooltipNormal(1, "合成")
 	..setTooltipNormalExtended(1, "检查工人物品栏前 3 格，执行 2 合 1 或 3 合 1 升阶。")
-	..presetIcon("BTNChestOfGold")
+	..presetIcon(tdFarmerCraftIconPath())
 	..presetHotkey("C")
 	..presetButtonPosNormal(0, 1)
 	..presetTargetTypes(Targettype.NONE)

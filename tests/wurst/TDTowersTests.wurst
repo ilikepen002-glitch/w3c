@@ -1,5 +1,7 @@
 package TDTowersTests
 import TDTowers
+import TDInventory
+import TDItems
 import TDConfig
 import TDState
 import ObjectIds
@@ -128,6 +130,13 @@ import ObjectIds
 	tdFarmerWageCooldown().assertEquals(180.0)
 	tdFarmerWageUnlockWave().assertEquals(1)
 
+@Test function farmerUtilitySkillsKeepDistinctIcons()
+	tdFarmerBlinkIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNBlink.blp")
+	tdFarmerWageIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNChestOfGold.blp")
+	tdTowerRefineIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNEngineeringUpgrade.blp")
+	(tdFarmerWageIconPath() != tdFarmerCraftIconPath()).assertTrue()
+	(tdTowerRefineIconPath() != tdFarmerWageIconPath()).assertTrue()
+
 @Test function wageFormulaUsesGlobalWaveAndRandomBonusBounds()
 	tdFarmerWageGoldForWaveAndBonus(0, 1).assertEquals(4)
 	tdFarmerWageGoldForWaveAndBonus(2, 3).assertEquals(8)
@@ -181,6 +190,16 @@ import ObjectIds
 	tdArcherAuraIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNStrengthOfTheMoon.blp")
 	tdArcherPerfectAuraIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNImprovedStrengthOfTheMoon.blp")
 
+@Test function perfectSkillsUseUpgradedIconsInsteadOfReusingBaseArt()
+	tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_ORC).assertEquals("ReplaceableTextures\\CommandButtons\\BTNBattleRoar.blp")
+	tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_FOOTMAN).assertEquals("ReplaceableTextures\\CommandButtons\\BTNStormHammer.blp")
+	tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_DRYAD).assertEquals("ReplaceableTextures\\CommandButtons\\BTNPoisonSting.blp")
+	tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_GHOUL).assertEquals("ReplaceableTextures\\CommandButtons\\BTNBerserk.blp")
+	(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_ORC) != tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_ORC)).assertTrue()
+	(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_FOOTMAN) != tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_FOOTMAN)).assertTrue()
+	(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_DRYAD) != tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_DRYAD)).assertTrue()
+	(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_GHOUL) != tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_GHOUL)).assertTrue()
+
 @Test function towerDamageAurasCanBuffStructures()
 	tdTowerAuraTargetsAllowed().contains("structure").assertTrue()
 	tdTowerAuraTargetsAllowed().contains("friend").assertTrue()
@@ -196,6 +215,7 @@ import ObjectIds
 	(tdTowerSelectionScale(TD_TOWER_CHOICE_ARCHER, 5) <= 2.0).assertTrue()
 
 @Test function towerRangeIndicatorUsesIndependentGroundImage()
+	tdTowerRangeIndicatorEnabledForTest().assertTrue()
 	tdTowerRangeIndicatorTexturePath().assertEquals("ReplaceableTextures\\Selection\\SpellAreaOfEffect.blp")
 	tdTowerRangeIndicatorDiameter(TD_TOWER_CHOICE_GHOUL, 1).assertEquals(tdTowerBaseRange(TD_TOWER_CHOICE_GHOUL, 1) * 2.0)
 	tdTowerRangeIndicatorDiameter(TD_TOWER_CHOICE_ARCHER, 5).assertEquals(tdTowerBaseRange(TD_TOWER_CHOICE_ARCHER, 5) * 2.0)
@@ -208,6 +228,7 @@ import ObjectIds
 	tdTowerGroundTexture().assertEquals("")
 	tdTowerCollisionSize().assertEquals(64.0)
 	tdTowerAttackRangeMotionBuffer().assertEquals(0.0)
+	tdTowerObjectAttackRange(TD_TOWER_CHOICE_ORC, 1).assertEquals(tdTowerBaseRange(TD_TOWER_CHOICE_ORC, 1) + R2I(tdTowerEquipmentRangeCap() + 0.5))
 	tdTowerAcquisitionRange(TD_TOWER_CHOICE_ORC, 1).assertEquals(tdTowerBaseRange(TD_TOWER_CHOICE_ORC, 1).toReal())
 
 @Test function orcLevelFourUsesBuildingParentForStableUpgradeChain()
