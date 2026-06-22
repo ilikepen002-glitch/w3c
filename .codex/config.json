@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "agentGroup": {
+    "name": "War3 双 Agent 审查组",
+    "defaultMode": "Codex 开发 + Gemini 审查",
+    "reviewRequiredByDefault": true,
+    "skipReviewPhrases": [
+      "跳过 Gemini",
+      "这次不审查",
+      "skip review",
+      "skip gemini"
+    ]
+  },
+  "agents": {
+    "developer": {
+      "id": "dev_agent",
+      "provider": "codex",
+      "role": "开发实现",
+      "responsibilities": [
+        "实现 Wurst、玩法逻辑和构建相关改动",
+        "执行本次改动所需的验证",
+        "除非用户明确跳过，否则交付前发起 Gemini 审查"
+      ]
+    },
+    "reviewer": {
+      "id": "review_agent",
+      "provider": "gemini-cli",
+      "role": "只读审查",
+      "proxy": {
+        "HTTP_PROXY": "http://127.0.0.1:7890",
+        "HTTPS_PROXY": "http://127.0.0.1:7890"
+      },
+      "command": "powershell -ExecutionPolicy Bypass -File .\\tools\\Invoke-GeminiReview.ps1"
+    }
+  },
+  "reviewPolicy": {
+    "requiredFor": [
+      "最终交付",
+      "提交前整理",
+      "核心玩法改动",
+      "物编生成改动",
+      "构建或部署流程改动"
+    ],
+    "verdicts": [
+      "PASS",
+      "PASS WITH NOTES",
+      "FAIL"
+    ]
+  }
+}

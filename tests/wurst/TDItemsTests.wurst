@@ -30,5 +30,10 @@ import TDItems
 	tdItemTitleName(TD_ITEM_BOUNTY_CONTRACT_ID).assertEquals("|cff3399ff赏金契约|r")
 	tdItemTitleName(TD_ITEM_WHITE_TIGER_BANNER_ID).assertEquals("|cffcc66ff白虎战旗|r")
 
+@Test function equipmentObjectsDoNotRelyOnNativePassiveItemAbilities()
+	tdItemPassiveAbilityRawcodes(TD_ITEM_SHORT_BOW_ID).assertEquals("")
+	tdItemPassiveAbilityRawcodes(TD_ITEM_SWIFT_GLOVES_ID).assertEquals("")
+	tdItemPassiveAbilityRawcodes(TD_ITEM_STEEL_LONGBOW_ID).assertEquals("")
+
 @Test function farmerCraftUsesDistinctTransmuteIcon()
 	tdFarmerCraftIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNTransmute.blp")

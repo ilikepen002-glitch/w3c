@@ -1,6 +1,5 @@
 package TDItemData
 import Icons
-import ObjectIds
 
 public constant int TD_ITEM_QUALITY_WHITE = 1
 public constant int TD_ITEM_QUALITY_GREEN = 2
@@ -331,35 +330,7 @@ public function tdItemIconPath(int itemId) returns string
 		return "ReplaceableTextures\\CommandButtons\\BTNPackBeast.blp"
 	return "ReplaceableTextures\\CommandButtons\\BTNScroll.blp"
 
-function tdPassiveAbilityForEffect(int effectKind, real value) returns int
-	if effectKind == TD_ITEM_EFFECT_ATTACK
-		if value <= 8.0
-			return TD_ITEM_ATTACK_BONUS_WHITE_ABILITY_ID
-		if value <= 14.0
-			return TD_ITEM_ATTACK_BONUS_GREEN_ABILITY_ID
-		if value <= 22.0
-			return TD_ITEM_ATTACK_BONUS_BLUE_ABILITY_ID
-		return TD_ITEM_ATTACK_BONUS_PURPLE_ABILITY_ID
-	if effectKind == TD_ITEM_EFFECT_ATTACK_SPEED
-		if value <= 0.12
-			return TD_ITEM_ATTACK_SPEED_WHITE_ABILITY_ID
-		if value <= 0.20
-			return TD_ITEM_ATTACK_SPEED_GREEN_ABILITY_ID
-		if value <= 0.32
-			return TD_ITEM_ATTACK_SPEED_BLUE_ABILITY_ID
-		return TD_ITEM_ATTACK_SPEED_PURPLE_ABILITY_ID
-	return 0
-
-function tdAppendAbilityRawcode(string existing, int abilityId) returns string
-	if abilityId == 0
-		return existing
-	if existing == ""
-		return abilityId.toRawCode()
-	return existing + "," + abilityId.toRawCode()
-
-public function tdItemPassiveAbilityRawcodes(int itemId) returns string
+public function tdItemPassiveAbilityRawcodes(int _itemId) returns string
 	tdEnsureItemCatalog()
-	var result = ""
-	result = tdAppendAbilityRawcode(result, tdPassiveAbilityForEffect(tdItemPrimaryEffectKind(itemId), tdItemPrimaryEffectValue(itemId)))
-	result = tdAppendAbilityRawcode(result, tdPassiveAbilityForEffect(tdItemSecondaryEffectKind(itemId), tdItemSecondaryEffectValue(itemId)))
-	return result
+	// 塔装备的实际效果统一走运行时汇总，避免让建筑库存同时吃到原生物品被动和脚本同步效果。
+	return ""

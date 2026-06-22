@@ -9,6 +9,132 @@
 - 用统一方式验证结果
 - 避免破坏构建、测试和地图部署流程
 
+## 默认双 Agent 协作模式
+
+本仓库默认采用“双 Agent”工作流：
+
+- 开发者：Codex（负责实现、测试、修复、整理交付）
+- 审查者：Gemini CLI（负责方案审查和代码审查）
+
+默认流程：
+
+1. Codex 接收需求并完成本地实现
+2. Codex 运行本次改动所需的最小验证
+3. Codex 调用 Gemini 审查本次方案或代码改动
+4. 如果 Gemini 未通过，Codex 必须先修复再重新送审
+5. 只有 Gemini 明确通过，或用户明确要求“本次跳过审查”，才允许进入最终交付或提交阶段
+
+显式跳过审查规则：
+
+- 只有当用户明确说出“跳过 Gemini”“这次不审查”“skip review”或同等含义时，才允许跳过 Gemini 审查
+- “默认工作方式”优先于效率偏好；不要因为任务小就自动省略审查
+- 如果 Gemini CLI 不可用、鉴权失败、代理异常或审查命令执行失败，默认视为“审查未完成”，必须如实报告
+- 在 Gemini 不可用的情况下，只有用户再次明确同意“无审查交付”，才允许继续按跳过审查处理
+
+## Agent 角色
+
+### DevAgent（Codex）
+
+职责：
+
+- 负责需求拆解、Wurst 代码实现、测试补充、验证执行和最终交付
+- 按本文件既有架构边界，把改动落在正确源码位置
+- 在需要时调用 Gemini 审查，并根据审查意见继续修复
+- 不得声称“已经过 Gemini 审查”，除非 Gemini 命令实际执行成功并返回了结果
+
+### ReviewAgent（Gemini CLI）
+
+职责：
+
+- 只读审查，不直接修改仓库源码
+- 审查技术方案、改动 diff、测试覆盖和风险点
+- 对 Wurst 地图项目优先检查以下问题：
+  - 游戏规则或状态推进是否可能回归
+  - 初始化顺序、`init`/import 依赖是否存在隐患
+  - compiletime 物编生成、rawcode、升级链、技能挂载是否一致
+  - 核心玩法改动是否缺少最小验证
+  - 是否误改生成物、测试 staging 目录或构建产物
+- 输出必须包含明确结论：`PASS`、`PASS WITH NOTES` 或 `FAIL`
+
+## Gemini 调用要求
+
+调用 Gemini 时必须自动带代理配置。
+
+Windows CMD 形式：
+
+```cmd
+set HTTP_PROXY=http://127.0.0.1:7890 && set HTTPS_PROXY=http://127.0.0.1:7890 && gemini
+```
+
+PowerShell 形式：
+
+```powershell
+$env:HTTP_PROXY = "http://127.0.0.1:7890"
+$env:HTTPS_PROXY = "http://127.0.0.1:7890"
+gemini
+```
+
+本仓库统一入口脚本：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\Invoke-GeminiReview.ps1 -Task "本次改动说明"
+```
+
+除非当前任务明确要求手工拼装 Gemini 命令，否则优先使用上面的脚本，不要每次临时重写一套调用参数。
+
+## 默认审查门禁
+
+以下动作默认要求先经过 Gemini 审查，除非用户明确跳过：
+
+- 任何需要“完成交付”的代码改动
+- 任何请求提交 commit、整理提交信息、准备 PR 的改动
+- 任何影响核心玩法、初始化、波次、出怪、塔行为、物编生成、升级链或构建流程的改动
+
+如果当前任务只是在做探索、定位问题、起草方案或验证猜想，可以先不送审；但一旦进入“准备交付改动”的阶段，默认必须送审。
+
+## 审查输出约定
+
+Gemini 审查结果在最终说明里至少要交代：
+
+- 是否已实际调用 Gemini
+- Gemini 的结论是 `PASS`、`PASS WITH NOTES` 还是 `FAIL`
+- 如果未调用或调用失败，具体阻塞原因是什么
+- 如果用户要求跳过审查，需要明确写出“按用户要求跳过 Gemini 审查”
+
+## 示例工作流指令
+
+适合本项目的示例：
+
+```text
+给某个塔系新增一个主动技能，补最小测试，跑 Wurst 检查，然后让 Gemini 审查这次改动。
+```
+
+跳过审查示例：
+
+```text
+修复这个 Wurst 类型错误，跑检查，这次跳过 Gemini 审查。
+```
+
+## 验证命令
+
+验证脚本存在且能生成审查提示：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\Invoke-GeminiReview.ps1 -Task "验证 Gemini 审查脚本" -DryRun
+```
+
+验证 Gemini CLI 本体是否可被代理方式调用：
+
+```powershell
+$env:HTTP_PROXY = "http://127.0.0.1:7890"; $env:HTTPS_PROXY = "http://127.0.0.1:7890"; gemini --help
+```
+
+验证一次真实 Gemini 审查调用：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\Invoke-GeminiReview.ps1 -Task "验证 Gemini 审查链路"
+```
+
 ## 工作原则
 
 - 优先选择简单、可维护的方案。修根因，不堆脆弱补丁、重复分支或特殊判定。

@@ -1,0 +1,6 @@
+# Project-scoped Codex configuration for the MyFirstWurstMap dual-agent workflow.
+
+[agents]
+max_threads = 2
+max_depth = 1
+
