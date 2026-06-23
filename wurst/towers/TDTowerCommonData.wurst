@@ -212,6 +212,12 @@ public function tdArcherHasSplitArrowAtLevelBranch(int level, int branch) return
 	return branch == TD_TOWER_BRANCH_A
 
 public function tdArcherSplitArrowUsesBounceDamageForTest() returns boolean
+	return false
+
+public function tdArcherSplitArrowSearchesFromTowerRangeForTest() returns boolean
+	return true
+
+public function tdArcherSplitArrowDealsAttackDamageForTest() returns boolean
 	return true
 
 public function tdOrcCriticalStrikeChance() returns real

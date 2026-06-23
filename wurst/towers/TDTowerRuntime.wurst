@@ -10,11 +10,16 @@ import TDTowerData
 import TDInventory
 import ClosureTimers
 import TerrainUtils
+import Fx
+import LinkedList
 
 unit array tdFarmers
 constant Table tdPerfectUpgradeAvatarRefreshers = new Table()
 constant Table tdBuildPlotClaims = new Table()
 constant Table tdTowerBuildPlotSlots = new Table()
+constant Table tdOrcBladestormStates = new Table()
+constant int TD_ARCHER_SPLIT_ARROW_DAMAGE_EVENT_ID = 'Tspl'
+LinkedList<TDArcherSplitArrowVolley> tdArcherSplitArrowVolleys = new LinkedList<TDArcherSplitArrowVolley>()
 image array tdTowerRangeIndicatorImages
 unit array tdTowerRangeIndicatorTowers
 
@@ -26,12 +31,39 @@ trigger tdTowerConstructionFinishTrigger = CreateTrigger()
 trigger tdTowerConstructionCancelTrigger = CreateTrigger()
 trigger tdTowerUpgradeTrigger = CreateTrigger()
 trigger tdTowerDeathTrigger = CreateTrigger()
+trigger tdTowerAttackTrigger = CreateTrigger()
 trigger tdTowerSelectionTrigger = CreateTrigger()
 trigger tdTowerDeselectionTrigger = CreateTrigger()
 trigger tdTowerItemPickupVisualTrigger = CreateTrigger()
 trigger tdTowerItemDropVisualTrigger = CreateTrigger()
 int tdTowerCountPlayerId = -1
 int tdTowerCountResult = 0
+
+class TDArcherSplitArrowShot
+	unit target
+	real flightTime
+
+	construct(unit target, real flightTime)
+		this.target = target
+		this.flightTime = flightTime
+
+class TDArcherSplitArrowVolley
+	unit source
+	unit primaryTarget
+	real primaryFlightTime
+	LinkedList<TDArcherSplitArrowShot> extraShots
+
+	construct(unit source, unit primaryTarget, real primaryFlightTime, LinkedList<TDArcherSplitArrowShot> extraShots)
+		this.source = source
+		this.primaryTarget = primaryTarget
+		this.primaryFlightTime = primaryFlightTime
+		this.extraShots = extraShots
+
+	ondestroy
+		if extraShots != null
+			for shot in extraShots
+				destroy shot
+			destroy extraShots
 
 function tdPerfectUpgradeAvatarRefresherKey(unit tower) returns int
 	return tower.getHandleId()
@@ -297,11 +329,55 @@ function tdHandleTowerDeath()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	tdClearTowerRangeIndicatorsForTower(tower)
+	tdClearOrcBladestormState(tower)
 	tdReleaseTowerBuildPlot(tower)
 	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
 
 function tdTowerAlreadyPerfect(unit tower, int towerChoice) returns boolean
 	return tower != null and tdTowerPerfectSkillAbilityId(towerChoice) > 0 and tower.getAbilityLevel(tdTowerPerfectSkillAbilityId(towerChoice)) > 0
+
+function tdOrcBladestormStateKey(unit tower) returns int
+	return tower.getHandleId()
+
+function tdOrcBladestormIsActive(unit tower) returns boolean
+	return tower != null and tdOrcBladestormStates.hasBoolean(tdOrcBladestormStateKey(tower))
+
+function tdClearOrcBladestormState(unit tower)
+	if tower != null
+		tdOrcBladestormStates.removeBoolean(tdOrcBladestormStateKey(tower))
+
+function tdPulseOrcBladestorm(unit tower)
+	if tower == null or not tower.isAlive()
+		return
+	let center = tower.getPos()
+	let ownerPlayerId = GetPlayerId(GetOwningPlayer(tower))
+	let damagePerTick = tdOrcBladestormDamagePerSecond() * tdOrcBladestormTickInterval()
+	let g = CreateGroup()
+	g.enumUnitsInRange(center, tdOrcBladestormRadius())
+	for victim in g
+		if victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == ownerPlayerId
+			DamageEvent.setNextDamageFromCode()
+			tower.damageTarget(victim, damagePerTick)
+	g.destr()
+	tower.flashEffect(tdOrcBladestormEffectPath(), "origin")
+
+function tdHandleOrcBladestormCast() returns boolean
+	let tower = GetTriggerUnit()
+	if tower == null or tdOrcBladestormIsActive(tower)
+		return false
+	let key = tdOrcBladestormStateKey(tower)
+	let pulseCount = (tdOrcBladestormDuration() / tdOrcBladestormTickInterval() + 0.5).toInt()
+	tdOrcBladestormStates.saveBoolean(key, true)
+	doPeriodicallyCounted(tdOrcBladestormTickInterval(), pulseCount) cb ->
+		if tower == null or not tower.isAlive()
+			tdOrcBladestormStates.removeBoolean(key)
+			destroy cb
+		else
+			tdPulseOrcBladestorm(tower)
+			if cb.getCount() >= pulseCount
+				tdOrcBladestormStates.removeBoolean(key)
+				destroy cb
+	return false
 
 function tdHandleTowerRefineCast() returns boolean
 	let tower = GetTriggerUnit()
@@ -347,6 +423,162 @@ function tdHandleGhoulCorpseExplosionDamage()
 	let corpseExplosionEffect = AddSpecialEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayDamage.mdl", center.x, center.y)
 	DestroyEffect(corpseExplosionEffect)
 
+function tdArcherSplitArrowFlightTime(unit source, unit target) returns real
+	let projectileSpeed = tdTowerProjectileSpeed(TD_TOWER_CHOICE_ARCHER).toReal()
+	if source == null or target == null or projectileSpeed <= 0.405
+		return 0.0
+	let distance = source.getPos().distanceTo(target.getPos())
+	return distance / projectileSpeed
+
+function tdLaunchArcherSplitArrowVisual(unit source, unit target, real duration)
+	if source == null or target == null
+		return
+	let startPos = source.getPos().withTerrainZ(90.0)
+	let endPos = target.getPos().withTerrainZ(60.0)
+	let facing = source.getPos().angleTo(target.getPos())
+	let fx = new Fx(startPos, facing, tdTowerProjectileArt(TD_TOWER_CHOICE_ARCHER))
+	let tickInterval = 0.03
+	var tickCount = (duration / tickInterval + 0.5).toInt()
+	if tickCount < 1
+		tickCount = 1
+	doPeriodicallyCounted(tickInterval, tickCount) cb ->
+		var progress = cb.getCount().toReal() / tickCount.toReal()
+		if progress > 1.0
+			progress = 1.0
+		let currentPos = startPos + (endPos - startPos) * progress
+		fx.setXYZ(currentPos, true)
+		if cb.getCount() >= tickCount
+			destroy fx
+			destroy cb
+
+function tdFindFarthestArcherSplitArrowShot(LinkedList<TDArcherSplitArrowShot> shots) returns TDArcherSplitArrowShot
+	TDArcherSplitArrowShot farthestShot = null
+	var farthestFlightTime = -1.0
+	for shot in shots
+		if shot != null and shot.flightTime > farthestFlightTime
+			farthestShot = shot
+			farthestFlightTime = shot.flightTime
+	return farthestShot
+
+function tdTryAddArcherSplitArrowShot(LinkedList<TDArcherSplitArrowShot> shots, unit source, unit victim, int maxTargetCount)
+	if shots == null or source == null or victim == null or maxTargetCount <= 0
+		return
+	let newShot = new TDArcherSplitArrowShot(victim, tdArcherSplitArrowFlightTime(source, victim))
+	if shots.size() < maxTargetCount
+		shots.add(newShot)
+		return
+	let farthestShot = tdFindFarthestArcherSplitArrowShot(shots)
+	if farthestShot != null and newShot.flightTime < farthestShot.flightTime
+		if shots.remove(farthestShot)
+			destroy farthestShot
+		shots.add(newShot)
+		return
+	destroy newShot
+
+function tdArcherSplitArrowVolleyExpireDelay(TDArcherSplitArrowVolley volley) returns real
+	if volley == null
+		return 0.35
+	var expireDelay = volley.primaryFlightTime + 0.35
+	for shot in volley.extraShots
+		if shot != null and shot.flightTime + 0.35 > expireDelay
+			expireDelay = shot.flightTime + 0.35
+	return expireDelay
+
+function tdCreateArcherSplitArrowVolley(unit source, unit primaryTarget) returns TDArcherSplitArrowVolley
+	if source == null or primaryTarget == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != TD_TOWER_CHOICE_ARCHER
+		return null
+	if source.getAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID) <= 0
+		return null
+	let level = tdTowerLevelForUnitTypeId(GetUnitTypeId(source))
+	let remainingTargets = tdArcherSplitArrowTargetCount(level) - 1
+	if remainingTargets <= 0
+		return null
+	let laneId = tdEnemyLaneId(primaryTarget)
+	let sourcePos = source.getPos()
+	let searchRange = tdTowerEffectiveRangeForTower(source)
+	let primaryFlightTime = tdArcherSplitArrowFlightTime(source, primaryTarget)
+	let g = CreateGroup()
+	let extraShots = new LinkedList<TDArcherSplitArrowShot>()
+	g.enumUnitsInRange(sourcePos, searchRange)
+	for victim in g
+		if victim != primaryTarget and victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == laneId and sourcePos.distanceTo(victim.getPos()) <= searchRange + 0.405
+			tdTryAddArcherSplitArrowShot(extraShots, source, victim, remainingTargets)
+	g.destr()
+	if extraShots.isEmpty()
+		destroy extraShots
+		return null
+	for shot in extraShots
+		if shot != null and shot.target != null
+			tdLaunchArcherSplitArrowVisual(source, shot.target, shot.flightTime)
+	return new TDArcherSplitArrowVolley(source, primaryTarget, primaryFlightTime, extraShots)
+
+function tdQueueArcherSplitArrowVolley(unit source, unit primaryTarget)
+	let volley = tdCreateArcherSplitArrowVolley(source, primaryTarget)
+	if volley == null
+		return
+	tdArcherSplitArrowVolleys.add(volley)
+	let expireDelay = tdArcherSplitArrowVolleyExpireDelay(volley)
+	doAfter(expireDelay) ->
+		if tdArcherSplitArrowVolleys.remove(volley)
+			destroy volley
+
+function tdConsumeArcherSplitArrowVolley(unit source, unit primaryTarget) returns TDArcherSplitArrowVolley
+	let itr = tdArcherSplitArrowVolleys.iterator()
+	while itr.hasNext()
+		let volley = itr.next()
+		if volley.source == source and volley.primaryTarget == primaryTarget
+			itr.remove()
+			itr.close()
+			return volley
+	itr.close()
+	return null
+
+function tdHandleArcherSplitArrowAttack()
+	let source = GetAttacker()
+	let target = GetTriggerUnit()
+	if source == null or target == null
+		return
+	if tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != TD_TOWER_CHOICE_ARCHER
+		return
+	if source.getAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID) <= 0
+		return
+	if not target.isAlive() or GetOwningPlayer(target) != Player(TD_ENEMY_PLAYER_ID)
+		return
+	tdQueueArcherSplitArrowVolley(source, target)
+
+function tdArcherSplitArrowNativeAttackType() returns attacktype
+	return ATTACK_TYPE_PIERCE
+
+function tdDealArcherSplitArrowAttackDamage(unit source, unit target, real amount)
+	if source == null or target == null or not target.isAlive() or amount <= 0.0
+		return
+	DamageEvent.setNextDamageId(TD_ARCHER_SPLIT_ARROW_DAMAGE_EVENT_ID)
+	source.damageTarget(target, amount, true, true, tdArcherSplitArrowNativeAttackType(), DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+
+function tdHandleArcherSplitArrowDamage()
+	if DamageEvent.isSpell() or DamageEvent.isCode() or DamageEvent.getId() == TD_ARCHER_SPLIT_ARROW_DAMAGE_EVENT_ID
+		return
+	let source = DamageEvent.getSource()
+	let target = DamageEvent.getTarget()
+	if source == null or target == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != TD_TOWER_CHOICE_ARCHER
+		return
+	if source.getAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID) <= 0
+		return
+	let volley = tdConsumeArcherSplitArrowVolley(source, target)
+	if volley == null
+		return
+	let attackDamage = DamageEvent.getUnreducedAmount()
+	for shot in volley.extraShots
+		if shot != null and shot.target != null and shot.target.isAlive()
+			let victim = shot.target
+			let impactDelay = shot.flightTime - volley.primaryFlightTime
+			if impactDelay <= 0.03
+				tdDealArcherSplitArrowAttackDamage(source, victim, attackDamage)
+			else
+				doAfter(impactDelay) ->
+					tdDealArcherSplitArrowAttackDamage(source, victim, attackDamage)
+	destroy volley
+
 function tdUnlockFarmerWageAbility()
 	if tdFarmerWageUnlocked
 		return
@@ -369,7 +601,9 @@ public function tdSetupDialogTrigger()
 		return
 	tdTowerGameplayEventsReady = true
 	registerSpellEffectEvent(TD_FARMER_WAGE_ABILITY_ID, function tdHandleFarmerWageCast)
+	registerSpellEffectEvent(TD_ORC_BLADESTORM_ABILITY_ID, function tdHandleOrcBladestormCast)
 	registerSpellEffectEvent(TD_TOWER_REFINE_ABILITY_ID, function tdHandleTowerRefineCast)
+	tdTowerAttackTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_ATTACKED)
 	tdTowerConstructionStartTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_START)
 	tdTowerConstructionFinishTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_FINISH)
 	tdTowerConstructionCancelTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL)
@@ -382,9 +616,11 @@ public function tdSetupDialogTrigger()
 	tdTowerConstructionCancelTrigger.addAction(function tdHandleTowerConstructionCancelled)
 	tdTowerUpgradeTrigger.addAction(function tdHandleTowerUpgradeFinished)
 	tdTowerDeathTrigger.addAction(function tdHandleTowerDeath)
+	tdTowerAttackTrigger.addAction(function tdHandleArcherSplitArrowAttack)
 	tdTowerItemPickupVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)
 	tdTowerItemDropVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)
 	DamageEvent.addListener() ->
+		tdHandleArcherSplitArrowDamage()
 		tdHandleGhoulCorpseExplosionDamage()
 
 function tdHandleFarmerWageCast() returns boolean

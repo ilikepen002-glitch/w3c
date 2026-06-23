@@ -485,9 +485,9 @@ public function tdTowerLore(int towerChoice, int level) returns string
 		return "远程压制，站位安全，后期成长稳定。"
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if level >= TD_MAX_TOWER_LEVEL
-			return "终极剑圣分支，在Boss爆发或精英群处理之间做取舍。"
+			return "终极剑圣分支，在嗜血斩首或剑刃风暴压血线之间做取舍。"
 		if level == 5
-			return "剑圣成型后，致命一击和剑刃风暴一起爆发。"
+			return "剑圣成型后，致命一击配合剑舞持续压制高威胁目标。"
 		return "暴击重斩，适合拦腰斩断高血量怪。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if level >= TD_MAX_TOWER_LEVEL
@@ -518,8 +518,8 @@ public function tdTowerLoreForBranch(int towerChoice, int level, int branch) ret
 		return "星界白虎专注高伤害分裂箭，压低整段沟壑的血线。"
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
-			return "碎阵剑圣降低单点爆发，换取更远射程和剑刃风暴清群。"
-		return "屠王剑圣专注致命一击，用近距离高爆发处理Boss。"
+			return "碎阵剑圣保留致命一击，并以可自动释放的剑刃风暴兼顾单体追击和群体压血线。"
+		return "屠王剑圣以强化致命一击和嗜血追斩Boss，专注近距离单体爆发。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
 			return "圣佑统帅放弃盾击控制，换取更厚身板和统帅光环。"
@@ -536,10 +536,10 @@ public function tdTowerLoreForBranch(int towerChoice, int level, int branch) ret
 
 public function tdTowerTalentSummary(int towerChoice, int level) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		return "天赋: 分裂箭，总计命中" + tdArcherSplitArrowTargetCount(level).toString() + "个目标。"
+		return "天赋: 分裂箭，多支箭齐射，总计命中" + tdArcherSplitArrowTargetCount(level).toString() + "个目标。"
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if level >= 5
-			return "天赋: 致命一击，终阶追加剑刃风暴溅射。"
+			return "天赋: 致命一击与剑舞，终阶分化为嗜血斩首或剑刃风暴。"
 		return "天赋: 致命一击，专打高血量目标。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if level >= 5
@@ -562,8 +562,8 @@ public function tdTowerTalentSummaryForBranch(int towerChoice, int level, int br
 		return "分支: 分裂压制，高伤害多目标塔。"
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 剑刃风暴，远射程溅射清群。"
-		return "分支: 致命一击，近射程Boss爆发。"
+			return "分支: 剑刃风暴，兼顾单体追击和范围压血线。"
+		return "分支: 嗜血追斩，单体爆发和Boss处决。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
 			return "分支: 统帅光环，团队增伤和更稳防线。"
@@ -609,16 +609,9 @@ public function tdTowerAttackType(int towerChoice) returns AttackType
 	return AttackType.Normal
 
 public function tdTowerWeaponType(int towerChoice) returns WeaponType
-	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		return WeaponType.MissileBounce
-	if towerChoice == TD_TOWER_CHOICE_DRYAD
+	if towerChoice == TD_TOWER_CHOICE_ARCHER or towerChoice == TD_TOWER_CHOICE_DRYAD
 		return WeaponType.Missile
 	return WeaponType.Instant
-
-public function tdTowerWeaponTypeForBranch(int towerChoice, int level, int branch) returns WeaponType
-	if towerChoice == TD_TOWER_CHOICE_ARCHER and not tdArcherHasSplitArrowAtLevelBranch(level, branch)
-		return WeaponType.Missile
-	return tdTowerWeaponType(towerChoice)
 
 public function tdTowerProjectileArt(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
