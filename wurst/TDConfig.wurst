@@ -29,7 +29,8 @@ public constant int TD_TOWER_CHOICE_DRYAD = 4
 public constant int TD_TOWER_CHOICE_GHOUL = 5
 
 public constant int TD_PLAYER_ID = 0
-public constant int TD_ENEMY_PLAYER_ID = PLAYER_NEUTRAL_AGGRESSIVE
+// 与 wurst.build 的 Enemy Slot 保持一致，避免中立敌对野怪的自动回营行为。
+public constant int TD_ENEMY_PLAYER_ID = 4
 public constant int TD_BUILD_PLOT_UNIT_ID = 'uP01'
 public constant int TD_FARMER_UNIT_ID = 'uF01'
 

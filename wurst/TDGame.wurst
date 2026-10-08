@@ -156,7 +156,7 @@ function tdHandleEnemyDeath()
 	tdHandleEnemyDrop(enemy, playerId, wave)
 	tdRefreshHud()
 
-// 注册一个全局死亡触发器，统一监听中立敌对方刷出来的怪物死亡事件。
+// 注册一个全局死亡触发器，统一监听专用敌军槽位刷出来的怪物死亡事件。
 public function tdStartEnemyDeathWatcher()
 	TriggerRegisterPlayerUnitEvent(tdEnemyDeathTrigger, Player(TD_ENEMY_PLAYER_ID), EVENT_PLAYER_UNIT_DEATH, null)
 	TriggerAddAction(tdEnemyDeathTrigger, function tdHandleEnemyDeath)

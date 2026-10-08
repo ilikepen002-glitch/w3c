@@ -17,6 +17,16 @@ import TerrainUtils
 @Test function activePlayerCountIsFour()
 	TD_ACTIVE_PLAYER_COUNT.assertEquals(4)
 
+@Test function enemiesUseConfiguredComputerSlot()
+	TD_ENEMY_PLAYER_ID.assertEquals(4)
+
+@Test function enemiesDoNotUseNeutralAggressiveOwner()
+	(TD_ENEMY_PLAYER_ID != PLAYER_NEUTRAL_AGGRESSIVE).assertTrue()
+
+@Test function enemyOwnerStaysOutsideDefenderLanes()
+	TD_ENEMY_PLAYER_ID.assertGreaterThanOrEqual(TD_ACTIVE_PLAYER_COUNT)
+	tdIsLanePlayer(TD_ENEMY_PLAYER_ID).assertFalse()
+
 @Test function towerChoiceCountIsThree()
 	TD_TOWER_CHOICE_COUNT.assertEquals(5)
 
