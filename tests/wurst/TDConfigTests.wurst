@@ -34,32 +34,6 @@ import TerrainUtils
 	(TD_FARMER_UNIT_ID != 'hpea').assertTrue()
 	(TD_BUILD_PLOT_UNIT_ID != 'hhou').assertTrue()
 
-@Test function eachLaneKeepsEnoughGrassBuildSpace()
-	TD_BUILD_PLOTS_PER_LANE.assertGreaterThanOrEqual(10)
-	(tdBuildPlotPosition(0, 0).y != tdBuildPlotPosition(0, 1).y).assertTrue()
-	(tdBuildPlotPosition(0, 9).x > tdBuildPlotPosition(0, 0).x).assertTrue()
-
-@Test function buildPlotsSnapToStableTileCenters()
-	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		for plotIndex = 0 to TD_BUILD_PLOTS_PER_LANE - 1
-			tdBuildPlotCenter(playerId, plotIndex).assertEquals(tdBuildPlotPosition(playerId, plotIndex).toTileCenter())
-
-@Test function buildPlotsStaySeparatedByAtLeastOneBuildCell()
-	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		for leftIndex = 0 to TD_BUILD_PLOTS_PER_LANE - 1
-			for rightIndex = leftIndex + 1 to TD_BUILD_PLOTS_PER_LANE - 1
-				let leftPlot = tdBuildPlotCenter(playerId, leftIndex)
-				let rightPlot = tdBuildPlotCenter(playerId, rightIndex)
-				(leftPlot.distanceTo(rightPlot) >= tdBuildPlotMinimumSpacing()).assertTrue()
-
-@Test function exactBuildPlotCentersResolveBackToTheirOwnSlot()
-	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		for plotIndex = 0 to TD_BUILD_PLOTS_PER_LANE - 1
-			tdFindBuildPlotIndex(playerId, tdBuildPlotCenter(playerId, plotIndex)).assertEquals(plotIndex)
-
-@Test function offLanePositionsDoNotResolveToAnyBuildPlot()
-	tdFindBuildPlotIndex(0, tdLaneExitPosition(0)).assertEquals(-1)
-
 @Test function laneEndpointsExposeStableStartAndEndPositions()
 	(tdLaneSpawnPosition(0).distanceTo(tdLaneExitPosition(0)) > 0.).assertTrue()
 	(tdLaneSpawnPosition(1).distanceTo(tdLaneExitPosition(1)) > 0.).assertTrue()
@@ -83,13 +57,6 @@ import TerrainUtils
 	R2I(tdLaneWaypointPosition(0, 3).y).assertEquals(400)
 	R2I(tdLaneWaypointPosition(0, 4).x).assertEquals(-1168)
 	R2I(tdLaneWaypointPosition(0, 4).y).assertEquals(336)
-
-@Test function buildZonesStayScopedToEachPlayerLane()
-	tdLaneBuildZoneRadius().assertGreaterThanOrEqual(128.0)
-	tdIsInLaneBuildZone(0, tdBuildPlotCenter(0, 0)).assertTrue()
-	tdIsInLaneBuildZone(0, tdBuildPlotCenter(1, 0)).assertFalse()
-	tdIsInLaneBuildZone(2, tdBuildPlotCenter(2, 9)).assertTrue()
-	tdIsInLaneBuildZone(2, tdBuildPlotCenter(0, 0)).assertFalse()
 
 @Test function allLanesMergeIntoSharedCenterExit()
 	let exit0 = tdLaneExitPosition(0)

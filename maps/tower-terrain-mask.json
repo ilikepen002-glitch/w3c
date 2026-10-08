@@ -1,0 +1,96 @@
+{
+  "generator": "tools/GenerateTowerTerrainMask.py",
+  "baseline_commit": "4d69ea31a95d296138b0fd88c503c3ae701f2704",
+  "baseline_map_sha256": "627a64c012dcc46e1b5acc48dcbb20eeca0b465093718800799a2df37ded0b5e",
+  "terrain_sha256": "997468b2761ae013507a2696cdb1deb1644b8fd1c1e4cecb4d5da26ffee1f087",
+  "original_pathing_sha256": "b11e1a689c2ef493d77698e5c0e632a778f5332a558d439b9d8bf431e8ba2f41",
+  "generated_pathing_sha256": "f03db9fe3a24936718f3e9e4de1b3dc878527ad7d598d78ced7239a431d98d49",
+  "generated_map_sha256": "3fd31a78aaa5d017565fca6c6f3758d40ed6131999c701bdf1f99557ba39e408",
+  "attributes_metadata_exception": {
+    "purpose": "Update only the changed WPM member's CRC32",
+    "crc_offset": 44,
+    "changed_bytes_maximum": 4,
+    "original_sha256": "537caccf4fe33dd57fc10f9894368f7b3c599a0ba84ddc1d08fb57f1c50bbfd4",
+    "generated_sha256": "395127c0bc047b7d6d0570b360bd5fb6be420ec046c06c402674fda63f685579"
+  },
+  "origin": [
+    -4096,
+    -4096
+  ],
+  "cell_size": 32,
+  "pathing_dimensions": [
+    256,
+    256
+  ],
+  "raw_plateau_layer": 1,
+  "max_quad_height_delta": 8.0,
+  "edge_margin": 32,
+  "shared_exit_rect": [
+    -384,
+    -448,
+    352,
+    64
+  ],
+  "eligible_cells": 21984,
+  "added_unbuildable_cells": 9764,
+  "unchanged_member_sha256": {
+    "(listfile)": "f084ff35c5a8e17566c773bddde1d17bee78093b928a0e6c193c8feba389ef98",
+    "war3map.doo": "3cad755ed7f21214130ec5d7ed553e6c740309a1b053c22fd230f8996fad9382",
+    "war3map.j": "95cb24509ca5210908221ac0edf0614529fb8d1fb681578fbcc0b4e8689ab75e",
+    "war3map.mmp": "15e135454a7896064c8c36c8c81148885b3faa6c655db1547b2d97ebafe560ac",
+    "war3map.shd": "de2f256064a0af797747c2b97505dc0b9f3df0de4f489eac731c23ae9ca9cc31",
+    "war3map.w3a": "a2e78ac3d22b6347e4d82131314b23e18ce015793dd74d19b46db2ffe6bd0056",
+    "war3map.w3c": "d6892f5b7b07fdbe520f2f22b95b82706e0af716848d62aceb47c53715816ebf",
+    "war3map.w3e": "997468b2761ae013507a2696cdb1deb1644b8fd1c1e4cecb4d5da26ffee1f087",
+    "war3map.w3i": "fc160af3281ed19c319494223c92d6af4907de12cc209f2d6f0dd6881b2c0c51",
+    "war3map.w3r": "6fb69963bcaa599f4932cc7ead21699bad8aa18a5be9cc866330144abb2107b5",
+    "war3map.w3u": "b369a756f4938aa180bf41e1f7eac1e969da599f7a65101ff47b05af9d0ee4a2",
+    "war3map.wct": "ff9daa33881c8fa3ae2b09a3966ea87ea3a1843e0cd97dc457d21585bbe93310",
+    "war3map.wtg": "ac155a4bac5cbfb70832c18aba7254247ac106f71660ac6d6a68eb9bc0dce935",
+    "war3map.wts": "403881d04663017ac9c875efd1724b6aabe22fe1842036380def5f83a5f5f8d9",
+    "war3mapMap.blp": "9c1096afc313456bd574e2d1aadd794815772bb3752c6271f66f795dcf5bf81f",
+    "war3mapUnits.doo": "0ad30f729507c0a2f58a3b904c7cdac663cd4062f96f488d8ef7c2dcd7c267a7"
+  },
+  "approved_p1_centers": [
+    [
+      -2432,
+      1792
+    ],
+    [
+      -2240,
+      1792
+    ],
+    [
+      -2048,
+      1792
+    ],
+    [
+      -1856,
+      1792
+    ],
+    [
+      -1664,
+      1792
+    ],
+    [
+      -2432,
+      2304
+    ],
+    [
+      -2240,
+      2304
+    ],
+    [
+      -2048,
+      2304
+    ],
+    [
+      -1856,
+      2304
+    ],
+    [
+      -1664,
+      2304
+    ]
+  ]
+}

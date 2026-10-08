@@ -70,7 +70,7 @@ public function tdClampCameraTargetDistance(real distance) returns real
 
 public function tdStartupGuideMessage() returns string
 	// 文案保持和当前实现一致：路线区域来自地图静态布局，运行时只处理规则和提示。
-	return "当前路线只保留起点到终点的区域逻辑。请在自己路线旁的草地上建塔。鼠标滚轮可拉高/拉低镜头，TD工人可用 " + tdFarmerBlinkHotkey() + " 闪烁快速换位。首发装备池共 " + tdItemDefinitionCount().toString() + " 件。"
+	return "当前路线只保留起点到终点的区域逻辑。请在自己象限的平坦高台上建塔，悬崖旁留 32 距离；中心出口禁建。鼠标滚轮可拉高/拉低镜头，TD工人可用 " + tdFarmerBlinkHotkey() + " 闪烁快速换位。首发装备池共 " + tdItemDefinitionCount().toString() + " 件。"
 
 function tdInactiveLaneNoticePlayerActiveForTest(int playerId, boolean lane0Active, boolean lane1Active, boolean lane2Active, boolean lane3Active) returns boolean
 	if playerId == 0

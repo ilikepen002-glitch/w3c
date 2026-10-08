@@ -9,14 +9,12 @@ import Table
 import TDTowerData
 import TDInventory
 import ClosureTimers
-import TerrainUtils
+import MapBounds
 import Fx
 import LinkedList
 
 unit array tdFarmers
 constant Table tdPerfectUpgradeAvatarRefreshers = new Table()
-constant Table tdBuildPlotClaims = new Table()
-constant Table tdTowerBuildPlotSlots = new Table()
 constant Table tdOrcBladestormStates = new Table()
 constant int TD_ARCHER_SPLIT_ARROW_DAMAGE_EVENT_ID = 'Tspl'
 LinkedList<TDArcherSplitArrowVolley> tdArcherSplitArrowVolleys = new LinkedList<TDArcherSplitArrowVolley>()
@@ -142,22 +140,21 @@ public function tdCanAffordTower(int playerId, int towerChoice) returns boolean
 public function tdGetFarmer(int playerId) returns unit
 	return tdFarmers[playerId]
 
-function tdBuildPlotSlot(int playerId, int plotIndex) returns int
-	return playerId * TD_BUILD_PLOTS_PER_LANE + plotIndex
+// Native building pathing owns occupancy. Read live units rather than keeping a
+// second reservation table: construction, upgrades, death and RemoveUnit cannot
+// leave stale cells, and another owner's unfinished tower also blocks placement.
+public function tdTowerBlocksPlacement(vec2 candidatePosition, vec2 otherPosition, boolean sameUnit, boolean alive, int otherTypeId) returns boolean
+	return not sameUnit and alive and tdTowerChoiceForUnitTypeId(otherTypeId) != 0 and tdTowerFootprintsOverlap(candidatePosition, otherPosition)
 
-function tdTowerBuildPlotSlot(unit tower) returns int
-	if tower != null and tdTowerBuildPlotSlots.hasInt(tower.getHandleId())
-		return tdTowerBuildPlotSlots.loadInt(tower.getHandleId())
-	return -1
-
-function tdReleaseTowerBuildPlot(unit tower)
-	let slot = tdTowerBuildPlotSlot(tower)
-	if slot < 0
-		return
-	tdTowerBuildPlotSlots.removeInt(tower.getHandleId())
-	let claimedTower = tdBuildPlotClaims.loadUnit(slot)
-	if claimedTower == tower
-		tdBuildPlotClaims.removeHandle(slot)
+function tdTowerOverlapsAnotherTower(unit tower) returns boolean
+	let nearby = CreateGroup()
+	nearby.enumUnitsInRect(boundRect)
+	var overlaps = false
+	for other from nearby
+		if tdTowerBlocksPlacement(tower.getPos(), other.getPos(), other == tower, other.isAlive(), GetUnitTypeId(other))
+			overlaps = true
+	nearby.destr()
+	return overlaps
 
 function tdCountPlayerTowerEnum()
 	let tower = GetEnumUnit()
@@ -168,7 +165,7 @@ function tdCountLivingPlayerTowers(int playerId) returns int
 	tdTowerCountPlayerId = playerId
 	tdTowerCountResult = 0
 	let g = CreateGroup()
-	g.enumUnitsInRect(GetWorldBounds())
+	g.enumUnitsInRect(boundRect)
 	ForGroup(g, function tdCountPlayerTowerEnum)
 	g.destr()
 	return tdTowerCountResult
@@ -179,19 +176,19 @@ function tdAlignPlayerTowerPopulation(int playerId)
 	SetPlayerState(Player(playerId), PLAYER_STATE_RESOURCE_FOOD_CAP, tdGetTowerPopulationLimit())
 	SetPlayerState(Player(playerId), PLAYER_STATE_RESOURCE_FOOD_USED, tdCountLivingPlayerTowers(playerId))
 
-function tdClaimTowerBuildPlot(unit tower, int slot)
-	tdBuildPlotClaims.saveUnit(slot, tower)
-	tdTowerBuildPlotSlots.saveInt(tower.getHandleId(), slot)
-
 function tdRejectTowerConstruction(unit tower, int playerId, int towerChoice, string message)
+	// RemoveUnit does not use native cancellation/refund. A duplicate callback
+	// sees typeId 0 and cannot credit the base build cost a second time.
+	if tower == null or GetUnitTypeId(tower) == 0
+		return
 	tdClearTowerRangeIndicatorsForTower(tower)
-	tdReleaseTowerBuildPlot(tower)
 	tower.remove()
 	tdGainGold(playerId, tdTowerCost(towerChoice))
+	tdAlignPlayerTowerPopulation(playerId)
 	tdRefreshHud()
 	DisplayTimedTextToPlayer(Player(playerId), 0, 0, 4.0, message)
 
-function tdTryReserveTowerBuildPlot(unit tower) returns boolean
+function tdValidateTowerConstruction(unit tower) returns boolean
 	if tower == null
 		return false
 	let towerChoice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
@@ -203,18 +200,20 @@ function tdTryReserveTowerBuildPlot(unit tower) returns boolean
 		return false
 	if tdCountLivingPlayerTowers(playerId) > tdGetTowerPopulationLimit()
 		tdRejectTowerConstruction(tower, playerId, towerChoice, "已达到当前阶段人口上限，先升级已有防御塔。")
-		tdAlignPlayerTowerPopulation(playerId)
 		return false
-	let buildCenter = tower.getPos().toTileCenter()
+	let buildCenter = tower.getPos()
 	if not tdIsInLaneBuildZone(playerId, buildCenter)
-		tdRejectTowerConstruction(tower, playerId, towerChoice, "只能在自己路线旁的草地建造区里建塔。")
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "只能在自己象限的高台上建塔，中心出口禁止建造。")
 		return false
 	if not tdBuildPlotHasValidTerrain(buildCenter)
-		// 具体可建/不可建由地图 pathing 决定，运行时只给统一的建造失败反馈。
-		tdRejectTowerConstruction(tower, playerId, towerChoice, "这个位置不可建造，请换到同一路线旁的有效草地。")
+		// 静态 terrain mask 与地图禁建格同源，不会把新塔自己的占地误判成非法。
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "请在自己的高台上建造，并与悬崖保持 32 距离。")
 		return false
 	if not tdBuildPlotIsFlat(buildCenter)
-		tdRejectTowerConstruction(tower, playerId, towerChoice, "这个位置不够平整，请换到同一路线旁更平整的草地。")
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "整个建筑占地必须平整，请避开斜坡。")
+		return false
+	if tdTowerOverlapsAnotherTower(tower)
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "这里已被另一座塔占用，请勿重叠建造。")
 		return false
 	return true
 
@@ -275,7 +274,7 @@ function tdHandleTowerConstructionStarted()
 	let tower = GetConstructedStructure()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
-	tdTryReserveTowerBuildPlot(tower)
+	tdValidateTowerConstruction(tower)
 
 function tdHandleTowerConstructionFinished()
 	let tower = GetConstructedStructure()
@@ -289,8 +288,12 @@ function tdHandleTowerConstructionCancelled()
 	let tower = GetCancelledStructure()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
-	tdReleaseTowerBuildPlot(tower)
-	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
+	// Native cancellation owns the refund and removes the building after this
+	// event. Reconcile food afterward; do not manually refund or clear another
+	// tower's occupancy. Retain only playerId, not the soon-removed unit handle.
+	let playerId = GetPlayerId(GetOwningPlayer(tower))
+	doAfter(0.0) ->
+		tdAlignPlayerTowerPopulation(playerId)
 
 function tdApplyPerfectUpgrade(unit tower, int towerChoice)
 	let baseAbilityId = tdTowerBaseSkillAbilityId(towerChoice)
@@ -331,7 +334,6 @@ function tdHandleTowerDeath()
 		return
 	tdClearTowerRangeIndicatorsForTower(tower)
 	tdClearOrcBladestormState(tower)
-	tdReleaseTowerBuildPlot(tower)
 	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
 
 function tdTowerAlreadyPerfect(unit tower, int towerChoice) returns boolean

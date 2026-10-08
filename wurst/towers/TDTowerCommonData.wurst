@@ -26,16 +26,16 @@ public function tdTowerNormalSelectionScale() returns real
 	return 1.35
 
 public function tdTowerCollisionSize() returns real
-	return 64.0
+	return TD_TOWER_HALF_FOOTPRINT
 
 public function tdTowerPathingMap() returns string
-	return "PathTextures\\2x2Default.tga"
+	return "war3mapImported\\TDTower192.tga"
 
 public function tdTowerPlacementRequires() returns string
 	return ""
 
 public function tdTowerPlacementPreventedBy() returns string
-	return "" // unbuildable,unwalkable,unflyable,blighted,water
+	return "unbuildable,unwalkable,water"
 
 public function tdTowerRaceForObjectGen() returns Race
 	return Race.Human

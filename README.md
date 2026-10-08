@@ -12,19 +12,24 @@
 ## 后续构建
 
 按项目规则运行 `tools\Run-WurstChecks.bat` 和 `build-and-deploy-test-map.bat`。
-构建脚本从 `maps\ExampleMap.source.w3x` 编译，在 `_build/` 生成地图，成功追加显示名时间戳后更新根目录 `ExampleMap.w3x`，然后部署到脚本配置的游戏目录。
+构建脚本先把 `maps\ExampleMap.source.w3x` 复制到 `_build\ExampleMap.input.w3x`，编译这个临时输入，在 `_build/` 生成地图，追加显示名时间戳后更新根目录 `ExampleMap.w3x`，然后部署到脚本配置的游戏目录。临时输入不会被当作部署产物。
 发布玩法修改时，也要重新构建并提交根目录地图。历史方案文档中把 `ExampleMap.w3x` 当作源地图的路径，现对应 `maps/ExampleMap.source.w3x`。
 
-## 本次打包验证（2026-10-08，2228）
+## 本次打包验证（2026-10-08，2256）
 
-- 基于 `23e45c1d889746cc526c258dc5f4f003fc3808fa`，敌人归属改为 `wurst.build` 已配置的专用电脑槽位 4；不再使用中立敌对玩家。
-- 本次只调整敌人归属，不改路线、地形、碰撞、数值或移动命令逻辑；保留原有 CreepGuard、RemoveGuardPosition 和避免重复 move 命令的保护。
-- 这是针对“拐角/受击后回头”的候选修复。中立敌对归属与专用敌军槽位不一致已确认，但尚未在 Warcraft III 1.27a 中证明它是全部回头现象的原因。
-- 使用原先固定、校验过的官方工具链，从 `maps/ExampleMap.source.w3x` 重新构建；类型检查通过，176/176 自动测试通过。新增归属测试先在旧代码失败，再在修复后通过。
-- 测试 staging 清理后再次编译成功。未加时间戳地图 SHA-256：`2757fcba98a45059c327dda6c0b3ce805d9f3551eb0e663cb06b16f9eea7ee38`。
-- 按现有 `PatchMapDisplayName` 工具生成显示名和加载页标题 `深渊守望 2228`。2228 是 2026-10-08 22:28（UTC+8）的构建版本标签，不代表用户时区。
-- 最终根目录地图 SHA-256：`a091cb2b121dad61fbc1bad238a9e04da4f59480cae23c1ab914c42c8b5b985c`；追加时间戳前后 JASS 逐字节一致。
-- 已检查打包 JASS：敌人归属初始化为 4，槽位 4 为电脑且属敌军队伍 1，玩家 0–3 属防守队伍 0；生成、死亡监听、奖励和目标筛选继续使用同一归属常量，路线归属仍取自单位元数据。
-- World Editor 源地图模板逐字节未变。保留 `scriptMode: JASS`、`wc3Patch: v1.28` 和 pre1.29 标准库。
-- 按用户要求跳过 Gemini 审查，改用独立只读方案和实现审查。
-- 本次执行获准的 Linux 构建/测试流程；未执行 Windows bat、Windows 部署或 Warcraft III 1.27a 实机试玩。请以 2228 版复核同一拐角、被塔攻击后的走向，以及击杀奖励和漏怪扣命。
+- 基于 `4d69ea31a95d296138b0fd88c503c3ae701f2704`，保留 2228 版专用敌军电脑槽位 4 及移动命令修复。
+- 所有 35 个塔等级/分支统一为显式建筑，192×192（6×6 路径格）占地，碰撞半径 96，使用原生禁建/不可走/水域过滤。允许自由摆放，不固定为十个槽位。
+- 仅允许在自己的平坦高台建造，悬崖侧留 32：P1 左上、P2 右上、P3 右下、P4 左下；中心出口保留。运行时检查实际完整占地和现存塔，包括正在建造的塔，升级不另占位置。
+- 源图从固定基线生成同源 WPM/Wurst 掩码，只给 9,764 个格增加 `0x08` 禁建位，另同步该 WPM 的 CRC32 元数据。W3E 地形、其他游戏成员、其他路径位逐字节未变；工人继续飞行移动。没有全图运行时路径循环。
+- 使用固定官方工具链：类型检查通过，183/183 Wurst 测试通过，14/14 源图/归档回归通过；占地回归先在旧代码失败再通过。实际构建地图中 35/35 对象和导入 6×6 TGA 像素均核验通过。
+- 原始源图备份：上述基线提交的 `maps/ExampleMap.source.w3x`，SHA-256 `627a64c012dcc46e1b5acc48dcbb20eeca0b465093718800799a2df37ded0b5e`。掩码源图 SHA-256 `3fd31a78aaa5d017565fca6c6f3758d40ed6131999c701bdf1f99557ba39e408`，构建前后不变。
+- 未加时间戳的构建 SHA-256：`abe39cf62341f31c3dca0ca28ff164223e7a4b4ed449faaf9574b46ccc6f8cbd`。
+- 根目录地图显示名与加载页标题为 `深渊守望 2256`，2256 是 2026-10-08 22:56（UTC+8）的构建标签。最终 SHA-256：`7e8617a32d895050137284785dd34f0762df2b5685c5222dbb50e77fce1ab3b2`。追加名称前后 JASS 和所有其他游戏资源一致。
+- 按用户要求跳过 Gemini 审查，独立只读方案审查 PASS WITH NOTES、实现审查 PASS。保留 JASS、v1.28 和 pre1.29 标准库。
+- 本次执行获准的 Linux 构建/测试，没有执行 Windows bat、Windows 部署或 Warcraft III 1.27a 实机试玩。自动测试验证的是规则与资产；原生建造预览、工人接近、取消退款/人口、升级和即时重建仍需游戏复核。跨象限限制由运行时执行，原生地形预览不区分玩家。
+
+掩码再生成：`python3 tools/GenerateTowerTerrainMask.py --write`；一致性检查：`python3 tools/GenerateTowerTerrainMask.py --check`。输入固定为基线 Git 对象，不会对输出重复侵蚀；未审查的地形/路径修改会阻止覆盖。
+
+源图回归：`python3 tools/VerifyTowerTerrainMask.py`。实际打包检查：`python3 tools/VerifyTowerPlacementArtifact.py ExampleMap.w3x`。
+
+详见 [高台建塔解决记录](docs/solutions/2026-10-08-高台建塔占地与禁建掩码.md)。

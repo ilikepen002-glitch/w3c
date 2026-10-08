@@ -21,7 +21,16 @@ if not defined MAP_TIMESTAMP (
 )
 
 echo [1/3] Building map...
-call grill build "maps\ExampleMap.source.w3x" --quiet
+rem Grill's MPQ reader can normalize its input. Build a disposable copy so the
+rem reviewed terrain mask and its checksum metadata stay reproducible.
+if not exist "_build" mkdir "_build"
+copy /y "maps\ExampleMap.source.w3x" "_build\ExampleMap.input.w3x" >nul
+if errorlevel 1 (
+	echo Failed to prepare a disposable build input.
+	pause
+	exit /b 1
+)
+call grill build "_build\ExampleMap.input.w3x" --quiet
 if errorlevel 1 (
 	echo Build failed.
 	pause
@@ -29,7 +38,7 @@ if errorlevel 1 (
 )
 
 set "SOURCE_MAP="
-for /f "usebackq delims=" %%F in (`powershell -NoProfile -Command "$map = Get-ChildItem -LiteralPath '_build' -File | Where-Object { $_.Name -like '*.w3x' -or $_.Name -like '*.w3x.w3x' } | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName; if ($map) { $map } else { exit 1 }"`) do set "SOURCE_MAP=%%F"
+for /f "usebackq delims=" %%F in (`powershell -NoProfile -Command "$map = Get-ChildItem -LiteralPath '_build' -File | Where-Object { ($_.Name -like '*.w3x' -or $_.Name -like '*.w3x.w3x') -and $_.Name -ne 'ExampleMap.input.w3x' } | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName; if ($map) { $map } else { exit 1 }"`) do set "SOURCE_MAP=%%F"
 
 if not defined SOURCE_MAP (
 	echo Build finished, but no output map was found.

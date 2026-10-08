@@ -10,3 +10,6 @@ wurst/war3map.j
 wurst/_tests/
 /.vscode/*
 !/.vscode/settings.json
+
+# Python source-map generation and verification helpers
+**/__pycache__/

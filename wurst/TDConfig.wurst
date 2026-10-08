@@ -1,11 +1,10 @@
 package TDConfig
-import TerrainUtils
+import public TDTowerPlacementRules
 
 public constant int TD_ACTIVE_PLAYER_COUNT = 4
 public constant int TD_STARTING_LIVES = 20
 public constant int TD_STARTING_GOLD = 100
 public constant int TD_TOWER_CHOICE_COUNT = 5
-public constant int TD_BUILD_PLOTS_PER_LANE = 10
 public constant int TD_MAX_TOWER_LEVEL = 6
 public constant real TD_FIRST_WAVE_DELAY = 30.00
 public constant real TD_TIME_BETWEEN_WAVES = 20.00
@@ -34,24 +33,8 @@ public constant int TD_ENEMY_PLAYER_ID = 4
 public constant int TD_BUILD_PLOT_UNIT_ID = 'uP01'
 public constant int TD_FARMER_UNIT_ID = 'uF01'
 
-public constant int TD_PAD_COUNT = TD_ACTIVE_PLAYER_COUNT * TD_BUILD_PLOTS_PER_LANE
 // 当前只有玩家 1 路线保留多段 waypoint，其它路线先直接汇入中心终点。
 constant int TD_PLAYER_ONE_WAYPOINT_COUNT = 5
-
-public function tdBuildPlotMinimumSpacing() returns real
-	return 128.0
-
-public function tdBuildPlotClaimRadius() returns real
-	return 64.0
-
-public function tdLaneBuildZoneRadius() returns real
-	return 224.0
-
-function tdBuildPlotFlatnessSampleOffset() returns real
-	return 96.0
-
-function tdBuildPlotMaxHeightDelta() returns real
-	return 8.0
 
 public function tdIsLanePlayer(int playerId) returns boolean
 	return playerId >= 0 and playerId < TD_ACTIVE_PLAYER_COUNT
@@ -142,136 +125,5 @@ public function tdLaneWaypointPosition(int playerId, int index) returns vec2
 			return tdRectCenterOrFallback(tdLaneWaypointRect(playerId, index), -1168., 336.)
 	return tdLaneExitPosition(playerId)
 
-public function tdBuildPlotPosition(int playerId, int plotIndex) returns vec2
-	if playerId == 0
-		if plotIndex == 0
-			return vec2(-1220, 980)
-		if plotIndex == 1
-			return vec2(-1220, 80)
-		if plotIndex == 2
-			return vec2(-900, 980)
-		if plotIndex == 3
-			return vec2(-520, 600)
-		if plotIndex == 4
-			return vec2(-900, 160)
-		if plotIndex == 5
-			return vec2(-500, 520)
-		if plotIndex == 6
-			return vec2(-500, -40)
-		if plotIndex == 7
-			return vec2(-80, 320)
-		if plotIndex == 8
-			return vec2(260, 100)
-		return vec2(260, -300)
-	if playerId == 1
-		if plotIndex == 0
-			return vec2(980, 1220)
-		if plotIndex == 1
-			return vec2(600, 1220)
-		if plotIndex == 2
-			return vec2(980, 900)
-		if plotIndex == 3
-			return vec2(600, 520)
-		if plotIndex == 4
-			return vec2(160, 900)
-		if plotIndex == 5
-			return vec2(520, 500)
-		if plotIndex == 6
-			return vec2(-40, 500)
-		if plotIndex == 7
-			return vec2(320, 80)
-		if plotIndex == 8
-			return vec2(100, -260)
-		return vec2(-300, -260)
-	if playerId == 2
-		if plotIndex == 0
-			return vec2(1220, -980)
-		if plotIndex == 1
-			return vec2(1220, -600)
-		if plotIndex == 2
-			return vec2(900, -980)
-		if plotIndex == 3
-			return vec2(520, -600)
-		if plotIndex == 4
-			return vec2(900, -160)
-		if plotIndex == 5
-			return vec2(500, -520)
-		if plotIndex == 6
-			return vec2(500, 40)
-		if plotIndex == 7
-			return vec2(80, -320)
-		if plotIndex == 8
-			return vec2(-260, -100)
-		return vec2(-260, 300)
-	if plotIndex == 0
-		return vec2(-980, -1220)
-	if plotIndex == 1
-		return vec2(-600, -1220)
-	if plotIndex == 2
-		return vec2(-980, -900)
-	if plotIndex == 3
-		return vec2(-600, -520)
-	if plotIndex == 4
-		return vec2(-160, -900)
-	if plotIndex == 5
-		return vec2(-520, -500)
-	if plotIndex == 6
-		return vec2(40, -500)
-	if plotIndex == 7
-		return vec2(-320, -80)
-	if plotIndex == 8
-		return vec2(-100, 260)
-	return vec2(300, 260)
-
-public function tdPadPosition(int index) returns vec2
-	let playerId = index div TD_BUILD_PLOTS_PER_LANE
-	let plotIndex = index mod TD_BUILD_PLOTS_PER_LANE
-	return tdBuildPlotCenter(playerId, plotIndex)
-
-public function tdBuildPlotCenter(int playerId, int plotIndex) returns vec2
-	return tdBuildPlotPosition(playerId, plotIndex).toTileCenter()
-
-function tdBuildPlotHeightDelta(vec2 center, vec2 sample) returns real
-	return (center.getTerrainZ() - sample.getTerrainZ()).abs()
-
-public function tdBuildPlotHasValidTerrain(vec2 position) returns boolean
-	let center = position.toTileCenter()
-	// 禁建判断只看编辑器最终 pathing；路线纹理不再由代码硬编码识别。
-	return center.isTerrainLand() and center.isTerrainWalkable()
-
-public function tdBuildPlotIsFlat(vec2 position) returns boolean
-	let center = position.toTileCenter()
-	let sampleOffset = tdBuildPlotFlatnessSampleOffset()
-	let maxDelta = tdBuildPlotMaxHeightDelta()
-	if not tdBuildPlotHasValidTerrain(center)
-		return false
-	let east = center.add(sampleOffset, 0).toTileCenter()
-	let west = center.add(-sampleOffset, 0).toTileCenter()
-	let north = center.add(0, sampleOffset).toTileCenter()
-	let south = center.add(0, -sampleOffset).toTileCenter()
-	return tdBuildPlotHeightDelta(center, east) <= maxDelta
-		and tdBuildPlotHeightDelta(center, west) <= maxDelta
-		and tdBuildPlotHeightDelta(center, north) <= maxDelta
-		and tdBuildPlotHeightDelta(center, south) <= maxDelta
-
-public function tdFindBuildPlotIndex(int playerId, vec2 position) returns int
-	if not tdIsLanePlayer(playerId)
-		return -1
-	var nearestIndex = -1
-	var nearestDistance = tdBuildPlotClaimRadius()
-	for plotIndex = 0 to TD_BUILD_PLOTS_PER_LANE - 1
-		let plot = tdBuildPlotCenter(playerId, plotIndex)
-		let distance = plot.distanceTo(position)
-		if distance <= nearestDistance
-			nearestIndex = plotIndex
-			nearestDistance = distance
-	return nearestIndex
-
 public function tdIsInLaneBuildZone(int playerId, vec2 position) returns boolean
-	if not tdIsLanePlayer(playerId)
-		return false
-	let center = position.toTileCenter()
-	for plotIndex = 0 to TD_BUILD_PLOTS_PER_LANE - 1
-		if tdBuildPlotCenter(playerId, plotIndex).distanceTo(center) <= tdLaneBuildZoneRadius()
-			return true
-	return false
+	return tdIsLanePlayer(playerId) and tdBuildAreaOwner(position) == playerId

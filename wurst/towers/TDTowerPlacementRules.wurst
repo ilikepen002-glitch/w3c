@@ -1,0 +1,66 @@
+package TDTowerPlacementRules
+import TDTowerTerrainMask
+import Maths
+
+public constant real TD_TOWER_FOOTPRINT_SIZE = 192.0
+public constant real TD_TOWER_HALF_FOOTPRINT = 96.0
+public constant real TD_TOWER_CLIFF_MARGIN = 32.0
+
+// Ownership uses the visual four quadrants, not the obsolete ten circle slots.
+// Keep the complete footprint plus the safety border inside its own quadrant.
+public function tdBuildAreaOwner(vec2 center) returns int
+	let extent = TD_TOWER_HALF_FOOTPRINT + TD_TOWER_CLIFF_MARGIN
+	if center.x - extent < 352.0 and center.x + extent > -384.0 and center.y - extent < 64.0 and center.y + extent > -448.0
+		return -1
+	if center.x <= -extent
+		if center.y >= extent
+			return 0
+		if center.y <= -extent
+			return 3
+	if center.x >= extent
+		if center.y >= extent
+			return 1
+		if center.y <= -extent
+			return 2
+	return -1
+
+// Half-open footprints: touching an adjacent tower is legal, overlapping is not.
+public function tdTowerFootprintsOverlap(vec2 first, vec2 second) returns boolean
+	return (first.x - second.x).abs() < TD_TOWER_FOOTPRINT_SIZE and (first.y - second.y).abs() < TD_TOWER_FOOTPRINT_SIZE
+
+public function tdFootprintFirstCell(real coordinate, real origin) returns int
+	return ((coordinate - TD_TOWER_HALF_FOOTPRINT - origin) / TD_TERRAIN_CELL_SIZE).floor()
+
+public function tdFootprintLastCell(real coordinate, real origin) returns int
+	return ((coordinate + TD_TOWER_HALF_FOOTPRINT - origin) / TD_TERRAIN_CELL_SIZE).ceil() - 1
+
+// The generated terrain mask already erodes cliff edges by 32, exactly once.
+// Query immutable terrain rather than dynamic pathing: at CONSTRUCT_START the
+// candidate's own native pathing texture has already blocked its footprint.
+public function tdBuildPlotHasValidTerrain(vec2 position) returns boolean
+	let minX = tdFootprintFirstCell(position.x, TD_TERRAIN_ORIGIN_X)
+	let maxX = tdFootprintLastCell(position.x, TD_TERRAIN_ORIGIN_X)
+	let minY = tdFootprintFirstCell(position.y, TD_TERRAIN_ORIGIN_Y)
+	let maxY = tdFootprintLastCell(position.y, TD_TERRAIN_ORIGIN_Y)
+	for cellY = minY to maxY
+		for cellX = minX to maxX
+			if not tdTerrainCellBuildable(cellX, cellY)
+				return false
+	return true
+
+public function tdBuildPlotIsFlat(vec2 position) returns boolean
+	let minX = tdFootprintFirstCell(position.x, TD_TERRAIN_ORIGIN_X)
+	let maxX = tdFootprintLastCell(position.x, TD_TERRAIN_ORIGIN_X)
+	let minY = tdFootprintFirstCell(position.y, TD_TERRAIN_ORIGIN_Y)
+	let maxY = tdFootprintLastCell(position.y, TD_TERRAIN_ORIGIN_Y)
+	var lowest = 100000.0
+	var highest = -100000.0
+	for cellY = minY to maxY
+		for cellX = minX to maxX
+			if not tdTerrainCellBuildable(cellX, cellY)
+				return false
+			lowest = min(lowest, tdTerrainCellMinHeight(cellX, cellY))
+			highest = max(highest, tdTerrainCellMaxHeight(cellX, cellY))
+			if highest - lowest > 8.0
+				return false
+	return true

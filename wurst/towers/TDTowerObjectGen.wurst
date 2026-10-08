@@ -26,6 +26,7 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setAttack1ProjectileSpeed(tdTowerProjectileSpeed(towerChoice))
 	..setAttack1ProjectileHomingEnabled(tdTowerWeaponType(towerChoice) == WeaponType.Missile)
 	..setModelFile(tdTowerModelPath(towerChoice, level))
+	..setIsaBuilding(true)
 	..setMovementType(MovementType.None)
 	..setSpeedBase(0)
 	..setSpeedMinimum(0)
