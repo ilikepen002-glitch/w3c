@@ -69,11 +69,8 @@ public function tdEnemyLaneOrderIdForTest() returns int
 public function tdEnemyLaneOrderNameForTest() returns string
 	return "move"
 
-function tdEnemyPinsLaneOrder() returns boolean
-	return true
-
 function tdEnemyNeedsLaneOrderRefresh(int currentOrder, int laneOrderId) returns boolean
-	return currentOrder != laneOrderId or tdEnemyPinsLaneOrder()
+	return currentOrder != laneOrderId
 
 public function tdEnemyNeedsLaneOrderRefreshForTest(int currentOrder, int laneOrderId) returns boolean
 	return tdEnemyNeedsLaneOrderRefresh(currentOrder, laneOrderId)
@@ -93,8 +90,8 @@ function tdOrderEnemyAlongLane(unit enemy, boolean waypointAdvanced)
 		return
 	let waypointIndex = tdEnemyWaypointIndex(enemy)
 	if waypointIndex < tdLaneWaypointCount(playerId)
-		// 魔兽原生受击反应可能在保留 move order 的同时把怪物朝向拉回攻击者，
-		// 所以这里持续重下路线命令，把逃跑朝向钉在当前 waypoint 上。
+		// 只有路线命令被中断或 waypoint 推进时才重新下令，
+		// 避免每次轮询都重置正在执行的 move order。
 		enemy.issuePointOrderById(laneOrderId, tdLaneWaypointPosition(playerId, waypointIndex))
 	else
 		enemy.issuePointOrderById(laneOrderId, tdLaneExitPosition(playerId))
