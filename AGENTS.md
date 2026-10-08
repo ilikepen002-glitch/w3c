@@ -15,7 +15,7 @@
 - 测试源码只放 `tests/wurst/`，不要手工维护 `wurst/_tests/`
 - 常规检查跑 `tools\Run-WurstChecks.bat`
 - 涉及物编、构建、核心玩法或实际可玩性时，加跑 `build-and-deploy-test-map.bat`
-- 默认工作流是 `Codex 实现 -> Gemini 审查 -> Codex 修复/交付`
+- 默认工作流是 `Codex 先出方案 -> Gemini 审方案 -> Codex/Gemini 收敛方案 -> Codex 实现与验证 -> 交付`
 - 只有用户明确说“跳过 Gemini / 这次不审查 / skip review”时，才允许跳过审查
 - Gemini 统一走 `tools\Invoke-GeminiReview.ps1`
 - 看不清需求落点时，先查 `wurst/`、`wurst/towers/`、`tests/wurst/`、`wurst.build`
@@ -24,27 +24,29 @@
 
 本仓库默认使用：
 
-- `DevAgent = Codex`：负责实现、测试、修复和最终交付
-- `ReviewAgent = Gemini CLI`：负责方案审查和代码审查
+- `DevAgent = Codex`：负责方案设计、实现、测试、修复和最终交付
+- `ReviewAgent = Gemini CLI`：默认负责方案审查；只有用户明确要求时才做实现后的代码审查
 
 默认流程：
 
-1. Codex 完成本地实现和最小验证
-2. 交付前默认调用 Gemini 审查
-3. Gemini 未通过时，先修复再送审
-4. 只有 Gemini 通过，或用户明确要求“跳过 Gemini / 这次不审查 / skip review”时，才允许按已完成交付
+1. Codex 先提出修改或优化方案，至少说明目标、拟改位置、核心做法、主要风险和验证思路
+2. 在开始开发前，默认调用 Gemini 审方案，而不是先实现再审代码
+3. Gemini 给出意见后，Codex 可以接受、反驳或调整方案；必要时允许多轮往返，直到方案收敛
+4. 方案获得 Gemini `PASS` 或 `PASS WITH NOTES`，或用户明确要求“跳过 Gemini / 这次不审查 / skip review”后，Codex 才开始实现
+5. 实现完成后由 Codex 自行完成相关验证并交付；除非用户明确要求，否则默认不再追加一轮 Gemini 代码审查
 
 额外规则：
 
-- 不要因为任务小就自动省略审查
-- Gemini 不可用、鉴权失败或命令失败时，默认视为“审查未完成”，必须如实报告
-- 只有用户再次明确同意“无审查交付”，才允许在 Gemini 不可用时继续结束任务
+- 不要因为任务小就自动省略方案审查
+- Gemini 不可用、鉴权失败或命令失败时，默认视为“方案审查未完成”，必须如实报告
+- 只有用户再次明确同意“无审查开发/交付”，才允许在 Gemini 不可用时继续推进实现或结束任务
 
 角色边界：
 
-- Codex 负责把改动落在正确源码位置，并按本文件规则执行验证
+- Codex 负责先把方案讲清楚，再把改动落在正确源码位置，并按本文件规则执行验证
 - Gemini 只读审查，不直接改仓库
-- Gemini 审查优先关注：玩法回归、初始化顺序、compiletime 物编、rawcode/升级链一致性、缺失验证、误改生成物
+- Gemini 在方案阶段优先关注：方案是否改对位置、是否过度设计、玩法回归风险、初始化顺序、compiletime 物编、rawcode/升级链一致性、验证是否充分
+- 如果用户明确要求实现后代码审查，Gemini 再额外关注：实际改动是否偏离方案、是否误改生成物、是否漏测
 - Gemini 结论必须明确为 `PASS`、`PASS WITH NOTES` 或 `FAIL`
 
 Gemini 调用：
@@ -53,17 +55,19 @@ Gemini 调用：
 - 统一使用仓库脚本：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\Invoke-GeminiReview.ps1 -Task "本次改动说明"
+powershell -ExecutionPolicy Bypass -File .\tools\Invoke-GeminiReview.ps1 -ReviewKind proposal -Task "本次方案说明"
 ```
 
 审查门禁：
 
-- 默认要求审查的场景：最终交付、提交前整理、核心玩法改动、物编生成改动、构建或部署流程改动
-- 如果当前只是探索、定位问题或起草方案，可以先不送审；一旦进入“准备交付改动”，默认必须送审
+- 默认要求 Gemini 方案审查的场景：开始开发前、提交前整理、核心玩法改动、物编生成改动、构建或部署流程改动、任何自己认为有多种实现路径的改动
+- 如果当前只是探索、定位问题或收集上下文，可以先不送审；一旦进入“准备开始实现”，默认必须先送方案审查
+- 实现后的 Gemini 代码审查不是默认门禁；只有用户明确要求，或当前任务另行声明需要实现后再审时才执行
 
 最终说明至少要写明：
 
 - 是否实际调用了 Gemini
+- Gemini 审的是方案还是实现
 - Gemini 的结论，或未执行成功的阻塞原因
 - 如果跳过审查，明确写“按用户要求跳过 Gemini 审查”
 
