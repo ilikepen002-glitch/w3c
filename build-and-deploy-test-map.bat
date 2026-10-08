@@ -21,7 +21,7 @@ if not defined MAP_TIMESTAMP (
 )
 
 echo [1/3] Building map...
-call grill build ExampleMap.w3x --quiet
+call grill build "maps\ExampleMap.source.w3x" --quiet
 if errorlevel 1 (
 	echo Build failed.
 	pause
@@ -49,6 +49,14 @@ if errorlevel 1 (
 java -cp "tools;C:\Users\huawei\.wurst\wurst-compiler\wurstscript.jar" PatchMapDisplayName "%SOURCE_MAP%" "%MAP_TIMESTAMP%"
 if errorlevel 1 (
 	echo Failed to patch the built map display name.
+	pause
+	exit /b 1
+)
+
+rem Keep the repository root map as the packaged artifact, never the build input.
+copy /y "%SOURCE_MAP%" "ExampleMap.w3x" >nul
+if errorlevel 1 (
+	echo Failed to publish the built map to ExampleMap.w3x.
 	pause
 	exit /b 1
 )
