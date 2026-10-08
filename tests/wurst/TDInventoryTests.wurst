@@ -24,6 +24,11 @@ import TDTowers
 	tdEquipmentKillGoldBonusForItems(TD_ITEM_GOLD_RING_ID, TD_ITEM_MERCENARY_PURSE_ID, 0).assertEquals(3)
 	tdEquipmentDropBonusRollsForItems(TD_ITEM_SCAVENGER_BAG_ID, TD_ITEM_MERCENARY_PURSE_ID, 0).assertEquals(2)
 
+@Test function poisonBonusesAggregateWithDuplicatePenalty()
+	tdEquipmentPoisonBonusForItems(TD_ITEM_POISON_SAC_ID, TD_ITEM_TOXIC_VINE_ID, TD_ITEM_CORRUPTED_HEART_ID).assertEquals(40.0)
+	tdEquipmentPoisonBonusForItems(TD_ITEM_CORRUPTED_HEART_ID, TD_ITEM_CORRUPTED_HEART_ID, TD_ITEM_CORRUPTED_HEART_ID).assertEquals(60.0)
+	tdTowerPoisonBonusAbilityLevelForItems(TD_ITEM_CORRUPTED_HEART_ID, TD_ITEM_CORRUPTED_HEART_ID, TD_ITEM_CORRUPTED_HEART_ID).assertEquals(60)
+
 @Test function distinctRawcodesDoNotShareDuplicatePenaltyBuckets()
 	tdEquipmentAttackBonusForItems(TD_ITEM_SHORT_BOW_ID, TD_ITEM_STEEL_LONGBOW_ID, TD_ITEM_WHITE_TIGER_BANNER_ID).assertEquals(56.0)
 

@@ -65,6 +65,26 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setHotkey(tdTowerHotkey(towerChoice))
 	return this
 
+function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip, string iconPath, real baseDamagePerSecond, real moveFactor, real attackFactor)
+	let poison = new AbilityDefinitionSlowPoison(abilityId)
+	let levelCount = TD_TOWER_EQUIPMENT_POISON_BONUS_MAX_LEVEL + 1
+	poison
+	..setName(name)
+	..setLevels(levelCount)
+	..setTooltipNormal(1, name)
+	..setTooltipNormalExtended(1, tooltip)
+	..presetIcon(iconPath)
+	..presetButtonPosNormal(0, 1)
+	..setHeroAbility(false)
+	..setItemAbility(false)
+	..setRequirements("")
+	..setRequirementsLevels("")
+	..setCheckDependencies(false)
+	for level = 1 to levelCount
+		poison.setDamagePerSecond(level, baseDamagePerSecond + (level - 1).toReal())
+		poison.setMovementSpeedFactor(level, moveFactor)
+		poison.setAttackSpeedFactor(level, attackFactor)
+
 // 这些 compiletime 定义会直接生成最终地图里的物编数据，
 // 也就是把塔的平衡和技能配置放在代码里维护，而不是靠手改 WE。
 @compiletime function tdGenerateTowerAbilities()
@@ -214,20 +234,15 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setRequirementsLevels("")
 	..setCheckDependencies(false)
 
-	new AbilityDefinitionSlowPoison(TD_DRYAD_POISON_ABILITY_ID)
-	..setName("毒镖")
-	..setTooltipNormal(1, "毒镖")
-	..setTooltipNormalExtended(1, "被动：普通攻击附带持续毒伤，并对单个目标施加" + tdSlowPercentString(tdDryadSlowFactor()) + "移动减速。")
-	..presetIcon(tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_DRYAD))
-	..presetButtonPosNormal(0, 1)
-	..setDamagePerSecond(1, tdDryadPoisonDps())
-	..setMovementSpeedFactor(1, tdDryadSlowFactor())
-	..setAttackSpeedFactor(1, tdDryadAttackSlowFactor())
-	..setHeroAbility(false)
-	..setItemAbility(false)
-	..setRequirements("")
-	..setRequirementsLevels("")
-	..setCheckDependencies(false)
+	tdGenerateDryadPoisonAbility(
+		TD_DRYAD_POISON_ABILITY_ID,
+		"毒镖",
+		"被动：普通攻击附带持续毒伤，并对单个目标施加" + tdSlowPercentString(tdDryadSlowFactor()) + "移动减速。",
+		tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_DRYAD),
+		tdDryadPoisonDps(),
+		tdDryadSlowFactor(),
+		tdDryadAttackSlowFactor()
+	)
 
 	new AbilityDefinitionAuraSlow(TD_DRYAD_SLOW_AURA_ABILITY_ID)
 	..setName("缓速藤蔓")
@@ -329,20 +344,15 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setRequirementsLevels("")
 	..setCheckDependencies(false)
 
-	new AbilityDefinitionSlowPoison(TD_DRYAD_PERFECT_POISON_ABILITY_ID)
-	..setName("完美毒镖")
-	..setTooltipNormal(1, "完美毒镖")
-	..setTooltipNormalExtended(1, "被动：单体减速更深，持续毒伤更高。")
-	..presetIcon(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_DRYAD))
-	..presetButtonPosNormal(0, 1)
-	..setDamagePerSecond(1, tdDryadPoisonDps() * tdPerfectUpgradeSkillMultiplier())
-	..setMovementSpeedFactor(1, tdDryadSlowFactor() - 0.04)
-	..setAttackSpeedFactor(1, tdDryadAttackSlowFactor() - 0.04)
-	..setHeroAbility(false)
-	..setItemAbility(false)
-	..setRequirements("")
-	..setRequirementsLevels("")
-	..setCheckDependencies(false)
+	tdGenerateDryadPoisonAbility(
+		TD_DRYAD_PERFECT_POISON_ABILITY_ID,
+		"完美毒镖",
+		"被动：单体减速更深，持续毒伤更高。",
+		tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_DRYAD),
+		tdDryadPoisonDps() * tdPerfectUpgradeSkillMultiplier(),
+		tdDryadSlowFactor() - 0.04,
+		tdDryadAttackSlowFactor() - 0.04
+	)
 
 	new AbilityDefinitionAttackSpeedIncrease(TD_GHOUL_PERFECT_FRENZY_ABILITY_ID)
 	..setName("完美狂热")

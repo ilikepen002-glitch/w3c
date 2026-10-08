@@ -31,9 +31,8 @@ import TDItems
 	tdItemTitleName(TD_ITEM_WHITE_TIGER_BANNER_ID).assertEquals("|cffcc66ff白虎战旗|r")
 
 @Test function equipmentObjectsDoNotRelyOnNativePassiveItemAbilities()
-	tdItemPassiveAbilityRawcodes(TD_ITEM_SHORT_BOW_ID).assertEquals("")
-	tdItemPassiveAbilityRawcodes(TD_ITEM_SWIFT_GLOVES_ID).assertEquals("")
-	tdItemPassiveAbilityRawcodes(TD_ITEM_STEEL_LONGBOW_ID).assertEquals("")
+	for index = 1 to tdItemDefinitionCount()
+		tdItemPassiveAbilityRawcodes(tdItemIdForCatalogIndex(index)).assertEquals("")
 
 @Test function farmerCraftUsesDistinctTransmuteIcon()
 	tdFarmerCraftIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNTransmute.blp")

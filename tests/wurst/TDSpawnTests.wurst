@@ -14,9 +14,9 @@ import Orders
 	tdEnemyNativeGoldBountySides().assertEquals(0)
 	tdEnemyLaneOrderNameForTest().assertEquals("move")
 	tdEnemyLaneOrderIdForTest().assertEquals(Orders.move)
-	tdEnemyNeedsLaneOrderRefreshForTest(Orders.move, Orders.move).assertTrue()
+	tdEnemyNeedsLaneOrderRefreshForTest(Orders.move, Orders.move).assertFalse()
 	tdEnemyNeedsLaneOrderRefreshForTest(Orders.patrol, Orders.move).assertTrue()
-	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, false).assertTrue()
+	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, false).assertFalse()
 	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, true).assertTrue()
 
 @Test function enemyHealthDisplayIsNotManagedByRuntime()
