@@ -109,9 +109,9 @@ public function tdPetSkillDescriptionById(int skill, int quality) returns string
 	if skill == 8
 		return "普攻：低于30%生命目标追加 " + (power * 100.0).toInt().toString() + "% 宿主伤害"
 	if skill == 9
-		return "原生强化：弓箭塔分裂箭命中附3秒减速" + (power * 100.0).toInt().toString() + "%；仅弓箭塔适配"
+		return "原生强化：弓箭塔分裂箭命中附3秒减速" + (power * 100.0).toInt().toString() + "%；宿主需实际拥有分裂箭"
 	if skill == 10
-		return "原生强化：食尸鬼尸爆留下3秒毒域，每秒尸爆伤害" + (power * 100.0).toInt().toString() + "%；仅食尸鬼适配"
+		return "原生强化：食尸鬼尸爆留下3秒毒域，每秒基础尸爆伤害（36）" + (power * 100.0).toInt().toString() + "%；宿主需实际拥有尸爆"
 	if skill == 11
 		return "自动主动：普攻触发，6秒狂热攻速 +" + (power * 100.0).toInt().toString() + "%，冷却14秒"
 	if skill == 12

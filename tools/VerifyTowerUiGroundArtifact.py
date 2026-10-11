@@ -9,13 +9,16 @@ import sys
 from pathlib import Path
 from GenerateTowerTerrainMask import Mpq
 from VerifyTowerPlacementArtifact import unit_objects
-from VerifyEquipmentAbilityArtifact import ability_objects
+from VerifyEquipmentAbilityArtifact import ability_objects, require
+from VerifyTowerUpgradeArtifact import validate_upgrade_artifact
 
 
 def main():
     mpq = Mpq(Path(sys.argv[1]).read_bytes())
     units = unit_objects(mpq.extract('war3map.w3u'))
-    abilities = {code: (parent, {(key, level): value for (key, level, column), (kind, value) in fields.items()}) for code, (parent, fields) in ability_objects(mpq.extract('war3map.w3a')).items()}
+    raw_abilities = ability_objects(mpq.extract('war3map.w3a'))
+    validate_upgrade_artifact(units, raw_abilities, mpq)
+    abilities = {code: (parent, {(key, level): value for (key, level, column), (kind, value) in fields.items()}) for code, (parent, fields) in raw_abilities.items()}
     for family in 'AOH DG'.replace(' ', ''):
         for level in range(1, 6):
             expected = f'u{family}1{level + 1}' if level < 5 else f'u{family}6A,u{family}6B'
@@ -24,9 +27,9 @@ def main():
             code = f'u{family}6{branch}'
             assert 'uupt' in units[code], f'{code}: missing explicit upgrade override'
             assert units[code]['uupt'] == '', (code, 'inherited upgrade')
-    for unit, required in [('uD6B', {'A110', 'A135'}), ('uG6A', {'A107', 'A137'}), ('uO15', {'A103', 'A139'})]:
+    for unit, required in [('uD6B', {'A140', 'A141'}), ('uG6A', {'A107', 'A137'}), ('uO15', {'A103', 'A139'})]:
         assert required <= set(units[unit]['uabi'].split(',')), (unit, 'missing display')
-    for code, levels in [('A135', 61), ('A136', 61), ('A137', 1), ('A138', 1), ('A139', 1)]:
+    for code, levels in [('A135', 61), ('A136', 61), ('A137', 1), ('A138', 1), ('A139', 1), ('A141', 61)]:
         parent, fields = abilities[code]
         assert parent == 'AOcr', (code, parent)
         assert fields['aher', 0] == 0 and fields['aite', 0] == 0

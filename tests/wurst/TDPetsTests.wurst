@@ -67,7 +67,7 @@ import TDWaves
 				pet.level.assertEquals(1)
 				tdPetUnlockedSlots(pet.level).assertEquals(2)
 				for tower = 1 to 6
-					tdPetSkillFitsTower(mechanism, tower).assertTrue()
+					tdPetSkillFitsAbilities(mechanism, tower == TD_TOWER_CHOICE_ARCHER, tower == TD_TOWER_CHOICE_GHOUL).assertTrue()
 				destroy pet
 
 @Test function petStageEncounterBudgetIsBoundedAndBossSafe()

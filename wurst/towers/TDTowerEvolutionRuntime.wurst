@@ -53,10 +53,30 @@ public function tdEvolutionSkillOriginal(int choice, int branch) returns int
 	if choice == TD_TOWER_CHOICE_FOOTMAN and branch == TD_TOWER_BRANCH_B
 		return TD_FOOT_COMMAND_ABILITY_ID
 	if choice == TD_TOWER_CHOICE_DRYAD and branch == TD_TOWER_BRANCH_B
-		return TD_DRYAD_SLOW_AURA_ABILITY_ID
+		return TD_DRYAD_WIDE_SLOW_ABILITY_ID
 	if choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_B
 		return 0
 	return tdTowerBaseSkillAbilityId(choice)
+
+public function tdEvolutionDisplayOriginal(int choice, int branch) returns int
+	if choice == TD_TOWER_CHOICE_DRYAD and branch == TD_TOWER_BRANCH_B
+		return TD_DRYAD_WIDE_SLOW_DISPLAY_ABILITY_ID
+	if choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_A
+		return TD_GHOUL_FRENZY_DISPLAY_ABILITY_ID
+	return 0
+
+public function tdEvolutionDisplayReplacement(int choice, int branch) returns int
+	if choice == TD_TOWER_CHOICE_DRYAD and branch == TD_TOWER_BRANCH_B
+		return TD_DRYAD_EVOLVED_SLOW_DISPLAY_ABILITY_ID
+	if choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_A
+		return TD_GHOUL_PERFECT_FRENZY_DISPLAY_ABILITY_ID
+	return 0
+
+public function tdEvolutionSplitArrowDisplayLevel(int choice, int branch, boolean evolved) returns int
+	return choice == TD_TOWER_CHOICE_ARCHER and branch == TD_TOWER_BRANCH_A and evolved ? 2 : 1
+
+public function tdEvolutionCorpseDisplayLevel(int choice, int branch, boolean evolved) returns int
+	return choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_B and evolved ? 2 : 1
 
 public function tdEvolutionRefresh(unit tower)
 	if tower == null or not tower.isAlive() or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
@@ -74,12 +94,15 @@ public function tdEvolutionRefresh(unit tower)
 		if replacement != 0
 			tower.removeAbility(tdEvolutionSkillOriginal(choice, branch))
 			tower.addPermanentAbility(replacement, 1)
-			if choice == TD_TOWER_CHOICE_DRYAD and branch == TD_TOWER_BRANCH_B
-				tower.removeAbility(TD_DRYAD_SLOW_DISPLAY_ABILITY_ID)
-				tower.addPermanentAbility(TD_DRYAD_EVOLVED_SLOW_DISPLAY_ABILITY_ID, 1)
-			if choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_A
-				tower.removeAbility(TD_GHOUL_FRENZY_DISPLAY_ABILITY_ID)
-				tower.addPermanentAbility(TD_GHOUL_PERFECT_FRENZY_DISPLAY_ABILITY_ID, 1)
+			let displayOriginal = tdEvolutionDisplayOriginal(choice, branch)
+			if displayOriginal != 0
+				tower.removeAbility(displayOriginal)
+				tower.addPermanentAbility(tdEvolutionDisplayReplacement(choice, branch), 1)
+		// These display upgrades also belong to branches with no replaced effect.
+		if choice == TD_TOWER_CHOICE_ARCHER
+			tower.setAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID, tdEvolutionSplitArrowDisplayLevel(choice, branch, record.evolved))
+		if choice == TD_TOWER_CHOICE_GHOUL
+			tower.setAbilityLevel(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID, tdEvolutionCorpseDisplayLevel(choice, branch, record.evolved))
 		tdRefreshTowerEquipmentBonuses(tower)
 		record.wings = AddSpecialEffectTarget("war3mapImported\\TDEvolutionWings" + choice.toString() + ".mdx", tower, "origin")
 		DisplayTimedTextToPlayer(GetOwningPlayer(tower), 0, 0, 8.0, "自动进化！击杀达到" + TD_EVOLUTION_KILL_REQUIREMENT.toString() + "，获得双翼与当前分支20%强化。全局进化名额已使用。")

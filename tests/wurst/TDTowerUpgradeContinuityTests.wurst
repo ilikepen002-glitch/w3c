@@ -1,0 +1,232 @@
+package TDTowerUpgradeContinuityTests
+import TDTowers
+import TDConfig
+import ObjectIds
+import TDEquipmentObjectGen
+import TDPetCombat
+import TDPetRules
+
+@Test function allThirtyFiveTowerNodesUseSeparateBuildAndUpgradeButtons()
+	var nodes = 0
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		for level = 1 to 6
+			let branches = level == 6 ? 2 : 1
+			for branch = TD_TOWER_BRANCH_A to branches
+				nodes += 1
+				let upgradeX = level == 1 ? tdTowerButtonX(choice) : (branch == TD_TOWER_BRANCH_B ? 1 : 0)
+				let upgradeY = level == 1 ? tdTowerButtonY(choice) : 2
+				let hotkey = level == 1 ? tdTowerHotkey(choice) : (branch == TD_TOWER_BRANCH_B ? "W" : "Q")
+				tdTowerLevelButtonX(choice, level, branch).assertEquals(upgradeX)
+				tdTowerLevelButtonY(choice, level, branch).assertEquals(upgradeY)
+				tdTowerHotkeyForLevelBranch(choice, level, branch).assertEquals(hotkey)
+	nodes.assertEquals(35)
+	tdFarmerBuildMenuRawcodes().assertEquals("uA11,uO11,uH11,uD11,uG11")
+
+@Test function allThirtyUpgradeEdgesKeepTheirPreviousAttackRange()
+	var edges = 0
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		for level = 1 to 5
+			let branches = level == 5 ? 2 : 1
+			for branch = TD_TOWER_BRANCH_A to branches
+				edges += 1
+				let before = tdTowerBaseRange(choice, level)
+				let after = tdTowerBaseRangeForBranch(choice, level + 1, branch)
+				(after >= before).assertTrue()
+				(tdTowerObjectAttackRangeForBranch(choice, level + 1, branch) >= tdTowerObjectAttackRange(choice, level)).assertTrue()
+				tdTowerAcquisitionRangeForBranch(choice, level + 1, branch).assertEquals(after.toReal())
+				tdTowerRangeIndicatorDiameterForBranch(choice, level + 1, branch).assertEquals(after * 2.0)
+	edges.assertEquals(30)
+
+@Test function ultimateTowersRetainAllEstablishedFamilyMechanisms()
+	for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+		let archer = tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_ARCHER, 6, branch)
+		archer.contains("A100").assertTrue()
+		archer.contains("A101").assertTrue()
+		let orc = tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_ORC, 6, branch)
+		orc.contains("A102").assertTrue()
+		orc.contains("A103").assertTrue()
+		orc.contains("A139").assertTrue()
+		let foot = tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_FOOTMAN, 6, branch)
+		foot.contains("A104").assertTrue()
+		foot.contains("A105").assertTrue()
+		let dryad = tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_DRYAD, 6, branch)
+		dryad.contains("A106").assertTrue()
+		let ghoul = tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_GHOUL, 6, branch)
+		ghoul.contains("A107").assertTrue()
+		ghoul.contains("A137").assertTrue()
+		ghoul.contains("A116").assertTrue()
+
+function real.assertContinuityNear(real expected)
+	((this - expected).abs() < 0.000001).assertTrue()
+
+function expectedSkills(int choice, int level, int branch) returns string
+	if choice == TD_TOWER_CHOICE_ARCHER
+		return level >= 5 ? "A100,A101" : "A100"
+	if choice == TD_TOWER_CHOICE_ORC
+		if level < 5
+			return "A102"
+		if level == 5
+			return "A102,A103,A139"
+		return branch == TD_TOWER_BRANCH_B ? "A102,A103,A139,A132" : "A102,A103,A139,A131"
+	if choice == TD_TOWER_CHOICE_FOOTMAN
+		return level >= 5 ? "A104,A105" : "A104"
+	if choice == TD_TOWER_CHOICE_DRYAD
+		if level < 5
+			return "A106"
+		return level == 6 and branch == TD_TOWER_BRANCH_B ? "A106,A140,A141" : "A106,A110,A135"
+	return "A107,A137,A116"
+
+@Test function allThirtyFiveNodesExposeExactCumulativeSkillLists()
+	var nodes = 0
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		for level = 1 to 6
+			let branches = level == 6 ? 2 : 1
+			for branch = TD_TOWER_BRANCH_A to branches
+				nodes += 1
+				tdTowerNormalAbilitiesRawcodesForBranch(choice, level, branch).assertEquals(expectedSkills(choice, level, branch))
+	nodes.assertEquals(35)
+
+@Test function allThirtyEdgesRetainEveryEstablishedMechanism()
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		for level = 1 to 5
+			let branches = level == 5 ? 2 : 1
+			for branch = TD_TOWER_BRANCH_A to branches
+				let before = tdTowerNormalAbilitiesRawcodes(choice, level)
+				var after = tdTowerNormalAbilitiesRawcodesForBranch(choice, level + 1, branch)
+				// A wider Aasl replaces the same effect, rather than stacking two auras.
+				if choice == TD_TOWER_CHOICE_DRYAD and level == 5 and branch == TD_TOWER_BRANCH_B
+					after = after.replace("A140", "A110").replace("A141", "A135")
+				if level < 4 or choice == TD_TOWER_CHOICE_GHOUL or level == 5 and choice != TD_TOWER_CHOICE_ORC
+					after.assertEquals(before)
+				else
+					after.substring(0, before.length()).assertEquals(before)
+
+@Test function ultimateBasicDpsNeverDropsBelowTheFifthLevel()
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		let previousDps = tdTowerBaseDamage(choice, 5).toReal() / tdTowerBaseCooldown(choice, 5)
+		for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+			let currentDps = tdTowerBaseDamageForBranch(choice, 6, branch).toReal() / tdTowerBaseCooldownForBranch(choice, 6, branch)
+			(currentDps >= previousDps).assertTrue()
+
+@Test function ultimateSkillsHaveDistinctIconsAndVacantActiveButtons()
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		for level = 1 to 5
+			tdTowerIconPathForBranch(choice, level, TD_TOWER_BRANCH_A).assertEquals(tdTowerIconPath(choice, level))
+		(tdTowerIconPathForBranch(choice, 6, TD_TOWER_BRANCH_A) != tdTowerIconPathForBranch(choice, 6, TD_TOWER_BRANCH_B)).assertTrue()
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_A).assertEquals(tdOrcBloodlustIconPath())
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B).assertEquals(tdOrcBladestormIconPath())
+	tdOrcUltimateSkillButtonX().assertEquals(2)
+	tdOrcUltimateSkillButtonY().assertEquals(1)
+	tdOrcUltimateSkillHotkey().assertEquals("E")
+	tdTowerSellButtonX().assertEquals(3)
+	tdTowerSellButtonY().assertEquals(1)
+
+@Test function wideVinesKeepNormalReductionAcrossAllControlLevels()
+	tdDryadAuraSlowRadius().assertEquals(225.0)
+	tdDryadWideAuraSlowRadius().assertEquals(265.0)
+	for level = 1 to 61
+		tdEquipmentSlowAuraReduction(false, level).assertEquals((1.0 - tdDryadAuraSlowFactor()) * (1.0 + (level - 1) / 100.0))
+		tdEquipmentSlowAuraReduction(true, level).assertEquals((1.0 - tdDryadAuraSlowFactor()) * tdEvolutionSkillMultiplier() * (1.0 + (level - 1) / 100.0))
+	tdPreciseBonusPercentString(0.18).assertEquals("18%")
+	tdPreciseBonusPercentString(0.216).assertEquals("21.6%")
+	tdPreciseBonusPercentString(0.21816).assertEquals("21.816%")
+	tdPreciseBonusPercentString(0.504).assertEquals("50.4%")
+
+function evolvedSkills(int choice, int branch) returns string
+	var skills = tdTowerNormalAbilitiesRawcodesForBranch(choice, 6, branch)
+	let original = tdEvolutionSkillOriginal(choice, branch)
+	let replacement = tdEvolutionSkillReplacement(choice, branch)
+	if replacement != 0
+		skills = skills.replace(original.toRawCode(), replacement.toRawCode())
+	let displayOriginal = tdEvolutionDisplayOriginal(choice, branch)
+	if displayOriginal != 0
+		skills = skills.replace(displayOriginal.toRawCode(), tdEvolutionDisplayReplacement(choice, branch).toRawCode())
+	return skills
+
+@Test function allTenEvolutionStatesRetainNonselectedAbilities()
+	evolvedSkills(TD_TOWER_CHOICE_ARCHER, TD_TOWER_BRANCH_A).assertEquals("A100,A101")
+	evolvedSkills(TD_TOWER_CHOICE_ARCHER, TD_TOWER_BRANCH_B).assertEquals("A100,A111")
+	evolvedSkills(TD_TOWER_CHOICE_ORC, TD_TOWER_BRANCH_A).assertEquals("A112,A103,A139,A131")
+	evolvedSkills(TD_TOWER_CHOICE_ORC, TD_TOWER_BRANCH_B).assertEquals("A112,A103,A139,A132")
+	evolvedSkills(TD_TOWER_CHOICE_FOOTMAN, TD_TOWER_BRANCH_A).assertEquals("A113,A105")
+	evolvedSkills(TD_TOWER_CHOICE_FOOTMAN, TD_TOWER_BRANCH_B).assertEquals("A104,AeCM")
+	evolvedSkills(TD_TOWER_CHOICE_DRYAD, TD_TOWER_BRANCH_A).assertEquals("A114,A110,A135")
+	evolvedSkills(TD_TOWER_CHOICE_DRYAD, TD_TOWER_BRANCH_B).assertEquals("A106,AeSL,A136")
+	evolvedSkills(TD_TOWER_CHOICE_GHOUL, TD_TOWER_BRANCH_A).assertEquals("A115,A138,A116")
+	evolvedSkills(TD_TOWER_CHOICE_GHOUL, TD_TOWER_BRANCH_B).assertEquals("A107,A137,A116")
+
+@Test function inheritedSplitArrowsAndCorpseExplosionOnlyBoostTheChosenBranch()
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+			let skills = evolvedSkills(choice, branch)
+			tdPetSkillFitsAbilities(9, skills.contains("A100"), skills.contains("A116")).assertEquals(choice == TD_TOWER_CHOICE_ARCHER)
+			tdPetSkillFitsAbilities(10, skills.contains("A100"), skills.contains("A116")).assertEquals(choice == TD_TOWER_CHOICE_GHOUL)
+		for level = 1 to 6
+			for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+				tdArcherSplitArrowDamageMultiplier(level, branch, false).assertEquals(1.0)
+				tdArcherSplitArrowDamageMultiplier(level, branch, true).assertEquals(level == 6 and branch == TD_TOWER_BRANCH_A ? 1.2 : 1.0)
+				tdGhoulCorpseExplosionDamageForBranch(level, branch, false).assertEquals(36.0)
+				tdGhoulCorpseExplosionDamageForBranch(level, branch, true).assertEquals(36.0 * (level == 6 and branch == TD_TOWER_BRANCH_B ? 1.2 : 1.0))
+
+@Test function evolutionNumbersAndUnselectedMechanismsKeepTheirOwnBaselines()
+	for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+		tdOrcCriticalStrikeChance().assertContinuityNear(0.25)
+		(tdOrcCriticalStrikeMultiplier() * tdEvolutionSkillMultiplier()).assertContinuityNear(2.64)
+		(tdOrcCriticalStrikeDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(21.6)
+		tdOrcSwordDanceAttackSpeedBonus().assertContinuityNear(0.30)
+		tdOrcBloodlustAttackSpeedBonus().assertContinuityNear(0.35)
+		tdOrcBladestormDamagePerSecond().assertContinuityNear(70.0)
+	(tdArcherAuraDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.216)
+	(tdFootmanBashChance() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.264)
+	(tdFootmanBashDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(24.0)
+	(tdFootmanCommandAuraDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.192)
+	(tdDryadPoisonDps() * tdEvolutionSkillMultiplier()).assertContinuityNear(14.4)
+	tdDryadPoisonDps().assertContinuityNear(12.0)
+	(tdGhoulFrenzyAttackSpeedBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.504)
+	tdGhoulFrenzyAttackSpeedBonus().assertContinuityNear(0.42)
+
+@Test function evolutionDisplayLevelsOnlyChangeTheFourRelevantStates()
+	for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+		tdEvolutionSplitArrowDisplayLevel(TD_TOWER_CHOICE_ARCHER, branch, false).assertEquals(1)
+		tdEvolutionSplitArrowDisplayLevel(TD_TOWER_CHOICE_ARCHER, branch, true).assertEquals(branch == TD_TOWER_BRANCH_A ? 2 : 1)
+		tdEvolutionCorpseDisplayLevel(TD_TOWER_CHOICE_GHOUL, branch, false).assertEquals(1)
+		tdEvolutionCorpseDisplayLevel(TD_TOWER_CHOICE_GHOUL, branch, true).assertEquals(branch == TD_TOWER_BRANCH_B ? 2 : 1)
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		if choice != TD_TOWER_CHOICE_ARCHER
+			tdEvolutionSplitArrowDisplayLevel(choice, TD_TOWER_BRANCH_A, true).assertEquals(1)
+		if choice != TD_TOWER_CHOICE_GHOUL
+			tdEvolutionCorpseDisplayLevel(choice, TD_TOWER_BRANCH_B, true).assertEquals(1)
+
+@Test function petMechanismAdaptationUsesActualAbilitiesForAllSixteenSkills()
+	for split = 0 to 1
+		for corpse = 0 to 1
+			for skill = 0 to 15
+				tdPetSkillFitsAbilities(skill, split == 1, corpse == 1).assertEquals((skill != 9 or split == 1) and (skill != 10 or corpse == 1))
+	// Same family without its actual mechanism is intentionally incompatible.
+	tdPetSkillFitsAbilities(9, false, true).assertFalse()
+	tdPetSkillFitsAbilities(10, true, false).assertFalse()
+	tdPetSkillFitsHost(9, null).assertFalse()
+	tdPetSkillFitsHost(10, null).assertFalse()
+
+@Test function ultimateTextKeepsSevenTargetsAndStatesOnlyRealStrengthening()
+	for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+		tdArcherHasSplitArrowAtLevelBranch(6, branch).assertTrue()
+		tdArcherSplitArrowTargetCount(6).assertEquals(7)
+		tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_ARCHER, 6, branch).contains("7目标").assertTrue()
+		tdTowerLoreForBranch(TD_TOWER_CHOICE_FOOTMAN, 6, branch).contains("保留").assertTrue()
+		tdTowerLoreForBranch(TD_TOWER_CHOICE_ARCHER, 6, branch).contains("牺牲").assertFalse()
+		tdTowerLoreForBranch(TD_TOWER_CHOICE_ORC, 6, branch).contains("强化致命一击").assertFalse()
+	tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_DRYAD, 6, TD_TOWER_BRANCH_B).contains("265").assertTrue()
+	tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_GHOUL, 6, TD_TOWER_BRANCH_B).contains("进化后仅尸爆43.2").assertTrue()
+
+@Test function ordinaryUpgradeHelpersIgnoreUltimateBranchParameters()
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		for level = 2 to 5
+			for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+				tdTowerLevelButtonX(choice, level, branch).assertEquals(0)
+				tdTowerLevelButtonY(choice, level, branch).assertEquals(2)
+				tdTowerHotkeyForLevelBranch(choice, level, branch).assertEquals("Q")
+
+@Test function corpsePetTooltipKeepsTheUnchangedThirtySixBaseDamage()
+	for quality = 1 to 4
+		tdPetSkillDescriptionById(10, quality).contains("基础尸爆伤害（36）").assertTrue()

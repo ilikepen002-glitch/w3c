@@ -53,14 +53,14 @@ public function tdConfigureEquipmentPoison(AbilityDefinitionSlowPoison definitio
 public function tdEquipmentSlowAuraReduction(boolean evolved, int level) returns real
 	return tdEquipmentControlReduction((1.0 - tdDryadAuraSlowFactor()) * (evolved ? tdEvolutionSkillMultiplier() : 1.0), level)
 
-public function tdConfigureEquipmentSlowAura(AbilityDefinitionAuraSlow definition, boolean evolved)
+public function tdConfigureEquipmentSlowAura(AbilityDefinitionAuraSlow definition, boolean evolved, real radius)
 	definition.setLevels(61)
 	for level = 1 to 61
-		definition.setTooltipNormal(level, "缓速藤蔓")
-		definition.setTooltipNormalExtended(level, "被动：周围敌军移动速度降低" + tdBonusPercentString(tdEquipmentSlowAuraReduction(evolved, level)) + "。")
+		definition.setTooltipNormal(level, evolved ? "进化缓速藤蔓" : (radius > tdDryadAuraSlowRadius() ? "宽域缓速藤蔓" : "缓速藤蔓"))
+		definition.setTooltipNormalExtended(level, "被动：周围" + radius.toInt().toString() + "范围敌军移动速度降低" + tdPreciseBonusPercentString(tdEquipmentSlowAuraReduction(evolved, level)) + "。")
 		definition.setMovementSpeedFactor(level, -tdEquipmentSlowAuraReduction(evolved, level))
 		definition.setAttackSpeedFactor(level, 0.0)
-		definition.setAreaofEffect(level, tdDryadAuraSlowRadius())
+		definition.setAreaofEffect(level, radius)
 		definition.setTargetsAllowed(level, "enemy,ground,air,organic")
 		definition.setBuffs(level, "Basl")
 		definition.setDurationNormal(level, 0.0)

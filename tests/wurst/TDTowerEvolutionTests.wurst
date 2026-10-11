@@ -28,7 +28,7 @@ import TDWaves
 	tdEvolutionSkillReplacement(4, 2).assertEquals(TD_DRYAD_EVOLVED_SLOW_ABILITY_ID)
 	tdEvolutionSkillReplacement(5, 2).assertEquals(0)
 	tdEvolutionSkillOriginal(3, 2).assertEquals(TD_FOOT_COMMAND_ABILITY_ID)
-	tdEvolutionSkillOriginal(4, 2).assertEquals(TD_DRYAD_SLOW_AURA_ABILITY_ID)
+	tdEvolutionSkillOriginal(4, 2).assertEquals(TD_DRYAD_WIDE_SLOW_ABILITY_ID)
 
 @Test function evolutionWaitsForCompletedUpgrade()
 	let match = new TDTowerEvolutionMatch()

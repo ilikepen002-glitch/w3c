@@ -40,14 +40,15 @@ import ObjEditingCommons
 		(tdTowerUnitIdForLevelBranch(towerChoice, 6, TD_TOWER_BRANCH_B) > 0).assertTrue()
 		(tdTowerUnitIdForLevelBranch(towerChoice, 6, TD_TOWER_BRANCH_A) != tdTowerUnitIdForLevelBranch(towerChoice, 6, TD_TOWER_BRANCH_B)).assertTrue()
 
-@Test function ultimateBranchesExposeDistinctStatsAndSkillBars()
+@Test function ultimateBranchesExposeDistinctRolesAndIcons()
 	for towerChoice = 1 to TD_TOWER_CHOICE_COUNT
 		let branchADamage = tdTowerBaseDamageForBranch(towerChoice, 6, TD_TOWER_BRANCH_A)
 		let branchBDamage = tdTowerBaseDamageForBranch(towerChoice, 6, TD_TOWER_BRANCH_B)
 		let branchARange = tdTowerBaseRangeForBranch(towerChoice, 6, TD_TOWER_BRANCH_A)
 		let branchBRange = tdTowerBaseRangeForBranch(towerChoice, 6, TD_TOWER_BRANCH_B)
 		(branchADamage != branchBDamage or branchARange != branchBRange).assertTrue()
-		(tdTowerNormalAbilitiesRawcodesForBranch(towerChoice, 6, TD_TOWER_BRANCH_A) != tdTowerNormalAbilitiesRawcodesForBranch(towerChoice, 6, TD_TOWER_BRANCH_B)).assertTrue()
+		(tdTowerTalentSummaryForBranch(towerChoice, 6, TD_TOWER_BRANCH_A) != tdTowerTalentSummaryForBranch(towerChoice, 6, TD_TOWER_BRANCH_B)).assertTrue()
+		(tdTowerIconPathForBranch(towerChoice, 6, TD_TOWER_BRANCH_A) != tdTowerIconPathForBranch(towerChoice, 6, TD_TOWER_BRANCH_B)).assertTrue()
 
 @Test function ultimateBranchTooltipsNameTheChosenBranchAndShowItsStats()
 	let tooltip = tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B)
@@ -109,8 +110,8 @@ import ObjEditingCommons
 @Test function towerSkillBarsExposeFamilyDefiningEffects()
 	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_ARCHER, 5).assertEquals("A100,A101")
 	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_ORC, 5).assertEquals("A102,A103,A139")
-	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_A).assertEquals("A102,A131")
-	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B).assertEquals("A102,A132")
+	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_A).assertEquals("A102,A103,A139,A131")
+	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B).assertEquals("A102,A103,A139,A132")
 	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_FOOTMAN, 5).assertEquals("A104,A105")
 	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_DRYAD, 5).assertEquals("A106,A110,A135")
 	tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_GHOUL, 5).assertEquals("A107,A137,A116")
@@ -159,8 +160,8 @@ import ObjEditingCommons
 	tdTowerBloodlustTargetsAllowed().assertEquals("self,structure,vulnerable")
 
 @Test function hiddenNativePassivesKeepTheirFunctionalAndDisplayAbilities()
-	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_DRYAD, 6, TD_TOWER_BRANCH_B).assertEquals("A110,A135")
-	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_GHOUL, 6, TD_TOWER_BRANCH_A).assertEquals("A107,A137")
+	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_DRYAD, 6, TD_TOWER_BRANCH_B).assertEquals("A106,A140,A141")
+	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_GHOUL, 6, TD_TOWER_BRANCH_A).assertEquals("A107,A137,A116")
 
 @Test function towerButtonsUseFamilySpecificIcons()
 	tdTowerIconPath(TD_TOWER_CHOICE_ARCHER).assertEquals("ReplaceableTextures\\CommandButtons\\BTNArcher.blp")

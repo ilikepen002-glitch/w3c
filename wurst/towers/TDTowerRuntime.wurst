@@ -484,7 +484,7 @@ function tdHandleGhoulCorpseExplosionDamage()
 	for victim in g
 		if victim != target and victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == laneId
 			DamageEvent.setNextDamageFromCode()
-			source.damageTarget(victim, tdGhoulCorpseExplosionDamage() * (tdTowerIsEvolved(source) ? 1.20 : 1.0))
+			source.damageTarget(victim, tdGhoulCorpseExplosionDamageForBranch(tdTowerLevelForUnitTypeId(GetUnitTypeId(source)), tdTowerBranchForUnitTypeId(GetUnitTypeId(source)), tdTowerIsEvolved(source)))
 	g.destr()
 	let corpseExplosionEffect = AddSpecialEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayDamage.mdl", center.x, center.y)
 	DestroyEffect(corpseExplosionEffect)
@@ -682,7 +682,7 @@ function tdHandleArcherSplitArrowDamage()
 	let volley = tdConsumeArcherSplitArrowVolley(source, target)
 	if volley == null
 		return
-	let attackDamage = DamageEvent.getUnreducedAmount() * (tdTowerIsEvolved(source) ? 1.20 : 1.0)
+	let attackDamage = DamageEvent.getUnreducedAmount() * tdArcherSplitArrowDamageMultiplier(tdTowerLevelForUnitTypeId(GetUnitTypeId(source)), tdTowerBranchForUnitTypeId(GetUnitTypeId(source)), tdTowerIsEvolved(source))
 	for shot in volley.extraShots
 		if shot != null and shot.target != null and shot.target.isAlive()
 			let victim = shot.target

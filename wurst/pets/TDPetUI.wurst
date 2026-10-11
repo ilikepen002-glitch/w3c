@@ -91,8 +91,8 @@ function details(int lane) returns string
 			if slot >= tdPetUnlockedSlots(pet.level)
 				text += " [共鸣锁定：本路第" + (slot == 2 ? "4" : "8") + "波完成解锁]"
 			text += "|n" + tdPetSkillDescriptionById(pet.skillAt(slot), pet.qualityAt(slot))
-			if pet.host != null and not tdPetSkillFitsTower(pet.skillAt(slot), tdTowerChoiceForUnitTypeId(GetUnitTypeId(pet.host)))
-				text += "|n|cffff8080不适配：仅本栏停用；推荐" + (pet.skillAt(slot) == 9 ? "弓箭塔" : "食尸鬼") + "|r"
+			if pet.host != null and not tdPetSkillFitsHost(pet.skillAt(slot), pet.host)
+				text += "|n|cffff8080不适配：仅本栏停用；宿主需要" + (pet.skillAt(slot) == 9 ? "分裂箭能力" : "尸爆能力") + "|r"
 	return text
 
 public function tdPetShowCollection(int lane)

@@ -63,5 +63,5 @@ function assertEquipmentNear(real actual, real expected)
 	assertEquipmentNear(tdEquipmentControlReduction(0.22, 1), 0.22)
 	tdTowerHotkeyForLevelBranch(TD_TOWER_CHOICE_FOOTMAN, 6, TD_TOWER_BRANCH_A).assertEquals("Q")
 	tdTowerHotkeyForLevelBranch(TD_TOWER_CHOICE_FOOTMAN, 6, TD_TOWER_BRANCH_B).assertEquals("W")
-	tdTowerHotkeyForLevelBranch(TD_TOWER_CHOICE_FOOTMAN, 5, TD_TOWER_BRANCH_B).assertEquals("E")
+	tdTowerHotkeyForLevelBranch(TD_TOWER_CHOICE_FOOTMAN, 5, TD_TOWER_BRANCH_B).assertEquals("Q")
 

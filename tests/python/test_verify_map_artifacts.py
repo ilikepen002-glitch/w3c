@@ -38,7 +38,7 @@ class BaselineArtifactTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("PASS", result.stdout)
 
-    def test_evolution_accepts_existing_complete_skill_bars(self):
+    def test_evolution_accepts_complete_inherited_skill_bars(self):
         self.assert_verifier_passes("VerifyEvolutionArtifact.py")
 
     def test_ground_accepts_existing_six_command_book(self):
@@ -71,7 +71,7 @@ class ParsedObjectNegativeTests(unittest.TestCase):
 
     def test_evolution_rejects_each_missing_display(self):
         for uid, missing in [("uO15", "A139"), ("uD15", "A135"),
-                             ("uD6B", "A135"), ("uG15", "A137"),
+                             ("uD6B", "A141"), ("uG15", "A137"),
                              ("uG6A", "A137")]:
             with self.subTest(unit=uid, missing=missing):
                 self.units = deepcopy(self.baseline_units)

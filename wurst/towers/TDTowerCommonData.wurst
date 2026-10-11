@@ -198,12 +198,23 @@ public function tdArcherSplitArrowTargetCount(int level) returns int
 		clampedLevel = TD_MAX_TOWER_LEVEL
 	return clampedLevel + 1
 
-public function tdArcherHasSplitArrowAtLevelBranch(int level, int branch) returns boolean
-	if level < 1
-		return false
-	if level < TD_MAX_TOWER_LEVEL
-		return true
-	return branch == TD_TOWER_BRANCH_A
+public function tdArcherHasSplitArrowAtLevelBranch(int level, int _branch) returns boolean
+	return level >= 1 and level <= TD_MAX_TOWER_LEVEL
+
+public function tdArcherSplitArrowDamageMultiplier(int level, int branch, boolean evolved) returns real
+	return evolved and level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_A ? tdEvolutionSkillMultiplier() : 1.0
+
+public function tdGhoulCorpseExplosionDamageForBranch(int level, int branch, boolean evolved) returns real
+	return tdGhoulCorpseExplosionDamage() * (evolved and level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_B ? tdEvolutionSkillMultiplier() : 1.0)
+
+public function tdOrcUltimateSkillButtonX() returns int
+	return 2
+
+public function tdOrcUltimateSkillButtonY() returns int
+	return 1
+
+public function tdOrcUltimateSkillHotkey() returns string
+	return "E"
 
 public function tdArcherSplitArrowUsesBounceDamageForTest() returns boolean
 	return false
@@ -290,6 +301,11 @@ public function tdDryadAuraSlowFactor() returns real
 public function tdDryadAuraSlowRadius() returns real
 	return 225.0
 
+public function tdDryadWideAuraSlowRadius() returns real
+	// Approved: 225 * 940 / 800 = 264.375, rounded to a 5-unit step.
+	// Evolution preserves this radius; this is not an in-game balance result.
+	return 265.0
+
 public function tdDryadAttackSlowFactor() returns real
 	return 0.84
 
@@ -301,3 +317,15 @@ public function tdBonusPercentString(real bonus) returns string
 
 public function tdSlowPercentString(real remainingFactor) returns string
 	return ((1.0 - remainingFactor) * 100.0 + 0.5).toInt().toString() + "%"
+
+public function tdPreciseBonusPercentString(real bonus) returns string
+	// Three fractional percentage digits cover all 61 control levels exactly.
+	let scaled = R2I(bonus * 100000.0 + 0.5)
+	let whole = scaled div 1000
+	let fraction = scaled mod 1000
+	if fraction == 0
+		return whole.toString() + "%"
+	var digits = (fraction + 1000).toString().substring(1, 4)
+	while digits.substring(digits.length() - 1, digits.length()) == "0"
+		digits = digits.substring(0, digits.length() - 1)
+	return whole.toString() + "." + digits + "%"

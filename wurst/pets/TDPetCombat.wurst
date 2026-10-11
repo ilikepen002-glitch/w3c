@@ -26,8 +26,11 @@ public function tdPetDamageSourceEligible(boolean codeDamage, boolean spellDamag
 public function tdPetBindingValid(TDPet pet, unit host, int generation) returns boolean
 	return pet != null and not pet.released and pet.host == host and pet.generation == generation and not pet.paused and host != null and host.isAlive() and tdTowerChoiceForUnitTypeId(GetUnitTypeId(host)) != 0 and GetPlayerId(GetOwningPlayer(host)) == pet.lane and tdPetLaneCanAct(pet.lane)
 
-public function tdPetSkillFitsTower(int skill, int choice) returns boolean
-	return (skill != 9 or choice == TD_TOWER_CHOICE_ARCHER) and (skill != 10 or choice == TD_TOWER_CHOICE_GHOUL)
+public function tdPetSkillFitsAbilities(int skill, boolean hasSplitArrow, boolean hasCorpseExplosion) returns boolean
+	return (skill != 9 or hasSplitArrow) and (skill != 10 or hasCorpseExplosion)
+
+public function tdPetSkillFitsHost(int skill, unit host) returns boolean
+	return host != null and tdPetSkillFitsAbilities(skill, host.getAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID) > 0, host.getAbilityLevel(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID) > 0)
 
 public function tdPetProcReady(boolean pending, real now, real readyAt) returns boolean
 	return not pending and now >= readyAt
@@ -115,14 +118,14 @@ public function tdPetRefreshHost(unit tower, real aura)
 
 public function tdPetOnSplitArrowImpact(unit source, unit target)
 	let pet = tdPetForHost(source)
-	if pet != null and tdPetBindingValid(pet, source, pet.generation) and tdPetEnemyIsValid(target, pet.lane)
+	if pet != null and tdPetBindingValid(pet, source, pet.generation) and tdPetEnemyIsValid(target, pet.lane) and tdPetSkillFitsHost(9, source)
 		let power = pet.skillPower(9)
 		if power > 0.0
 			applySlow(target, power, 3.0, ((power - 0.08) / 0.04 + 0.5).toInt() - 1)
 
 public function tdPetOnCorpseExplosion(unit source, vec2 center)
 	let pet = tdPetForHost(source)
-	if pet == null or not tdPetBindingValid(pet, source, pet.generation)
+	if pet == null or not tdPetBindingValid(pet, source, pet.generation) or not tdPetSkillFitsHost(10, source)
 		return
 	let power = pet.skillPower(10)
 	if power <= 0.0

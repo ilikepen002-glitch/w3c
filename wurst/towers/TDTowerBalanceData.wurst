@@ -72,6 +72,15 @@ public function tdTowerIconPath(int towerChoice, int level) returns string
 		return Icons.bTNGhoul
 	return ""
 
+public function tdTowerIconPathForBranch(int towerChoice, int level, int branch) returns string
+	if level < TD_MAX_TOWER_LEVEL
+		return tdTowerIconPath(towerChoice, level)
+	if towerChoice == TD_TOWER_CHOICE_ARCHER
+		return branch == TD_TOWER_BRANCH_B ? tdArcherAuraIconPath() : tdTowerBaseSkillIconPath(towerChoice)
+	if towerChoice == TD_TOWER_CHOICE_ORC
+		return branch == TD_TOWER_BRANCH_B ? tdOrcBladestormIconPath() : tdOrcBloodlustIconPath()
+	return branch == TD_TOWER_BRANCH_B ? tdTowerSupportSkillIconPath(towerChoice) : tdTowerBaseSkillIconPath(towerChoice)
+
 public function tdTowerIconPath(int towerChoice) returns string
 	return tdTowerIconPath(towerChoice, 1)
 
@@ -475,7 +484,7 @@ public function tdTowerBaseRangeForBranch(int towerChoice, int level, int branch
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
 			return 780
-		return 660
+		return 670
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
 			return 720
@@ -531,24 +540,24 @@ public function tdTowerLoreForBranch(int towerChoice, int level, int branch) ret
 		return tdTowerLore(towerChoice, level)
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		if branch == TD_TOWER_BRANCH_B
-			return "月神号令牺牲分裂覆盖，换取更远射程和白虎战吼支援。"
-		return "星界白虎专注高伤害分裂箭，压低整段沟壑的血线。"
+			return "月神号令保留分裂箭与白虎战吼，以1020射程提供远程支援。"
+		return "星界白虎保留白虎战吼，以更高攻击和更快攻击节奏强化分裂压制。"
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
-			return "碎阵剑圣保留致命一击，并以可自动释放的剑刃风暴兼顾单体追击和群体压血线。"
-		return "屠王剑圣以强化致命一击和嗜血追斩Boss，专注近距离单体爆发。"
+			return "碎阵剑圣保留致命一击与剑舞，新增可自动施放的剑刃风暴压低群体血线。"
+		return "屠王剑圣保留致命一击与剑舞，新增嗜血，以更高攻击追斩Boss。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
-			return "圣佑统帅放弃盾击控制，换取更厚身板和统帅光环。"
-		return "审判圣骑士专注盾击与单点伤害，守住关键拐角。"
+			return "圣佑统帅保留盾击与统帅光环，以更厚身板和720射程稳住团队防线。"
+		return "审判圣骑士保留统帅光环，以更高攻击和更快攻击节奏配合盾击守住拐角。"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if branch == TD_TOWER_BRANCH_B
-			return "缠根守护者扩大缓速藤蔓覆盖，用控制拖长输出窗口。"
-		return "剧毒守护者专注毒镖伤害，快速处理高威胁目标。"
+			return "缠根守护者保留毒镖，将缓速藤蔓范围从225扩大到265，以940射程拖长输出窗口。"
+		return "剧毒守护者保留225范围缓速藤蔓，以更高攻击和更快攻击节奏配合毒镖。"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if branch == TD_TOWER_BRANCH_B
-			return "血疫憎恶用尸爆收割扎堆残血，适合密集波次。"
-		return "疾猎憎恶专注狂热攻速，快速补刀漏血敌人。"
+			return "血疫憎恶保留狂热与尸爆，以更高生命和650射程收割密集波次。"
+		return "疾猎憎恶保留尸爆，以更高攻击和更快攻击节奏配合狂热补刀。"
 	return tdTowerLore(towerChoice, level)
 
 public function tdTowerTalentSummary(int towerChoice, int level) returns string
@@ -575,24 +584,24 @@ public function tdTowerTalentSummaryForBranch(int towerChoice, int level, int br
 		return tdTowerTalentSummary(towerChoice, level)
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 战吼支援，远射程光环塔。"
-		return "分支: 分裂压制，高伤害多目标塔。"
+			return "分支: 战吼支援；保留分裂箭，总计7目标。进化后仅战吼增伤18%→21.6%。"
+		return "分支: 分裂压制，总计7目标；保留18%战吼。进化后仅额外箭伤害+20%，主箭不变。"
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 剑刃风暴，兼顾单体追击和范围压血线。"
-		return "分支: 嗜血追斩，单体爆发和Boss处决。"
+			return "分支: 剑刃风暴；保留25%致命一击与30%剑舞。风暴固定780范围，70伤害/秒。"
+		return "分支: 嗜血追斩；保留25%致命一击与30%剑舞。嗜血额外提高35%攻速，持续5秒。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 统帅光环，团队增伤和更稳防线。"
-		return "分支: 盾击审判，单点伤害和控制。"
+			return "分支: 统帅支援；保留22%盾击与16%统帅光环。进化后仅光环16%→19.2%。"
+		return "分支: 盾击审判；保留16%统帅光环。进化后仅盾击概率22%→26.4%，附伤20→24。"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 缓速藤蔓，大范围控速。"
-		return "分支: 剧毒镖击，单体毒伤和减速。"
+			return "分支: 宽域藤蔓；保留毒伤12/秒和单体减速。藤蔓范围265、减速18%；进化后仅藤蔓减速21.6%。"
+		return "分支: 剧毒镖击；保留225范围18%藤蔓减速。毒伤12/秒；进化后仅毒伤14.4/秒。"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 血疫尸爆，残血群体收割。"
-		return "分支: 疾猎狂热，高攻速补刀。"
+			return "分支: 血疫尸爆；保留42%狂热。尸爆36伤害；进化后仅尸爆43.2伤害。"
+		return "分支: 疾猎狂热；保留36伤害尸爆。攻速+42%；进化后仅狂热+50.4%。"
 	return tdTowerTalentSummary(towerChoice, level)
 
 public function tdTowerModelPath(int towerChoice, int level) returns string
@@ -661,14 +670,14 @@ public function tdTowerButtonY(int towerChoice) returns int
 	return 1
 
 public function tdTowerLevelButtonX(int towerChoice, int level, int branch) returns int
-	if level >= TD_MAX_TOWER_LEVEL
-		if branch == TD_TOWER_BRANCH_B
+	if level >= 2
+		if level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_B
 			return 1
 		return 0
 	return tdTowerButtonX(towerChoice)
 
 public function tdTowerLevelButtonY(int towerChoice, int level, int _branch) returns int
-	if level >= TD_MAX_TOWER_LEVEL
+	if level >= 2
 		return 2
 	return tdTowerButtonY(towerChoice)
 
@@ -684,6 +693,6 @@ public function tdTowerHotkey(int towerChoice) returns string
 	return "S"
 
 public function tdTowerHotkeyForLevelBranch(int towerChoice, int level, int branch) returns string
-	if level == 6
-		return branch == TD_TOWER_BRANCH_B ? "W" : "Q"
+	if level >= 2
+		return level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_B ? "W" : "Q"
 	return tdTowerHotkey(towerChoice)
