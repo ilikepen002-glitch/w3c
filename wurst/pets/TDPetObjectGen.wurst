@@ -17,7 +17,7 @@ function command(int abilityId, string name, string key, int x, int y, Targettyp
 	..presetIcon(icon)
 	..makeUnitSpell(0, 0.0)
 	..setCheckDependencies(false)
-	..setTargetsAllowed(1, "friend,enemy,neutral,ground,air,organic,structure,vulnerable,invulnerable")
+	..setTargetsAllowed(1, "friend,enemy,neutral,ground,air,organic,mechanical,structure,vulnerable,invulnerable")
 
 public function tdPetSkillIconName(int skill) returns string
 	if skill == 0

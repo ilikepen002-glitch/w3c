@@ -52,6 +52,17 @@ def field_value(fields, key, level=0):
 
 
 def verify_pet_core(abilities, units):
+    for rawcode in ('Pdep', 'Pc04'):
+        targets = set(field_value(abilities[rawcode][1], 'atar', 1).split(','))
+        require({'organic', 'mechanical', 'structure'}.issubset(targets),
+                f'{rawcode}: deployment must target organic and mechanical towers; '
+                f'actual targets={sorted(targets)}')
+    capture_targets = {'neutral', 'enemy', 'ground', 'air', 'organic',
+                       'invulnerable', 'vulnerable'}
+    for level in range(1, 62):
+        require(set(field_value(abilities['Pcap'][1], 'atar', level).split(','))
+                == capture_targets,
+                f'Pcap level {level}: ordinary capture target filter changed')
     models = [r'Units\Human\Phoenix\Phoenix.mdl',
               r'Units\NightElf\FaerieDragon\FaerieDragon.mdl',
               r'Units\NightElf\Wisp\Wisp.mdl']
