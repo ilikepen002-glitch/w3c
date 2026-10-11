@@ -5,14 +5,18 @@ import TDPetData
 import TDConfig
 import TDCraftingLogic
 
-@Test function groundCraftPrioritizesTriplesAndStopsAtPurple()
-	tdGroundCraftBatchSize(1, 5).assertEquals(3)
-	tdGroundCraftBatchSize(1, 2).assertEquals(2)
-	tdGroundCraftBatchSize(1, 1).assertEquals(0)
-	tdGroundCraftBatchSize(4, 100).assertEquals(0)
+@Test function groundCraftOnlyConsumesGuaranteedTriples()
+	for quality = TD_ITEM_QUALITY_WHITE to TD_ITEM_QUALITY_BLUE
+		for count = 0 to 2
+			tdGroundCraftBatchSize(quality, count).assertEquals(0)
+		for count = 3 to 9
+			tdGroundCraftBatchSize(quality, count).assertEquals(3)
+		tdGroundCraftBatchSize(quality, -1).assertEquals(0)
+	for quality = 4 to 5
+		tdGroundCraftBatchSize(quality, 100).assertEquals(0)
 	tdGroundCraftBatchSize(0, 3).assertEquals(0)
-	tdCraftSucceeds(tdGroundCraftBatchSize(2, 2), 65).assertTrue()
-	tdCraftSucceeds(tdGroundCraftBatchSize(2, 2), 66).assertFalse()
+	for roll = 1 to 100
+		tdCraftSucceeds(tdGroundCraftBatchSize(2, 3), roll).assertTrue()
 
 @Test function groundGroupsSeparateBallsAndIgnoreUnknownItems()
 	tdGroundItemGroup(TD_ITEM_SHORT_BOW_ID).assertEquals(1)
@@ -65,45 +69,30 @@ import TDCraftingLogic
 	tdGroundItemPileCenter(2, 1).y.assertEquals(-2816.0)
 	tdGroundItemPileCenter(3, 1).x.assertEquals(-1024.0)
 
-@Test function groundBatchFiveSixAndEightKeepTriplePriority()
-	for count = 5 to 8
+@Test function groundBatchZeroThroughNineKeepsOneOrTwoLeftovers()
+	for count = 0 to 9
 		var remaining = count
 		var triples = 0
-		var pairs = 0
 		while tdGroundCraftBatchSize(1, remaining) > 0
-			let batch = tdGroundCraftBatchSize(1, remaining)
-			if batch == 3
-				triples += 1
-			else
-				pairs += 1
-			remaining -= batch
+			remaining -= tdGroundCraftBatchSize(1, remaining)
+			triples += 1
 		triples.assertEquals(count div 3)
-		pairs.assertEquals(ModuloInteger(count, 3) == 2 ? 1 : 0)
-		remaining.assertEquals(ModuloInteger(count, 3) == 1 ? 1 : 0)
+		remaining.assertEquals(ModuloInteger(count, 3))
 
-@Test function groundProductsJoinExistingHigherQualityForCascade()
-	// Six white produce two green; the existing green makes a triple, then
-	// that blue joins two existing blue and reaches purple.
-	var whites = 6
-	var greens = 1
-	var blues = 2
-	var purples = 0
-	while tdGroundCraftBatchSize(1, whites) > 0
-		let batch = tdGroundCraftBatchSize(1, whites)
-		whites -= batch
-		if tdCraftSucceeds(batch, 1)
-			greens += 1
-	while tdGroundCraftBatchSize(2, greens) > 0
-		let batch = tdGroundCraftBatchSize(2, greens)
-		greens -= batch
-		if tdCraftSucceeds(batch, 1)
-			blues += 1
-	while tdGroundCraftBatchSize(3, blues) > 0
-		let batch = tdGroundCraftBatchSize(3, blues)
-		blues -= batch
-		if tdCraftSucceeds(batch, 1)
-			purples += 1
-	whites.assertEquals(0)
-	greens.assertEquals(0)
-	blues.assertEquals(0)
-	purples.assertEquals(1)
+@Test function groundMixedEquipmentTypesKeepTheSameQualityGroup()
+	tdGroundItemGroup(TD_ITEM_SHORT_BOW_ID).assertEquals(1)
+	tdGroundItemGroup(TD_ITEM_EAGLE_SCOPE_ID).assertEquals(1)
+	tdGroundItemGroup(TD_ITEM_ARMOR_SPIKE_ID).assertEquals(1)
+	tdGroundItemGroup(TD_ITEM_STEEL_LONGBOW_ID).assertEquals(2)
+	tdGroundItemGroup(TD_ITEM_WINDRUNNER_BOW_ID).assertEquals(3)
+	tdGroundItemGroup(TD_ITEM_WHITE_TIGER_BANNER_ID).assertEquals(4)
+
+@Test function groundProductPilesFollowFrozenPlayerAndNextQuality()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for quality = TD_ITEM_QUALITY_WHITE to TD_ITEM_QUALITY_BLUE
+			let nextQuality = tdCraftResultQuality(quality)
+			for index = 0 to 29
+				let product = tdGroundItemPilePosition(lane, nextQuality, index)
+				tdGroundItemLane(product.x, product.y).assertEquals(lane)
+				let center = tdGroundItemPileCenter(lane, nextQuality)
+				tdGroundPointInUpgradeCircle(product.x, product.y, center.x, center.y).assertTrue()
