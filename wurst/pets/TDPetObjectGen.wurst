@@ -133,7 +133,8 @@ function tdPetCommandDescription(int command) returns string
 			..setSpeedBase(120)
 			..setSpeedMinimum(1)
 			..setSpeedMaximum(150)
-			..setNormalAbilities("")
+			// Own pathing is disabled at spawn; Ghost Visible lets other units pass through.
+			..setNormalAbilities("Aeth")
 			..setAttacksEnabled(0)
 			..setAcquisitionRange(0.0)
 			..setCollisionSize(0.0)
