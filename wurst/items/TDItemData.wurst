@@ -1,5 +1,4 @@
 package TDItemData
-import Icons
 
 public constant int TD_ITEM_QUALITY_WHITE = 1
 public constant int TD_ITEM_QUALITY_GREEN = 2
@@ -308,29 +307,68 @@ public function tdItemLevel(int itemId) returns int
 	return 1
 
 public function tdFarmerCraftIconPath() returns string
-	return Icons.bTNTransmute
+	return "war3mapImported\\BTNTDActionInventoryCraft.blp"
+
+public function tdFarmerGroundUpgradeIconPath() returns string
+	return "war3mapImported\\BTNTDActionGroundUpgrade.blp"
 
 public function tdItemIconPath(int itemId) returns string
-	if itemId == TD_ITEM_SHORT_BOW_ID or itemId == TD_ITEM_STEEL_LONGBOW_ID or itemId == TD_ITEM_WINDRUNNER_BOW_ID or itemId == TD_ITEM_WHITE_TIGER_BANNER_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNArcher.blp"
-	if itemId == TD_ITEM_EAGLE_SCOPE_ID or itemId == TD_ITEM_HUNTER_SCOPE_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNSnazzyPotion.blp"
-	if itemId == TD_ITEM_SWIFT_GLOVES_ID or itemId == TD_ITEM_TOXIC_VINE_ID or itemId == TD_ITEM_CORRUPTED_HEART_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
-	if itemId == TD_ITEM_COOLING_RUNE_ID or itemId == TD_ITEM_RHYTHM_TOTEM_ID or itemId == TD_ITEM_FROST_TOME_ID or itemId == TD_ITEM_COMMAND_SEAL_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNRune.blp"
-	if itemId == TD_ITEM_GOLD_RING_ID or itemId == TD_ITEM_MERCENARY_PURSE_ID or itemId == TD_ITEM_BOUNTY_CONTRACT_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNChestOfGold.blp"
-	if itemId == TD_ITEM_ARMOR_SPIKE_ID or itemId == TD_ITEM_WAR_AXE_ID or itemId == TD_ITEM_ARMOR_DRUM_ID or itemId == TD_ITEM_BLADEMASTER_SIGIL_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNClawsOfAttack.blp"
-	if itemId == TD_ITEM_EXECUTION_DAGGER_ID or itemId == TD_ITEM_LACERATING_SPIKE_ID or itemId == TD_ITEM_EXECUTION_MARK_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNDaggerOfEscape.blp"
-	if itemId == TD_ITEM_POISON_SAC_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNOrbOfVenom.blp"
+	if itemId == TD_ITEM_SHORT_BOW_ID
+		return "war3mapImported\\BTNTDItemShortBow.blp"
+	if itemId == TD_ITEM_STEEL_LONGBOW_ID
+		return "war3mapImported\\BTNTDItemSteelLongbow.blp"
+	if itemId == TD_ITEM_WINDRUNNER_BOW_ID
+		return "war3mapImported\\BTNTDItemWindrunnerBow.blp"
+	if itemId == TD_ITEM_EAGLE_SCOPE_ID
+		return "war3mapImported\\BTNTDItemEagleScope.blp"
+	if itemId == TD_ITEM_HUNTER_SCOPE_ID
+		return "war3mapImported\\BTNTDItemHunterScope.blp"
+	if itemId == TD_ITEM_WHITE_TIGER_BANNER_ID
+		return "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+	if itemId == TD_ITEM_COOLING_RUNE_ID
+		return "war3mapImported\\BTNTDItemCoolingRune.blp"
 	if itemId == TD_ITEM_STABLE_TOTEM_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNCommand.blp"
+		return "war3mapImported\\BTNTDItemStableTotem.blp"
+	if itemId == TD_ITEM_RHYTHM_TOTEM_ID
+		return "war3mapImported\\BTNTDItemRhythmTotem.blp"
+	if itemId == TD_ITEM_FOCUS_STONE_ID
+		return "war3mapImported\\BTNTDItemFocusStone.blp"
+	if itemId == TD_ITEM_FROST_TOME_ID
+		return "war3mapImported\\BTNTDItemFrostTome.blp"
+	if itemId == TD_ITEM_COMMAND_SEAL_ID
+		return "war3mapImported\\BTNTDItemCommandSeal.blp"
+	if itemId == TD_ITEM_ARMOR_SPIKE_ID
+		return "war3mapImported\\BTNTDItemArmorSpike.blp"
+	if itemId == TD_ITEM_WAR_AXE_ID
+		return "war3mapImported\\BTNTDItemWarAxe.blp"
+	if itemId == TD_ITEM_LACERATING_SPIKE_ID
+		return "war3mapImported\\BTNTDItemLaceratingSpike.blp"
+	if itemId == TD_ITEM_BERSERKER_BADGE_ID
+		return "war3mapImported\\BTNTDItemBerserkerBadge.blp"
+	if itemId == TD_ITEM_ARMOR_DRUM_ID
+		return "war3mapImported\\BTNTDItemArmorDrum.blp"
+	if itemId == TD_ITEM_BLADEMASTER_SIGIL_ID
+		return "war3mapImported\\BTNTDItemBlademasterSigil.blp"
+	if itemId == TD_ITEM_GOLD_RING_ID
+		return "war3mapImported\\BTNTDItemGoldRing.blp"
 	if itemId == TD_ITEM_SCAVENGER_BAG_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNPackBeast.blp"
+		return "war3mapImported\\BTNTDItemScavengerBag.blp"
+	if itemId == TD_ITEM_MERCENARY_PURSE_ID
+		return "war3mapImported\\BTNTDItemMercenaryPurse.blp"
+	if itemId == TD_ITEM_BOUNTY_CONTRACT_ID
+		return "war3mapImported\\BTNTDItemBountyContract.blp"
+	if itemId == TD_ITEM_EXECUTION_MARK_ID
+		return "war3mapImported\\BTNTDItemExecutionMark.blp"
+	if itemId == TD_ITEM_CORRUPTED_HEART_ID
+		return "war3mapImported\\BTNTDItemCorruptedHeart.blp"
+	if itemId == TD_ITEM_POISON_SAC_ID
+		return "war3mapImported\\BTNTDItemPoisonSac.blp"
+	if itemId == TD_ITEM_TOXIC_VINE_ID
+		return "war3mapImported\\BTNTDItemToxicVine.blp"
+	if itemId == TD_ITEM_SWIFT_GLOVES_ID
+		return "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+	if itemId == TD_ITEM_EXECUTION_DAGGER_ID
+		return "ReplaceableTextures\\CommandButtons\\BTNDaggerOfEscape.blp"
 	return "ReplaceableTextures\\CommandButtons\\BTNScroll.blp"
 
 public function tdItemPassiveAbilityRawcodes(int _itemId) returns string

@@ -1,0 +1,800 @@
+{
+  "schemaVersion": 1,
+  "generator": "Built-in imagegen tool",
+  "date": "2026-10-11",
+  "provenance": {
+    "input": "Self-generated for this project using builtin imagegen; no third-party reference image input.",
+    "rights": "No third-party or Creative Commons license, exclusivity, or legal copyright ownership claim is made.",
+    "selectedSources": 7,
+    "rejectedAssets": "Discarded anatomical-heart sketch and superseded crystal-fusion actions sheet are not included. sheet_actions records the first prompt; forge_edit records replacement with five ordinary capture balls and one crowned master ball.",
+    "prompts": "assets/source/semantic-icons/prompts.json",
+    "editPrompt": "assets/source/semantic-icons/forge-edit-prompt.txt"
+  },
+  "conversion": {
+    "size": [
+      64,
+      64
+    ],
+    "crop": "Exact asset-specific pixel boxes",
+    "resize": "Pillow LANCZOS",
+    "disabled": "grayscale, preserve alpha, brightness 0.45",
+    "format": "BLP1 paletted, alpha8, 7 mip levels down to 1x1",
+    "palette": "256-color MEDIANCUT, NONE dither",
+    "pillowVersion": "12.3.0",
+    "command": "python3 tools/BuildSemanticIcons.py --check"
+  },
+  "assets": [
+    {
+      "name": "ShortBow",
+      "source": "assets/source/semantic-icons/ranged-sheet-source.png",
+      "crop": [
+        0,
+        0,
+        512,
+        484
+      ],
+      "rawcodes": [
+        "iW01"
+      ],
+      "source_sha256": "6d38d110df1662c31cd3c730b74334f2e29360ffd8b31987344fcc55e79ba116",
+      "normal": "war3mapImported\\BTNTDItemShortBow.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemShortBow.blp",
+      "normal_sha256": "c1261fc37d0e0942cfbda4efbf1b5f6fd41984cab3aed593dac26c8c442f8885",
+      "disabled_sha256": "de47b01e3920a0f4dfc93bbb816a61a8760704ba26f470f51bc3350a314d63c4"
+    },
+    {
+      "name": "SteelLongbow",
+      "source": "assets/source/semantic-icons/ranged-sheet-source.png",
+      "crop": [
+        512,
+        0,
+        1024,
+        484
+      ],
+      "rawcodes": [
+        "iG01"
+      ],
+      "source_sha256": "6d38d110df1662c31cd3c730b74334f2e29360ffd8b31987344fcc55e79ba116",
+      "normal": "war3mapImported\\BTNTDItemSteelLongbow.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemSteelLongbow.blp",
+      "normal_sha256": "15f5a3edbb61a507a7760bda5cf714ec8426773ae188c37fd8034e3210c52574",
+      "disabled_sha256": "78324ebc4a6fb5fc7277276acbc04daa912b2815ab4af56b65eaa0c13ee4d682"
+    },
+    {
+      "name": "WindrunnerBow",
+      "source": "assets/source/semantic-icons/ranged-sheet-source.png",
+      "crop": [
+        1024,
+        0,
+        1536,
+        484
+      ],
+      "rawcodes": [
+        "iB01"
+      ],
+      "source_sha256": "6d38d110df1662c31cd3c730b74334f2e29360ffd8b31987344fcc55e79ba116",
+      "normal": "war3mapImported\\BTNTDItemWindrunnerBow.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemWindrunnerBow.blp",
+      "normal_sha256": "de8b3150b991983383dd8c96d8bccb1ec4db71492f2488e8c7e5b4838063e4e4",
+      "disabled_sha256": "e8708cd033837031cb784d9669a1409cae4b2926d3453f95115c0500774ae997"
+    },
+    {
+      "name": "EagleScope",
+      "source": "assets/source/semantic-icons/ranged-sheet-source.png",
+      "crop": [
+        0,
+        484,
+        512,
+        988
+      ],
+      "rawcodes": [
+        "iW02"
+      ],
+      "source_sha256": "6d38d110df1662c31cd3c730b74334f2e29360ffd8b31987344fcc55e79ba116",
+      "normal": "war3mapImported\\BTNTDItemEagleScope.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemEagleScope.blp",
+      "normal_sha256": "886dc907ad7c1765bee61e71023d04b430f7178f461f3b06d174dbd538838080",
+      "disabled_sha256": "c6fea95a2c13eb4cd2128d06ccc84a77296ebe82e86f9b2d1ff9c9d59420e1f7"
+    },
+    {
+      "name": "HunterScope",
+      "source": "assets/source/semantic-icons/ranged-sheet-source.png",
+      "crop": [
+        512,
+        484,
+        1024,
+        988
+      ],
+      "rawcodes": [
+        "iG02"
+      ],
+      "source_sha256": "6d38d110df1662c31cd3c730b74334f2e29360ffd8b31987344fcc55e79ba116",
+      "normal": "war3mapImported\\BTNTDItemHunterScope.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemHunterScope.blp",
+      "normal_sha256": "41be6a8557cc5f12e6d79159545374364ca90d3c578b49bb7ceee94b1a6f55cf",
+      "disabled_sha256": "8ee98d3e7a6ad7fd856687feb61e538e18fd5faaecc12f9800c87ee04dc60f20"
+    },
+    {
+      "name": "WhiteTigerBanner",
+      "source": "assets/source/semantic-icons/ranged-sheet-source.png",
+      "crop": [
+        1024,
+        484,
+        1536,
+        988
+      ],
+      "rawcodes": [
+        "iP01"
+      ],
+      "source_sha256": "6d38d110df1662c31cd3c730b74334f2e29360ffd8b31987344fcc55e79ba116",
+      "normal": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemWhiteTigerBanner.blp",
+      "normal_sha256": "0c2fc4dbee4d0e625287464dccb97235633f01200b03d2796b04264b3134d8a6",
+      "disabled_sha256": "11f4cf546f4239847830461979a316777e98fabe0ed51a355f2b4ed6b21017b1"
+    },
+    {
+      "name": "CoolingRune",
+      "source": "assets/source/semantic-icons/arcane-sheet-source.png",
+      "crop": [
+        0,
+        0,
+        512,
+        488
+      ],
+      "rawcodes": [
+        "iW04"
+      ],
+      "source_sha256": "3902e0ea0d8ebe5b38056291e66d0ddf65d4c5d0254968e3a04b9e5a577a7d98",
+      "normal": "war3mapImported\\BTNTDItemCoolingRune.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemCoolingRune.blp",
+      "normal_sha256": "863a96b3898e7cf2adeab3ddd58a487e9566b7b707a5f40d8f546312875f2443",
+      "disabled_sha256": "9e05e699793f3a09b879e30d86329b847c68a954a2a45fce107e977175c093f5"
+    },
+    {
+      "name": "StableTotem",
+      "source": "assets/source/semantic-icons/arcane-sheet-source.png",
+      "crop": [
+        512,
+        0,
+        1024,
+        488
+      ],
+      "rawcodes": [
+        "iW09"
+      ],
+      "source_sha256": "3902e0ea0d8ebe5b38056291e66d0ddf65d4c5d0254968e3a04b9e5a577a7d98",
+      "normal": "war3mapImported\\BTNTDItemStableTotem.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemStableTotem.blp",
+      "normal_sha256": "68aae27ccba6d7a05eaaa4df9eafa1d45fd1afd40f51b6a1b9786d798162456a",
+      "disabled_sha256": "f556b0d0a0aad650fd5aa8fb78bde28eb252c13c0ae32cf64e5b749a2586a8c7"
+    },
+    {
+      "name": "RhythmTotem",
+      "source": "assets/source/semantic-icons/arcane-sheet-source.png",
+      "crop": [
+        1024,
+        0,
+        1536,
+        488
+      ],
+      "rawcodes": [
+        "iG04"
+      ],
+      "source_sha256": "3902e0ea0d8ebe5b38056291e66d0ddf65d4c5d0254968e3a04b9e5a577a7d98",
+      "normal": "war3mapImported\\BTNTDItemRhythmTotem.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemRhythmTotem.blp",
+      "normal_sha256": "d8dd7a04a42c62ac4b090b270b1d8a7910d9b461ee10fc44b66271229933e2fe",
+      "disabled_sha256": "81d5a9898d32e0bdd7088b1adbe58263aa609386a2c990f8a0d3b5c50f12c418"
+    },
+    {
+      "name": "FocusStone",
+      "source": "assets/source/semantic-icons/arcane-sheet-source.png",
+      "crop": [
+        0,
+        488,
+        512,
+        1024
+      ],
+      "rawcodes": [
+        "iG08"
+      ],
+      "source_sha256": "3902e0ea0d8ebe5b38056291e66d0ddf65d4c5d0254968e3a04b9e5a577a7d98",
+      "normal": "war3mapImported\\BTNTDItemFocusStone.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemFocusStone.blp",
+      "normal_sha256": "e28c795e7fb15bf5f63a05b63bcb2f4d5795c787dbde8908c1cd746ce6050d64",
+      "disabled_sha256": "cef87f66ae6a47e0f90f3e4ba75b0b6ebac7e77a8e8972f41990a10158d0ad74"
+    },
+    {
+      "name": "FrostTome",
+      "source": "assets/source/semantic-icons/arcane-sheet-source.png",
+      "crop": [
+        512,
+        488,
+        1024,
+        1024
+      ],
+      "rawcodes": [
+        "iB04"
+      ],
+      "source_sha256": "3902e0ea0d8ebe5b38056291e66d0ddf65d4c5d0254968e3a04b9e5a577a7d98",
+      "normal": "war3mapImported\\BTNTDItemFrostTome.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemFrostTome.blp",
+      "normal_sha256": "87ae94ccc673a5c00841011404722f4f31094b4de8fc5bc846a19fb662d0cf23",
+      "disabled_sha256": "6e8b1ae5ae2f0c37d71712e8111f2b75a5d6639cf7ab5db1066667f5265dd51d"
+    },
+    {
+      "name": "CommandSeal",
+      "source": "assets/source/semantic-icons/arcane-sheet-source.png",
+      "crop": [
+        1024,
+        488,
+        1536,
+        1024
+      ],
+      "rawcodes": [
+        "iP03"
+      ],
+      "source_sha256": "3902e0ea0d8ebe5b38056291e66d0ddf65d4c5d0254968e3a04b9e5a577a7d98",
+      "normal": "war3mapImported\\BTNTDItemCommandSeal.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemCommandSeal.blp",
+      "normal_sha256": "a191c1e5234f592a3fc5ed085ab1a48b2aaf8a324bcac8edc48ddfe95f912064",
+      "disabled_sha256": "d930bde0886493b56d596fcd94d133f8849274d9cb73776bc2e5862d707a7992"
+    },
+    {
+      "name": "ArmorSpike",
+      "source": "assets/source/semantic-icons/combat-sheet-source.png",
+      "crop": [
+        0,
+        0,
+        512,
+        474
+      ],
+      "rawcodes": [
+        "iW06"
+      ],
+      "source_sha256": "6b1dea19f9e5939377d2adc53e94aa30b013312bc99d540769e480bb7622cca0",
+      "normal": "war3mapImported\\BTNTDItemArmorSpike.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemArmorSpike.blp",
+      "normal_sha256": "52d20fb26026da26aaaddec514eec1984908dc3795dc71c02c53d784dc082c5f",
+      "disabled_sha256": "4e31328b09580673a39d62e6859c4639bf2c7a98878b96b4123030e2df3c5eea"
+    },
+    {
+      "name": "WarAxe",
+      "source": "assets/source/semantic-icons/combat-sheet-source.png",
+      "crop": [
+        512,
+        0,
+        1024,
+        474
+      ],
+      "rawcodes": [
+        "iG03"
+      ],
+      "source_sha256": "6b1dea19f9e5939377d2adc53e94aa30b013312bc99d540769e480bb7622cca0",
+      "normal": "war3mapImported\\BTNTDItemWarAxe.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemWarAxe.blp",
+      "normal_sha256": "06fb018be2d89bd82e22a27d998ca11f9e6c54d006f43e39c0b4a19d6d33f9ec",
+      "disabled_sha256": "03bcae6ce87b0e6d9083fb6c8536d2df40bd4035db673884d53b09c9f5de78c5"
+    },
+    {
+      "name": "LaceratingSpike",
+      "source": "assets/source/semantic-icons/combat-sheet-source.png",
+      "crop": [
+        1024,
+        0,
+        1536,
+        474
+      ],
+      "rawcodes": [
+        "iG07"
+      ],
+      "source_sha256": "6b1dea19f9e5939377d2adc53e94aa30b013312bc99d540769e480bb7622cca0",
+      "normal": "war3mapImported\\BTNTDItemLaceratingSpike.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemLaceratingSpike.blp",
+      "normal_sha256": "622549944fad95568ef5c7a7c5850d1b7c569f1fb41a05fd02519fd952aee72a",
+      "disabled_sha256": "eca22fcff6d79508b7d88ade3e2744c9aaed07cf4e7dda3e100dd2e114bee1be"
+    },
+    {
+      "name": "BerserkerBadge",
+      "source": "assets/source/semantic-icons/combat-sheet-source.png",
+      "crop": [
+        0,
+        474,
+        512,
+        1024
+      ],
+      "rawcodes": [
+        "iB02"
+      ],
+      "source_sha256": "6b1dea19f9e5939377d2adc53e94aa30b013312bc99d540769e480bb7622cca0",
+      "normal": "war3mapImported\\BTNTDItemBerserkerBadge.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemBerserkerBadge.blp",
+      "normal_sha256": "ca4c9bb4a39d47f7566d92ab3101ba557c0f1f1a4b04b1ea42a8623eb7158847",
+      "disabled_sha256": "121eb2fdba8be0351ca6735dca383baf92a851806d5d8b5859f9e74c225f2232"
+    },
+    {
+      "name": "ArmorDrum",
+      "source": "assets/source/semantic-icons/combat-sheet-source.png",
+      "crop": [
+        512,
+        474,
+        1024,
+        1024
+      ],
+      "rawcodes": [
+        "iB03"
+      ],
+      "source_sha256": "6b1dea19f9e5939377d2adc53e94aa30b013312bc99d540769e480bb7622cca0",
+      "normal": "war3mapImported\\BTNTDItemArmorDrum.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemArmorDrum.blp",
+      "normal_sha256": "ebfaa058876ce494d9bb3b6b1c8f51b166f3c05b58643f9e88c57c688d26adda",
+      "disabled_sha256": "ea17014fee47e3e8aa1fe92393bd2a5a362597eb64006b050b77d56ac1ca7735"
+    },
+    {
+      "name": "BlademasterSigil",
+      "source": "assets/source/semantic-icons/combat-sheet-source.png",
+      "crop": [
+        1024,
+        474,
+        1536,
+        1024
+      ],
+      "rawcodes": [
+        "iP02"
+      ],
+      "source_sha256": "6b1dea19f9e5939377d2adc53e94aa30b013312bc99d540769e480bb7622cca0",
+      "normal": "war3mapImported\\BTNTDItemBlademasterSigil.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemBlademasterSigil.blp",
+      "normal_sha256": "8fd02345bc70f142863fb163d26a263fc4ff1501a02fa29a6db07cc3ea24ac07",
+      "disabled_sha256": "52192f46862eacb10b8366893a8098b64f6cee530de3e12f6ee48866a0892d72"
+    },
+    {
+      "name": "GoldRing",
+      "source": "assets/source/semantic-icons/misc-sheet-source.png",
+      "crop": [
+        0,
+        0,
+        512,
+        480
+      ],
+      "rawcodes": [
+        "iW05"
+      ],
+      "source_sha256": "35c7c4cdb6333a3e0548ddb104259365c88792c98bea8264e5f145c4fa546d71",
+      "normal": "war3mapImported\\BTNTDItemGoldRing.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemGoldRing.blp",
+      "normal_sha256": "f0005871c23dd0e45be2923729c0f8bc66baaf73389505c7a75c74dc2d95f548",
+      "disabled_sha256": "29d19486f8641246a5a8d96920bdb1f6bd67904277cad410122fc016e83e7d53"
+    },
+    {
+      "name": "ScavengerBag",
+      "source": "assets/source/semantic-icons/misc-sheet-source.png",
+      "crop": [
+        512,
+        0,
+        1024,
+        480
+      ],
+      "rawcodes": [
+        "iW10"
+      ],
+      "source_sha256": "35c7c4cdb6333a3e0548ddb104259365c88792c98bea8264e5f145c4fa546d71",
+      "normal": "war3mapImported\\BTNTDItemScavengerBag.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemScavengerBag.blp",
+      "normal_sha256": "1026a57cab599b00defc553dc6c048cfa435ce4bb887c1e1c87d8fb99801f784",
+      "disabled_sha256": "63015badd774c94149ff86e40aea4078825e7dbdb0bf86bae982202d4912ebd7"
+    },
+    {
+      "name": "MercenaryPurse",
+      "source": "assets/source/semantic-icons/misc-sheet-source.png",
+      "crop": [
+        1024,
+        0,
+        1536,
+        480
+      ],
+      "rawcodes": [
+        "iG06"
+      ],
+      "source_sha256": "35c7c4cdb6333a3e0548ddb104259365c88792c98bea8264e5f145c4fa546d71",
+      "normal": "war3mapImported\\BTNTDItemMercenaryPurse.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemMercenaryPurse.blp",
+      "normal_sha256": "9faae67db90e2fb4508aa02b4e99ae07807b3fb38cfbf5481c1acf30b71d92e2",
+      "disabled_sha256": "e0f5d85d9f8af76e230b05108a7f3a5589688999c08acd83bcca78ac700c9db4"
+    },
+    {
+      "name": "BountyContract",
+      "source": "assets/source/semantic-icons/misc-sheet-source.png",
+      "crop": [
+        0,
+        480,
+        512,
+        1000
+      ],
+      "rawcodes": [
+        "iB05"
+      ],
+      "source_sha256": "35c7c4cdb6333a3e0548ddb104259365c88792c98bea8264e5f145c4fa546d71",
+      "normal": "war3mapImported\\BTNTDItemBountyContract.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemBountyContract.blp",
+      "normal_sha256": "cf2bba9a29356da6039901fc13bccd891ddc90c5506d8dd1b7e51128b268f3e1",
+      "disabled_sha256": "7ca6247daa5ae0f6968f04329df5926430a18b333974378870a2e7003e673613"
+    },
+    {
+      "name": "ExecutionMark",
+      "source": "assets/source/semantic-icons/misc-sheet-source.png",
+      "crop": [
+        512,
+        480,
+        1024,
+        1000
+      ],
+      "rawcodes": [
+        "iB06"
+      ],
+      "source_sha256": "35c7c4cdb6333a3e0548ddb104259365c88792c98bea8264e5f145c4fa546d71",
+      "normal": "war3mapImported\\BTNTDItemExecutionMark.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemExecutionMark.blp",
+      "normal_sha256": "c76aaeea00019836397e426d5e2edde71f8b190c5e144061d061501d7278ffa4",
+      "disabled_sha256": "708d5f13687a54ff46bd0b0dcd5249721e66f9eb8c835873da8be4a6bf15b48b"
+    },
+    {
+      "name": "CorruptedHeart",
+      "source": "assets/source/semantic-icons/misc-sheet-source.png",
+      "crop": [
+        1024,
+        480,
+        1536,
+        1000
+      ],
+      "rawcodes": [
+        "iP04"
+      ],
+      "source_sha256": "35c7c4cdb6333a3e0548ddb104259365c88792c98bea8264e5f145c4fa546d71",
+      "normal": "war3mapImported\\BTNTDItemCorruptedHeart.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemCorruptedHeart.blp",
+      "normal_sha256": "edd2828b571d0b3b2b46a3daa7b874045186917779b0c0e8f47be41011734974",
+      "disabled_sha256": "a979d584495bb41278f23a109d7e3d81902fb9fe9e0047c8e220235f8a6b4ad4"
+    },
+    {
+      "name": "PoisonSac",
+      "source": "assets/source/semantic-icons/actions-sheet-v2-source.png",
+      "crop": [
+        0,
+        0,
+        512,
+        484
+      ],
+      "rawcodes": [
+        "iW08"
+      ],
+      "source_sha256": "18389ebd56b8a5c03ff96a8992f56cb8c5fef5dfa16095405754895e344d4115",
+      "normal": "war3mapImported\\BTNTDItemPoisonSac.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemPoisonSac.blp",
+      "normal_sha256": "a2d5e20422c6aea8fe6b93abd3d47deb8dd91681d5354c7d7678f6cb11456705",
+      "disabled_sha256": "fb40035c0f3bd1b19be32711590eb00fb335657ca839a45d98a0407e4db97276"
+    },
+    {
+      "name": "ToxicVine",
+      "source": "assets/source/semantic-icons/actions-sheet-v2-source.png",
+      "crop": [
+        512,
+        0,
+        1024,
+        484
+      ],
+      "rawcodes": [
+        "iG05"
+      ],
+      "source_sha256": "18389ebd56b8a5c03ff96a8992f56cb8c5fef5dfa16095405754895e344d4115",
+      "normal": "war3mapImported\\BTNTDItemToxicVine.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemToxicVine.blp",
+      "normal_sha256": "3ecb0fdb376236bbd3cfaf9442d0ee389fd8c56f295b6b3c6f3ee2213bffd49f",
+      "disabled_sha256": "da8be2bb4c98b2a2716d069dc42b460b71bb084c55b51450a0bf0ebac0b326ba"
+    },
+    {
+      "name": "CaptureOrb",
+      "source": "assets/source/semantic-icons/actions-sheet-v2-source.png",
+      "crop": [
+        1024,
+        0,
+        1536,
+        484
+      ],
+      "rawcodes": [
+        "Ibal",
+        "Pcap"
+      ],
+      "source_sha256": "18389ebd56b8a5c03ff96a8992f56cb8c5fef5dfa16095405754895e344d4115",
+      "normal": "war3mapImported\\BTNTDActionCaptureOrb.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDActionCaptureOrb.blp",
+      "normal_sha256": "dcc9d89aa22283b396065c8cb75505eb0523af7d819c6f719d0729994aa733dc",
+      "disabled_sha256": "b2a6a74b7bb83113f1ffb057d0034a285fe527b8102437b2a29ae3b4feda7ac2"
+    },
+    {
+      "name": "MasterCapture",
+      "source": "assets/source/semantic-icons/actions-sheet-v2-source.png",
+      "crop": [
+        0,
+        484,
+        512,
+        1024
+      ],
+      "rawcodes": [
+        "Pmas"
+      ],
+      "source_sha256": "18389ebd56b8a5c03ff96a8992f56cb8c5fef5dfa16095405754895e344d4115",
+      "normal": "war3mapImported\\BTNTDActionMasterCapture.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDActionMasterCapture.blp",
+      "normal_sha256": "2a9c3b131fe5485ab9a9ace74087296e6bfffad5fcd08aef46bd540f3f629627",
+      "disabled_sha256": "88b4817808ab779a982728464c5d527d83d9b871c6b340348bf81aba6f3a4ff0"
+    },
+    {
+      "name": "CaptureForge",
+      "source": "assets/source/semantic-icons/actions-sheet-v2-source.png",
+      "crop": [
+        512,
+        484,
+        1024,
+        1024
+      ],
+      "rawcodes": [
+        "Pfor"
+      ],
+      "source_sha256": "18389ebd56b8a5c03ff96a8992f56cb8c5fef5dfa16095405754895e344d4115",
+      "normal": "war3mapImported\\BTNTDActionCaptureForge.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDActionCaptureForge.blp",
+      "normal_sha256": "ae49f43e13a354a14a6dfe4c3a96807b14b2a292ab1851024140dddc0bf5f85b",
+      "disabled_sha256": "79efa61f377acdfcdc9b8fd810d918f29114f2768de2c27e6d51c85b6e31973a"
+    },
+    {
+      "name": "GroundUpgrade",
+      "source": "assets/source/semantic-icons/actions-sheet-v2-source.png",
+      "crop": [
+        1024,
+        484,
+        1536,
+        1024
+      ],
+      "rawcodes": [
+        "Gupg"
+      ],
+      "source_sha256": "18389ebd56b8a5c03ff96a8992f56cb8c5fef5dfa16095405754895e344d4115",
+      "normal": "war3mapImported\\BTNTDActionGroundUpgrade.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDActionGroundUpgrade.blp",
+      "normal_sha256": "5ed7a237e91db7c4fc42fab167009f6f0f31f273e62ab6a2d6ba3155759a4fee",
+      "disabled_sha256": "10392d30c100c68c1029cae11805ccebb08b9c7155393268c61d62aedb91c1a7"
+    },
+    {
+      "name": "CriticalStrike",
+      "source": "assets/source/semantic-icons/critical-strike-source.png",
+      "crop": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "rawcodes": [
+        "A102",
+        "A112"
+      ],
+      "source_sha256": "7adeaa8e645f9a13bcf1aa65fc964b441fcaa813da1dc26c243348ff93009d05",
+      "normal": "war3mapImported\\BTNTDTowerCriticalStrike.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerCriticalStrike.blp",
+      "normal_sha256": "d9b7970930c8587e0cb16cba0f1d15a24c4d30f0154548c5764d2b2f0c757c88",
+      "disabled_sha256": "7fff1a2ba2c0cd707975708f3863f22df6ccac9e322b74ea41d7849e641afe6b"
+    },
+    {
+      "name": "InventoryCraft",
+      "source": "assets/source/semantic-icons/inventory-craft-source.png",
+      "crop": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "rawcodes": [
+        "A119"
+      ],
+      "source_sha256": "de8f51ba2cfe4b94eac249c41650e1a82c987c2fbc0cf390da07e29be1210417",
+      "normal": "war3mapImported\\BTNTDActionInventoryCraft.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDActionInventoryCraft.blp",
+      "normal_sha256": "c63231afcccb96e7b8c5db86aeb095b307253a0fd7a7e2daaa2bfead14088ff4",
+      "disabled_sha256": "44b0095e3f9959fce30821742b52a36145378b1751d85714190e5298e61c9e67"
+    }
+  ],
+  "towerMigrations": [
+    {
+      "name": "SplitShot",
+      "old_normal": "war3mapImported\\BTNSplitShot.blp",
+      "normal": "war3mapImported\\BTNTDTowerSplitShot.blp",
+      "normal_sha256": "1173e2c95819dc2588d720e03b1f64e8341745c7a0168a4966e34da20448be25",
+      "old_disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNSplitShot.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerSplitShot.blp",
+      "disabled_sha256": "619962db7aaaa9552b4cdf129f7c02f3b93a1760ffc65692825320e46f72d6ad"
+    },
+    {
+      "name": "TrueshotAura",
+      "old_normal": "war3mapImported\\BTNTrueshotAura.blp",
+      "normal": "war3mapImported\\BTNTDTowerTrueshotAura.blp",
+      "normal_sha256": "3eae9cc9bb06be95f9bbfec18b1597f21ed3d218fd7f88a1d72ccc8feb6d9d9a",
+      "old_disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTrueshotAura.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerTrueshotAura.blp",
+      "disabled_sha256": "1035d5ecfc787b74c7952261ac8d1e6e0df2d3151afa434fa649bed11fe602e2"
+    },
+    {
+      "name": "SwordDance",
+      "old_normal": "war3mapImported\\BTNSwordDance.blp",
+      "normal": "war3mapImported\\BTNTDTowerSwordDance.blp",
+      "normal_sha256": "dd67db8d768c2ded6a2021152c05599f48c14fbb98202eb6491dedc747ae6243",
+      "old_disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNSwordDance.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerSwordDance.blp",
+      "disabled_sha256": "279f1120b4dc6b0cbdeed237dccae581b6b0a6356194b006e1cf1842bcc61677"
+    },
+    {
+      "name": "Bloodlust",
+      "old_normal": "war3mapImported\\BTNBloodlust.blp",
+      "normal": "war3mapImported\\BTNTDTowerBloodlust.blp",
+      "normal_sha256": "4003eace5288dee493923ac81650ae0e86cd8ff50e373552a645c65df9e64259",
+      "old_disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNBloodlust.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerBloodlust.blp",
+      "disabled_sha256": "f71c3b966a4e47823a91f9a8ec3cb2ee8d09e086285a4ae0852a0b4bdba440f2"
+    },
+    {
+      "name": "Bladestorm",
+      "old_normal": "war3mapImported\\BTNBladestorm.blp",
+      "normal": "war3mapImported\\BTNTDTowerBladestorm.blp",
+      "normal_sha256": "20be8428260ed9147aa4db3980fa3f9bc8fb3301e18b161c446f592c234d2af0",
+      "old_disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNBladestorm.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerBladestorm.blp",
+      "disabled_sha256": "4ad19927b57c89bd488585b3d63da86cee82f51f1553fc9c24800d7dda16c661"
+    },
+    {
+      "name": "ShieldBash",
+      "old_normal": "war3mapImported\\BTNShieldBash.blp",
+      "normal": "war3mapImported\\BTNTDTowerShieldBash.blp",
+      "normal_sha256": "cc094f3aba7725363276e686e171f38e7749b9eb6e23488ab39094b9b893af6d",
+      "old_disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNShieldBash.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerShieldBash.blp",
+      "disabled_sha256": "2bb1b801038c30e7c3097400e9357947173abea972536094da43e1a907996042"
+    },
+    {
+      "name": "CommandAura",
+      "old_normal": "war3mapImported\\BTNCommandAura.blp",
+      "normal": "war3mapImported\\BTNTDTowerCommandAura.blp",
+      "normal_sha256": "affcfb6f9b00b68fbf9399c4c7e01e09a110f76f3ffe3ca42db51c0c2e9f0019",
+      "old_disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNCommandAura.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerCommandAura.blp",
+      "disabled_sha256": "789281ae676e9c02a5aecce848faf51cb2fb964b289f461a5b17dfddbf5454e4"
+    },
+    {
+      "name": "PoisonDart",
+      "old_normal": "war3mapImported\\BTNPoisonDart.blp",
+      "normal": "war3mapImported\\BTNTDTowerPoisonDart.blp",
+      "normal_sha256": "41c7e1937764876cf797da8026d8860ed0e2f4e73bc7e02fa35c5c4b445dedde",
+      "old_disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNPoisonDart.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerPoisonDart.blp",
+      "disabled_sha256": "6cdb65c1261571501750bfa38c1e9a933f45a5b3ebe2885c56ba1087f1cc9536"
+    },
+    {
+      "name": "VinesAura",
+      "old_normal": "war3mapImported\\BTNVinesAura.blp",
+      "normal": "war3mapImported\\BTNTDTowerVinesAura.blp",
+      "normal_sha256": "dedc9aca348aba759c3ae28e146cf4dc47caca0709d1b4a56696456f9177b930",
+      "old_disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNVinesAura.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerVinesAura.blp",
+      "disabled_sha256": "83e3f25cca4fef4e9804236e4ca828fbede5d82580722a629845c5aee04d8351"
+    },
+    {
+      "name": "Frenzy",
+      "old_normal": "war3mapImported\\BTNFrenzy.blp",
+      "normal": "war3mapImported\\BTNTDTowerFrenzy.blp",
+      "normal_sha256": "5ad13418d4b7bfd542f16d0f63291c46e9c517339037e5a1600e48937a38c5cb",
+      "old_disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNFrenzy.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerFrenzy.blp",
+      "disabled_sha256": "797d8b4fb0087d165b7e4429fd180c6554a6fe4601dcba401b68830c0a1c7c20"
+    },
+    {
+      "name": "CorpseExplosion",
+      "old_normal": "war3mapImported\\BTNCorpseExplosion.blp",
+      "normal": "war3mapImported\\BTNTDTowerCorpseExplosion.blp",
+      "normal_sha256": "27193f40724d4f67ff5169f81d80521e3af54714e75def8e170e5902cb308158",
+      "old_disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNCorpseExplosion.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerCorpseExplosion.blp",
+      "disabled_sha256": "087c26c2021489847df76fc0e6d373b819e12eb31045d602a59cd904c1e89a0f"
+    }
+  ],
+  "preservedPetUI": [
+    {
+      "name": "TDPetCollection",
+      "normal": "war3mapImported\\BTNTDPetCollection.blp",
+      "normal_sha256": "030766bcb2f6abbba5af1535c8922aa92b3832379c7a10fe98a2ab66c91c11b0",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetCollection.blp",
+      "disabled_sha256": "2d9fdf30ce10a626099aa7d080f8bf2adeed70225848cfe35528134ea43ced2b"
+    },
+    {
+      "name": "TDPetCultivate",
+      "normal": "war3mapImported\\BTNTDPetCultivate.blp",
+      "normal_sha256": "905ae5f98051e3a7b9f83f7afa40424b48a8b004355eac9067718eacce4a9dde",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetCultivate.blp",
+      "disabled_sha256": "4b89f89ed42c46b8c93f69f1ad3522781ecbf7f8c3ba2b4fdbb0bcffb31ee2b4"
+    },
+    {
+      "name": "TDPetDeploy",
+      "normal": "war3mapImported\\BTNTDPetDeploy.blp",
+      "normal_sha256": "99349674464fcc96e7311b652353239333add6d57147623a370742464812e650",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetDeploy.blp",
+      "disabled_sha256": "9a75218704f005c9896187af222c6fda229f04f1b1a66ae35143ad893edeb296"
+    },
+    {
+      "name": "TDPetEmptySlot",
+      "normal": "war3mapImported\\BTNTDPetEmptySlot.blp",
+      "normal_sha256": "1b6b37ef0038afaedf2470feee1953dafdec86417941e3bff637948cc919eaed",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetEmptySlot.blp",
+      "disabled_sha256": "b0e74a437464908098dbd5f6824980a8c95a9b3ee37952234f041d472a39ffc5"
+    },
+    {
+      "name": "TDPetFlamePhoenix",
+      "normal": "war3mapImported\\BTNTDPetFlamePhoenix.blp",
+      "normal_sha256": "e5f7147a0a12e14cd5f3e811fcba042a0df526b42aa0d1cef3f06aa6b4a73734",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenix.blp",
+      "disabled_sha256": "21834bd6b1d2423712ce6a77613025837dbc2eb450e2b195439564ef711e5a9c"
+    },
+    {
+      "name": "TDPetGhostWisp",
+      "normal": "war3mapImported\\BTNTDPetGhostWisp.blp",
+      "normal_sha256": "73fd59ce4bc69a9d5fd857cb37522a20df6bbbc6747f9ba5315621dbfcb9dbaf",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWisp.blp",
+      "disabled_sha256": "f4642590f12300b3abd82492d5acb6016215e072e58d29eaf366e228561d7ed7"
+    },
+    {
+      "name": "TDPetInfo",
+      "normal": "war3mapImported\\BTNTDPetInfo.blp",
+      "normal_sha256": "9101121fbbd919532850db56d73e483f1728324d30f0520d921276b1d2b325d7",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetInfo.blp",
+      "disabled_sha256": "0e5087ffc095ec1ae1e33429fa9ec40e211497c15f4d97a5dea007cc9e8cafdd"
+    },
+    {
+      "name": "TDPetMenuTools",
+      "normal": "war3mapImported\\BTNTDPetMenuTools.blp",
+      "normal_sha256": "37e5812d51d294ebb76be159d7116d495ea9a2fde13bebabc075da7c4dee85b9",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetMenuTools.blp",
+      "disabled_sha256": "17f466a86c7ab0bcdbef64dab4e764b319e32fb391fad6b4acc9366e645d6422"
+    },
+    {
+      "name": "TDPetNext",
+      "normal": "war3mapImported\\BTNTDPetNext.blp",
+      "normal_sha256": "78133488330594e7dab24062a7308a2dd9d5e3a7e0ced747e91c274719db499a",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetNext.blp",
+      "disabled_sha256": "b7d9cdcf32e714747a35022f4bb0dba9774ee4f848125382a05da52f566b6c1a"
+    },
+    {
+      "name": "TDPetPrevious",
+      "normal": "war3mapImported\\BTNTDPetPrevious.blp",
+      "normal_sha256": "ebc1c9400cc1dd0ac744812e1c7647f6478b31ab84b46aef9fdb0a808aa7316e",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetPrevious.blp",
+      "disabled_sha256": "fc136ad3d5cdccd50cf0da6f3530a168a54c852b3680409511c62ed67ce5c4f6"
+    },
+    {
+      "name": "TDPetRecall",
+      "normal": "war3mapImported\\BTNTDPetRecall.blp",
+      "normal_sha256": "cd4133074b832de960d5fe4c19f5706b28e1cbaaeb0e4d5b6cf4b699426d275b",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetRecall.blp",
+      "disabled_sha256": "b3339e1db3bcadd9b44985891a0c86b73a90339b864fcc667ba765cd894e15c1"
+    },
+    {
+      "name": "TDPetReturnBuilder",
+      "normal": "war3mapImported\\BTNTDPetReturnBuilder.blp",
+      "normal_sha256": "01431868d964cda6285538697f92128788f09e4d04c578476fad202d6facadaf",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetReturnBuilder.blp",
+      "disabled_sha256": "d98381dca5d019d7724a87965852ebc0ac5fe47ab2feba402028abe2a90764be"
+    },
+    {
+      "name": "TDPetStormFaerieDragon",
+      "normal": "war3mapImported\\BTNTDPetStormFaerieDragon.blp",
+      "normal_sha256": "0e0c3ea67ed63f51d872360731475f73ceb90ac0d21dbb1af9f6dcf1e7190c0d",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragon.blp",
+      "disabled_sha256": "ef96038bffa7e5a762d0c4aadcc9f67a931f12aff89306761f1ba64ef5f6dd95"
+    }
+  ]
+}

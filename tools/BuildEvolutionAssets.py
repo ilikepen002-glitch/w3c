@@ -7,6 +7,25 @@ from PIL import Image, ImageOps, ImageEnhance
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/source'
 OUT = ROOT / 'imports/war3mapImported'
+TOWER_ICON_NAMES = frozenset([
+    'SplitShot', 'TrueshotAura', 'SwordDance', 'Bloodlust', 'Bladestorm',
+    'ShieldBash', 'CommandAura', 'PoisonDart', 'VinesAura', 'Frenzy', 'CorpseExplosion',
+])
+
+def tower_icon_stem(name):
+    if name not in TOWER_ICON_NAMES:
+        raise ValueError(f'Unknown tower icon source: {name}')
+    return 'TDTower' + name
+
+def remove_legacy_tower_icon(name):
+    tower_icon_stem(name)  # Restrict cleanup to the eleven approved tower names.
+    # MPQ path lookup is case-insensitive. A legacy DISBTNBloodlust import also
+    # replaces native DISBTNBloodLust, so future rebuilds must not resurrect it.
+    for folder, prefix in [(OUT, 'BTN'), (ROOT / 'imports/ReplaceableTextures/CommandButtonsDisabled', 'DISBTN')]:
+        legacy = (prefix + name + '.blp').casefold()
+        for path in folder.glob('*.blp'):
+            if path.name.casefold() == legacy:
+                path.unlink()
 
 def blp(image, path):
     image = image.convert('RGBA')
@@ -82,12 +101,14 @@ def main():
         (SOURCE/f'TDEvolutionWings{choice}.mdl').write_text(wing_mdl(choice,width,base,height), encoding='utf-8')
     for png in sorted(SOURCE.glob('icon-*.png')):
         name = png.stem[5:]
+        stem = tower_icon_stem(name)
+        remove_legacy_tower_icon(name)
         image = Image.open(png).convert('RGBA').resize((64,64), Image.Resampling.LANCZOS)
-        blp(image, OUT/f'BTN{name}.blp')
+        blp(image, OUT/f'BTN{stem}.blp')
         disabled = ImageOps.grayscale(image).convert('RGBA')
         disabled.putalpha(image.getchannel('A'))
         disabled = ImageEnhance.Brightness(disabled).enhance(0.45)
-        blp(disabled, ROOT/f'imports/ReplaceableTextures/CommandButtonsDisabled/DISBTN{name}.blp')
+        blp(disabled, ROOT/f'imports/ReplaceableTextures/CommandButtonsDisabled/DISBTN{stem}.blp')
 
 if __name__ == '__main__':
     main()

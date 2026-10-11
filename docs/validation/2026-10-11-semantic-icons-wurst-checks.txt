@@ -1,0 +1,20 @@
+Verified stdlib: /workspace/shared/fixed-build-tools-20261011/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Verified stdlib: /workspace/shared/w3c-icons-20261011/_build/dependencies/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Running: /workspace/shared/fixed-build-tools-20261011/jdk/jdk-25+36/bin/java -Duser.home=/workspace/shared/fixed-build-tools-20261011/home -cp /workspace/shared/fixed-build-tools-20261011/classes:/workspace/shared/fixed-build-tools-20261011/linux-toolchain/wurst-compiler/wurstscript.jar ExtractNativeMapScript /workspace/shared/fixed-build-tools-20261011/run-history/native-map-script-10gkpi1x/ExampleMap.source.w3x /workspace/shared/fixed-build-tools-20261011/run-history/native-map-script-10gkpi1x/war3map.j
+Extracted native war3map.j bytes: 11412
+Native map script from template: /workspace/shared/w3c-icons-20261011/wurst/war3map.j
+SHA256: 95cb24509ca5210908221ac0edf0614529fb8d1fb681578fbcc0b4e8689ab75e
+Verified stdlib: /workspace/shared/fixed-build-tools-20261011/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Verified stdlib: /workspace/shared/w3c-icons-20261011/_build/dependencies/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Temporarily isolated obsolete nested dependency: _build/dependencies/pre1.29; saved intact at /workspace/shared/fixed-build-tools-20261011/run-history/legacy-dependency-kgozpsyx/pre1.29.original
+Running: /workspace/shared/fixed-build-tools-20261011/jdk/jdk-25+36/bin/java -Duser.home=/workspace/shared/fixed-build-tools-20261011/home -cp /workspace/shared/fixed-build-tools-20261011/classes:/workspace/shared/fixed-build-tools-20261011/linux-toolchain/wurst-compiler/wurstscript.jar DiagnoseBuildLibraries /workspace/shared/w3c-icons-20261011 /workspace/shared/w3c-icons-20261011/_build/dependencies/WurstStdlib2-source/wurst
+Wurst -> /workspace/shared/w3c-icons-20261011/_build/dependencies/WurstStdlib2-source/wurst/Wurst.wurst -> model eligible=true, locked root=true
+Libraries=164, model-rejected selected libraries=0, outside locked root=0
+Running: /workspace/shared/fixed-build-tools-20261011/bin/grill typecheck --quiet
+✅ Typecheck succeeded.
+Running: /workspace/shared/fixed-build-tools-20261011/bin/grill test --quiet
+Tests: 303/303 passed
+Verified stdlib: /workspace/shared/w3c-icons-20261011/_build/dependencies/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Restored legacy dependency: all file hashes, types, modes, mtimes and tracked status unchanged
+Restored original wurst.build byte-for-byte
+Restored original .vscode/settings.json bytes and existence state

@@ -4,6 +4,15 @@ package TDPetUIData
 function importedIcon(string name) returns string
 	return "war3mapImported\\BTN" + name + ".blp"
 
+public function tdPetCaptureIconPath() returns string
+	return importedIcon("TDActionCaptureOrb")
+
+public function tdPetMasterCaptureIconPath() returns string
+	return importedIcon("TDActionMasterCapture")
+
+public function tdPetCaptureForgeIconPath() returns string
+	return importedIcon("TDActionCaptureForge")
+
 public function tdPetMenuToolsIconPath() returns string
 	return importedIcon("TDPetMenuTools")
 

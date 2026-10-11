@@ -1,0 +1,67 @@
+package TDSemanticIconTests
+import TDConfig
+import TDItems
+import TDTowers
+import TDPetUIData
+
+@Test function semanticWhiteEquipmentIconsMatchEveryPhysicalIdentity()
+	tdItemIconPath(TD_ITEM_SHORT_BOW_ID).assertEquals("war3mapImported\\BTNTDItemShortBow.blp")
+	tdItemIconPath(TD_ITEM_EAGLE_SCOPE_ID).assertEquals("war3mapImported\\BTNTDItemEagleScope.blp")
+	tdItemIconPath(TD_ITEM_COOLING_RUNE_ID).assertEquals("war3mapImported\\BTNTDItemCoolingRune.blp")
+	tdItemIconPath(TD_ITEM_STABLE_TOTEM_ID).assertEquals("war3mapImported\\BTNTDItemStableTotem.blp")
+	tdItemIconPath(TD_ITEM_ARMOR_SPIKE_ID).assertEquals("war3mapImported\\BTNTDItemArmorSpike.blp")
+	tdItemIconPath(TD_ITEM_GOLD_RING_ID).assertEquals("war3mapImported\\BTNTDItemGoldRing.blp")
+	tdItemIconPath(TD_ITEM_SCAVENGER_BAG_ID).assertEquals("war3mapImported\\BTNTDItemScavengerBag.blp")
+	tdItemIconPath(TD_ITEM_POISON_SAC_ID).assertEquals("war3mapImported\\BTNTDItemPoisonSac.blp")
+	tdItemIconPath(TD_ITEM_SWIFT_GLOVES_ID).assertEquals("ReplaceableTextures\\CommandButtons\\BTNGlove.blp")
+	tdItemIconPath(TD_ITEM_EXECUTION_DAGGER_ID).assertEquals("ReplaceableTextures\\CommandButtons\\BTNDaggerOfEscape.blp")
+
+@Test function semanticGreenEquipmentIconsMatchEveryPhysicalIdentity()
+	tdItemIconPath(TD_ITEM_STEEL_LONGBOW_ID).assertEquals("war3mapImported\\BTNTDItemSteelLongbow.blp")
+	tdItemIconPath(TD_ITEM_HUNTER_SCOPE_ID).assertEquals("war3mapImported\\BTNTDItemHunterScope.blp")
+	tdItemIconPath(TD_ITEM_RHYTHM_TOTEM_ID).assertEquals("war3mapImported\\BTNTDItemRhythmTotem.blp")
+	tdItemIconPath(TD_ITEM_FOCUS_STONE_ID).assertEquals("war3mapImported\\BTNTDItemFocusStone.blp")
+	tdItemIconPath(TD_ITEM_WAR_AXE_ID).assertEquals("war3mapImported\\BTNTDItemWarAxe.blp")
+	tdItemIconPath(TD_ITEM_LACERATING_SPIKE_ID).assertEquals("war3mapImported\\BTNTDItemLaceratingSpike.blp")
+	tdItemIconPath(TD_ITEM_MERCENARY_PURSE_ID).assertEquals("war3mapImported\\BTNTDItemMercenaryPurse.blp")
+	tdItemIconPath(TD_ITEM_TOXIC_VINE_ID).assertEquals("war3mapImported\\BTNTDItemToxicVine.blp")
+
+@Test function semanticBlueEquipmentIconsMatchEveryPhysicalIdentity()
+	tdItemIconPath(TD_ITEM_WINDRUNNER_BOW_ID).assertEquals("war3mapImported\\BTNTDItemWindrunnerBow.blp")
+	tdItemIconPath(TD_ITEM_FROST_TOME_ID).assertEquals("war3mapImported\\BTNTDItemFrostTome.blp")
+	tdItemIconPath(TD_ITEM_BERSERKER_BADGE_ID).assertEquals("war3mapImported\\BTNTDItemBerserkerBadge.blp")
+	tdItemIconPath(TD_ITEM_ARMOR_DRUM_ID).assertEquals("war3mapImported\\BTNTDItemArmorDrum.blp")
+	tdItemIconPath(TD_ITEM_BOUNTY_CONTRACT_ID).assertEquals("war3mapImported\\BTNTDItemBountyContract.blp")
+	tdItemIconPath(TD_ITEM_EXECUTION_MARK_ID).assertEquals("war3mapImported\\BTNTDItemExecutionMark.blp")
+
+@Test function semanticPurpleEquipmentIconsMatchEveryPhysicalIdentity()
+	tdItemIconPath(TD_ITEM_WHITE_TIGER_BANNER_ID).assertEquals("war3mapImported\\BTNTDItemWhiteTigerBanner.blp")
+	tdItemIconPath(TD_ITEM_COMMAND_SEAL_ID).assertEquals("war3mapImported\\BTNTDItemCommandSeal.blp")
+	tdItemIconPath(TD_ITEM_BLADEMASTER_SIGIL_ID).assertEquals("war3mapImported\\BTNTDItemBlademasterSigil.blp")
+	tdItemIconPath(TD_ITEM_CORRUPTED_HEART_ID).assertEquals("war3mapImported\\BTNTDItemCorruptedHeart.blp")
+
+@Test function allEquipmentIconsKeepUniquePhysicalIdentity()
+	for index = 1 to tdItemDefinitionCount()
+		for other = index + 1 to tdItemDefinitionCount()
+			(tdItemIconPath(tdItemIdForCatalogIndex(index)) != tdItemIconPath(tdItemIdForCatalogIndex(other))).assertTrue()
+	tdItemIconPath(0).assertEquals("ReplaceableTextures\\CommandButtons\\BTNScroll.blp")
+
+@Test function inventoryCraftAndGroundUpgradeHaveSeparateActionIcons()
+	tdFarmerCraftIconPath().assertEquals("war3mapImported\\BTNTDActionInventoryCraft.blp")
+	tdFarmerGroundUpgradeIconPath().assertEquals("war3mapImported\\BTNTDActionGroundUpgrade.blp")
+	(tdFarmerCraftIconPath() != tdFarmerGroundUpgradeIconPath()).assertTrue()
+
+@Test function captureActionsSeparateOrdinaryMasterAndFiveToOneForging()
+	tdPetCaptureIconPath().assertEquals("war3mapImported\\BTNTDActionCaptureOrb.blp")
+	tdPetMasterCaptureIconPath().assertEquals("war3mapImported\\BTNTDActionMasterCapture.blp")
+	tdPetCaptureForgeIconPath().assertEquals("war3mapImported\\BTNTDActionCaptureForge.blp")
+	(tdPetCaptureIconPath() != tdPetMasterCaptureIconPath()).assertTrue()
+	(tdPetCaptureIconPath() != tdPetCaptureForgeIconPath()).assertTrue()
+	(tdPetMasterCaptureIconPath() != tdPetCaptureForgeIconPath()).assertTrue()
+
+@Test function orcCriticalStrikeAndSwordDanceCannotShareAnIcon()
+	tdOrcCriticalStrikeIconPath().assertEquals("war3mapImported\\BTNTDTowerCriticalStrike.blp")
+	tdOrcSwordDanceIconPath().assertEquals("war3mapImported\\BTNTDTowerSwordDance.blp")
+	tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_ORC).assertEquals(tdOrcCriticalStrikeIconPath())
+	tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_ORC).assertEquals(tdOrcCriticalStrikeIconPath())
+	(tdOrcCriticalStrikeIconPath() != tdOrcSwordDanceIconPath()).assertTrue()

@@ -146,22 +146,22 @@ public function tdArcherAuraDamageBonus() returns real
 	return 0.18
 
 public function tdArcherAuraIconPath() returns string
-	return "war3mapImported\\BTNTrueshotAura.blp"
+	return "war3mapImported\\BTNTDTowerTrueshotAura.blp"
 
 public function tdArcherPerfectAuraIconPath() returns string
-	return "war3mapImported\\BTNTrueshotAura.blp"
+	return "war3mapImported\\BTNTDTowerTrueshotAura.blp"
 
 public function tdTowerBaseSkillIconPath(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		return "war3mapImported\\BTNSplitShot.blp"
+		return "war3mapImported\\BTNTDTowerSplitShot.blp"
 	if towerChoice == TD_TOWER_CHOICE_ORC
-		return "war3mapImported\\BTNSwordDance.blp"
+		return tdOrcCriticalStrikeIconPath()
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
-		return "war3mapImported\\BTNShieldBash.blp"
+		return "war3mapImported\\BTNTDTowerShieldBash.blp"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
-		return "war3mapImported\\BTNPoisonDart.blp"
+		return "war3mapImported\\BTNTDTowerPoisonDart.blp"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
-		return "war3mapImported\\BTNFrenzy.blp"
+		return "war3mapImported\\BTNTDTowerFrenzy.blp"
 	return ""
 
 public function tdTowerSupportSkillIconPath(int towerChoice) returns string
@@ -170,24 +170,24 @@ public function tdTowerSupportSkillIconPath(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		return tdOrcBladestormIconPath()
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
-		return "war3mapImported\\BTNCommandAura.blp"
+		return "war3mapImported\\BTNTDTowerCommandAura.blp"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
-		return "war3mapImported\\BTNVinesAura.blp"
+		return "war3mapImported\\BTNTDTowerVinesAura.blp"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
-		return "war3mapImported\\BTNCorpseExplosion.blp"
+		return "war3mapImported\\BTNTDTowerCorpseExplosion.blp"
 	return ""
 
 public function tdTowerPerfectSkillIconPath(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		return tdArcherPerfectAuraIconPath()
 	if towerChoice == TD_TOWER_CHOICE_ORC
-		return "war3mapImported\\BTNSwordDance.blp"
+		return tdOrcCriticalStrikeIconPath()
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
-		return "war3mapImported\\BTNShieldBash.blp"
+		return "war3mapImported\\BTNTDTowerShieldBash.blp"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
-		return "war3mapImported\\BTNPoisonDart.blp"
+		return "war3mapImported\\BTNTDTowerPoisonDart.blp"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
-		return "war3mapImported\\BTNFrenzy.blp"
+		return "war3mapImported\\BTNTDTowerFrenzy.blp"
 	return ""
 
 public function tdArcherSplitArrowTargetCount(int level) returns int
@@ -249,14 +249,17 @@ public function tdOrcBloodlustCooldown() returns real
 public function tdOrcBloodlustDuration() returns real
 	return 5.0
 
+public function tdOrcCriticalStrikeIconPath() returns string
+	return "war3mapImported\\BTNTDTowerCriticalStrike.blp"
+
 public function tdOrcSwordDanceIconPath() returns string
-	return "war3mapImported\\BTNSwordDance.blp"
+	return "war3mapImported\\BTNTDTowerSwordDance.blp"
 
 public function tdOrcBloodlustIconPath() returns string
-	return "war3mapImported\\BTNBloodlust.blp"
+	return "war3mapImported\\BTNTDTowerBloodlust.blp"
 
 public function tdOrcBladestormIconPath() returns string
-	return "war3mapImported\\BTNBladestorm.blp"
+	return "war3mapImported\\BTNTDTowerBladestorm.blp"
 
 public function tdOrcBladestormCooldown() returns real
 	return 9.0

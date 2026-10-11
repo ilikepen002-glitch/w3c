@@ -34,5 +34,5 @@ import TDItems
 	for index = 1 to tdItemDefinitionCount()
 		tdItemPassiveAbilityRawcodes(tdItemIdForCatalogIndex(index)).assertEquals("")
 
-@Test function farmerCraftUsesDistinctTransmuteIcon()
-	tdFarmerCraftIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNTransmute.blp")
+@Test function farmerCraftUsesDistinctInventoryCraftIcon()
+	tdFarmerCraftIconPath().assertEquals("war3mapImported\\BTNTDActionInventoryCraft.blp")

@@ -19,11 +19,11 @@ FAMILIES = 'A O H D G'.split()
 COMMON = ['A118', 'A133', 'A130']
 HIDDEN = {'A103', 'A107', 'A110', 'A140', 'AeSL', 'A115', 'A118'}
 BRANCH_ICONS = {
-    'A': ('BTNSplitShot', 'BTNTrueshotAura'),
-    'O': ('BTNBloodlust', 'BTNBladestorm'),
-    'H': ('BTNShieldBash', 'BTNCommandAura'),
-    'D': ('BTNPoisonDart', 'BTNVinesAura'),
-    'G': ('BTNFrenzy', 'BTNCorpseExplosion'),
+    'A': ('BTNTDTowerSplitShot', 'BTNTDTowerTrueshotAura'),
+    'O': ('BTNTDTowerBloodlust', 'BTNTDTowerBladestorm'),
+    'H': ('BTNTDTowerShieldBash', 'BTNTDTowerCommandAura'),
+    'D': ('BTNTDTowerPoisonDart', 'BTNTDTowerVinesAura'),
+    'G': ('BTNTDTowerFrenzy', 'BTNTDTowerCorpseExplosion'),
 }
 IDENTITIES = {
     'A': ('Archer', 'Units\\NightElf\\Archer\\Archer.mdx', 'HeroMoonPriestess', 'Units\\NightElf\\HeroMoonPriestess\\HeroMoonPriestess.mdx'),
