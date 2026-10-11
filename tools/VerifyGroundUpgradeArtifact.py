@@ -427,7 +427,7 @@ def verify_sort_preserved(script):
 
 def verify_tooltip(abilities):
     tooltip = abilities['Gupg'][1][('aub1', 1, 0)][1]
-    for text in ('本路', '每 3 件必成', '1 至 2 件原地保留', '本次不再参与升级'):
+    for text in ('本路', '每3件必得1件', '高一品质', '可不同名', '每次只升一级', '余1至2件原地保留', '本次不再参与升级', '对应品质堆'):
         require(text in tooltip, 'Ground tooltip lacks ' + text)
     for obsolete in ('65%', '失败', '继续合成至紫'):
         require(obsolete not in tooltip, 'Ground tooltip retains obsolete ' + obsolete)

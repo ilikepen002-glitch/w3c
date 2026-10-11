@@ -173,7 +173,7 @@ function showReleaseConfirmation(int lane)
 	if not sessions[lane].open(TD_PET_DIALOG_RELEASE_CONFIRM, pet, nonce)
 		tdPetCancelRelease(lane)
 		return
-	dialogs[lane].setMessage("确认永久释放收藏" + (slot + 1).toString() + "：" + pet.summary() + "？|n永久消耗此精灵，不退捕获球，不会重新变成野生。|n每次必得1洗练石；独立2%概率得1开栏石。|n奖励进入本路精灵材料账户，不占背包。|n1确认 / 2取消。")
+	dialogs[lane].setMessage("确认永久释放收藏" + (slot + 1).toString() + "：" + pet.summary() + "？|n永久删除此精灵，不退捕获球和已用材料。|n每次必得1洗练石；独立2%概率得1开栏石。|n奖励进入本路精灵材料账户，不占背包。|n1确认 / 2取消。")
 	addButton(lane, "1 确认永久释放", 14)
 	addButton(lane, "2 取消", 0)
 	dialogs[lane].display(Player(lane), true)

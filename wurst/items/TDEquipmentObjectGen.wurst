@@ -1,4 +1,5 @@
 package TDEquipmentObjectGen
+import TDTooltipText
 import TDEquipmentRules
 import TDTowerData
 import ChannelAbilityPreset
@@ -7,7 +8,7 @@ public function tdConfigureEquipmentBloodlust(AbilityDefinitionBloodlust definit
 	definition.setLevels(41)
 	for level = 1 to 41
 		definition.setTooltipNormal(level, "嗜血")
-		definition.setTooltipNormalExtended(level, "主动：可设为自动施放。剑圣为自己灌注嗜血，在" + tdOrcBloodlustDuration().toString() + "秒内提高" + tdBonusPercentString(tdOrcBloodlustAttackSpeedBonus()) + "攻击速度。")
+		definition.setTooltipNormalExtended(level, "自身攻击速度提高" + tdBonusPercentString(tdOrcBloodlustAttackSpeedBonus()) + "，持续" + tdTooltipNumber(tdOrcBloodlustDuration()) + "秒。|n冷却" + tdTooltipNumber((tdOrcBloodlustCooldown() * (1.0 - (level - 1) / 100.0))) + "秒；可自动施放。")
 		definition.setMovementSpeedIncrease(level, tdOrcBloodlustMoveSpeedBonus())
 		definition.setAttackSpeedIncrease(level, tdOrcBloodlustAttackSpeedBonus())
 		definition.setScalingFactor(level, 1.0)
@@ -23,9 +24,9 @@ public function tdConfigureEquipmentBladestorm(AbilityDefinitionSlow definition)
 	definition.setLevels(41)
 	for level = 1 to 41
 		definition.setTooltipNormal(level, "剑刃风暴")
-		definition.setTooltipNormalExtended(level, "主动：可设为自动施放。锁定附近敌人后原地旋身" + tdOrcBladestormDuration().toString() + "秒，对自身周围" + tdOrcBladestormRadius().toInt().toString() + "范围内的敌军持续造成伤害。技能范围固定，不受装备射程加成影响。")
+		definition.setTooltipNormalExtended(level, "原地旋转" + tdTooltipNumber(tdOrcBladestormDuration()) + "秒，对自身" + tdOrcBladestormRadius().toInt().toString() + "范围内敌人每秒造成" + tdOrcBladestormDamagePerSecond().toInt().toString() + "伤害。|n冷却" + tdTooltipNumber((tdOrcBladestormCooldown() * (1.0 - (level - 1) / 100.0))) + "秒；可自动施放。范围不受装备射程影响。")
 		definition.setTooltipTurnOff(level, "剑刃风暴")
-		definition.setTooltipTurnOffExtended(level, "自动施放关闭：手动选择时再释放剑刃风暴。")
+		definition.setTooltipTurnOffExtended(level, "关闭自动施放，改为手动释放剑刃风暴。")
 		definition.setMovementSpeedFactor(level, 0.0)
 		definition.setAttackSpeedFactor(level, 0.0)
 		definition.setAlwaysAutocast(level, true)
@@ -40,6 +41,7 @@ public function tdConfigureEquipmentBladestorm(AbilityDefinitionSlow definition)
 public function tdConfigureEquipmentPoison(AbilityDefinitionSlowPoison definition, real dps, real moveFactor, real attackFactor)
 	definition.setLevels(61)
 	for level = 1 to 61
+		definition.setTooltipNormalExtended(level, "普攻附毒，每秒" + tdTooltipNumber(dps) + "伤害，持续5秒（英雄1秒）。|n移动速度降低" + tdPreciseBonusPercentString(tdEquipmentControlReduction(1.0 - moveFactor, level)) + "，攻击速度降低" + tdPreciseBonusPercentString(1.0 - attackFactor) + "。")
 		definition.setDamagePerSecond(level, dps)
 		definition.setMovementSpeedFactor(level, tdEquipmentControlReduction(1.0 - moveFactor, level))
 		definition.setAttackSpeedFactor(level, 1.0 - attackFactor)
@@ -70,7 +72,7 @@ public function tdConfigureEquipmentBash(AbilityDefinitionMountainKingBash defin
 	definition.setLevels(61)
 	for level = 1 to 61
 		definition.setTooltipNormal(level, perfect ? "进化盾击" : "盾击")
-		definition.setTooltipNormalExtended(level, perfect ? "进化：盾击概率和附加伤害提高20%，控制时间保留装备强化。" : "被动：有" + tdBonusPercentString(tdFootmanBashChance()) + "概率打出盾击，造成额外" + tdFootmanBashDamageBonus().toInt().toString() + "点伤害。")
+		definition.setTooltipNormalExtended(level, "普攻有" + tdPreciseBonusPercentString(tdFootmanBashChance() * (perfect ? tdEvolutionSkillMultiplier() : 1.0)) + "概率追加" + tdTooltipNumber((tdFootmanBashDamageBonus() * (perfect ? tdEvolutionSkillMultiplier() : 1.0))) + "伤害，并眩晕" + tdTooltipNumber((2.0 * (1.0 + (level - 1) / 100.0))) + "秒（英雄" + tdTooltipNumber((1.0 + (level - 1) / 100.0)) + "秒）。")
 		definition.setChancetoBash(level, tdFootmanBashChance() * (perfect ? tdEvolutionSkillMultiplier() : 1.0) * 100.0)
 		definition.setDamageMultiplier(level, tdFootmanBashDamageMultiplier())
 		definition.setDamageBonus(level, tdFootmanBashDamageBonus() * (perfect ? 1.20 : 1.0))

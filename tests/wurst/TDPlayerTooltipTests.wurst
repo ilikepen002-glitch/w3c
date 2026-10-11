@@ -1,0 +1,59 @@
+package TDPlayerTooltipTests
+import TDTowerData
+import TDItemData
+import TDPetRules
+import Wurstunit
+import TDTooltipText
+import TDInit
+
+@Test function playerTowerTooltipsCoverAllThirtyFiveForms()
+	for family = 1 to 5
+		for level = 1 to 6
+			for branch = 1 to (level == 6 ? 2 : 1)
+				let text = tdTowerTooltipExtendedForBranch(family, level, branch)
+				let base = tdTowerBaseDamageForBranch(family, level, branch)
+				text.contains("攻击：" + (base + 1).toString() + "至" + (base + 6 + level).toString()).assertTrue()
+				text.contains("（基础" + base.toString() + "）").assertTrue()
+				text.contains("射程：").assertTrue()
+				text.contains("建在草地").assertEquals(level == 1)
+
+@Test function playerEquipmentTooltipsRetainThirdCopyPenalty()
+	for index = 1 to tdItemDefinitionCount()
+		let text = tdItemTooltip(tdItemIdForCatalogIndex(index))
+		text.contains("同塔第3件同名装备仅发挥50%属性").assertTrue()
+		text.contains("前3格").assertTrue()
+		tdItemTooltip(TD_ITEM_HUNTER_SCOPE_ID).contains("上限500").assertTrue()
+
+@Test function playerPetTooltipsPreserveTriggerThresholdAndDamageBasis()
+	for quality = 1 to 4
+		tdPetSkillDescriptionById(8, quality).contains("不高于30%").assertTrue()
+		tdPetSkillDescriptionById(7, quality).contains("本次普攻伤害").assertTrue()
+		tdPetSkillDescriptionById(12, quality).contains("基础攻击").assertTrue()
+		tdPetSkillDescriptionById(10, quality).contains("180范围").assertTrue()
+		tdPetSkillDescriptionById(10, quality).contains("最多12名").assertTrue()
+		tdPetSkillDescriptionById(10, quality).contains("不随尸爆进化增伤").assertTrue()
+		for skill = 0 to 15
+			let text = tdPetSkillDescriptionById(skill, quality)
+			text.contains("原生").assertFalse()
+			text.contains("受控").assertFalse()
+
+@Test function playerSaleTooltipKeepsIrreversibleEvolutionCost()
+	tdTowerSellTooltip().contains("80%").assertTrue()
+	tdTowerSellTooltip().contains("进化名额不返还").assertTrue()
+
+@Test function playerTooltipNumbersDropOnlyRedundantZeros()
+	tdTooltipNumber(0.0).assertEquals("0")
+	tdTooltipNumber(20.0).assertEquals("20")
+	tdTooltipNumber(2.5).assertEquals("2.5")
+	tdTooltipNumber(21.6).assertEquals("21.6")
+	tdTooltipNumber(1.45).assertEquals("1.45")
+
+@Test function playerPetPercentTextRoundsFloatingPointProducts()
+	tdPetSkillDescriptionById(5, 3).contains("20%").assertTrue()
+	tdPetSkillDescriptionById(9, 3).contains("20%").assertTrue()
+	tdPetSkillDescriptionById(7, 4).contains("85%").assertTrue()
+	tdPetSkillDescriptionById(15, 4).contains("75%").assertTrue()
+
+@Test function playerStartupGuideExplainsActualLeakClasses()
+	let text = tdStartupGuideMessage()
+	text.contains("普通1、精英和近卫队长2、首领3").assertTrue()

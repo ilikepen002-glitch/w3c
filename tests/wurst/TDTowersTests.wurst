@@ -52,9 +52,9 @@ import ObjEditingCommons
 
 @Test function ultimateBranchTooltipsNameTheChosenBranchAndShowItsStats()
 	let tooltip = tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B)
-	tooltip.contains(tdTowerDisplayNameForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B)).assertTrue()
-	tooltip.contains("伤害: " + tdTowerBaseDamageForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B).toString()).assertTrue()
-	tooltip.contains("射程: " + tdTowerBaseRangeForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B).toString()).assertTrue()
+	tooltip.contains("剑刃风暴").assertTrue()
+	tooltip.contains("（基础" + tdTowerBaseDamageForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B).toString() + "）").assertTrue()
+	tooltip.contains("射程：" + tdTowerBaseRangeForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B).toString()).assertTrue()
 
 @Test function upgradeCostsRiseTowardFinalForms()
 	(tdTowerUpgradeCost(1, 4) > tdTowerUpgradeCost(1, 1)).assertTrue()
@@ -137,9 +137,9 @@ import ObjEditingCommons
 	tdFarmerWageMaximumGold(4).assertEquals(10)
 
 @Test function towerTooltipsStayChineseAndDoNotAdvertiseExtraRequirements()
-	tdTowerTooltipExtended(TD_TOWER_CHOICE_ORC, 1).contains("暴击重斩").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_ORC, 1).contains("25%概率暴击").assertTrue()
 	tdTowerTooltipExtended(TD_TOWER_CHOICE_ORC, 1).contains("需要").assertFalse()
-	tdTowerTooltipExtended(TD_TOWER_CHOICE_GHOUL, 1).contains("伤害").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_GHOUL, 1).contains("180范围尸爆").assertTrue()
 
 @Test function archerTooltipsDescribeSplitArrowScaling()
 	tdTowerTooltipExtended(TD_TOWER_CHOICE_ARCHER, 1).contains("分裂箭").assertTrue()
@@ -152,7 +152,7 @@ import ObjEditingCommons
 	tdArcherSplitArrowSearchesFromTowerRangeForTest().assertTrue()
 	tdArcherSplitArrowDealsAttackDamageForTest().assertTrue()
 	(tdTowerWeaponType(TD_TOWER_CHOICE_ARCHER) == WeaponType.Missile).assertTrue()
-	tdTowerTooltipExtended(TD_TOWER_CHOICE_ARCHER, 1).contains("多支箭").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_ARCHER, 1).contains("最多同时攻击").assertTrue()
 
 @Test function workersRemainInvulnerableWhileTowersAcceptFriendlySpells()
 	tdFarmersShouldBeInvulnerableForTest().assertTrue()
@@ -191,13 +191,13 @@ import ObjEditingCommons
 	tdTowerDisplayName(TD_TOWER_CHOICE_DRYAD, 5).assertEquals("丛林守护者")
 	tdTowerBaseDamage(TD_TOWER_CHOICE_DRYAD, 5).assertEquals(88)
 	tdTowerBaseRange(TD_TOWER_CHOICE_DRYAD, 5).assertEquals(800)
-	tdTowerTooltipExtended(TD_TOWER_CHOICE_DRYAD, 5).contains("伤害: 88 射程: 800").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_DRYAD, 5).contains("攻击：89至99（基础88）；射程：800").assertTrue()
 
 @Test function footmanFinalFormUsesPaladinIdentity()
 	tdTowerDisplayName(TD_TOWER_CHOICE_FOOTMAN, 5).assertEquals("圣骑士")
 
 @Test function dryadFinalFormTooltipCallsOutSingleTargetSlow()
-	tdTowerTooltipExtended(TD_TOWER_CHOICE_DRYAD, 5).contains("单体减速").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_DRYAD, 5).contains("普攻附毒并减速").assertTrue()
 
 @Test function whiteTigerAuraUsesValidNightElfAuraIcons()
 	tdArcherAuraIconPath().assertEquals("war3mapImported\\BTNTDTowerTrueshotAura.blp")
@@ -235,7 +235,7 @@ import ObjEditingCommons
 @Test function dryadFinalFormAddsAreaSlowAura()
 	tdDryadAuraSlowRadius().assertEquals(225.0)
 	tdDryadAuraSlowFactor().assertEquals(0.82)
-	tdTowerTooltipExtended(TD_TOWER_CHOICE_DRYAD, 5).contains("范围减速").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_DRYAD, 5).contains("225范围内敌人移动速度降低18%").assertTrue()
 
 @Test function towerSelectionCircleStaysUnitSizedInsteadOfShowingAttackRange()
 	tdTowerSelectionScale(TD_TOWER_CHOICE_GHOUL, 1).assertEquals(tdTowerNormalSelectionScale())

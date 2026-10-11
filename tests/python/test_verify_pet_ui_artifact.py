@@ -256,7 +256,7 @@ class PetUINegativeTests(unittest.TestCase):
             verifier.verify_slot_icons(self.abilities)
 
     def test_rejects_locked_description_for_different_skill(self):
-        self.set_field(self.abilities, "s240", "aub1", "已抽技能，尚未生效。完成本路第4波解锁。|n错误技能", 1)
+        self.set_field(self.abilities, "s240", "aub1", "技能已获得，尚未生效。完成本路第4波解锁。|n错误技能", 1)
         with self.assertRaisesRegex(ValueError, "s240: locked skill description mismatch"):
             verifier.verify_slot_icons(self.abilities)
 

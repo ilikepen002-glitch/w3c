@@ -75,7 +75,7 @@ public function tdClampCameraTargetDistance(real distance) returns real
 	return distance
 
 public function tdStartupGuideMessage() returns string
-	return "守住起点到终点的路线，在高台建塔。B 建造 / F 闪烁 / C 功能 / G 工资；Q 捕获 / W 收藏 / E 上阵。滚轮调整镜头；宝宝与装备都可强化塔。"
+	return "守住起点到终点的路线，在高台建塔。B 建造 / F 闪烁 / C 功能 / G 工资；Q 捕获 / W 收藏 / E 上阵。滚轮调整镜头；精灵与装备都可强化塔。|n每漏过1名敌人扣除生命：普通1、精英和近卫队长2、首领3。"
 function tdInactiveLaneNoticePlayerActiveForTest(int playerId, boolean lane0Active, boolean lane1Active, boolean lane2Active, boolean lane3Active) returns boolean
 	if playerId == 0
 		return lane0Active

@@ -43,7 +43,8 @@ public function tdTowerChoiceLabel(int towerChoice) returns string
 	return "未知塔"
 
 public function tdTowerTooltipExtendedForBranch(int towerChoice, int level, int branch) returns string
-	return tdTowerDisplayNameForBranch(towerChoice, level, branch) + "|n" + tdTowerLoreForBranch(towerChoice, level, branch) + "|n" + tdTowerTalentSummaryForBranch(towerChoice, level, branch) + "|n伤害: " + tdTowerBaseDamageForBranch(towerChoice, level, branch).toString() + " 射程: " + tdTowerBaseRangeForBranch(towerChoice, level, branch).toString() + "|n建在草地上，自动攻击沟壑中的逃跑怪。"
+	let base = tdTowerBaseDamageForBranch(towerChoice, level, branch)
+	return tdTowerTalentSummaryForBranch(towerChoice, level, branch) + "|n攻击：" + (base + 1).toString() + "至" + (base + 6 + level).toString() + "（基础" + base.toString() + "）" + "；射程：" + tdTowerBaseRangeForBranch(towerChoice, level, branch).toString() + (level == 1 ? "|n建在草地上，自动攻击敌人。" : "")
 
 public function tdTowerTooltipExtended(int towerChoice, int level) returns string
 	return tdTowerTooltipExtendedForBranch(towerChoice, level, TD_TOWER_BRANCH_A)
@@ -562,21 +563,21 @@ public function tdTowerLoreForBranch(int towerChoice, int level, int branch) ret
 
 public function tdTowerTalentSummary(int towerChoice, int level) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		return (level >= 5 ? "天赋: 白虎战吼（友塔攻击+18%）与分裂箭，总计命中" : "天赋: 分裂箭，多支箭齐射，总计命中") + tdArcherSplitArrowTargetCount(level).toString() + "个目标。"
+		return (level >= 5 ? "白虎战吼使900范围内友塔攻击力提高18%；分裂箭最多攻击" : "分裂箭最多同时攻击") + tdArcherSplitArrowTargetCount(level).toString() + "个目标。"
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if level >= 5
-			return "天赋: 致命一击与剑舞，终阶分化为嗜血斩首或剑刃风暴。"
-		return "天赋: 致命一击，专打高血量目标。"
+			return "普攻25%概率暴击；剑舞使攻击速度提高30%。"
+		return "普攻25%概率暴击，造成2.2倍伤害并追加18伤害。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if level >= 5
-			return "天赋: 神圣盾击与统帅光环（友塔攻击+16%）。"
-		return "天赋: 盾击，稳定打断关键怪。"
+			return "普攻22%概率盾击；统帅光环使900范围内友塔攻击力提高16%。"
+		return "普攻22%概率盾击，追加20伤害并眩晕2秒（英雄1秒）。"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if level >= 5
-			return "天赋: 丛林毒镖与缓速光环，同时提供单体减速与范围减速。"
-		return "天赋: 毒镖，附带减速和持续伤害。"
+			return "普攻附毒并减速；缓速藤蔓使225范围内敌人移动速度降低18%。"
+		return "普攻附毒，每秒12伤害并使移动速度降低22%，持续5秒（英雄1秒）。"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
-		return "天赋: 狂热与尸爆，收残血时炸伤附近敌人。"
+		return "狂热使攻击速度提高42%；普攻击杀低血量敌人可触发180范围尸爆。"
 	return "天赋: 无"
 
 public function tdTowerTalentSummaryForBranch(int towerChoice, int level, int branch) returns string
@@ -588,8 +589,8 @@ public function tdTowerTalentSummaryForBranch(int towerChoice, int level, int br
 		return "分支: 分裂压制，总计7目标；保留18%战吼。进化后仅额外箭伤害+20%，主箭不变。"
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 剑刃风暴；保留25%致命一击与30%剑舞。风暴固定780范围，70伤害/秒。"
-		return "分支: 嗜血追斩；保留25%致命一击与30%剑舞。嗜血额外提高35%攻速，持续5秒。"
+			return "剑刃风暴：780范围内每秒70伤害，持续2.5秒。保留25%暴击与30%剑舞攻速。|n进化：暴击伤害2.64倍，追加21.6伤害。"
+		return "嗜血：攻击速度提高35%，持续5秒。保留25%暴击与30%剑舞攻速。|n进化：暴击伤害2.64倍，追加21.6伤害。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
 			return "分支: 统帅支援；保留22%盾击与16%统帅光环。进化后仅光环16%→19.2%。"

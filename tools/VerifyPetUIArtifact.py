@@ -441,12 +441,12 @@ def verify_slot_icons(abilities):
             if variant == 128:
                 require('共鸣锁定' not in label + description,
                         f'{rawcode}: empty slot must not be resonance locked')
-                require('空栏' in label and '没有此栏' in description and '开栏石' in description,
+                require('空栏' in label and '新增' in description and '1开栏石' in description and '最多4栏' in description,
                         f'{rawcode}: empty slot explanation changed')
             elif variant >= 64:
                 require('共鸣锁定' in label and '空栏' not in label,
                         f'{rawcode}: locked skill must retain specific identity')
-                require('解锁' in description and '已抽技能' in description,
+                require('解锁' in description and '技能已获得' in description,
                         f'{rawcode}: missing resonance explanation')
             else:
                 require('共鸣锁定' not in label and '空栏' not in label,
@@ -457,7 +457,7 @@ def verify_slot_icons(abilities):
                 if variant >= 64:
                     expected_label += ' [共鸣锁定]'
                     bright_fields = abilities[f's{slot}{base_variant:02X}'][1]
-                    lock_prefix = f'已抽技能，尚未生效。完成本路第{4 if slot == 2 else 8}波解锁。|n'
+                    lock_prefix = f'技能已获得，尚未生效。完成本路第{4 if slot == 2 else 8}波解锁。|n'
                     require(description == lock_prefix + field_value(bright_fields, 'aub1', 1),
                             f'{rawcode}: locked skill description mismatch')
                 require(label == expected_label and field_value(fields, 'anam') == expected_label,

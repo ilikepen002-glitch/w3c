@@ -1,5 +1,6 @@
 package TDTowerObjectGen
 import TDConfig
+import TDTooltipText
 import TDWaves
 import TDTowerEvolutionState
 import TDTowerData
@@ -128,7 +129,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	..setCheckDependencies(false)
 	tdConfigureEquipmentPoison(poison, baseDamagePerSecond, moveFactor, attackFactor)
 	poison.presetTooltipNormal(lvl -> name)
-	poison.presetTooltipNormalExtended(lvl -> tooltip)
+	// Per-level poison text is generated alongside the actual control values.
 
 // 这些 compiletime 定义会直接生成最终地图里的物编数据，
 // 也就是把塔的平衡和技能配置放在代码里维护，而不是靠手改 WE。
@@ -136,7 +137,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	new AbilityDefinitionMoonPriestessTrueshotAura(TD_ARCHER_TRUESHOT_ABILITY_ID)
 	..setName("白虎战吼")
 	..setTooltipNormal(1, "白虎战吼")
-	..setTooltipNormalExtended(1, "被动：为周围友军提供" + tdBonusPercentString(tdArcherAuraDamageBonus()) + "攻击力加成。")
+	..setTooltipNormalExtended(1, "900范围内友塔获得" + tdBonusPercentString(tdArcherAuraDamageBonus()) + "攻击力加成。")
 	..setIconResearch(tdArcherAuraIconPath())
 	..setIconNormal(tdArcherAuraIconPath())
 	..setButtonPositionNormalX(1)
@@ -162,7 +163,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	new AbilityDefinitionBladeMasterCriticalStrike(TD_ORC_CRIT_ABILITY_ID)
 	..setName("致命一击")
 	..setTooltipNormal(1, "致命一击")
-	..setTooltipNormalExtended(1, "被动：有" + tdBonusPercentString(tdOrcCriticalStrikeChance()) + "概率造成" + tdOrcCriticalStrikeMultiplier().toString() + "倍伤害，并额外附加" + tdOrcCriticalStrikeDamageBonus().toInt().toString() + "点伤害。")
+	..setTooltipNormalExtended(1, "被动：有" + tdBonusPercentString(tdOrcCriticalStrikeChance()) + "概率造成" + tdTooltipNumber(tdOrcCriticalStrikeMultiplier()) + "倍伤害，并额外附加" + tdOrcCriticalStrikeDamageBonus().toInt().toString() + "点伤害。")
 	..setIconNormal(tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_ORC))
 	..setIconResearch(tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_ORC))
 	..presetButtonPosNormal(0, 1)
@@ -179,7 +180,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	new AbilityDefinitionAttackSpeedIncrease(TD_ORC_SWORD_DANCE_ABILITY_ID)
 	..setName("剑舞")
 	..setTooltipNormal(1, "剑舞")
-	..setTooltipNormalExtended(1, "被动：攻击速度提高" + tdBonusPercentString(tdOrcSwordDanceAttackSpeedBonus()) + "，让剑圣更快追出致命一击。")
+	..setTooltipNormalExtended(1, "被动：攻击速度提高" + tdBonusPercentString(tdOrcSwordDanceAttackSpeedBonus()) + "。")
 	..setIconNormal(tdOrcSwordDanceIconPath())
 	..setIconResearch(tdOrcSwordDanceIconPath())
 	..presetButtonPosNormal(1, 1)
@@ -274,7 +275,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	new AbilityDefinitionItemAuraCommand(TD_FOOT_COMMAND_ABILITY_ID)
 	..setName("统帅光环")
 	..setTooltipNormal(1, "统帅光环")
-	..setTooltipNormalExtended(1, "被动：为周围友军提供" + tdBonusPercentString(tdFootmanCommandAuraDamageBonus()) + "攻击力加成。")
+	..setTooltipNormalExtended(1, "900范围内友塔获得" + tdBonusPercentString(tdFootmanCommandAuraDamageBonus()) + "攻击力加成。")
 	..setIconNormal(tdTowerSupportSkillIconPath(TD_TOWER_CHOICE_FOOTMAN))
 	..setIconResearch(tdTowerSupportSkillIconPath(TD_TOWER_CHOICE_FOOTMAN))
 	..presetButtonPosNormal(1, 1)
@@ -338,7 +339,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	new AbilityDefinitionAttackSpeedIncrease(TD_GHOUL_FRENZY_ABILITY_ID)
 	..setName("狂热")
 	..setTooltipNormal(1, "狂热")
-	..setTooltipNormalExtended(1, "被动：攻击速度提高" + tdBonusPercentString(tdGhoulFrenzyAttackSpeedBonus()) + "，更快收掉残血目标。")
+	..setTooltipNormalExtended(1, "被动：攻击速度提高" + tdBonusPercentString(tdGhoulFrenzyAttackSpeedBonus()) + "。")
 	..setIconNormal(tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_GHOUL))
 	..setIconResearch(tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_GHOUL))
 	..presetButtonPosNormal(0, 1)
@@ -350,14 +351,14 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	..setCheckDependencies(false)
 
 	let corpseExplosion = tdGeneratePassiveDisplay(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID, "尸爆", tdTowerSupportSkillIconPath(TD_TOWER_CHOICE_GHOUL), 1, 2)
-	corpseExplosion.setTooltipNormalExtended(1, "被动：若普通攻击击杀生命值低于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人，会对周围敌军造成36点范围伤害。")
+	corpseExplosion.setTooltipNormalExtended(1, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围180范围内其他敌人造成36伤害。")
 	corpseExplosion.setTooltipNormal(2, "进化尸爆")
-	corpseExplosion.setTooltipNormalExtended(2, "进化：若普通攻击击杀生命值低于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人，会对周围敌军造成43.2点范围伤害。")
+	corpseExplosion.setTooltipNormalExtended(2, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围180范围内其他敌人造成43.2伤害。")
 
 	new AbilityDefinitionMoonPriestessTrueshotAura(TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID)
 	..setName("进化白虎战吼")
 	..setTooltipNormal(1, "进化白虎战吼")
-	..setTooltipNormalExtended(1, "被动：为周围友军提供21.6%攻击力加成。")
+	..setTooltipNormalExtended(1, "900范围内友塔攻击力提高21.6%。")
 	..setIconResearch(tdArcherPerfectAuraIconPath())
 	..setIconNormal(tdArcherPerfectAuraIconPath())
 	..setButtonPositionNormalX(1)
@@ -378,7 +379,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	new AbilityDefinitionBladeMasterCriticalStrike(TD_ORC_PERFECT_CRIT_ABILITY_ID)
 	..setName("进化致命一击")
 	..setTooltipNormal(1, "进化致命一击")
-	..setTooltipNormalExtended(1, "进化：暴击伤害倍率2.2→2.64，附加伤害18→21.6。")
+	..setTooltipNormalExtended(1, "普攻有25%概率造成2.64倍伤害，并追加21.6伤害。")
 	..setIconNormal(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_ORC))
 	..setIconResearch(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_ORC))
 	..presetButtonPosNormal(0, 1)
@@ -424,7 +425,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	new AbilityDefinitionAttackSpeedIncrease(TD_GHOUL_PERFECT_FRENZY_ABILITY_ID)
 	..setName("进化狂热")
 	..setTooltipNormal(1, "进化狂热")
-	..setTooltipNormalExtended(1, "被动：进一步提高攻击速度，更快触发补刀与尸爆节奏。")
+	..setTooltipNormalExtended(1, "被动：攻击速度提高" + tdPreciseBonusPercentString(tdGhoulFrenzyAttackSpeedBonus() * tdEvolutionSkillMultiplier()) + "。")
 	..setIconNormal(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_GHOUL))
 	..setIconResearch(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_GHOUL))
 	..presetButtonPosNormal(0, 1)
@@ -455,7 +456,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	wageAbility
 	..setName("工资")
 	..setTooltipNormal(1, "工资")
-	..setTooltipNormalExtended(1, "第一波开始后可用。领取工资，获得 3 + 当前波次 + 随机 1-3 金币。")
+	..setTooltipNormalExtended(1, "领取当前波次+随机4至6金币。|n第1波开始后可用，冷却180秒。")
 	..setIconNormal(tdFarmerWageIconPath())
 	..setIconResearch(tdFarmerWageIconPath())
 	..presetHotkey("G")
@@ -518,7 +519,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	..setIconResearch(tdTowerEvolutionStatusIconPath())
 	..presetButtonPosNormal(3, 2)
 	..presetTooltipNormal(lvl -> lvl == 3 ? "名额已用" : (lvl == 2 ? "已进化" : "等待完成6阶"))
-	..presetTooltipNormalExtended(lvl -> lvl == 3 ? "全局名额已被其他塔使用，本局无法进化。累计击杀仍继续记录。" : "本塔累计" + TD_EVOLUTION_KILL_REQUIREMENT.toString() + "击杀且完成6阶升级后自动进化；当前分支关键数值+20%。弓：分裂额外箭伤/战吼；兽：暴击倍率及附伤；步：盾击概率及附伤/统帅；鹿：毒伤/藤蔓减速；憎恶：攻速/尸爆。整局全局仅一座；出售或失守不返名额。")
+	..presetTooltipNormalExtended(lvl -> lvl == 3 ? "其他塔已使用本局唯一进化名额，此塔无法进化。击杀数仍会累计。" : (lvl == 2 ? "此塔已进化，当前分支技能已强化。|n出售或失守不返还全局进化名额。" : "完成6阶升级且累计" + TD_EVOLUTION_KILL_REQUIREMENT.toString() + "击杀后自动进化，强化当前分支技能。|n全局仅1座；出售或失守不返还名额。具体强化见分支说明。"))
 	for level = 1 to 3
 		status.setChancetoCriticalStrike(level, 0.0)
 		status.setDamageMultiplier(level, 1.0)

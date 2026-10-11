@@ -34,7 +34,7 @@ def main():
                 f'A132: incorrect cooldown at level {level}')
         require(fields.get(('abuf', level, 0)) == (3, ''), f'A132: unexpected carrier buff at {level}')
     tooltip = fields.get(('aub1', 1, 0), (None, ''))[1]
-    require(isinstance(tooltip, str) and '780' in tooltip and '技能范围固定' in tooltip,
+    require(isinstance(tooltip, str) and '780' in tooltip and '范围不受装备射程影响' in tooltip,
             'A132: tooltip must explain the fixed 780 spell range')
     print('PASS: A132 inherits Aslo, native range780, zero native slowing, Always Autocast, fixed-range tooltip.')
     print('NOT TESTED: runtime damage, animation, autocast, and balance in game.')

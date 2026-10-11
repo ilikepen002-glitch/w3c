@@ -1,4 +1,5 @@
 package TDTowerUpgradeContinuityTests
+import TDTooltipText
 import TDTowers
 import TDConfig
 import ObjectIds
@@ -229,4 +230,4 @@ function evolvedSkills(int choice, int branch) returns string
 
 @Test function corpsePetTooltipKeepsTheUnchangedThirtySixBaseDamage()
 	for quality = 1 to 4
-		tdPetSkillDescriptionById(10, quality).contains("基础尸爆伤害（36）").assertTrue()
+		tdPetSkillDescriptionById(10, quality).contains(tdTooltipNumber(36.0 * tdPetSkillPower(10, quality)) + "伤害").assertTrue()

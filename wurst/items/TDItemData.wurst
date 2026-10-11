@@ -261,25 +261,25 @@ function tdItemEffectText(int effectKind, real value) returns string
 	if effectKind == TD_ITEM_EFFECT_ATTACK
 		return "攻击 +" + R2I(value + 0.5).toString()
 	if effectKind == TD_ITEM_EFFECT_RANGE
-		return "射程 +" + R2I(value + 0.5).toString()
+		return "射程 +" + R2I(value + 0.5).toString() + "（装备射程加成上限500）"
 	if effectKind == TD_ITEM_EFFECT_ATTACK_SPEED
 		return "攻速 +" + R2I(value * 100.0 + 0.5).toString() + "%"
 	if effectKind == TD_ITEM_EFFECT_COOLDOWN
-		return "嗜血/剑刃风暴冷却缩减 " + R2I(value * 100.0 + 0.5).toString() + "%"
+		return "嗜血、剑刃风暴冷却时间缩短" + R2I(value * 100.0 + 0.5).toString() + "%（与精灵灵感合计上限40%）"
 	if effectKind == TD_ITEM_EFFECT_KILL_GOLD
-		return "同路非Boss击杀金币 +" + R2I(value + 0.5).toString() + "\n每路每波额外金币上限：本波非Boss基础击杀金币总额。"
+		return "本路非首领击杀金币 +" + R2I(value + 0.5).toString() + "\n每路每波额外金币上限：本波非Boss基础击杀金币总额。"
 	if effectKind == TD_ITEM_EFFECT_ARMOR_SHRED
-		return "普攻减甲（3秒，最强覆盖） " + R2I(value + 0.5).toString() + "\n同塔汇总后四舍五入为整数，最高30。"
+		return "普攻使目标护甲降低" + R2I(value + 0.5).toString() + "，持续3秒。\n同塔装备减甲相加后四舍五入，最高30；不同塔取最强效果。"
 	if effectKind == TD_ITEM_EFFECT_EXECUTE
-		return "主目标普通攻击：目标半血及以下追加伤害 " + R2I(value * 100.0 + 0.5).toString() + "%\n与Boss追加比例相加；法术、分裂箭和宝宝伤害不继承。原击致死不追加。"
+		return "普攻命中生命值不高于50%的主目标时，追加本次普攻伤害的" + R2I(value * 100.0 + 0.5).toString() + "%\n与首领追加比例相加；法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。"
 	if effectKind == TD_ITEM_EFFECT_POISON
-		return "普攻装备毒（3秒，最强覆盖） " + R2I(value + 0.5).toString() + "/秒"
+		return "普攻使目标中毒，每秒" + R2I(value + 0.5).toString() + "伤害，持续3秒。\n同塔装备毒伤相加，不同塔取最强效果。"
 	if effectKind == TD_ITEM_EFFECT_CONTROL_POWER
-		return "毒镖/缓速/盾击控制强化 +" + R2I(value * 100.0 + 0.5).toString() + "%"
+		return "毒镖、缓速藤蔓的移动减速与盾击眩晕时间提高" + R2I(value * 100.0 + 0.5).toString() + "%（装备控制强化上限60%）"
 	if effectKind == TD_ITEM_EFFECT_DROP_BONUS
-		return "同路非Boss掉落品质额外判定 +" + R2I(value + 0.5).toString() + " 次，取最好结果。\n不增加掉落件数，不改变Boss奖励。"
+		return "本路非首领装备掉落品质额外抽取" + R2I(value + 0.5).toString() + "次，取最好结果。\n不增加掉落件数，不改变首领奖励。"
 	if effectKind == TD_ITEM_EFFECT_BOSS_DAMAGE
-		return "主目标普通攻击：Boss追加伤害 " + R2I(value * 100.0 + 0.5).toString() + "%\n与半血追加比例相加；法术、分裂箭和宝宝伤害不继承。原击致死不追加。"
+		return "普攻命中首领主目标时，追加本次普攻伤害的" + R2I(value * 100.0 + 0.5).toString() + "%\n与半血追加比例相加；法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。"
 	return ""
 
 public function tdItemTooltip(int itemId) returns string
@@ -291,7 +291,7 @@ public function tdItemTooltip(int itemId) returns string
 		tooltip += "\n" + primary
 	if secondary != ""
 		tooltip += "\n" + secondary
-	tooltip += "\n可给塔穿戴，也可放进工人前 3 格合成。"
+	tooltip += "\n塔可装备；同塔第3件同名装备仅发挥50%属性。\n放入工人前3格可参与同品质合成。"
 	return tooltip
 
 public function tdItemLevel(int itemId) returns int

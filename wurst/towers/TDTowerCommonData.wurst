@@ -23,7 +23,7 @@ public function tdTowerSellButtonY() returns int
 	return 1
 
 public function tdTowerSellTooltip() returns string
-	return "出售防御塔，返还已完成建造、升级金币的80%，向下取整。装备掉落在原地。建造或升级期间无法出售。"
+	return "出售此塔，返还已完成建造与升级花费的80%，不足1金币部分舍去；装备留在原地。|n建造或升级中不可出售。已使用的全局进化名额不返还。"
 
 public function tdFarmerBuildAbilityId() returns int
 	return TD_FARMER_BUILD_ABILITY_ID
