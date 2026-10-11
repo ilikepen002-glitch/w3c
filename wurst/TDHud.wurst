@@ -1,0 +1,112 @@
+package TDHud
+import TDConfig
+import TDState
+import TDWaves
+import ClosureTimers
+import TDPetState
+import TDEnemyMechanicData
+import TDDamageHud
+import TDDamageRuntime
+
+multiboard tdStatusBoard = null
+
+public function tdHudLaneStatus(boolean active, boolean finished, boolean defeated, int wave, int waveCount) returns string
+	if not active
+		return "未开启"
+	if finished
+		return "已完成"
+	if defeated
+		return "已失守"
+	if wave == 0
+		return "待命"
+	return "第 " + wave.toString() + "/" + waveCount.toString() + " 波"
+
+public function tdHudPhaseText(boolean gameOver, boolean anyFinished, int wave, boolean queued, int queuedWave, int waveCount) returns string
+	if gameOver
+		if anyFinished
+			return "胜利 · 防守完成"
+		return "失败 · 已停止刷怪，请重新开局"
+	if wave == 0
+		return "开局准备 · 尚未刷怪"
+	if queued
+		return "等待第 " + queuedWave.toString() + "/" + waveCount.toString() + " 波"
+	return "第 " + wave.toString() + "/" + waveCount.toString() + " 波进行中"
+
+public function tdHudChapter(int wave) returns string
+	if wave <= 8
+		return "第一章"
+	if wave <= 16
+		return "第二章"
+	if wave <= 24
+		return "第三章"
+	return "终章"
+
+public function tdHudThreatText(int wave) returns string
+	if wave < 1 or wave > tdWaveCount()
+		return "无后续波次"
+	return "下波 " + wave.toString() + " · 普通 " + tdWaveNormalEnemyCount(wave).toString() + " 精英 " + tdWaveEliteEnemyCount(wave).toString() + " 近卫 " + tdWaveBossGuardEnemyCount(wave).toString() + " Boss " + tdWaveBossEnemyCount(wave).toString()
+
+public function tdRefreshStatusBoard()
+	if compiletime or tdStatusBoard == null
+		return
+	var anyFinished = false
+	var row = 1
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(playerId)
+			anyFinished = anyFinished or tdIsLaneFinished(playerId)
+			tdStatusBoard.setItemValue(row, 0, "玩家" + (playerId + 1).toString())
+			tdStatusBoard.setItemValue(row, 1, tdGetLives(playerId))
+			tdStatusBoard.setItemValue(row, 2, tdHudLaneStatus(true, tdIsLaneFinished(playerId), tdIsLaneDefeated(playerId), tdGetGlobalWave(), tdWaveCount()))
+			row += 1
+	let phase = tdHudPhaseText(tdIsGameOver(), anyFinished, tdGetGlobalWave(), tdIsNextWaveQueued(), tdGetQueuedWave(), tdWaveCount())
+	tdStatusBoard.setTitle(tdHudChapter(tdGetGlobalWave()) + " · " + phase)
+	let nextWave = tdIsNextWaveQueued() ? tdGetQueuedWave() : tdGetGlobalWave() + 1
+	tdStatusBoard.setItemValue(row, 0, "预告")
+	tdStatusBoard.setItemValue(row, 1, "")
+	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() ? "本局结束" : tdHudThreatText(nextWave))
+	row += 1
+	// A separate short row keeps mechanic hints out of the already full threat line.
+	tdStatusBoard.setItemValue(row, 0, "本波")
+	tdStatusBoard.setItemValue(row, 1, "")
+	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() ? "机制已结束" : tdEnemyMechanicHint(tdGetGlobalWave()))
+	row += 1
+	tdStatusBoard.setItemValue(row, 0, "下波")
+	tdStatusBoard.setItemValue(row, 1, "")
+	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() or nextWave > tdWaveCount() ? "无后续机制" : tdEnemyMechanicHint(nextWave))
+	row += 1
+	// Only presentation differs locally; all pet state and counts stay synchronized.
+	let lane = GetPlayerId(GetLocalPlayer())
+	tdStatusBoard.setItemValue(row, 0, "宝宝")
+	tdStatusBoard.setItemValue(row, 1, "")
+	if tdIsLanePlayer(lane)
+		tdStatusBoard.setItemValue(row, 2, "球 " + tdPetBallsForLane(lane).toString() + " · 收藏 " + tdPetCollectionCount(lane).toString() + " · 上阵 " + tdPetDeployedCount(lane).toString())
+	else
+		tdStatusBoard.setItemValue(row, 2, "旁观")
+
+	row += 1
+	tdDamageRefreshCatalog()
+	tdDamageRefreshHud(tdStatusBoard, row)
+
+public function tdSetupHud()
+	if compiletime or tdStatusBoard != null
+		return
+	tdStatusBoard = CreateMultiboard()
+	tdStatusBoard.setColumnCount(3)
+	tdStatusBoard.setRowCount(tdCountActiveLanes() + 5 + TD_DAMAGE_HUD_ROWS)
+	tdStatusBoard.setItemsStyle(true, false)
+	tdStatusBoard.setColumnWidth(0, 0.055)
+	tdStatusBoard.setColumnWidth(1, 0.065)
+	tdStatusBoard.setColumnWidth(2, 0.25)
+	tdStatusBoard.setItemValue(0, 0, "路线")
+	tdStatusBoard.setItemValue(0, 1, "生命")
+	tdStatusBoard.setItemValue(0, 2, "进度 / 下波威胁")
+	tdRefreshStatusBoard()
+	tdStatusBoard.show()
+	tdStatusBoard.maximize()
+	doPeriodically(1.0) cb ->
+		tdRefreshStatusBoard()
+		if tdIsGameOver()
+			destroy cb
+
+
+

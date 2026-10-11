@@ -1,7 +1,11 @@
 package TDItemObjectGen
 import TDItemData
+import TDPetData
+import TDDamageData
+import TDDamageObjectGen
 import ChannelAbilityPreset
 import ItemObjEditing
+import TDGroundItemRules
 
 function tdGenerateInventoryAbility(int abilityId, int slotCount, boolean canUseItems)
 	new AbilityDefinitionInventory(abilityId)
@@ -19,7 +23,7 @@ function tdGenerateCraftAbility()
 	..setTooltipNormalExtended(1, "检查工人物品栏前 3 格，执行 2 合 1 或 3 合 1 升阶。")
 	..presetIcon(tdFarmerCraftIconPath())
 	..presetHotkey("C")
-	..presetButtonPosNormal(0, 1)
+	..presetButtonPosNormal(0, 0)
 	..presetTargetTypes(Targettype.NONE)
 	..makeUnitSpell(0, 0.50)
 	..setCheckDependencies(false)
@@ -31,7 +35,7 @@ function tdGenerateAttackBonusAbility(int abilityId, int bonus)
 	..setCheckDependencies(false)
 
 function tdGenerateAttackSpeedAbility(int abilityId, real bonus)
-	new AbilityDefinitionAIas(abilityId)
+	new AbilityDefinitionAttackSpeedIncrease(abilityId)
 	..setAttackSpeedIncrease(1, bonus)
 	..setItemAbility(true)
 	..setCheckDependencies(false)
@@ -45,7 +49,7 @@ function tdGenerateTowerAttackBonusSyncAbility()
 		bonusAbility.setAttackBonus(level, level)
 
 function tdGenerateTowerAttackSpeedSyncAbility()
-	let speedAbility = new AbilityDefinitionAIas(TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID)
+	let speedAbility = new AbilityDefinitionAttackSpeedIncrease(TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID)
 	speedAbility.setLevels(TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL)
 	speedAbility.setItemAbility(true)
 	speedAbility.setCheckDependencies(false)
@@ -78,6 +82,8 @@ function tdGenerateEquipmentItem(int itemId)
 	tdGenerateInventoryAbility(TD_FARMER_INVENTORY_ABILITY_ID, 6, false)
 	tdGenerateInventoryAbility(TD_TOWER_INVENTORY_ABILITY_ID, 3, false)
 	tdGenerateCraftAbility()
+	tdGenerateGroundEquipmentCommands()
+	tdGenerateDamageStatisticsAbility()
 	tdGenerateAttackBonusAbility(TD_ITEM_ATTACK_BONUS_WHITE_ABILITY_ID, 8)
 	tdGenerateAttackBonusAbility(TD_ITEM_ATTACK_BONUS_GREEN_ABILITY_ID, 14)
 	tdGenerateAttackBonusAbility(TD_ITEM_ATTACK_BONUS_BLUE_ABILITY_ID, 22)
@@ -93,3 +99,37 @@ function tdGenerateEquipmentItem(int itemId)
 
 // 物编生成和运行时接线会在后续实现中继续扩充；
 // 先保留独立包边界，避免把装备数据和 compiletime 代码混在一起。
+
+
+function tdGenerateGroundEquipmentCommands()
+	new AbilityDefinitionSpellBook(TD_FARMER_EQUIPMENT_BOOK_ABILITY_ID)
+	..setName("功能")
+	..setTooltipNormal(1, "功能 (|cffffcc00C|r)")
+	..setTooltipNormalExtended(1, "打开背包合成、地面范围升级与伤害统计页面。地面装备每 30 秒集中到中央北高台边缘，捕获球另成一堆。")
+	..setIconNormal(tdFarmerCraftIconPath())
+	..setHotkeyNormal("C")
+	..setButtonPositionNormalX(1)
+	..setButtonPositionNormalY(2)
+	..setSpellList(1, TD_FARMER_CRAFT_ABILITY_ID.toRawCode() + "," + TD_FARMER_GROUND_UPGRADE_ABILITY_ID.toRawCode() + "," + TD_FARMER_DAMAGE_STATISTICS_ABILITY_ID.toRawCode() + "," + TD_PET_MASTER_ABILITY_ID.toRawCode() + "," + TD_PET_HUNT_ABILITY_ID.toRawCode() + "," + TD_PET_FORGE_ABILITY_ID.toRawCode())
+	..setMinimumSpells(1, 6)
+	..setMaximumSpells(1, 6)
+	..setSharedSpellCooldown(1, false)
+	..setBaseOrderID(1, "spellbook")
+	..setHeroAbility(false)
+	..setItemAbility(false)
+	..setCheckDependencies(false)
+	new ChannelAbilityPreset(TD_FARMER_GROUND_UPGRADE_ABILITY_ID, 1, true)
+	..setName("范围升级")
+	..setTooltipNormal(1, "范围升级 (|cffffcc00U|r)")
+	..setTooltipNormalExtended(1, "圈选半径 144 内的地面装备：同品质优先 3 合 1 必成，余 2 件按 65% 成功率合成，单件保留；产物继续合成至紫装。失败材料损毁。背包和捕获球不参与。")
+	..presetIcon(tdFarmerCraftIconPath())
+	..presetHotkey("U")
+	..presetButtonPosNormal(1, 0)
+	..presetTargetTypes(Targettype.POINT)
+	..presetOption(Option.TARGETIMAGE, true)
+	..setAreaofEffect(1, TD_GROUND_UPGRADE_RADIUS)
+	..setCastRange(1, 99999.0)
+	..makeUnitSpell(0, 0.50)
+	..setCheckDependencies(false)
+
+

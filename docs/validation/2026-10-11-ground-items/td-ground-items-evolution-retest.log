@@ -1,0 +1,87 @@
+🔥 Grill 1.4.0.0-8845a51
+verifyInstallation: detectedCompilerJar=C:\Users\huawei\.wurst\wurst-compiler\wurstscript.jar exists=true
+Found installation at C:\Users\huawei\.wurst\wurst-compiler\wurstscript.jar
+⚗️ Running tests...
+✔ Core JASS ready (v1.28, cached)
+Running tests
+Filter 'evolutionStatisticsRemainExactBeyondThreshold' matched 1 test(s):
+  TDTowerEvolutionTests.evolutionStatisticsRemainExactBeyondThreshold
+Running D:\War3Projects\MyFirstWurstMap\wurst\_tests\TDTowerEvolutionTests.wurst:40 - evolutionStatisticsRemainExactBeyondThreshold..
+	OK!
+Tests succeeded: 1/1
+>> All tests have passed successfully!
+Finished running tests
+compilation finished (errors: 0, warnings: 36)
+Warning in File TDEnemyMechanicObjectGen.wurst:5:
+ The function compiletime must be annotated with @annotation to be usable as an annotation.
+Warning in File TDEquipmentObjectGen.wurst:81:
+ The function compiletime must be annotated with @annotation to be usable as an annotation.
+Warning in File TDItemObjectGen.wurst:78:
+ The function compiletime must be annotated with @annotation to be usable as an annotation.
+Warning in File TDPetObjectGen.wurst:30:
+ The function compiletime must be annotated with @annotation to be usable as an annotation.
+Warning in File TDWaves.wurst:874:
+ The function compiletime must be annotated with @annotation to be usable as an annotation.
+Warning in File TDTowerObjectGen.wurst:99:
+ The function compiletime must be annotated with @annotation to be usable as an annotation.
+Warning in File TDTowerObjectGen.wurst:511:
+ The function compiletime must be annotated with @annotation to be usable as an annotation.
+Warning in File TDTowerObjectGen.wurst:548:
+ The function compiletime must be annotated with @annotation to be usable as an annotation.
+Warning in File TDDamageRuntime.wurst:120:
+ The assignment to local variable record is never read.
+Warning in File TDTowerPlacementRules.wurst:41:
+ The assignment to local variable minX is never read.
+Warning in File TDTowerPlacementRules.wurst:43:
+ The assignment to local variable minY is never read.
+Warning in File TDTowerPlacementRules.wurst:52:
+ The assignment to local variable minX is never read.
+Warning in File TDTowerPlacementRules.wurst:54:
+ The assignment to local variable minY is never read.
+Warning in File TDNativeNormalPlayProbe.wurst:187:
+ The assignment to local variable first is never read.
+Warning in File TDNativeNormalPlayProbe.wurst:368:
+ The assignment to local variable accepted is never read.
+Warning in File TDEnemyMechanicRuntime.wurst:4:
+ The import TDEnemyMechanicObjectGen is never used
+Warning in File TDGroundItemRuntime.wurst:7:
+ The import TDTowerData is never used
+Warning in File TDInit.wurst:6:
+ The import TDItems is never used
+Warning in File TDPets.wurst:7:
+ The import TDPetObjectGen is never used
+Warning in File TDTowerObjectGen.wurst:8:
+ The import Icons is never used
+Warning in File TDTowerObjectGen.wurst:9:
+ The import ObjEditingNatives can be removed, because it is already included in ChannelAbilityPreset.
+Warning in File TDTowerPlacementRules.wurst:3:
+ The import Maths can be removed, because it is already included in Wurst.
+Warning in File TDNativeBladestormProbe.wurst:2:
+ The import TDConfig is never used
+Warning in File TDNativeBladestormProbe.wurst:8:
+ The import RegisterEvents is never used
+Warning in File TDNativeDamageChainProbe.wurst:6:
+ The import TDTowers is never used
+Warning in File TDNativeDenseDamageProbe.wurst:2:
+ The import TDConfig is never used
+Warning in File TDNativeDenseDamageProbe.wurst:8:
+ The import RegisterEvents is never used
+Warning in File TDNativeEquipmentProbe.wurst:4:
+ The import TDInventoryRuntime is never used
+Warning in File TDNativeEquipmentProbe.wurst:8:
+ The import RegisterEvents is never used
+Warning in File TDNativeNormalPlayProbe.wurst:6:
+ The import TDTowerPlacementRules can be removed, because it is already included in TDConfig.
+Warning in File TDNativeNormalPlayProbe.wurst:8:
+ The import RegisterEvents is never used
+Warning in File TDNativePetLifecycleProbe.wurst:3:
+ The import TDConfig is never used
+Warning in File TDNativePetLifecycleProbe.wurst:12:
+ The import RegisterEvents is never used
+Warning in File TDNativeRewardProbe.wurst:8:
+ The import TDInventory is never used
+Warning in File TDNativeRouteProbe.wurst:6:
+ The import TDTowers is never used
+Warning in File TDConfigTests.wurst:3:
+ The import TerrainUtils is never used
+✅ All tests succeeded.

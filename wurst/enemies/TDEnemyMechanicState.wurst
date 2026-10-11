@@ -1,0 +1,76 @@
+package TDEnemyMechanicState
+import TDEnemyMechanicData
+
+int tdEnemyMechanicGeneration = 0
+
+function nextEnemyMechanicGeneration() returns int
+	tdEnemyMechanicGeneration += 1
+	return tdEnemyMechanicGeneration
+
+// One link per original lane/wave, independent of the currently displayed wave.
+public class TDEnemyGuardLink
+	int lane
+	int wave
+	int livingGuards = 0
+
+	construct(int lane, int wave)
+		this.lane = lane
+		this.wave = wave
+
+	function protects(int lane, int wave) returns boolean
+		return this.lane == lane and this.wave == wave and tdEnemyGuardArmorEnabled(wave) and livingGuards > 0
+
+// Native ownership lives in Runtime; this state is deterministic and testable.
+public class TDEnemyMechanicState
+	TDEnemyGuardLink link
+	int role
+	real originalBaseSpeed
+	private boolean active = true
+	private boolean sprintUsed = false
+	private boolean sprintRunning = false
+	private int generation
+
+	construct(TDEnemyGuardLink link, int role, real originalBaseSpeed)
+		this.link = link
+		this.role = role
+		this.originalBaseSpeed = originalBaseSpeed
+		generation = nextEnemyMechanicGeneration()
+		if role == TD_ENEMY_ROLE_GUARD
+			link.livingGuards += 1
+
+	function isActive() returns boolean
+		return active
+
+	function isSprinting() returns boolean
+		return sprintRunning
+
+	function getGeneration() returns int
+		return generation
+
+	function beginSprint(int reachedWaypoint) returns boolean
+		if not active or sprintUsed or reachedWaypoint != TD_ENEMY_SPRINT_WAYPOINT or not tdEnemySprintEnabled(link.wave, role)
+			return false
+		sprintUsed = true
+		sprintRunning = true
+		generation = nextEnemyMechanicGeneration()
+		return true
+
+	function finishSprint(int expectedGeneration) returns boolean
+		if not active or not sprintRunning or expectedGeneration != generation
+			return false
+		sprintRunning = false
+		generation = nextEnemyMechanicGeneration()
+		return true
+
+	function deactivate() returns boolean
+		if not active
+			return false
+		active = false
+		sprintRunning = false
+		generation = nextEnemyMechanicGeneration()
+		if role == TD_ENEMY_ROLE_GUARD
+			link.livingGuards -= 1
+		return true
+
+	ondestroy
+		deactivate()

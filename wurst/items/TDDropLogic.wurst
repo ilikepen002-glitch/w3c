@@ -91,12 +91,15 @@ function tdBaseDropQualityForRoll(int wave, boolean elite, boolean boss, int rol
 public function tdDropQualityForRoll(int wave, boolean elite, boolean boss, int rollBasisPoints) returns int
 	return tdBaseDropQualityForRoll(wave, elite, boss, rollBasisPoints)
 
-public function tdDropQualityWithBonusRoll(int wave, boolean elite, boolean boss, int rollBasisPoints, int bonusSteps) returns int
-	let baseQuality = tdBaseDropQualityForRoll(wave, elite, boss, rollBasisPoints)
-	var boosted = baseQuality
-	for _step = 1 to bonusSteps
-		boosted = tdNextItemQuality(boosted)
-	return boosted
+public function tdBestDropQualityRoll(int currentRoll, int extraRoll) returns int
+	// All quality tables are monotone: a lower roll can only improve quality.
+	return currentRoll < extraRoll ? currentRoll : extraRoll
+
+function tdRollEquipmentQuality(int wave, boolean elite, int bonusRolls) returns int
+	var roll = GetRandomInt(1, 10000)
+	for _step = 1 to bonusRolls
+		roll = tdBestDropQualityRoll(roll, GetRandomInt(1, 10000))
+	return tdDropQualityForRoll(wave, elite, false, roll)
 
 public function tdBossGuardSkipsIndependentDropForUnitTypeId(int unitTypeId) returns boolean
 	return tdIsBossGuardUnitTypeId(unitTypeId)
@@ -117,14 +120,16 @@ function tdSpawnEquipmentDrop(unit enemy, int playerId, int wave, int quality, b
 	if quality >= TD_ITEM_QUALITY_GREEN
 		DisplayTimedTextToPlayer(Player(playerId), 0, 0, 4.0, "掉落：" + tdItemQualityName(quality) + " " + tdItemName(itemId))
 
-function tdTryNormalEnemyDrop(unit enemy, int playerId, int wave)
+function tdTryNormalEnemyDrop(unit enemy, int playerId, int wave, int bonusRolls)
+	if not tdCanSpendLaneDropBudget(playerId, wave)
+		return
 	if GetRandomInt(1, 10000) > tdNormalDropChanceBasisPointsForWave(wave)
 		return
-	let quality = tdDropQualityForRoll(wave, false, false, GetRandomInt(1, 10000))
+	let quality = tdRollEquipmentQuality(wave, false, bonusRolls)
 	tdSpawnEquipmentDrop(enemy, playerId, wave, quality, false)
 
-function tdTryEliteEnemyDrop(unit enemy, int playerId, int wave)
-	let quality = tdDropQualityForRoll(wave, true, false, GetRandomInt(1, 10000))
+function tdTryEliteEnemyDrop(unit enemy, int playerId, int wave, int bonusRolls)
+	let quality = tdRollEquipmentQuality(wave, true, bonusRolls)
 	tdSpawnEquipmentDrop(enemy, playerId, wave, quality, true)
 
 function tdTryBossEnemyDrop(unit enemy, int playerId, int wave)
@@ -134,7 +139,7 @@ function tdTryBossEnemyDrop(unit enemy, int playerId, int wave)
 	if GetRandomInt(1, 10000) <= 1200
 		tdSpawnEquipmentDrop(enemy, playerId, wave, TD_ITEM_QUALITY_PURPLE, true)
 
-public function tdHandleEnemyDrop(unit enemy, int playerId, int wave)
+public function tdHandleEnemyDrop(unit enemy, int playerId, int wave, int bonusRolls)
 	if enemy == null
 		return
 	let unitTypeId = GetUnitTypeId(enemy)
@@ -143,6 +148,9 @@ public function tdHandleEnemyDrop(unit enemy, int playerId, int wave)
 	if tdIsBossUnitTypeId(unitTypeId)
 		tdTryBossEnemyDrop(enemy, playerId, wave)
 	else if tdIsEliteUnitTypeId(unitTypeId)
-		tdTryEliteEnemyDrop(enemy, playerId, wave)
+		tdTryEliteEnemyDrop(enemy, playerId, wave, bonusRolls)
 	else
-		tdTryNormalEnemyDrop(enemy, playerId, wave)
+		tdTryNormalEnemyDrop(enemy, playerId, wave, bonusRolls)
+
+public function tdHandleEnemyDrop(unit enemy, int playerId, int wave)
+	tdHandleEnemyDrop(enemy, playerId, wave, 0)

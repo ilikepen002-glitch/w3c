@@ -1,0 +1,59 @@
+package TDDamageHud
+import TDDamageState
+import TDConfig
+import TDState
+
+public constant int TD_DAMAGE_HUD_ROWS = 15
+string array tdDamageHudLabels
+string array tdDamageHudValues
+string array tdDamageHudDetails
+
+function tdDamageSetHudRow(int viewer, int row, string label, string value, string details)
+	let key = viewer * TD_DAMAGE_HUD_ROWS + row
+	tdDamageHudLabels[key] = label
+	tdDamageHudValues[key] = value
+	tdDamageHudDetails[key] = details
+
+function tdDamagePlayerRank(int lane) returns int
+	let total = tdDamageLedger.playerTotal(lane)
+	var rank = 0
+	for other = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(other)
+			let otherTotal = tdDamageLedger.playerTotal(other)
+			if otherTotal > total or (otherTotal == total and other < lane)
+				rank += 1
+	return rank
+
+// Prepare every viewer synchronously: list iterators and ordering are never local.
+function tdDamagePrepareHud()
+	for viewer = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for row = 0 to TD_DAMAGE_HUD_ROWS - 1
+			tdDamageSetHudRow(viewer, row, "", "", "")
+		let laneFilter = tdDamageViewerLane(viewer)
+		let count = tdDamageLedger.count(laneFilter)
+		let page = tdDamageClampedPage(tdDamageViewerPage(viewer), count)
+		tdDamageSetHudRow(viewer, 0, "伤害榜", "有效", tdDamagePageTitle(viewer))
+		var playerRow = 1
+		for rank = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+				if tdIsLaneActive(lane) and tdDamagePlayerRank(lane) == rank and (laneFilter == -1 or laneFilter == lane)
+					tdDamageSetHudRow(viewer, playerRow, "P" + (lane + 1).toString(), tdDamageText(tdDamageLedger.playerTotal(lane)), "玩家总伤害（含精灵协战）")
+					playerRow += 1
+		tdDamageSetHudRow(viewer, 5, "防御塔", "伤害", count.toString() + " 座 · 精灵伤害计入宿主塔")
+		for slot = 0 to TD_DAMAGE_PAGE_SIZE - 1
+			let record = tdDamageLedger.ranked(laneFilter, page * TD_DAMAGE_PAGE_SIZE + slot)
+			if record != null
+				let label = "P" + (record.getLane() + 1).toString() + " #" + record.getSerial().toString()
+				let details = record.label + (record.retired ? " [退场]" : "")
+				tdDamageSetHudRow(viewer, 6 + slot, label, tdDamageText(record.getTotal()), details)
+		tdDamageSetHudRow(viewer, 14, "切换", "", "农民 → 功能 → 伤害统计")
+
+public function tdDamageRefreshHud(multiboard board, int firstRow)
+	tdDamagePrepareHud()
+	let localId = GetPlayerId(GetLocalPlayer())
+	let viewer = tdIsLanePlayer(localId) ? localId : 0
+	for row = 0 to TD_DAMAGE_HUD_ROWS - 1
+		let key = viewer * TD_DAMAGE_HUD_ROWS + row
+		board.setItemValue(firstRow + row, 0, tdDamageHudLabels[key])
+		board.setItemValue(firstRow + row, 1, tdDamageHudValues[key])
+		board.setItemValue(firstRow + row, 2, tdDamageHudDetails[key])

@@ -1,0 +1,11 @@
+package TDEnemyMechanicObjectGen
+import TDEnemyMechanicData
+import AbilityObjEditing
+
+@compiletime function tdGenerateEnemyMechanicObjects()
+	// Independent native positive armor; equipment owns its separate negative ability.
+	new AbilityDefinitionDefenseBonusPlus1(TD_ENEMY_GUARD_ARMOR_ABILITY_ID)
+	..setName("近卫护甲")
+	..setDefenseBonus(1, TD_ENEMY_GUARD_ARMOR_BONUS)
+	..setItemAbility(true)
+	..setCheckDependencies(false)

@@ -5,6 +5,7 @@ cd /d "%~dp0"
 
 set "TARGET_DIR=D:\War3_1.27a\Warcraft III Frozen Throne 1.27a publish\Maps\Test"
 set "MAP_TIMESTAMP="
+if not defined WURST_TOOLCHAIN_HOME set "WURST_TOOLCHAIN_HOME=%USERPROFILE%\.wurst"
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "tools\Sync-WurstTests.ps1" -Mode Clean >nul
 if errorlevel 1 (
@@ -30,8 +31,25 @@ if errorlevel 1 (
 	pause
 	exit /b 1
 )
-call grill build "_build\ExampleMap.input.w3x" --quiet
+if not defined WURST_NATIVE_PLAYTEST goto build_map
+powershell -NoProfile -ExecutionPolicy Bypass -File "tools\Sync-WurstTests.ps1" -Mode StageNative
+if not errorlevel 1 goto native_staged
+powershell -NoProfile -ExecutionPolicy Bypass -File "tools\Sync-WurstTests.ps1" -Mode Clean >nul
+echo Native test staging failed.
+exit /b 1
+
+:native_staged
+set "MAP_TIMESTAMP=TEST-%MAP_TIMESTAMP%"
+
+:build_map
+call tools\Run-Grill.bat build "_build\ExampleMap.input.w3x" --quiet
+set "BUILD_RESULT=%ERRORLEVEL%"
+powershell -NoProfile -ExecutionPolicy Bypass -File "tools\Sync-WurstTests.ps1" -Mode Clean >nul
 if errorlevel 1 (
+	echo Failed to clean staged Wurst tests after build.
+	exit /b 1
+)
+if not "%BUILD_RESULT%"=="0" (
 	echo Build failed.
 	pause
 	exit /b 1
@@ -48,14 +66,14 @@ if not defined SOURCE_MAP (
 )
 
 echo [2/3] Patching map display name with timestamp %MAP_TIMESTAMP%...
-javac -cp "C:\Users\huawei\.wurst\wurst-compiler\wurstscript.jar" "tools\PatchMapDisplayName.java"
+javac -cp "%WURST_TOOLCHAIN_HOME%\wurst-compiler\wurstscript.jar" "tools\PatchMapDisplayName.java"
 if errorlevel 1 (
 	echo Failed to compile tools\PatchMapDisplayName.java.
 	pause
 	exit /b 1
 )
 
-java -cp "tools;C:\Users\huawei\.wurst\wurst-compiler\wurstscript.jar" PatchMapDisplayName "%SOURCE_MAP%" "%MAP_TIMESTAMP%"
+java -cp "tools;%WURST_TOOLCHAIN_HOME%\wurst-compiler\wurstscript.jar" PatchMapDisplayName "%SOURCE_MAP%" "%MAP_TIMESTAMP%"
 if errorlevel 1 (
 	echo Failed to patch the built map display name.
 	pause
@@ -76,7 +94,7 @@ echo Source map time:
 echo   %SOURCE_TIME%
 set "COPY_TARGET="
 for /f "usebackq delims=" %%F in (`powershell -NoProfile -Command "$ErrorActionPreference = 'Stop'; $sourceMap = '%SOURCE_MAP%'; $targetDir = '%TARGET_DIR%'; $mapBaseName = [string]([char]0x6DF1) + [char]0x6E0A + [char]0x5B88 + [char]0x671B; if (-not (Test-Path -LiteralPath $targetDir)) { New-Item -ItemType Directory -Path $targetDir | Out-Null }; Get-ChildItem -LiteralPath $targetDir -File -Filter ($mapBaseName + '*.w3x') -ErrorAction SilentlyContinue | Remove-Item -Force; $targetName = $mapBaseName + '.w3x'; $targetMap = Join-Path $targetDir $targetName; Copy-Item -LiteralPath $sourceMap -Destination $targetMap -Force; if (-not (Test-Path -LiteralPath $targetMap)) { throw 'Target map was not created.' }; $targetMap"`) do set "COPY_TARGET=%%F"
-if errorlevel 1 (
+if not defined COPY_TARGET (
 	echo Copy failed.
 	echo The target map is probably open in Warcraft III or World Editor.
 	echo Close anything using this file and run the script again:

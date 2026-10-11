@@ -1,0 +1,14 @@
+package TDDamageObjectGen
+import TDDamageData
+import ChannelAbilityPreset
+
+public function tdGenerateDamageStatisticsAbility()
+	new ChannelAbilityPreset(TD_FARMER_DAMAGE_STATISTICS_ABILITY_ID, 1, true)
+	..setName("伤害统计")
+	..setTooltipNormal(1, "伤害统计")
+	..setTooltipNormalExtended(1, tdDamageStatisticsTooltip())
+	..presetIcon("ReplaceableTextures\\CommandButtons\\BTNHumanArmorUpOne.blp")
+	..presetButtonPosNormal(tdDamageStatisticsButtonX(), tdDamageStatisticsButtonY())
+	..presetTargetTypes(Targettype.NONE)
+	..makeUnitSpell(0, 0.0)
+	..setCheckDependencies(false)

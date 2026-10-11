@@ -127,3 +127,10 @@ public function tdLaneWaypointPosition(int playerId, int index) returns vec2
 
 public function tdIsInLaneBuildZone(int playerId, vec2 position) returns boolean
 	return tdIsLanePlayer(playerId) and tdBuildAreaOwner(position) == playerId
+
+// Inner grass cliff edge in each lane; source terrain is visually asymmetric.
+public function tdGroundItemPileCenter(int lane, int pileGroup) returns vec2
+	let x = lane == 0 ? -768.0 : (lane == 3 ? -1024.0 : 1024.0)
+	let y = lane <= 1 ? 2560.0 - (pileGroup - 1) * 256.0 : -2816.0 + (pileGroup - 1) * 256.0
+	return vec2(x, y)
+

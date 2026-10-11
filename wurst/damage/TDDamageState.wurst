@@ -1,0 +1,213 @@
+package TDDamageState
+import TDConfig
+import TDState
+import LinkedList
+
+public constant int TD_DAMAGE_PAGE_SIZE = 8
+
+// Values are finalized event damage capped at pre-hit life, never panel damage.
+public function tdEffectiveDamage(real amount, real preLife) returns real
+	if amount <= 0.0 or preLife <= 0.0
+		return 0.0
+	return min(amount, preLife)
+
+public function tdDamageText(real amount) returns string
+	if amount <= 0.0
+		return "0"
+	if amount < 0.1
+		return "<0.1"
+	if amount < 10.0
+		return R2SW(amount, 0, 1)
+	return R2SW(amount, 0, 0)
+
+public function tdDamagePageCount(int count) returns int
+	return max(1, (max(0, count) + TD_DAMAGE_PAGE_SIZE - 1) div TD_DAMAGE_PAGE_SIZE)
+
+public function tdDamageClampedPage(int page, int count) returns int
+	return max(0, min(page, tdDamagePageCount(count) - 1))
+
+public class TDDamageRecord
+	private TDDamageLedger owner
+	private int serial
+	private int lane
+	private real total = 0.0
+	string label
+	boolean retired = false
+
+	construct(TDDamageLedger owner, int serial, int lane, string label)
+		this.owner = owner
+		this.serial = serial
+		this.lane = lane
+		this.label = label
+
+	function addDamage(TDDamageLedger ledger, real amount) returns boolean
+		if owner != ledger or amount <= 0.0
+			return false
+		total += amount
+		return true
+
+	function getSerial() returns int
+		return serial
+
+	function getLane() returns int
+		return lane
+
+	function getTotal() returns real
+		return total
+
+	function matches(int laneFilter) returns boolean
+		return laneFilter == -1 or lane == laneFilter
+
+	function precedes(TDDamageRecord other) returns boolean
+		return total > other.total or (total == other.total and serial < other.serial)
+
+constant Comparator<TDDamageRecord> tdDamageComparator = (left, right) -> left.precedes(right) ? -1 : (right.precedes(left) ? 1 : 0)
+
+public class TDDamageLedger
+	private LinkedList<TDDamageRecord> records = new LinkedList<TDDamageRecord>()
+	private int nextSerial = 1
+	private boolean dirty = false
+	private real total0 = 0.0
+	private real total1 = 0.0
+	private real total2 = 0.0
+	private real total3 = 0.0
+
+	function register(int lane, string label) returns TDDamageRecord
+		if not tdIsLanePlayer(lane)
+			return null
+		let record = new TDDamageRecord(this, nextSerial, lane, label)
+		nextSerial += 1
+		records.add(record)
+		dirty = true
+		return record
+
+	function credit(TDDamageRecord record, real amount, real preLife) returns real
+		let effective = tdEffectiveDamage(amount, preLife)
+		if record == null or not record.addDamage(this, effective)
+			return 0.0
+		if record.getLane() == 0
+			total0 += effective
+		else if record.getLane() == 1
+			total1 += effective
+		else if record.getLane() == 2
+			total2 += effective
+		else
+			total3 += effective
+		dirty = true
+		return effective
+
+	function refreshOrder()
+		if dirty
+			records.sortWith(tdDamageComparator)
+			dirty = false
+
+	function playerTotal(int lane) returns real
+		if lane == 0
+			return total0
+		if lane == 1
+			return total1
+		if lane == 2
+			return total2
+		if lane == 3
+			return total3
+		return 0.0
+
+	function count(int laneFilter) returns int
+		var result = 0
+		for record in records
+			if record.matches(laneFilter)
+				result += 1
+		return result
+
+	function ranked(int laneFilter, int rank) returns TDDamageRecord
+		if rank < 0
+			return null
+		refreshOrder()
+		var index = 0
+		TDDamageRecord result = null
+		let iter = records.iterator()
+		while iter.hasNext()
+			let record = iter.next()
+			if record.matches(laneFilter)
+				if index == rank
+					result = record
+					break
+				index += 1
+		destroy iter
+		return result
+
+	function reset()
+		for record in records
+			destroy record
+		records.clear()
+		nextSerial = 1
+		dirty = false
+		total0 = 0.0
+		total1 = 0.0
+		total2 = 0.0
+		total3 = 0.0
+
+	ondestroy
+		reset()
+		destroy records
+
+public TDDamageLedger tdDamageLedger = new TDDamageLedger()
+int array tdDamageLaneFilter
+int array tdDamagePage
+
+public constant int TD_DAMAGE_ACTION_CLOSE = 0
+public constant int TD_DAMAGE_ACTION_ALL = 1
+public constant int TD_DAMAGE_ACTION_PLAYER_BASE = 2
+public constant int TD_DAMAGE_ACTION_PREVIOUS = 6
+public constant int TD_DAMAGE_ACTION_NEXT = 7
+
+public function tdDamageViewerLane(int viewer) returns int
+	if viewer < 0 or viewer >= TD_ACTIVE_PLAYER_COUNT
+		return -1
+	return tdDamageLaneFilter[viewer]
+
+public function tdDamageViewerPage(int viewer) returns int
+	if viewer < 0 or viewer >= TD_ACTIVE_PLAYER_COUNT
+		return 0
+	return tdDamagePage[viewer]
+
+public function tdDamageSetView(int viewer, int lane) returns boolean
+	if not tdIsLanePlayer(viewer) or lane < -1 or lane >= TD_ACTIVE_PLAYER_COUNT
+		return false
+	tdDamageLaneFilter[viewer] = lane
+	tdDamagePage[viewer] = 0
+	return true
+
+public function tdDamageMovePage(int viewer, int delta)
+	if not tdIsLanePlayer(viewer)
+		return
+	let count = tdDamageLedger.count(tdDamageViewerLane(viewer))
+	tdDamagePage[viewer] = tdDamageClampedPage(tdDamagePage[viewer] + delta, count)
+
+// The same bounded actions drive native UI and deterministic tests.
+public function tdDamageApplyPageAction(int viewer, int action) returns boolean
+	if not tdIsLanePlayer(viewer)
+		return false
+	if action == TD_DAMAGE_ACTION_CLOSE
+		return true
+	if action == TD_DAMAGE_ACTION_ALL
+		return tdDamageSetView(viewer, -1)
+	if action >= TD_DAMAGE_ACTION_PLAYER_BASE and action < TD_DAMAGE_ACTION_PLAYER_BASE + TD_ACTIVE_PLAYER_COUNT
+		let lane = action - TD_DAMAGE_ACTION_PLAYER_BASE
+		if not tdIsLaneActive(lane)
+			return false
+		return tdDamageSetView(viewer, lane)
+	if action == TD_DAMAGE_ACTION_PREVIOUS or action == TD_DAMAGE_ACTION_NEXT
+		tdDamageMovePage(viewer, action == TD_DAMAGE_ACTION_NEXT ? 1 : -1)
+		return true
+	return false
+
+public function tdDamagePageTitle(int viewer) returns string
+	let lane = tdDamageViewerLane(viewer)
+	let count = tdDamageLedger.count(lane)
+	let page = tdDamageClampedPage(tdDamageViewerPage(viewer), count)
+	return (lane == -1 ? "全部玩家" : "玩家" + (lane + 1).toString()) + " · 第 " + (page + 1).toString() + "/" + tdDamagePageCount(count).toString() + " 页"
+
+public function tdResetDamageViews()
+	for viewer = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdDamageSetView(viewer, -1)

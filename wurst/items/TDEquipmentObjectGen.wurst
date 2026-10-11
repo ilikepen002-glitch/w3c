@@ -1,0 +1,92 @@
+package TDEquipmentObjectGen
+import TDEquipmentRules
+import TDTowerData
+import ChannelAbilityPreset
+
+public function tdConfigureEquipmentBloodlust(AbilityDefinitionBloodlust definition)
+	definition.setLevels(41)
+	for level = 1 to 41
+		definition.setTooltipNormal(level, "嗜血")
+		definition.setTooltipNormalExtended(level, "主动：可设为自动施放。剑圣为自己灌注嗜血，在" + tdOrcBloodlustDuration().toString() + "秒内提高" + tdBonusPercentString(tdOrcBloodlustAttackSpeedBonus()) + "攻击速度。")
+		definition.setMovementSpeedIncrease(level, tdOrcBloodlustMoveSpeedBonus())
+		definition.setAttackSpeedIncrease(level, tdOrcBloodlustAttackSpeedBonus())
+		definition.setScalingFactor(level, 1.0)
+		definition.setDurationNormal(level, tdOrcBloodlustDuration())
+		definition.setDurationHero(level, tdOrcBloodlustDuration())
+		definition.setCooldown(level, tdOrcBloodlustCooldown() * (1.0 - (level - 1) / 100.0))
+		definition.setManaCost(level, 0)
+		definition.setCastRange(level, 0.0)
+		definition.setTargetsAllowed(level, tdTowerBloodlustTargetsAllowed())
+		definition.setBuffs(level, "Bblo")
+
+public function tdConfigureEquipmentBladestorm(AbilityDefinitionSlow definition)
+	definition.setLevels(41)
+	for level = 1 to 41
+		definition.setTooltipNormal(level, "剑刃风暴")
+		definition.setTooltipNormalExtended(level, "主动：可设为自动施放。锁定附近敌人后原地旋身" + tdOrcBladestormDuration().toString() + "秒，对自身周围" + tdOrcBladestormRadius().toInt().toString() + "范围内的敌军持续造成伤害。技能范围固定，不受装备射程加成影响。")
+		definition.setTooltipTurnOff(level, "剑刃风暴")
+		definition.setTooltipTurnOffExtended(level, "自动施放关闭：手动选择时再释放剑刃风暴。")
+		definition.setMovementSpeedFactor(level, 0.0)
+		definition.setAttackSpeedFactor(level, 0.0)
+		definition.setAlwaysAutocast(level, true)
+		definition.setCooldown(level, tdOrcBladestormCooldown() * (1.0 - (level - 1) / 100.0))
+		definition.setManaCost(level, 0)
+		definition.setCastRange(level, tdOrcBladestormRadius())
+		definition.setTargetsAllowed(level, "enemy,ground,air,organic")
+		definition.setBuffs(level, "")
+		definition.setDurationNormal(level, 0.0)
+		definition.setDurationHero(level, 0.0)
+
+public function tdConfigureEquipmentPoison(AbilityDefinitionSlowPoison definition, real dps, real moveFactor, real attackFactor)
+	definition.setLevels(61)
+	for level = 1 to 61
+		definition.setDamagePerSecond(level, dps)
+		definition.setMovementSpeedFactor(level, tdEquipmentControlReduction(1.0 - moveFactor, level))
+		definition.setAttackSpeedFactor(level, 1.0 - attackFactor)
+		// Preserve Aspo's verified 1.27a parent duration and both native buffs.
+		definition.setDurationNormal(level, 5.0)
+		definition.setDurationHero(level, 1.0)
+		definition.setTargetsAllowed(level, "air,ground,organic")
+		definition.setBuffs(level, "Bspo,Bssd")
+		definition.setStackingType(level, 1)
+
+public function tdEquipmentSlowAuraReduction(boolean evolved, int level) returns real
+	return tdEquipmentControlReduction((1.0 - tdDryadAuraSlowFactor()) * (evolved ? tdEvolutionSkillMultiplier() : 1.0), level)
+
+public function tdConfigureEquipmentSlowAura(AbilityDefinitionAuraSlow definition, boolean evolved)
+	definition.setLevels(61)
+	for level = 1 to 61
+		definition.setTooltipNormal(level, "缓速藤蔓")
+		definition.setTooltipNormalExtended(level, "被动：周围敌军移动速度降低" + tdBonusPercentString(tdEquipmentSlowAuraReduction(evolved, level)) + "。")
+		definition.setMovementSpeedFactor(level, -tdEquipmentSlowAuraReduction(evolved, level))
+		definition.setAttackSpeedFactor(level, 0.0)
+		definition.setAreaofEffect(level, tdDryadAuraSlowRadius())
+		definition.setTargetsAllowed(level, "enemy,ground,air,organic")
+		definition.setBuffs(level, "Basl")
+		definition.setDurationNormal(level, 0.0)
+		definition.setDurationHero(level, 0.0)
+
+public function tdConfigureEquipmentBash(AbilityDefinitionMountainKingBash definition, boolean perfect)
+	definition.setLevels(61)
+	for level = 1 to 61
+		definition.setTooltipNormal(level, perfect ? "进化盾击" : "盾击")
+		definition.setTooltipNormalExtended(level, perfect ? "进化：盾击概率和附加伤害提高20%，控制时间保留装备强化。" : "被动：有" + tdBonusPercentString(tdFootmanBashChance()) + "概率打出盾击，造成额外" + tdFootmanBashDamageBonus().toInt().toString() + "点伤害。")
+		definition.setChancetoBash(level, tdFootmanBashChance() * (perfect ? tdEvolutionSkillMultiplier() : 1.0) * 100.0)
+		definition.setDamageMultiplier(level, tdFootmanBashDamageMultiplier())
+		definition.setDamageBonus(level, tdFootmanBashDamageBonus() * (perfect ? 1.20 : 1.0))
+		definition.setNeverMiss(level, true)
+		// AHbh alias in local 1.27a Units/AbilityData.slk: Dur=2, HeroDur=1.
+		definition.setDurationNormal(level, 2.0 * (1.0 + (level - 1) / 100.0))
+		definition.setDurationHero(level, 1.0 * (1.0 + (level - 1) / 100.0))
+		definition.setTargetsAllowed(level, "ground,air")
+		definition.setBuffs(level, "BPSE")
+
+@compiletime function tdGenerateEquipmentArmorShred()
+	let definition = new AbilityDefinitionDefenseBonusPlus1(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID)
+	definition.setName("装备破甲")
+	definition.setLevels(TD_EQUIPMENT_ARMOR_MAX)
+	definition.setItemAbility(true)
+	definition.setCheckDependencies(false)
+	for level = 1 to TD_EQUIPMENT_ARMOR_MAX
+		definition.setDefenseBonus(level, -level)
+

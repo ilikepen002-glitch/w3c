@@ -1,7 +1,7 @@
 ---
 projectName: MyFirstWurstMap
 dependencies:
-- https://github.com/wurstscript/WurstStdlib2:pre1.29
+- file:///E:/WurstToolchain/WurstStdlib2-source:pre1.29
 buildMapData:
   name: 深渊守望
   fileName: MyFirstWurstMap.w3x

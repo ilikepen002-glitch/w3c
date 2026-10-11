@@ -1,0 +1,12 @@
+package TDDamageData
+
+public constant int TD_FARMER_DAMAGE_STATISTICS_ABILITY_ID = 'Dsta'
+
+public function tdDamageStatisticsButtonX() returns int
+	return 2
+
+public function tdDamageStatisticsButtonY() returns int
+	return 0
+
+public function tdDamageStatisticsTooltip() returns string
+	return "打开伤害排行页面，点击总榜、各玩家与上一页/下一页切换右上角榜单。玩家和每座塔分别累计有效伤害，精灵伤害计入当时的宿主塔。"

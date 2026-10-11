@@ -5,9 +5,13 @@ import initlater TDGame
 import TDWaves
 import ClosureTimers
 import Orders
+import TDPetWild
+import TDEnemyMechanicData
+import TDEnemyMechanicRuntime
 
 rect tdWorldRect = GetWorldBounds()
 int tdLaneEnemyCheckPlayer = -1
+int tdLaneEnemyCheckWave = 0
 boolean tdLaneEnemyCheckFound = false
 // 测试环境可能缺少 World Editor rect 句柄；兜底时用接近 32x32 路点的半径，
 // 避免在拐角前过早切到下一个 waypoint。
@@ -36,7 +40,7 @@ public function tdEnemyWasLeaked(unit enemy) returns boolean
 public function tdMarkEnemyLeaked(unit enemy)
 	tdSetEnemyData(enemy, tdEnemyLaneId(enemy), tdEnemyWave(enemy), 99)
 
-function tdEnemyWaypointIndex(unit enemy) returns int
+public function tdEnemyWaypointIndex(unit enemy) returns int
 	return tdEnemyState(enemy)
 
 function tdSetEnemyWaypointIndex(unit enemy, int index)
@@ -107,6 +111,14 @@ public function tdCreateEnemy(int playerId, int wave, int unitId) returns unit
 	if tdEnemyRemovesGuardPosition()
 		enemy.removeGuardPosition()
 	tdSetEnemyData(enemy, playerId, wave, 0)
+	var role = TD_ENEMY_ROLE_NORMAL
+	if tdIsBossUnitTypeId(unitId)
+		role = TD_ENEMY_ROLE_BOSS
+	else if tdIsBossGuardUnitTypeId(unitId)
+		role = TD_ENEMY_ROLE_GUARD
+	else if tdIsEliteUnitTypeId(unitId)
+		role = TD_ENEMY_ROLE_ELITE
+	tdEnemyMechanicRegister(enemy, playerId, wave, role)
 	tdOrderEnemyAlongLane(enemy)
 	return enemy
 
@@ -134,28 +146,32 @@ function tdEnemyReachedWaypoint(unit enemy, int playerId, int waypointIndex) ret
 	return tdEnemyReachedWaypointPosition(playerId, waypointIndex, enemy.getPos())
 
 function tdAdvanceEnemyWaypoint(unit enemy)
-	if enemy == null or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdEnemyWasLeaked(enemy)
+	if tdPetIsWild(enemy) or enemy == null or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdEnemyWasLeaked(enemy)
 		return
 	let playerId = tdEnemyLaneId(enemy)
 	let waypointIndex = tdEnemyWaypointIndex(enemy)
 	var waypointAdvanced = false
 	if waypointIndex < tdLaneWaypointCount(playerId)
 		if tdEnemyReachedWaypoint(enemy, playerId, waypointIndex)
+			// This is the reached index BEFORE increment, not the next destination.
+			tdEnemyMechanicOnWaypoint(enemy, waypointIndex)
 			tdSetEnemyWaypointIndex(enemy, waypointIndex + 1)
 			waypointAdvanced = true
 	tdOrderEnemyAlongLane(enemy, waypointAdvanced)
 
 function tdLaneEnemyCheckEnum()
 	let enemy = GetEnumUnit()
-	if not tdLaneEnemyCheckFound and enemy != null and enemy.isAlive() and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == tdLaneEnemyCheckPlayer
+	if not tdPetIsWild(enemy) and not tdLaneEnemyCheckFound and enemy != null and enemy.isAlive() and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == tdLaneEnemyCheckPlayer and (tdLaneEnemyCheckWave == 0 or tdEnemyWave(enemy) == tdLaneEnemyCheckWave)
 		tdLaneEnemyCheckFound = true
 
 function tdWaypointAdvanceEnum()
 	let enemy = GetEnumUnit()
 	tdAdvanceEnemyWaypoint(enemy)
 
-public function tdLaneHasLivingEnemies(int playerId) returns boolean
+// wave 0 queries all waves. ForGroup completes synchronously without yielding.
+public function tdLaneHasLivingEnemies(int playerId, int wave) returns boolean
 	tdLaneEnemyCheckPlayer = playerId
+	tdLaneEnemyCheckWave = wave
 	tdLaneEnemyCheckFound = false
 	let g = CreateGroup()
 	g.enumUnitsInRect(tdWorldRect)
@@ -163,25 +179,39 @@ public function tdLaneHasLivingEnemies(int playerId) returns boolean
 	g.destr()
 	return tdLaneEnemyCheckFound
 
+public function tdLaneHasLivingEnemies(int playerId) returns boolean
+	return tdLaneHasLivingEnemies(playerId, 0)
+
 function tdWaitForLaneToClear(int playerId, int wave)
 	doPeriodically(0.40) cb ->
 		if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId)
 			destroy cb
-		else if not tdLaneHasLivingEnemies(playerId)
+		else if not tdLaneHasLivingEnemies(playerId, wave)
 			destroy cb
 			tdHandleWaveFinished(playerId, wave)
 
-// 按时间间隔逐个刷出这一波的怪，等该路所有存活敌人都消失后，
+// 按时间间隔逐个刷出这一波的怪，等该路这一波的存活敌人都消失后，
 // 再由 TDGame 决定发奖励还是开启下一波。
+public function tdLaneCanReceiveSpawns(int playerId) returns boolean
+	if not tdIsLanePlayer(playerId)
+		return false
+	return not tdIsGameOver() and tdIsLaneActive(playerId) and not tdIsLaneDefeated(playerId) and not tdIsLaneFinished(playerId)
+
 public function tdSpawnWave(int playerId, int wave)
-	if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId)
+	if not tdLaneCanReceiveSpawns(playerId)
 		return
 	let count = tdWaveEnemyCount(wave)
 	let interval = tdWaveSpawnInterval(wave)
+	tdPetWildOnWave(playerId, wave)
 	doPeriodicallyCounted(interval, count) cb ->
-		tdCreateEnemy(playerId, wave, tdWaveSpawnUnitId(wave, cb.getCount()))
+		if not tdLaneCanReceiveSpawns(playerId)
+			destroy cb
+			return
+		let typeId = tdWaveSpawnUnitId(wave, cb.getCount())
+		tdCreateEnemy(playerId, wave, typeId)
 	doAfter(interval * count + 0.25) ->
-		tdWaitForLaneToClear(playerId, wave)
+		if tdLaneCanReceiveSpawns(playerId)
+			tdWaitForLaneToClear(playerId, wave)
 
 public function tdStartLaneWaypointWatcher()
 	// 用轻量轮询检测区域进入，避免每个 waypoint 都单独创建触发器和状态。
@@ -190,5 +220,8 @@ public function tdStartLaneWaypointWatcher()
 		g.enumUnitsInRect(tdWorldRect)
 		ForGroup(g, function tdWaypointAdvanceEnum)
 		g.destr()
+		tdEnemyMechanicsTick()
 		if tdIsGameOver()
 			destroy cb
+
+

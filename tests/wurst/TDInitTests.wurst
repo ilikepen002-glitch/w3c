@@ -30,7 +30,7 @@ import TDConfig
 
 @Test function startupCameraStartsHigherAndAllowsThreeExtraWheelHeights()
 	tdDefaultCameraTargetDistance().assertEquals(3200.0)
-	tdDefaultCameraAngleOfAttack().assertEquals(338.0)
+	tdDefaultCameraAngleOfAttack().assertEquals(315.0)
 	tdCameraWheelLiftStepCount().assertEquals(3)
 	tdCameraWheelLiftDistancePerStep().assertEquals(400.0)
 	tdStartingCameraReapplyDelay().assertEquals(0.10)
@@ -60,3 +60,4 @@ import TDConfig
 	tdResetState()
 	tdTryHandleAddMoneyCommand(0, "-addMoney nope").assertFalse()
 	tdGetGold(0).assertEquals(TD_STARTING_GOLD)
+

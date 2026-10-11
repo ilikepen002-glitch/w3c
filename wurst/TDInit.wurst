@@ -5,8 +5,14 @@ import TDSpawn
 import TDTowers
 import TDItems
 import TDInventory
+import TDGroundItemRuntime
 import TDConfig
 import ClosureTimers
+import TDHud
+import TDPets
+import TDEnemyMechanicRuntime
+import TDDamageRuntime
+import TDDamageUI
 
 trigger tdChatCommandTrigger = CreateTrigger()
 boolean tdGameplayStartupCompleted = false
@@ -27,7 +33,7 @@ public function tdDefaultCameraTargetDistance() returns real
 	return 3200.0
 
 public function tdDefaultCameraAngleOfAttack() returns real
-	return 338.0
+	return 315.0
 
 public function tdCameraWheelLiftStepCount() returns int
 	return 3
@@ -69,9 +75,7 @@ public function tdClampCameraTargetDistance(real distance) returns real
 	return distance
 
 public function tdStartupGuideMessage() returns string
-	// 文案保持和当前实现一致：路线区域来自地图静态布局，运行时只处理规则和提示。
-	return "当前路线只保留起点到终点的区域逻辑。请在自己象限的平坦高台上建塔，悬崖旁留 32 距离；中心出口禁建。鼠标滚轮可拉高/拉低镜头，TD工人可用 " + tdFarmerBlinkHotkey() + " 闪烁快速换位。首发装备池共 " + tdItemDefinitionCount().toString() + " 件。"
-
+	return "守住起点到终点的路线，在高台建塔。B 建造 / F 闪烁 / C 功能 / G 工资；Q 捕获 / W 收藏 / E 上阵。滚轮调整镜头；宝宝与装备都可强化塔。"
 function tdInactiveLaneNoticePlayerActiveForTest(int playerId, boolean lane0Active, boolean lane1Active, boolean lane2Active, boolean lane3Active) returns boolean
 	if playerId == 0
 		return lane0Active
@@ -207,17 +211,31 @@ function tdRunGameplayStartup()
 	if tdGameplayStartupCompleted
 		return
 	tdGameplayStartupCompleted = true
+	let enemyPlayer = Player(TD_ENEMY_PLAYER_ID)
+	RemoveAllGuardPositions(enemyPlayer)
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		SetPlayerAlliance(enemyPlayer, Player(playerId), ALLIANCE_PASSIVE, false)
+		SetPlayerAlliance(Player(playerId), enemyPlayer, ALLIANCE_PASSIVE, false)
 	// 这里以后只装配运行时系统；地形/pathing 之类的可视布局仍由地图文件维护。
 	tdCreatePads()
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(playerId)
+			tdPetInitializeFarmer(playerId, tdGetFarmer(playerId))
+	tdSetupPets()
+	tdSetupDamageStatistics()
+	tdSetupDamageUI()
+	tdSetupEnemyMechanics()
 	tdSetupBuildDialog()
 	tdSetupPadSelection()
 	tdSetupDialogTrigger()
 	tdSetupInventoryRuntime()
+	tdSetupGroundItemRuntime()
 	tdSetupLaneRects()
 	tdStartLaneWaypointWatcher()
 	tdStartEnemyDeathWatcher()
 	tdStartLeakWatcher()
 	tdSetupChatCommands()
+	tdSetupHud()
 	tdRefreshHud()
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		if tdIsLaneActive(playerId)
@@ -250,8 +268,14 @@ function tdBootstrapGameplayWhenPlayersReady(int retryCount)
 // 游戏主启动流程。路线本身交给地图静态布局，只保留起点/终点等区域驱动的运行时逻辑。
 public function tdStartGame()
 	tdResetState()
+	tdResetDamageStatistics()
 	tdGameplayStartupCompleted = false
 	tdRevealWholeMap()
 	let setupDelay = tdMapBootstrapDelay()
 	doAfter(setupDelay) ->
 		tdBootstrapGameplayWhenPlayersReady(0)
+
+
+
+
+

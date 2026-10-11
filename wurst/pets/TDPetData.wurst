@@ -1,0 +1,75 @@
+package TDPetData
+import ObjectIds
+
+public constant int TD_PET_CAPTURE_ABILITY_ID = 'Pcap'
+public constant int TD_PET_COLLECTION_ABILITY_ID = 'Pcol'
+public constant int TD_PET_DEPLOY_ABILITY_ID = 'Pdep'
+public constant int TD_PET_BALL_ITEM_ID = 'Ibal'
+public constant int TD_FARMER_MENU_REPAIR_ABILITY_ID = 'Prpr'
+public constant int TD_PET_DAMAGE_ID = 'Pdam'
+public constant int TD_PET_COLLECTION_LIMIT = 12
+public constant int TD_PET_DEPLOY_LIMIT = 3
+public constant int TD_PET_BALL_LIMIT = 60
+
+public function tdPetWildUnitId(int wave, int species) returns int
+	let hex = "0123456789ABCDEF"
+	return ("p" + SubString(hex, wave div 16, wave div 16 + 1) + SubString(hex, wave mod 16, wave mod 16 + 1) + species.toString()).fromRawCode()
+
+public function tdPetVisualUnitId(int species) returns int
+	return 'pv01' + species - 1
+
+function tdPetHexDigit(int ascii) returns int
+	if ascii >= 48 and ascii <= 57
+		return ascii - 48
+	if ascii >= 65 and ascii <= 70
+		return ascii - 55
+	return -100
+
+// Stable type identity in O(1), including after death settlement.
+public function tdPetSpeciesForWildType(int typeId) returns int
+	let species = typeId mod 256 - 48
+	if species < 1 or species > 3 or typeId div 16777216 != 112
+		return 0
+	let wave = tdPetHexDigit((typeId div 65536) mod 256) * 16 + tdPetHexDigit((typeId div 256) mod 256)
+	return wave >= 1 and wave <= 32 ? species : 0
+public function tdPetSpeciesName(int species) returns string
+	if species == 1
+		return "炎灵"
+	if species == 2
+		return "雷灵"
+	return "幽灵"
+
+public function tdPetModel(int species) returns string
+	if species == 1
+		return "Units\\Human\\Phoenix\\Phoenix.mdl"
+	if species == 2
+		return "Units\\NightElf\\FaerieDragon\\FaerieDragon.mdl"
+	return "Units\\NightElf\\Wisp\\Wisp.mdl"
+
+public function tdPetCaptureChance(real _currentLife, real _maxLife) returns real
+	return 0.60
+
+public function tdPetCaptureTooltip(int balls) returns string
+	return "普通球 " + balls.toString() + "/60。固定60%成功率，首只教学精灵第一次普通球必成。满收藏不扣球；收藏12，上阵3，每塔1。野生停留60秒。功能菜单可猎杀、投大师球与普通球5合1。"
+
+public constant int TD_PET_MASTER_ABILITY_ID = 'Pmas'
+public constant int TD_PET_HUNT_ABILITY_ID = 'Phnt'
+public constant int TD_PET_FORGE_ABILITY_ID = 'Pfor'
+public constant int TD_PET_ATTACK_BONUS_ID = 'Pbat'
+public constant int TD_PET_SPEED_BONUS_ID = 'Pbsp'
+public constant int TD_PET_ARMOR_ID = 'Pbar'
+public constant int TD_PET_SKILL_COUNT = 16
+
+public function tdPetDisplayUnitId(int species) returns int
+	return 'pd01' + species - 1
+
+public function tdPetSlotAbilityId(int slot, int variant) returns int
+	let hex = "0123456789ABCDEF"
+	return ("s" + slot.toString() + SubString(hex, variant div 16, variant div 16 + 1) + SubString(hex, variant mod 16, variant mod 16 + 1)).fromRawCode()
+
+public function tdPetUICommandId(int command) returns int
+	return 'Pc00' + command
+
+
+
+

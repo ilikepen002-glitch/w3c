@@ -1,0 +1,18 @@
+[1/3] Building map...
+? Map built.
+[2/3] Patching map display name with timestamp 1534...
+ע: tools\PatchMapDisplayName.javaʹ�û򸲸����ѹ�ʱ�� API��
+ע: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+Patched map name: ��Ԩ���� 1534
+Patched loading title: ��Ԩ���� 1534
+[3/3] Copying "D:\War3Projects\MyFirstWurstMap\_build\MyFirstWurstMap.w3x.w3x"
+Source map time:
+  2026-10-11 15:35:21
+[3/3] Done.
+Source map:
+  D:\War3Projects\MyFirstWurstMap\_build\MyFirstWurstMap.w3x.w3x
+Deployed to:
+  D:\War3_1.27a\Warcraft III Frozen Throne 1.27a publish\Maps\Test\��Ԩ����.w3x
+Target map time:
+  2026-10-11 15:35:21
+�밴���������. . . 

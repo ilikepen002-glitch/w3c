@@ -1,0 +1,555 @@
+package TDNativeNormalPlayProbe
+import TDConfig
+import TDState
+import TDSpawn
+import TDTowers
+import TDTowerPlacementRules
+import ClosureTimers
+import RegisterEvents
+import ObjectIds
+import TDPetData
+import TDPetState
+import GameTimer
+
+tuple normalInvestment(int slot, int level, int branch)
+normalInvestment array normalPlan
+constant int NORMAL_PLAN_COUNT = 30
+
+// Opt-in orders only. Never create units, alter resources, damage enemies,
+// change speed, advance waves or call production reward/clear helpers.
+boolean normalRunning = false
+boolean normalHeld = false
+boolean normalStarted = false
+boolean normalAutoWaiting = false
+real normalAutoWaitTime = 0.0
+real normalTime = 0.0
+int normalEpoch = 0
+int normalStep = 0
+int normalPending = 0
+int normalExpectedId = 0
+int normalSlot = 0
+real normalIssuedAt = 0.0
+unit normalPendingTower = null
+unit array normalTowers
+boolean array normalObservedClear
+int normalLastWave = 0
+int normalLastLives = 20
+string normalWait = ""
+string normalStopReason = "not started"
+string array normalRecords
+int normalRecordCount = 0
+trigger normalChat = null
+trigger normalConstruction = null
+trigger normalUpgrade = null
+trigger normalCancel = null
+trigger normalDeath = null
+trigger normalStartTrace = null
+trigger normalCaptureTrace = null
+trigger normalItemTrace = null
+boolean normalCaptureEnabled = true
+unit normalCaptureTarget = null
+int normalCaptureAttempts = 0
+int normalCaptureBallsBefore = 0
+int normalCaptureCollectionBefore = 0
+boolean normalCaptureEffect = false
+real normalCaptureIssuedAt = 0.0
+real normalCaptureReadyAt = 0.0
+boolean normalWageEnabled = true
+boolean normalWagePending = false
+real normalWageIssuedAt = 0.0
+real normalWageReadyAt = 0.0
+real normalWageUnlockedAt = -1.0
+string array normalWaveStart
+string array normalWaveClear
+string array normalWaveEnd
+
+function normalConfigurePlan()
+	let a = TD_TOWER_BRANCH_A
+	normalPlan[0] = normalInvestment(0, 1, a)
+	normalPlan[1] = normalInvestment(1, 1, a)
+	normalPlan[2] = normalInvestment(0, 2, a)
+	normalPlan[3] = normalInvestment(0, 3, a)
+	normalPlan[4] = normalInvestment(2, 1, a)
+	normalPlan[5] = normalInvestment(0, 4, a)
+	normalPlan[6] = normalInvestment(1, 2, a)
+	normalPlan[7] = normalInvestment(2, 2, a)
+	normalPlan[8] = normalInvestment(3, 1, a)
+	normalPlan[9] = normalInvestment(4, 1, a)
+	normalPlan[10] = normalInvestment(1, 3, a)
+	normalPlan[11] = normalInvestment(1, 4, a)
+	normalPlan[12] = normalInvestment(2, 3, a)
+	normalPlan[13] = normalInvestment(2, 4, a)
+	normalPlan[14] = normalInvestment(3, 2, a)
+	normalPlan[15] = normalInvestment(3, 3, a)
+	normalPlan[16] = normalInvestment(4, 2, a)
+	normalPlan[17] = normalInvestment(4, 3, a)
+	normalPlan[18] = normalInvestment(0, 5, a)
+	normalPlan[19] = normalInvestment(3, 4, a)
+	normalPlan[20] = normalInvestment(3, 5, a)
+	normalPlan[21] = normalInvestment(2, 5, a)
+	normalPlan[22] = normalInvestment(0, 6, a)
+	normalPlan[23] = normalInvestment(3, 6, a)
+	normalPlan[24] = normalInvestment(2, 6, TD_TOWER_BRANCH_B)
+	normalPlan[25] = normalInvestment(1, 5, a)
+	normalPlan[26] = normalInvestment(4, 4, a)
+	normalPlan[27] = normalInvestment(4, 5, a)
+	normalPlan[28] = normalInvestment(1, 6, a)
+	normalPlan[29] = normalInvestment(4, 6, a)
+
+function normalPosition(int slot) returns vec2
+	if slot == 0
+		return vec2(-1760.0, 2016.0)
+	if slot == 1
+		return vec2(-1760.0, 1824.0)
+	return vec2(-1952.0 - (slot - 2) * 192.0, 1824.0)
+
+function normalTowerSummary(boolean positions) returns string
+	var result = ""
+	for slot = 0 to 4
+		let tower = normalTowers[slot]
+		if tower != null and GetUnitTypeId(tower) != 0 and tower.isAlive()
+			result += " " + GetUnitTypeId(tower).toRawCode() + ":L" + tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)).toString()
+			if positions
+				result += "@" + R2I(GetUnitX(tower)).toString() + "," + R2I(GetUnitY(tower)).toString()
+		else
+			result += " -"
+	return result
+
+function normalLog(string message)
+	let line = "t=" + normalTime.toString() + " wave=" + tdGetGlobalWave().toString() + " gold=" + tdGetGold(0).toString() + " lives=" + tdGetLives(0).toString() + " towers=" + normalTowerSummary(false) + " " + message
+	// Retain latest 256 records; a snapshot never consumes or resets evidence.
+	normalRecords[normalRecordCount mod 256] = line
+	normalRecordCount += 1
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 6.0, "NORMAL " + line)
+
+function normalWaveState() returns string
+	return "t=" + normalTime.toString() + " gold=" + tdGetGold(0).toString() + " lives=" + tdGetLives(0).toString() + " food=" + GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_USED).toString() + "/" + GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_CAP).toString() + " held=" + normalHeld.toString() + " step=" + normalStep.toString() + " wait=" + normalWait + " towers=" + normalTowerSummary(true)
+
+function normalWaveSnapshot(int wave)
+	if wave < 1 or wave > 32
+		DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL wave must be 1..32")
+		return
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL wave=" + wave.toString() + " START " + (normalWaveStart[wave] == null ? "not observed" : normalWaveStart[wave]))
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL CLEAR " + (normalWaveClear[wave] == null ? "not observed" : normalWaveClear[wave]))
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL END " + (normalWaveEnd[wave] == null ? "not observed" : normalWaveEnd[wave]))
+
+// Read production records only. Class identity distinguishes captures even when
+// a released collection slot is reused; match ownership retains those records.
+function normalObservePets(string context, boolean retain)
+	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+		let pet = tdPetAt(0, slot)
+		if pet != null
+			var hostId = "none"
+			if pet.host != null and GetUnitTypeId(pet.host) != 0
+				hostId = GetUnitTypeId(pet.host).toRawCode()
+			let line = "PET " + context + " slot=" + slot.toString() + " record=" + (pet castTo int).toString() + " species=" + pet.species.toString() + ":" + tdPetSpeciesName(pet.species) + " captureWave=" + pet.captureWave.toString() + " skillCount=" + pet.skillCount.toString() + " level=" + pet.level.toString() + " skillIds=" + pet.skillAt(0).toString() + "," + pet.skillAt(1).toString() + "," + pet.skillAt(2).toString() + " host=" + hostId + " generation=" + pet.generation.toString()
+			if retain
+				normalLog(line)
+			else
+				// Snapshot is current live state, not the historical page's state.
+				DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL live wave=" + tdGetGlobalWave().toString() + " " + line)
+
+function normalStop(string reason)
+	normalRunning = false
+	normalWageEnabled = false
+	normalWagePending = false
+	normalCaptureEnabled = false
+	if normalCaptureTarget != null
+		normalLog("CAPTURE observation ended; native order not cancelled")
+	normalCaptureTarget = null
+	normalCaptureEffect = false
+	normalStopReason = reason
+	if normalLastWave >= 1 and normalLastWave <= 32
+		normalWaveEnd[normalLastWave] = reason + " " + normalWaveState()
+	normalLog("STOP " + reason + "; already issued native orders remain")
+
+function normalSnapshot(int page)
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL capture enabled=" + normalCaptureEnabled.toString() + " pending=" + (normalCaptureTarget != null).toString() + " attempts=" + normalCaptureAttempts.toString() + " effect=" + normalCaptureEffect.toString())
+	if normalRecordCount == 0
+		DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL snapshot: no records; autoWaiting=" + normalAutoWaiting.toString())
+		normalObservePets("snapshot-current", false)
+		return
+	var oldest = normalRecordCount - 256
+	if oldest < 0
+		oldest = 0
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL snapshot running=" + normalRunning.toString() + " autoWaiting=" + normalAutoWaiting.toString() + " held=" + normalHeld.toString() + " wagePending=" + normalWagePending.toString() + " capturePending=" + (normalCaptureTarget != null).toString() + " step=" + normalStep.toString() + " pending=" + normalPending.toString() + " reason=" + normalStopReason + " retained absolute records=" + (oldest + 1).toString() + ".." + normalRecordCount.toString())
+	var first = normalRecordCount - 6
+	var last = normalRecordCount - 1
+	if page > 0
+		first = (page - 1) * 6
+		last = first + 5
+		if first < oldest or first >= normalRecordCount
+			DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL rejected page: invalid or overwritten absolute record range")
+			return
+		if last >= normalRecordCount
+			last = normalRecordCount - 1
+	else if first < oldest
+		first = oldest
+	for index = first to last
+		DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL #" + (index + 1).toString() + " " + normalRecords[index mod 256])
+	normalObservePets("snapshot-current", false)
+
+function normalComplete(unit tower, int kind)
+	if normalPending != kind or tower == null or GetOwningPlayer(tower) != Player(0)
+		return
+	if kind == 1 and tower.getPos().distanceTo(normalPosition(normalSlot)) > 48.0
+		return
+	if kind == 2 and tower != normalPendingTower
+		return
+	if GetUnitTypeId(tower) != normalExpectedId
+		if normalRunning
+			normalStop("completion type mismatch expected=" + normalExpectedId.toRawCode())
+		return
+	normalTowers[normalSlot] = tower
+	if not normalRunning
+		normalLog("OBSERVED_AFTER_STOP completion kind=" + kind.toString() + " id=" + normalExpectedId.toRawCode() + "; t frozen; no step advance/orders")
+		return
+	normalLog("COMPLETE kind=" + kind.toString() + " id=" + normalExpectedId.toRawCode())
+	normalPending = 0
+	normalPendingTower = null
+	normalStep += 1
+	normalWait = ""
+
+function normalOnConstruction()
+	normalComplete(GetConstructedStructure(), 1)
+
+function normalOnConstructionStart()
+	let tower = GetConstructingStructure()
+	if tower != null and GetOwningPlayer(tower) == Player(0) and tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) != 0
+		normalLog("CONSTRUCT_START id=" + GetUnitTypeId(tower).toRawCode() + " x=" + GetUnitX(tower).toString() + " y=" + GetUnitY(tower).toString())
+		if normalPending == 1 and GetUnitTypeId(tower) == normalExpectedId and tower.getPos().distanceTo(normalPosition(normalSlot)) <= 48.0
+			normalPendingTower = tower
+
+function normalOnUpgrade()
+	normalComplete(GetTriggerUnit(), 2)
+
+function normalOnCancel()
+	if not normalRunning or normalPending == 0
+		return
+	let tower = GetTriggerUnit()
+	if tower == null or GetOwningPlayer(tower) != Player(0)
+		return
+	if tower == normalPendingTower or (normalPending == 1 and tower.getPos().distanceTo(normalPosition(normalSlot)) <= 48.0)
+		normalStop("native construction/upgrade cancelled")
+
+function normalOnDeath()
+	if not normalRunning
+		return
+	let dying = GetTriggerUnit()
+	if dying == tdGetFarmer(0) or dying == normalPendingTower
+		normalStop("worker or pending tower died")
+		return
+	if GetOwningPlayer(dying) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(dying) == 0 and tdEnemyWasLeaked(dying)
+		normalLog("LEAK originalWave=" + tdEnemyWave(dying).toString())
+	for slot = 0 to 4
+		if dying == normalTowers[slot]
+			normalStop("tracked tower died")
+			return
+
+function normalOnCaptureEffect()
+	if normalRunning and GetTriggerUnit() == tdGetFarmer(0) and GetSpellAbilityId() == TD_FARMER_WAGE_ABILITY_ID
+		normalWageReadyAt = getElapsedGameTime() + tdFarmerWageCooldown()
+		normalWagePending = false
+		normalLog("WAGE actual SPELL_EFFECT; next available after180s")
+	if normalRunning and GetTriggerUnit() == tdGetFarmer(0) and (GetSpellAbilityId() == TD_PET_DEPLOY_ABILITY_ID or GetSpellAbilityId() == TD_PET_COLLECTION_ABILITY_ID)
+		normalLog("MANUAL pet UI spell=" + GetSpellAbilityId().toRawCode())
+	if normalCaptureTarget != null and GetTriggerUnit() == tdGetFarmer(0) and GetSpellAbilityId() == TD_PET_CAPTURE_ABILITY_ID and GetSpellTargetUnit() == normalCaptureTarget
+		normalCaptureEffect = true
+		normalLog("CAPTURE actual Pcap SPELL_EFFECT attempt=" + normalCaptureAttempts.toString())
+
+function normalOnItemPickup()
+	if normalRunning and GetOwningPlayer(GetTriggerUnit()) == Player(0)
+		normalLog("PICKUP item=" + GetItemTypeId(GetManipulatedItem()).toRawCode() + " unit=" + GetUnitTypeId(GetTriggerUnit()).toRawCode())
+
+// Returns true only while capture owns this tick; never invokes pet mutation.
+function normalCaptureTick() returns boolean
+	if normalCaptureTarget != null
+		if normalCaptureEffect and normalTime - normalCaptureIssuedAt >= 1.0
+			let collection = tdPetCollectionCount(0)
+			let balls = tdPetBallsForLane(0)
+			if collection > normalCaptureCollectionBefore
+				normalCaptureEnabled = false
+				normalLog("CAPTURE actual first success; permanent disable; balls=" + balls.toString())
+				normalObservePets("capture-success", true)
+			else if balls < normalCaptureBallsBefore
+				normalLog("CAPTURE actual failed roll; balls=" + balls.toString())
+			else
+				normalCaptureEnabled = false
+				normalLog("CAPTURE effect without ball spend/success; disable without retry")
+			normalCaptureTarget = null
+			normalCaptureEffect = false
+			normalCaptureReadyAt = normalTime + 1.0
+		else if not normalCaptureEffect and (GetUnitTypeId(normalCaptureTarget) == 0 or not normalCaptureTarget.isAlive() or tdEnemyWasLeaked(normalCaptureTarget) or normalTime - normalCaptureIssuedAt >= 5.0)
+			normalCaptureEnabled = false
+			normalLog("CAPTURE no observed effect: target gone/leaked or 5s timeout; disable, native order not cancelled")
+			normalCaptureTarget = null
+		return true
+	let worker = tdGetFarmer(0)
+	if normalHeld or not normalCaptureEnabled or normalPending != 0 or normalWagePending or normalTime < normalCaptureReadyAt or worker == null or not worker.isAlive() or GetUnitCurrentOrder(worker) != 0
+		return false
+	if tdPetCollectionCount(0) > 0 or normalCaptureAttempts >= 3 or tdPetBallsForLane(0) <= 0
+		normalCaptureEnabled = false
+		normalLog("CAPTURE disabled: first collection exists, attempts exhausted or no balls")
+		return false
+	let nearby = CreateGroup()
+	GroupEnumUnitsInRange(nearby, GetUnitX(worker), GetUnitY(worker), 1000.0, null)
+	for candidate from nearby
+		if normalCaptureTarget == null and candidate != null and GetOwningPlayer(candidate) == Player(TD_ENEMY_PLAYER_ID) and candidate.isAlive() and tdEnemyLaneId(candidate) == 0 and not tdEnemyWasLeaked(candidate) and GetWidgetLife(candidate) <= GetUnitState(candidate, UNIT_STATE_MAX_LIFE) * 0.5 and candidate.getPos().distanceTo(worker.getPos()) <= 1000.0
+			if tdPetSpeciesForWildType(GetUnitTypeId(candidate)) > 0
+				normalCaptureTarget = candidate
+	nearby.destr()
+	if normalCaptureTarget == null
+		return false
+	// Pending is visible before the native command can synchronously emit effect.
+	normalCaptureAttempts += 1
+	normalCaptureEffect = false
+	normalCaptureBallsBefore = tdPetBallsForLane(0)
+	normalCaptureCollectionBefore = tdPetCollectionCount(0)
+	normalCaptureIssuedAt = normalTime
+	let accepted = IssueTargetOrderById(worker, OrderId("ambush"), normalCaptureTarget)
+	normalLog("CAPTURE request attempt=" + normalCaptureAttempts.toString() + " returned=" + accepted.toString() + "; boolean diagnostic only")
+	return true
+
+function normalWageTick() returns boolean
+	if normalWageUnlockedAt < 0.0 and tdGetGlobalWave() >= tdFarmerWageUnlockWave()
+		normalWageUnlockedAt = normalTime
+	if normalWagePending
+		if normalTime - normalWageIssuedAt >= 5.0
+			normalWagePending = false
+			normalWageEnabled = false
+			normalLog("WAGE no actual effect within5s; disable wage task without retry")
+		return true
+	let worker = tdGetFarmer(0)
+	if normalHeld or not normalWageEnabled or normalPending != 0 or normalCaptureTarget != null or normalWageUnlockedAt < 0.0 or normalTime - normalWageUnlockedAt < 1.0 or getElapsedGameTime() < normalWageReadyAt or worker == null or not worker.isAlive() or GetUnitCurrentOrder(worker) != 0
+		return false
+	normalWagePending = true
+	normalWageIssuedAt = normalTime
+	// Current ordinary0500 W3A A109 Ncl6=absorb; recheck the next artifact.
+	let accepted = IssueImmediateOrderById(worker, OrderId("absorb"))
+	normalLog("WAGE requested returned=" + accepted.toString() + "; await real effect")
+	return true
+
+function normalWaitFor(string reason)
+	if normalWait != reason
+		normalWait = reason
+		normalLog("WAIT " + reason)
+
+function normalIssueNext()
+	if normalHeld or normalStep >= NORMAL_PLAN_COUNT
+		return
+	let investment = normalPlan[normalStep]
+	let slot = investment.slot
+	let level = investment.level
+	let choice = slot < 2 ? TD_TOWER_CHOICE_ARCHER : (slot == 2 ? TD_TOWER_CHOICE_DRYAD : (slot == 3 ? TD_TOWER_CHOICE_ORC : TD_TOWER_CHOICE_FOOTMAN))
+	let kind = level == 1 ? 1 : 2
+	let id = tdTowerUnitIdForLevelBranch(choice, level, investment.branch)
+	let cost = tdTowerGoldCostForLevelBranch(choice, level, investment.branch)
+	if tdGetGold(0) < cost
+		normalWaitFor("gold required=" + cost.toString())
+		return
+	if kind == 1 and GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_USED) >= GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_CAP)
+		normalWaitFor("population capacity")
+		return
+	var actor = tdGetFarmer(0)
+	if kind == 2
+		actor = normalTowers[slot]
+		if actor == null or not actor.isAlive() or tdTowerLevelForUnitTypeId(GetUnitTypeId(actor)) != level - 1
+			normalStop("upgrade source missing or unexpected level")
+			return
+	if actor == null or not actor.isAlive()
+		normalStop("real worker unavailable")
+		return
+	normalPending = kind
+	normalSlot = slot
+	normalExpectedId = id
+	normalPendingTower = kind == 2 ? actor : null
+	normalIssuedAt = normalTime
+	normalWait = ""
+	var accepted = false
+	if kind == 1
+		let position = normalPosition(slot)
+		// One diagnostic candidate only. No fallback, retry or compensating state.
+		accepted = IssuePointOrderById(actor, id, position.x, position.y)
+	else
+		accepted = IssueImmediateOrderById(actor, id)
+	normalLog("ORDER kind=" + kind.toString() + " slot=" + slot.toString() + " id=" + id.toRawCode() + " returned=" + accepted.toString() + " afterCurrentOrder=" + GetUnitCurrentOrder(actor).toString())
+	// Native boolean can be false even after paid CONSTRUCT_START. Completion
+	// events and the bounded timeout own outcome; never retry either boolean.
+
+function normalTick()
+	normalTime += 0.25
+	let wave = tdGetGlobalWave()
+	if wave != normalLastWave
+		normalLastWave = wave
+		if wave >= 1 and wave <= 32
+			normalWaveStart[wave] = normalWaveState()
+		normalLog("WAVE_START observed")
+	if tdGetLives(0) != normalLastLives
+		normalLastLives = tdGetLives(0)
+		normalLog("LIVES_CHANGED")
+	// Defeat bulk-marks resolution flags; those are not rewarded real clears.
+	if tdIsLaneDefeated(0) or tdGetLives(0) <= 0
+		normalStop("lane defeated; resolution flags are not clear/reward evidence")
+		return
+	for original = 1 to 32
+		if not normalObservedClear[original] and tdIsWaveResolved(0, original)
+			normalObservedClear[original] = true
+			normalWaveClear[original] = normalWaveState()
+			normalLog("ACTUAL_CLEAR originalWave=" + original.toString())
+			normalObservePets("after-clear=" + original.toString(), true)
+	// Successful terminal flags remain observable before the game-over stop.
+	if tdIsGameOver() or tdIsLaneFinished(0)
+		let victory = tdIsGameOver() and tdIsLaneFinished(0) and tdIsWaveResolved(0, 32) and tdGetLives(0) > 0
+		normalStop(victory ? "VICTORY observed finished+32resolved+positive life" : "terminal without verified victory")
+		return
+	if normalCaptureTick()
+		return
+	if normalPending != 0
+		if normalTime - normalIssuedAt >= 20.0
+			normalStop("20s without native completion; no retry")
+		return
+	if normalWageTick()
+		return
+	normalIssueNext()
+
+function normalStart()
+	if normalStarted
+		DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL start rejected: one run per fresh game; prior evidence retained")
+		return
+	let worker = tdGetFarmer(0)
+	if tdGetGlobalWave() != 0 or tdGetGold(0) != 100 or tdGetLives(0) != 20 or GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_USED) != 0 or worker == null or not worker.isAlive() or GetUnitTypeId(worker) != TD_FARMER_UNIT_ID or GetOwningPlayer(worker) != Player(0) or not tdIsLaneActive(0) or tdIsLaneDefeated(0) or tdIsGameOver()
+		DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL start rejected: requires fresh P1 before wave1, real worker, 100 gold/20 lives/no towers")
+		return
+	for lane = 1 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(lane)
+			DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL start rejected: P1-only game required")
+			return
+	for slot = 0 to 4
+		let position = normalPosition(slot)
+		if not tdIsInLaneBuildZone(0, position) or not tdBuildPlotHasValidTerrain(position) or not tdBuildPlotIsFlat(position)
+			DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL start rejected: fixed terrain point failed")
+			return
+	normalStarted = true
+	normalRunning = true
+	normalAutoWaiting = false
+	normalStopReason = "running"
+	normalEpoch += 1
+	let epoch = normalEpoch
+	normalLog("START strategyB normal-resource32wave fixed5tower plan + native wage + natural firstcapture max3; no resource/life/wave/unit/HP changes; manual gear/deploy must be recorded")
+	normalIssueNext()
+	doPeriodically(0.25) cb ->
+		if epoch != normalEpoch or not normalRunning
+			destroy cb
+		else
+			normalTick()
+
+function normalHoldStatus() returns string
+	return " held=" + normalHeld.toString() + " step=" + normalStep.toString() + " investmentPending=" + normalPending.toString() + " wagePending=" + normalWagePending.toString() + " capturePending=" + (normalCaptureTarget != null).toString()
+
+function normalCommand()
+	let command = GetEventPlayerChatString()
+	if command == "-normal start"
+		normalStart()
+	else if command == "-normal hold" or command == "-normal resume"
+		if not normalRunning or tdIsGameOver() or tdIsLaneDefeated(0) or tdIsLaneFinished(0) or tdGetLives(0) <= 0
+			DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL hold/resume rejected: executor stopped or terminal")
+		else if command == "-normal hold"
+			if normalHeld
+				DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL already held; pending orders and deadlines unchanged" + normalHoldStatus())
+			else
+				normalHeld = true
+				normalLog("HOLD new orders only; manual play requires investment pending0, wagePending=false, capturePending=false and worker idle" + normalHoldStatus())
+		else if normalHeld
+			normalHeld = false
+			normalLog("RESUME next normal tick; step, cooldowns, attempts and deadlines retained" + normalHoldStatus())
+		else
+			DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL resume rejected: executor not held")
+	else if command == "-normal stop"
+		normalAutoWaiting = false
+		if normalRunning
+			normalStop("explicit operator stop")
+		else
+			normalStopReason = "operator cancelled automatic start / executor already stopped"
+			normalLog(normalStopReason)
+	else if command == "-normal snapshot"
+		normalSnapshot(0)
+	else if SubString(command, 0, StringLength("-normal wave ")) == "-normal wave "
+		let text = SubString(command, StringLength("-normal wave "), StringLength(command))
+		let wave = S2I(text)
+		if wave.toString() == text
+			normalWaveSnapshot(wave)
+	else if SubString(command, 0, StringLength("-normal snapshot ")) == "-normal snapshot "
+		let text = SubString(command, StringLength("-normal snapshot "), StringLength(command))
+		let page = S2I(text)
+		if StringLength(text) > 8 or page <= 0 or page.toString() != text
+			DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL invalid page: use positive integer N")
+		else
+			normalSnapshot(page)
+
+function normalAutoWaitTick()
+	normalAutoWaitTime += 0.25
+	if tdGetGlobalWave() > 0 or tdIsGameOver() or tdIsLaneDefeated(0)
+		normalAutoWaiting = false
+		normalStopReason = "automatic start aborted: first wave/terminal state already reached"
+		normalLog(normalStopReason)
+		return
+	let worker = tdGetFarmer(0)
+	if worker != null and tdIsLaneActive(0)
+		var onlyPlayerOne = true
+		for lane = 1 to TD_ACTIVE_PLAYER_COUNT - 1
+			if tdIsLaneActive(lane)
+				onlyPlayerOne = false
+		if not onlyPlayerOne or not worker.isAlive() or GetUnitTypeId(worker) != TD_FARMER_UNIT_ID or GetOwningPlayer(worker) != Player(0) or tdGetGold(0) != 100 or tdGetLives(0) != 20 or GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_USED) != 0
+			normalAutoWaiting = false
+			normalStopReason = "automatic start aborted: not untouched single-P1 new game"
+			normalLog(normalStopReason)
+			return
+		var terrainReady = true
+		for slot = 0 to 4
+			let position = normalPosition(slot)
+			if not tdIsInLaneBuildZone(0, position) or not tdBuildPlotHasValidTerrain(position) or not tdBuildPlotIsFlat(position)
+				terrainReady = false
+		if terrainReady
+			normalStart()
+			return
+	if normalAutoWaitTime >= 10.0
+		normalAutoWaiting = false
+		normalStopReason = "automatic start timed out after 10s; no orders or compensation"
+		normalLog(normalStopReason)
+
+init
+	if not compiletime
+		normalConfigurePlan()
+		normalChat = CreateTrigger()
+		TriggerRegisterPlayerChatEvent(normalChat, Player(0), "-normal ", false)
+		normalChat.addAction(function normalCommand)
+		normalConstruction = CreateTrigger()
+		normalConstruction.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_FINISH)
+		normalConstruction.addAction(function normalOnConstruction)
+		normalUpgrade = CreateTrigger()
+		normalUpgrade.registerAnyUnitEvent(EVENT_PLAYER_UNIT_UPGRADE_FINISH)
+		normalUpgrade.addAction(function normalOnUpgrade)
+		normalCancel = CreateTrigger()
+		normalCancel.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL)
+		normalCancel.registerAnyUnitEvent(EVENT_PLAYER_UNIT_UPGRADE_CANCEL)
+		normalCancel.addAction(function normalOnCancel)
+		normalDeath = CreateTrigger()
+		normalDeath.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
+		normalDeath.addAction(function normalOnDeath)
+		normalStartTrace = CreateTrigger()
+		normalStartTrace.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_START)
+		normalStartTrace.addAction(function normalOnConstructionStart)
+		normalCaptureTrace = CreateTrigger()
+		normalCaptureTrace.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+		normalCaptureTrace.addAction(function normalOnCaptureEffect)
+		normalItemTrace = CreateTrigger()
+		normalItemTrace.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
+		normalItemTrace.addAction(function normalOnItemPickup)
+		// Inclusion of this test-only package is the automatic-run opt-in.
+		normalAutoWaiting = true
+		doPeriodically(0.25) cb ->
+			if not normalAutoWaiting or normalStarted
+				destroy cb
+			else
+				normalAutoWaitTick()
+

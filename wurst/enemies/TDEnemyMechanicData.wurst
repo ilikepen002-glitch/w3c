@@ -1,0 +1,37 @@
+package TDEnemyMechanicData
+
+public constant int TD_ENEMY_ROLE_NORMAL = 0
+public constant int TD_ENEMY_ROLE_ELITE = 1
+public constant int TD_ENEMY_ROLE_GUARD = 2
+public constant int TD_ENEMY_ROLE_BOSS = 3
+public constant int TD_ENEMY_GUARD_ARMOR_ABILITY_ID = 'Emar'
+public constant int TD_ENEMY_GUARD_ARMOR_BONUS = 4
+public constant int TD_ENEMY_SPRINT_WAYPOINT = 2
+public constant real TD_ENEMY_SPRINT_FACTOR = 1.40
+public constant real TD_ENEMY_SPRINT_DURATION = 2.0
+
+public function tdEnemyGuardArmorEnabled(int wave) returns boolean
+	return wave == 8 or wave == 16 or wave == 24 or wave == 32
+
+public function tdEnemySprintEnabled(int wave, int role) returns boolean
+	return (role == TD_ENEMY_ROLE_ELITE and (wave == 12 or wave == 20 or wave == 28)) or (role == TD_ENEMY_ROLE_GUARD and wave == 32)
+
+public function tdEnemyMechanicTracked(int wave, int role) returns boolean
+	return tdEnemySprintEnabled(wave, role) or (tdEnemyGuardArmorEnabled(wave) and (role == TD_ENEMY_ROLE_GUARD or role == TD_ENEMY_ROLE_BOSS))
+
+public function tdEnemySprintSpeed(real originalBase) returns real
+	return originalBase * TD_ENEMY_SPRINT_FACTOR
+
+public function tdEnemyMechanicMaxSpeed(int wave, int role, int originalBase) returns int
+	if tdEnemySprintEnabled(wave, role)
+		return R2I(tdEnemySprintSpeed(originalBase.toReal()) + 0.5)
+	return originalBase
+
+public function tdEnemyMechanicHint(int wave) returns string
+	if wave == 32
+		return "近卫冲刺护主，优先清除"
+	if tdEnemyGuardArmorEnabled(wave)
+		return "先清近卫，解除Boss护甲"
+	if wave == 12 or wave == 20 or wave == 28
+		return "精英拐点冲刺，减速拦截"
+	return "常规推进"

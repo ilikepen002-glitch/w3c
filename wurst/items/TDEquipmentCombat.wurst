@@ -1,0 +1,169 @@
+package TDEquipmentCombat
+import public TDEquipmentRules
+import TDItemData
+import TDConfig
+import TDState
+import TDTowerData
+import DamageEvent
+import ClosureTimers
+import GameTimer
+import LinkedList
+import TDWaves
+
+class TDEquipmentDebuff
+	unit target
+	unit source = null
+	int lane
+	real armor = 0.0
+	real armorUntil = 0.0
+	real poison = 0.0
+	int poisonTicks = 0
+	real nextPoisonAt = 0.0
+	construct(unit target, int lane)
+		this.target = target
+		this.lane = lane
+	ondestroy
+		if target != null and GetUnitTypeId(target) != 0
+			target.removeAbility(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID)
+		target = null
+		source = null
+
+LinkedList<TDEquipmentDebuff> tdEquipmentDebuffs = new LinkedList<TDEquipmentDebuff>()
+boolean tdEquipmentCombatReady = false
+
+function tdEquipmentLaneValid(int lane) returns boolean
+	return tdIsLanePlayer(lane) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
+
+function tdEquipmentEnemyValid(unit target, int lane) returns boolean
+	return target != null and target.isAlive() and GetPlayerId(GetOwningPlayer(target)) == TD_ENEMY_PLAYER_ID and target.getUserData() div 10000 == lane and target.getUserData() mod 100 < 99 and tdEquipmentLaneValid(lane)
+
+function tdEquipmentSourceValid(unit source, int lane) returns boolean
+	return source != null and source.isAlive() and GetPlayerId(GetOwningPlayer(source)) == lane and tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != 0 and tdEquipmentLaneValid(lane)
+
+function tdEquipmentDebuffFor(unit target, int lane) returns TDEquipmentDebuff
+	for entry in tdEquipmentDebuffs
+		if entry.target == target
+			return entry
+	let newEntry = new TDEquipmentDebuff(target, lane)
+	tdEquipmentDebuffs.add(newEntry)
+	return newEntry
+
+public function tdForgetEquipmentEnemy(unit target)
+	let iter = tdEquipmentDebuffs.iterator()
+	while iter.hasNext()
+		let entry = iter.next()
+		if entry.target == target
+			iter.remove()
+			destroy entry
+	destroy iter
+
+public function tdForgetEquipmentTower(unit tower)
+	for entry in tdEquipmentDebuffs
+		if entry.source == tower
+			entry.source = null
+			entry.poison = 0.0
+			entry.poisonTicks = 0
+
+public function tdApplyEquipmentAttack(unit source, unit target, int originLane, boolean _boss)
+	if not tdEquipmentNativeAttackEligible(DamageEvent.isCode(), DamageEvent.isSpell(), DamageEvent.getId()) or DamageEvent.getAmount() <= 0.0 or not tdEquipmentSourceValid(source, originLane) or not tdEquipmentEnemyValid(target, originLane)
+		return
+	let item1 = tdEquipmentItemId(source, 0)
+	let item2 = tdEquipmentItemId(source, 1)
+	let item3 = tdEquipmentItemId(source, 2)
+	let armor = tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_ARMOR_SHRED)
+	let poison = tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_POISON)
+	if armor <= 0.0 and poison <= 0.0
+		return
+	let entry = tdEquipmentDebuffFor(target, originLane)
+	let now = getElapsedGameTime()
+	if now >= entry.armorUntil
+		entry.armor = 0.0
+	if tdEquipmentDebuffRefreshes(armor, entry.armor)
+		entry.armor = armor
+		entry.armorUntil = now + 3.0
+		let level = tdEquipmentArmorLevel(armor)
+		if target.getAbilityLevel(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID) == 0
+			target.addAbility(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID)
+		target.setAbilityLevel(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID, level)
+	if tdEquipmentDebuffRefreshes(poison, entry.poison)
+		entry.nextPoisonAt = tdEquipmentPoisonNextTick(now, entry.poison, entry.nextPoisonAt)
+		entry.source = source
+		entry.poison = poison
+		entry.poisonTicks = 3
+
+function tdCaptureEquipmentAdditionalDamage()
+	if not tdEquipmentNativeAttackEligible(DamageEvent.isCode(), DamageEvent.isSpell(), DamageEvent.getId()) or DamageEvent.getAmount() <= 0.0
+		return
+	let source = DamageEvent.getSource()
+	let target = DamageEvent.getTarget()
+	if target == null
+		return
+	let lane = target.getUserData() div 10000
+	if not tdEquipmentSourceValid(source, lane) or not tdEquipmentEnemyValid(target, lane)
+		return
+	let item1 = tdEquipmentItemId(source, 0)
+	let item2 = tdEquipmentItemId(source, 1)
+	let item3 = tdEquipmentItemId(source, 2)
+	// This locked pre1.29 engine receives the native event value, not a guaranteed
+	// pre-armor attack amount. Capture HP before the native hit changes it.
+	let bonus = tdEquipmentConditionalBonus(target.getHP(), target.getMaxHP(), tdIsBossUnitTypeId(GetUnitTypeId(target)), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_EXECUTE), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_BOSS_DAMAGE))
+	let additional = DamageEvent.getAmount() * bonus
+	if additional <= 0.0
+		return
+	// Ordinary addListener.setAmount does not write HP in this locked engine.
+	// A separate, tagged segment executes after the native hit; lethal hits skip it.
+	doAfter(0.01) ->
+		if tdEquipmentSourceValid(source, lane) and tdEquipmentEnemyValid(target, lane)
+			DamageEvent.setNextDamageFromCode()
+			DamageEvent.setNextDamageId(TD_EQUIPMENT_ADDITIONAL_DAMAGE_ID)
+			// The locked library classifies ATTACK_TYPE_NORMAL as spell damage.
+			// Standard two-argument damage uses CHAOS/UNIVERSAL, avoiding the
+			// Boss hero spell reduction on an already scaled native-event value.
+			source.damageTarget(target, additional)
+
+function tdTickEquipmentDebuffs()
+	let now = getElapsedGameTime()
+	let iter = tdEquipmentDebuffs.iterator()
+	while iter.hasNext()
+		let entry = iter.next()
+		if not tdEquipmentEnemyValid(entry.target, entry.lane)
+			iter.remove()
+			destroy entry
+			continue
+		if entry.armor > 0.0 and now >= entry.armorUntil
+			entry.target.removeAbility(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID)
+			entry.armor = 0.0
+		if entry.poison > 0.0 and not tdEquipmentSourceValid(entry.source, entry.lane)
+			entry.poison = 0.0
+			entry.source = null
+		if entry.poison > 0.0 and now >= entry.nextPoisonAt
+			entry.poisonTicks -= 1
+			entry.nextPoisonAt += 1.0
+			// Defer damage until iteration ends: synchronous death hooks remove records.
+			let source = entry.source
+			let target = entry.target
+			let amount = entry.poison
+			if entry.poisonTicks == 0
+				entry.poison = 0.0
+			let lane = entry.lane
+			doAfter(0.0) ->
+				if tdEquipmentEnemyValid(target, lane) and tdEquipmentSourceValid(source, lane)
+					DamageEvent.setNextDamageFromCode()
+					source.damageTarget(target, amount)
+		if entry.armor == 0.0 and entry.poison == 0.0
+			iter.remove()
+			destroy entry
+	destroy iter
+
+public function tdSetupEquipmentCombat()
+	if tdEquipmentCombatReady
+		return
+	tdEquipmentCombatReady = true
+	DamageEvent.addUnreducedListener(TD_EQUIPMENT_DAMAGE_PRIORITY) ->
+		tdCaptureEquipmentAdditionalDamage()
+	doPeriodically(0.10) cb ->
+		tdTickEquipmentDebuffs()
+		if tdIsGameOver() and tdEquipmentDebuffs.isEmpty()
+			destroy cb
+
+

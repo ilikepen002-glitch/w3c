@@ -1,0 +1,19 @@
+package TDHudTests
+import TDHud
+
+@Test function hudExplainsPreparationAndBetweenWaveWait()
+	tdHudPhaseText(false, false, 0, false, 0, 32).assertEquals("开局准备 · 尚未刷怪")
+	tdHudPhaseText(false, false, 2, true, 3, 32).assertEquals("等待第 3/32 波")
+	tdHudPhaseText(false, false, 2, false, 0, 32).assertEquals("第 2/32 波进行中")
+
+@Test function hudExplainsWhySpawningEnded()
+	tdHudPhaseText(true, false, 3, true, 4, 32).assertEquals("失败 · 已停止刷怪，请重新开局")
+	tdHudPhaseText(true, true, 32, false, 0, 32).assertEquals("胜利 · 防守完成")
+	tdHudLaneStatus(true, false, true, 3, 32).assertEquals("已失守")
+
+@Test function hudChaptersFollowEightWaveBoundaries()
+	tdHudChapter(8).assertEquals("第一章")
+	tdHudChapter(9).assertEquals("第二章")
+	tdHudChapter(17).assertEquals("第三章")
+	tdHudChapter(25).assertEquals("终章")
+	tdHudThreatText(33).assertEquals("无后续波次")

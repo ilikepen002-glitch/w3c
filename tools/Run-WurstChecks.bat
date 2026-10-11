@@ -7,31 +7,32 @@ set "MODE=%~1"
 if "%MODE%"=="" set "MODE=all"
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "tools\Sync-WurstTests.ps1" -Mode Stage
-if errorlevel 1 exit /b 1
+if errorlevel 1 (
+	powershell -NoProfile -ExecutionPolicy Bypass -File "tools\Sync-WurstTests.ps1" -Mode Clean >nul
+	exit /b 1
+)
 
 set "RESULT=0"
 
 if /i "%MODE%"=="all" (
-	call grill typecheck --quiet
+	call tools\Run-Grill.bat typecheck --quiet
 	if errorlevel 1 (
 		set "RESULT=1"
 		goto cleanup
 	)
-	call grill test --quiet
+	call tools\Run-Grill.bat test --quiet
 	if errorlevel 1 set "RESULT=1"
 	goto cleanup
 )
 
 if /i "%MODE%"=="typecheck" (
-	shift
-	call grill typecheck %*
+	call tools\Run-Grill.bat %*
 	if errorlevel 1 set "RESULT=1"
 	goto cleanup
 )
 
 if /i "%MODE%"=="test" (
-	shift
-	call grill test %*
+	call tools\Run-Grill.bat %*
 	if errorlevel 1 set "RESULT=1"
 	goto cleanup
 )
@@ -44,4 +45,5 @@ set "RESULT=1"
 
 :cleanup
 powershell -NoProfile -ExecutionPolicy Bypass -File "tools\Sync-WurstTests.ps1" -Mode Clean >nul
+if errorlevel 1 set "RESULT=1"
 exit /b %RESULT%

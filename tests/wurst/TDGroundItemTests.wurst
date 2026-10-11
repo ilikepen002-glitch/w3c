@@ -1,0 +1,109 @@
+package TDGroundItemTests
+import TDGroundItemRules
+import TDItemData
+import TDPetData
+import TDConfig
+import TDCraftingLogic
+
+@Test function groundCraftPrioritizesTriplesAndStopsAtPurple()
+	tdGroundCraftBatchSize(1, 5).assertEquals(3)
+	tdGroundCraftBatchSize(1, 2).assertEquals(2)
+	tdGroundCraftBatchSize(1, 1).assertEquals(0)
+	tdGroundCraftBatchSize(4, 100).assertEquals(0)
+	tdGroundCraftBatchSize(0, 3).assertEquals(0)
+	tdCraftSucceeds(tdGroundCraftBatchSize(2, 2), 65).assertTrue()
+	tdCraftSucceeds(tdGroundCraftBatchSize(2, 2), 66).assertFalse()
+
+@Test function groundGroupsSeparateBallsAndIgnoreUnknownItems()
+	tdGroundItemGroup(TD_ITEM_SHORT_BOW_ID).assertEquals(1)
+	tdGroundItemGroup(TD_PET_BALL_ITEM_ID).assertEquals(5)
+	tdGroundItemGroup(0).assertEquals(0)
+
+@Test function groundCircleIncludesBoundaryAndExcludesAdjacentPile()
+	tdGroundPointInUpgradeCircle(144, 0, 0, 0).assertTrue()
+	tdGroundPointInUpgradeCircle(145, 0, 0, 0).assertFalse()
+	for pileGroup = 1 to 5
+		let center = tdGroundItemPileCenter(0, pileGroup)
+		for index = 0 to 29
+			let point = tdGroundItemPilePosition(0, pileGroup, index)
+			tdGroundPointInUpgradeCircle(point.x, point.y, center.x, center.y).assertTrue()
+			if pileGroup < 5
+				let neighbor = tdGroundItemPileCenter(0, pileGroup + 1)
+				tdGroundPointInUpgradeCircle(point.x, point.y, neighbor.x, neighbor.y).assertFalse()
+
+@Test function groundPileOverflowReusesSafeCells()
+	let first = tdGroundItemPilePosition(0, 1, 0)
+	let overflow = tdGroundItemPilePosition(0, 1, 15)
+	first.x.assertEquals(overflow.x)
+	first.y.assertEquals(overflow.y)
+
+@Test function groundSortKeepsAllFourLanePositionsStableAndSeparated()
+	tdGroundItemLane(-1, 1).assertEquals(0)
+	tdGroundItemLane(1, 1).assertEquals(1)
+	tdGroundItemLane(1, -1).assertEquals(2)
+	tdGroundItemLane(-1, -1).assertEquals(3)
+	tdGroundItemLane(0, 1).assertEquals(1)
+	tdGroundItemLane(1, 0).assertEquals(1)
+	tdGroundItemLane(0, 0).assertEquals(1)
+	tdGroundItemLane(-1, 0).assertEquals(0)
+	tdGroundItemLane(0, -1).assertEquals(2)
+	for lane = 0 to 3
+		for pileGroup = 1 to 5
+			let center = tdGroundItemPileCenter(lane, pileGroup)
+			for index = 0 to 29
+				let point = tdGroundItemPilePosition(lane, pileGroup, index)
+				tdGroundItemLane(point.x, point.y).assertEquals(lane)
+				tdGroundPointInUpgradeCircle(point.x, point.y, center.x, center.y).assertTrue()
+				let repeat = tdGroundItemPilePosition(tdGroundItemLane(point.x, point.y), pileGroup, index)
+				repeat.x.assertEquals(point.x)
+				repeat.y.assertEquals(point.y)
+				if pileGroup < 5
+					let neighbor = tdGroundItemPileCenter(lane, pileGroup + 1)
+					tdGroundPointInUpgradeCircle(point.x, point.y, neighbor.x, neighbor.y).assertFalse()
+	tdGroundItemPileCenter(0, 1).x.assertEquals(-768.0)
+	tdGroundItemPileCenter(1, 1).x.assertEquals(1024.0)
+	tdGroundItemPileCenter(2, 1).y.assertEquals(-2816.0)
+	tdGroundItemPileCenter(3, 1).x.assertEquals(-1024.0)
+
+@Test function groundBatchFiveSixAndEightKeepTriplePriority()
+	for count = 5 to 8
+		var remaining = count
+		var triples = 0
+		var pairs = 0
+		while tdGroundCraftBatchSize(1, remaining) > 0
+			let batch = tdGroundCraftBatchSize(1, remaining)
+			if batch == 3
+				triples += 1
+			else
+				pairs += 1
+			remaining -= batch
+		triples.assertEquals(count div 3)
+		pairs.assertEquals(ModuloInteger(count, 3) == 2 ? 1 : 0)
+		remaining.assertEquals(ModuloInteger(count, 3) == 1 ? 1 : 0)
+
+@Test function groundProductsJoinExistingHigherQualityForCascade()
+	// Six white produce two green; the existing green makes a triple, then
+	// that blue joins two existing blue and reaches purple.
+	var whites = 6
+	var greens = 1
+	var blues = 2
+	var purples = 0
+	while tdGroundCraftBatchSize(1, whites) > 0
+		let batch = tdGroundCraftBatchSize(1, whites)
+		whites -= batch
+		if tdCraftSucceeds(batch, 1)
+			greens += 1
+	while tdGroundCraftBatchSize(2, greens) > 0
+		let batch = tdGroundCraftBatchSize(2, greens)
+		greens -= batch
+		if tdCraftSucceeds(batch, 1)
+			blues += 1
+	while tdGroundCraftBatchSize(3, blues) > 0
+		let batch = tdGroundCraftBatchSize(3, blues)
+		blues -= batch
+		if tdCraftSucceeds(batch, 1)
+			purples += 1
+	whites.assertEquals(0)
+	greens.assertEquals(0)
+	blues.assertEquals(0)
+	purples.assertEquals(1)

@@ -61,8 +61,10 @@ def main():
         obj = objects[tower]
         assert obj['ubdg'] == 1, (tower, 'not explicitly a building')
         assert obj['upat'] == 'war3mapImported\\TDTower192.tga', (tower, 'wrong pathing')
-        assert obj['upar'] == 'unbuildable,unwalkable,water', (tower, 'wrong placement filter')
-        assert obj['upap'] == '', (tower, 'unexpected required terrain')
+        # Actual 1.27a Units/UnitMetaData.slk: upap=preventPlace,
+        # upar=requirePlace. The pre1.29 Wurst wrapper names are reversed.
+        assert obj['upap'] == 'unbuildable,unwalkable,water', (tower, 'wrong placement filter (upap/preventPlace)')
+        assert obj['upar'] == '', (tower, 'unexpected required terrain (upar/requirePlace)')
         assert obj['ucol'] == 96.0, (tower, 'wrong collision')
         assert obj['ufoo'] == 1, (tower, 'wrong population cost')
     farmer = objects['uF01']

@@ -1,0 +1,25 @@
+package TDPetEffectState
+
+public class TDPetSlowState
+	private real array[8] powers
+	private real array[8] expiries
+	private real aura = 0.0
+
+	function clearAura()
+		aura = 0.0
+
+	function refreshAura(real power)
+		aura = RMaxBJ(aura, power)
+
+	function refresh(int channel, real power, real duration, real now)
+		if channel < 0 or channel > 7 or duration <= 0.0
+			return
+		powers[channel] = power
+		expiries[channel] = RMaxBJ(expiries[channel], now + duration)
+
+	function effectivePower(real now) returns real
+		var power = aura
+		for channel = 0 to 7
+			if now < expiries[channel]
+				power = RMaxBJ(power, powers[channel])
+		return power

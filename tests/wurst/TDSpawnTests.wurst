@@ -2,6 +2,23 @@ package TDSpawnTests
 import TDSpawn
 import TDWaves
 import Orders
+import TDState
+
+@Test function spawningStopsWhenLaneOrMatchEnds()
+	tdResetState()
+	tdLaneCanReceiveSpawns(-1).assertFalse()
+	tdLaneCanReceiveSpawns(0).assertFalse()
+	tdSetLaneActive(0, true)
+	tdLaneCanReceiveSpawns(0).assertTrue()
+	tdSetLaneDefeated(0, true)
+	tdLaneCanReceiveSpawns(0).assertFalse()
+	tdSetLaneDefeated(0, false)
+	tdSetLaneFinished(0, true)
+	tdLaneCanReceiveSpawns(0).assertFalse()
+	tdSetLaneFinished(0, false)
+	tdSetGameOver(true)
+	tdLaneCanReceiveSpawns(0).assertFalse()
+	tdResetState()
 
 @Test function spawnedEnemiesDoNotUseCreepGuard()
 	tdEnemyUsesCreepGuard().assertEquals(false)

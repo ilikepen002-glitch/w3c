@@ -1,0 +1,127 @@
+package TDEnemyMechanicRuntime
+import TDEnemyMechanicData
+import TDPetState
+import TDEnemyMechanicState
+import TDEnemyMechanicObjectGen
+import TDConfig
+import TDState
+import Table
+import LinkedList
+import ClosureTimers
+
+class TDEnemyMechanicRecord
+	unit enemy
+	TDEnemyMechanicState state
+
+	construct(unit enemy, TDEnemyMechanicState state)
+		this.enemy = enemy
+		this.state = state
+
+	ondestroy
+		destroy state
+		enemy = null
+
+constant Table tdEnemyMechanicRecordsByHandle = new Table()
+LinkedList<TDEnemyMechanicRecord> tdEnemyMechanicRecords = new LinkedList<TDEnemyMechanicRecord>()
+TDEnemyGuardLink array tdEnemyGuardLinks
+boolean tdEnemyMechanicsReady = false
+
+function tdEnemyMechanicRecordFor(unit enemy) returns TDEnemyMechanicRecord
+	if enemy == null or not tdEnemyMechanicRecordsByHandle.hasInt(enemy.getHandleId())
+		return null
+	return tdEnemyMechanicRecordsByHandle.loadInt(enemy.getHandleId()) castTo TDEnemyMechanicRecord
+
+function tdEnemyMechanicRecordValid(TDEnemyMechanicRecord record) returns boolean
+	let lane = record.state.link.lane
+	return record.state.isActive() and record.enemy != null and record.enemy.isAlive() and GetUnitTypeId(record.enemy) != 0 and GetOwningPlayer(record.enemy) == Player(TD_ENEMY_PLAYER_ID) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
+
+function tdEnemyMechanicSyncArmor(TDEnemyGuardLink link)
+	for record in tdEnemyMechanicRecords
+		if record.state.link == link and record.state.role == TD_ENEMY_ROLE_BOSS and tdEnemyMechanicRecordValid(record)
+			if link.protects(link.lane, link.wave)
+				if record.enemy.getAbilityLevel(TD_ENEMY_GUARD_ARMOR_ABILITY_ID) == 0
+					record.enemy.addAbility(TD_ENEMY_GUARD_ARMOR_ABILITY_ID)
+			else
+				record.enemy.removeAbility(TD_ENEMY_GUARD_ARMOR_ABILITY_ID)
+
+function tdEnemyMechanicRetireRecord(TDEnemyMechanicRecord record)
+	let link = record.state.link
+	tdEnemyMechanicRecordsByHandle.removeInt(record.enemy.getHandleId())
+	if GetUnitTypeId(record.enemy) != 0
+		if record.state.isSprinting() and record.enemy.isAlive()
+			SetUnitMoveSpeed(record.enemy, record.state.originalBaseSpeed)
+		record.enemy.removeAbility(TD_ENEMY_GUARD_ARMOR_ABILITY_ID)
+	record.state.deactivate()
+	destroy record
+	tdEnemyMechanicSyncArmor(link)
+
+public function tdEnemyMechanicUnregister(unit enemy)
+	let record = tdEnemyMechanicRecordFor(enemy)
+	if record == null
+		return
+	tdEnemyMechanicRecords.remove(record)
+	tdEnemyMechanicRetireRecord(record)
+
+public function tdEnemyMechanicRegister(unit enemy, int lane, int wave, int role)
+	if not tdEnemyMechanicsReady or enemy == null or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or not tdIsLanePlayer(lane) or not tdIsLaneActive(lane) or tdIsLaneDefeated(lane) or tdIsLaneFinished(lane) or tdIsGameOver() or wave < 1 or wave > 32 or not tdEnemyMechanicTracked(wave, role)
+		return
+	// Duplicate registrations cannot increment guard counts or reset one-shot sprint.
+	if tdEnemyMechanicRecordFor(enemy) != null
+		return
+	let key = lane * 40 + wave
+	if tdEnemyGuardLinks[key] == null
+		tdEnemyGuardLinks[key] = new TDEnemyGuardLink(lane, wave)
+	let link = tdEnemyGuardLinks[key]
+	let state = new TDEnemyMechanicState(link, role, GetUnitDefaultMoveSpeed(enemy))
+	let record = new TDEnemyMechanicRecord(enemy, state)
+	tdEnemyMechanicRecords.add(record)
+	tdEnemyMechanicRecordsByHandle.saveInt(enemy.getHandleId(), record castTo int)
+	tdEnemyMechanicSyncArmor(link)
+
+public function tdEnemyMechanicOnWaypoint(unit enemy, int reachedWaypoint)
+	let record = tdEnemyMechanicRecordFor(enemy)
+	if record == null or not tdEnemyMechanicRecordValid(record) or not record.state.beginSprint(reachedWaypoint)
+		return
+	let generation = record.state.getGeneration()
+	SetUnitMoveSpeed(enemy, tdEnemySprintSpeed(record.state.originalBaseSpeed) * tdPetEnemySpeedFactor(enemy))
+	// Capture only a native handle and token, never a possibly retired class instance.
+	doAfter(TD_ENEMY_SPRINT_DURATION) ->
+		let current = tdEnemyMechanicRecordFor(enemy)
+		if current == null or current.state.getGeneration() != generation
+			return
+		if not tdEnemyMechanicRecordValid(current)
+			tdEnemyMechanicUnregister(enemy)
+			return
+		if current.state.finishSprint(generation)
+			SetUnitMoveSpeed(enemy, current.state.originalBaseSpeed * tdPetEnemySpeedFactor(enemy))
+
+// Called by the existing waypoint watcher: only tracked specials, no world scan.
+// This also retires external RemoveUnit records absent from the native unit group.
+public function tdEnemyMechanicsTick()
+	let iter = tdEnemyMechanicRecords.iterator()
+	while iter.hasNext()
+		let record = iter.next()
+		if not tdEnemyMechanicRecordValid(record)
+			iter.remove()
+			tdEnemyMechanicRetireRecord(record)
+	destroy iter
+
+public function tdEnemyMechanicsShutdown()
+	tdEnemyMechanicsReady = false
+	while not tdEnemyMechanicRecords.isEmpty()
+		let record = tdEnemyMechanicRecords.get(0)
+		tdEnemyMechanicUnregister(record.enemy)
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for wave = 1 to 32
+			let key = lane * 40 + wave
+			if tdEnemyGuardLinks[key] != null
+				destroy tdEnemyGuardLinks[key]
+				tdEnemyGuardLinks[key] = null
+
+public function tdSetupEnemyMechanics()
+	tdEnemyMechanicsReady = true
+public function tdEnemyMechanicBaseSpeed(unit enemy) returns real
+	let record = tdEnemyMechanicRecordFor(enemy)
+	if record == null
+		return GetUnitDefaultMoveSpeed(enemy)
+	return record.state.isSprinting() ? tdEnemySprintSpeed(record.state.originalBaseSpeed) : record.state.originalBaseSpeed

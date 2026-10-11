@@ -1,0 +1,46 @@
+Version { FormatVersion 800, }
+Model "TDEvolutionWings5" { NumGeosets 2, NumBones 2, BlendTime 150, MinimumExtent { -40,-115,35 }, MaximumExtent { 40,115,190 }, BoundsRadius 270, }
+Sequences 1 { Anim "Stand" { Interval { 0,3000 }, MinimumExtent { -40,-115,35 }, MaximumExtent { 40,115,190 }, BoundsRadius 270, } }
+Textures 1 { Bitmap { Image "war3mapImported\TDEvolutionWings.blp", } }
+Materials 1 { Material { Layer { FilterMode Blend, TwoSided, Unshaded, static TextureID 0, static Alpha 1, } } }
+Geoset {
+Vertices 4 { { -20, -115, 35 },
+{ -20, 0, 35 },
+{ -20, 0, 190 },
+{ -20, -115, 190 }, }
+Normals 4 { { -1,0,0 }, { -1,0,0 }, { -1,0,0 }, { -1,0,0 }, }
+TVertices 4 { { 0,1 }, { 0.5,1 }, { 0.5,0 }, { 0,0 }, }
+VertexGroup { 0,0,0,0, }
+Faces 1 6 { Triangles { { 0,1,2,0,2,3 }, } }
+Groups 1 1 { Matrices { 0 }, }
+MinimumExtent { -40, -115, 35 },
+MaximumExtent { 40, 115, 190 },
+BoundsRadius 270,
+Anim { MinimumExtent { -40, -115, 35 }, MaximumExtent { 40, 115, 190 }, BoundsRadius 270, }
+MaterialID 0,
+SelectionGroup 0,
+Unselectable,
+}Geoset {
+Vertices 4 { { -20, 0, 35 },
+{ -20, 115, 35 },
+{ -20, 115, 190 },
+{ -20, 0, 190 }, }
+Normals 4 { { -1,0,0 }, { -1,0,0 }, { -1,0,0 }, { -1,0,0 }, }
+TVertices 4 { { 0.5,1 }, { 1,1 }, { 1,0 }, { 0.5,0 }, }
+VertexGroup { 0,0,0,0, }
+Faces 1 6 { Triangles { { 0,1,2,0,2,3 }, } }
+Groups 1 1 { Matrices { 1 }, }
+MinimumExtent { -40, -115, 35 },
+MaximumExtent { 40, 115, 190 },
+BoundsRadius 270,
+Anim { MinimumExtent { -40, -115, 35 }, MaximumExtent { 40, 115, 190 }, BoundsRadius 270, }
+MaterialID 0,
+SelectionGroup 0,
+Unselectable,
+}
+Bone "Wing0" { ObjectId 0, GeosetId 0, GeosetAnimId None,
+Rotation 3 { Linear, 0: { 0,0,-0.04,0.99919968 }, 1500: { 0,0,0.04,0.99919968 }, 3000: { 0,0,-0.04,0.99919968 }, }
+}Bone "Wing1" { ObjectId 1, GeosetId 1, GeosetAnimId None,
+Rotation 3 { Linear, 0: { 0,0,0.04,0.99919968 }, 1500: { 0,0,-0.04,0.99919968 }, 3000: { 0,0,0.04,0.99919968 }, }
+}
+PivotPoints 2 { { -20,0,89.25 }, { -20,0,89.25 }, }

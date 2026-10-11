@@ -1,0 +1,78 @@
+{
+  "generator": "Built-in image_gen tool",
+  "date": "2026-10-10",
+  "assets": [
+    {
+      "name": "ascension-wings",
+      "prompt": "Use case: stylized-concept. Production game texture for a classic Warcraft III fantasy tower-defense ascension attachment. Create ONE beautiful pair of symmetrical angelic magical feather wings viewed straight-on from behind, fully spread in a graceful high V, isolated on true transparent background. Wings only: no person, no body, no head, no circle, no text, no logo, no background. Left and right wing meet at a small central root at the lower middle, most wing area extends upwards and sideways. Elegant ivory feathers with antique-gold quills and subtle pale-cyan luminous edges, restrained highlights, dark defined feather separations, painterly chunky shapes readable from an RTS camera. 8 to 10 distinct large layered feathers per side, substantial silhouette not wispy light. Entire pair fits inside the square canvas with 8 percent transparent margin. Flat orthographic texture intended for alpha-blended two-sided wing mesh; no cast shadow, no perspective, no excessive bloom.",
+      "path": "assets/source/evolution-wings.png",
+      "transparent": true
+    },
+    {
+      "name": "split-shot",
+      "prompt": "Use case: stylized-concept. Asset type: a single square 64-pixel-readable Warcraft III style fantasy RTS ability icon, rendered at high resolution for downsampling. Ability: Lunar Split Shot for an ascended night-elf archer tower. Show THREE large silver arrowheads fanning forward from lower-left towards upper-right, central arrow prominent, pale cyan moonlight trails, subtle crescent moon behind. High contrast chunky hand-painted fantasy game art, dark midnight-blue backdrop, refined gold and silver detail, no tiny clutter, dramatic readable silhouettes. One thin dark antique-metal bevel frame exactly at all outer edges. No text, no letters, no numbers, no interface, no watermark. Fill canvas, beautiful and polished, distinctly an attack skill not a character portrait.",
+      "path": "assets/source/icon-SplitShot.png",
+      "transparent": false
+    },
+    {
+      "name": "trueshot-aura",
+      "prompt": "Use case: stylized-concept. Asset type: single square fantasy RTS ability icon readable at 64x64, rendered high resolution. Ability: Moonlit Trueshot Aura for an archer hero tower in Warcraft III. One elegant silver crescent moon cradling an upright golden longbow; a luminous cyan circular aura expands beneath the bow, with two broad concentric arcs. Bold clear silhouette, high contrast, centered large emblem occupying most of canvas, ivory and antique gold details, dark midnight-blue backdrop. Refined hand-painted classic fantasy game skill art, restrained moonlight highlights. One thin antique dark-metal beveled frame at all outer edges. No words, no letters, no numbers, no character, no watermark, no multiple icons, no tiny decorative clutter. Beautiful cohesive moon-and-gold aesthetic; clearly a beneficial aura rather than a projectile attack.",
+      "path": "assets/source/icon-TrueshotAura.png",
+      "transparent": false
+    },
+    {
+      "name": "sword-dance",
+      "prompt": "Use case: stylized-concept. ONE square Warcraft III style fantasy RTS ability icon, readable at 64x64, high resolution. High-contrast hand-painted premium classic game art with bold large silhouettes, restrained magic highlights, deep dark backdrop and a thin antique dark-gold beveled frame at all outer edges. No text, letters, numbers, UI, watermarks or tiny clutter. Sword Dance: two broad silver curved orc blades crossing in a powerful X, one sweeping gold-white arc showing the swing, deep warm charcoal and dark teal background, sharp readable edges.",
+      "path": "assets/source/icon-SwordDance.png",
+      "transparent": false
+    },
+    {
+      "name": "bloodlust",
+      "prompt": "Use case: stylized-concept. ONE square Warcraft III style fantasy RTS ability icon, readable at 64x64, high resolution. High-contrast hand-painted premium classic game art with bold large silhouettes, restrained magic highlights, deep dark backdrop and a thin antique dark-gold beveled frame at all outer edges. No text, letters, numbers, UI, watermarks or tiny clutter. Bloodlust: a muscular crimson orc fist gripping a black iron axe, fiery red-orange magical vigor surrounding the fist, dark burgundy background, fierce strength, no blood splashes.",
+      "path": "assets/source/icon-Bloodlust.png",
+      "transparent": false
+    },
+    {
+      "name": "bladestorm",
+      "prompt": "Use case: stylized-concept. ONE square Warcraft III style fantasy RTS ability icon, readable at 64x64, high resolution. High-contrast hand-painted premium classic game art with bold large silhouettes, restrained magic highlights, deep dark backdrop and a thin antique dark-gold beveled frame at all outer edges. No text, letters, numbers, UI, watermarks or tiny clutter. Bladestorm: a large silver curved sword at the center of a sweeping golden circular whirlwind, two bold crescent blade trails imply spinning motion, dark blue-gray background, clean dynamic spiral.",
+      "path": "assets/source/icon-Bladestorm.png",
+      "transparent": false
+    },
+    {
+      "name": "shield-bash",
+      "prompt": "Use case: stylized-concept. ONE square Warcraft III style fantasy RTS skill icon, designed readable at 64x64 and rendered high resolution. Beautiful hand-painted classic game art, bold large silhouette, restrained magical highlights, midnight dark background, thin antique dark-gold metal beveled frame along all outer edges. No text, letters, numbers, UI or watermark. Shield Bash: a large silver and royal-blue paladin shield crashing diagonally forward, a radiant gold starburst at its edge, strong impact arcs, chunky clean heraldic shapes.",
+      "path": "assets/source/icon-ShieldBash.png",
+      "transparent": false
+    },
+    {
+      "name": "command-aura",
+      "prompt": "Use case: stylized-concept. ONE square Warcraft III style fantasy RTS skill icon, designed readable at 64x64 and rendered high resolution. Beautiful hand-painted classic game art, bold large silhouette, restrained magical highlights, midnight dark background, thin antique dark-gold metal beveled frame along all outer edges. No text, letters, numbers, UI or watermark. Command Aura: an upright ivory and gold paladin banner with a simple sun symbol above a glowing gold circular aura, rays spreading to both sides, deep royal-blue background, noble leadership and allied strength, centered emblem.",
+      "path": "assets/source/icon-CommandAura.png",
+      "transparent": false
+    },
+    {
+      "name": "poison-dart",
+      "prompt": "Use case: stylized-concept. ONE square Warcraft III style fantasy RTS skill icon readable at 64x64, high resolution. Beautiful hand-painted classic game art, bold large silhouette, restrained magic, deep midnight dark backdrop, thin antique dark-gold metal beveled frame at every outer edge. No text, letters, numbers, UI, watermark or tiny clutter. Poison Dart: one large dark green thorn-tipped spearhead crossing diagonally, a luminous emerald droplet at its tip and a curling turquoise venom wisp, ivory blade edges, rich deep forest-green background, clean instantly readable poisonous attack.",
+      "path": "assets/source/icon-PoisonDart.png",
+      "transparent": false
+    },
+    {
+      "name": "vines-aura",
+      "prompt": "Use case: stylized-concept. ONE square Warcraft III style fantasy RTS skill icon readable at 64x64, high resolution. Beautiful hand-painted classic game art, bold large silhouette, restrained magic, deep midnight dark backdrop, thin antique dark-gold metal beveled frame at every outer edge. No text, letters, numbers, UI, watermark or tiny clutter. Entangling Vines Aura: thick emerald living roots curling into a clear circular ring around an icy-blue glowing hoofprint, three bold thorny tendrils, dark jade background, subtle gold highlights, a nature control aura that slows enemy movement.",
+      "path": "assets/source/icon-VinesAura.png",
+      "transparent": false
+    },
+    {
+      "name": "frenzy",
+      "prompt": "Use case: stylized-concept. ONE square Warcraft III style fantasy RTS skill icon readable at 64x64, high resolution. Beautiful classic hand-painted game art, bold large silhouette, dramatic restrained magic highlights, dark midnight backdrop, thin antique dark-gold beveled metal border exactly at all outer edges. No text, letters, numbers, UI, watermark or tiny clutter. Non-graphic fantasy undead magic, no gore. Unholy Frenzy: one large spectral bone-white claw with three sharp hooked fingers reaching diagonally forward, purple and crimson speed trails around it, deep plum charcoal background, readable supernatural rapid attacks.",
+      "path": "assets/source/icon-Frenzy.png",
+      "transparent": false
+    },
+    {
+      "name": "corpse-explosion",
+      "prompt": "Use case: stylized-concept. ONE square Warcraft III style fantasy RTS skill icon readable at 64x64, high resolution. Beautiful classic hand-painted game art, bold large silhouette, dramatic restrained magic highlights, dark midnight backdrop, thin antique dark-gold beveled metal border exactly at all outer edges. No text, letters, numbers, UI, watermark or tiny clutter. Non-graphic fantasy undead magic, no gore. Corpse Explosion: one ancient ivory skull floating at center, green necromantic energy bursting outward in a broad radial shockwave, emerald and cyan rim light, dark black-green background, magical blast, no flesh or gore.",
+      "path": "assets/source/icon-CorpseExplosion.png",
+      "transparent": false
+    }
+  ]
+}

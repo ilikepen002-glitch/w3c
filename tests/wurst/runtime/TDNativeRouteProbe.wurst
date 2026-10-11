@@ -1,0 +1,230 @@
+package TDNativeRouteProbe
+import TDConfig
+import TDState
+import TDSpawn
+import TDWaves
+import TDTowers
+import ClosureTimers
+import Orders
+import ObjectIds
+import DamageEvent
+
+unit array enemies
+int array lanes
+int array waves
+int array ids
+int array waypoints
+int array hits
+int array stillTicks
+int array orderTicks
+int array reverseTicks
+boolean array finished
+real array lastX
+real array lastY
+real array nearest
+int array initialLife
+int array allLeaks
+int array probeLeaks
+unit attacker = null
+trigger deaths = null
+trigger chat = null
+boolean started = false
+boolean failed = false
+int count = 0
+int completed = 0
+int ticks = 0
+int nextWave = 1
+int extra = 0
+real worstReverse = 0.0
+
+function report(string message)
+    ClearTextMessages()
+    DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "ROUTES " + message + " completed=" + completed.toString() + "/" + count.toString())
+
+function fail(string reason)
+    if not failed
+        failed = true
+        report("FAIL " + reason)
+
+function describe(int index) returns string
+    return ids[index].toRawCode() + " lane=" + (lanes[index] + 1).toString() + " wp=" + waypoints[index].toString() + " x=" + R2I(GetUnitX(enemies[index])).toString() + " y=" + R2I(GetUnitY(enemies[index])).toString()
+
+function distanceToTarget(int index) returns real
+    let lane = lanes[index]
+    var target = tdLaneExitPosition(lane)
+    if waypoints[index] < tdLaneWaypointCount(lane)
+        target = tdLaneWaypointPosition(lane, waypoints[index])
+    return enemies[index].getPos().distanceTo(target)
+
+function spawn(int lane, int wave, int typeId)
+    let enemy = tdCreateEnemy(lane, wave, typeId)
+    if enemy == null or not enemy.isAlive() or GetUnitTypeId(enemy) != typeId
+        fail("creation " + typeId.toRawCode())
+        if enemy != null
+            RemoveUnit(enemy)
+        return
+    let index = count
+    enemies[index] = enemy
+    lanes[index] = lane
+    waves[index] = wave
+    ids[index] = typeId
+    lastX[index] = GetUnitX(enemy)
+    lastY[index] = GetUnitY(enemy)
+    waypoints[index] = tdEnemyWaypointIndex(enemy)
+    nearest[index] = distanceToTarget(index)
+    count += 1
+
+function spawnNext()
+    if nextWave <= tdWaveCount()
+        spawn(0, nextWave, tdWaveUnitId(nextWave))
+        if tdWaveEliteEnemyCount(nextWave) > 0 or tdWaveBossEnemyCount(nextWave) > 0
+            spawn(0, nextWave, tdWaveSpecialUnitId(nextWave))
+        if tdWaveBossGuardEnemyCount(nextWave) > 0
+            spawn(0, nextWave, tdWaveBossGuardUnitId(nextWave))
+        nextWave += 1
+    else if extra < 6
+        let lane = 1 + extra div 2
+        if extra mod 2 == 0
+            spawn(lane, 1, tdWaveUnitId(1))
+        else
+            spawn(lane, 32, tdWaveSpecialUnitId(32))
+        extra += 1
+
+function onDeath()
+    let enemy = GetTriggerUnit()
+    let lane = tdEnemyLaneId(enemy)
+    if tdEnemyWasLeaked(enemy) and lane >= 0 and lane < 4
+        allLeaks[lane] += 1
+    for index = 0 to count - 1
+        if enemies[index] == enemy and not finished[index]
+            finished[index] = true
+            completed += 1
+            if not tdEnemyWasLeaked(enemy)
+                fail("unexpected death " + describe(index))
+            else if lane != lanes[index] or tdEnemyWave(enemy) != waves[index]
+                fail("death metadata " + describe(index))
+            else if waypoints[index] != tdLaneWaypointCount(lane)
+                fail("missing waypoint " + describe(index))
+            else if hits[index] == 0
+                fail("no observed damage " + describe(index))
+            else
+                probeLeaks[lane] += 1
+
+function sample(int index)
+    if finished[index]
+        return
+    let enemy = enemies[index]
+    if not enemy.isAlive() or tdEnemyWasLeaked(enemy)
+        fail("missing death event " + describe(index))
+        return
+    if tdEnemyLaneId(enemy) != lanes[index] or tdEnemyWave(enemy) != waves[index] or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID)
+        fail("metadata changed " + describe(index))
+        return
+    let waypoint = tdEnemyWaypointIndex(enemy)
+    if waypoint < waypoints[index] or waypoint > waypoints[index] + 1 or waypoint > tdLaneWaypointCount(lanes[index])
+        fail("waypoint jumped " + describe(index))
+        return
+    if waypoint != waypoints[index]
+        waypoints[index] = waypoint
+        nearest[index] = distanceToTarget(index)
+        reverseTicks[index] = 0
+    let distance = distanceToTarget(index)
+    if distance < nearest[index]
+        nearest[index] = distance
+    // Only explicit waypoint segments have a monotone geometric reference.
+    if lanes[index] == 0 and waypoint < tdLaneWaypointCount(0)
+        let reverse = distance - nearest[index]
+        if reverse > worstReverse
+            worstReverse = reverse
+        if reverse > 128.0
+            reverseTicks[index] += 1
+        else
+            reverseTicks[index] = 0
+        if reverseTicks[index] >= 10
+            fail("sustained reverse=" + R2I(reverse).toString() + " " + describe(index))
+    let x = GetUnitX(enemy)
+    let y = GetUnitY(enemy)
+    if (x - lastX[index]).abs() + (y - lastY[index]).abs() < 1.0
+        stillTicks[index] += 1
+    else
+        stillTicks[index] = 0
+    lastX[index] = x
+    lastY[index] = y
+    if GetUnitCurrentOrder(enemy) != Orders.move
+        orderTicks[index] += 1
+    else
+        orderTicks[index] = 0
+    if stillTicks[index] >= 100 or orderTicks[index] >= 10
+        fail("stalled/nonmove order=" + GetUnitCurrentOrder(enemy).toString() + " " + describe(index))
+    // Keep the same per-target frequency without a synthetic 50-hit burst.
+    if ticks mod 5 == index mod 5
+        if GetWidgetLife(enemy) < GetUnitState(enemy, UNIT_STATE_MAX_LIFE) * 0.5
+            SetWidgetLife(enemy, GetUnitState(enemy, UNIT_STATE_MAX_LIFE))
+        let before = GetWidgetLife(enemy)
+        DamageEvent.setNextDamageFromCode()
+        UnitDamageTarget(attacker, enemy, 0.25, true, true, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+        if GetWidgetLife(enemy) < before
+            hits[index] += 1
+
+function cleanup()
+    DestroyTrigger(deaths)
+    DestroyTrigger(chat)
+    for index = 0 to count - 1
+        RemoveUnit(enemies[index])
+        enemies[index] = null
+    RemoveUnit(attacker)
+    attacker = null
+
+function verifyAccounting()
+    for lane = 0 to 3
+        if initialLife[lane] - tdGetLives(lane) != allLeaks[lane]
+            fail("life mismatch lane=" + (lane + 1).toString())
+        var expected = 2
+        if lane == 0
+            expected = 44
+        if probeLeaks[lane] != expected
+            fail("probe leaks lane=" + (lane + 1).toString() + " actual=" + probeLeaks[lane].toString())
+
+function start()
+    if started or tdIsGameOver() or tdCountActiveLanes() != 1 or not tdIsLaneActive(0) or GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_USED) != 0
+        return
+    started = true
+    for lane = 0 to 3
+        if tdIsLaneDefeated(lane) or tdIsLaneFinished(lane)
+            fail("requires fresh isolated game")
+            return
+    for lane = 0 to 3
+        tdSetLaneActive(lane, true)
+        tdLoseLife(lane, -10000)
+        initialLife[lane] = tdGetLives(lane)
+    attacker = CreateUnit(Player(0), TD_FARMER_UNIT_ID, -1600, 1600, 0)
+    PauseUnit(attacker, true)
+    deaths = CreateTrigger()
+    TriggerRegisterPlayerUnitEvent(deaths, Player(TD_ENEMY_PLAYER_ID), EVENT_PLAYER_UNIT_DEATH, null)
+    TriggerAddAction(deaths, function onDeath)
+    report("START 44 types + 6 other-lane targets, native damage every 0.5s")
+    doPeriodically(0.1) cb ->
+        ticks += 1
+        if ticks mod 4 == 0 and not failed
+            spawnNext()
+        for index = 0 to count - 1
+            if not failed
+                sample(index)
+        if ticks >= 1200 and completed < 50 and not failed
+            for index = 0 to count - 1
+                if not finished[index]
+                    fail("timeout " + describe(index))
+            fail("timeout incomplete target count")
+        if completed == 50 and not failed
+            verifyAccounting()
+            if not failed
+                report("PASS hits+waypoints+leaks; max reverse=" + R2I(worstReverse).toString() + " time=" + (ticks div 10).toString() + "s")
+        if failed or completed == 50
+            cleanup()
+            destroy cb
+
+init
+    if not compiletime
+        chat = CreateTrigger()
+        TriggerRegisterPlayerChatEvent(chat, Player(0), "-routes", true)
+        TriggerAddAction(chat, function start)

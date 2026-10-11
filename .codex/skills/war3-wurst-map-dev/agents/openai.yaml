@@ -1,4 +1,4 @@
 interface:
   display_name: "Warcraft III Wurst Map Dev"
-  short_description: "Guide Wurst Warcraft III map changes."
-  default_prompt: "Use $war3-wurst-map-dev to plan, implement, or review Warcraft III Wurst map work in MyFirstWurstMap."
+  short_description: "Wurst map development, art integration, and offline validation."
+  default_prompt: "Use $war3-wurst-map-dev to diagnose, implement, or review this project's map changes; validate offline and do not launch Warcraft III unless I explicitly request a playtest."

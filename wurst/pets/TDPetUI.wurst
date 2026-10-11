@@ -1,0 +1,270 @@
+package TDPetUI
+import TDPetData
+import TDPetRules
+import TDPetState
+import TDPetRuntime
+import TDPetCombat
+import TDTowerData
+import TDConfig
+import RegisterEvents
+import Dialog
+import Table
+import ClosureTimers
+import TDState
+
+public int array tdPetSelectedSlot
+public unit array tdPetDisplays
+int array displayedSpecies
+int array displayRevision
+int array slotAbilities
+int array cultivationSlot
+dialog array dialogs
+trigger dialogTrigger = CreateTrigger()
+constant Table actions = new Table()
+button array buttons
+int array buttonCount
+TDPet array dialogPets
+int array dialogRevisions
+int array dialogMode
+int array listPage
+boolean ready = false
+
+function selectDisplay(int lane)
+	if GetLocalPlayer() == Player(lane) and tdPetDisplays[lane] != null
+		ClearSelection()
+		SelectUnit(tdPetDisplays[lane], true)
+
+function addButton(int lane, string label, int action)
+	let btn = dialogs[lane].addButton(label)
+	actions.saveInt(btn.getHandleId(), action)
+	buttons[lane * 16 + buttonCount[lane]] = btn
+	buttonCount[lane] += 1
+
+function clearDialog(int lane)
+	for index = 0 to buttonCount[lane] - 1
+		actions.removeInt(buttons[lane * 16 + index].getHandleId())
+		buttons[lane * 16 + index] = null
+	buttonCount[lane] = 0
+	dialogs[lane].clear()
+
+public function tdPetRefreshDisplay(int lane)
+	let pet = tdPetAt(lane, tdPetSelectedSlot[lane])
+	if pet == null or not tdPetLaneCanAct(lane)
+		if tdPetDisplays[lane] != null
+			tdPetDisplays[lane].remove()
+			tdPetDisplays[lane] = null
+		return
+	if tdPetDisplays[lane] == null or displayedSpecies[lane] != pet.species
+		if tdPetDisplays[lane] != null
+			tdPetDisplays[lane].remove()
+		tdPetDisplays[lane] = createUnit(Player(lane), tdPetDisplayUnitId(pet.species), tdFarmerSpawnPosition(lane) + vec2(120.0, 0.0), 0 .fromDeg())
+		displayedSpecies[lane] = pet.species
+		SetUnitInvulnerable(tdPetDisplays[lane], true)
+		for slot = 0 to 3
+			slotAbilities[lane * 4 + slot] = 0
+	for slot = 0 to 3
+		let old = slotAbilities[lane * 4 + slot]
+		var variant = 128
+		if slot < pet.skillCount
+			variant = pet.skillAt(slot) * 4 + pet.qualityAt(slot) - 1 + (slot >= tdPetUnlockedSlots(pet.level) ? 64 : 0)
+		let abilityId = tdPetSlotAbilityId(slot, variant)
+		if old != abilityId
+			if old != 0
+				tdPetDisplays[lane].removeAbility(old)
+			tdPetDisplays[lane].addPermanentAbility(abilityId, 1)
+			slotAbilities[lane * 4 + slot] = abilityId
+	displayRevision[lane] = pet.revision
+
+function details(int lane) returns string
+	let pet = tdPetAt(lane, tdPetSelectedSlot[lane])
+	if pet == null
+		return "收藏为空。Q捕获本路野生精灵。"
+	var text = "收藏 " + (tdPetSelectedSlot[lane] + 1).toString() + "/12 · " + pet.summary()
+	text += "|n普通球 " + tdPetBallsForLane(lane).toString() + " · 大师球 " + tdPetMasterBalls[lane].toString()
+	text += "|n洗练石 " + tdPetRerollStones[lane].toString() + " · 开栏石 " + tdPetSlotStones[lane].toString()
+	for slot = 0 to 3
+		text += "|n栏" + (slot + 1).toString() + ": "
+		if slot >= pet.skillCount
+			text += "空栏（开栏石可扩展，最多4）"
+		else
+			text += tdPetQualityName(pet.qualityAt(slot)) + " " + tdPetSkillNameById(pet.skillAt(slot))
+			if slot >= tdPetUnlockedSlots(pet.level)
+				text += " [共鸣锁定：本路第" + (slot == 2 ? "4" : "8") + "波完成解锁]"
+			text += "|n" + tdPetSkillDescriptionById(pet.skillAt(slot), pet.qualityAt(slot))
+			if pet.host != null and not tdPetSkillFitsTower(pet.skillAt(slot), tdTowerChoiceForUnitTypeId(GetUnitTypeId(pet.host)))
+				text += "|n|cffff8080不适配：仅本栏停用；推荐" + (pet.skillAt(slot) == 9 ? "弓箭塔" : "食尸鬼") + "|r"
+	return text
+
+public function tdPetShowCollection(int lane)
+	if not tdPetLaneCanAct(lane)
+		return
+	if tdPetAt(lane, tdPetSelectedSlot[lane]) == null
+		for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+			if tdPetAt(lane, slot) != null
+				tdPetSelectedSlot[lane] = slot
+				break
+	tdPetRefreshDisplay(lane)
+	selectDisplay(lane)
+	let selected = tdPetAt(lane, tdPetSelectedSlot[lane])
+	if selected != null
+		tdPetNotice(lane, "已选：" + selected.summary() + "。四栏悬停看技能；培养可洗练/开栏；信息查看材料和适配。")
+	else
+		tdPetNotice(lane, details(lane))
+
+function showCultivation(int lane)
+	let pet = tdPetAt(lane, tdPetSelectedSlot[lane])
+	if pet == null
+		return
+	clearDialog(lane)
+	dialogMode[lane] = 1
+	dialogPets[lane] = pet
+	dialogRevisions[lane] = pet.revision
+	if pet.proposalSlot >= 0
+		let slot = pet.proposalSlot
+		dialogs[lane].setMessage("洗练栏" + (slot + 1).toString() + "（已消耗1洗练石）|n旧：" + tdPetQualityName(pet.qualityAt(slot)) + " " + tdPetSkillNameById(pet.skillAt(slot)) + "|n新：" + tdPetQualityName(pet.proposalQuality) + " " + tdPetSkillNameById(pet.proposalSkill) + "|n" + tdPetSkillDescriptionById(pet.proposalSkill, pet.proposalQuality))
+		addButton(lane, "保留旧技能", 10)
+		addButton(lane, "替换新技能", 11)
+	else
+		dialogs[lane].setMessage(details(lane) + "|n选择一栏洗练；数值栏保持数值，其他栏保持机制且不重复。")
+		for slot = 0 to pet.skillCount - 1
+			addButton(lane, "洗练栏" + (slot + 1).toString(), slot + 1)
+		if pet.skillCount < 4
+			addButton(lane, "开栏（消耗1开栏石）", 12)
+		if pet.host == null
+			addButton(lane, "释放精灵…", 13)
+		addButton(lane, "关闭", 0)
+	dialogs[lane].display(Player(lane), true)
+
+function showList(int lane)
+	clearDialog(lane)
+	dialogMode[lane] = 0
+	dialogs[lane].setMessage("精灵收藏 " + tdPetCollectionCount(lane).toString() + "/12 · 页" + (listPage[lane] + 1).toString() + "/2")
+	for slot = listPage[lane] * 6 to listPage[lane] * 6 + 5
+		let pet = tdPetAt(lane, slot)
+		if pet != null
+			addButton(lane, pet.summary(), 100 + slot)
+	addButton(lane, "上一页 / 下一页", 120)
+	addButton(lane, "关闭", 0)
+	dialogs[lane].display(Player(lane), true)
+function onDialog()
+	let lane = GetPlayerId(GetTriggerPlayer())
+	if not tdIsLanePlayer(lane) or not tdPetLaneCanAct(lane) or GetClickedDialog() != dialogs[lane]
+		return
+	let action = actions.loadInt(GetClickedButton().getHandleId())
+	let pet = tdPetAt(lane, tdPetSelectedSlot[lane])
+	dialogs[lane].display(Player(lane), false)
+	if dialogMode[lane] == 2
+		return
+	if dialogMode[lane] == 0
+		if action >= 100 and action < 112
+			tdPetSelectedSlot[lane] = action - 100
+			tdPetShowCollection(lane)
+		else if action == 120
+			listPage[lane] = 1 - listPage[lane]
+			showList(lane)
+		return
+	if pet == null or pet != dialogPets[lane] or pet.revision != dialogRevisions[lane]
+		tdPetNotice(lane, "收藏或技能已变化，操作取消。请重新打开培养。")
+		return
+	if action >= 1 and action <= 4
+		if not tdPetBeginReroll(lane, tdPetSelectedSlot[lane], action - 1)
+			tdPetNotice(lane, "洗练石不足或已有待选结果，未扣材料。")
+		showCultivation(lane)
+	else if action == 10 or action == 11
+		tdPetResolveReroll(lane, tdPetSelectedSlot[lane], action == 11)
+		tdPetRefreshDisplay(lane)
+		showCultivation(lane)
+	else if action == 12
+		if not tdPetOpenSlot(lane, tdPetSelectedSlot[lane])
+			tdPetNotice(lane, "开栏石不足、已满4栏或待洗练，未扣材料。")
+		tdPetRefreshDisplay(lane)
+		showCultivation(lane)
+	else if action == 13 and pet.host == null
+		clearDialog(lane)
+		dialogs[lane].setMessage("永久释放 " + pet.summary() + "？不退球和材料。")
+		addButton(lane, "确认释放", 14)
+		addButton(lane, "取消", 0)
+		dialogs[lane].display(Player(lane), true)
+	else if action == 14 and pet.host == null
+		tdPetRelease(lane, tdPetSelectedSlot[lane])
+		tdPetShowCollection(lane)
+
+function navigate(int lane, int direction)
+	var candidate = tdPetSelectedSlot[lane]
+	for _index = 1 to TD_PET_COLLECTION_LIMIT
+		candidate = (candidate + direction + TD_PET_COLLECTION_LIMIT) mod TD_PET_COLLECTION_LIMIT
+		if tdPetAt(lane, candidate) != null
+			tdPetSelectedSlot[lane] = candidate
+			tdPetShowCollection(lane)
+			return
+
+function onCommand() returns boolean
+	let caster = GetTriggerUnit()
+	let lane = GetPlayerId(GetOwningPlayer(caster))
+	if not tdIsLanePlayer(lane) or not tdPetLaneCanAct(lane) or caster != tdPetDisplays[lane]
+		return false
+	let command = GetSpellAbilityId() - tdPetUICommandId(0)
+	let pet = tdPetAt(lane, tdPetSelectedSlot[lane])
+	if command == 0
+		showList(lane)
+	else if command == 1 or command == 2
+		navigate(lane, command == 1 ? -1 : 1)
+	else if command == 3
+		if GetLocalPlayer() == Player(lane)
+			ClearSelection()
+			SelectUnit(tdPetFarmers[lane], true)
+	else if command == 4
+		if not tdPetDeploy(pet, GetSpellTargetUnit())
+			tdPetNotice(lane, "请选择本路已完工空塔；上阵最多3只，每塔1只。")
+	else if command == 5 and pet != null
+		pet.recall()
+	else if command == 6
+		showCultivation(lane)
+	else if command == 7
+		clearDialog(lane)
+		dialogMode[lane] = 2
+		dialogs[lane].setMessage(details(lane))
+		addButton(lane, "关闭", 0)
+		dialogs[lane].display(Player(lane), true)
+	return false
+
+function onCollection() returns boolean
+	let farmer = GetTriggerUnit()
+	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
+		tdPetShowCollection(GetPlayerId(GetOwningPlayer(farmer)))
+	return false
+
+function onDeploy() returns boolean
+	let farmer = GetTriggerUnit()
+	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
+		let lane = GetPlayerId(GetOwningPlayer(farmer))
+		if not tdPetDeploy(tdPetAt(lane, tdPetSelectedSlot[lane]), GetSpellTargetUnit())
+			tdPetNotice(lane, "先W选择精灵，再E点击本路已完工空塔。")
+	return false
+
+public function tdPetSetupUI()
+	if ready
+		return
+	ready = true
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdPetSelectedSlot[lane] = -1
+		dialogs[lane] = DialogCreate()
+		TriggerRegisterDialogEvent(dialogTrigger, dialogs[lane])
+	dialogTrigger.addAction(function onDialog)
+	registerSpellEffectEvent(TD_PET_COLLECTION_ABILITY_ID, function onCollection)
+	registerSpellEffectEvent(TD_PET_DEPLOY_ABILITY_ID, function onDeploy)
+	for command = 0 to 7
+		registerSpellEffectEvent(tdPetUICommandId(command), function onCommand)
+	doPeriodically(0.5) cb ->
+		for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			if tdPetDisplays[lane] != null
+				tdPetRefreshDisplay(lane)
+			if not tdPetLaneCanAct(lane)
+				dialogs[lane].display(Player(lane), false)
+		if tdIsGameOver()
+			destroy cb
+
+
+
+
+

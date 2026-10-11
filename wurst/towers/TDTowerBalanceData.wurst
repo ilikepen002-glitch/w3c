@@ -29,20 +29,6 @@ public function tdTowerObjectAttackRangeForBranch(int towerChoice, int level, in
 public function tdTowerObjectAttackRange(int towerChoice, int level) returns int
 	return tdTowerObjectAttackRangeForBranch(towerChoice, level, TD_TOWER_BRANCH_A)
 
-public function tdPerfectUpgradeMessage(int towerChoice) returns string
-	return "完美升级！" + tdTowerChoiceLabel(towerChoice) + " 获得了额外的终极强化。"
-
-public function tdPerfectUpgradeEffectPath(int towerChoice) returns string
-	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		return "Abilities\\Spells\\NightElf\\BattleRoar\\RoarCaster.mdl"
-	if towerChoice == TD_TOWER_CHOICE_ORC
-		return "Abilities\\Spells\\Orc\\MirrorImage\\MirrorImageDeathCaster.mdl"
-	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
-		return "Abilities\\Spells\\Human\\Defend\\DefendCaster.mdl"
-	if towerChoice == TD_TOWER_CHOICE_DRYAD
-		return "Abilities\\Spells\\NightElf\\Tranquility\\TranquilityCaster.mdl"
-	return "Abilities\\Spells\\Undead\\DeathCoil\\DeathCoilSpecialArt.mdl"
-
 public function tdTowerChoiceLabel(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		return "弓箭手"
@@ -62,7 +48,18 @@ public function tdTowerTooltipExtendedForBranch(int towerChoice, int level, int 
 public function tdTowerTooltipExtended(int towerChoice, int level) returns string
 	return tdTowerTooltipExtendedForBranch(towerChoice, level, TD_TOWER_BRANCH_A)
 
-public function tdTowerIconPath(int towerChoice) returns string
+public function tdTowerIconPath(int towerChoice, int level) returns string
+	if level >= 5
+		if towerChoice == TD_TOWER_CHOICE_ARCHER
+			return Icons.bTNHeroMoonPriestess
+		if towerChoice == TD_TOWER_CHOICE_ORC
+			return Icons.bTNHeroBlademaster
+		if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+			return Icons.bTNHeroPaladin
+		if towerChoice == TD_TOWER_CHOICE_DRYAD
+			return Icons.bTNKeeperOfTheGrove
+		if towerChoice == TD_TOWER_CHOICE_GHOUL
+			return Icons.bTNAbomination
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		return Icons.bTNArcher
 	if towerChoice == TD_TOWER_CHOICE_ORC
@@ -74,6 +71,9 @@ public function tdTowerIconPath(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		return Icons.bTNGhoul
 	return ""
+
+public function tdTowerIconPath(int towerChoice) returns string
+	return tdTowerIconPath(towerChoice, 1)
 
 public function tdTowerRequirementsRawcodes(int _towerChoice, int _level) returns string
 	return ""
@@ -236,6 +236,23 @@ public function tdTowerTotalGoldCost(int towerChoice) returns int
 	for level = 1 to TD_MAX_TOWER_LEVEL - 1
 		total += tdTowerUpgradeCost(towerChoice, level)
 	return total
+
+public function tdTowerInvestedGoldForUnitTypeId(int unitTypeId) returns int
+	let towerChoice = tdTowerChoiceForUnitTypeId(unitTypeId)
+	let level = tdTowerLevelForUnitTypeId(unitTypeId)
+	if towerChoice == 0 or level <= 0
+		return 0
+	let branch = tdTowerBranchForUnitTypeId(unitTypeId)
+	var total = 0
+	for completedLevel = 1 to level
+		total += tdTowerGoldCostForLevelBranch(towerChoice, completedLevel, branch)
+	return total
+
+public function tdTowerSellRefund(int unitTypeId) returns int
+	let invested = tdTowerInvestedGoldForUnitTypeId(unitTypeId)
+	if invested <= 0
+		return 0
+	return invested * tdTowerSellRefundPercent() div 100
 
 function tdTowerBaseDamageCore(int towerChoice, int level) returns int
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
@@ -536,14 +553,14 @@ public function tdTowerLoreForBranch(int towerChoice, int level, int branch) ret
 
 public function tdTowerTalentSummary(int towerChoice, int level) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		return "天赋: 分裂箭，多支箭齐射，总计命中" + tdArcherSplitArrowTargetCount(level).toString() + "个目标。"
+		return (level >= 5 ? "天赋: 白虎战吼（友塔攻击+18%）与分裂箭，总计命中" : "天赋: 分裂箭，多支箭齐射，总计命中") + tdArcherSplitArrowTargetCount(level).toString() + "个目标。"
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if level >= 5
 			return "天赋: 致命一击与剑舞，终阶分化为嗜血斩首或剑刃风暴。"
 		return "天赋: 致命一击，专打高血量目标。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if level >= 5
-			return "天赋: 神圣盾击，终阶提供统帅光环。"
+			return "天赋: 神圣盾击与统帅光环（友塔攻击+16%）。"
 		return "天赋: 盾击，稳定打断关键怪。"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if level >= 5
@@ -655,12 +672,6 @@ public function tdTowerLevelButtonY(int towerChoice, int level, int _branch) ret
 		return 2
 	return tdTowerButtonY(towerChoice)
 
-public function tdTowerRefineButtonX() returns int
-	return 2
-
-public function tdTowerRefineButtonY() returns int
-	return 2
-
 public function tdTowerHotkey(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		return "Q"
@@ -671,3 +682,8 @@ public function tdTowerHotkey(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		return "A"
 	return "S"
+
+public function tdTowerHotkeyForLevelBranch(int towerChoice, int level, int branch) returns string
+	if level == 6
+		return branch == TD_TOWER_BRANCH_B ? "W" : "Q"
+	return tdTowerHotkey(towerChoice)

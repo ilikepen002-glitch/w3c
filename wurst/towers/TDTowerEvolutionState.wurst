@@ -1,0 +1,23 @@
+package TDTowerEvolutionState
+
+public constant int TD_EVOLUTION_KILL_REQUIREMENT = 250
+
+public function tdEvolutionProgressLevel(int kills) returns int
+	return kills + 1
+
+public function tdEvolutionStatusLevel(int kills, boolean evolved, boolean claimed) returns int
+	if kills < TD_EVOLUTION_KILL_REQUIREMENT
+		return 0
+	return evolved ? 2 : (claimed ? 3 : 1)
+
+public class TDTowerEvolutionMatch
+	boolean claimed = false
+
+	function tryClaim(int kills, int level, boolean eligible, boolean working) returns boolean
+		if claimed or working or not eligible or level != 6 or kills < TD_EVOLUTION_KILL_REQUIREMENT
+			return false
+		claimed = true
+		return true
+
+public function tdEvolutionKillEligible(boolean enemyOwned, boolean leaked, boolean towerAlive, int towerChoice, int towerOwner, int enemyLane) returns boolean
+	return enemyOwned and not leaked and towerAlive and towerChoice > 0 and towerOwner == enemyLane

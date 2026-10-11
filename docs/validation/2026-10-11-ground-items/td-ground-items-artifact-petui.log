@@ -1,0 +1,2 @@
+PASS OBJECTS: uF01; seven custom/native-cloned commands fill twelve distinct cells with observed 1.27a native commands; collection icon path matches.
+NOT TESTED: native rendering, actual command placement, collection icon display, dialog text width.

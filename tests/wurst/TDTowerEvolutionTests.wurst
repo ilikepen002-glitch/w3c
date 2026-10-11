@@ -1,0 +1,54 @@
+package TDTowerEvolutionTests
+import TDTowers
+import TDWaves
+
+@Test function evolutionClaimsOnlyOnceAfterKillsAndLevel()
+	let match = new TDTowerEvolutionMatch()
+	match.tryClaim(249, 6, true, false).assertFalse()
+	match.tryClaim(250, 5, true, false).assertFalse()
+	match.tryClaim(250, 6, false, false).assertFalse()
+	match.tryClaim(250, 6, true, false).assertTrue()
+	// Removing an evolved tower has no operation that resets claimed.
+	match.tryClaim(251, 6, true, false).assertFalse()
+	match.claimed.assertTrue()
+	destroy match
+
+@Test function evolutionCreditsOnlyRealSameLaneTowerKills()
+	tdEvolutionKillEligible(true, false, true, 1, 0, 0).assertTrue()
+	tdEvolutionKillEligible(true, true, true, 1, 0, 0).assertFalse()
+	tdEvolutionKillEligible(false, false, true, 1, 0, 0).assertFalse()
+	tdEvolutionKillEligible(true, false, false, 1, 0, 0).assertFalse()
+	tdEvolutionKillEligible(true, false, true, 0, 0, 0).assertFalse()
+	tdEvolutionKillEligible(true, false, true, 1, 0, 1).assertFalse()
+
+@Test function evolutionPreservesUltimateBranchSkillChoice()
+	tdEvolutionSkillReplacement(1, 1).assertEquals(0)
+	tdEvolutionSkillReplacement(1, 2).assertEquals(TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID)
+	tdEvolutionSkillReplacement(3, 2).assertEquals(TD_FOOT_EVOLVED_COMMAND_ABILITY_ID)
+	tdEvolutionSkillReplacement(4, 2).assertEquals(TD_DRYAD_EVOLVED_SLOW_ABILITY_ID)
+	tdEvolutionSkillReplacement(5, 2).assertEquals(0)
+	tdEvolutionSkillOriginal(3, 2).assertEquals(TD_FOOT_COMMAND_ABILITY_ID)
+	tdEvolutionSkillOriginal(4, 2).assertEquals(TD_DRYAD_SLOW_AURA_ABILITY_ID)
+
+@Test function evolutionWaitsForCompletedUpgrade()
+	let match = new TDTowerEvolutionMatch()
+	match.tryClaim(250, 6, true, true).assertFalse()
+	match.tryClaim(250, 5, true, false).assertFalse()
+	match.tryClaim(250, 6, true, false).assertTrue()
+	destroy match
+
+@Test function evolutionStatisticsRemainExactBeyondThreshold()
+	tdEvolutionProgressLevel(0).assertEquals(1)
+	tdEvolutionProgressLevel(249).assertEquals(250)
+	tdEvolutionProgressLevel(250).assertEquals(251)
+	tdEvolutionProgressLevel(251).assertEquals(252)
+	tdMatchEnemyCountPerLane().assertEquals(538)
+	tdEvolutionProgressLevel(tdMatchEnemyCountPerLane()).assertEquals(539)
+
+@Test function evolutionStatusAppearsOnlyAfterThreshold()
+	tdEvolutionStatusLevel(249, false, false).assertEquals(0)
+	tdEvolutionStatusLevel(249, false, true).assertEquals(0)
+	tdEvolutionStatusLevel(250, false, false).assertEquals(1)
+	tdEvolutionStatusLevel(250, true, true).assertEquals(2)
+	tdEvolutionStatusLevel(250, false, true).assertEquals(3)
+	tdEvolutionStatusLevel(251, true, true).assertEquals(2)

@@ -1,0 +1,67 @@
+package TDEquipmentTests
+import TDEquipmentRules
+import TDEquipmentAbilities
+import TDItemData
+import TDTowerData
+import TDWaves
+import TDConfig
+
+function assertEquipmentNear(real actual, real expected)
+	((actual - expected).abs() < 0.000001).assertTrue()
+
+@Test function conditionalDamageUsesHalfHealthAndTrueBossOnly()
+	assertEquipmentNear(tdEquipmentConditionalMultiplier(50.0, 100.0, false, 0.12, 0.25), 1.12)
+	assertEquipmentNear(tdEquipmentConditionalMultiplier(50.1, 100.0, false, 0.12, 0.25), 1.0)
+	assertEquipmentNear(tdEquipmentConditionalMultiplier(50.0, 100.0, true, 0.12, 0.25), 1.37)
+	assertEquipmentNear(tdEquipmentConditionalMultiplier(0.0, 0.0, false, 0.12, 0.25), 1.0)
+	tdIsBossUnitTypeId(tdWaveBossGuardUnitId(8)).assertFalse()
+	tdIsBossUnitTypeId(tdWaveSpecialUnitId(8)).assertTrue()
+	tdEquipmentNativeAttackEligible(false, false, 0).assertTrue()
+	tdEquipmentNativeAttackEligible(true, false, 0).assertFalse()
+	tdEquipmentNativeAttackEligible(false, true, 0).assertFalse()
+	tdEquipmentNativeAttackEligible(false, false, 'Tspl').assertFalse()
+	tdItemTooltip(TD_ITEM_EXECUTION_DAGGER_ID).contains("主目标普通攻击").assertTrue()
+	tdItemTooltip(TD_ITEM_EXECUTION_DAGGER_ID).contains("法术、分裂箭和宝宝伤害不继承").assertTrue()
+	tdItemTooltip(TD_ITEM_BERSERKER_BADGE_ID).contains("与半血追加比例相加").assertTrue()
+	assertEquipmentNear(tdEquipmentConditionalBonus(50.0, 100.0, true, 0.12, 0.25), 0.37)
+	assertEquipmentNear(tdEquipmentConditionalBonus(50.1, 100.0, false, 0.12, 0.25), 0.0)
+
+@Test function strongestDebuffOnlyRefreshesForEqualOrStronger()
+	tdEquipmentDebuffRefreshes(2.0, 1.0).assertTrue()
+	tdEquipmentDebuffRefreshes(2.0, 2.0).assertTrue()
+	tdEquipmentDebuffRefreshes(1.0, 2.0).assertFalse()
+	tdEquipmentDebuffRefreshes(0.0, 0.0).assertFalse()
+	tdEquipmentPoisonNextTick(10.0, 0.0, 0.0).assertEquals(11.0)
+	tdEquipmentPoisonNextTick(10.5, 4.0, 11.0).assertEquals(11.0)
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_ARMOR_SPIKE_ID, TD_ITEM_ARMOR_SPIKE_ID, TD_ITEM_ARMOR_SPIKE_ID, TD_ITEM_EFFECT_ARMOR_SHRED), 2.5)
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_EXECUTION_DAGGER_ID, TD_ITEM_EXECUTION_DAGGER_ID, TD_ITEM_EXECUTION_DAGGER_ID, TD_ITEM_EFFECT_EXECUTE), 0.30)
+	tdEquipmentArmorLevel(2.5).assertEquals(3)
+	tdEquipmentArmorLevel(2.49).assertEquals(2)
+	tdEquipmentArmorLevel(100.0).assertEquals(30)
+	tdEquipmentArmorLevel(0.0).assertEquals(0)
+
+@Test function equipmentAbilityTasksStopWhenLaneOrMatchEnds()
+	tdEquipmentAbilityLaneEligible(false, true, false, false).assertTrue()
+	tdEquipmentAbilityLaneEligible(true, true, false, false).assertFalse()
+	tdEquipmentAbilityLaneEligible(false, false, false, false).assertFalse()
+	tdEquipmentAbilityLaneEligible(false, true, true, false).assertFalse()
+	tdEquipmentAbilityLaneEligible(false, true, false, true).assertFalse()
+
+@Test function cooldownWaitsUntilRecordedExpiryAndMapsZeroToBase()
+	tdEquipmentPercentLevel(0.0, 40).assertEquals(1)
+	tdEquipmentPercentLevel(0.08, 40).assertEquals(9)
+	tdEquipmentPercentLevel(0.99, 40).assertEquals(41)
+	tdEquipmentPercentLevel(-1.0, 40).assertEquals(1)
+	tdEquipmentCooldownCanApply(11.9, 12.0).assertFalse()
+	tdEquipmentCooldownCanApply(12.0, 12.0).assertTrue()
+
+@Test function controlCapsAndUnloadingRestoresNativeLevel()
+	tdEquipmentPercentLevel(0.0, 60).assertEquals(1)
+	tdEquipmentPercentLevel(0.4, 60).assertEquals(41)
+	tdEquipmentPercentLevel(1.0, 60).assertEquals(61)
+	assertEquipmentNear(tdEquipmentControlReduction(0.5, 61), 0.70)
+	assertEquipmentNear(tdEquipmentControlReduction(0.22, 1), 0.22)
+	tdTowerHotkeyForLevelBranch(TD_TOWER_CHOICE_FOOTMAN, 6, TD_TOWER_BRANCH_A).assertEquals("Q")
+	tdTowerHotkeyForLevelBranch(TD_TOWER_CHOICE_FOOTMAN, 6, TD_TOWER_BRANCH_B).assertEquals("W")
+	tdTowerHotkeyForLevelBranch(TD_TOWER_CHOICE_FOOTMAN, 5, TD_TOWER_BRANCH_B).assertEquals("E")
+

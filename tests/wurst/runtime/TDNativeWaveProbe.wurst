@@ -1,0 +1,159 @@
+package TDNativeWaveProbe
+import TDSpawn
+import TDState
+import TDWaves
+import TDConfig
+import ClosureTimers
+
+boolean started = false
+boolean holding = false
+boolean failed = false
+int phase = 0
+int ticks = 0
+int phaseTicks = 0
+int oldCount = 0
+int newCount = 0
+unit oldTarget = null
+unit newTarget = null
+int baselineGold = 0
+rect world = null
+constant int OLD_WAVE = 30
+constant int NEW_WAVE = 31
+
+function report(string text)
+    ClearTextMessages()
+    DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "WAVE PROBE " + text + " phase=" + phase.toString() + " old=" + oldCount.toString() + " new=" + newCount.toString() + " gold=" + tdGetGold(0).toString())
+
+function fail(string message)
+    failed = true
+    report("FAIL " + message)
+
+function scanEnemy()
+    let enemy = GetEnumUnit()
+    if enemy == null or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID)
+        return
+    PauseUnit(enemy, holding)
+    if tdEnemyLaneId(enemy) != 0
+        return
+    if tdEnemyWave(enemy) == OLD_WAVE
+        oldCount += 1
+        oldTarget = enemy
+    else if tdEnemyWave(enemy) == NEW_WAVE
+        newCount += 1
+        newTarget = enemy
+
+function scan()
+    oldCount = 0
+    newCount = 0
+    oldTarget = null
+    newTarget = null
+    let g = CreateGroup()
+    GroupEnumUnitsInRect(g, world, null)
+    ForGroup(g, function scanEnemy)
+    DestroyGroup(g)
+
+function expectedOldGold() returns int
+    return baselineGold + tdWaveEnemyCount(OLD_WAVE) * tdWaveKillGold(OLD_WAVE) + tdWaveReward(OLD_WAVE)
+
+function expectedFinalGold() returns int
+    return expectedOldGold() + tdWaveEnemyCount(NEW_WAVE) * tdWaveKillGold(NEW_WAVE) + tdWaveReward(NEW_WAVE)
+
+function verifyOld() returns boolean
+    if tdLaneHasLivingEnemies(0, OLD_WAVE) or not tdLaneHasLivingEnemies(0, NEW_WAVE) or tdLaneHasLivingEnemies(1, NEW_WAVE)
+        fail("living enemy query must filter wave, lane and dead units")
+        return false
+    // The all-wave overload must reset both lane and wave query context.
+    if not tdLaneHasLivingEnemies(0)
+        fail("all-wave query did not reset lane context")
+        return false
+    if tdLaneHasLivingEnemies(0, OLD_WAVE)
+        fail("cleared wave unexpectedly alive")
+        return false
+    if not tdLaneHasLivingEnemies(0)
+        fail("all-wave query did not reset wave context")
+        return false
+    if not tdIsWaveResolved(0, OLD_WAVE) or tdIsWaveResolved(0, NEW_WAVE) or newCount != tdWaveEnemyCount(NEW_WAVE) or tdGetGold(0) != expectedOldGold()
+        fail("old wave must settle once while new wave remains alive; expected gold=" + expectedOldGold().toString())
+        return false
+    return true
+
+function advance()
+    ticks += 1
+    phaseTicks += 1
+    scan()
+    if ticks > 600
+        fail("timeout")
+        return
+    if phase == 0
+        let oldDuration = tdWaveSpawnInterval(OLD_WAVE) * tdWaveEnemyCount(OLD_WAVE)
+        let newDuration = tdWaveSpawnInterval(NEW_WAVE) * tdWaveEnemyCount(NEW_WAVE)
+        let readyTime = (oldDuration > newDuration ? oldDuration : newDuration) + 1.0
+        if ticks.toReal() * 0.1 < readyTime
+            return
+        if oldCount != tdWaveEnemyCount(OLD_WAVE) or newCount != tdWaveEnemyCount(NEW_WAVE)
+            fail("native wave spawn count mismatch")
+            return
+        baselineGold = tdGetGold(0)
+        phase = 1
+        report("two overlapping waves ready")
+    else if phase == 1
+        if oldTarget != null
+            KillUnit(oldTarget)
+        else
+            phase = 2
+            phaseTicks = 0
+    else if phase == 2 and phaseTicks >= 10
+        if verifyOld()
+            report("old wave settled with new wave alive")
+            phase = 3
+            phaseTicks = 0
+    else if phase == 3 and phaseTicks >= 10
+        if verifyOld()
+            phase = 4
+    else if phase == 4
+        if newTarget != null
+            KillUnit(newTarget)
+        else
+            phase = 5
+            phaseTicks = 0
+    else if phase == 5 and phaseTicks >= 10
+        if oldCount != 0 or newCount != 0 or not tdIsWaveResolved(0, OLD_WAVE) or not tdIsWaveResolved(0, NEW_WAVE) or tdGetGold(0) != expectedFinalGold()
+            fail("both waves must settle exactly once; expected gold=" + expectedFinalGold().toString())
+        else
+            phase = 6
+            phaseTicks = 0
+    else if phase == 6 and phaseTicks >= 10
+        if oldCount != 0 or newCount != 0 or tdGetGold(0) != expectedFinalGold()
+            fail("duplicate reward after both waves cleared")
+        else
+            phase = 7
+            report("PASS independent old/new rewards; no duplicate settlement")
+
+function start()
+    if started or tdIsGameOver() or tdCountActiveLanes() != 1 or GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_USED) != 0
+        return
+    if not tdLaneCanReceiveSpawns(0) or tdIsWaveResolved(0, OLD_WAVE) or tdIsWaveResolved(0, NEW_WAVE)
+        return
+    started = true
+    holding = true
+    world = GetWorldBounds()
+    tdLoseLife(0, -10000)
+    // Real production spawn timers and clear watchers; no direct finish handler.
+    tdSpawnWave(0, OLD_WAVE)
+    tdSpawnWave(0, NEW_WAVE)
+    report("START isolate two overlapping waves")
+    doPeriodically(0.1) cb ->
+        if failed or phase == 7
+            holding = false
+            scan()
+            RemoveRect(world)
+            world = null
+            destroy cb
+        else
+            advance()
+
+init
+    if not compiletime
+        let chat = CreateTrigger()
+        TriggerRegisterPlayerChatEvent(chat, Player(0), "-waves", true)
+        TriggerAddAction(chat, function start)

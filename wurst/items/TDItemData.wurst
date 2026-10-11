@@ -22,6 +22,8 @@ public constant int TD_ITEM_EFFECT_BOSS_DAMAGE = 11
 public constant int TD_FARMER_INVENTORY_ABILITY_ID = 'A117'
 public constant int TD_TOWER_INVENTORY_ABILITY_ID = 'A118'
 public constant int TD_FARMER_CRAFT_ABILITY_ID = 'A119'
+public constant int TD_FARMER_EQUIPMENT_BOOK_ABILITY_ID = 'Geqb'
+public constant int TD_FARMER_GROUND_UPGRADE_ABILITY_ID = 'Gupg'
 public constant int TD_ITEM_ATTACK_BONUS_WHITE_ABILITY_ID = 'A120'
 public constant int TD_ITEM_ATTACK_BONUS_GREEN_ABILITY_ID = 'A121'
 public constant int TD_ITEM_ATTACK_BONUS_BLUE_ABILITY_ID = 'A122'
@@ -264,21 +266,21 @@ function tdItemEffectText(int effectKind, real value) returns string
 	if effectKind == TD_ITEM_EFFECT_ATTACK_SPEED
 		return "攻速 +" + R2I(value * 100.0 + 0.5).toString() + "%"
 	if effectKind == TD_ITEM_EFFECT_COOLDOWN
-		return "冷却缩减 " + R2I(value * 100.0 + 0.5).toString() + "%"
+		return "嗜血/剑刃风暴冷却缩减 " + R2I(value * 100.0 + 0.5).toString() + "%"
 	if effectKind == TD_ITEM_EFFECT_KILL_GOLD
-		return "击杀金币 +" + R2I(value + 0.5).toString()
+		return "同路非Boss击杀金币 +" + R2I(value + 0.5).toString() + "\n每路每波额外金币上限：本波非Boss基础击杀金币总额。"
 	if effectKind == TD_ITEM_EFFECT_ARMOR_SHRED
-		return "减甲 " + R2I(value + 0.5).toString()
+		return "普攻减甲（3秒，最强覆盖） " + R2I(value + 0.5).toString() + "\n同塔汇总后四舍五入为整数，最高30。"
 	if effectKind == TD_ITEM_EFFECT_EXECUTE
-		return "半血增伤 " + R2I(value * 100.0 + 0.5).toString() + "%"
+		return "主目标普通攻击：目标半血及以下追加伤害 " + R2I(value * 100.0 + 0.5).toString() + "%\n与Boss追加比例相加；法术、分裂箭和宝宝伤害不继承。原击致死不追加。"
 	if effectKind == TD_ITEM_EFFECT_POISON
-		return "毒伤 " + R2I(value + 0.5).toString() + "/秒"
+		return "普攻装备毒（3秒，最强覆盖） " + R2I(value + 0.5).toString() + "/秒"
 	if effectKind == TD_ITEM_EFFECT_CONTROL_POWER
-		return "控制强化 +" + R2I(value * 100.0 + 0.5).toString() + "%"
+		return "毒镖/缓速/盾击控制强化 +" + R2I(value * 100.0 + 0.5).toString() + "%"
 	if effectKind == TD_ITEM_EFFECT_DROP_BONUS
-		return "掉装加权 +" + R2I(value + 0.5).toString()
+		return "同路非Boss掉落品质额外判定 +" + R2I(value + 0.5).toString() + " 次，取最好结果。\n不增加掉落件数，不改变Boss奖励。"
 	if effectKind == TD_ITEM_EFFECT_BOSS_DAMAGE
-		return "Boss增伤 " + R2I(value * 100.0 + 0.5).toString() + "%"
+		return "主目标普通攻击：Boss追加伤害 " + R2I(value * 100.0 + 0.5).toString() + "%\n与半血追加比例相加；法术、分裂箭和宝宝伤害不继承。原击致死不追加。"
 	return ""
 
 public function tdItemTooltip(int itemId) returns string
@@ -335,3 +337,15 @@ public function tdItemPassiveAbilityRawcodes(int _itemId) returns string
 	tdEnsureItemCatalog()
 	// 塔装备的实际效果统一走运行时汇总，避免让建筑库存同时吃到原生物品被动和脚本同步效果。
 	return ""
+
+
+public function tdItemPickupSummary(int itemId, int slot) returns string
+	let primary = tdItemEffectText(tdItemPrimaryEffectKind(itemId), tdItemPrimaryEffectValue(itemId))
+	// Feedback is one short line; detailed reward limits belong in the tooltip.
+	var lineEnd = StringLength(primary)
+	for index = 0 to StringLength(primary) - 1
+		if SubString(primary, index, index + 1) == "\n"
+			lineEnd = index
+			break
+	return tdItemTitleName(itemId) + " · " + tdItemQualityName(tdItemQuality(itemId)) + " · 装备位 " + slot.toString() + " · " + SubString(primary, 0, lineEnd)
+

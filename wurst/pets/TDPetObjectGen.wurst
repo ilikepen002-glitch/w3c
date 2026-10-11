@@ -1,0 +1,164 @@
+package TDPetObjectGen
+import TDPetData
+import TDPetRules
+import TDWaves
+import ItemObjEditing
+import ChannelAbilityPreset
+
+function command(int abilityId, string name, string key, int x, int y, Targettype targetType, string icon, string description)
+	new ChannelAbilityPreset(abilityId, 1, true)
+	..setName(name)
+	..setTooltipNormal(1, name + " (" + key + ")")
+	..setTooltipNormalExtended(1, description)
+	..presetHotkey(key)
+	..presetButtonPosNormal(x, y)
+	..presetTargetTypes(targetType)
+	..presetCastRange(lvl -> 99999.0)
+	..presetIcon(icon)
+	..makeUnitSpell(0, 0.0)
+	..setCheckDependencies(false)
+	..setTargetsAllowed(1, "friend,enemy,neutral,ground,air,organic,structure,vulnerable,invulnerable")
+
+public function tdPetSkillIconName(int skill) returns string
+	if skill == 0
+		return "BTNGauntletsOfOgrePower"
+	if skill == 1
+		return "BTNSteelMelee"
+	if skill == 2
+		return "BTNGlove"
+	if skill == 3
+		return "BTNBrilliance"
+	if skill == 4
+		return "BTNCommand"
+	if skill == 5
+		return "BTNSlow"
+	if skill == 6
+		return "BTNFaerieFire"
+	if skill == 7
+		return "BTNCleavingAttack"
+	if skill == 8
+		return "BTNCriticalStrike"
+	if skill == 9
+		return "BTNColdArrows"
+	if skill == 10
+		return "BTNDeathAndDecay"
+	if skill == 11
+		return "BTNBloodLust"
+	if skill == 12
+		return "BTNInnerFire"
+	if skill == 13
+		return "BTNChainLightning"
+	if skill == 14
+		return "BTNImmolationOn"
+	return "BTNCyclone"
+
+function slotIcon(int skill, boolean locked) returns string
+	return locked ? "ReplaceableTextures\\CommandButtonsDisabled\\DIS" + tdPetSkillIconName(skill) + ".blp" : "ReplaceableTextures\\CommandButtons\\" + tdPetSkillIconName(skill) + ".blp"
+@compiletime function tdGeneratePetObjects()
+	let capture = new ChannelAbilityPreset(TD_PET_CAPTURE_ABILITY_ID, 61, true)
+	capture..setName("普通球捕获")..presetHotkey("Q")..presetButtonPosNormal(2, 2)..presetTargetTypes(Targettype.UNIT)..presetCastRange(lvl -> 99999.0)..presetIcon("ReplaceableTextures\\CommandButtons\\BTNCharm.blp")..makeUnitSpell(0, 0.0)..setCheckDependencies(false)
+	for level = 1 to 61
+		capture.setTooltipNormal(level, "普通球捕获 (Q) · " + (level - 1).toString() + "/60")
+		capture.setTooltipNormalExtended(level, tdPetCaptureTooltip(level - 1))
+		capture.setTargetsAllowed(level, "neutral,enemy,ground,air,organic,invulnerable,vulnerable")
+	command(TD_PET_COLLECTION_ABILITY_ID, "精灵收藏", "W", 3, 2, Targettype.NONE, "ReplaceableTextures\\CommandButtons\\BTNPackBeast.blp", "选中原生精灵展示：动态模型、头像与四技能栏。上一只/下一只浏览12收藏；上阵/换绑/召回/培养。共鸣：完成本路第4/8波开启已有第3/4栏。")
+	command(TD_PET_DEPLOY_ABILITY_ID, "精灵上阵", "E", 3, 0, Targettype.UNIT, "ReplaceableTextures\\CommandButtons\\BTNAnimalWarTraining.blp", "先W选精灵，再E点本路已完工空塔；每塔1，上阵3。换绑保留主动冷却。")
+	command(TD_PET_MASTER_ABILITY_ID, "大师球捕获", "M", 0, 1, Targettype.UNIT, "ReplaceableTextures\\CommandButtons\\BTNCharm.blp", "消耗本路1大师球必定捕获保护态野生精灵；满收藏不扣球。库存见W收藏。")
+	command(TD_PET_HUNT_ABILITY_ID, "标记猎杀", "H", 1, 1, Targettype.UNIT, "ReplaceableTextures\\CommandButtons\\BTNAnimalWarTraining.blp", "本路野生精灵永久放弃捕获、解除保护成为敌军。必须实际战斗击杀：洗练石必得，2%开栏石。截止仍是出现后60秒。")
+	command(TD_PET_FORGE_ABILITY_ID, "捕获球升级（5合1）", "B", 2, 1, Targettype.NONE, "ReplaceableTextures\\CommandButtons\\BTNCharm.blp", "账户内5普通球必成合1大师球；不足不扣。与地面装备升级独立。")
+	new AbilityDefinition(TD_FARMER_MENU_REPAIR_ABILITY_ID, 'Ahrp')..setHotkeyNormal("R")..setButtonPositionNormalX(1)..setButtonPositionNormalY(1)
+	for cmd = 0 to 7
+		var label = "收藏信息"
+		var key = "I"
+		if cmd == 1
+			label = "上一只"
+			key = "A"
+		else if cmd == 2
+			label = "下一只"
+			key = "D"
+		else if cmd == 3
+			label = "返回农民"
+			key = "R"
+		else if cmd == 4
+			label = "上阵 / 换绑"
+			key = "E"
+		else if cmd == 5
+			label = "召回"
+			key = "Q"
+		else if cmd == 6
+			label = "培养 / 释放"
+			key = "C"
+		else if cmd == 7
+			label = "技能适配与材料"
+			key = "W"
+		command(tdPetUICommandId(cmd), label, key, cmd mod 4, cmd < 4 ? 0 : 2, cmd == 4 ? Targettype.UNIT : Targettype.NONE, "ReplaceableTextures\\CommandButtons\\BTNPackBeast.blp", "动态收藏共用命令。培养可指定一栏洗练并保留旧/替换新结果，开栏最高4；材料和全部技能/适配见信息。")
+	for slot = 0 to 3
+		for variant = 0 to 128
+			let skill = (variant mod 64) div 4
+			let quality = variant mod 4 + 1
+			let locked = variant >= 64 and variant < 128
+			let empty = variant == 128
+			let label = empty ? "空栏" : tdPetQualityName(quality) + " " + tdPetSkillNameById(skill) + (locked ? " [共鸣锁定]" : "")
+			let description = empty ? "捕获时没有此栏；开栏石可随机添加不重复机制技能，最多4栏。" : (locked ? "已抽技能，尚未生效。完成本路第" + (slot == 2 ? "4" : "8") + "波解锁。|n" + tdPetSkillDescriptionById(skill, quality) : tdPetSkillDescriptionById(skill, quality))
+			let displaySkill = new AbilityDefinitionBladeMasterCriticalStrike(tdPetSlotAbilityId(slot, variant))
+			displaySkill..setName(label)..setTooltipNormal(1, label)..setTooltipNormalExtended(1, description)..setIconNormal(empty ? "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp" : slotIcon(skill, locked))..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setRequirements("")..setButtonPositionNormalX(slot)..setButtonPositionNormalY(1)..setChancetoCriticalStrike(1, 0.0)..setDamageMultiplier(1, 1.0)
+	let attack = new AbilityDefinitionAttackBonus(TD_PET_ATTACK_BONUS_ID)
+	attack..setLevels(512)..setItemAbility(true)..setCheckDependencies(false)
+	for level = 1 to 512
+		attack.setAttackBonus(level, level)
+	let speed = new AbilityDefinitionAttackSpeedIncrease(TD_PET_SPEED_BONUS_ID)
+	speed..setLevels(150)..setItemAbility(true)..setCheckDependencies(false)
+	for level = 1 to 150
+		speed.setAttackSpeedIncrease(level, level / 100.0)
+	let armor = new AbilityDefinitionDefenseBonusPlus1(TD_PET_ARMOR_ID)
+	armor..setLevels(8)..setItemAbility(true)..setCheckDependencies(false)
+	for level = 1 to 8
+		armor.setDefenseBonus(level, -level)
+	for species = 1 to 3
+		new UnitDefinition(tdPetVisualUnitId(species), 'hpea')..setName(tdPetSpeciesName(species))..setModelFile(tdPetModel(species))..setScalingValue(0.45)..setNormalAbilities("Aloc,Avul")..setAttacksEnabled(0)..setAcquisitionRange(0.0)..setCollisionSize(0.0)..setMovementType(MovementType.None)..setSpeedBase(0)..setFoodCost(0)..setStructuresBuilt("")
+		var commands = "Avul"
+		for cmd = 0 to 7
+			commands += "," + tdPetUICommandId(cmd).toRawCode()
+		new BuildingDefinition(tdPetDisplayUnitId(species), 'hpea')
+		..setName("精灵收藏 · " + tdPetSpeciesName(species))
+		..setModelFile(tdPetModel(species))
+		..setScalingValue(0.65)
+		..setNormalAbilities(commands)
+		..setAttacksEnabled(0)
+		..setAcquisitionRange(0.0)
+		..setCollisionSize(0.0)
+		..setMovementType(MovementType.None)
+		..setSpeedBase(0)
+		..setFoodCost(0)
+		..setStructuresBuilt("")
+		..setIsaBuilding(true)
+		..setPathingMap("")
+		..setUnitsTrained("")
+		..setUpgradesTo("")
+		for wave = 1 to tdWaveCount()
+			new UnitDefinition(tdPetWildUnitId(wave, species), 'hpea')
+			..setName("[野生精灵] " + tdPetSpeciesName(species))
+			..setDescription("本路保护60秒。捕获或主动猎杀二选一。")
+			..setModelFile(tdPetModel(species))
+			..setScalingValue(0.85)
+			..setHitPointsMaximumBase(tdWaveBaseHitPoints(wave))
+			..setDefenseBase(tdWaveBaseArmor(wave))
+			..setSpeedBase(120)
+			..setSpeedMinimum(1)
+			..setSpeedMaximum(150)
+			..setNormalAbilities("")
+			..setAttacksEnabled(0)
+			..setAcquisitionRange(0.0)
+			..setCollisionSize(0.0)
+			..setCanFlee(false)
+			..setSleeps(false)
+			..setFoodCost(0)
+			..setStructuresBuilt("")
+			..setGoldBountyAwardedBase(0)
+			..setGoldBountyAwardedNumberofDice(0)
+			..setGoldBountyAwardedSidesperDie(0)
+	new ItemDefinition(TD_PET_BALL_ITEM_ID, 'ratf')..setName("普通捕获球")..setTooltipBasic("普通捕获球 · 本路专属")..setTooltipExtended("工人或塔拾取后本路普通球+1，最多60；已满留地面。全局补充预算每路最多1只。")..setModelUsed("Objects\\InventoryItems\\CrystalShard\\CrystalShard.mdl")..setInterfaceIcon("ReplaceableTextures\\CommandButtons\\BTNCharm.blp")..setAbilities("")..setUseAutomaticallyWhenAcquired(false)..setActivelyUsed(false)..setIncludeAsRandomChoice(false)..setCanBeDropped(true)..setCanBeSoldToMerchants(false)..setGoldCost(0)
+
+
+
+

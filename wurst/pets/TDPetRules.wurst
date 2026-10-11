@@ -1,0 +1,126 @@
+package TDPetRules
+import BitSet
+
+public function tdPetSkillCountForRoll(int roll) returns int
+	return roll <= 55 ? 2 : (roll <= 90 ? 3 : 4)
+
+public function tdPetQualityForRoll(int roll) returns int
+	return roll <= 45 ? 1 : (roll <= 75 ? 2 : (roll <= 95 ? 3 : 4))
+
+public function tdPetResonanceForWave(int wave) returns int
+	return wave >= 8 ? 3 : (wave >= 4 ? 2 : 1)
+
+public function tdPetUnlockedSlots(int level) returns int
+	return level + 1
+
+public function tdPetFixedEncounter(int wave) returns boolean
+	return wave == 1 or wave == 3 or wave == 5 or wave == 7 or wave == 10 or wave == 13 or wave == 16 or wave == 19 or wave == 22 or wave == 25
+
+public function tdPetStageStart(int stage) returns int
+	return stage == 0 ? 1 : (stage == 1 ? 7 : (stage == 2 ? 13 : 19))
+
+public function tdPetStageEnd(int stage) returns int
+	return stage == 3 ? 25 : tdPetStageStart(stage) + 5
+
+public function tdPetStageBallReward(int wave) returns int
+	return wave == 4 or wave == 8 or wave == 13 or wave == 19 ? 6 : 0
+
+public function tdPetSkillIsNumeric(int skill) returns boolean
+	return skill >= 0 and skill <= 3
+
+public function tdPetSkillIsActive(int skill) returns boolean
+	return skill >= 11 and skill <= 15
+
+public function tdPetSkillIsUniversal(int skill) returns boolean
+	return skill >= 4 and skill != 9 and skill != 10
+
+public function tdPetSkillAllowed(int skill, int slot, int usedMask, boolean hasActive) returns boolean
+	if skill < 0 or skill >= 16 or bitset(usedMask).get(skill)
+		return false
+	if slot == 0
+		return tdPetSkillIsNumeric(skill)
+	return not tdPetSkillIsNumeric(skill) and (slot != 1 or tdPetSkillIsUniversal(skill)) and (not hasActive or not tdPetSkillIsActive(skill))
+
+public function tdPetSkillNameById(int skill) returns string
+	if skill == 0
+		return "坚韧之力"
+	if skill == 1
+		return "战意"
+	if skill == 2
+		return "疾攻"
+	if skill == 3
+		return "灵感"
+	if skill == 4
+		return "统御光环"
+	if skill == 5
+		return "迟滞领域"
+	if skill == 6
+		return "破甲印记"
+	if skill == 7
+		return "连击蓄能"
+	if skill == 8
+		return "处决追击"
+	if skill == 9
+		return "分裂霜箭"
+	if skill == 10
+		return "腐尸毒域"
+	if skill == 11
+		return "狂热"
+	if skill == 12
+		return "蓄力"
+	if skill == 13
+		return "雷链"
+	if skill == 14
+		return "火焰冲击"
+	return "风缚"
+
+public function tdPetQualityName(int quality) returns string
+	return quality == 1 ? "|cffffffff白|r" : (quality == 2 ? "|cff40dd40绿|r" : (quality == 3 ? "|cff4090ff蓝|r" : "|cffc060ff紫|r"))
+
+public function tdPetSkillPower(int skill, int quality) returns real
+	if skill == 0
+		return 8.0 * quality
+	if skill == 1 or skill == 2 or skill == 3 or skill == 4
+		return 0.06 * quality
+	if skill == 5 or skill == 9
+		return 0.08 + 0.04 * quality
+	if skill == 6
+		return quality * 2.0
+	return 0.25 + quality * 0.15
+
+public function tdPetSkillDescriptionById(int skill, int quality) returns string
+	let power = tdPetSkillPower(skill, quality)
+	if skill == 0
+		return "被动：宿主攻击 +" + power.toInt().toString()
+	if skill == 1
+		return "被动：宿主基础攻击 +" + (power * 100.0).toInt().toString() + "%"
+	if skill == 2
+		return "被动：宿主攻击速度 +" + (power * 100.0).toInt().toString() + "%"
+	if skill == 3
+		return "被动：宿主受控技能冷却缩减 " + (power * 100.0).toInt().toString() + "%（仅嗜血/剑刃风暴/精灵主动）"
+	if skill == 4
+		return "光环：全队全部塔攻击速度 +" + (power * 100.0).toInt().toString() + "%，仅最强生效"
+	if skill == 5
+		return "光环：宿主600范围本路敌军移动减速 " + (power * 100.0).toInt().toString() + "%，仅最强生效"
+	if skill == 6
+		return "普攻：目标破甲 " + power.toInt().toString() + "，持续3秒，最强生效"
+	if skill == 7
+		return "普攻：每第4次命中追加 " + (power * 100.0).toInt().toString() + "% 宿主伤害"
+	if skill == 8
+		return "普攻：低于30%生命目标追加 " + (power * 100.0).toInt().toString() + "% 宿主伤害"
+	if skill == 9
+		return "原生强化：弓箭塔分裂箭命中附3秒减速" + (power * 100.0).toInt().toString() + "%；仅弓箭塔适配"
+	if skill == 10
+		return "原生强化：食尸鬼尸爆留下3秒毒域，每秒尸爆伤害" + (power * 100.0).toInt().toString() + "%；仅食尸鬼适配"
+	if skill == 11
+		return "自动主动：普攻触发，6秒狂热攻速 +" + (power * 100.0).toInt().toString() + "%，冷却14秒"
+	if skill == 12
+		return "自动主动：普攻触发，6秒蓄力攻击 +" + (power * 100.0).toInt().toString() + "%，冷却14秒"
+	if skill == 13
+		return "自动主动：普攻触发，450范围最多3目标雷链，每个 " + (power * 100.0).toInt().toString() + "% 宿主伤害，冷却10秒"
+	if skill == 14
+		return "自动主动：普攻触发，220范围最多12目标火焰冲击，每个 " + (power * 100.0).toInt().toString() + "% 宿主伤害，冷却10秒"
+	return "自动主动：普攻触发，220范围最多12目标风缚减速" + (RMinBJ(0.75, power) * 100.0).toInt().toString() + "%持续3秒，冷却10秒"
+
+
+

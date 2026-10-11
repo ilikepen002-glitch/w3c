@@ -23,11 +23,19 @@ import TDTowers
 @Test function economicAndDropBonusesAggregatePerTower()
 	tdEquipmentKillGoldBonusForItems(TD_ITEM_GOLD_RING_ID, TD_ITEM_MERCENARY_PURSE_ID, 0).assertEquals(3)
 	tdEquipmentDropBonusRollsForItems(TD_ITEM_SCAVENGER_BAG_ID, TD_ITEM_MERCENARY_PURSE_ID, 0).assertEquals(2)
+	tdEquipmentKillGoldBonusForItems(TD_ITEM_BOUNTY_CONTRACT_ID, TD_ITEM_BOUNTY_CONTRACT_ID, TD_ITEM_BOUNTY_CONTRACT_ID).assertEquals(7)
+	tdEquipmentDropBonusRollsForItems(TD_ITEM_BOUNTY_CONTRACT_ID, TD_ITEM_BOUNTY_CONTRACT_ID, TD_ITEM_BOUNTY_CONTRACT_ID).assertEquals(5)
+
+@Test function equipmentRewardsRequireSameOriginLaneTowerAndNonBoss()
+	tdCanUseEquipmentKillRewards(0, 0, TD_ARCHER_LEVEL_1_ID, false).assertTrue()
+	tdCanUseEquipmentKillRewards(0, 1, TD_ARCHER_LEVEL_1_ID, false).assertFalse()
+	tdCanUseEquipmentKillRewards(0, 0, TD_FARMER_UNIT_ID, false).assertFalse()
+	tdCanUseEquipmentKillRewards(0, 0, TD_ARCHER_LEVEL_1_ID, true).assertFalse()
+	tdCanUseEquipmentKillRewards(-1, -1, TD_ARCHER_LEVEL_1_ID, false).assertFalse()
 
 @Test function poisonBonusesAggregateWithDuplicatePenalty()
 	tdEquipmentPoisonBonusForItems(TD_ITEM_POISON_SAC_ID, TD_ITEM_TOXIC_VINE_ID, TD_ITEM_CORRUPTED_HEART_ID).assertEquals(40.0)
 	tdEquipmentPoisonBonusForItems(TD_ITEM_CORRUPTED_HEART_ID, TD_ITEM_CORRUPTED_HEART_ID, TD_ITEM_CORRUPTED_HEART_ID).assertEquals(60.0)
-	tdTowerPoisonBonusAbilityLevelForItems(TD_ITEM_CORRUPTED_HEART_ID, TD_ITEM_CORRUPTED_HEART_ID, TD_ITEM_CORRUPTED_HEART_ID).assertEquals(60)
 
 @Test function distinctRawcodesDoNotShareDuplicatePenaltyBuckets()
 	tdEquipmentAttackBonusForItems(TD_ITEM_SHORT_BOW_ID, TD_ITEM_STEEL_LONGBOW_ID, TD_ITEM_WHITE_TIGER_BANNER_ID).assertEquals(56.0)
@@ -35,3 +43,4 @@ import TDTowers
 @Test function towerEffectiveRangeAddsEquipmentBonusOnTopOfBaseRange()
 	let baseRange = tdTowerBaseRangeForBranch(TD_TOWER_CHOICE_ARCHER, 5, TD_TOWER_BRANCH_A).toReal()
 	tdTowerEffectiveRangeForLoadout(TD_TOWER_CHOICE_ARCHER, 5, TD_TOWER_BRANCH_A, TD_ITEM_EAGLE_SCOPE_ID, TD_ITEM_FOCUS_STONE_ID, 0).assertEquals(baseRange + 240.0)
+

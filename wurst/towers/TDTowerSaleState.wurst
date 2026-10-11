@@ -1,0 +1,37 @@
+package TDTowerSaleState
+
+// Unique work tokens also distinguish destroyed/recreated state objects.
+int tdTowerWorkGeneration = 0
+
+// One owner for sale eligibility; no placement reservation.
+public class TDTowerSaleState
+	private boolean busy = false
+	private boolean selling = false
+	private int workGeneration = 0
+
+	function startWork()
+		tdTowerWorkGeneration += 1
+		workGeneration = tdTowerWorkGeneration
+		busy = true
+
+	function getWorkGeneration() returns int
+		return workGeneration
+
+	function finishWorkForGeneration(int generation) returns boolean
+		if generation != workGeneration
+			return false
+		finishWork()
+		return true
+
+	function finishWork()
+		busy = false
+
+	function canSell() returns boolean
+		return not busy and not selling
+
+	function beginSale() returns boolean
+		if not canSell()
+			return false
+		selling = true
+		return true
+

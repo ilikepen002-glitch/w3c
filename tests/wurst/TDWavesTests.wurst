@@ -132,3 +132,9 @@ function tdWavePressureProxyForTest(int wave) returns real
 	tdWaveBossSpellDamageTakenFactor(8).assertEquals(1.00)
 	(tdWaveBossSpellDamageTakenFactor(24) < tdWaveBossSpellDamageTakenFactor(16)).assertTrue()
 	(tdWaveBossSpellDamageTakenFactor(32) < tdWaveBossSpellDamageTakenFactor(24)).assertTrue()
+
+@Test function waveAnnouncementMatchesSpawnComposition()
+	tdWaveCompositionText(1).assertEquals("农民逃兵 ×8")
+	tdWaveCompositionText(4).assertEquals("矮人火枪手 ×9、铁木桩精英 ×1")
+	tdWaveCompositionText(32).assertEquals("亡魂 ×18、终局近卫队长 ×2、最终Boss ×1")
+	tdWaveCompositionText(0).assertEquals("")

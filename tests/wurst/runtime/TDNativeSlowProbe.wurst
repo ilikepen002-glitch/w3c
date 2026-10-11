@@ -1,0 +1,189 @@
+package TDNativeSlowProbe
+import TDConfig
+import TDState
+import TDWaves
+import TDTowers
+import ClosureTimers
+import Orders
+
+unit source = null
+unit auraSource = null
+unit target = null
+trigger chat = null
+boolean started = false
+boolean failed = false
+int mode = 0
+int stage = 0
+int ticks = 0
+int stageTicks = 0
+real initialHp = 0.0
+real startX = 0.0
+real startY = 0.0
+real array distances
+
+function report(string message)
+    DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "SLOW " + message)
+
+function fail(string message)
+    if not failed
+        failed = true
+        report("FAIL mode=" + mode.toString() + " " + message)
+
+function needsPoison() returns boolean
+    return mode mod 6 == 1 or mode mod 6 >= 3
+
+function needsAura() returns boolean
+    return mode mod 6 == 2 or mode mod 6 >= 4
+
+function hasBuff() returns boolean
+    let poison = not needsPoison() or GetUnitAbilityLevel(target, 'Bspo') > 0 or GetUnitAbilityLevel(target, 'Bssd') > 0
+    let aura = not needsAura() or GetUnitAbilityLevel(target, 'Basl') > 0
+    return poison and aura
+
+function setup()
+    if target != null
+        RemoveUnit(target)
+    PauseUnit(source, true)
+    UnitRemoveAbility(source, TD_DRYAD_POISON_ABILITY_ID)
+    UnitRemoveAbility(source, TD_DRYAD_PERFECT_POISON_ABILITY_ID)
+    UnitRemoveAbility(source, TD_DRYAD_SLOW_AURA_ABILITY_ID)
+    UnitRemoveAbility(auraSource, TD_DRYAD_SLOW_AURA_ABILITY_ID)
+    // No lane metadata/order is needed: production lane0 is disabled in this fixture.
+    var targetId = tdWaveUnitId(29)
+    if mode >= 6
+        targetId = tdWaveSpecialUnitId(4)
+    target = CreateUnit(Player(TD_ENEMY_PLAYER_ID), targetId, -2200, 2672, 0)
+    if target == null or GetUnitTypeId(target) != targetId or not target.isAlive()
+        fail("target creation")
+        return
+    SetUnitCreepGuard(target, false)
+    RemoveGuardPosition(target)
+    // All cases measure native speed response without terrain/pathing detours.
+    SetUnitPathing(target, false)
+    PauseUnit(target, true)
+    initialHp = GetWidgetLife(target)
+    if needsAura()
+        if not UnitAddAbility(auraSource, TD_DRYAD_SLOW_AURA_ABILITY_ID)
+            fail("aura ability rejected")
+    if needsPoison()
+        var poisonId = TD_DRYAD_POISON_ABILITY_ID
+        if mode mod 6 == 3 or mode mod 6 == 5
+            poisonId = TD_DRYAD_PERFECT_POISON_ABILITY_ID
+        if not UnitAddAbility(source, poisonId)
+            fail("poison ability rejected")
+        PauseUnit(source, false)
+        if not IssueTargetOrderById(source, Orders.attack, target)
+            fail("attack order rejected")
+    stage = 0
+    stageTicks = 0
+
+function cleanup()
+    if source != null
+        RemoveUnit(source)
+    if target != null
+        RemoveUnit(target)
+    if auraSource != null
+        RemoveUnit(auraSource)
+    source = null
+    target = null
+    auraSource = null
+    tdSetLaneActive(0, true)
+    DestroyTrigger(chat)
+
+function advance()
+    stageTicks += 1
+    if stage == 0
+        if stageTicks > 80
+            fail("precondition: buff/attack not applied")
+            return
+        if stageTicks >= 5 and hasBuff() and (not needsPoison() or GetWidgetLife(target) < initialHp)
+            PauseUnit(source, true)
+            PauseUnit(target, false)
+            if not IssuePointOrderById(target, Orders.move, -1300, 2672)
+                fail("move order rejected")
+            stage = 1
+            stageTicks = 0
+    else if stage == 1
+        if not hasBuff()
+            fail("buff lost before measurement")
+            return
+        if stageTicks == 1
+            startX = GetUnitX(target)
+            startY = GetUnitY(target)
+        if needsAura() and target.getPos().distanceTo(auraSource.getPos()) > tdDryadAuraSlowRadius()
+            fail("outside aura radius")
+        if not target.isAlive()
+            fail("target died")
+        if stageTicks == 6
+            let endX = GetUnitX(target)
+            let endY = GetUnitY(target)
+            report("sample mode=" + mode.toString() + " x=" + startX.toString() + "->" + endX.toString() + " y=" + startY.toString() + "->" + endY.toString())
+            if (endY - startY).abs() > 8.0 or endX <= startX or endX >= -1308
+                fail("non-straight/finished path")
+                return
+            distances[mode] = endX - startX
+            report("mode=" + mode.toString() + " x=" + startX.toString() + "->" + endX.toString() + " y=" + startY.toString() + "->" + endY.toString() + " distance=" + distances[mode].toString() + " hp=" + GetWidgetLife(target).toString())
+            mode += 1
+            if mode < 12
+                setup()
+
+function checkGroup(int offset)
+    if distances[offset] < 50.0
+        fail("invalid baseline")
+        return
+    let poison = distances[offset + 1] / distances[offset]
+    let aura = distances[offset + 2] / distances[offset]
+    let perfect = distances[offset + 3] / distances[offset]
+    let combined = distances[offset + 4] / distances[offset]
+    let perfectCombined = distances[offset + 5] / distances[offset]
+    report("group=" + offset.toString() + " poison=" + poison.toString() + " aura=" + aura.toString() + " perfect=" + perfect.toString() + " combined=" + combined.toString() + "/" + perfectCombined.toString())
+    if (poison - tdDryadSlowFactor()).abs() > 0.02 or (aura - tdDryadAuraSlowFactor()).abs() > 0.02 or (perfect - (tdDryadSlowFactor() - 0.04)).abs() > 0.02
+        fail("single-effect ratios")
+    // TEST-0644 verified native additive stacking at both base speeds.
+    if (combined - 0.60).abs() > 0.02 or (perfectCombined - 0.56).abs() > 0.02
+        fail("combined-effect ratios")
+
+function start()
+    if started or tdIsGameOver() or tdCountActiveLanes() != 1 or not tdIsLaneActive(0) or GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_USED) != 0
+        return
+    started = true
+    tdSetLaneActive(0, false)
+    source = CreateUnit(Player(0), TD_DRYAD_LEVEL_1_ID, -2016, 2560, 0)
+    auraSource = CreateUnit(Player(0), TD_DRYAD_LEVEL_1_ID, -2016, 2560, 0)
+    if source == null or GetUnitTypeId(source) != TD_DRYAD_LEVEL_1_ID
+        fail("source creation")
+        cleanup()
+        return
+    // Isolate the speed measurement from the fixture building's pathing footprint.
+    SetUnitPathing(source, false)
+    if auraSource == null or GetUnitTypeId(auraSource) != TD_DRYAD_LEVEL_1_ID
+        fail("aura source creation")
+        cleanup()
+        return
+    SetUnitPathing(auraSource, false)
+    UnitRemoveAbility(auraSource, TD_DRYAD_POISON_ABILITY_ID)
+    UnitRemoveAbility(auraSource, TD_DRYAD_PERFECT_POISON_ABILITY_ID)
+    SetUnitAcquireRange(auraSource, 0.0)
+    PanCameraToTimed(-2050, 2650, 0.0)
+    setup()
+    report("START 12 cases; wave29 and slowest elite4; baseline/poison/aura/perfect/combinations")
+    doPeriodically(0.1) cb ->
+        ticks += 1
+        if not failed and mode < 12
+            advance()
+        if ticks >= 1200
+            fail("timeout")
+        if mode == 12 and not failed
+            checkGroup(0)
+            checkGroup(6)
+            if not failed
+                report("PASS 12 cases; single effects match; native combinations recorded")
+        if failed or mode == 12
+            cleanup()
+            destroy cb
+
+init
+    if not compiletime
+        chat = CreateTrigger()
+        TriggerRegisterPlayerChatEvent(chat, Player(0), "-slow", true)
+        TriggerAddAction(chat, function start)
