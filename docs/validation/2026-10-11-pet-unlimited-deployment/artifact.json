@@ -1,0 +1,11 @@
+{
+  "baseline_commit": "71a0c42b054370d7136dd2f687a6b4e7da830f19",
+  "baseline_tree": "bf75df2451f81116b5336d681f68e0c183c10e2e",
+  "baseline_map_sha256": "6f4859b0ee6e22ca373ebafa222f16c1d150ac64908fdcea04da31a771b8c7b7",
+  "root_map_sha256": "10a6eb992b4a9fb0edf2aa81db8700e5b78042462e5d5a130b71a2747907bb0f",
+  "root_map_git_blob": "dfd86a381a95738828dc8c670acce8e2edcf0015",
+  "root_map_bytes": 1729581,
+  "map_display_name": "深渊守望 20261012-0009-UTC+8",
+  "fixed_stdlib_tree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+  "native_playtest": false
+}

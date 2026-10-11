@@ -189,14 +189,20 @@ def jass_function(script, name):
 
 
 def _integer_expression(expression, variables, functions=None):
-    """Evaluate only the integer/boolean subset used by the pure pet helpers."""
+    """Evaluate only the scalar/array-read subset used by the pet helpers."""
     require(not (re.search(r'\band\b', expression) and re.search(r'\bor\b', expression)),
             f'Ambiguous packaged scalar boolean precedence: {expression}')
     def visit(node):
-        if isinstance(node, ast.Constant) and type(node.value) in (int, bool):
+        if isinstance(node, ast.Constant) and type(node.value) in (int, bool, str):
             return node.value
         if isinstance(node, ast.Name) and node.id in variables:
             return variables[node.id]
+        if isinstance(node, ast.Subscript) and isinstance(node.value, ast.Name):
+            name, index = node.value.id, visit(node.slice)
+            require(name in variables and isinstance(variables[name], dict)
+                    and type(index) is int and index in variables[name],
+                    f'Unsupported/missing packaged scalar array read: {expression}')
+            return variables[name][index]
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
             require(functions is not None and node.func.id in functions and not node.keywords,
                     f'Unsupported packaged scalar call: {node.func.id}')
@@ -206,8 +212,10 @@ def _integer_expression(expression, variables, functions=None):
             return (left + right if isinstance(node.op, ast.Add) else
                     left - right if isinstance(node.op, ast.Sub) else left * right)
         if isinstance(node, ast.BoolOp):
-            values = [bool(visit(value)) for value in node.values]
-            return all(values) if isinstance(node.op, ast.And) else any(values)
+            # JASS short-circuits, including the null-record guards before reads.
+            if isinstance(node.op, ast.And):
+                return all(bool(visit(value)) for value in node.values)
+            return any(bool(visit(value)) for value in node.values)
         if isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.Not, ast.USub)):
             result = visit(node.operand)
             return not result if isinstance(node.op, ast.Not) else -result
@@ -228,19 +236,43 @@ def _integer_expression(expression, variables, functions=None):
 
 
 def _run_scalar_helper(match, arguments, constants=None, functions=None,
-                       result_field=None, on_assignment=None):
+                       result_field=None, on_assignment=None, debug_stack=False):
     header = match.group(0).splitlines()[0]
-    parameters = re.findall(r'(?:integer|boolean|unit|player) (\w+)', header)
+    parameters = re.findall(r'(?:integer|boolean|unit|player|string) (\w+)', header)
     require(len(parameters) == len(arguments), 'Packaged scalar helper argument count changed')
     variables = {'true': True, 'false': False, 'null': None, **(constants or {}),
                  **dict(zip(parameters, arguments))}
     active, branches = True, []
+    stack_depth = 0
+    stack_pushes = 0
+    stack_started = False
     for source_line in match.group(1).splitlines():
         line = source_line.split('//', 1)[0].strip()
         if not line:
             continue
+        if debug_stack and line == 'set wurst_stack[wurst_stack_depth] = w__wurst_stackPos':
+            require(active and stack_depth == 0 and stack_pushes == 0
+                    and 'w__wurst_stackPos' in variables,
+                    'Unexpected packaged scalar debug stack push')
+            stack_pushes += 1
+            continue
+        if debug_stack and line in ('set wurst_stack_depth = wurst_stack_depth + 1',
+                                    'set wurst_stack_depth = wurst_stack_depth - 1'):
+            if active:
+                if line.endswith('+ 1'):
+                    require(not stack_started and stack_depth == 0,
+                            'Unexpected packaged scalar debug stack increment')
+                    stack_started = True
+                    stack_depth += 1
+                else:
+                    require(stack_started and stack_depth == 1,
+                            'Unexpected packaged scalar debug stack decrement')
+                    stack_depth -= 1
+                require(stack_pushes == 1 and stack_depth in (0, 1),
+                        'Unbalanced packaged scalar debug stack depth')
+            continue
         if line.startswith('local '):
-            declaration = re.fullmatch(r'local (integer|boolean|unit|player) (\w+)(?: = (.*))?', line)
+            declaration = re.fullmatch(r'local (integer|boolean|unit|player|string) (\w+)(?: = (.*))?', line)
             require(declaration is not None, f'Unsupported packaged scalar declaration: {line}')
             kind, name, initializer = declaration.groups()
             variables[name] = (_integer_expression(initializer, variables, functions) if initializer else
@@ -264,6 +296,8 @@ def _run_scalar_helper(match, arguments, constants=None, functions=None,
             active = branches.pop()[0]
         elif line.startswith('return '):
             if active:
+                require(not debug_stack or (stack_pushes == 1 and stack_started and stack_depth == 0),
+                        'Packaged scalar return leaked debug stack frame')
                 return _integer_expression(line[7:], variables, functions)
         elif line == 'return':
             if active:
@@ -273,6 +307,8 @@ def _run_scalar_helper(match, arguments, constants=None, functions=None,
             variable, expression = line[4:].split('=', 1)
             if active:
                 variable = variable.strip()
+                require(re.fullmatch(r'\w+', variable) is not None and variable in variables,
+                        f'Unsupported packaged scalar assignment target: {variable}')
                 variables[variable] = _integer_expression(expression.strip(), variables, functions)
                 if on_assignment is not None:
                     on_assignment(variable, variables[variable])

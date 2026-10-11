@@ -1,0 +1,8 @@
+PASS OLD RED: three concrete fixture records already hosted; the real packaged tdPetCanDeploy rejects a fourth unbound record. Parsing, all earlier legal guards and legal rebind execute successfully.
+CONTROLLED STUBS: lane eligibility, tower/native properties, busy table, 12-slot deployed count and host lookup. Only the real packaged admission function is executed; no deploy/recall/combat/native engine is modeled.
+PASS NEW GATE: two independent lanes with existing 3/4/9/11 admit another record; ten rejection guards per lane and legal empty-tower rebind pass. 11 is synthetic gate coverage; normal tower population remains at most 10.
+CONTROLLED STUBS: lane eligibility, tower/native properties, busy table, 12-slot deployed count and host lookup. Only the real packaged admission function is executed; no deploy/recall/combat/native engine is modeled.
+PASS SOURCE DIFFERENTIAL: only the deployment-gate tail changed in runtime; state/combat/rules, collection/release/cooldown tests and population tests unchanged.
+PASS PACKAGED STRUCTURE: deploy, recall, host lookup, 12-slot lifecycle, cooldown and tower-population functions unchanged against predecessor.
+PASS PLAYER HINTS: Pdep, all 61 Pcap levels, Pc04 and packaged UI have no old three-pet total cap; deployment hints state one pet per tower.
+NOT TESTED: live Warcraft deployment/effects, native engine lifecycle, rendering or higher active-combat load/performance.

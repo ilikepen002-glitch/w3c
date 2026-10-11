@@ -8,7 +8,6 @@ public constant int TD_PET_BALL_ITEM_ID = 'Ibal'
 public constant int TD_FARMER_MENU_REPAIR_ABILITY_ID = 'Prpr'
 public constant int TD_PET_DAMAGE_ID = 'Pdam'
 public constant int TD_PET_COLLECTION_LIMIT = 12
-public constant int TD_PET_DEPLOY_LIMIT = 3
 public constant int TD_PET_BALL_LIMIT = 60
 
 public function tdPetWildUnitId(int wave, int species) returns int

@@ -292,7 +292,7 @@ function onCommand() returns boolean
 			SelectUnit(tdPetFarmers[lane], true)
 	else if command == 4
 		if not tdPetDeploy(pet, GetSpellTargetUnit())
-			tdPetNotice(lane, "请选择本路已完工空塔；上阵最多3只，每塔1只。")
+			tdPetNotice(lane, "请选择本路已完工空塔；每座塔可上阵1只精灵。")
 	else if command == 5 and pet != null
 		pet.recall()
 	else if command == 6

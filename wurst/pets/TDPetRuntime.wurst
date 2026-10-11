@@ -41,7 +41,7 @@ public function tdPetCanDeploy(TDPet pet, unit tower) returns boolean
 		return false
 	if tdPetForHost(tower) != null
 		return false
-	return pet.host != null or tdPetDeployedCount(pet.lane) < TD_PET_DEPLOY_LIMIT
+	return true
 
 public function tdPetDeploy(TDPet pet, unit tower) returns boolean
 	if not tdPetCanDeploy(pet, tower)
