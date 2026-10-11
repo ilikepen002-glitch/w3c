@@ -1,6 +1,7 @@
 package TDItemObjectGen
 import TDItemData
 import TDPetData
+import TDPetUIData
 import TDDamageData
 import TDDamageObjectGen
 import ChannelAbilityPreset
@@ -106,10 +107,10 @@ function tdGenerateGroundEquipmentCommands()
 	..setName("功能")
 	..setTooltipNormal(1, "功能 (|cffffcc00C|r)")
 	..setTooltipNormalExtended(1, "打开背包合成、地面范围升级与伤害统计页面。地面装备每 30 秒集中到中央北高台边缘，捕获球另成一堆。")
-	..setIconNormal(tdFarmerCraftIconPath())
+	..setIconNormal(tdPetMenuToolsIconPath())
 	..setHotkeyNormal("C")
-	..setButtonPositionNormalX(1)
-	..setButtonPositionNormalY(2)
+	..setButtonPositionNormalX(3)
+	..setButtonPositionNormalY(0)
 	..setSpellList(1, TD_FARMER_CRAFT_ABILITY_ID.toRawCode() + "," + TD_FARMER_GROUND_UPGRADE_ABILITY_ID.toRawCode() + "," + TD_FARMER_DAMAGE_STATISTICS_ABILITY_ID.toRawCode() + "," + TD_PET_MASTER_ABILITY_ID.toRawCode() + "," + TD_PET_HUNT_ABILITY_ID.toRawCode() + "," + TD_PET_FORGE_ABILITY_ID.toRawCode())
 	..setMinimumSpells(1, 6)
 	..setMaximumSpells(1, 6)

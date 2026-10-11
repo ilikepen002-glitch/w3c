@@ -1,0 +1,78 @@
+package TDPetUIData
+
+// Full imported paths must use explicit object setters, never presetIcon.
+function importedIcon(string name) returns string
+	return "war3mapImported\\BTN" + name + ".blp"
+
+public function tdPetMenuToolsIconPath() returns string
+	return importedIcon("TDPetMenuTools")
+
+public function tdPetCollectionIconPath() returns string
+	return importedIcon("TDPetCollection")
+
+public function tdPetDeployIconPath() returns string
+	return importedIcon("TDPetDeploy")
+
+public function tdPetUICommandIconPath(int command) returns string
+	if command == 0
+		return tdPetCollectionIconPath()
+	if command == 1
+		return importedIcon("TDPetPrevious")
+	if command == 2
+		return importedIcon("TDPetNext")
+	if command == 3
+		return importedIcon("TDPetReturnBuilder")
+	if command == 4
+		return tdPetDeployIconPath()
+	if command == 5
+		return importedIcon("TDPetRecall")
+	if command == 6
+		return importedIcon("TDPetCultivate")
+	return importedIcon("TDPetInfo")
+
+public function tdPetSpeciesIconPath(int species) returns string
+	if species == 1
+		return importedIcon("TDPetFlamePhoenix")
+	if species == 2
+		return importedIcon("TDPetStormFaerieDragon")
+	return importedIcon("TDPetGhostWisp")
+
+public function tdPetSkillIconName(int skill) returns string
+	if skill == 0
+		return "BTNGauntletsOfOgrePower"
+	if skill == 1
+		return "BTNSteelMelee"
+	if skill == 2
+		return "BTNGlove"
+	if skill == 3
+		return "BTNBrilliance"
+	if skill == 4
+		return "BTNCommand"
+	if skill == 5
+		return "BTNSlow"
+	if skill == 6
+		return "BTNFaerieFire"
+	if skill == 7
+		return "BTNCleavingAttack"
+	if skill == 8
+		return "BTNCriticalStrike"
+	if skill == 9
+		return "BTNColdArrows"
+	if skill == 10
+		return "BTNDeathAndDecay"
+	if skill == 11
+		return "BTNBloodLust"
+	if skill == 12
+		return "BTNInnerFire"
+	if skill == 13
+		return "BTNChainLightning"
+	if skill == 14
+		return "BTNImmolationOn"
+	return "BTNCyclone"
+
+public function tdPetSlotIconPath(int variant) returns string
+	if variant == 128
+		return importedIcon("TDPetEmptySlot")
+	let skill = (variant mod 64) div 4
+	let name = tdPetSkillIconName(skill)
+	return variant >= 64 ? "ReplaceableTextures\\CommandButtonsDisabled\\DIS" + name + ".blp" : "ReplaceableTextures\\CommandButtons\\" + name + ".blp"

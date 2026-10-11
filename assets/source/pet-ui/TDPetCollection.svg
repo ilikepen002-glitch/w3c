@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>宠物收藏册</title><desc>Original editable vector artwork. Opaque 64px Warcraft III command-button icon; shared iron frame, distinct semantic silhouette.</desc>
+<defs>
+  <linearGradient id="metal" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#dce8ed"/><stop offset=".45" stop-color="#8499a5"/><stop offset="1" stop-color="#394e59"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#fff0a8"/><stop offset=".45" stop-color="#dfaa47"/><stop offset="1" stop-color="#89551f"/></linearGradient>
+  <linearGradient id="blue" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#d6ffff"/><stop offset=".43" stop-color="#51cee9"/><stop offset="1" stop-color="#237bb7"/></linearGradient>
+  <linearGradient id="green" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#e2ffd0"/><stop offset=".45" stop-color="#71d987"/><stop offset="1" stop-color="#287858"/></linearGradient>
+  <linearGradient id="violet" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#f6caff"/><stop offset=".38" stop-color="#b98bf1"/><stop offset="1" stop-color="#563493"/></linearGradient>
+  <linearGradient id="paper" x1="0" y1="0" x2=".4" y2="1"><stop stop-color="#fff8d5"/><stop offset=".7" stop-color="#e3c68a"/><stop offset="1" stop-color="#a77443"/></linearGradient>
+  <linearGradient id="fire" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe992"/><stop offset=".42" stop-color="#ffa339"/><stop offset="1" stop-color="#c7332b"/></linearGradient>
+  <radialGradient id="wisp"><stop stop-color="#f3ffff"/><stop offset=".45" stop-color="#b9fff1"/><stop offset=".75" stop-color="#55e3dd"/><stop offset="1" stop-color="#3286bc"/></radialGradient>
+  <radialGradient id="back"><stop stop-color="#382445"/><stop offset="1" stop-color="#080f19"/></radialGradient>
+</defs>
+<rect x="0" y="0" width="64" height="64" fill="#080b10"/>
+<rect x="4" y="4" width="56" height="56" fill="url(#back)"/>
+<path d="M1 1H63L59 5H5V59L1 63Z" fill="#98a3aa"/>
+<path d="M63 1V63H1L5 59H59V5Z" fill="#26323b"/>
+<path d="M2 2H62M2 2V62" fill="none" stroke="#d5d9d8" stroke-width=".7"/>
+<path d="M5 5H59V59H5Z" fill="none" stroke="#8b794f" stroke-width=".8"/>
+<path d="M6 6H58V58H6Z" fill="none" stroke="#030910" stroke-width="1"/>
+<g stroke-linejoin="round" stroke-linecap="round">
+  <path d="M16 10L49 13L51 52L17 55L11 50V15Z" fill="#503048" stroke="#130d1a" stroke-width="2"/>
+  <path d="M17 12L48 15L49 50L17 52Z" fill="url(#violet)"/>
+  <path d="M16 11L16 53L11 49V16Z" fill="#765947"/>
+  <path d="M19 49L48 47V52L18 55L14 51Z" fill="url(#paper)" stroke="#422f2d" stroke-width="1.1"/>
+  <path d="M22 17L44 19L45 44L22 46Z" fill="#3a255c" stroke="#efcb88" stroke-width="1.4"/>
+  <path d="M20 51L47 49M24 20L42 22" stroke="#fff1c1" stroke-width="1"/>
+  <path d="M27 34C27 30 32 27 35 29C40 31 41 37 37 39L30 40C27 39 26 37 27 34Z" fill="url(#gold)"/>
+  <ellipse cx="26" cy="29" rx="2.3" ry="3" fill="#e8c37c"/>
+  <ellipse cx="31.5" cy="25.5" rx="2.1" ry="2.8" fill="#e8c37c"/>
+  <ellipse cx="37" cy="26.5" rx="2.1" ry="2.8" fill="#e8c37c"/>
+  <path d="M44 29L52 30V36L44 37Z" fill="url(#gold)" stroke="#382c20" stroke-width="1.2"/>
+</g>
+</svg>

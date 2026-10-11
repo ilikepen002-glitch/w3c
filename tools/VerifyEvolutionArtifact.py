@@ -24,10 +24,10 @@ def main():
         require('A133' in attached, f'{uid}: sale missing')
     identities = {
         'A': ('Units\\NightElf\\HeroMoonPriestess\\HeroMoonPriestess.mdx', 'BTNHeroMoonPriestess', ['A100,A101','A100','A101']),
-        'O': ('Units\\Orc\\HeroBladeMaster\\HeroBladeMaster.mdx', 'BTNHeroBlademaster', ['A102,A103','A102,A131','A102,A132']),
+        'O': ('Units\\Orc\\HeroBladeMaster\\HeroBladeMaster.mdx', 'BTNHeroBlademaster', ['A102,A103,A139','A102,A131','A102,A132']),
         'H': ('Units\\Human\\HeroPaladin\\HeroPaladin.mdx', 'BTNHeroPaladin', ['A104,A105','A104','A105']),
-        'D': ('Units\\NightElf\\HeroKeeperOfTheGrove\\HeroKeeperoftheGrove.mdx', 'BTNKeeperOfTheGrove', ['A106,A110','A106','A110']),
-        'G': ('Units\\Undead\\Abomination\\Abomination.mdx', 'BTNAbomination', ['A107,A116','A107','A116']),
+        'D': ('Units\\NightElf\\HeroKeeperOfTheGrove\\HeroKeeperoftheGrove.mdx', 'BTNKeeperOfTheGrove', ['A106,A110,A135','A106','A110,A135']),
+        'G': ('Units\\Undead\\Abomination\\Abomination.mdx', 'BTNAbomination', ['A107,A137,A116','A107,A137','A116']),
     }
     for family, (model,icon,skills) in identities.items():
         for index, suffix in enumerate(['15','6A','6B']):

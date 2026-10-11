@@ -1,0 +1,36 @@
+package TDPetUIDataTests
+import TDPetUIData
+
+@Test function petFarmerCommandsUseStableSemanticIconPaths()
+	tdPetMenuToolsIconPath().assertEquals("war3mapImported\\BTNTDPetMenuTools.blp")
+	tdPetCollectionIconPath().assertEquals("war3mapImported\\BTNTDPetCollection.blp")
+	tdPetDeployIconPath().assertEquals("war3mapImported\\BTNTDPetDeploy.blp")
+
+@Test function petCollectionCommandsHaveEightDistinctPurposeIcons()
+	tdPetUICommandIconPath(0).assertEquals("war3mapImported\\BTNTDPetCollection.blp")
+	tdPetUICommandIconPath(1).assertEquals("war3mapImported\\BTNTDPetPrevious.blp")
+	tdPetUICommandIconPath(2).assertEquals("war3mapImported\\BTNTDPetNext.blp")
+	tdPetUICommandIconPath(3).assertEquals("war3mapImported\\BTNTDPetReturnBuilder.blp")
+	tdPetUICommandIconPath(4).assertEquals("war3mapImported\\BTNTDPetDeploy.blp")
+	tdPetUICommandIconPath(5).assertEquals("war3mapImported\\BTNTDPetRecall.blp")
+	tdPetUICommandIconPath(6).assertEquals("war3mapImported\\BTNTDPetCultivate.blp")
+	tdPetUICommandIconPath(7).assertEquals("war3mapImported\\BTNTDPetInfo.blp")
+	for command = 0 to 7
+		for other = command + 1 to 7
+			(tdPetUICommandIconPath(command) != tdPetUICommandIconPath(other)).assertTrue()
+
+@Test function petSpeciesIconsMatchThreeDistinctDynamicModels()
+	tdPetSpeciesIconPath(1).assertEquals("war3mapImported\\BTNTDPetFlamePhoenix.blp")
+	tdPetSpeciesIconPath(2).assertEquals("war3mapImported\\BTNTDPetStormFaerieDragon.blp")
+	tdPetSpeciesIconPath(3).assertEquals("war3mapImported\\BTNTDPetGhostWisp.blp")
+	(tdPetSpeciesIconPath(1) != tdPetSpeciesIconPath(2)).assertTrue()
+	(tdPetSpeciesIconPath(2) != tdPetSpeciesIconPath(3)).assertTrue()
+
+@Test function petEmptySlotIsIndependentFromBrightAndLockedSkillStates()
+	tdPetSlotIconPath(128).assertEquals("war3mapImported\\BTNTDPetEmptySlot.blp")
+	for variant = 0 to 63
+		let skill = variant div 4
+		tdPetSlotIconPath(variant).assertEquals("ReplaceableTextures\\CommandButtons\\" + tdPetSkillIconName(skill) + ".blp")
+		tdPetSlotIconPath(variant + 64).assertEquals("ReplaceableTextures\\CommandButtonsDisabled\\DIS" + tdPetSkillIconName(skill) + ".blp")
+		(tdPetSlotIconPath(variant) != tdPetSlotIconPath(128)).assertTrue()
+		(tdPetSlotIconPath(variant + 64) != tdPetSlotIconPath(128)).assertTrue()

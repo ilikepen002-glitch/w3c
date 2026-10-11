@@ -1,0 +1,314 @@
+"""Pet UI regressions: packaged positive contract and targeted in-memory negatives.
+
+The positive artifact tests intentionally fail on an old map until the approved
+source changes are rebuilt. Negatives use a corrected copy and never edit a map.
+"""
+from contextlib import redirect_stdout
+from copy import deepcopy
+import io
+from pathlib import Path
+import sys
+import struct
+import tempfile
+import unittest
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools"))
+from GenerateTowerTerrainMask import Mpq
+from VerifyEquipmentAbilityArtifact import ability_objects
+from VerifyTowerPlacementArtifact import unit_objects
+import VerifyPetUIArtifact as verifier
+
+
+class PetUIArtifactTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.artifact = Mpq((ROOT / "ExampleMap.w3x").read_bytes())
+        cls.abilities = ability_objects(cls.artifact.extract("war3map.w3a"))
+        cls.units = unit_objects(cls.artifact.extract("war3map.w3u"))
+
+    def test_actual_farmer_grid_is_exactly_twelve_cells(self):
+        verifier.verify_farmer_grid(self.abilities, self.units)
+
+    def test_actual_eight_collection_commands_keep_cells_hotkeys_orders(self):
+        verifier.verify_collection_commands(self.abilities)
+
+    def test_actual_three_species_have_explicit_matching_identity_icons(self):
+        verifier.verify_species_identity(self.units)
+
+    def test_actual_all_516_slots_distinguish_bright_locked_and_empty(self):
+        verifier.verify_slot_icons(self.abilities)
+
+    def test_actual_imports_decode_and_match_source_hashes(self):
+        verifier.verify_imported_icons(self.artifact, ROOT)
+
+
+class PetUINegativeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        artifact = Mpq((ROOT / "ExampleMap.w3x").read_bytes())
+        cls.corrected_abilities = ability_objects(artifact.extract("war3map.w3a"))
+        cls.corrected_units = unit_objects(artifact.extract("war3map.w3u"))
+        # Permit deterministic negative coverage before the next map rebuild.
+        for rawcode, (x, y, _, _) in verifier.EXPECTED.items():
+            cls.set_field(cls.corrected_abilities, rawcode, "abpx", x)
+            cls.set_field(cls.corrected_abilities, rawcode, "abpy", y)
+        for rawcode, stem in verifier.FARMER_ICONS.items():
+            cls.set_field(cls.corrected_abilities, rawcode, "aart", verifier.icon_path(stem))
+            if rawcode != "Geqb":
+                cls.set_field(cls.corrected_abilities, rawcode, "arar", verifier.icon_path(stem))
+        for rawcode, spec in verifier.COLLECTION_COMMANDS.items():
+            for field in ("aart", "arar"):
+                cls.set_field(cls.corrected_abilities, rawcode, field, verifier.icon_path(spec[4]))
+        for species, (_, stem) in enumerate(verifier.SPECIES, 1):
+            for field in ("uico", "ussi"):
+                cls.corrected_units[f"pd0{species}"][field] = verifier.icon_path(stem)
+        for slot in range(4):
+            cls.set_field(cls.corrected_abilities, f"s{slot}80", "aart", verifier.icon_path("TDPetEmptySlot"))
+
+    @staticmethod
+    def set_field(abilities, rawcode, field, value, level=0):
+        matches = [key for key in abilities[rawcode][1] if key[0] == field and key[1] == level]
+        if matches:
+            key = matches[0]
+            kind = abilities[rawcode][1][key][0]
+        else:
+            key = (field, level, 0)
+            kind = 3 if isinstance(value, str) else 0
+        abilities[rawcode][1][key] = (kind, value)
+
+    def setUp(self):
+        self.abilities = deepcopy(self.corrected_abilities)
+        self.units = deepcopy(self.corrected_units)
+
+    def test_corrected_fixture_satisfies_all_object_contracts(self):
+        verifier.verify_farmer_grid(self.abilities, self.units)
+        verifier.verify_collection_commands(self.abilities)
+        verifier.verify_species_identity(self.units)
+        verifier.verify_slot_icons(self.abilities)
+
+    def test_rejects_each_farmer_cell_conflict(self):
+        for rawcode in verifier.EXPECTED:
+            with self.subTest(command=rawcode):
+                abilities = deepcopy(self.abilities)
+                self.set_field(abilities, rawcode, "abpx", 0)
+                self.set_field(abilities, rawcode, "abpy", 0)
+                with self.assertRaisesRegex(ValueError, f"{rawcode}: farmer cell overlaps"):
+                    verifier.verify_farmer_grid(abilities, self.units)
+
+    def test_rejects_old_farmer_position(self):
+        self.set_field(self.abilities, "Geqb", "abpx", 1)
+        self.set_field(self.abilities, "Geqb", "abpy", 2)
+        with self.assertRaisesRegex(ValueError, "farmer cell overlaps"):
+            verifier.verify_farmer_grid(self.abilities, self.units)
+
+    def test_rejects_collection_same_icon(self):
+        self.set_field(self.abilities, "Pc02", "aart", verifier.icon_path("TDPetPrevious"))
+        with self.assertRaisesRegex(ValueError, "Collection command icons must be distinct"):
+            verifier.verify_collection_commands(self.abilities)
+
+    def test_rejects_collection_cell_conflict(self):
+        self.set_field(self.abilities, "Pc02", "abpx", 1)
+        with self.assertRaisesRegex(ValueError, "Pc02: collection cell overlaps Pc01"):
+            verifier.verify_collection_commands(self.abilities)
+
+    def test_rejects_collection_wrong_or_colliding_order(self):
+        for order, reason in [("web", "base orders collide"), ("attack", "Pc02: base order changed")]:
+            with self.subTest(order=order):
+                abilities = deepcopy(self.abilities)
+                self.set_field(abilities, "Pc02", "Ncl6", order, 1)
+                with self.assertRaisesRegex(ValueError, reason):
+                    verifier.verify_collection_commands(abilities)
+
+    def test_rejects_wrong_custom_path_prefix(self):
+        for field in ("aart", "arar"):
+            with self.subTest(field=field):
+                abilities = deepcopy(self.abilities)
+                self.set_field(abilities, "Pc02", field,
+                               verifier.NORMAL_PREFIX + verifier.icon_path("TDPetNext"))
+                with self.assertRaisesRegex(ValueError, "Pc02: .*icon path mismatch"):
+                    verifier.verify_collection_commands(abilities)
+
+    def test_rejects_species_without_portrait_or_wrong_species(self):
+        for species in range(1, 4):
+            for field in ("uico", "ussi"):
+                with self.subTest(species=species, field=field):
+                    units = deepcopy(self.units)
+                    units[f"pd0{species}"][field] = verifier.icon_path("TDPetCollection")
+                    with self.assertRaisesRegex(ValueError, f"pd0{species}: {field} species icon mismatch"):
+                        verifier.verify_species_identity(units)
+
+    def test_rejects_empty_locked_bright_icon_mixups(self):
+        for rawcode, bad_icon, reason in [
+            ("s080", verifier.skill_icon_path(64), "s080: empty slot icon mismatch"),
+            ("s040", verifier.icon_path("TDPetEmptySlot"), "s040: locked skill icon mismatch"),
+            ("s000", verifier.skill_icon_path(64), "s000: bright skill icon mismatch"),
+            ("s044", verifier.skill_icon_path(64), "s044: locked skill icon mismatch"),
+        ]:
+            with self.subTest(rawcode=rawcode):
+                abilities = deepcopy(self.abilities)
+                self.set_field(abilities, rawcode, "aart", bad_icon)
+                with self.assertRaisesRegex(ValueError, reason):
+                    verifier.verify_slot_icons(abilities)
+
+    def test_rejects_missing_locked_explanation(self):
+        self.set_field(self.abilities, "s240", "aub1", "已有技能", 1)
+        with self.assertRaisesRegex(ValueError, "s240: missing resonance explanation"):
+            verifier.verify_slot_icons(self.abilities)
+
+    def test_rejects_empty_label_as_locked(self):
+        self.set_field(self.abilities, "s280", "atp1", "空栏 共鸣锁定", 1)
+        with self.assertRaisesRegex(ValueError, "s280: empty slot must not be resonance locked"):
+            verifier.verify_slot_icons(self.abilities)
+
+    def test_rejects_wrong_locked_skill_or_quality_identity(self):
+        self.set_field(self.abilities, "s240", "atp1", "|cffffffff白|r 战意 [共鸣锁定]", 1)
+        with self.assertRaisesRegex(ValueError, "s240: skill/quality identity label changed"):
+            verifier.verify_slot_icons(self.abilities)
+
+    def test_rejects_locked_description_for_different_skill(self):
+        self.set_field(self.abilities, "s240", "aub1", "已抽技能，尚未生效。完成本路第4波解锁。|n错误技能", 1)
+        with self.assertRaisesRegex(ValueError, "s240: locked skill description mismatch"):
+            verifier.verify_slot_icons(self.abilities)
+
+    def test_rejects_passive_slot_combat_effect(self):
+        self.set_field(self.abilities, "s040", "Ocr1", 25.0, 1)
+        with self.assertRaisesRegex(ValueError, "s040: passive display must have no critical-strike combat effect"):
+            verifier.verify_slot_icons(self.abilities)
+
+    def test_rejects_missing_import_with_precise_path(self):
+        class MissingArchive:
+            def has(self, path):
+                return False
+        with self.assertRaisesRegex(ValueError, "Missing packaged pet UI icon: war3mapImported"):
+            verifier.verify_imported_icons(MissingArchive(), ROOT)
+
+
+def source_wiring_problems(pet_source, item_source):
+    problems = []
+    command = pet_source.split("function command(", 1)[1].split("@compiletime", 1)[0]
+    if "..presetIcon(icon)" in command:
+        problems.append("command helper still applies presetIcon to complete paths")
+    if "..setIconNormal(icon)" not in command or "..setIconResearch(icon)" not in command:
+        problems.append("command helper lacks explicit normal/research icon setters")
+    if "tdPetUICommandIconPath(cmd)" not in pet_source:
+        problems.append("collection commands bypass semantic icon mapping")
+    if "..setIconGameInterface(tdPetSpeciesIconPath(species))" not in pet_source:
+        problems.append("species displays lack explicit interface icons")
+    if "..setIconScoreScreen(tdPetSpeciesIconPath(species))" not in pet_source:
+        problems.append("species displays lack explicit score icons")
+    if "BTNSelectHeroOn" in pet_source or "setIconNormal(tdPetSlotIconPath(variant))" not in pet_source:
+        problems.append("empty/bright/locked slots bypass independent icon mapping")
+    if "..setIconNormal(tdPetMenuToolsIconPath())" not in item_source:
+        problems.append("function menu bypasses tools icon mapping")
+    return problems
+
+
+class PetUISourceTests(unittest.TestCase):
+    def test_cli_rejects_obsolete_extra_game_directory_argument(self):
+        with patch.object(sys, "argv", ["VerifyPetUIArtifact.py", "map.w3x", "game-directory"]), \
+                self.assertRaisesRegex(ValueError, "Usage:"):
+            verifier.main()
+
+    def test_imported_icon_wiring_uses_shared_helpers_and_explicit_setters(self):
+        pet = (ROOT / "wurst/pets/TDPetObjectGen.wurst").read_text(encoding="utf-8")
+        item = (ROOT / "wurst/items/TDItemObjectGen.wurst").read_text(encoding="utf-8")
+        self.assertEqual(source_wiring_problems(pet, item), [])
+
+
+class PetUIResourceNegativeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.source_data = {
+            verifier.icon_path(stem, disabled):
+            (ROOT / "imports" / verifier.icon_path(stem, disabled).replace("\\", "/")).read_bytes()
+            for stem in verifier.ICON_STEMS for disabled in (False, True)
+        }
+
+    def setUp(self):
+        self.data = dict(self.source_data)
+
+    def verify(self, source_matches=False):
+        class Archive:
+            def __init__(self, data):
+                self.data = data
+            def has(self, path):
+                return path in self.data
+            def extract(self, path):
+                return self.data[path]
+        with redirect_stdout(io.StringIO()):
+            if not source_matches:
+                return verifier.verify_imported_icons(Archive(self.data), ROOT)
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                for path, data in self.data.items():
+                    file = root / "imports" / path.replace("\\", "/")
+                    file.parent.mkdir(parents=True, exist_ok=True)
+                    file.write_bytes(data)
+                return verifier.verify_imported_icons(Archive(self.data), root)
+
+    def test_source_icons_satisfy_complete_resource_contract(self):
+        self.verify()
+
+    def test_rejects_missing_disabled_import(self):
+        path = verifier.icon_path("TDPetMenuTools", True)
+        del self.data[path]
+        with self.assertRaisesRegex(ValueError, "Missing packaged pet UI icon: ReplaceableTextures"):
+            self.verify()
+
+    def test_rejects_packaged_hash_mismatch(self):
+        path = verifier.icon_path("TDPetNext")
+        data = bytearray(self.data[path])
+        data[-1] ^= 1
+        self.data[path] = bytes(data)
+        with self.assertRaisesRegex(ValueError, "BTNTDPetNext.blp: packaged icon hash differs from source"):
+            self.verify()
+
+    def test_rejects_malformed_blp_or_wrong_dimensions(self):
+        path = verifier.icon_path("TDPetMenuTools")
+        for change, reason in [("magic", "invalid/truncated BLP1"),
+                               ("size", "icon must be 64x64"),
+                               ("mip", "mip 0 out of bounds or overlaps")]:
+            with self.subTest(change=change):
+                self.data = dict(self.source_data)
+                data = bytearray(self.data[path])
+                if change == "magic":
+                    data[:4] = b"PNG!"
+                elif change == "size":
+                    struct.pack_into("<I", data, 12, 128)
+                else:
+                    struct.pack_into("<I", data, 28, 1179)
+                self.data[path] = bytes(data)
+                with self.assertRaisesRegex(ValueError, reason):
+                    self.verify(source_matches=True)
+
+    def test_rejects_duplicate_semantic_artwork(self):
+        self.data[verifier.icon_path("TDPetNext")] = self.data[verifier.icon_path("TDPetPrevious")]
+        with self.assertRaisesRegex(ValueError, "duplicate semantic icon artwork"):
+            self.verify(source_matches=True)
+
+    def test_rejects_colored_disabled_artwork(self):
+        path = verifier.icon_path("TDPetMenuTools", True)
+        data = bytearray(self.data[path])
+        # Recolor every palette entry, preserving all valid format metadata.
+        for index in range(256):
+            value = max(20, data[156 + index * 4])
+            data[156 + index * 4:159 + index * 4] = bytes((0, 0, value))
+        self.data[path] = bytes(data)
+        with self.assertRaisesRegex(ValueError, "disabled icon must be grayscale"):
+            self.verify(source_matches=True)
+
+    def test_rejects_disabled_artwork_without_dimming(self):
+        path = verifier.icon_path("TDPetMenuTools", True)
+        data = bytearray(self.data[path])
+        for index in range(256):
+            value = 200 + data[156 + index * 4] // 5
+            data[156 + index * 4:159 + index * 4] = bytes((value, value, value))
+        self.data[path] = bytes(data)
+        with self.assertRaisesRegex(ValueError, "disabled icon must be visibly dimmer than normal"):
+            self.verify(source_matches=True)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
