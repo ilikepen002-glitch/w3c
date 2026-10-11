@@ -39,7 +39,14 @@ public function tdPetSkillAllowed(int skill, int slot, int usedMask, boolean has
 		return false
 	if slot == 0
 		return tdPetSkillIsNumeric(skill)
-	return not tdPetSkillIsNumeric(skill) and (slot != 1 or tdPetSkillIsUniversal(skill)) and (not hasActive or not tdPetSkillIsActive(skill))
+	// Use explicit short-circuit branches: the fixed JASS printer misgroups mixed and/or.
+	if tdPetSkillIsNumeric(skill)
+		return false
+	if slot == 1 and not tdPetSkillIsUniversal(skill)
+		return false
+	if hasActive and tdPetSkillIsActive(skill)
+		return false
+	return true
 
 public function tdPetSkillNameById(int skill) returns string
 	if skill == 0
@@ -124,3 +131,10 @@ public function tdPetSkillDescriptionById(int skill, int quality) returns string
 
 
 
+
+// Same fixed independent 2% bucket as the former wild-kill material reward.
+public function tdPetReleaseGetsSlotStone(int roll) returns boolean
+	return roll >= 1 and roll <= 2
+
+public function tdPetReleaseLifecycleAllows(boolean deployed, boolean released, boolean proposal) returns boolean
+	return not deployed and not released and not proposal

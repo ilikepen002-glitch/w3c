@@ -187,14 +187,88 @@ public function tdPetStore(int lane, TDPet pet) returns boolean
 			return true
 	return false
 
-// Keep released records alive until match end: delayed damage closures may hold them.
-public function tdPetRelease(int lane, int slot) returns boolean
+// Internal no-reward removal for lifecycle/probe cleanup, never the player release entry.
+// Keep discarded records alive until match end: delayed damage closures may hold them.
+public function tdPetDiscardOwned(int lane, int slot) returns boolean
 	let pet = tdPetAt(lane, slot)
-	if pet == null or pet.host != null
+	if pet == null or pet.lane != lane or pet.released or pet.host != null
 		return false
+	tdPetCancelRelease(lane)
 	pet.released = true
 	pet.recall()
 	tdPets[lane * TD_PET_COLLECTION_LIMIT + slot] = null
+	return true
+
+// Release tickets are lane-owned and single-use. Records stay alive until match end.
+public constant int TD_PET_MATERIAL_LIMIT = 2147483647
+boolean array tdPetPlayerLeft
+int releaseSerial = 0
+int array releaseNonce
+int array releaseSlot
+TDPet array releasePet
+int array releaseRevision
+int array releaseGeneration
+
+public function tdPetLaneCanManage(int lane) returns boolean
+	return tdIsLanePlayer(lane) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsGameOver() and not tdPetPlayerLeft[lane]
+
+public function tdPetCancelRelease(int lane)
+	if not tdIsLanePlayer(lane)
+		return
+	releaseNonce[lane] = 0
+	releaseSlot[lane] = -1
+	releasePet[lane] = null
+
+public function tdPetReleaseNonce(int lane) returns int
+	return tdIsLanePlayer(lane) ? releaseNonce[lane] : 0
+
+public function tdPetPlayerHasLeft(int lane) returns boolean
+	return not tdIsLanePlayer(lane) or tdPetPlayerLeft[lane]
+
+public function tdPetMarkPlayerLeft(int lane)
+	if tdIsLanePlayer(lane)
+		tdPetPlayerLeft[lane] = true
+		tdPetCancelRelease(lane)
+
+function canReleaseRecord(int lane, TDPet pet) returns boolean
+	return tdPetLaneCanManage(lane) and not tdIsLaneFinished(lane) and pet != null and pet.lane == lane and tdPetReleaseLifecycleAllows(pet.host != null, pet.released, pet.proposalSlot >= 0)
+
+public function tdPetBeginRelease(int lane, int slot) returns int
+	if not tdIsLanePlayer(lane)
+		return 0
+	tdPetCancelRelease(lane)
+	let pet = tdPetAt(lane, slot)
+	if not canReleaseRecord(lane, pet) or releaseSerial >= 2147483647
+		return 0
+	releaseSerial += 1
+	releaseNonce[lane] = releaseSerial
+	releaseSlot[lane] = slot
+	releasePet[lane] = pet
+	releaseRevision[lane] = pet.revision
+	releaseGeneration[lane] = pet.generation
+	return releaseNonce[lane]
+
+public function tdPetConfirmRelease(int lane, int nonce) returns boolean
+	if not tdIsLanePlayer(lane) or nonce <= 0 or nonce != releaseNonce[lane]
+		// A stale click must not invalidate a newer ticket.
+		return false
+	let slot = releaseSlot[lane]
+	let pet = releasePet[lane]
+	let revision = releaseRevision[lane]
+	let generation = releaseGeneration[lane]
+	// Consume the valid ticket before revalidation or randomness; never yield.
+	tdPetCancelRelease(lane)
+	if pet == null or tdPetAt(lane, slot) != pet or not canReleaseRecord(lane, pet) or pet.revision != revision or pet.generation != generation
+		return false
+	// Refuse before removal when either possible material reward would overflow.
+	if tdPetRerollStones[lane] < 0 or tdPetSlotStones[lane] < 0 or tdPetRerollStones[lane] >= TD_PET_MATERIAL_LIMIT or tdPetSlotStones[lane] >= TD_PET_MATERIAL_LIMIT
+		return false
+	let extra = tdPetReleaseGetsSlotStone(GetRandomInt(1, 100))
+	if not tdPetDiscardOwned(lane, slot)
+		return false
+	tdPetRerollStones[lane] += 1
+	if extra
+		tdPetSlotStones[lane] += 1
 	return true
 
 public int array tdPetResonance
@@ -312,6 +386,7 @@ public function tdPetTowerRemoved(unit tower)
 		tdPetBusyTowers.removeBoolean(tower.getHandleId())
 
 public function tdPetLaneDefeated(int lane)
+	tdPetCancelRelease(lane)
 	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
 		let pet = tdPetAt(lane, slot)
 		if pet != null
@@ -320,6 +395,8 @@ public function tdPetLaneDefeated(int lane)
 public function tdPetInitializeLane(int lane)
 	if not tdIsLanePlayer(lane)
 		return
+	tdPetCancelRelease(lane)
+	tdPetPlayerLeft[lane] = false
 	tdPetBalls[lane] = 3
 	tdPetResonance[lane] = 1
 	tdPetMasterBalls[lane] = 0

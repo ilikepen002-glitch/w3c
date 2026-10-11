@@ -54,16 +54,6 @@ public function tdPetWildTransition(TDPetWildRecord record, int nextState) retur
 public function tdPetWildCanCapture(TDPetWildRecord record, int lane) returns boolean
 	return record != null and record.lane == lane and record.creature != null and record.canCapture(record.creature.isAlive(), getElapsedGameTime())
 
-public function tdPetWildHunt(TDPetWildRecord record, int lane) returns boolean
-	if not tdPetWildCanCapture(record, lane)
-		return false
-	record.beginHunt(record.creature.isAlive(), getElapsedGameTime())
-	SetUnitInvulnerable(record.creature, false)
-	SetUnitOwner(record.creature, Player(TD_ENEMY_PLAYER_ID), false)
-	SetUnitVertexColor(record.creature, 255, 100, 100, 255)
-	DisplayTimedTextToPlayer(Player(lane), 0, 0, 5.0, "已标记猎杀：捕获资格永久失去。实际击杀必得洗练石，2%开栏石；60秒截止不变。")
-	return true
-
 public function tdPetWildPlanLane(int lane)
 	for stage = 0 to 3
 		if GetRandomInt(1, 100) <= 50
@@ -116,7 +106,7 @@ public function tdPetSpawnWild(int lane, int wave, int species) returns TDPetWil
 	record.travelSpeed = tdPetWildTravelSpeed(lane)
 	record.marker = CreateTextTag()
 	SetTextTagPermanent(record.marker, true)
-	SetTextTagText(record.marker, "野生精灵 60s · Q捕获 / 功能猎杀", 0.022)
+	SetTextTagText(record.marker, "野生精灵 60s · Q捕获", 0.022)
 	SetTextTagPosUnit(record.marker, creature, 85.0)
 	SetTextTagVisibility(record.marker, GetLocalPlayer() == Player(lane))
 	tdPetWildRecords.add(record)
@@ -124,7 +114,7 @@ public function tdPetSpawnWild(int lane, int wave, int species) returns TDPetWil
 	if GetLocalPlayer() == Player(lane)
 		PingMinimapEx(creature.getPos().x, creature.getPos().y, 4.0, 255, 220, 50, false)
 		StartSound(bj_questDiscoveredSound)
-	DisplayTimedTextToPlayer(Player(lane), 0, 0, 7.0, "|cffffdd40野生" + tdPetSpeciesName(species) + "出现！|r保护60秒，Q普通球捕获；功能菜单可大师球或猎杀。" + (record.tutorial ? " 教学首只第一次普通球必成。" : ""))
+	DisplayTimedTextToPlayer(Player(lane), 0, 0, 7.0, "|cffffdd40野生" + tdPetSpeciesName(species) + "出现！|r保护60秒，Q普通球捕获；功能菜单可投大师球。" + (record.tutorial ? " 教学首只第一次普通球必成。" : ""))
 	return record
 
 public function tdPetWildOnWave(int lane, int wave)
@@ -135,20 +125,9 @@ public function tdPetWildOnWave(int lane, int wave)
 
 function onDeath()
 	let record = tdPetWildFor(GetTriggerUnit())
-	if record == null or not record.hunting
-		return
-	let killer = GetKillingUnit()
-	if getElapsedGameTime() >= record.deadline
+	if record != null
+		// Wild creatures never award materials, regardless of killer or deadline.
 		tdPetWildTransition(record, TD_PET_WILD_EXPIRED)
-		return
-	if not tdPetWildTransition(record, TD_PET_WILD_KILLED)
-		return
-	if killer != null and GetPlayerId(GetOwningPlayer(killer)) == record.lane and not tdIsGameOver() and not tdIsLaneDefeated(record.lane)
-		tdPetRerollStones[record.lane] += 1
-		let extra = GetRandomInt(1, 100) <= 2
-		if extra
-			tdPetSlotStones[record.lane] += 1
-		DisplayTimedTextToPlayer(Player(record.lane), 0, 0, 6.0, "猎杀奖励：洗练石 +1" + (extra ? " · 开栏石 +1" : "") + "。已进入本路精灵材料账户。")
 
 public function tdPetSetupWild()
 	if ready
@@ -162,10 +141,10 @@ public function tdPetSetupWild()
 		while iter.hasNext()
 			let record = iter.next()
 			if record.state == TD_PET_WILD_ALIVE
-				if now >= record.deadline or tdIsGameOver() or tdIsLaneDefeated(record.lane) or not tdIsLaneActive(record.lane)
+				if record.creature == null or not record.creature.isAlive() or tdPetPlayerHasLeft(record.lane) or now >= record.deadline or tdIsGameOver() or tdIsLaneDefeated(record.lane) or not tdIsLaneActive(record.lane)
 					tdPetWildTransition(record, TD_PET_WILD_EXPIRED)
 				else
-					SetTextTagText(record.marker, (record.hunting ? "猎杀" : "可捕获") + " " + IMaxBJ(0, (record.deadline - now).toInt()).toString() + "s", 0.022)
+					SetTextTagText(record.marker, "可捕获 " + IMaxBJ(0, (record.deadline - now).toInt()).toString() + "s", 0.022)
 					SetTextTagPosUnit(record.marker, record.creature, 85.0)
 					if record.waypoint < tdLaneWaypointCount(record.lane)
 						let destination = tdLaneWaypointPosition(record.lane, record.waypoint)

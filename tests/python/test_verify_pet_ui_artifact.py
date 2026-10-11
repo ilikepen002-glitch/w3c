@@ -19,6 +19,7 @@ from GenerateTowerTerrainMask import Mpq
 from VerifyEquipmentAbilityArtifact import ability_objects
 from VerifyTowerPlacementArtifact import unit_objects
 import VerifyPetUIArtifact as verifier
+from pet_artifact_fixture import correct_release_contract
 
 
 class PetUIArtifactTests(unittest.TestCase):
@@ -33,6 +34,21 @@ class PetUIArtifactTests(unittest.TestCase):
 
     def test_actual_eight_collection_commands_keep_cells_hotkeys_orders(self):
         verifier.verify_collection_commands(self.abilities)
+
+    def test_actual_no_removed_hunt_ghost_or_attachment_remains(self):
+        verifier.verify_no_hunt_objects(self.abilities, self.units)
+
+    def test_actual_all_channel_orders_are_globally_unique(self):
+        verifier.verify_global_channel_orders(self.abilities)
+
+    def test_actual_wild_and_capture_tooltips_are_capture_only(self):
+        verifier.verify_capture_only(self.abilities, self.units)
+
+    def test_actual_cultivation_command_explicitly_exposes_release(self):
+        verifier.verify_cultivation_command(self.abilities)
+
+    def test_actual_dialog_buttons_use_real_numeric_hotkeys(self):
+        verifier.verify_dialog_hotkeys(self.artifact.extract("war3map.j").decode("utf-8"))
 
     def test_actual_three_species_have_explicit_matching_identity_icons(self):
         verifier.verify_species_identity(self.units)
@@ -50,6 +66,7 @@ class PetUINegativeTests(unittest.TestCase):
         artifact = Mpq((ROOT / "ExampleMap.w3x").read_bytes())
         cls.corrected_abilities = ability_objects(artifact.extract("war3map.w3a"))
         cls.corrected_units = unit_objects(artifact.extract("war3map.w3u"))
+        correct_release_contract(cls.corrected_abilities, cls.corrected_units)
         # Permit deterministic negative coverage before the next map rebuild.
         for rawcode, (x, y, _, _) in verifier.EXPECTED.items():
             cls.set_field(cls.corrected_abilities, rawcode, "abpx", x)
@@ -87,6 +104,7 @@ class PetUINegativeTests(unittest.TestCase):
         verifier.verify_collection_commands(self.abilities)
         verifier.verify_species_identity(self.units)
         verifier.verify_slot_icons(self.abilities)
+        verifier.verify_pet_core(self.abilities, self.units)
 
     def test_rejects_each_farmer_cell_conflict(self):
         for rawcode in verifier.EXPECTED:
@@ -102,6 +120,76 @@ class PetUINegativeTests(unittest.TestCase):
         self.set_field(self.abilities, "Geqb", "abpy", 2)
         with self.assertRaisesRegex(ValueError, "farmer cell overlaps"):
             verifier.verify_farmer_grid(self.abilities, self.units)
+
+    def test_rejects_cultivation_command_bad_name_tooltip_description_or_hotkey(self):
+        cases = [("anam", 0, "培养 / 释放", "cultivation name"),
+                 ("atp1", 1, "洗练 / 开栏 / 释放(C) (C)", "cultivation tooltip"),
+                 ("aub1", 1, "可洗练或开栏", "cultivation description"),
+                 ("ahky", 0, "V", "ahky cultivation hotkey"),
+                 ("arhk", 0, "V", "arhk cultivation hotkey"),
+                 ("auhk", 0, "V", "auhk cultivation hotkey")]
+        for field, level, text, reason in cases:
+            with self.subTest(field=field):
+                abilities = deepcopy(self.abilities)
+                self.set_field(abilities, "Pc06", field, text, level)
+                with self.assertRaisesRegex(ValueError, reason):
+                    verifier.verify_cultivation_command(abilities)
+
+    def test_rejects_capture_tooltip_hunt_at_any_inventory_level(self):
+        for level in (1, 31, 61):
+            with self.subTest(level=level):
+                abilities = deepcopy(self.abilities)
+                self.set_field(abilities, "Pcap", "aub1", "捕获或猎杀二选一", level)
+                with self.assertRaisesRegex(ValueError, f"Pcap level {level}: obsolete wild-hunt text"):
+                    verifier.verify_capture_only(abilities, self.units)
+
+    def test_rejects_hunt_on_last_wild_description(self):
+        self.units["p203"]["ides"] = "捕获或主动猎杀二选一。"
+        with self.assertRaisesRegex(ValueError, "p203: wild description"):
+            verifier.verify_capture_only(self.abilities, self.units)
+
+    def test_rejects_phnt_parent_or_nonmenu_reference(self):
+        for target in ("parent", "requirement", "unit_attachment"):
+            with self.subTest(target=target):
+                abilities, units = deepcopy(self.abilities), deepcopy(self.units)
+                if target == "parent":
+                    abilities["Xhnt"] = ("Phnt", {})
+                elif target == "requirement":
+                    self.set_field(abilities, "Pfor", "areq", "Phnt")
+                else:
+                    units["pv03"]["uabi"] += ",Phnt"
+                with self.assertRaisesRegex(ValueError, "removed Phnt remains"):
+                    verifier.verify_no_hunt_objects(abilities, units)
+
+    def test_rejects_channel_collision_outside_collection_and_at_later_level(self):
+        for owner in ("A109", "A133", "Pfor"):
+            with self.subTest(owner=owner):
+                abilities = deepcopy(self.abilities)
+                order = verifier.field_value(abilities[owner][1], "Ncl6", 1)
+                self.set_field(abilities, "Pcap", "Ncl6", order, 61)
+                with self.assertRaisesRegex(ValueError, "Channel order.*collides|consistent across all levels"):
+                    verifier.verify_global_channel_orders(abilities)
+
+    def test_rejects_nonchannel_object_with_colliding_channel_field(self):
+        order = verifier.field_value(self.abilities["Pfor"][1], "Ncl6", 1)
+        self.abilities["Xord"] = ("AOcr", {("Ncl6", 1, 6): (3, order)})
+        with self.assertRaisesRegex(ValueError, "Channel order.*collides"):
+            verifier.verify_global_channel_orders(self.abilities)
+
+    def test_rejects_missing_or_bad_global_channel_order(self):
+        for change in ("missing", "empty", "column", "type"):
+            with self.subTest(change=change):
+                abilities = deepcopy(self.abilities)
+                fields = abilities["Pcap"][1]
+                order = fields.pop(("Ncl6", 61, 6))
+                if change == "empty":
+                    fields[("Ncl6", 61, 6)] = (3, "")
+                elif change == "column":
+                    fields[("Ncl6", 61, 5)] = order
+                elif change == "type":
+                    fields[("Ncl6", 61, 6)] = (0, 1)
+                with self.assertRaisesRegex(ValueError, "Channel must define|invalid Channel order|consistent across all levels"):
+                    verifier.verify_global_channel_orders(abilities)
 
     def test_rejects_collection_same_icon(self):
         self.set_field(self.abilities, "Pc02", "aart", verifier.icon_path("TDPetPrevious"))

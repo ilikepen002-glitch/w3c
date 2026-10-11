@@ -32,7 +32,7 @@ public function tdPetEnemyIsValid(unit enemy, int lane) returns boolean
 	return enemy != null and enemy.isAlive() and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == lane and not tdEnemyWasLeaked(enemy)
 
 public function tdPetLaneCanAct(int lane) returns boolean
-	return tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsGameOver()
+	return tdPetLaneCanManage(lane)
 
 public function tdPetCanDeploy(TDPet pet, unit tower) returns boolean
 	if pet == null or pet.released or tower == null or not tower.isAlive() or not tdPetLaneCanAct(pet.lane)
@@ -67,7 +67,7 @@ function tdPetHandleCaptureWithBall(boolean master) returns boolean
 		tdPetNotice(lane, "这个目标不是野生宝宝。")
 		return false
 	if tdPetCollectionCount(lane) >= TD_PET_COLLECTION_LIMIT
-		tdPetNotice(lane, "收藏已满12只，先W释放未上阵宝宝。")
+		tdPetNotice(lane, "收藏已满12只。按W选中收藏展示，再按C释放；上阵精灵须先召回。")
 		return false
 	let now = getElapsedGameTime()
 	if now < tdPetCaptureReadyAt[lane]
@@ -104,7 +104,7 @@ function tdPetHandleCaptureWithBall(boolean master) returns boolean
 	tdEnemyMechanicUnregister(target)
 	target.remove()
 	wild.creature = null
-	tdPetNotice(lane, "|cff80ff80捕获成功|r：" + pet.summary() + "。W选中后E点塔上阵。")
+	tdPetNotice(lane, "|cff80ff80捕获成功|r：" + pet.summary() + "。按W选中收藏展示，E点塔上阵；选中展示后按C洗练/开栏/释放。")
 	return false
 
 function tdPetHandleCapture() returns boolean
@@ -112,14 +112,6 @@ function tdPetHandleCapture() returns boolean
 
 function tdPetHandleMaster() returns boolean
 	return tdPetHandleCaptureWithBall(true)
-
-function tdPetHandleHunt() returns boolean
-	let farmer = GetTriggerUnit()
-	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
-		let lane = GetPlayerId(GetOwningPlayer(farmer))
-		if tdPetLaneCanAct(lane) and not tdPetWildHunt(tdPetWildFor(GetSpellTargetUnit()), lane)
-			tdPetNotice(lane, "仅可标记本路尚未猎杀的存活野生精灵。")
-	return false
 
 function tdPetHandleForge() returns boolean
 	let farmer = GetTriggerUnit()
@@ -165,13 +157,17 @@ public function tdPetInitializeFarmer(int lane, unit farmer)
 	tdPetCaptureReadyAt[lane] = 0.0
 	tdPetSyncBallAbility(lane)
 
+function tdPetHandlePlayerLeave() returns boolean
+	tdPetMarkPlayerLeft(GetPlayerId(GetTriggerPlayer()))
+	return false
+
 public function tdPetSetupRuntime()
 	if tdPetRuntimeReady
 		return
 	tdPetRuntimeReady = true
 	tdPetSetupWild()
+	registerPlayerEvent(EVENT_PLAYER_LEAVE, function tdPetHandlePlayerLeave)
 	registerSpellEffectEvent(TD_PET_MASTER_ABILITY_ID, function tdPetHandleMaster)
-	registerSpellEffectEvent(TD_PET_HUNT_ABILITY_ID, function tdPetHandleHunt)
 	registerSpellEffectEvent(TD_PET_FORGE_ABILITY_ID, function tdPetHandleForge)
 	registerSpellEffectEvent(TD_PET_CAPTURE_ABILITY_ID, function tdPetHandleCapture)
 	tdPetBallPickupTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
@@ -188,6 +184,8 @@ public function tdPetSetupRuntime()
 						if pet.visual.getPos().distanceTo(desired) > 1.0
 							pet.visual.setPos(desired)
 		if tdIsGameOver()
+			for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+				tdPetCancelRelease(lane)
 			// All delayed attacks have zero delay or at most three one-second ticks.
 			// Stop new procs now, then reclaim records only after every callback expires.
 			doAfter(4.0) ->

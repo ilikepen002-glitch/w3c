@@ -50,10 +50,9 @@ public function tdPetCaptureChance(real _currentLife, real _maxLife) returns rea
 	return 0.60
 
 public function tdPetCaptureTooltip(int balls) returns string
-	return "普通球 " + balls.toString() + "/60。固定60%成功率，首只教学精灵第一次普通球必成。满收藏不扣球；收藏12，上阵3，每塔1。野生停留60秒。功能菜单可猎杀、投大师球与普通球5合1。"
+	return "普通球 " + balls.toString() + "/60。固定60%成功率，首只教学精灵第一次普通球必成。满收藏不扣球；收藏12，上阵3，每塔1。野生停留60秒。功能菜单可投大师球与普通球5合1；收藏展示按C洗练/开栏/释放。"
 
 public constant int TD_PET_MASTER_ABILITY_ID = 'Pmas'
-public constant int TD_PET_HUNT_ABILITY_ID = 'Phnt'
 public constant int TD_PET_FORGE_ABILITY_ID = 'Pfor'
 public constant int TD_PET_ATTACK_BONUS_ID = 'Pbat'
 public constant int TD_PET_SPEED_BONUS_ID = 'Pbsp'

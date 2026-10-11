@@ -161,8 +161,12 @@ function tdAdvanceEnemyWaypoint(unit enemy)
 
 function tdLaneEnemyCheckEnum()
 	let enemy = GetEnumUnit()
-	if not tdPetIsWild(enemy) and not tdLaneEnemyCheckFound and enemy != null and enemy.isAlive() and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == tdLaneEnemyCheckPlayer and (tdLaneEnemyCheckWave == 0 or tdEnemyWave(enemy) == tdLaneEnemyCheckWave)
-		tdLaneEnemyCheckFound = true
+	// Keep every eligibility guard ahead of the optional wave match; avoid mixed and/or.
+	if enemy == null or tdLaneEnemyCheckFound or tdPetIsWild(enemy) or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdEnemyLaneId(enemy) != tdLaneEnemyCheckPlayer
+		return
+	if tdLaneEnemyCheckWave != 0 and tdEnemyWave(enemy) != tdLaneEnemyCheckWave
+		return
+	tdLaneEnemyCheckFound = true
 
 function tdWaypointAdvanceEnum()
 	let enemy = GetEnumUnit()

@@ -27,7 +27,11 @@ public function tdPetBindingValid(TDPet pet, unit host, int generation) returns 
 	return pet != null and not pet.released and pet.host == host and pet.generation == generation and not pet.paused and host != null and host.isAlive() and tdTowerChoiceForUnitTypeId(GetUnitTypeId(host)) != 0 and GetPlayerId(GetOwningPlayer(host)) == pet.lane and tdPetLaneCanAct(pet.lane)
 
 public function tdPetSkillFitsAbilities(int skill, boolean hasSplitArrow, boolean hasCorpseExplosion) returns boolean
-	return (skill != 9 or hasSplitArrow) and (skill != 10 or hasCorpseExplosion)
+	if skill == 9
+		return hasSplitArrow
+	if skill == 10
+		return hasCorpseExplosion
+	return true
 
 public function tdPetSkillFitsHost(int skill, unit host) returns boolean
 	return host != null and tdPetSkillFitsAbilities(skill, host.getAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID) > 0, host.getAbilityLevel(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID) > 0)

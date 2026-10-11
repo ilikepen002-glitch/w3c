@@ -1,0 +1,82 @@
+package TDPetUIState
+import TDPetState
+
+public constant int TD_PET_DIALOG_NONE = -1
+public constant int TD_PET_DIALOG_LIST = 0
+public constant int TD_PET_DIALOG_CULTIVATE = 1
+public constant int TD_PET_DIALOG_INFO = 2
+public constant int TD_PET_DIALOG_RELEASE_CONFIRM = 3
+public constant int TD_PET_DIALOG_PREVIEW = 4
+
+public function tdPetDialogActionAllowed(int mode, int action) returns boolean
+	if mode == TD_PET_DIALOG_LIST
+		if action == 0 or action == 120
+			return true
+		return action >= 100 and action < 112
+	if mode == TD_PET_DIALOG_INFO
+		return action == 0
+	if mode == TD_PET_DIALOG_CULTIVATE
+		if action == 0 or action == 12 or action == 13
+			return true
+		return action >= 1 and action <= 4
+	if mode == TD_PET_DIALOG_PREVIEW
+		return action == 10 or action == 11
+	if mode == TD_PET_DIALOG_RELEASE_CONFIRM
+		return action == 14 or action == 0
+	return false
+
+// The labels and real native DialogAddButton hotkeys share this contract.
+public function tdPetDialogHotkey(int mode, int action) returns int
+	if mode == TD_PET_DIALOG_CULTIVATE and action >= 1 and action <= 4
+		return 48 + action
+	if mode == TD_PET_DIALOG_PREVIEW
+		if action == 10
+			return 49
+		if action == 11
+			return 50
+	if mode == TD_PET_DIALOG_RELEASE_CONFIRM
+		return action == 14 ? 49 : (action == 0 ? 50 : 0)
+	return 0
+
+// Used by the actual UI event bridge and by deterministic regression tests.
+public class TDPetDialogSession
+	int lane
+	int mode = TD_PET_DIALOG_NONE
+	int round = 0
+	boolean active = false
+	TDPet pet = null
+	int revision = 0
+	int generation = 0
+	int releaseNonce = 0
+
+	construct(int lane)
+		this.lane = lane
+
+	function close()
+		active = false
+		mode = TD_PET_DIALOG_NONE
+		pet = null
+		releaseNonce = 0
+
+	function open(int mode, TDPet pet, int nonce) returns boolean
+		close()
+		if round >= 2147483647
+			return false
+		round += 1
+		this.mode = mode
+		this.pet = pet
+		if pet != null
+			revision = pet.revision
+			generation = pet.generation
+		releaseNonce = nonce
+		active = true
+		return true
+
+	function matchesPet(TDPet current) returns boolean
+		return current != null and current == pet and current.lane == lane and current.revision == revision and current.generation == generation and not current.released
+
+	function consumeButton(int owner, int buttonRound, int action, boolean currentDialog) returns boolean
+		if not currentDialog or not active or owner != lane or buttonRound != round or not tdPetDialogActionAllowed(mode, action)
+			return false
+		active = false
+		return true

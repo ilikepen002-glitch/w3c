@@ -34,7 +34,7 @@ function cleanup()
 		pet.recall()
 		for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
 			if tdPetAt(0, slot) == pet
-				tdPetRelease(0, slot)
+				tdPetDiscardOwned(0, slot)
 		pet = null
 	if host != null
 		tdPetTowerRemoved(host)
