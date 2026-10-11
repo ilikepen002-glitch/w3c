@@ -230,6 +230,8 @@ public function tdGainGold(int playerId, int amount)
 
 public function tdLoseLife(int playerId, int amount)
 	tdLives[playerId] -= amount
+	if tdLives[playerId] < 0
+		tdLives[playerId] = 0
 
 public function tdAddScore(int playerId, int amount)
 	tdLaneScore[playerId] += amount

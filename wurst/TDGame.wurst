@@ -21,8 +21,21 @@ dialog array tdDefeatDialogs
 int tdLeakCheckLane = -1
 int tdClearLanePlayer = -1
 
+public function tdLeakLifeText(int amount, int lives) returns string
+	return "生命 -" + amount.toString() + "，剩余 " + lives.toString()
+
 public function tdLeakLifeText(int lives) returns string
-	return "生命 -1，剩余 " + lives.toString()
+	return tdLeakLifeText(1, lives)
+
+// Classify the actual unit, never its wave: special waves still contain normal creeps.
+public function tdEnemyLeakLifeCost(int unitTypeId) returns int
+	if tdIsBossUnitTypeId(unitTypeId)
+		return 3
+	if tdIsEliteUnitTypeId(unitTypeId)
+		return 2
+	if tdIsBossGuardUnitTypeId(unitTypeId)
+		return 2
+	return 1
 
 public function tdDefeatText() returns string
 	return "已失败，下次再战"
@@ -110,25 +123,34 @@ function tdClearLaneEnemies(int playerId)
 	ForGroup(g, function tdClearLaneEnemiesEnum)
 	g.destr()
 
-// 敌人进入终点区域时触发漏怪处理。每漏一个扣 1 命；
-// 如果该路生命归零，就把这一路标记为失败并清掉该路剩余敌人。
+// 普通怪扣 1 命，精英与近卫队长扣 2 命，Boss 扣 3 命。
+// 标记先于所有结算；致死时先封闭路线，再进入可同步触发死亡事件的 kill。
 public function tdHandleEnemyLeak(unit enemy)
-	if enemy == null or not enemy.isAlive() or tdEnemyWasLeaked(enemy)
+	if enemy == null
+		return
+	if not enemy.isAlive() or tdEnemyWasLeaked(enemy)
+		return
+	if GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdPetIsWild(enemy) or tdIsGameOver()
 		return
 	let playerId = tdEnemyLaneId(enemy)
-	let wave = tdEnemyWave(enemy)
-	if not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId)
+	if not tdIsLanePlayer(playerId)
 		return
-	tdLoseLife(playerId, 1)
-	DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, tdLeakLifeText(tdGetLives(playerId)))
+	if not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId)
+		return
+	let wave = tdEnemyWave(enemy)
+	let lifeCost = tdEnemyLeakLifeCost(GetUnitTypeId(enemy))
 	tdMarkEnemyLeaked(enemy)
-	tdForgetEquipmentEnemy(enemy)
-	tdEnemyMechanicUnregister(enemy)
-	// 漏怪用 kill 进入死亡流程，但 tdEnemyWasLeaked 会阻止重复发击杀奖励。
-	enemy.kill()
-	if tdGetLives(playerId) <= 0
+	tdLoseLife(playerId, lifeCost)
+	let defeated = tdGetLives(playerId) <= 0
+	if defeated
 		tdSetResolvedWave(playerId, wave)
 		tdSetLaneDefeated(playerId, true)
+	DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, tdLeakLifeText(lifeCost, tdGetLives(playerId)))
+	tdForgetEquipmentEnemy(enemy)
+	tdEnemyMechanicUnregister(enemy)
+	// The synchronous death handler sees the leaked marker and cannot grant kill rewards.
+	enemy.kill()
+	if defeated
 		tdPetLaneDefeated(playerId)
 		tdEvolutionClearLaneEffects(playerId)
 		tdClearLaneEnemies(playerId)

@@ -1,0 +1,52 @@
+package TDLeakTests
+import TDGame
+import TDState
+import TDConfig
+import TDWaves
+
+@Test function leakCostUsesActualEnemyTypeAcrossAllWaves()
+	for wave = 1 to tdWaveCount()
+		tdEnemyLeakLifeCost(tdWaveUnitId(wave)).assertEquals(1)
+		if tdWaveEliteEnemyCount(wave) > 0
+			tdEnemyLeakLifeCost(tdWaveSpecialUnitId(wave)).assertEquals(2)
+		if tdWaveBossEnemyCount(wave) > 0
+			tdEnemyLeakLifeCost(tdWaveSpecialUnitId(wave)).assertEquals(3)
+			tdEnemyLeakLifeCost(tdWaveBossGuardUnitId(wave)).assertEquals(2)
+
+@Test function leakCostAppliesPerSpawnNotPerSpecialWave()
+	for wave = 1 to tdWaveCount()
+		for remaining = 1 to tdWaveEnemyCount(wave)
+			let unitId = tdWaveSpawnUnitId(wave, remaining)
+			if remaining <= tdWaveNormalEnemyCount(wave)
+				tdEnemyLeakLifeCost(unitId).assertEquals(1)
+			else if tdIsBossUnitTypeId(unitId)
+				tdEnemyLeakLifeCost(unitId).assertEquals(3)
+			else
+				tdEnemyLeakLifeCost(unitId).assertEquals(2)
+
+@Test function leakLifeFeedbackDisplaysActualPenalty()
+	tdLeakLifeText(1, 19).assertEquals("生命 -1，剩余 19")
+	tdLeakLifeText(2, 18).assertEquals("生命 -2，剩余 18")
+	tdLeakLifeText(3, 17).assertEquals("生命 -3，剩余 17")
+	tdLeakLifeText(3, 0).assertEquals("生命 -3，剩余 0")
+
+@Test function leakLifeLossClampsAtZeroAndLeavesOtherLanesAlone()
+	for remaining = 1 to 2
+		for cost = 1 to 3
+			tdResetState()
+			tdLoseLife(0, TD_STARTING_LIVES - remaining)
+			tdLoseLife(0, cost)
+			if remaining > cost
+				tdGetLives(0).assertEquals(remaining - cost)
+			else
+				tdGetLives(0).assertEquals(0)
+			tdGetLives(1).assertEquals(TD_STARTING_LIVES)
+
+@Test function lifeLossRetainsDebugLifeIncreaseAndZeroFloor()
+	tdResetState()
+	tdLoseLife(0, -10000)
+	tdGetLives(0).assertEquals(TD_STARTING_LIVES + 10000)
+	tdLoseLife(0, TD_STARTING_LIVES + 10001)
+	tdGetLives(0).assertEquals(0)
+	tdLoseLife(0, 3)
+	tdGetLives(0).assertEquals(0)
