@@ -7,6 +7,7 @@ import GameTimer
 import LinkedList
 import TDConfig
 import TDState
+import TDTowerBloodlustAutocast
 
 public function tdEquipmentAbilityLaneEligible(boolean gameOver, boolean active, boolean defeated, boolean finished) returns boolean
 	return not gameOver and active and not defeated and not finished
@@ -55,8 +56,13 @@ function tdEquipmentSyncCooldown(unit tower, int abilityId, int desiredLevel)
 		return
 	let record = tdEquipmentCooldownFor(tower, abilityId)
 	record.desiredLevel = desiredLevel
+	if abilityId == TD_ORC_BLOODLUST_ABILITY_ID
+		if tower.getAbilityLevel(abilityId) == desiredLevel
+			return
 	if tdEquipmentCooldownCanApply(getElapsedGameTime(), record.readyAt)
 		tower.setAbilityLevel(abilityId, desiredLevel)
+		if abilityId == TD_ORC_BLOODLUST_ABILITY_ID
+			tdRestoreBloodlustAutocast(tower)
 
 function tdEquipmentSyncControl(unit tower, int abilityId, int level)
 	if tower.getAbilityLevel(abilityId) > 0
@@ -108,6 +114,8 @@ public function tdSetupEquipmentAbilities()
 			else if tdEquipmentCooldownCanApply(getElapsedGameTime(), record.readyAt)
 				if record.tower.getAbilityLevel(record.abilityId) != record.desiredLevel
 					record.tower.setAbilityLevel(record.abilityId, record.desiredLevel)
+					if record.abilityId == TD_ORC_BLOODLUST_ABILITY_ID
+						tdRestoreBloodlustAutocast(record.tower)
 		destroy iter
 		if tdIsGameOver()
 			destroy cb

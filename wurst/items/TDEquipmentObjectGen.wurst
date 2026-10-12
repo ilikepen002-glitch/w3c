@@ -8,7 +8,7 @@ public function tdConfigureEquipmentBloodlust(AbilityDefinitionBloodlust definit
 	definition.setLevels(41)
 	for level = 1 to 41
 		definition.setTooltipNormal(level, "嗜血")
-		definition.setTooltipNormalExtended(level, "自身攻击速度提高" + tdBonusPercentString(tdOrcBloodlustAttackSpeedBonus()) + "，持续" + tdTooltipNumber(tdOrcBloodlustDuration()) + "秒。|n冷却" + tdTooltipNumber((tdOrcBloodlustCooldown() * (1.0 - (level - 1) / 100.0))) + "秒；可自动施放。")
+		definition.setTooltipNormalExtended(level, "自身攻击速度提高" + tdBonusPercentString(tdOrcBloodlustAttackSpeedBonus()) + "，持续" + tdTooltipNumber(tdOrcBloodlustDuration()) + "秒。|n冷却" + tdTooltipNumber((tdOrcBloodlustCooldown() * (1.0 - (level - 1) / 100.0))) + "秒；可自动施放，获得时默认开启，可手动关闭。")
 		definition.setMovementSpeedIncrease(level, tdOrcBloodlustMoveSpeedBonus())
 		definition.setAttackSpeedIncrease(level, tdOrcBloodlustAttackSpeedBonus())
 		definition.setScalingFactor(level, 1.0)

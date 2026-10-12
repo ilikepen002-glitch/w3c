@@ -247,7 +247,17 @@ class CaptureRemovalActualRuntimeTests(unittest.TestCase):
         a_data = subprocess.check_output(['git', 'show', 'e340d1758c7d72c0f88df3cdb54139ec989a6fcd:ExampleMap.w3x'], cwd=ROOT)
         a_script = Mpq(a_data).extract('war3map.j').decode('utf-8')
         cls.actual = script
-        class_view, cls.proved_class_ids = proved_type_reindex_view(script, a_script)
+        # C source insertion shifts diagnostics only at proved unchanged lines;
+        # the historical B class/delta rule remains untouched.
+        from VerifyBloodlustDiagnostics import proved_diagnostic_view
+        b_data = subprocess.check_output(['git', 'show', '697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5:ExampleMap.w3x'], cwd=ROOT)
+        b_script = Mpq(b_data).extract('war3map.j').decode('utf-8')
+        paths = {'TDEquipmentAbilities': 'wurst/items/TDEquipmentAbilities.wurst',
+                 'TDTowerRuntime': 'wurst/towers/TDTowerRuntime.wurst'}
+        before_sources = {name: subprocess.check_output(['git', 'show', '697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5:' + path], cwd=ROOT).decode() for name, path in paths.items()}
+        current_sources = {name: (ROOT / path).read_text() for name, path in paths.items()}
+        diagnostic_view, cls.proved_diagnostics = proved_diagnostic_view(script, b_script, current_sources, before_sources)
+        class_view, cls.proved_class_ids = proved_type_reindex_view(diagnostic_view, a_script)
         cls.current, cls.proved_aliases = inherited_script_view(class_view, cls.before)
 
     def test_actual_packaged_capture_and_inherited_lifecycle_pass(self):

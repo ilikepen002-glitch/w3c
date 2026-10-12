@@ -1,0 +1,133 @@
+package TDTowerBloodlustAutocast
+import Table
+import Orders
+import RegisterEvents
+import TDTowerData
+import TDPetState
+
+public constant int TD_BLOODLUST_CHOICE_UNKNOWN = 0
+public constant int TD_BLOODLUST_CHOICE_ON = 1
+public constant int TD_BLOODLUST_CHOICE_OFF = 2
+
+// Independent of cooldown records: missing abilities/work never erase choice.
+constant Table tdBloodlustChoices = new Table()
+boolean tdBloodlustRestoring = false
+boolean tdBloodlustOrderEventsReady = false
+trigger tdBloodlustOrderTrigger = CreateTrigger()
+
+public function tdBloodlustChoiceAfterInitialization(int choice, boolean eligible) returns int
+	if not eligible
+		return choice
+	if choice == TD_BLOODLUST_CHOICE_UNKNOWN
+		return TD_BLOODLUST_CHOICE_ON
+	return choice
+
+public function tdBloodlustChoiceAfterOrder(int choice, int orderId, boolean eligible, boolean scripted) returns int
+	if not eligible
+		return choice
+	if scripted
+		return choice
+	if orderId == Orders.bloodluston
+		return TD_BLOODLUST_CHOICE_ON
+	if orderId == Orders.bloodlustoff
+		return TD_BLOODLUST_CHOICE_OFF
+	return choice
+
+public function tdBloodlustOrderForChoice(int choice, boolean eligible) returns int
+	if not eligible
+		return 0
+	if choice == TD_BLOODLUST_CHOICE_ON
+		return Orders.bloodluston
+	if choice == TD_BLOODLUST_CHOICE_OFF
+		return Orders.bloodlustoff
+	return 0
+
+function tdBloodlustAutocastEligible(unit tower) returns boolean
+	if tower == null
+		return false
+	if not tower.isAlive()
+		return false
+	if GetUnitTypeId(tower) != TD_ORC_LEVEL_6_A_ID
+		return false
+	if tower.getAbilityLevel(TD_ORC_BLOODLUST_ABILITY_ID) == 0
+		return false
+	if tdPetBusyTowers.hasBoolean(tower.getHandleId())
+		return false
+	return true
+
+public function tdRestoreBloodlustAutocast(unit tower)
+	if tdBloodlustRestoring
+		return
+	if not tdBloodlustAutocastEligible(tower)
+		return
+	let orderId = tdBloodlustOrderForChoice(tdBloodlustChoices.loadInt(tower.getHandleId()), true)
+	if orderId == 0
+		return
+	// Native order events run synchronously; restoration must not write choice.
+	tdBloodlustRestoring = true
+	tower.issueImmediateOrderById(orderId)
+	tdBloodlustRestoring = false
+
+public function tdInitializeBloodlustAutocast(unit tower)
+	if not tdBloodlustAutocastEligible(tower)
+		return
+	let key = tower.getHandleId()
+	let choice = tdBloodlustChoiceAfterInitialization(tdBloodlustChoices.loadInt(key), true)
+	tdBloodlustChoices.saveInt(key, choice)
+	tdRestoreBloodlustAutocast(tower)
+
+function tdForgetBloodlustChoiceKey(int key)
+	tdBloodlustChoices.removeInt(key)
+
+public function tdForgetBloodlustAutocast(unit tower)
+	if tower != null
+		tdForgetBloodlustChoiceKey(tower.getHandleId())
+
+function tdHandleBloodlustAutocastOrder()
+	if tdBloodlustRestoring
+		return
+	let tower = GetTriggerUnit()
+	if not tdBloodlustAutocastEligible(tower)
+		return
+	let orderId = GetIssuedOrderId()
+	if orderId != Orders.bloodluston
+		if orderId != Orders.bloodlustoff
+			return
+	let key = tower.getHandleId()
+	let choice = tdBloodlustChoiceAfterOrder(tdBloodlustChoices.loadInt(key), orderId, true, false)
+	tdBloodlustChoices.saveInt(key, choice)
+
+public function tdSetupBloodlustAutocastOrders()
+	if tdBloodlustOrderEventsReady
+		return
+	tdBloodlustOrderEventsReady = true
+	tdBloodlustOrderTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_ISSUED_ORDER)
+	tdBloodlustOrderTrigger.addAction(function tdHandleBloodlustAutocastOrder)
+
+public function tdBloodlustChoiceLifetimeRegressionForTest() returns boolean
+	let key = -131
+	tdBloodlustChoices.saveInt(key, TD_BLOODLUST_CHOICE_OFF)
+	tdForgetBloodlustChoiceKey(key)
+	let forgotten = tdBloodlustChoices.loadInt(key)
+	if forgotten != TD_BLOODLUST_CHOICE_UNKNOWN
+		return false
+	return tdBloodlustChoiceAfterInitialization(forgotten, true) == TD_BLOODLUST_CHOICE_ON
+
+public function tdBloodlustIndependentChoicesRegressionForTest() returns boolean
+	let firstKey = -131
+	let secondKey = -132
+	tdBloodlustChoices.saveInt(firstKey, TD_BLOODLUST_CHOICE_OFF)
+	tdBloodlustChoices.saveInt(secondKey, TD_BLOODLUST_CHOICE_ON)
+	tdBloodlustChoices.saveInt(firstKey, tdBloodlustChoiceAfterInitialization(tdBloodlustChoices.loadInt(firstKey), true))
+	var valid = true
+	if tdBloodlustChoices.loadInt(firstKey) != TD_BLOODLUST_CHOICE_OFF
+		valid = false
+	if tdBloodlustChoices.loadInt(secondKey) != TD_BLOODLUST_CHOICE_ON
+		valid = false
+	tdForgetBloodlustChoiceKey(firstKey)
+	if tdBloodlustChoices.loadInt(firstKey) != TD_BLOODLUST_CHOICE_UNKNOWN
+		valid = false
+	if tdBloodlustChoices.loadInt(secondKey) != TD_BLOODLUST_CHOICE_ON
+		valid = false
+	tdForgetBloodlustChoiceKey(secondKey)
+	return valid

@@ -20,6 +20,7 @@ import TDEquipmentAbilities
 import TDWaves
 import TDTowerEvolutionRuntime
 import TDDamageRuntime
+import TDTowerBloodlustAutocast
 import TDEnemyMechanicRuntime
 
 unit array tdFarmers
@@ -87,6 +88,7 @@ function tdHandleTowerSellCast() returns boolean
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
+	tdForgetBloodlustAutocast(tower)
 	tower.remove()
 	tdGainGold(playerId, refund)
 	tdRefreshHud()
@@ -232,6 +234,7 @@ function tdRejectTowerConstruction(unit tower, int playerId, int towerChoice, st
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
+	tdForgetBloodlustAutocast(tower)
 	tower.remove()
 	tdGainGold(playerId, tdTowerCost(towerChoice))
 	// The engine still updates food after CONSTRUCT_START returns.
@@ -342,6 +345,7 @@ function tdHandleTowerConstructionFinished()
 	tdApplyTowerPersistentState(tower)
 	tdEvolutionRefresh(tower)
 	tdRefreshTowerEquipmentBonuses(tower)
+	tdInitializeBloodlustAutocast(tower)
 	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
 
 function tdHandleTowerConstructionCancelled()
@@ -358,6 +362,7 @@ function tdHandleTowerConstructionCancelled()
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
+	tdForgetBloodlustAutocast(tower)
 	tdClearTowerRangeIndicatorsForTower(tower)
 	doAfter(0.0) ->
 		tdAlignPlayerTowerPopulation(playerId)
@@ -382,6 +387,7 @@ function tdHandleTowerUpgradeCancelled()
 		tdRefreshTowerEquipmentBonuses(tower)
 		tdRefreshTowerRangeIndicatorsForTower(tower)
 		tdEvolutionRefresh(tower)
+		tdInitializeBloodlustAutocast(tower)
 
 function tdHandleTowerUpgradeFinished()
 	let tower = GetTriggerUnit()
@@ -398,6 +404,7 @@ function tdHandleTowerUpgradeFinished()
 	tdEvolutionRefresh(tower)
 	tdRefreshTowerEquipmentBonuses(tower)
 	tdRefreshTowerRangeIndicatorsForTower(tower)
+	tdInitializeBloodlustAutocast(tower)
 	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
 
 function tdHandleTowerDeath()
@@ -412,6 +419,7 @@ function tdHandleTowerDeath()
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
+	tdForgetBloodlustAutocast(tower)
 	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
 
 function tdOrcBladestormStateKey(unit tower) returns int
@@ -715,6 +723,7 @@ public function tdSetupDialogTrigger()
 	if tdTowerGameplayEventsReady
 		return
 	tdTowerGameplayEventsReady = true
+	tdSetupBloodlustAutocastOrders()
 	registerSpellEffectEvent(TD_FARMER_WAGE_ABILITY_ID, function tdHandleFarmerWageCast)
 	registerSpellEffectEvent(TD_ORC_BLADESTORM_ABILITY_ID, function tdHandleOrcBladestormCast)
 	registerSpellEffectEvent(TD_TOWER_SELL_ABILITY_ID, function tdHandleTowerSellCast)
