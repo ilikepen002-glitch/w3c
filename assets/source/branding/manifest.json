@@ -1,0 +1,83 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-10-12",
+  "transparent_background": false,
+  "map_name": "契灵守卫战",
+  "approved_loading_text": "以塔为阵，与灵缔契！捕捉精灵、洗练绝技，让不同的契约与装备碰撞出意想不到的力量。打造属于你的王牌阵容，与契灵并肩，守到最后！",
+  "conversion": "python tools/BuildMapBrandingAssets.py",
+  "pillow_version": "12.3.0",
+  "images": [
+    {
+      "file": "契灵守卫战-加载背景.png",
+      "library_file_id": "libfile_d2722b55f02881918cdb52ff94dee9bf",
+      "version": 1,
+      "prompt": "Use case: stylized-concept. Create ORIGINAL premium hand-painted HIGH FANTASY game loading-screen artwork for a spirit-bond tower-defense game called 契灵守卫战, no text in artwork. Landscape 4:3. The MAIN SUBJECT IS THE COOPERATION BETWEEN SPIRITS AND DEFENSIVE TOWERS, not an isolated tall crystal tower, not generic dark castle wallpaper. On the LEFT and CENTER LEFT, a beautifully crafted compact stone-and-carved-wood archer defense tower on a forest cliff launches a brilliantly charged arrow volley. A large magnificent orange-gold PHOENIX spirit wraps its wings around that tower in a protective sweeping arc and lends fire to the arrows through visible elegant luminous binding ribbons. Slightly behind, a blue-violet faerie-dragon spirit circles a second runic tower and channels branching blue lightning into it. A small emerald wisp infuses a sturdy shield-bearing guardian on a battlement below. Clear paired silhouettes: fire spirit + archer tower, lightning spirit + runic tower, visibly working together toward a distant shadow enemy line. Exciting heroic forward motion, expressive spirits, rich painterly textures, stylized fantasy craftsmanship, warm golden fire versus fresh turquoise lightning and forest greens, energetic and inviting with danger in the distance, NOT bleak grayscale, NOT photorealism, NOT anime portrait collage. Background is enchanted woodland and mountain valley with a violet storm at the distant horizon. Composition must leave RIGHT-middle/lower-right (x52-97%, y49-66%) as atmospheric dark teal woodland mist with low detail and low contrast for native white loading text; bottom15% calm dark ground/mist for native progress bar. Do NOT make the entire right half a featureless black void: use subtle layered landscape and soft light while keeping text area readable. Keep key subjects above the bottom band and inside margins. No UI, no frame, no typography, no logo, no numerals, no watermark, no parchment. Professional memorable game key art, strong spirit/tower bond as the storytelling focus.",
+      "path": "assets/source/branding/契灵守卫战-加载背景.png",
+      "sha256": "7ecdeb4914609494a566d210181a21fd4c363c2d539c0cfa6d205974f30cd3fb",
+      "size": [
+        1448,
+        1086
+      ]
+    },
+    {
+      "file": "契灵守卫战-地图缩略图.png",
+      "library_file_id": "libfile_2539d2a61e5c8191bf9eaf6c4aacb6c9",
+      "version": 1,
+      "prompt": "Use case: stylized-concept. Make a square original game lobby THUMBNAIL for a heroic high-fantasy spirit-bond tower-defense game 契灵守卫战. The image must tell at a glance that spirits empower defensive towers. A single compact handsome green-and-gold timber-and-stone archer tower dominates the center, firing three luminous arrows diagonally forward. A magnificent ORANGE-GOLD PHOENIX wraps around the tower in a bold protective wing arc, visibly channeling a ribbon of flame into the tower and arrows. One smaller BLUE-VIOLET FAERIE DRAGON curves around the lower opposite side, feeding a visible lightning ribbon to a runic crystal at the tower base. Treat these as clearly cooperating bonded guardians, not attacking the building. Strong readable triangle of the phoenix head, tower, and dragon face. Saturated warm orange versus cool electric blue, emerald foliage accents, dark teal enchanted forest behind for clean contrast. Premium polished painterly fantasy game art, expressive magical creatures, energetic defense, inviting and heroic. Large simplified silhouette readable at 256 and 128 pixels, central safe composition. No distant epic panorama, no bleak generic gothic crystal tower, no excessive tiny characters, no words, no letters, no numerals, no UI, no border, no watermark. Distinctive spirit-and-tower partnership as the identity.",
+      "path": "assets/source/branding/契灵守卫战-地图缩略图.png",
+      "sha256": "4fb4475820317c1b8caa5cb6aea2bad6b340b872fde2dc461970ccddaaa0ff2d",
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "imports/ui/Glues/Loading/Load-Generic/Generic-Loading-TopLeft.blp",
+      "sha256": "c34b8c75d2aafdeea271cf4d10035c3c8297006af8ae253ecabf2fcb00c6dfc1",
+      "bytes": 350705,
+      "mip_count": 10,
+      "alpha_bits": 0
+    },
+    {
+      "path": "imports/ui/Glues/Loading/Load-Generic/Generic-Loading-TopRight.blp",
+      "sha256": "d9044e5d89453d4df14c8d7825ff8ff0a19903ec0564df509ee44a6ab2b23a88",
+      "bytes": 350705,
+      "mip_count": 10,
+      "alpha_bits": 0
+    },
+    {
+      "path": "imports/ui/Glues/Loading/Load-Generic/Generic-Loading-BotLeft.blp",
+      "sha256": "b26fecb91e44b02214858e666f03a465dc44e970ee3a7c7bd5c47cfdf045af7c",
+      "bytes": 175943,
+      "mip_count": 10,
+      "alpha_bits": 0
+    },
+    {
+      "path": "imports/ui/Glues/Loading/Load-Generic/Generic-Loading-BotRight.blp",
+      "sha256": "d753e348a6f0571acd253b8a2903fe3fcbf8ec7743fe192702ac1e35d6035448",
+      "bytes": 175943,
+      "mip_count": 10,
+      "alpha_bits": 0
+    },
+    {
+      "path": "imports/war3mapPreview.tga",
+      "sha256": "de6bf54fb625336162f8f04397d827dba4b744c249d57d6ccad3cb715511d379",
+      "bytes": 262162,
+      "size": [
+        256,
+        256
+      ],
+      "alpha_range": [
+        255,
+        255
+      ]
+    }
+  ],
+  "loading_model": {
+    "path": "imports/ui/Glues/Loading/Load-Generic/Load-Generic.mdx",
+    "sha256": "1cc5d2cb11b6f9166ce967eb8747b0aefb15ec5ac179d1508b311b9d3eb6b693"
+  },
+  "real_minimap_policy": "Do not replace war3mapMap.blp"
+}

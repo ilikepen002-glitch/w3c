@@ -1,0 +1,21 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-10-12",
+  "transparent_background": false,
+  "map_name": "契灵守卫战",
+  "approved_loading_text": "以塔为阵，与灵缔契！捕捉精灵、洗练绝技，让不同的契约与装备碰撞出意想不到的力量。打造属于你的王牌阵容，与契灵并肩，守到最后！",
+  "images": [
+    {
+      "file": "契灵守卫战-加载背景.png",
+      "library_file_id": "libfile_d2722b55f02881918cdb52ff94dee9bf",
+      "version": 1,
+      "prompt": "Use case: stylized-concept. Create ORIGINAL premium hand-painted HIGH FANTASY game loading-screen artwork for a spirit-bond tower-defense game called 契灵守卫战, no text in artwork. Landscape 4:3. The MAIN SUBJECT IS THE COOPERATION BETWEEN SPIRITS AND DEFENSIVE TOWERS, not an isolated tall crystal tower, not generic dark castle wallpaper. On the LEFT and CENTER LEFT, a beautifully crafted compact stone-and-carved-wood archer defense tower on a forest cliff launches a brilliantly charged arrow volley. A large magnificent orange-gold PHOENIX spirit wraps its wings around that tower in a protective sweeping arc and lends fire to the arrows through visible elegant luminous binding ribbons. Slightly behind, a blue-violet faerie-dragon spirit circles a second runic tower and channels branching blue lightning into it. A small emerald wisp infuses a sturdy shield-bearing guardian on a battlement below. Clear paired silhouettes: fire spirit + archer tower, lightning spirit + runic tower, visibly working together toward a distant shadow enemy line. Exciting heroic forward motion, expressive spirits, rich painterly textures, stylized fantasy craftsmanship, warm golden fire versus fresh turquoise lightning and forest greens, energetic and inviting with danger in the distance, NOT bleak grayscale, NOT photorealism, NOT anime portrait collage. Background is enchanted woodland and mountain valley with a violet storm at the distant horizon. Composition must leave RIGHT-middle/lower-right (x52-97%, y49-66%) as atmospheric dark teal woodland mist with low detail and low contrast for native white loading text; bottom15% calm dark ground/mist for native progress bar. Do NOT make the entire right half a featureless black void: use subtle layered landscape and soft light while keeping text area readable. Keep key subjects above the bottom band and inside margins. No UI, no frame, no typography, no logo, no numerals, no watermark, no parchment. Professional memorable game key art, strong spirit/tower bond as the storytelling focus."
+    },
+    {
+      "file": "契灵守卫战-地图缩略图.png",
+      "library_file_id": "libfile_2539d2a61e5c8191bf9eaf6c4aacb6c9",
+      "version": 1,
+      "prompt": "Use case: stylized-concept. Make a square original game lobby THUMBNAIL for a heroic high-fantasy spirit-bond tower-defense game 契灵守卫战. The image must tell at a glance that spirits empower defensive towers. A single compact handsome green-and-gold timber-and-stone archer tower dominates the center, firing three luminous arrows diagonally forward. A magnificent ORANGE-GOLD PHOENIX wraps around the tower in a bold protective wing arc, visibly channeling a ribbon of flame into the tower and arrows. One smaller BLUE-VIOLET FAERIE DRAGON curves around the lower opposite side, feeding a visible lightning ribbon to a runic crystal at the tower base. Treat these as clearly cooperating bonded guardians, not attacking the building. Strong readable triangle of the phoenix head, tower, and dragon face. Saturated warm orange versus cool electric blue, emerald foliage accents, dark teal enchanted forest behind for clean contrast. Premium polished painterly fantasy game art, expressive magical creatures, energetic defense, inviting and heroic. Large simplified silhouette readable at 256 and 128 pixels, central safe composition. No distant epic panorama, no bleak generic gothic crystal tower, no excessive tiny characters, no words, no letters, no numerals, no UI, no border, no watermark. Distinctive spirit-and-tower partnership as the identity."
+    }
+  ]
+}
