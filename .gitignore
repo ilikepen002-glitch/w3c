@@ -1,10 +1,4 @@
-/_build/*
-!/_build/dependencies/
-/_build/dependencies/*
-!/_build/dependencies/pre1.29/
-/_build/dependencies/pre1.29/*
-!/_build/dependencies/pre1.29/WurstStdlib2/
-!/_build/dependencies/pre1.29/WurstStdlib2/**
+/_build/
 wurst.dependencies
 wurst/war3map.j
 wurst/_tests/
