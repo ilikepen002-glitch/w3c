@@ -5,7 +5,7 @@ from pathlib import Path
 import re
 import unittest
 ROOT = Path(__file__).resolve().parents[2]
-def source(path): return (ROOT / path).read_text()
+def source(path): return (ROOT / path).read_text(encoding='utf-8')
 class EquipmentPhaseB(unittest.TestCase):
     def test_stable_identities_and_bounded_real_buff_variants(self):
         rules = source('wurst/auras/TDAuraRules.wurst')
@@ -74,7 +74,17 @@ class EquipmentPhaseB(unittest.TestCase):
         self.assertIn('target.setAbilityLevel(TD_PET_ARMOR_ID, power.toInt())',pet)
     def test_cooldown_coverage_has_actual_supported_target_guard(self):
         runtime = source('wurst/auras/TDAuraRuntime.wurst')
-        self.assertIn('kind == TD_ITEM_AURA_COOLDOWN and not tdAuraCooldownTargetEligible(target)',runtime)
+        refresh = runtime[runtime.index('function tdAuraRefresh('):runtime.index('public function tdForgetAuraTarget(')]
+        offer = runtime[runtime.index('function tdAuraOfferSource('):runtime.index('function tdAuraRefresh(')]
+        self.assertIn('let cooldownEligible = record.tower and tdAuraCooldownTargetEligible(target)', refresh)
+        self.assertEqual(refresh.count('tdAuraCooldownTargetEligible(target)'), 1)
+        self.assertIn('tdAuraOfferSource(record, source.target, prepared, targetLane, targetPos, mechanical, cooldownEligible)', refresh)
+        self.assertIn('boolean cooldownEligible)', offer)
+        self.assertNotIn('tdAuraCooldownTargetEligible(', offer)
+        # Unsupported cooldown items are rejected before offering a contribution.
+        self.assertIn('if kind == TD_ITEM_AURA_COOLDOWN and not cooldownEligible\n\t\t\tcontinue', offer)
+        self.assertLess(offer.index('if kind == TD_ITEM_AURA_COOLDOWN and not cooldownEligible'),
+                        offer.index('aggregate.offer(tdEquipmentAuraIdentity(kind)'))
         self.assertIn('tdPetBindingValid(pet, target, pet.generation)',runtime)
         self.assertIn('tdPetUnlockedSlots(pet.level)',runtime)
         self.assertIn('skill >= 11 and skill <= 15 and tdPetSkillFitsHost(skill, target)',runtime)

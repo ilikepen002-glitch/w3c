@@ -32,9 +32,10 @@ def map_bytes():
 
 class Formal72SourceFixture:
     def __init__(self):
-        # Located beneath repo so unmodified historical checkers' git commands
-        # can find the same object database without an absolute scratch path.
-        self.temporary = tempfile.TemporaryDirectory(prefix='.formal72-oracle-', dir=ROOT)
+        # Keep git discovery working while interrupted runs stay in ignored output.
+        scratch = ROOT / '_build' / 'test-fixtures'
+        scratch.mkdir(parents=True, exist_ok=True)
+        self.temporary = tempfile.TemporaryDirectory(prefix='formal72-oracle-', dir=scratch)
         self.root = Path(self.temporary.name)
         self.file_sha256 = {}
         for name, data in source_bytes().items():
