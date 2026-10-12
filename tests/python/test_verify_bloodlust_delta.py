@@ -1,8 +1,9 @@
 """Immutable official B + independently declared synthetic C read-only negatives.
 
 The synthetic archive is a decoder facade; no MPQ bytes are edited/written.
-The optional observed-C check is restricted to its exact artifact digest, so a
-future unrelated stage cannot become this suite's historical fixture truth.
+The observed-C check pairs its immutable commit artifact and source, restricted
+to the exact artifact digest. Later mutable working-tree source and maps cannot
+become this suite's historical fixture truth.
 """
 from copy import deepcopy
 from dataclasses import replace
@@ -21,6 +22,9 @@ from VerifySemanticIconArtifact import load_objects
 from VerifyBloodlustAutocastArtifact import source_body
 from VerifyBloodlustDiagnostics import DIAGNOSTIC, source_line_maps
 import VerifyBloodlustDelta as gate
+
+FORMAL_C_COMMIT = 'b7e3d051e98c2b18caafed4ab6e036700a6ee64c'
+FORMAL_C_MAP_SHA256 = '55e8decccc5fada5b3dd21c854ad44a2203c73b64e1fcc1d10bd380bd48daadf'
 
 # Independently declared approved source semantics, not current artifact JASS.
 MODULE = '''package TDTowerBloodlustAutocast
@@ -247,13 +251,12 @@ class BloodlustClosedDeltaTests(unittest.TestCase):
         self.assertEqual((proof['allocators'], proof['type_comparisons'], proof['local_temp_alpha']), (81, 226, {}))
         self.assertEqual(proof['diagnostic_relocations'], 288)
 
-    def test_read_only_exact_frozen_official_C_artifact(self):
-        # Later features replace the root map. History remains the exact official
-        # C input; missing history or wrong bytes fails instead of skipping.
-        data = subprocess.check_output(['git', 'show', 'b7e3d051e98c2b18caafed4ab6e036700a6ee64c:ExampleMap.w3x'], cwd=ROOT)
-        self.assertEqual(gate.digest(data), '55e8decccc5fada5b3dd21c854ad44a2203c73b64e1fcc1d10bd380bd48daadf')
-        sources, old_sources = gate.read_sources()
-        proof = gate.validate_closed_bloodlust_delta(Mpq(data), self.artifact, sources, old_sources)
+    def test_read_only_exact_observed_C_artifact_and_paired_sources(self):
+        data = subprocess.check_output(['git', 'show', FORMAL_C_COMMIT + ':ExampleMap.w3x'], cwd=ROOT)
+        self.assertEqual(gate.digest(data), FORMAL_C_MAP_SHA256)
+        sources = {package: subprocess.check_output(['git', 'show', FORMAL_C_COMMIT + ':' + path], cwd=ROOT).decode()
+                   for package, path in gate.SOURCE_PATHS.items()}
+        proof = gate.validate_closed_bloodlust_delta(Mpq(data), self.artifact, sources, self.old_sources)
         self.assertEqual(proof['diagnostic_relocations'], 288)
 
     def test_every_retirement_and_initialization_insertion_is_required(self):

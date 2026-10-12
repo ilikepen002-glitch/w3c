@@ -4,39 +4,68 @@ public constant int TD_ENEMY_ROLE_NORMAL = 0
 public constant int TD_ENEMY_ROLE_ELITE = 1
 public constant int TD_ENEMY_ROLE_GUARD = 2
 public constant int TD_ENEMY_ROLE_BOSS = 3
-public constant int TD_ENEMY_GUARD_ARMOR_ABILITY_ID = 'Emar'
-public constant int TD_ENEMY_GUARD_ARMOR_BONUS = 4
 public constant int TD_ENEMY_SPRINT_WAYPOINT = 2
 public constant real TD_ENEMY_SPRINT_FACTOR = 1.40
 public constant real TD_ENEMY_SPRINT_DURATION = 2.0
+public constant int TD_BOSS_DARK_TIDE_ABILITY_ID = 'Ebtd'
+public constant real TD_BOSS_DARK_TIDE_RADIUS = 250.0
+public constant real TD_BOSS_DARK_TIDE_DURATION = 3.0
+public constant real TD_BOSS_DARK_TIDE_ATTACK_SPEED = -0.20
+public constant int TD_BOSS_EVENT_WARNING = 1
+public constant int TD_BOSS_EVENT_DARK_TIDE = 2
+public constant int TD_BOSS_EVENT_ENRAGE = 4
 
-public function tdEnemyGuardArmorEnabled(int wave) returns boolean
+public function tdIsPureBossWave(int wave) returns boolean
 	return wave == 8 or wave == 16 or wave == 24 or wave == 32
 
-// Code spells are scaled explicitly at their existing production damage site.
-// Code-derived attacks share the engine's code flag and must stay unchanged.
+public function tdEnemyBossSpellResistanceEnabled(int wave) returns boolean
+	return tdIsPureBossWave(wave)
+
 public function tdEnemyMechanicNativeSpellEligible(boolean spellDamage, boolean codeDamage) returns boolean
 	return spellDamage and not codeDamage
 
 public function tdEnemySprintEnabled(int wave, int role) returns boolean
-	return (role == TD_ENEMY_ROLE_ELITE and (wave == 12 or wave == 20 or wave == 28)) or (role == TD_ENEMY_ROLE_GUARD and wave == 32)
+	if role != TD_ENEMY_ROLE_ELITE
+		return false
+	return wave == 12 or wave == 20 or wave == 28
 
 public function tdEnemyMechanicTracked(int wave, int role) returns boolean
-	return tdEnemySprintEnabled(wave, role) or (tdEnemyGuardArmorEnabled(wave) and (role == TD_ENEMY_ROLE_GUARD or role == TD_ENEMY_ROLE_BOSS))
+	if tdEnemySprintEnabled(wave, role)
+		return true
+	return role == TD_ENEMY_ROLE_BOSS and tdEnemyBossSpellResistanceEnabled(wave)
 
 public function tdEnemySprintSpeed(real originalBase) returns real
 	return originalBase * TD_ENEMY_SPRINT_FACTOR
 
 public function tdEnemyMechanicMaxSpeed(int wave, int role, int originalBase) returns int
+	if role == TD_ENEMY_ROLE_BOSS and wave == 8
+		return R2I(originalBase * 1.30 + 0.5)
+	if role == TD_ENEMY_ROLE_BOSS and wave == 32
+		return R2I(originalBase * 1.15 + 0.5)
 	if tdEnemySprintEnabled(wave, role)
 		return R2I(tdEnemySprintSpeed(originalBase.toReal()) + 0.5)
 	return originalBase
 
 public function tdEnemyMechanicHint(int wave) returns string
+	if wave == 8
+		return "裂风猎王：每10秒预告1秒，冲刺2秒"
+	if wave == 16
+		return "黑曜棺卫：稳定重甲，保留原生法伤减免"
+	if wave == 24
+		return "蚀月织咒者：暗潮预告1秒，附近塔攻速减20个百分点3秒"
 	if wave == 32
-		return "近卫冲刺护主，优先清除"
-	if tdEnemyGuardArmorEnabled(wave)
-		return "先清近卫，解除Boss护甲"
+		return "无冕深渊君王：30%血量一次小加速，必须击杀"
 	if wave == 12 or wave == 20 or wave == 28
 		return "精英拐点冲刺，减速拦截"
 	return "常规推进"
+
+public function tdBossIconPath(int wave) returns string
+	if wave == 8
+		return "war3mapImported\\BTNTDBossRiftwind.blp"
+	if wave == 16
+		return "war3mapImported\\BTNTDBossObsidian.blp"
+	if wave == 24
+		return "war3mapImported\\BTNTDBossEclipse.blp"
+	if wave == 32
+		return "war3mapImported\\BTNTDBossAbyss.blp"
+	return ""

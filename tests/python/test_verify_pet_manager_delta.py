@@ -2,9 +2,13 @@
 from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
+import hashlib
+import subprocess
+import tempfile
 import re
 import sys
 import unittest
+from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 from GenerateTowerTerrainMask import Mpq
@@ -16,7 +20,22 @@ import VerifyPetManagerDelta as gate
 class ManagerInheritanceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.current = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        # This strict stage oracle remains b7 -> the published manager commit.
+        # Later Boss deltas use their own actual-map source/MPQ/JASS proof.
+        commit = '654771baa872241cf572b16a0ef884436fe4818c'
+        data = subprocess.check_output(['git', 'show', commit + ':ExampleMap.w3x'], cwd=ROOT)
+        if hashlib.sha256(data).hexdigest() != '30714b250dc528275e94c6d1d6779e66dceeafbc2d7eaf3cd9ce7c4e1c7b0f7c':
+            raise AssertionError('Immutable formal manager map digest changed')
+        cls.directory = tempfile.TemporaryDirectory(prefix='formal-manager-stage-')
+        cls.addClassCleanup(cls.directory.cleanup)
+        frozen = Path(cls.directory.name)
+        (frozen / '.git').write_bytes((ROOT / '.git').read_bytes())
+        paths = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', commit, 'wurst'], cwd=ROOT).decode().splitlines()
+        for relative in paths:
+            target = frozen / relative; target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(subprocess.check_output(['git', 'show', commit + ':' + relative], cwd=ROOT))
+        scope = patch.object(gate, 'ROOT', frozen); scope.start(); cls.addClassCleanup(scope.stop)
+        cls.current = Mpq(data)
         cls.before = gate.baseline_map()
         cls.script = cls.current.extract('war3map.j').decode()
         cls.baseline = cls.before.extract('war3map.j').decode()

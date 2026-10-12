@@ -1,5 +1,6 @@
 package TDState
 import TDConfig
+import TDWaveFlowState
 
 int array tdLives
 int array tdGold
@@ -58,6 +59,7 @@ function tdSyncPlayerResources(int playerId)
 
 // 重置本局里所有会变化的状态，避免一次测试的结果污染下一次测试。
 public function tdResetState()
+	tdResetWaveFlowState()
 	tdTeamScore = 0
 	tdGameOver = false
 	tdGlobalWave = 0

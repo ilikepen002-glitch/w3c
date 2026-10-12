@@ -8,53 +8,53 @@ function nextEnemyMechanicGeneration() returns int
 	tdEnemyMechanicGeneration += 1
 	return tdEnemyMechanicGeneration
 
-// One link per original lane/wave, independent of the currently displayed wave.
-public class TDEnemyGuardLink
+// Native handles belong to Runtime. This state uses the original lane/wave.
+public class TDEnemyMechanicState
 	int lane
 	int wave
-	int livingGuards = 0
-
-	construct(int lane, int wave)
-		this.lane = lane
-		this.wave = wave
-
-	function protects(int lane, int wave) returns boolean
-		return this.lane == lane and this.wave == wave and tdEnemyGuardArmorEnabled(wave) and livingGuards > 0
-
-// Native ownership lives in Runtime; this state is deterministic and testable.
-public class TDEnemyMechanicState
-	TDEnemyGuardLink link
 	int role
 	real originalBaseSpeed
 	private boolean active = true
 	private boolean sprintUsed = false
 	private boolean sprintRunning = false
+	private boolean bossBurstRunning = false
+	private boolean bossEnraged = false
+	private int warningCycle = 0
+	private int pulseCycle = 0
 	private int generation
 
-	construct(TDEnemyGuardLink link, int role, real originalBaseSpeed)
-		this.link = link
+	construct(int lane, int wave, int role, real originalBaseSpeed)
+		this.lane = lane
+		this.wave = wave
 		this.role = role
 		this.originalBaseSpeed = originalBaseSpeed
 		generation = nextEnemyMechanicGeneration()
-		if role == TD_ENEMY_ROLE_GUARD
-			link.livingGuards += 1
 
 	function isActive() returns boolean
 		return active
 
 	function scaledSpellAmount(real amount) returns real
-		if amount <= 0.0 or not active or role != TD_ENEMY_ROLE_BOSS or not tdEnemyGuardArmorEnabled(link.wave)
+		if amount <= 0.0 or not active or role != TD_ENEMY_ROLE_BOSS or not tdEnemyBossSpellResistanceEnabled(wave)
 			return amount
-		return amount * tdWaveBossSpellDamageTakenFactor(link.wave)
+		return amount * tdWaveBossSpellDamageTakenFactor(wave)
 
 	function isSprinting() returns boolean
-		return sprintRunning
+		return sprintRunning or bossBurstRunning
+
+	function baseSpeed() returns real
+		if sprintRunning
+			return tdEnemySprintSpeed(originalBaseSpeed)
+		if bossBurstRunning
+			return originalBaseSpeed * 1.30
+		if bossEnraged
+			return originalBaseSpeed * 1.15
+		return originalBaseSpeed
 
 	function getGeneration() returns int
 		return generation
 
 	function beginSprint(int reachedWaypoint) returns boolean
-		if not active or sprintUsed or reachedWaypoint != TD_ENEMY_SPRINT_WAYPOINT or not tdEnemySprintEnabled(link.wave, role)
+		if not active or sprintUsed or reachedWaypoint != TD_ENEMY_SPRINT_WAYPOINT or not tdEnemySprintEnabled(wave, role)
 			return false
 		sprintUsed = true
 		sprintRunning = true
@@ -68,14 +68,40 @@ public class TDEnemyMechanicState
 		generation = nextEnemyMechanicGeneration()
 		return true
 
+	// Absolute lifetime avoids waypoint differences and cumulative timer drift.
+	function updateBoss(real age, real healthFraction) returns int
+		if not active or role != TD_ENEMY_ROLE_BOSS or age < 0.0
+			return 0
+		if wave == 32
+			if not bossEnraged and healthFraction <= 0.30
+				bossEnraged = true
+				return TD_BOSS_EVENT_ENRAGE
+			return 0
+		if wave != 8 and wave != 24
+			return 0
+		let period = wave == 8 ? 10.0 : 12.0
+		let cycle = R2I(age / period)
+		let phase = age - cycle * period
+		bossBurstRunning = wave == 8 and cycle > 0 and phase >= 1.0 and phase < 3.0
+		if cycle > warningCycle
+			warningCycle = cycle
+			// A delayed first observation beyond the warning must not fire a late pulse.
+			if phase < 1.0
+				return TD_BOSS_EVENT_WARNING
+		if wave == 24 and cycle > pulseCycle and cycle > 0 and phase >= 1.0
+			pulseCycle = cycle
+			if phase < 4.0
+				return TD_BOSS_EVENT_DARK_TIDE
+		return 0
+
 	function deactivate() returns boolean
 		if not active
 			return false
 		active = false
 		sprintRunning = false
+		bossBurstRunning = false
+		bossEnraged = false
 		generation = nextEnemyMechanicGeneration()
-		if role == TD_ENEMY_ROLE_GUARD
-			link.livingGuards -= 1
 		return true
 
 	ondestroy

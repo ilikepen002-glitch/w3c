@@ -7,6 +7,8 @@ import TDPetState
 import TDEnemyMechanicData
 import TDDamageHud
 import TDDamageRuntime
+import TDWaveFlowState
+import GameTimer
 
 multiboard tdStatusBoard = null
 string array tdPetHudSummaries
@@ -47,6 +49,25 @@ public function tdHudThreatText(int wave) returns string
 		return "无后续波次"
 	return "下波 " + wave.toString() + " · 普通 " + tdWaveNormalEnemyCount(wave).toString() + " 精英 " + tdWaveEliteEnemyCount(wave).toString() + " 近卫 " + tdWaveBossGuardEnemyCount(wave).toString() + " Boss " + tdWaveBossEnemyCount(wave).toString()
 
+function tdHudSetBossIcon(int row, int wave)
+	let icon = tdIsGameOver() ? "" : tdBossIconPath(wave)
+	tdStatusBoard.setItemIcon(row, 1, icon)
+	let cell = tdStatusBoard.getItem(row, 1)
+	cell.setStyle(false, icon != "")
+	cell.release()
+
+public function tdHudBossMechanicText(int wave) returns string
+	if tdFlowIsPreparing()
+		return "Boss待入场：等待旧波清场与精灵窗口"
+	if tdFlowHeldTransitionToken() != 0
+		return "阶段休整 · 等待挑战结束"
+	if tdFlowIsBossActive()
+		var remaining = 0
+		for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			remaining = IMaxBJ(remaining, tdFlowBossSecondsRemaining(lane, getElapsedGameTime()))
+		return tdEnemyMechanicHint(wave) + " · 剩余" + remaining + "s"
+	return tdEnemyMechanicHint(wave)
+
 public function tdRefreshStatusBoard()
 	if compiletime or tdStatusBoard == null
 		return
@@ -67,10 +88,12 @@ public function tdRefreshStatusBoard()
 	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() ? "本局结束" : tdHudThreatText(nextWave))
 	row += 1
 	// A separate short row keeps mechanic hints out of the already full threat line.
+	tdHudSetBossIcon(row, tdFlowIsPreparing() ? 0 : tdGetGlobalWave())
 	tdStatusBoard.setItemValue(row, 0, "本波")
 	tdStatusBoard.setItemValue(row, 1, "")
-	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() ? "机制已结束" : tdEnemyMechanicHint(tdGetGlobalWave()))
+	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() ? "机制已结束" : tdHudBossMechanicText(tdGetGlobalWave()))
 	row += 1
+	tdHudSetBossIcon(row, nextWave)
 	tdStatusBoard.setItemValue(row, 0, "下波")
 	tdStatusBoard.setItemValue(row, 1, "")
 	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() or nextWave > tdWaveCount() ? "无后续机制" : tdEnemyMechanicHint(nextWave))

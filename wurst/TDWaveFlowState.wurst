@@ -1,0 +1,230 @@
+package TDWaveFlowState
+import TDConfig
+import TDEnemyMechanicData
+import TDBossTransitionHook
+
+public constant int TD_WAVE_FLOW_NORMAL = 0
+public constant int TD_WAVE_FLOW_PREPARING = 1
+public constant int TD_WAVE_FLOW_BOSS = 2
+public constant int TD_WAVE_FLOW_INTERMISSION = 3
+public constant int TD_BOSS_RESULT_PENDING = 0
+public constant int TD_BOSS_RESULT_ACTIVE = 1
+public constant int TD_BOSS_RESULT_KILLED = 2
+public constant int TD_BOSS_RESULT_LEAKED = 3
+public constant int TD_BOSS_RESULT_TIMED_OUT = 4
+public constant int TD_BOSS_RESULT_ABORTED = 5
+public constant real TD_BOSS_TIME_LIMIT = 90.0
+
+int tdFlowMatchEpoch = 0
+int tdFlowScheduleToken = 0
+int tdFlowTransitionToken = 0
+int tdFlowTransitionState = 0
+boolean tdFlowTransitionOffered = false
+boolean tdFlowReadyCalled = false
+int tdFlowPhase = TD_WAVE_FLOW_NORMAL
+int tdFlowBossWave = 0
+int array tdFlowSpawnGeneration
+int array tdFlowSpawnBusy
+int array tdFlowBossResults
+boolean array tdFlowBossLootClaimed
+boolean array tdFlowBossBallClaimed
+boolean array tdFlowBossRewardsClaimed
+real array tdFlowBossDeadlines
+TDBossTransitionHook tdFlowHook = null
+
+public function tdFlowEpoch() returns int
+	return tdFlowMatchEpoch
+
+public function tdFlowSchedule() returns int
+	return tdFlowScheduleToken
+
+public function tdFlowPhaseForTest() returns int
+	return tdFlowPhase
+
+public function tdFlowPendingBossWave() returns int
+	return tdFlowBossWave
+
+public function tdFlowIsPreparing() returns boolean
+	return tdFlowPhase == TD_WAVE_FLOW_PREPARING
+
+public function tdFlowIsBossActive() returns boolean
+	return tdFlowPhase == TD_WAVE_FLOW_BOSS
+
+public function tdFlowIsIntermission() returns boolean
+	return tdFlowPhase == TD_WAVE_FLOW_INTERMISSION
+
+public function tdFlowTransitionBlocksAdvance() returns boolean
+	return tdFlowTransitionState != 0
+
+public function tdFlowTransitionIsHeld(int token) returns boolean
+	return token == tdFlowTransitionToken and tdFlowTransitionState == 1
+
+public function tdFlowHeldTransitionToken() returns int
+	return tdFlowTransitionState == 1 ? tdFlowTransitionToken : 0
+
+public function tdFlowReleaseTransition(int token, int reason) returns boolean
+	if not tdFlowTransitionIsHeld(token) or reason < TD_TRANSITION_COMPLETED or reason > TD_TRANSITION_ABORTED
+		return false
+	// Close before the external callback, so a callback cannot reenter release.
+	tdFlowTransitionState = 2
+	if tdFlowHook != null
+		tdFlowHook.onRelease(token, reason)
+	tdFlowTransitionState = 0
+	return true
+
+public function tdFlowRegisterTransitionHook(TDBossTransitionHook hook) returns boolean
+	if tdFlowTransitionState != 0
+		return false
+	if tdFlowHook != null
+		if tdFlowHook != hook
+			return false
+	tdFlowHook = hook
+	return true
+
+public function tdFlowHasTransitionHook() returns boolean
+	return tdFlowHook != null
+
+public function tdFlowHoldTransition(int wave) returns int
+	if tdFlowPhase != TD_WAVE_FLOW_INTERMISSION or tdFlowTransitionState != 0 or tdFlowTransitionOffered or tdFlowHook == null
+		return 0
+	if wave != 8 and wave != 24
+		return 0
+	tdFlowTransitionToken += 1
+	tdFlowTransitionOffered = true
+	tdFlowReadyCalled = false
+	tdFlowTransitionState = 1
+	return tdFlowTransitionToken
+
+public function tdFlowCallTransitionReady(int wave, int token) returns boolean
+	if not tdFlowTransitionIsHeld(token) or tdFlowHook == null or tdFlowReadyCalled
+		return false
+	tdFlowReadyCalled = true
+	return tdFlowHook.onReady(wave, token)
+
+public function tdResetWaveFlowState()
+	let held = tdFlowHeldTransitionToken()
+	if held != 0
+		tdFlowReleaseTransition(held, TD_TRANSITION_ABORTED)
+	tdFlowMatchEpoch += 1
+	tdFlowScheduleToken += 1
+	tdFlowTransitionToken += 1
+	tdFlowTransitionState = 0
+	tdFlowTransitionOffered = false
+	tdFlowReadyCalled = false
+	tdFlowHook = null
+	tdFlowPhase = TD_WAVE_FLOW_NORMAL
+	tdFlowBossWave = 0
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdFlowSpawnGeneration[lane] += 1
+		tdFlowSpawnBusy[lane] = 0
+		tdFlowBossResults[lane] = TD_BOSS_RESULT_PENDING
+		tdFlowBossRewardsClaimed[lane] = false
+		tdFlowBossLootClaimed[lane] = false
+		tdFlowBossBallClaimed[lane] = false
+		tdFlowBossDeadlines[lane] = 0.0
+
+public function tdFlowEnterNormal()
+	tdFlowPhase = TD_WAVE_FLOW_NORMAL
+	tdFlowScheduleToken += 1
+
+public function tdFlowPrepareBoss(int wave) returns boolean
+	if tdFlowPhase != TD_WAVE_FLOW_NORMAL or not tdIsPureBossWave(wave)
+		return false
+	tdFlowPhase = TD_WAVE_FLOW_PREPARING
+	tdFlowBossWave = wave
+	// Do not cancel legitimate old production, clear watchers or natural rewards.
+	tdFlowScheduleToken += 1
+	return true
+
+public function tdFlowStartBoss(int wave) returns boolean
+	if tdFlowPhase != TD_WAVE_FLOW_PREPARING or tdFlowBossWave != wave
+		return false
+	tdFlowPhase = TD_WAVE_FLOW_BOSS
+	tdFlowScheduleToken += 1
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdFlowSpawnGeneration[lane] += 1
+		tdFlowBossResults[lane] = TD_BOSS_RESULT_PENDING
+		tdFlowBossRewardsClaimed[lane] = false
+		tdFlowBossLootClaimed[lane] = false
+		tdFlowBossBallClaimed[lane] = false
+	return true
+
+public function tdFlowBeginSpawn(int lane) returns int
+	if not tdIsLanePlayer(lane) or tdFlowSpawnBusy[lane] != 0
+		return 0
+	tdFlowSpawnGeneration[lane] += 1
+	tdFlowSpawnBusy[lane] = tdFlowSpawnGeneration[lane]
+	return tdFlowSpawnGeneration[lane]
+
+public function tdFlowSpawnCallbackValid(int lane, int epoch, int generation) returns boolean
+	return tdIsLanePlayer(lane) and epoch == tdFlowMatchEpoch and generation == tdFlowSpawnGeneration[lane]
+
+public function tdFlowEndSpawn(int lane, int generation)
+	if tdIsLanePlayer(lane) and tdFlowSpawnBusy[lane] == generation
+		tdFlowSpawnBusy[lane] = 0
+
+public function tdFlowLaneHasPendingSpawn(int lane) returns boolean
+	return tdIsLanePlayer(lane) and tdFlowSpawnBusy[lane] != 0
+
+public function tdFlowCancelLane(int lane)
+	if not tdIsLanePlayer(lane)
+		return
+	tdFlowSpawnGeneration[lane] += 1
+	tdFlowSpawnBusy[lane] = 0
+	if tdFlowBossResults[lane] == TD_BOSS_RESULT_ACTIVE or tdFlowBossResults[lane] == TD_BOSS_RESULT_PENDING
+		tdFlowBossResults[lane] = TD_BOSS_RESULT_ABORTED
+
+public function tdFlowActivateBoss(int lane, int wave, real now) returns boolean
+	if not tdIsLanePlayer(lane) or not tdFlowIsBossActive() or wave != tdFlowBossWave or tdFlowBossResults[lane] != TD_BOSS_RESULT_PENDING
+		return false
+	tdFlowBossResults[lane] = TD_BOSS_RESULT_ACTIVE
+	tdFlowBossDeadlines[lane] = now + TD_BOSS_TIME_LIMIT
+	return true
+
+public function tdFlowBossResult(int lane, int wave) returns int
+	if not tdIsLanePlayer(lane) or wave != tdFlowBossWave
+		return TD_BOSS_RESULT_PENDING
+	return tdFlowBossResults[lane]
+
+public function tdFlowClaimBossResult(int lane, int wave, int result) returns boolean
+	if not tdIsLanePlayer(lane) or wave != tdFlowBossWave or tdFlowBossResults[lane] != TD_BOSS_RESULT_ACTIVE or result < TD_BOSS_RESULT_KILLED or result > TD_BOSS_RESULT_ABORTED
+		return false
+	tdFlowBossResults[lane] = result
+	return true
+
+public function tdFlowBossExpired(int lane, int wave, real now) returns boolean
+	return tdFlowBossResult(lane, wave) == TD_BOSS_RESULT_ACTIVE and now >= tdFlowBossDeadlines[lane]
+
+public function tdFlowBossSecondsRemaining(int lane, real now) returns int
+	if not tdIsLanePlayer(lane) or tdFlowBossResults[lane] != TD_BOSS_RESULT_ACTIVE
+		return 0
+	return IMaxBJ(0, R2I(tdFlowBossDeadlines[lane] - now + 0.999))
+
+public function tdFlowEnterIntermission() returns boolean
+	if not tdFlowIsBossActive()
+		return false
+	tdFlowPhase = TD_WAVE_FLOW_INTERMISSION
+	tdFlowTransitionOffered = false
+	tdFlowScheduleToken += 1
+	return true
+
+public function tdFlowClaimBossReward(int lane, int wave, int epoch) returns boolean
+	if epoch != tdFlowMatchEpoch or tdFlowBossResult(lane, wave) != TD_BOSS_RESULT_KILLED or tdFlowBossRewardsClaimed[lane]
+		return false
+	tdFlowBossRewardsClaimed[lane] = true
+	return true
+
+public function tdFlowBossRewardWasClaimed(int lane, int wave) returns boolean
+	return tdIsLanePlayer(lane) and wave == tdFlowBossWave and tdFlowBossRewardsClaimed[lane]
+
+public function tdFlowClaimBossLoot(int lane, int wave) returns boolean
+	if not tdFlowBossRewardWasClaimed(lane, wave) or tdFlowBossResult(lane, wave) != TD_BOSS_RESULT_KILLED or tdFlowBossLootClaimed[lane]
+		return false
+	tdFlowBossLootClaimed[lane] = true
+	return true
+
+public function tdFlowClaimBossBallCompensation(int lane, int wave) returns boolean
+	if not tdFlowBossRewardWasClaimed(lane, wave) or tdFlowBossResult(lane, wave) != TD_BOSS_RESULT_KILLED or tdFlowBossBallClaimed[lane]
+		return false
+	tdFlowBossBallClaimed[lane] = true
+	return true

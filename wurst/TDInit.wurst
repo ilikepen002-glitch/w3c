@@ -12,9 +12,12 @@ import TDHud
 import TDPets
 import TDEnemyMechanicRuntime
 import TDDamageRuntime
+import RegisterEvents
 
 trigger tdChatCommandTrigger = CreateTrigger()
 boolean tdGameplayStartupCompleted = false
+// This listener lives for the process, independently of match resets.
+boolean tdLanePlayerLeaveWatcherReady = false
 
 public function tdMapBootstrapDelay() returns real
 	return 0.10
@@ -74,7 +77,7 @@ public function tdClampCameraTargetDistance(real distance) returns real
 	return distance
 
 public function tdStartupGuideMessage() returns string
-	return "守住起点到终点的路线，在高台建塔。B 建造 / U 范围升级 / C 背包合成 / G 工资；Q 捕获 / W 收藏 / E 上阵。发起建造后建筑自行施工。滚轮调整镜头；精灵与装备都可强化塔。|n每漏过1名敌人扣除生命：普通1、精英和近卫队长2、首领3。"
+	return "守住起点到终点的路线，在高台建塔。B 建造 / U 范围升级 / C 背包合成 / G 工资；Q 捕获 / W 收藏 / E 上阵。发起建造后建筑自行施工。滚轮调整镜头；精灵与装备都可强化塔。|n每漏过1名敌人扣除生命：普通1、精英和近卫队长2、首领3。首领关每路1名，入场后90秒限时。"
 function tdInactiveLaneNoticePlayerActiveForTest(int playerId, boolean lane0Active, boolean lane1Active, boolean lane2Active, boolean lane3Active) returns boolean
 	if playerId == 0
 		return lane0Active
@@ -206,6 +209,18 @@ function tdSetupChatCommands()
 		TriggerRegisterPlayerChatEvent(tdChatCommandTrigger, Player(playerId), "-addMoney", false)
 	TriggerAddAction(tdChatCommandTrigger, function tdHandleChatCommand)
 
+function tdHandleLanePlayerLeaveEvent() returns boolean
+	tdHandleLanePlayerLeft(GetPlayerId(GetTriggerPlayer()))
+	return false
+
+public function tdSetupLanePlayerLeaveWatcher() returns boolean
+	if tdLanePlayerLeaveWatcherReady
+		return false
+	tdLanePlayerLeaveWatcherReady = true
+	if not compiletime
+		registerPlayerEvent(EVENT_PLAYER_LEAVE, function tdHandleLanePlayerLeaveEvent)
+	return true
+
 function tdRunGameplayStartup()
 	if tdGameplayStartupCompleted
 		return
@@ -221,6 +236,7 @@ function tdRunGameplayStartup()
 		if tdIsLaneActive(playerId)
 			tdPetInitializeFarmer(playerId, tdGetFarmer(playerId))
 	tdSetupPets()
+	tdSetupLanePlayerLeaveWatcher()
 	tdSetupDamageStatistics()
 	tdSetupEnemyMechanics()
 	tdSetupBuildDialog()
@@ -265,6 +281,7 @@ function tdBootstrapGameplayWhenPlayersReady(int retryCount)
 
 // 游戏主启动流程。路线本身交给地图静态布局，只保留起点/终点等区域驱动的运行时逻辑。
 public function tdStartGame()
+	tdShutdownGameFlow()
 	tdResetState()
 	tdResetDamageStatistics()
 	tdGameplayStartupCompleted = false

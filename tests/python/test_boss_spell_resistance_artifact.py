@@ -551,10 +551,24 @@ class BossBaselineResolverTests(unittest.TestCase):
             BaselineFixture(environment={}, git_reader=missing)
 
 
-class BossResistanceFinalArtifactTests(unittest.TestCase):
+class BossResistanceHistoricalReleaseTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        map_path = Path(os.environ.get('BOSS_RESISTANCE_MAP', ROOT / 'ExampleMap.w3x'))
+        # Guard-link resistance is the immutable original Boss-stage contract.
+        # Pure Boss production has a different, separately executed state oracle.
+        commit = '0384ccddcfdbaa868f773573c1f7403fe809d3e2'
+        cls.directory = tempfile.TemporaryDirectory(prefix='formal-boss-stage-')
+        cls.addClassCleanup(cls.directory.cleanup)
+        cls.source_root = Path(cls.directory.name)
+        map_path = cls.source_root / 'ExampleMap.w3x'
+        data = subprocess.check_output(['git', 'show', commit + ':ExampleMap.w3x'], cwd=ROOT)
+        verifier.require(hashlib.sha256(data).hexdigest() == '1b2b9671d3ce7b05837811dbfbb8efa0815fe4bcea840f53f8dde4789761f96e',
+                         'Immutable original Boss release map differs')
+        map_path.write_bytes(data)
+        paths = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', commit, 'wurst'], cwd=ROOT).decode().splitlines()
+        for relative in paths:
+            target = cls.source_root / relative; target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(subprocess.check_output(['git', 'show', commit + ':' + relative], cwd=ROOT))
         cls.artifact = Mpq(map_path.read_bytes())
         cls.script = cls.artifact.extract('war3map.j').decode('utf-8')
         if 'function tdEnemyMechanicScaleSpellDamage takes' not in cls.script:
@@ -597,7 +611,7 @@ class BossResistanceFinalArtifactTests(unittest.TestCase):
             verifier.verify_artifact(path, self.baseline.map, root / 'wurst', self.baseline.source)
 
     def test_current_source_and_compiled_boss_contract(self):
-        verifier.verify_source_contract(ROOT / 'wurst')
+        verifier.verify_source_contract(self.source_root / 'wurst')
         verifier.verify_compiled_structure(self.script)
 
 

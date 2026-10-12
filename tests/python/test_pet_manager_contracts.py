@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 import VerifyPetManagerSource as checker
 import VerifyPetUIArtifact as artifact
+import VerifyPureBossArtifact as boss
 from BuildPetUiAssets import verify_manifest
 
 
@@ -77,7 +78,11 @@ class RealSourceContractTests(unittest.TestCase):
         quiet(checker.verify_scalar_contracts)
 
     def test_actual_sync_session_transactions_selection_and_poll_wiring(self):
-        quiet(checker.verify_wiring)
+        quiet(boss.verify_manager_inherited_wiring)
+
+    def test_historical_manager_wild_scope_is_still_strict(self):
+        with self.assertRaisesRegex(ValueError, 'Wild encounter changes outside scope'):
+            quiet(checker.verify_wiring)
 
     def test_reject_wrong_real_source_whitelist_or_hotkey_or_capacity_partition(self):
         originals = {name: checker.source(name) for name in checker.FILES}
@@ -109,7 +114,7 @@ class RealSourceContractTests(unittest.TestCase):
             self.assertIn(old, modified[package])
             modified[package] = modified[package].replace(old, new)
             with self.subTest(package=package, mutation=new), patch.object(checker, 'source', side_effect=lambda name: modified[name]), self.assertRaises(ValueError):
-                quiet(checker.verify_wiring)
+                quiet(boss.verify_manager_inherited_wiring)
 
     def test_current_manifest_28_assets_and_original_13_remain_exact(self):
         quiet(checker.verify_assets)

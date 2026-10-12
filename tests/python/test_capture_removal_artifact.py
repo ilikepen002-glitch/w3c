@@ -1,16 +1,20 @@
 """Ordinary-only capture regressions; synthetic mutations never rewrite a map.
 
-Actual-runtime tests require a newly built root artifact. Static-only preparation
-runs the object/member/condition/source classes, and does not claim a new build.
+Historical-runtime tests pair the immutable formal C artifact with source from
+that same commit. They never apply mutable current-source diagnostics to an old
+script, and do not claim a new current-stage build.
 """
 from copy import deepcopy
 from dataclasses import replace
+import hashlib
 from pathlib import Path
 import subprocess
 import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
+FORMAL_C_COMMIT = 'b7e3d051e98c2b18caafed4ab6e036700a6ee64c'
+FORMAL_C_MAP_SHA256 = '55e8decccc5fada5b3dd21c854ad44a2203c73b64e1fcc1d10bd380bd48daadf'
 sys.path.insert(0, str(ROOT / 'tools'))
 from GenerateTowerTerrainMask import Mpq
 import VerifyCaptureRemovalArtifact as removal
@@ -233,13 +237,16 @@ class CaptureRemovalSourceTests(unittest.TestCase):
         self.assertTrue((ROOT / 'assets/source/semantic-icons/actions-sheet-v2-source.png').exists())
 
 
-class CaptureRemovalHistoricalInheritanceTests(unittest.TestCase):
-    """Frozen official C inheritance; current-manager behavior is a separate test."""
+class CaptureRemovalHistoricalRuntimeTests(unittest.TestCase):
+    """Preserve the real formal C capture oracle independently of later stages."""
     @classmethod
     def setUpClass(cls):
         data = subprocess.check_output(['git', 'show', '0384ccddcfdbaa868f773573c1f7403fe809d3e2:ExampleMap.w3x'], cwd=ROOT)
         cls.before = Mpq(data).extract('war3map.j').decode('utf-8')
-        script = Mpq(subprocess.check_output(['git', 'show', 'b7e3d051e98c2b18caafed4ab6e036700a6ee64c:ExampleMap.w3x'], cwd=ROOT)).extract('war3map.j').decode('utf-8')
+        c_data = subprocess.check_output(['git', 'show', FORMAL_C_COMMIT + ':ExampleMap.w3x'], cwd=ROOT)
+        if hashlib.sha256(c_data).hexdigest() != FORMAL_C_MAP_SHA256:
+            raise AssertionError('Immutable formal C artifact digest changed')
+        script = Mpq(c_data).extract('war3map.j').decode('utf-8')
         # Formal B changed compiler class IDs; prove named allocators and every
         # comparison against immutable formal A, without weakening the historic
         # capture-only delta gate or changing actual behavior-oracle input.
@@ -255,10 +262,20 @@ class CaptureRemovalHistoricalInheritanceTests(unittest.TestCase):
         paths = {'TDEquipmentAbilities': 'wurst/items/TDEquipmentAbilities.wurst',
                  'TDTowerRuntime': 'wurst/towers/TDTowerRuntime.wurst'}
         before_sources = {name: subprocess.check_output(['git', 'show', '697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5:' + path], cwd=ROOT).decode() for name, path in paths.items()}
-        current_sources = {name: subprocess.check_output(['git', 'show', 'b7e3d051e98c2b18caafed4ab6e036700a6ee64c:' + path], cwd=ROOT).decode() for name, path in paths.items()}
+        # Both artifact and source are frozen C. Current Boss or later source
+        # insertions are validated by their own delta, never this historical one.
+        current_sources = {name: subprocess.check_output(['git', 'show', FORMAL_C_COMMIT + ':' + path], cwd=ROOT).decode() for name, path in paths.items()}
+        cls.formal_sources, cls.b_sources, cls.b_script = current_sources, before_sources, b_script
         diagnostic_view, cls.proved_diagnostics = proved_diagnostic_view(script, b_script, current_sources, before_sources)
         class_view, cls.proved_class_ids = proved_type_reindex_view(diagnostic_view, a_script)
         cls.current, cls.proved_aliases = inherited_script_view(class_view, cls.before)
+
+    def test_historical_diagnostics_reject_mismatched_source_pair(self):
+        from VerifyBloodlustDiagnostics import proved_diagnostic_view
+        mismatched = dict(self.formal_sources)
+        mismatched['TDTowerRuntime'] = '// later-stage source insertion\n' + mismatched['TDTowerRuntime']
+        with self.assertRaisesRegex(ValueError, 'Diagnostic source-line provenance changed'):
+            proved_diagnostic_view(self.actual, self.b_script, mismatched, self.b_sources)
 
     def test_actual_packaged_capture_and_inherited_lifecycle_pass(self):
         removal.verify_spend_and_attempt(self.actual)

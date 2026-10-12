@@ -1,0 +1,14 @@
+{
+  "repo": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/combined-harness-worktree-07",
+  "mode": "build",
+  "sourceCommit": "654771baa872241cf572b16a0ef884436fe4818c",
+  "sourceTree": "af36fa739ae598a5f41a1f01d3bab73f4734d875",
+  "templateSha256": "3fd31a78aaa5d017565fca6c6f3758d40ed6131999c701bdf1f99557ba39e408",
+  "stdlibTree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+  "nativeJassSha256": "95cb24509ca5210908221ac0edf0614529fb8d1fb681578fbcc0b4e8689ab75e",
+  "artifactSha256": "55816202fc9487390f887db1fc1851fe0db6c76fef460e6547a0ede29c8ea898",
+  "timestampUTC8": "20261012-1853-UTC+8",
+  "displayName": "深渊守望 20261012-1853-UTC+8",
+  "journal": "/workspace/scratch/2106c0ab1fac/toolchain-recovery-20261012/state/transaction-d1680aac45fe4830891f21d3a2e42065/journal.json",
+  "candidate": "/workspace/scratch/2106c0ab1fac/toolchain-recovery-20261012/state/transaction-d1680aac45fe4830891f21d3a2e42065/candidate.w3x"
+}

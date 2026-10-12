@@ -1,0 +1,158 @@
+[
+  {
+    "stage": "A-native",
+    "exit_code": 0,
+    "sourceCommit": "697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5",
+    "tool": "tools/VerifyBuilderConstructionArtifact.py",
+    "toolSHA256": "99d65a6c8b765d03f9ba194a82c24c37c89add8abad74d3ab7481e77710a7f95",
+    "command": [
+      "python",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-697d0f3e/tools/VerifyBuilderConstructionArtifact.py",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-e340d175/ExampleMap.w3x",
+      "--baseline-map",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-a1293716/ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-697d0f3e",
+    "candidate_commit": "e340d1758c7d72c0f88df3cdb54139ec989a6fcd",
+    "baseline_commit": "a1293716c6b06b31e4b1cb9625efe3d9db3da572",
+    "candidate_map_sha256": "2965ec8fc2c2b9a7573249a92b77aeebc7b73ea29928104d307906f81b64284f",
+    "baseline_map_sha256": "d2f6e06f6089aff567e7acffdd9a056c9c80c217ff80c2c2b01d2926ceb0c3c5",
+    "returncode": 0,
+    "log_sha256": "cc8ea4bf5d63073abd43ee2f634e77c5515e766ea9d89e52bb9c75e8859a0084"
+  },
+  {
+    "stage": "B-controls",
+    "exit_code": 0,
+    "sourceCommit": "697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5",
+    "tool": "tools/VerifyBuilderControlArtifact.py",
+    "toolSHA256": "a6daefa82167225eb34fb4d48786688dc50e068f9f81627e1ace8a6557ab260c",
+    "command": [
+      "python",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-697d0f3e/tools/VerifyBuilderControlArtifact.py",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-697d0f3e/ExampleMap.w3x",
+      "--baseline-map",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-e340d175/ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-697d0f3e",
+    "candidate_commit": "697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5",
+    "baseline_commit": "e340d1758c7d72c0f88df3cdb54139ec989a6fcd",
+    "candidate_map_sha256": "cd720757a37f2b4ac5c58bcc7ae6dbde7fe20d1dbbf71045a1414b4fd9f4c577",
+    "baseline_map_sha256": "2965ec8fc2c2b9a7573249a92b77aeebc7b73ea29928104d307906f81b64284f",
+    "returncode": 0,
+    "log_sha256": "c96d777ed8e9fbd9ec99cdd94269481ad0386423a0b91dfe5fd2e858c43ff351"
+  },
+  {
+    "stage": "rank",
+    "exit_code": 0,
+    "sourceCommit": "a1293716c6b06b31e4b1cb9625efe3d9db3da572",
+    "tool": "tools/VerifyGlobalRankingsArtifact.py",
+    "toolSHA256": "808e5d213ec7aaabb0f8689983e9def70a52cb4993cdb60b97d7adf7941bcea0",
+    "command": [
+      "python",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-a1293716/tools/VerifyGlobalRankingsArtifact.py",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-a1293716/ExampleMap.w3x",
+      "--baseline-map",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0a476154/ExampleMap.w3x",
+      "--root",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-a1293716"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-a1293716",
+    "candidate_commit": "a1293716c6b06b31e4b1cb9625efe3d9db3da572",
+    "baseline_commit": "0a476154e7269ee0a1c8e619c1349f31ba17b36b",
+    "candidate_map_sha256": "d2f6e06f6089aff567e7acffdd9a056c9c80c217ff80c2c2b01d2926ceb0c3c5",
+    "baseline_map_sha256": "fe7f464dd5d0ade134a0958ce2298ff6d5196792aa3b990d327ac624bb99dfe6",
+    "returncode": 0,
+    "log_sha256": "ca3bd9b2319051e7fd47597dd4aae8857e08ce9a9aea28f6096feffee0fbfd9f"
+  },
+  {
+    "stage": "capture",
+    "exit_code": 0,
+    "sourceCommit": "0a476154e7269ee0a1c8e619c1349f31ba17b36b",
+    "tool": "tools/VerifyCaptureRemovalArtifact.py",
+    "toolSHA256": "d24123cfa5de8a70837cb658650d6bf05b5704ff140398df07f4ebbb07198520",
+    "command": [
+      "python",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0a476154/tools/VerifyCaptureRemovalArtifact.py",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0a476154/ExampleMap.w3x",
+      "--baseline-map",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0384ccdd/ExampleMap.w3x",
+      "--root",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0a476154"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0a476154",
+    "candidate_commit": "0a476154e7269ee0a1c8e619c1349f31ba17b36b",
+    "baseline_commit": "0384ccddcfdbaa868f773573c1f7403fe809d3e2",
+    "candidate_map_sha256": "fe7f464dd5d0ade134a0958ce2298ff6d5196792aa3b990d327ac624bb99dfe6",
+    "baseline_map_sha256": "1b2b9671d3ce7b05837811dbfbb8efa0815fe4bcea840f53f8dde4789761f96e",
+    "returncode": 0,
+    "log_sha256": "751a973a8df1db2590133b2607878b01ee5eef49a6f22d1012d2807cbcb00ee2"
+  },
+  {
+    "stage": "boss",
+    "exit_code": 0,
+    "sourceCommit": "697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5",
+    "tool": "tools/VerifyBossSpellResistanceArtifact.py",
+    "toolSHA256": "468030b8af34f7b7fdcaf7634f86657a43e85308e23475627d7710f8059fa4b3",
+    "command": [
+      "python",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-697d0f3e/tools/VerifyBossSpellResistanceArtifact.py",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0384ccdd/ExampleMap.w3x",
+      "--baseline-map",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0330fd12/ExampleMap.w3x",
+      "--source",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0384ccdd/wurst",
+      "--baseline-source",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0330fd12/wurst"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-697d0f3e",
+    "candidate_commit": "0384ccddcfdbaa868f773573c1f7403fe809d3e2",
+    "baseline_commit": "0330fd12de4d66c4a1ca4980e10b771f0903fbfc",
+    "candidate_map_sha256": "1b2b9671d3ce7b05837811dbfbb8efa0815fe4bcea840f53f8dde4789761f96e",
+    "baseline_map_sha256": "10a6eb992b4a9fb0edf2aa81db8700e5b78042462e5d5a130b71a2747907bb0f",
+    "returncode": 0,
+    "log_sha256": "11f353966ba29efbf52058652c3217cb4685635ce3668eff5f71abf746e32aaf"
+  },
+  {
+    "stage": "wild",
+    "exit_code": 0,
+    "sourceCommit": "697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5",
+    "tool": "tools/VerifyPetWildPathingArtifact.py",
+    "toolSHA256": "112dfafbffcd97d411b23af80c4d0d2dc9d235f0264eec2865238dd1241af54a",
+    "command": [
+      "python",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-697d0f3e/tools/VerifyPetWildPathingArtifact.py",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-71a0c42b/ExampleMap.w3x",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-96769958/ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-697d0f3e",
+    "candidate_commit": "71a0c42b054370d7136dd2f687a6b4e7da830f19",
+    "baseline_commit": "967699580510791022408cd067513a92ba675792",
+    "candidate_map_sha256": "6f4859b0ee6e22ca373ebafa222f16c1d150ac64908fdcea04da31a771b8c7b7",
+    "baseline_map_sha256": "d0e5a38101a136cb023ab2fc490da4c85906136565d8f1042040abfe26886f9c",
+    "returncode": 0,
+    "log_sha256": "774e85fc72e10951fd6dd806ddf49336649e13b4a44f4cc427d86f0c1dfb4784"
+  },
+  {
+    "stage": "deployment",
+    "exit_code": 0,
+    "sourceCommit": "0330fd12de4d66c4a1ca4980e10b771f0903fbfc",
+    "tool": "tools/VerifyPetDeploymentArtifact.py",
+    "toolSHA256": "fbe51347f9882f001bcf7e72f8dab871da349e07f5b72f3ce3015c9e3fd0d883",
+    "command": [
+      "python",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0330fd12/tools/VerifyPetDeploymentArtifact.py",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0330fd12/ExampleMap.w3x",
+      "--previous",
+      "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-71a0c42b/ExampleMap.w3x",
+      "--baseline",
+      "71a0c42b054370d7136dd2f687a6b4e7da830f19"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/historical-cli-final-07/formal-0330fd12",
+    "candidate_commit": "0330fd12de4d66c4a1ca4980e10b771f0903fbfc",
+    "baseline_commit": "71a0c42b054370d7136dd2f687a6b4e7da830f19",
+    "candidate_map_sha256": "10a6eb992b4a9fb0edf2aa81db8700e5b78042462e5d5a130b71a2747907bb0f",
+    "baseline_map_sha256": "6f4859b0ee6e22ca373ebafa222f16c1d150ac64908fdcea04da31a771b8c7b7",
+    "returncode": 0,
+    "log_sha256": "c1c89ff8c76c75f0f2faada5986d02a2df73b04822dcb62b7e6fc94a0d1fad45"
+  }
+]

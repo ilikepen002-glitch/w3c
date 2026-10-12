@@ -1,0 +1,243 @@
+[
+  {
+    "gate": "EquipmentAbility",
+    "command": [
+      "python",
+      "tools/VerifyEquipmentAbilityArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "fe0098a670a6904be77709ee9e8bfed64cf7db166d0cfb7f47d3982e71b87bd8",
+    "returncode": 0,
+    "log_sha256": "7c7fcddcd2a2554a82d7091635781decc32f0db6d0fb356922e1c4417c658672"
+  },
+  {
+    "gate": "Evolution",
+    "command": [
+      "python",
+      "tools/VerifyEvolutionArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "30a266f307e4ba5474462faef8e77d79ed1eaacd1082c2e714d400b9522cb65c",
+    "returncode": 0,
+    "log_sha256": "30d96dee9aee199522cb06cf8772b66aa5c461f778d77cbe95b1b642394848fb"
+  },
+  {
+    "gate": "GroundItem",
+    "command": [
+      "python",
+      "tools/VerifyGroundItemArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "0d372f0c9be8b870318abd49f26d577e12265c219b37f2016b6504b8d288b3fc",
+    "returncode": 0,
+    "log_sha256": "f4110718f68078408af0a2d43aff15c0dcc4bb2935f83a72c9597e7f9eac9e8e"
+  },
+  {
+    "gate": "GroundUpgrade",
+    "command": [
+      "python",
+      "tools/VerifyGroundUpgradeArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "187dffaf41ca83114eef383833b7dcbeaffb35ac05fc89031733cb528566569f",
+    "returncode": 0,
+    "log_sha256": "00bef6b0c98a1976ad7644ac97861027b844952cdd0f634107f167313b5174ae"
+  },
+  {
+    "gate": "PetUI",
+    "command": [
+      "python",
+      "tools/VerifyPetUIArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "69624b7c74d8adb82d57080e3626888f87dc4925318ec569a3a0f02a1a94da3a",
+    "returncode": 0,
+    "log_sha256": "729c647239cb546a8085d369edf515e58cf824b6144b3dd6704f3e49a42b5e0a"
+  },
+  {
+    "gate": "PlayerTooltip",
+    "command": [
+      "python",
+      "tools/VerifyPlayerTooltipArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "897c87ba25838a05d39fef0d80ad3fd1571f4ef5f3fa96144e71182c471df44d",
+    "returncode": 0,
+    "log_sha256": "e5c9f63958989e47ff893f43a3a701d99f249f2805c33a690fbeaa9a5c3ec70c"
+  },
+  {
+    "gate": "SlowAbility",
+    "command": [
+      "python",
+      "tools/VerifySlowAbilityArtifact.py",
+      "ExampleMap.w3x",
+      "--pure-boss"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "afdd12926a746a3703b601c776a33fdac4650f6121bf260262fddc47a3782b73",
+    "returncode": 0,
+    "log_sha256": "abfe6f1b4b337be4b190706eef1800167b122b99c6d27f80b68851b2d8f5d3c7",
+    "first_legacy_mode_returncode": 1,
+    "approved_adaptation": "Only uG32 (260,260), uB08 (240,312), uB32 (250,288); legacy default retained"
+  },
+  {
+    "gate": "BladestormAbility",
+    "command": [
+      "python",
+      "tools/VerifyBladestormAbilityArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "8be1d7b6a224bcf15411a4bd18ef950d65698f0da26f89e93ec9cb88df1ff9cd",
+    "returncode": 0,
+    "log_sha256": "944455d6ea13011c31a7edb22f5fbe0b3545b854110fed7dbe766fc1c6f1370a"
+  },
+  {
+    "gate": "TowerPlacement",
+    "command": [
+      "python",
+      "tools/VerifyTowerPlacementArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "8f9e29a07b313a34fdc788f66f4c669c4169d4997f037f5897f5ab52cc6d2476",
+    "returncode": 0,
+    "log_sha256": "0f4c7e7f1e27320fb5a6d07e3e0c4a60bc3700fa0b88b656c22e08c60bfa15f5"
+  },
+  {
+    "gate": "TowerSale",
+    "command": [
+      "python",
+      "tools/VerifyTowerSaleArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "5ea5ebceafc7abd43b1ff64d45396dda45d92cc9a9ae0fd9e8761ecd35b49165",
+    "returncode": 0,
+    "log_sha256": "2da485fa2ddf57c81149b2c00f0dbe80d687c9676250afa4535f9b0096062eeb"
+  },
+  {
+    "gate": "TowerUiGround",
+    "command": [
+      "python",
+      "tools/VerifyTowerUiGroundArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "ddc0cdcc1a77911a41b0ca65bd365915a88cd9076c34e13469708da1054262f0",
+    "returncode": 0,
+    "log_sha256": "a1d80a64cbcd83d782e5147157b973c61ea0d19fab1de8feff16002e3d7c586d"
+  },
+  {
+    "gate": "TowerUpgrade",
+    "command": [
+      "python",
+      "tools/VerifyTowerUpgradeArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "7433cd136b7591893c4918cc3e2e18a2a2fc57918aeb4da0bd30b45e1037e9cd",
+    "returncode": 0,
+    "log_sha256": "501a2047c4047f55214ab7ce9d014b2837bdce5156023abf5ce529258021ff01"
+  },
+  {
+    "gate": "PetDeployment",
+    "command": [
+      "python",
+      "tools/VerifyPetDeploymentArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "7888fcbe49f1e5648cbf9d147372546fa3fc0e35be4d0dbfc21886d522dbba87",
+    "returncode": 0,
+    "log_sha256": "d0e14fbfc603a6f9a15e278b58bad5438f2e01b53405203346cb251b7f829052"
+  },
+  {
+    "gate": "BuilderConstruction",
+    "command": [
+      "python",
+      "tools/VerifyBuilderConstructionArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "99d65a6c8b765d03f9ba194a82c24c37c89add8abad74d3ab7481e77710a7f95",
+    "returncode": 0,
+    "log_sha256": "b67892d7055d0402add77556bb7d59bab70716861739c24c2bffa00409f7f49a"
+  },
+  {
+    "gate": "BuilderControl",
+    "command": [
+      "python",
+      "tools/VerifyBuilderControlArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "a6daefa82167225eb34fb4d48786688dc50e068f9f81627e1ace8a6557ab260c",
+    "returncode": 0,
+    "log_sha256": "7a980a2774a05722f4bb847f3e13be2f3ad1bd31c19b59c85d487ee448241c6b"
+  },
+  {
+    "gate": "BloodlustAutocast",
+    "command": [
+      "python",
+      "tools/VerifyBloodlustAutocastArtifact.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+    "input_scope": "actual combined06 root map",
+    "map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+    "tool_sha256": "e9efeef711ed6414dc8b39dd2ac1c27b49c92a4dc4ef26df2de7ddb4897d2116",
+    "returncode": 0,
+    "log_sha256": "ff350913d879843451d23f3a803ca8087f2ee5bccd3c3dd0f44d8188a0b36cfe"
+  },
+  {
+    "gate": "PetManagerDelta",
+    "command": [
+      "python",
+      "tools/VerifyPetManagerDelta.py",
+      "ExampleMap.w3x"
+    ],
+    "cwd": "/workspace/scratch/2106c0ab1fac/spirit-manager-20261012/integration-worktree",
+    "input_scope": "immutable manager654 stage",
+    "map_sha256": "30714b250dc528275e94c6d1d6779e66dceeafbc2d7eaf3cd9ce7c4e1c7b0f7c",
+    "tool_sha256": "3cf2744850a4a6b9827545c229371dbb64bfd0caa44cd1620f8b3311f0765c59",
+    "returncode": 0,
+    "log_sha256": "b4c5a77729361dcd0c450750cae340a9f9c62fb9834b308c4103ce45854630b6"
+  }
+]

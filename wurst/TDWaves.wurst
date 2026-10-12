@@ -116,6 +116,8 @@ public function tdWaveCount() returns int
 	return 32
 
 public function tdWaveNormalEnemyCount(int wave) returns int
+	if tdIsPureBossWave(wave)
+		return 0
 	if wave == 1
 		return 8
 	if wave == 2
@@ -194,10 +196,6 @@ public function tdWaveEliteEnemyCount(int wave) returns int
 	return 0
 
 public function tdWaveBossGuardEnemyCount(int wave) returns int
-	if wave == 8 or wave == 16
-		return 1
-	if wave == 24 or wave == 32
-		return 2
 	return 0
 
 public function tdWaveBossEnemyCount(int wave) returns int
@@ -483,24 +481,24 @@ public function tdWaveBossGuardSpeed(int wave) returns int
 
 public function tdWaveBossHitPoints(int wave) returns int
 	if wave == 8
-		return tdScaledEnemyStat(1800, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(3200, tdEnemyHealthMultiplier())
 	if wave == 16
-		return tdScaledEnemyStat(4500, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(6800, tdEnemyHealthMultiplier())
 	if wave == 24
-		return tdScaledEnemyStat(9500, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(19000, tdEnemyHealthMultiplier())
 	if wave == 32
-		return tdScaledEnemyStat(18000, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(36000, tdEnemyHealthMultiplier())
 	return 0
 
 public function tdWaveBossArmor(int wave) returns int
 	if wave == 8
 		return tdScaledEnemyStat(2, tdEnemyArmorMultiplier())
 	if wave == 16
-		return tdScaledEnemyStat(6, tdEnemyArmorMultiplier())
+		return tdScaledEnemyStat(10, tdEnemyArmorMultiplier())
 	if wave == 24
 		return tdScaledEnemyStat(9, tdEnemyArmorMultiplier())
 	if wave == 32
-		return tdScaledEnemyStat(12, tdEnemyArmorMultiplier())
+		return tdScaledEnemyStat(8, tdEnemyArmorMultiplier())
 	return 0
 
 public function tdWaveBossSpeed(int wave) returns int
@@ -522,7 +520,7 @@ public function tdWaveBossSpellDamageTakenFactor(int wave) returns real
 	if wave == 24
 		return 0.68
 	if wave == 16
-		return 0.82
+		return 1.00
 	return 1.00
 
 public function tdWaveNormalName(int wave) returns string
@@ -586,23 +584,23 @@ public function tdWaveBossGuardName(int wave) returns string
 
 public function tdWaveBossName(int wave) returns string
 	if wave == 8
-		return "早期Boss"
+		return "裂风猎王"
 	if wave == 16
-		return "阶段Boss"
+		return "黑曜棺卫"
 	if wave == 24
-		return "后期Boss"
-	return "最终Boss"
+		return "蚀月织咒者"
+	return "无冕深渊君王"
 
 public function tdWaveCompositionText(int wave) returns string
 	if wave < 1 or wave > tdWaveCount()
 		return ""
-	var text = tdWaveNormalName(wave) + " ×" + tdWaveNormalEnemyCount(wave).toString()
+	var text = tdWaveNormalEnemyCount(wave) > 0 ? tdWaveNormalName(wave) + " ×" + tdWaveNormalEnemyCount(wave) : ""
 	if tdWaveEliteEnemyCount(wave) > 0
 		text += "、" + tdWaveEliteName(wave) + " ×" + tdWaveEliteEnemyCount(wave).toString()
 	if tdWaveBossGuardEnemyCount(wave) > 0
 		text += "、" + tdWaveBossGuardName(wave) + " ×" + tdWaveBossGuardEnemyCount(wave).toString()
 	if tdWaveBossEnemyCount(wave) > 0
-		text += "、" + tdWaveBossName(wave) + " ×" + tdWaveBossEnemyCount(wave).toString()
+		text += (text == "" ? "" : "、") + tdWaveBossName(wave) + " ×" + tdWaveBossEnemyCount(wave)
 	return text
 
 public function tdWaveUnitId(int wave) returns int
@@ -902,10 +900,18 @@ function tdWaveObjectParentId(int wave) returns int
 
 	new UnitDefinition(TD_WAVE_8_BOSS_UNIT_ID, 'Ocbh')
 	..tdApplyEscaperStats(tdWaveBossName(8), tdWaveBossHitPoints(8), tdWaveBossArmor(8), tdWaveBossSpeed(8))
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(8, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(8)))
+	..setIconGameInterface(tdBossIconPath(8))
 	new UnitDefinition(TD_WAVE_16_BOSS_UNIT_ID, 'Ocbh')
 	..tdApplyEscaperStats(tdWaveBossName(16), tdWaveBossHitPoints(16), tdWaveBossArmor(16), tdWaveBossSpeed(16))
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(16, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(16)))
+	..setIconGameInterface(tdBossIconPath(16))
 	new UnitDefinition(TD_WAVE_24_BOSS_UNIT_ID, 'Udre')
 	..tdApplyEscaperStats(tdWaveBossName(24), tdWaveBossHitPoints(24), tdWaveBossArmor(24), tdWaveBossSpeed(24))
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(24, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(24)))
+	..setIconGameInterface(tdBossIconPath(24))
 	new UnitDefinition(TD_WAVE_32_BOSS_UNIT_ID, 'Ulic')
 	..tdApplyEscaperStats(tdWaveBossName(32), tdWaveBossHitPoints(32), tdWaveBossArmor(32), tdWaveBossSpeed(32))
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(32, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(32)))
+	..setIconGameInterface(tdBossIconPath(32))
 

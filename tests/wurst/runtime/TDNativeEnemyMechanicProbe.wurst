@@ -10,6 +10,8 @@ import ClosureTimers
 import Orders
 import DamageEvent
 
+// Historical guard probe rawcode; production no longer generates or attaches it.
+constant int TD_ENEMY_GUARD_ARMOR_ABILITY_ID = 'Emar'
 unit probeBoss = null
 unit probeGuard = null
 unit probeSource = null

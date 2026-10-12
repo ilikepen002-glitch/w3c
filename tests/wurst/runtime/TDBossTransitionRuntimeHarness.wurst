@@ -1,0 +1,38 @@
+package TDBossTransitionRuntimeHarness
+import TDGame
+
+// Source truth for a separately compiled NON-RELEASE offline harness.
+// The production map never imports or stages this package.
+public class TDTransitionRuntimeHarness implements TDBossTransitionHook
+	boolean acceptHold = true
+	boolean reenterOnRelease = false
+	boolean reentrantResumeSucceeded = false
+	int readyCalls = 0
+	int releaseCalls = 0
+	int lastWave = 0
+	int lastToken = 0
+	int lastReason = 0
+
+	override function onReady(int completedWave, int transitionToken) returns boolean
+		readyCalls += 1
+		lastWave = completedWave
+		lastToken = transitionToken
+		return acceptHold
+
+	override function onRelease(int transitionToken, int reason)
+		releaseCalls += 1
+		lastToken = transitionToken
+		lastReason = reason
+		if reenterOnRelease
+			reentrantResumeSucceeded = tdResumeBossTransition(transitionToken)
+
+// Keep the real allocator, interface dispatch, registration and public resume
+// reachable only in the dedicated compiled fixture. This map is never played.
+init
+	if not compiletime
+		let hook = new TDTransitionRuntimeHarness()
+		tdRegisterBossTransitionHook(hook)
+		tdResumeBossTransition(0)
+		// Keep observation fields in actual compiler output. This engine-I/O
+		// sink is retained only in the dedicated NON-RELEASE fixture.
+		DisplayTimedTextToPlayer(Player(0), 0, 0, 1.0, "NON-RELEASE hook observations " + hook.lastWave + "/" + hook.lastToken + "/" + hook.lastReason + "/" + (hook.reentrantResumeSucceeded ? "true" : "false"))

@@ -240,7 +240,7 @@ def verify_scalar_contracts(namespace=None):
     print('PASS SOURCE SCALARS: 861 page/action cases; 151/548 unique ability partitions; 20 numbers; 1,280 quality cases; 200 real-source skip-hole/200 lane-isolation cases; boundary guards')
 
 
-def verify_wiring():
+def verify_wiring(*, verify_legacy_wild_scope=True):
     texts = {name: source(name) for name in FILES}
     ui, view, state, session, objects = (texts[n] for n in ('TDPetUI', 'TDPetUIView', 'TDPetState', 'TDPetUIState', 'TDPetObjectGen'))
     require('TD_PET_COLLECTION_LIMIT = 20' in texts['TDPetData'], 'Collection capacity must be twenty')
@@ -298,10 +298,12 @@ def verify_wiring():
     before = subprocess.run(['git', 'show', BASELINE + ':wurst/TDHud.wurst'], cwd=ROOT, check=True, capture_output=True, text=True).stdout
     require(hud.count('CreateMultiboard') == before.count('CreateMultiboard'), 'Manager replaces ranking board')
     require('setColumnCount(TD_DAMAGE_HUD_COLUMNS)' in hud and 'tdPetHudSummaries[playerId]' in hud and 'tdPetHudSummaries[lane]' in hud, 'Keep ranking columns and synchronous lane summaries')
-    for path in ('wurst/pets/TDPetWild.wurst', 'wurst/pets/TDPetWildState.wurst'):
-        before = subprocess.run(['git', 'show', BASELINE + ':' + path], cwd=ROOT, check=True, capture_output=True).stdout
-        require((ROOT / path).read_bytes() == before, 'Wild encounter changes outside scope: ' + path)
-    print('PASS SOURCE WIRING: fresh caster authority, exact level/page whitelist, consume-before-transaction, dirty-only polling, synchronized mounts/local-only selection, proposal preservation, release cancellation, unchanged wild spawning/HUD board ownership')
+    if verify_legacy_wild_scope:
+        for path in ('wurst/pets/TDPetWild.wurst', 'wurst/pets/TDPetWildState.wurst'):
+            before = subprocess.run(['git', 'show', BASELINE + ':' + path], cwd=ROOT, check=True, capture_output=True).stdout
+            require((ROOT / path).read_bytes() == before, 'Wild encounter changes outside scope: ' + path)
+    print('PASS SOURCE WIRING: fresh caster authority, exact level/page whitelist, consume-before-transaction, dirty-only polling, synchronized mounts/local-only selection, proposal preservation, release cancellation, HUD board ownership; ' +
+          ('unchanged historical wild bytes' if verify_legacy_wild_scope else 'wild scope must be proven by the separate exact Boss delta'))
 
 
 def verify_assets():

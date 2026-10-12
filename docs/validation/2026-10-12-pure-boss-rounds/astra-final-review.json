@@ -1,0 +1,15 @@
+{
+  "reviewer_model": "gpt-6-astra",
+  "conclusion": "PASS WITH NOTES",
+  "blocking_findings": [],
+  "review_utc": "2026-10-12T11:17:49Z",
+  "candidate_map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+  "candidate_script_sha256": "7228cc50df34fe4fb438c04bc613b5961016dbf0874a25622c26661c67671ed0",
+  "reviewed_template_sha256": "dc30765a11054133ce98c785fa2e6f5230fc0cede62037e186c37bcb20e62d49",
+  "evidence": "Independent final read-only review verified441/441,178-code fingerprint unchanged,365Wurst,new-warning0,17actual-current/8historical and same-source hook10; exact compiler/global source delta approved separately.",
+  "notes": [
+    "No live Warcraft or Windows deployment validation.",
+    "Native negative attack-speed stacking, rendering, engine timer behavior and balance remain unobserved.",
+    "Production has no trial registration; same-source hook07 is NON-RELEASE validation only."
+  ]
+}

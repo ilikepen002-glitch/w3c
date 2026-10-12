@@ -1,58 +1,57 @@
 package TDBossSpellResistanceTests
 import TDEnemyMechanicData
 import TDEnemyMechanicState
-import TDWaves
 import TDState
 import TDDamageState
 
 @Test function bossStageCurveScalesExistingChannelExactlyOnce()
 	for stage = 1 to 4
-		let stageLink = new TDEnemyGuardLink(0, stage * 8)
-		let stageBoss = new TDEnemyMechanicState(stageLink, TD_ENEMY_ROLE_BOSS, 240.0)
-		let expected = stage == 1 ? 100.0 : (stage == 2 ? 82.0 : (stage == 3 ? 68.0 : 58.0))
+		// original lane/wave 0, stage * 8
+		let stageBoss = new TDEnemyMechanicState(0, stage * 8, TD_ENEMY_ROLE_BOSS, 240.0)
+		let expected = stage == 1 ? 100.0 : (stage == 2 ? 100.0 : (stage == 3 ? 68.0 : 58.0))
 		stageBoss.scaledSpellAmount(100.0).assertEquals(expected, 0.000001)
 		destroy stageBoss
-		destroy stageLink
-	let link = new TDEnemyGuardLink(0, 32)
-	let boss = new TDEnemyMechanicState(link, TD_ENEMY_ROLE_BOSS, 240.0)
+
+	// original lane/wave 0, 32
+	let boss = new TDEnemyMechanicState(0, 32, TD_ENEMY_ROLE_BOSS, 240.0)
 	// An already-native-reduced amount gets only the additional stage factor.
 	boss.scaledSpellAmount(75.0).assertEquals(43.5, 0.000001)
 	boss.scaledSpellAmount(0.125).assertEquals(0.0725, 0.000001)
 	boss.scaledSpellAmount(0.0).assertEquals(0.0)
 	boss.scaledSpellAmount(-3.5).assertEquals(-3.5)
 	destroy boss
-	destroy link
+
 
 @Test function ordinaryEliteGuardAndInvalidBossWavesPassThrough()
-	let link = new TDEnemyGuardLink(0, 32)
+	// original lane/wave 0, 32
 	for role = TD_ENEMY_ROLE_NORMAL to TD_ENEMY_ROLE_GUARD
-		let state = new TDEnemyMechanicState(link, role, 240.0)
+		let state = new TDEnemyMechanicState(0, 32, role, 240.0)
 		state.scaledSpellAmount(100.0).assertEquals(100.0)
 		destroy state
-	let invalidRole = new TDEnemyMechanicState(link, -1, 240.0)
+	let invalidRole = new TDEnemyMechanicState(0, 32, -1, 240.0)
 	invalidRole.scaledSpellAmount(100.0).assertEquals(100.0)
 	destroy invalidRole
-	destroy link
+
 	for wave = -1 to 33
-		if not tdEnemyGuardArmorEnabled(wave)
-			let invalidLink = new TDEnemyGuardLink(0, wave)
-			let state = new TDEnemyMechanicState(invalidLink, TD_ENEMY_ROLE_BOSS, 240.0)
+		if not tdEnemyBossSpellResistanceEnabled(wave)
+			// original lane/wave 0, wave
+			let state = new TDEnemyMechanicState(0, wave, TD_ENEMY_ROLE_BOSS, 240.0)
 			state.scaledSpellAmount(100.0).assertEquals(100.0)
 			destroy state
-			destroy invalidLink
+
 
 @Test function originalBossWaveWinsOverGlobalWaveAndRetiredState()
 	tdResetState()
 	tdSetGlobalWave(32)
-	let link = new TDEnemyGuardLink(0, 16)
-	let boss = new TDEnemyMechanicState(link, TD_ENEMY_ROLE_BOSS, 240.0)
-	boss.scaledSpellAmount(100.0).assertEquals(82.0, 0.000001)
+	// original lane/wave 0, 16
+	let boss = new TDEnemyMechanicState(0, 16, TD_ENEMY_ROLE_BOSS, 240.0)
+	boss.scaledSpellAmount(100.0).assertEquals(100.0, 0.000001)
 	tdSetGlobalWave(8)
-	boss.scaledSpellAmount(100.0).assertEquals(82.0, 0.000001)
+	boss.scaledSpellAmount(100.0).assertEquals(100.0, 0.000001)
 	boss.deactivate().assertTrue()
 	boss.scaledSpellAmount(100.0).assertEquals(100.0)
 	destroy boss
-	destroy link
+
 	tdResetState()
 
 @Test function nativeListenerSelectsOnlyNonCodeSpell()
@@ -62,11 +61,10 @@ import TDDamageState
 	tdEnemyMechanicNativeSpellEligible(true, true).assertFalse()
 
 @Test function scaledSpellLedgerCapsAtRemainingLife()
-	let link = new TDEnemyGuardLink(0, 32)
-	let boss = new TDEnemyMechanicState(link, TD_ENEMY_ROLE_BOSS, 240.0)
+	// original lane/wave 0, 32
+	let boss = new TDEnemyMechanicState(0, 32, TD_ENEMY_ROLE_BOSS, 240.0)
 	let amount = boss.scaledSpellAmount(100.0)
 	tdEffectiveDamage(amount, 20.0).assertEquals(20.0)
 	tdEffectiveDamage(amount, 100.0).assertEquals(58.0, 0.000001)
 	tdEffectiveDamage(amount, 0.0).assertEquals(0.0)
 	destroy boss
-	destroy link

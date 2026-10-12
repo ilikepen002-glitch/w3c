@@ -1,0 +1,12 @@
+{
+  "repo": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06",
+  "mode": "checks",
+  "sourceCommit": "5a18ec16b8e12e6e9a283cc5ad469e836f0c4950",
+  "sourceTree": "e1ddfaf864effb27b1751adbc69e7580a2ffe3f3",
+  "templateSha256": "3fd31a78aaa5d017565fca6c6f3758d40ed6131999c701bdf1f99557ba39e408",
+  "stdlibTree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+  "nativeJassSha256": "95cb24509ca5210908221ac0edf0614529fb8d1fb681578fbcc0b4e8689ab75e",
+  "stagedFileCount": 52,
+  "journal": "/workspace/scratch/2106c0ab1fac/toolchain-recovery-20261012/state/transaction-2798e129ad6749769c4a1a163cf96b38/journal.json",
+  "candidate": null
+}

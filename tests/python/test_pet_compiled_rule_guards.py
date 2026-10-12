@@ -24,7 +24,15 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
         verifier.verify_skill_allowed(self.script)
 
     def test_actual_all_256_lane_enemy_guard_combinations(self):
-        verifier.verify_lane_enemy_guards(self.script)
+        verifier.verify_lane_enemy_guards(self.script, require_match_registry=True)
+
+    def test_rejects_missing_actual_current_match_registration(self):
+        original = verifier.jass_function(self.script, 'tdLaneEnemyCheckEnum').group(1)
+        changed, count = re.subn(r' or \( not tdEnemyBelongsToCurrentMatch\(enemy_1, "[^"]+"\)\)', '', original)
+        self.assertEqual(count, 1)
+        with self.assertRaisesRegex(ValueError, 'Lane enemy guards missing current-match registration'):
+            verifier.verify_lane_enemy_guards(replace_body(self.script, 'tdLaneEnemyCheckEnum', changed),
+                                               require_match_registry=True)
 
     def test_rejects_old_compiled_skill_admission_mixed_precedence(self):
         body = '''    if skill_1 < 0 or skill_1 >= 16 or bitset_get(usedMask, skill_1) then
@@ -105,7 +113,7 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
 
     def test_rejects_missing_wave_filter_or_wrong_found_assignment(self):
         original = verifier.jass_function(self.script, 'tdLaneEnemyCheckEnum').group(1)
-        no_wave = re.sub(r'\tif TDSpawn_tdLaneEnemyCheckWave != 0 and[^\n]*\n\t\treturn\n\tendif\n', '', original)
+        no_wave = re.sub(r'\tif TDSpawn_tdLaneEnemyCheckWave != 0 and[^\n]*\n(?:\t\tset wurst_stack_depth = wurst_stack_depth - 1\n)?\t\treturn\n\tendif\n', '', original)
         self.assertNotEqual(no_wave, original)
         for body in (no_wave, original.replace('set TDSpawn_tdLaneEnemyCheckFound = true',
                                                'set TDSpawn_tdLaneEnemyCheckFound = false')):

@@ -13,6 +13,8 @@ import Table
 import ClosureTimers
 import TDEquipmentCombat
 import TDEnemyMechanicRuntime
+import TDBossRewardRules
+import TDWaveFlowState
 
 public unit array tdPetFarmers
 real array tdPetCaptureReadyAt
@@ -112,6 +114,15 @@ public function tdPetHandleEnemyBallDrop(unit enemy, int lane, int wave)
 	let ball = createItem(TD_PET_BALL_ITEM_ID, enemy.getPos())
 	tdPetBallOwners.saveInt(ball.getHandleId(), lane + 1)
 
+public function tdPetHandleBossBallCompensation(unit enemy, int lane, int wave)
+	if enemy == null or GetKillingUnit() == null or not tdPetLaneCanAct(lane) or tdEnemyWasLeaked(enemy) or tdFlowBossResult(lane, wave) != TD_BOSS_RESULT_KILLED or not tdFlowClaimBossBallCompensation(lane, wave)
+		return
+	for _attempt = 1 to tdBossBallDropAttempts(wave)
+		if tdBossBallDropSucceeds(GetRandomInt(1, 100)) and tdPetTakeDropBudget(lane, wave)
+			let ball = createItem(TD_PET_BALL_ITEM_ID, enemy.getPos())
+			tdPetBallOwners.saveInt(ball.getHandleId(), lane + 1)
+			return
+
 function tdPetHandleBallPickup()
 	let ball = GetManipulatedItem()
 	let carrier = GetManipulatingUnit()
@@ -139,16 +150,11 @@ public function tdPetInitializeFarmer(int lane, unit farmer)
 	tdPetCaptureReadyAt[lane] = 0.0
 	tdPetSyncBallAbility(lane)
 
-function tdPetHandlePlayerLeave() returns boolean
-	tdPetMarkPlayerLeft(GetPlayerId(GetTriggerPlayer()))
-	return false
-
 public function tdPetSetupRuntime()
 	if tdPetRuntimeReady
 		return
 	tdPetRuntimeReady = true
 	tdPetSetupWild()
-	registerPlayerEvent(EVENT_PLAYER_LEAVE, function tdPetHandlePlayerLeave)
 	registerSpellEffectEvent(TD_PET_CAPTURE_ABILITY_ID, function tdPetHandleCapture)
 	tdPetBallPickupTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
 	tdPetBallPickupTrigger.addAction(function tdPetHandleBallPickup)

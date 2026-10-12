@@ -15,7 +15,7 @@ public function tdPetUnlockedSlots(int level) returns int
 	return level + 1
 
 public function tdPetFixedEncounter(int wave) returns boolean
-	return wave == 1 or wave == 3 or wave == 5 or wave == 7 or wave == 10 or wave == 13 or wave == 16 or wave == 19 or wave == 22 or wave == 25
+	return wave == 1 or wave == 3 or wave == 5 or wave == 7 or wave == 10 or wave == 13 or wave == 17 or wave == 19 or wave == 22 or wave == 25
 
 public function tdPetStageStart(int stage) returns int
 	return stage == 0 ? 1 : (stage == 1 ? 7 : (stage == 2 ? 13 : 19))

@@ -1,4 +1,5 @@
 package TDTowerRuntime
+import TDBossDarkTideRuntime
 import TDConfig
 import TDState
 import TDSpawn
@@ -88,6 +89,7 @@ function tdHandleTowerSellCast() returns boolean
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
+	tdDarkTideForgetTower(tower)
 	tdForgetBloodlustAutocast(tower)
 	tower.remove()
 	tdGainGold(playerId, refund)
@@ -99,6 +101,7 @@ function tdHandleTowerSellCast() returns boolean
 function tdHandleTowerUpgradeStarted()
 	let tower = GetTriggerUnit()
 	if tower != null and tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) != 0
+		tdDarkTideForgetTower(tower)
 		tdGetTowerSaleState(tower).startWork()
 		tdEvolutionWorkStarted(tower)
 		tdPetTowerWorkStarted(tower)
@@ -234,6 +237,7 @@ function tdRejectTowerConstruction(unit tower, int playerId, int towerChoice, st
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
+	tdDarkTideForgetTower(tower)
 	tdForgetBloodlustAutocast(tower)
 	tower.remove()
 	tdGainGold(playerId, tdTowerCost(towerChoice))
@@ -362,6 +366,7 @@ function tdHandleTowerConstructionCancelled()
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
+	tdDarkTideForgetTower(tower)
 	tdForgetBloodlustAutocast(tower)
 	tdClearTowerRangeIndicatorsForTower(tower)
 	doAfter(0.0) ->
@@ -419,6 +424,7 @@ function tdHandleTowerDeath()
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
+	tdDarkTideForgetTower(tower)
 	tdForgetBloodlustAutocast(tower)
 	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
 

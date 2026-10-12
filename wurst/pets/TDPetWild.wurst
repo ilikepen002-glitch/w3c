@@ -71,7 +71,7 @@ public function tdPetWildPlanLane(int lane)
 						rank -= 1
 
 public function tdPetEncounterCount(int lane, int wave) returns int
-	if not tdIsLanePlayer(lane) or wave < 1 or wave > 25
+	if not tdIsLanePlayer(lane) or wave < 1 or wave > 25 or tdWaveBossEnemyCount(wave) > 0
 		return 0
 	var count = tdPetFixedEncounter(wave) ? 1 : 0
 	for stage = 0 to 3
@@ -95,6 +95,8 @@ public function tdPetWildHoldPosition(int lane) returns vec2
 	let exit = tdLaneExitPosition(lane)
 	return exit + (origin - exit).norm() * RMinBJ(600.0, origin.distanceTo(exit))
 public function tdPetSpawnWild(int lane, int wave, int species) returns TDPetWildRecord
+	if not tdIsLanePlayer(lane) or wave < 1 or wave > 25 or tdWaveBossEnemyCount(wave) > 0 or species < 1 or species > 3
+		return null
 	let creature = createUnit(Player(PLAYER_NEUTRAL_PASSIVE), tdPetWildUnitId(wave, species), tdLaneSpawnPosition(lane), 0 .fromDeg())
 	creature.setUserData(lane * 10000 + wave * 100)
 	creature.setPathing(false)
@@ -117,7 +119,16 @@ public function tdPetSpawnWild(int lane, int wave, int species) returns TDPetWil
 	DisplayTimedTextToPlayer(Player(lane), 0, 0, 7.0, "|cffffdd40野生" + tdPetSpeciesName(species) + "出现！|r保护60秒，Q普通球捕获。" + (record.tutorial ? " 教学首只第一次普通球必成。" : ""))
 	return record
 
+public function tdPetWildHasCaptureWindow() returns boolean
+	let now = getElapsedGameTime()
+	for record in tdPetWildRecords
+		if tdIsLaneActive(record.lane) and not tdIsLaneDefeated(record.lane) and not tdIsLaneFinished(record.lane) and record.creature != null and record.canCapture(record.creature.isAlive(), now)
+			return true
+	return false
+
 public function tdPetWildOnWave(int lane, int wave)
+	if tdWaveBossEnemyCount(wave) > 0
+		return
 	if not tdPetClaimWildSpawn(lane, wave)
 		return
 	for _index = 1 to tdPetEncounterCount(lane, wave)

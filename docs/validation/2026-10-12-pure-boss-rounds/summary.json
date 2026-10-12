@@ -1,0 +1,98 @@
+{
+  "models": {
+    "plan_review": "gpt-6-astra",
+    "implementation": "gpt-6.1-sol"
+  },
+  "conclusion": "PASS WITH NOTES",
+  "formal_parent": "654771baa872241cf572b16a0ef884436fe4818c",
+  "candidate_map_sha256": "be13ef7b9f7c2144a7feedbef88c79802b4c3e034e8336933e8f808735937d80",
+  "candidate_script_sha256": "7228cc50df34fe4fb438c04bc613b5961016dbf0874a25622c26661c67671ed0",
+  "production_source_files": 64,
+  "changed_source_owners": 22,
+  "wurst_tests_passed": 365,
+  "python_tests_passed": 441,
+  "python_skips": 0,
+  "new_warning_sites": 0,
+  "inherited_warning_sites": 389,
+  "current_actual_cli_gates": 17,
+  "historical_stage_cli_gates": 8,
+  "hook_harness_cases": 10,
+  "files": {
+    "artifact-result.json": {
+      "bytes": 25981,
+      "sha256": "142b05d9dbba68ab0b2f515e7e68922315ab0d8237940d2500fd8b3144185aac"
+    },
+    "astra-final-review.json": {
+      "bytes": 940,
+      "sha256": "d8f5de873fbad879d01d5e931bdcdd0e51f20bf906a52189445223c765fee513"
+    },
+    "current-cli-results.json": {
+      "bytes": 9862,
+      "sha256": "00b7e5b086490c7bb4efd6a2db721edd9ac124cc6b34b293d379dcbf682da787"
+    },
+    "full-python.log": {
+      "bytes": 90849,
+      "sha256": "f425367dd2c0631d9e491a6c68fc12042f45e0a8f9c6c5aaa45564f44a00cadf"
+    },
+    "historical-cli-results.json": {
+      "bytes": 9342,
+      "sha256": "d3b7cca52f24497a44142ec9cac6e7a2262a4c63877d53b82a09c8a6844abbf7"
+    },
+    "hook-harness-result.json": {
+      "bytes": 8724,
+      "sha256": "5f2665c28452e653bf8d1bb26bcb81ad927b23caf97ff0313126f5c312be3f45"
+    },
+    "hook-harness-staging.json": {
+      "bytes": 13918,
+      "sha256": "9a595ff9d9dbb8deb36b3b59c834fc13f646dce94eaa1b25713bef6211bb44a0"
+    },
+    "latest-checks-result.json": {
+      "bytes": 730,
+      "sha256": "1e272ba878627b6246df74aff9ab8987d80710f9332dbb38662cdea0c0d8331a"
+    },
+    "manager-inheritance.json": {
+      "bytes": 7731,
+      "sha256": "bb4f4a04e4d8f6ca33c03d611eb165d58657b069272c8c2540b36dc2ff6e77f8"
+    },
+    "pure-boss-cli-result.json": {
+      "bytes": 2117,
+      "sha256": "e0058872d9322a834a5d7ba53cd067574533ea8c938d98fc9d237e259ba0e79b"
+    },
+    "python-results.json": {
+      "bytes": 1036,
+      "sha256": "17d2e32e3cfaae699621f5d4aa5b39266cb1842b3f3055d12e532f2f1f29d754"
+    },
+    "reviewed-jass-templates.json": {
+      "bytes": 1292850,
+      "sha256": "dc30765a11054133ce98c785fa2e6f5230fc0cede62037e186c37bcb20e62d49"
+    },
+    "source-delta.json": {
+      "bytes": 11151,
+      "sha256": "3f8addf0885f4ec7786fa57e2b4d6cdef9b296a8c885927e79cf38a87c0c18b5"
+    },
+    "transaction-2798e129ad6749769c4a1a163cf96b38.json": {
+      "bytes": 663,
+      "sha256": "8e37f24eabba0d1aaf4c976446cf9cc137a2ff50d3910b988844a20abf18a9bb"
+    },
+    "transaction-b6f0d8d1dfbf4626ab31beda72146d88.json": {
+      "bytes": 1084,
+      "sha256": "396ac7866b83bddd46e7e6e00baa6227595f44f726d232675f3e126c8f999f1b"
+    },
+    "transaction-d1680aac45fe4830891f21d3a2e42065.json": {
+      "bytes": 947,
+      "sha256": "915a824f588f36e01cbd024f7d111de0a4620addd58a0bb3939ee452410f405e"
+    },
+    "transaction-fingerprints.json": {
+      "bytes": 2336,
+      "sha256": "619fa9e10d6519a5b72acfe28f1e0ce24c37041c46e52d88669ce7fe653eb6d5"
+    },
+    "validation-code-fingerprint.json": {
+      "bytes": 19571,
+      "sha256": "de0c1467958a2a84727531892dd53e67f203c35dff522185d386455d9b2f85f1"
+    },
+    "warning-site-audit.json": {
+      "bytes": 223415,
+      "sha256": "a5dd486a0c74505c45acec247aaeb37a3f0ab389b33c7e224faee602de38fe8d"
+    }
+  }
+}

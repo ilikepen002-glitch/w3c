@@ -3,9 +3,9 @@ import TDEnemyMechanicData
 import AbilityObjEditing
 
 @compiletime function tdGenerateEnemyMechanicObjects()
-	// Independent native positive armor; equipment owns its separate negative ability.
-	new AbilityDefinitionDefenseBonusPlus1(TD_ENEMY_GUARD_ARMOR_ABILITY_ID)
-	..setName("近卫护甲")
-	..setDefenseBonus(1, TD_ENEMY_GUARD_ARMOR_BONUS)
+	// This independent native item bonus composes with equipment/pets/bloodlust.
+	new AbilityDefinitionAttackSpeedIncrease(TD_BOSS_DARK_TIDE_ABILITY_ID)
+	..setName("暗潮攻速削减")
+	..setAttackSpeedIncrease(1, TD_BOSS_DARK_TIDE_ATTACK_SPEED)
 	..setItemAbility(true)
 	..setCheckDependencies(false)

@@ -1,0 +1,98 @@
+package TDBossDarkTideRuntime
+import TDEnemyMechanicData
+import TDState
+import TDTowerCatalogData
+import TDPetState
+import LinkedList
+import GameTimer
+import TDWaveFlowState
+import Table
+
+class TDBossDarkTideRecord
+	unit boss
+	unit tower
+	int lane
+	int matchEpoch
+	int bossGeneration
+	int towerType
+	real expiresAt
+	construct(unit boss, unit tower, int lane, int bossGeneration)
+		this.boss = boss
+		this.tower = tower
+		this.lane = lane
+		this.bossGeneration = bossGeneration
+		matchEpoch = tdFlowEpoch()
+		towerType = GetUnitTypeId(tower)
+		expiresAt = getElapsedGameTime() + TD_BOSS_DARK_TIDE_DURATION
+		tower.addAbility(TD_BOSS_DARK_TIDE_ABILITY_ID)
+	ondestroy
+		if tower != null and GetUnitTypeId(tower) != 0
+			tower.removeAbility(TD_BOSS_DARK_TIDE_ABILITY_ID)
+		tower = null
+		boss = null
+
+constant Table tdDarkTideBossTokens = new Table()
+
+LinkedList<TDBossDarkTideRecord> tdDarkTideRecords = new LinkedList<TDBossDarkTideRecord>()
+
+public function tdDarkTideTowerEligible(unit tower, int lane) returns boolean
+	return tower != null and tower.isAlive() and GetUnitTypeId(tower) != 0 and tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) != 0 and GetPlayerId(GetOwningPlayer(tower)) == lane and not tdPetBusyTowers.hasBoolean(tower.getHandleId()) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
+
+public function tdDarkTideForgetTower(unit tower)
+	let iter = tdDarkTideRecords.iterator()
+	while iter.hasNext()
+		let record = iter.next()
+		if record.tower == tower
+			iter.remove()
+			destroy record
+	destroy iter
+
+public function tdDarkTideForgetBoss(unit boss)
+	if boss != null
+		tdDarkTideBossTokens.removeInt(boss.getHandleId())
+	let iter = tdDarkTideRecords.iterator()
+	while iter.hasNext()
+		let record = iter.next()
+		if record.boss == boss
+			iter.remove()
+			destroy record
+	destroy iter
+
+public function tdDarkTideClearLane(int lane)
+	let iter = tdDarkTideRecords.iterator()
+	while iter.hasNext()
+		let record = iter.next()
+		if record.lane == lane
+			iter.remove()
+			destroy record
+	destroy iter
+
+public function tdDarkTideApply(unit boss, int lane, int generation)
+	if boss == null or not boss.isAlive() or tdIsGameOver()
+		return
+	tdDarkTideBossTokens.saveInt(boss.getHandleId(), generation)
+	let g = CreateGroup()
+	g.enumUnitsInRange(boss.getPos(), TD_BOSS_DARK_TIDE_RADIUS)
+	for tower in g
+		if tdDarkTideTowerEligible(tower, lane) and tower.getPos().distanceTo(boss.getPos()) <= TD_BOSS_DARK_TIDE_RADIUS
+			// Refreshing owns only this ability; never read or restore total speed.
+			tdDarkTideForgetTower(tower)
+			tdDarkTideRecords.add(new TDBossDarkTideRecord(boss, tower, lane, generation))
+	g.destr()
+
+public function tdDarkTideTick()
+	let now = getElapsedGameTime()
+	let iter = tdDarkTideRecords.iterator()
+	while iter.hasNext()
+		let record = iter.next()
+		if record.matchEpoch != tdFlowEpoch() or not tdDarkTideBossTokens.hasInt(record.boss.getHandleId()) or tdDarkTideBossTokens.loadInt(record.boss.getHandleId()) != record.bossGeneration or now >= record.expiresAt or not tdDarkTideTowerEligible(record.tower, record.lane) or GetUnitTypeId(record.tower) != record.towerType or record.boss == null or GetUnitTypeId(record.boss) == 0 or not record.boss.isAlive()
+			iter.remove()
+			destroy record
+	destroy iter
+
+public function tdDarkTideShutdown()
+	tdDarkTideBossTokens.flush()
+	while not tdDarkTideRecords.isEmpty()
+		let record = tdDarkTideRecords.get(0)
+		tdDarkTideRecords.remove(record)
+		destroy record

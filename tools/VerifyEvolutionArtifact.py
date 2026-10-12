@@ -41,7 +41,7 @@ def validate_evolution_artifact(units, abilities, artifact):
         require(attached.count('A130') == 1, f'{uid}: evolution progress must be attached once')
         require('A133' in attached, f'{uid}: sale missing')
     # Wave table provides the exact theoretical upper bound (no extra summons).
-    max_kills = 538
+    max_kills = 474
     for aid, levels, icon, x in [
         ('A130', max_kills + 1, 'BTNMarkOfFire', 2),
         ('AeEV', 3, 'BTNMetamorphosis', 3),
@@ -56,10 +56,10 @@ def validate_evolution_artifact(units, abilities, artifact):
             for field, column, expected in [('Ocr1',1,0.0),('Ocr2',2,1.0),('Ocr3',3,0.0),('Ocr5',5,0)]:
                 require(fields[(field,level,column)][1] == expected, f'{aid}/{level}: passive carrier has combat effect')
     progress = abilities['A130'][1]
-    for kills in [0,249,250,251,max_kills]:
+    for kills in [0,219,220,221,max_kills]:
         require(progress[('atp1',kills+1,0)][1] == f'累计击杀：{kills}', f'Exact count missing: {kills}')
         require(f'本塔累计击杀：{kills}。' in progress[('aub1',kills+1,0)][1], f'Exact hover count missing: {kills}')
-        require('达到250击杀' in progress[('aub1',kills+1,0)][1], 'Wrong evolution threshold')
+        require('达到220击杀' in progress[('aub1',kills+1,0)][1], 'Wrong evolution threshold')
     status = abilities['AeEV'][1]
     require('等待完成6阶' in status[('atp1',1,0)][1], 'Waiting state missing')
     require('已进化' in status[('atp1',2,0)][1], 'Evolved state missing')
@@ -133,7 +133,7 @@ def main():
     units = unit_objects(artifact.extract('war3map.w3u'))
     abilities = ability_objects(artifact.extract('war3map.w3a'))
     validate_evolution_artifact(units, abilities, artifact)
-    print('PASS: 35 tower progress attachments; exact539-level statistics and separate3-state evolution; invulnerable900-range auras; 35 inherited skill bars and ten Jass evolution sets; branch-only scalar multipliers; two-level zero-effect displays; BTN/DISBTN and wing resources; no retired runtime/native probes.')
+    print('PASS: 35 tower progress attachments; exact475-level statistics and separate3-state evolution; invulnerable900-range auras; 35 inherited skill bars and ten Jass evolution sets; branch-only scalar multipliers; two-level zero-effect displays; BTN/DISBTN and wing resources; no retired runtime/native probes.')
     print('NOT TESTED: native aura benefit, automatic evolution, wings attachment/occlusion, FPS, balance or exit dialog in game.')
 
 if __name__ == '__main__':

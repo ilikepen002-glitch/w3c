@@ -2,48 +2,11 @@ package TDEnemyMechanicsTests
 import TDEnemyMechanicData
 import TDEnemyMechanicState
 import TDWaves
-import TDEquipmentRules
+import TDPetData
+import TDItemData
 
-@Test function guardLinksIsolateLaneAndOriginalWave()
-	let link = new TDEnemyGuardLink(0, 8)
-	let guard = new TDEnemyMechanicState(link, TD_ENEMY_ROLE_GUARD, 260.0)
-	link.protects(0, 8).assertTrue()
-	link.protects(1, 8).assertFalse()
-	link.protects(0, 16).assertFalse()
-	destroy guard
-	link.protects(0, 8).assertFalse()
-	destroy link
-
-@Test function lastGuardAndRepeatedUnregisterAreIdempotent()
-	let link = new TDEnemyGuardLink(0, 32)
-	let first = new TDEnemyMechanicState(link, TD_ENEMY_ROLE_GUARD, 260.0)
-	let last = new TDEnemyMechanicState(link, TD_ENEMY_ROLE_GUARD, 260.0)
-	first.deactivate().assertTrue()
-	first.deactivate().assertFalse()
-	link.livingGuards.assertEquals(1)
-	link.protects(0, 32).assertTrue()
-	last.deactivate().assertTrue()
-	link.livingGuards.assertEquals(0)
-	link.protects(0, 32).assertFalse()
-	destroy first
-	destroy last
-	destroy link
-
-@Test function bossMayRegisterAndDieBeforeGuards()
-	let link = new TDEnemyGuardLink(0, 8)
-	let boss = new TDEnemyMechanicState(link, TD_ENEMY_ROLE_BOSS, 220.0)
-	link.protects(0, 8).assertFalse()
-	let guard = new TDEnemyMechanicState(link, TD_ENEMY_ROLE_GUARD, 260.0)
-	link.protects(0, 8).assertTrue()
-	boss.deactivate().assertTrue()
-	link.livingGuards.assertEquals(1)
-	destroy boss
-	destroy guard
-	destroy link
-
-@Test function sprintOnlyAtReachedWaypointAndOnlyOnce()
-	let link = new TDEnemyGuardLink(0, 12)
-	let state = new TDEnemyMechanicState(link, TD_ENEMY_ROLE_ELITE, 270.0)
+@Test function eliteSprintOnlyAtReachedWaypointAndOnlyOnce()
+	let state = new TDEnemyMechanicState(0, 12, TD_ENEMY_ROLE_ELITE, 270.0)
 	state.beginSprint(1).assertFalse()
 	state.beginSprint(2).assertTrue()
 	let token = state.getGeneration()
@@ -51,39 +14,85 @@ import TDEquipmentRules
 	state.finishSprint(token).assertTrue()
 	state.finishSprint(token).assertFalse()
 	state.beginSprint(2).assertFalse()
-	state.originalBaseSpeed.assertEquals(270.0)
+	state.baseSpeed().assertEquals(270.0)
 	destroy state
-	destroy link
 
 @Test function removalOrShutdownInvalidatesDelayedSprintToken()
-	let link = new TDEnemyGuardLink(0, 32)
-	let state = new TDEnemyMechanicState(link, TD_ENEMY_ROLE_GUARD, 260.0)
+	let state = new TDEnemyMechanicState(0, 28, TD_ENEMY_ROLE_ELITE, 285.0)
 	state.beginSprint(2).assertTrue()
 	let token = state.getGeneration()
 	state.deactivate().assertTrue()
 	state.finishSprint(token).assertFalse()
 	state.isSprinting().assertFalse()
-	let replacement = new TDEnemyMechanicState(link, TD_ENEMY_ROLE_GUARD, 260.0)
+	let replacement = new TDEnemyMechanicState(0, 28, TD_ENEMY_ROLE_ELITE, 285.0)
 	replacement.beginSprint(2).assertTrue()
 	replacement.finishSprint(token).assertFalse()
 	destroy replacement
 	destroy state
-	destroy link
 
-@Test function sprintObjectCapsAndArmorIdsAreIndependent()
+@Test function bossEightWarnsAndBurstsByLifetimeOnEveryLane()
+	for lane = 0 to 3
+		let boss = new TDEnemyMechanicState(lane, 8, TD_ENEMY_ROLE_BOSS, 240.0)
+		boss.beginSprint(2).assertFalse()
+		boss.updateBoss(9.99, 1.0).assertEquals(0)
+		boss.updateBoss(10.0, 1.0).assertEquals(TD_BOSS_EVENT_WARNING)
+		boss.updateBoss(10.2, 1.0).assertEquals(0)
+		boss.baseSpeed().assertEquals(240.0)
+		boss.updateBoss(11.0, 1.0).assertEquals(0)
+		boss.baseSpeed().assertEquals(312.0, 0.0001)
+		boss.updateBoss(13.0, 1.0).assertEquals(0)
+		boss.baseSpeed().assertEquals(240.0)
+		boss.updateBoss(20.0, 1.0).assertEquals(TD_BOSS_EVENT_WARNING)
+		destroy boss
+
+@Test function bossTwentyFourWarningsAndPulsesAreSingleUsePerCycle()
+	let boss = new TDEnemyMechanicState(1, 24, TD_ENEMY_ROLE_BOSS, 250.0)
+	boss.updateBoss(12.0, 1.0).assertEquals(TD_BOSS_EVENT_WARNING)
+	boss.updateBoss(12.8, 1.0).assertEquals(0)
+	boss.updateBoss(13.0, 1.0).assertEquals(TD_BOSS_EVENT_DARK_TIDE)
+	boss.updateBoss(13.0, 1.0).assertEquals(0)
+	boss.updateBoss(24.0, 1.0).assertEquals(TD_BOSS_EVENT_WARNING)
+	boss.updateBoss(25.0, 1.0).assertEquals(TD_BOSS_EVENT_DARK_TIDE)
+	boss.baseSpeed().assertEquals(250.0)
+	boss.deactivate().assertTrue()
+	boss.updateBoss(36.0, 1.0).assertEquals(0)
+	destroy boss
+
+@Test function finalEnrageHasInclusiveBoundaryAndCannotRepeat()
+	let boss = new TDEnemyMechanicState(3, 32, TD_ENEMY_ROLE_BOSS, 250.0)
+	boss.updateBoss(0.0, 0.30001).assertEquals(0)
+	boss.updateBoss(1.0, 0.30).assertEquals(TD_BOSS_EVENT_ENRAGE)
+	boss.baseSpeed().assertEquals(287.5, 0.0001)
+	boss.updateBoss(2.0, 0.90).assertEquals(0)
+	boss.updateBoss(3.0, 0.10).assertEquals(0)
+	boss.baseSpeed().assertEquals(287.5, 0.0001)
+	destroy boss
+
+@Test function movementCompositionKeepsMechanicAndSlowIndependent()
+	let boss = new TDEnemyMechanicState(0, 8, TD_ENEMY_ROLE_BOSS, 240.0)
+	boss.updateBoss(10.0, 1.0)
+	boss.updateBoss(11.0, 1.0)
+	(boss.baseSpeed() * 0.70).assertEquals(218.4, 0.0001)
+	// Releasing a pet slow uses the still-active mechanic base.
+	(boss.baseSpeed() * 1.0).assertEquals(312.0, 0.0001)
+	boss.updateBoss(13.0, 1.0)
+	(boss.baseSpeed() * 0.70).assertEquals(168.0, 0.0001)
+	destroy boss
+
+@Test function maximaAndDarkTideIdsAreIndependent()
 	tdEnemyMechanicMaxSpeed(12, TD_ENEMY_ROLE_ELITE, 270).assertEquals(378)
 	tdEnemyMechanicMaxSpeed(20, TD_ENEMY_ROLE_ELITE, 280).assertEquals(392)
 	tdEnemyMechanicMaxSpeed(28, TD_ENEMY_ROLE_ELITE, 285).assertEquals(399)
-	tdEnemyMechanicMaxSpeed(32, TD_ENEMY_ROLE_GUARD, 260).assertEquals(364)
-	tdEnemyMechanicMaxSpeed(4, TD_ENEMY_ROLE_ELITE, 205).assertEquals(205)
-	(TD_ENEMY_GUARD_ARMOR_ABILITY_ID != TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID).assertTrue()
+	tdEnemyMechanicMaxSpeed(8, TD_ENEMY_ROLE_BOSS, 240).assertEquals(312)
+	tdEnemyMechanicMaxSpeed(32, TD_ENEMY_ROLE_BOSS, 250).assertEquals(288)
+	tdEnemyMechanicMaxSpeed(32, TD_ENEMY_ROLE_GUARD, 260).assertEquals(260)
+	(TD_BOSS_DARK_TIDE_ABILITY_ID != TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID).assertTrue()
+	(TD_BOSS_DARK_TIDE_ABILITY_ID != TD_PET_SPEED_BONUS_ID).assertTrue()
 
-@Test function descendingSpawnCounterCreatesGuardsBeforeBoss()
+@Test function pureBossSpawnHasNoGuardOrNormalSegment()
 	for chapter = 1 to 4
 		let wave = chapter * 8
-		let count = tdWaveEnemyCount(wave)
-		let guards = tdWaveBossGuardEnemyCount(wave)
-		for offset = 0 to guards - 1
-			tdWaveSpawnUnitId(wave, count - offset).assertEquals(tdWaveBossGuardUnitId(wave))
-		tdWaveSpawnUnitId(wave, count - guards).assertEquals(tdWaveSpecialUnitId(wave))
-		tdWaveSpawnUnitId(wave, 1).assertEquals(tdWaveUnitId(wave))
+		tdWaveEnemyCount(wave).assertEquals(1)
+		tdWaveBossGuardEnemyCount(wave).assertEquals(0)
+		tdWaveNormalEnemyCount(wave).assertEquals(0)
+		tdWaveSpawnUnitId(wave, 1).assertEquals(tdWaveSpecialUnitId(wave))

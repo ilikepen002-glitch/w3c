@@ -14,12 +14,21 @@ import TDEquipmentCombat
 import TDEnemyMechanicRuntime
 import Dialog
 import TDTowerEvolutionRuntime
+import TDWaveFlowState
+import TDEnemyMechanicData
+import TDBossDarkTideRuntime
+import public TDBossTransitionHook
+import GameTimer
+import TDBossRewardRules
+import TDBossRewardRuntime
 
 rect array tdLaneEndRects
 trigger tdEnemyDeathTrigger = CreateTrigger()
+boolean tdEnemyDeathWatcherReady = false
 dialog array tdDefeatDialogs
 int tdLeakCheckLane = -1
 int tdClearLanePlayer = -1
+unit array tdBossUnits
 
 public function tdLeakLifeText(int amount, int lives) returns string
 	return "生命 -" + amount.toString() + "，剩余 " + lives.toString()
@@ -100,6 +109,11 @@ function tdHandleGameResolved()
 		return
 	tdClearQueuedWave()
 	tdSetGameOver(true)
+	let held = tdFlowHeldTransitionToken()
+	if held != 0
+		tdFlowReleaseTransition(held, TD_TRANSITION_ABORTED)
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdFlowCancelLane(lane)
 	tdEnemyMechanicsShutdown()
 	tdEvolutionShutdown()
 	tdRefreshHud()
@@ -110,10 +124,11 @@ function tdHandleGameResolved()
 
 function tdClearLaneEnemiesEnum()
 	let enemy = GetEnumUnit()
-	if enemy != null and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == tdClearLanePlayer
+	if enemy != null and tdEnemyBelongsToCurrentMatch(enemy) and not tdPetIsWild(enemy) and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == tdClearLanePlayer
 		// 敌人表现不再挂自定义血条，清线时只需要移除单位本体。
 		tdForgetEquipmentEnemy(enemy)
 		tdEnemyMechanicUnregister(enemy)
+		tdForgetEnemyMatch(enemy)
 		enemy.remove()
 
 function tdClearLaneEnemies(int playerId)
@@ -123,21 +138,71 @@ function tdClearLaneEnemies(int playerId)
 	ForGroup(g, function tdClearLaneEnemiesEnum)
 	g.destr()
 
-// 普通怪扣 1 命，精英与近卫队长扣 2 命，Boss 扣 3 命。
-// 标记先于所有结算；致死时先封闭路线，再进入可同步触发死亡事件的 kill。
-public function tdHandleEnemyLeak(unit enemy)
-	if enemy == null
+// Close a lane once before any synchronous death or external callback can run.
+function tdCloseDefeatedLane(int playerId)
+	tdSetLaneDefeated(playerId, true)
+	tdFlowCancelLane(playerId)
+	tdPetLaneDefeated(playerId)
+	tdEvolutionClearLaneEffects(playerId)
+	tdDarkTideClearLane(playerId)
+	tdClearLaneEnemies(playerId)
+	tdBossUnits[playerId] = null
+
+public function tdHandleLanePlayerLeft(int playerId)
+	if not tdIsLanePlayer(playerId)
 		return
-	if not enemy.isAlive() or tdEnemyWasLeaked(enemy)
+	tdPetMarkPlayerLeft(playerId)
+	tdPetLaneDefeated(playerId)
+	if not tdIsLaneActive(playerId) or tdIsLaneFinished(playerId) or tdIsLaneDefeated(playerId)
+		return
+	tdCloseDefeatedLane(playerId)
+	tdBroadcast("玩家" + (playerId + 1) + "已离线，路线停止且不发奖励。")
+	tdRefreshHud()
+	tdHandleGameResolved()
+	tdTryScheduleNextWave(tdGetGlobalWave())
+
+function tdBossCanSettle(unit enemy, int playerId, int wave) returns boolean
+	return tdBossUnits[playerId] == enemy and tdFlowBossResult(playerId, wave) == TD_BOSS_RESULT_ACTIVE
+
+function tdSettleBossFailure(unit enemy, int playerId, int wave, int result)
+	if not tdBossCanSettle(enemy, playerId, wave) or not tdFlowClaimBossResult(playerId, wave, result)
+		return
+	// Claim first: a kill event synchronously caused below cannot award a kill.
+	if enemy != null and GetUnitTypeId(enemy) != 0
+		tdMarkEnemyLeaked(enemy)
+	tdLoseLife(playerId, 3)
+	let defeated = tdGetLives(playerId) <= 0 or wave == tdWaveCount()
+	if defeated
+		tdSetLaneDefeated(playerId, true)
+		tdFlowCancelLane(playerId)
+	tdEnemyMechanicUnregister(enemy)
+	tdForgetEquipmentEnemy(enemy)
+	if enemy != null and GetUnitTypeId(enemy) != 0 and enemy.isAlive()
+		enemy.kill()
+	tdForgetEnemyMatch(enemy)
+	tdBossUnits[playerId] = null
+	DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, (result == TD_BOSS_RESULT_TIMED_OUT ? "首领超时或异常消失；" : "首领突破；") + tdLeakLifeText(3, tdGetLives(playerId)))
+	if defeated
+		tdCloseDefeatedLane(playerId)
+		tdShowDefeatDialog(playerId)
+	else
+		tdHandleWaveFinished(playerId, wave)
+	tdRefreshHud()
+	tdHandleGameResolved()
+	tdTryScheduleNextWave(wave)
+
+public function tdHandleEnemyLeak(unit enemy)
+	if enemy == null or not tdEnemyBelongsToCurrentMatch(enemy) or not enemy.isAlive() or tdEnemyDeathWasSettled(enemy)
 		return
 	if GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdPetIsWild(enemy) or tdIsGameOver()
 		return
 	let playerId = tdEnemyLaneId(enemy)
-	if not tdIsLanePlayer(playerId)
-		return
-	if not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId)
+	if not tdIsLanePlayer(playerId) or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId)
 		return
 	let wave = tdEnemyWave(enemy)
+	if tdIsBossUnitTypeId(GetUnitTypeId(enemy))
+		tdSettleBossFailure(enemy, playerId, wave, TD_BOSS_RESULT_LEAKED)
+		return
 	let lifeCost = tdEnemyLeakLifeCost(GetUnitTypeId(enemy))
 	tdMarkEnemyLeaked(enemy)
 	tdLoseLife(playerId, lifeCost)
@@ -145,15 +210,14 @@ public function tdHandleEnemyLeak(unit enemy)
 	if defeated
 		tdSetResolvedWave(playerId, wave)
 		tdSetLaneDefeated(playerId, true)
+		tdFlowCancelLane(playerId)
 	DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, tdLeakLifeText(lifeCost, tdGetLives(playerId)))
 	tdForgetEquipmentEnemy(enemy)
 	tdEnemyMechanicUnregister(enemy)
-	// The synchronous death handler sees the leaked marker and cannot grant kill rewards.
 	enemy.kill()
+	tdForgetEnemyMatch(enemy)
 	if defeated
-		tdPetLaneDefeated(playerId)
-		tdEvolutionClearLaneEffects(playerId)
-		tdClearLaneEnemies(playerId)
+		tdCloseDefeatedLane(playerId)
 		tdShowDefeatDialog(playerId)
 		tdBroadcast("玩家" + (playerId + 1).toString() + "的路线失守了。")
 	tdRefreshHud()
@@ -167,7 +231,11 @@ function tdHandleLeakingEnumUnit()
 
 // 周期性扫描每一路终点区域，检查是否有敌人漏进来了。
 public function tdStartLeakWatcher()
+	let epoch = tdFlowEpoch()
 	doPeriodically(0.25) cb ->
+		if epoch != tdFlowEpoch()
+			destroy cb
+			return
 		for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 			if tdIsLaneActive(playerId) and not tdIsLaneDefeated(playerId) and not tdIsLaneFinished(playerId)
 				tdLeakCheckLane = playerId
@@ -185,31 +253,59 @@ public function tdWaveEquipmentGoldBudget(int wave) returns int
 	// Boss guards count as non-boss units, consistently with kill eligibility.
 	return (tdWaveEnemyCount(wave) - tdWaveBossEnemyCount(wave)) * tdWaveKillGold(wave)
 
+public function tdClaimEnemyKill(unit enemy) returns boolean
+	if enemy == null or not tdEnemyBelongsToCurrentMatch(enemy) or tdEnemyDeathWasSettled(enemy)
+		return false
+	let playerId = tdEnemyLaneId(enemy)
+	let wave = tdEnemyWave(enemy)
+	if tdIsBossUnitTypeId(GetUnitTypeId(enemy))
+		if not tdBossCanSettle(enemy, playerId, wave) or not tdFlowClaimBossResult(playerId, wave, TD_BOSS_RESULT_KILLED)
+			return false
+		if not tdFlowClaimBossReward(playerId, wave, tdFlowEpoch())
+			return false
+	tdMarkEnemyKilled(enemy)
+	return true
+
 function tdHandleEnemyDeath()
 	let enemy = GetTriggerUnit()
-	// Mechanic cleanup is unconditional even when rewards are suppressed at game end.
-	tdEnemyMechanicUnregister(enemy)
-	if tdPetIsWild(enemy) or enemy == null or tdIsGameOver()
+	if enemy == null
 		return
-	if GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID)
+	if tdPetIsWild(enemy) or tdIsGameOver() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID)
+		tdEnemyMechanicUnregister(enemy)
+		tdForgetEnemyMatch(enemy)
 		return
 	let playerId = tdEnemyLaneId(enemy)
-	if not tdIsLaneActive(playerId) or tdEnemyWasLeaked(enemy)
+	if not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId) or not tdClaimEnemyKill(enemy)
+		tdEnemyMechanicUnregister(enemy)
+		tdForgetEnemyMatch(enemy)
 		return
+	// The Boss result and enemy marker were atomically claimed before cleanup/rewards.
+	tdEnemyMechanicUnregister(enemy)
 	let wave = tdEnemyWave(enemy)
-	let bonuses = tdEquipmentKillRewardsFor(GetKillingUnit(), playerId, tdIsBossUnitTypeId(GetUnitTypeId(enemy)))
+	let isBoss = tdIsBossUnitTypeId(GetUnitTypeId(enemy))
+	let bonuses = tdEquipmentKillRewardsFor(GetKillingUnit(), playerId, isBoss)
 	tdForgetEquipmentEnemy(enemy)
 	let extraGold = tdTakeLaneWaveEquipmentGold(playerId, wave, bonuses.gold, tdWaveEquipmentGoldBudget(wave))
-	// 这里只结算真正被击杀的怪；漏怪会走另一套逻辑，不给奖励。
-	tdGainGold(playerId, tdWaveKillGold(wave) + extraGold)
+	tdGainGold(playerId, tdWaveKillGold(wave) + extraGold + (isBoss ? tdBossKillCompensation(wave) : 0))
 	tdEvolutionRecordKill(GetKillingUnit(), playerId)
 	tdAddScore(playerId, tdWaveScoreValue(wave))
-	tdHandleEnemyDrop(enemy, playerId, wave, bonuses.qualityRolls)
-	tdPetHandleEnemyBallDrop(enemy, playerId, wave)
+	if isBoss
+		tdHandlePureBossLoot(enemy, playerId, wave)
+		tdPetHandleBossBallCompensation(enemy, playerId, wave)
+	else
+		tdHandleEnemyDrop(enemy, playerId, wave, bonuses.qualityRolls)
+		tdPetHandleEnemyBallDrop(enemy, playerId, wave)
+	if isBoss
+		tdBossUnits[playerId] = null
+		tdHandleWaveFinished(playerId, wave)
+	tdForgetEnemyMatch(enemy)
 	tdRefreshHud()
 
 // 注册一个全局死亡触发器，统一监听专用敌军槽位刷出来的怪物死亡事件。
 public function tdStartEnemyDeathWatcher()
+	if tdEnemyDeathWatcherReady
+		return
+	tdEnemyDeathWatcherReady = true
 	TriggerRegisterPlayerUnitEvent(tdEnemyDeathTrigger, Player(TD_ENEMY_PLAYER_ID), EVENT_PLAYER_UNIT_DEATH, null)
 	TriggerAddAction(tdEnemyDeathTrigger, function tdHandleEnemyDeath)
 
@@ -226,36 +322,157 @@ public function tdWaveForceStartDelay(int wave) returns real
 		return 90.0
 	return 60.0
 
+function tdContinuingLanesEmpty() returns boolean
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdLaneCanSpawnWave(lane)
+			if tdFlowLaneHasPendingSpawn(lane) or tdLaneHasLivingEnemies(lane)
+				return false
+	return true
+
 function tdScheduleForcedNextWave(int wave)
-	if wave >= tdWaveCount()
+	if wave >= tdWaveCount() or tdIsPureBossWave(wave)
 		return
+	let epoch = tdFlowEpoch()
+	let schedule = tdFlowSchedule()
 	let nextWave = wave + 1
 	doAfter(tdWaveForceStartDelay(wave)) ->
-		if tdIsGameOver() or tdGetGlobalWave() != wave or not tdHasContinuingLanes()
+		if epoch != tdFlowEpoch() or schedule != tdFlowSchedule() or tdIsGameOver() or tdGetGlobalWave() != wave or not tdHasContinuingLanes() or tdFlowIsPreparing()
 			return
-		tdBroadcast("第 " + nextWave.toString() + "/" + tdWaveCount().toString() + " 波时间到，敌军继续压上！")
+		tdBroadcast("第 " + nextWave + "/" + tdWaveCount() + " 波时间到。")
 		tdStartGlobalWave(nextWave)
 
-function tdTryScheduleNextWave(int wave)
-	if tdIsGameOver() or wave != tdGetGlobalWave() or wave >= tdWaveCount() or tdIsNextWaveQueued()
-		return
-	if not tdAllContinuingLanesResolved(wave) or not tdHasContinuingLanes()
-		return
+function tdScheduleWaveAfterDelay(int wave, real delay)
+	let epoch = tdFlowEpoch()
+	let schedule = tdFlowSchedule()
 	let nextWave = wave + 1
 	tdQueueNextWave(nextWave)
 	tdRefreshHud()
-	let delay = tdWaveClearDelay(wave)
-	tdBroadcast("第 " + nextWave.toString() + "/" + tdWaveCount().toString() + " 波将在 " + R2I(delay).toString() + " 秒后开始。")
+	tdBroadcast("第 " + nextWave + "/" + tdWaveCount() + " 波将在 " + R2I(delay) + " 秒后开始。")
 	doAfter(delay) ->
-		if tdIsGameOver() or not tdIsNextWaveQueued() or tdGetQueuedWave() != nextWave
+		if epoch != tdFlowEpoch() or schedule != tdFlowSchedule() or tdIsGameOver() or not tdIsNextWaveQueued() or tdGetQueuedWave() != nextWave or tdFlowHeldTransitionToken() != 0
 			return
-		tdClearQueuedWave()
 		if tdGetGlobalWave() == wave and tdAllContinuingLanesResolved(wave) and tdHasContinuingLanes()
 			tdStartGlobalWave(nextWave)
 
-public function tdStartGlobalWave(int wave)
-	if tdIsGameOver() or wave < 1 or wave > tdWaveCount()
+public function tdRegisterBossTransitionHook(TDBossTransitionHook hook) returns boolean
+	return tdFlowRegisterTransitionHook(hook)
+
+public function tdResumeBossTransition(int transitionToken) returns boolean
+	if tdIsGameOver() or not tdHasContinuingLanes() or not tdFlowIsIntermission() or not tdFlowTransitionIsHeld(transitionToken) or not tdContinuingLanesEmpty()
+		return false
+	let epoch = tdFlowEpoch()
+	let wave = tdGetGlobalWave()
+	if not tdFlowReleaseTransition(transitionToken, TD_TRANSITION_COMPLETED)
+		return false
+	if epoch != tdFlowEpoch() or tdIsGameOver() or not tdHasContinuingLanes() or not tdContinuingLanesEmpty()
+		return false
+	tdStartGlobalWave(wave + 1)
+	return true
+
+function tdBeginBossIntermission(int wave)
+	if not tdFlowEnterIntermission()
 		return
+	if wave == 8 or wave == 24
+		if tdFlowHasTransitionHook()
+			let token = tdFlowHoldTransition(wave)
+			let epoch = tdFlowEpoch()
+			let held = tdFlowCallTransitionReady(wave, token)
+			if epoch != tdFlowEpoch() or tdIsGameOver() or not tdFlowTransitionIsHeld(token)
+				return
+			if held
+				tdRefreshHud()
+				doAfter(TD_BOSS_TRANSITION_TIME_LIMIT) ->
+					if epoch != tdFlowEpoch() or tdIsGameOver() or not tdFlowTransitionIsHeld(token)
+						return
+					if tdFlowReleaseTransition(token, TD_TRANSITION_TIME_LIMIT) and tdHasContinuingLanes() and not tdIsGameOver() and epoch == tdFlowEpoch()
+						tdStartGlobalWave(wave + 1)
+				return
+			if not tdFlowReleaseTransition(token, TD_TRANSITION_COMPLETED)
+				return
+	tdScheduleWaveAfterDelay(wave, 30.0)
+
+function tdTryScheduleNextWave(int wave)
+	if tdIsGameOver() or wave != tdGetGlobalWave() or wave >= tdWaveCount() or tdIsNextWaveQueued() or tdFlowIsPreparing() or tdFlowIsIntermission()
+		return
+	if not tdAllContinuingLanesResolved(wave) or not tdHasContinuingLanes()
+		return
+	tdTryUnlockPopulationAfterWave(wave)
+	if tdIsPureBossWave(wave)
+		if not tdContinuingLanesEmpty()
+			return
+		tdBeginBossIntermission(wave)
+	else
+		tdScheduleWaveAfterDelay(wave, tdWaveClearDelay(wave))
+
+function tdWatchBossRound(int wave, int epoch)
+	doPeriodically(0.20) cb ->
+		if epoch != tdFlowEpoch() or tdIsGameOver() or not tdFlowIsBossActive() or tdGetGlobalWave() != wave
+			destroy cb
+			return
+		for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			if tdLaneCanSpawnWave(lane) and tdFlowBossResult(lane, wave) == TD_BOSS_RESULT_ACTIVE
+				let boss = tdBossUnits[lane]
+				if boss == null or GetUnitTypeId(boss) == 0 or not boss.isAlive() or tdFlowBossExpired(lane, wave, getElapsedGameTime())
+					tdSettleBossFailure(boss, lane, wave, TD_BOSS_RESULT_TIMED_OUT)
+		tdTryScheduleNextWave(wave)
+
+function tdStartPreparedBoss(int wave)
+	if not tdFlowStartBoss(wave)
+		return
+	tdClearQueuedWave()
+	tdSetGlobalWave(wave)
+	tdBroadcast("第 " + wave + "/32 波：" + tdWaveBossName(wave) + "！90秒内击杀；前三超时扣3生命，最终超时失守。")
+	let epoch = tdFlowEpoch()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdLaneCanSpawnWave(lane)
+			tdSetCurrentWave(lane, wave)
+			let boss = tdCreateEnemy(lane, wave, tdWaveSpecialUnitId(wave))
+			if boss == null or not boss.isAlive() or not tdEnemyMechanicIsRegistered(boss) or not tdFlowActivateBoss(lane, wave, getElapsedGameTime())
+				if boss != null
+					tdEnemyMechanicUnregister(boss)
+					boss.remove()
+				tdCloseDefeatedLane(lane)
+			else
+				tdBossUnits[lane] = boss
+			let bossLane = lane
+			doAfter(TD_BOSS_TIME_LIMIT) ->
+				if epoch == tdFlowEpoch() and not tdIsGameOver() and tdBossUnits[bossLane] == boss and tdFlowBossResult(bossLane, wave) == TD_BOSS_RESULT_ACTIVE
+					tdSettleBossFailure(boss, bossLane, wave, TD_BOSS_RESULT_TIMED_OUT)
+	tdRefreshHud()
+	tdHandleGameResolved()
+	if not tdIsGameOver()
+		tdWatchBossRound(wave, epoch)
+
+function tdBossPreparationReady(int wave) returns boolean
+	if not tdHasContinuingLanes() or not tdContinuingLanesEmpty() or tdPetWildHasCaptureWindow()
+		return false
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdLaneCanSpawnWave(lane) and tdGetResolvedWave(lane) < wave - 1
+			return false
+	return true
+
+function tdPrepareBossRound(int wave)
+	if not tdFlowPrepareBoss(wave)
+		return
+	tdClearQueuedWave()
+	tdBroadcast("首领待入场：等待旧波自然清场和野生精灵原捕获窗口结束。")
+	tdRefreshHud()
+	let epoch = tdFlowEpoch()
+	doPeriodically(0.20) cb ->
+		if epoch != tdFlowEpoch() or tdIsGameOver() or not tdFlowIsPreparing() or tdFlowPendingBossWave() != wave
+			destroy cb
+			return
+		if tdBossPreparationReady(wave)
+			destroy cb
+			tdStartPreparedBoss(wave)
+
+public function tdStartGlobalWave(int wave)
+	if tdIsGameOver() or wave < 1 or wave > tdWaveCount() or wave <= tdGetGlobalWave() or tdFlowIsPreparing() or tdFlowIsBossActive() or tdFlowTransitionBlocksAdvance()
+		return
+	if tdIsPureBossWave(wave)
+		tdPrepareBossRound(wave)
+		return
+	tdFlowEnterNormal()
 	tdClearQueuedWave()
 	tdSetGlobalWave(wave)
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
@@ -269,14 +486,24 @@ public function tdStartGlobalWave(int wave)
 	tdScheduleForcedNextWave(wave)
 
 public function tdStartWaveSchedule()
+	let epoch = tdFlowEpoch()
 	doAfter(TD_FIRST_WAVE_DELAY) ->
-		tdStartGlobalWave(1)
+		if epoch == tdFlowEpoch()
+			tdStartGlobalWave(1)
 
 public function tdHandleWaveFinished(int playerId, int wave)
 	if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId)
 		return
 	if tdIsWaveResolved(playerId, wave)
 		return
+	if tdIsPureBossWave(wave)
+		let result = tdFlowBossResult(playerId, wave)
+		if result != TD_BOSS_RESULT_KILLED and result != TD_BOSS_RESULT_LEAKED and result != TD_BOSS_RESULT_TIMED_OUT
+			return
+		if tdLaneHasLivingEnemies(playerId) or tdFlowLaneHasPendingSpawn(playerId)
+			return
+		if wave == tdWaveCount() and result != TD_BOSS_RESULT_KILLED
+			return
 	tdMarkWaveResolved(playerId, wave)
 	tdPetCreditWave(playerId, wave)
 	tdPetSyncBallAbility(playerId)
@@ -293,3 +520,14 @@ public function tdHandleWaveFinished(int playerId, int wave)
 	tdTryScheduleNextWave(wave)
 
 
+
+public function tdShutdownGameFlow()
+	let held = tdFlowHeldTransitionToken()
+	if held != 0
+		tdFlowReleaseTransition(held, TD_TRANSITION_ABORTED)
+	if not compiletime
+		for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			tdFlowCancelLane(lane)
+			tdClearLaneEnemies(lane)
+			tdBossUnits[lane] = null
+		tdEnemyMechanicsShutdown()

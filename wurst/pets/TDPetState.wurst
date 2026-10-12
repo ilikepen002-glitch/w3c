@@ -3,6 +3,7 @@ import TDPetData
 import TDPetRules
 import TDConfig
 import TDState
+import TDEnemyMechanicData
 import Table
 import BitSet
 import LinkedList
@@ -389,7 +390,7 @@ public function tdPetTakeDropBudget(int lane, int wave) returns boolean
 	return true
 
 public function tdPetClaimWildSpawn(int lane, int wave) returns boolean
-	if not tdIsLanePlayer(lane) or wave < 1 or wave > 32
+	if not tdIsLanePlayer(lane) or wave < 1 or wave > 32 or tdIsPureBossWave(wave)
 		return false
 	let key = lane * 40 + wave
 	if tdPetWildSpawnClaimed[key]

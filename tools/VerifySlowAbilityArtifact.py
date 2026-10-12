@@ -19,7 +19,7 @@ def check_field(fields, field, level, column, expected):
             f'{field} level {level}: got {(kind, value)}, expected {expected}')
 
 
-def validate_enemy_speed(units):
+def validate_enemy_speed(units, *, pure_boss=False):
     enemies = [f'uE{wave:02X}' for wave in range(1, 33)]
     enemies += [f'uS{wave:02d}' for wave in (4, 12, 20, 28)]
     enemies += [f'u{family}{wave:02d}' for family in 'GB' for wave in (8, 16, 24, 32)]
@@ -29,6 +29,10 @@ def validate_enemy_speed(units):
         'uS28': (285, 399),
         'uG32': (260, 364),
     }
+    if pure_boss:
+        # Explicitly selected, approved pure-Boss stage. Ordinary/elite bounds
+        # and every native slow field below retain the historical oracle.
+        sprint_speeds.update({'uG32': (260, 260), 'uB08': (240, 312), 'uB32': (250, 288)})
     require(all(enemy in units for enemy in enemies), 'required enemy objects missing')
     for enemy in enemies:
         fields = units[enemy]
@@ -91,9 +95,9 @@ def validate_slow_abilities(abilities):
 
 
 def main():
-    require(len(sys.argv) == 2, __doc__)
+    require(len(sys.argv) == 2 or (len(sys.argv) == 3 and sys.argv[2] == '--pure-boss'), __doc__)
     artifact = Mpq(Path(sys.argv[1]).read_bytes())
-    validate_enemy_speed(unit_objects(artifact.extract('war3map.w3u')))
+    validate_enemy_speed(unit_objects(artifact.extract('war3map.w3u')), pure_boss=len(sys.argv) == 3)
     validate_slow_abilities(ability_objects(artifact.extract('war3map.w3a')))
     print('PASS: enemy speed bounds; all 61 poison, 225/265-range slow, neutral display and Bash control levels and unchanged native poison damage.')
     print('NOT TESTED: native displacement, buff application, stacking, or pathing.')

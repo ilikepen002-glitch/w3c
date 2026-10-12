@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests/python",
+    "-v"
+  ],
+  "environment": {
+    "PURE_BOSS_CANDIDATE_MAP": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/integration-worktree-06/ExampleMap.w3x",
+    "PURE_BOSS_BASELINE_SOURCE": "/workspace/scratch/2106c0ab1fac/spirit-manager-20261012/integration-worktree/wurst",
+    "PURE_BOSS_REVIEWED_JASS_TEMPLATES": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/combined-06-jass-templates-APPROVED.json",
+    "PURE_BOSS_HOOK_HARNESS_MAP": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/combined-harness-07-NON-RELEASE.w3x"
+  },
+  "tests": 441,
+  "passed": 441,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "runtime_seconds": 335.774,
+  "returncode": 0,
+  "log_sha256": "f425367dd2c0631d9e491a6c68fc12042f45e0a8f9c6c5aaa45564f44a00cadf",
+  "frozen_code_files": 178,
+  "code_snapshot_sha256": "de0c1467958a2a84727531892dd53e67f203c35dff522185d386455d9b2f85f1",
+  "all_frozen_code_unchanged": true
+}

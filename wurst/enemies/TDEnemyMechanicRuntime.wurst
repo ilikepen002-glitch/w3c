@@ -9,14 +9,21 @@ import Table
 import LinkedList
 import ClosureTimers
 import DamageEvent
+import GameTimer
+import TDBossDarkTideRuntime
+import TDWaveFlowState
 
 class TDEnemyMechanicRecord
 	unit enemy
 	TDEnemyMechanicState state
+	int matchEpoch
+	real bornAt
 
 	construct(unit enemy, TDEnemyMechanicState state)
 		this.enemy = enemy
 		this.state = state
+		matchEpoch = tdFlowEpoch()
+		bornAt = getElapsedGameTime()
 
 	ondestroy
 		destroy state
@@ -24,7 +31,6 @@ class TDEnemyMechanicRecord
 
 constant Table tdEnemyMechanicRecordsByHandle = new Table()
 LinkedList<TDEnemyMechanicRecord> tdEnemyMechanicRecords = new LinkedList<TDEnemyMechanicRecord>()
-TDEnemyGuardLink array tdEnemyGuardLinks
 boolean tdEnemyMechanicsReady = false
 // DamageEvent listeners persist across shutdown. Never reset this with records.
 boolean tdEnemySpellResistanceListenerReady = false
@@ -35,8 +41,8 @@ function tdEnemyMechanicRecordFor(unit enemy) returns TDEnemyMechanicRecord
 	return tdEnemyMechanicRecordsByHandle.loadInt(enemy.getHandleId()) castTo TDEnemyMechanicRecord
 
 function tdEnemyMechanicRecordValid(TDEnemyMechanicRecord record) returns boolean
-	let lane = record.state.link.lane
-	return record.state.isActive() and record.enemy != null and record.enemy.isAlive() and GetUnitTypeId(record.enemy) != 0 and GetOwningPlayer(record.enemy) == Player(TD_ENEMY_PLAYER_ID) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
+	let lane = record.state.lane
+	return record.matchEpoch == tdFlowEpoch() and record.state.isActive() and record.enemy != null and record.enemy.isAlive() and GetUnitTypeId(record.enemy) != 0 and GetOwningPlayer(record.enemy) == Player(TD_ENEMY_PLAYER_ID) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
 
 // Use the existing valid record and its original wave, never the displayed wave.
 public function tdEnemyMechanicScaleSpellDamage(unit target, real amount) returns real
@@ -53,25 +59,14 @@ function tdEnemyMechanicScaleNativeSpellDamage()
 	// Early setAmount reaches the locked engine's HP settlement and priority-4 ledger.
 	DamageEvent.setAmount(tdEnemyMechanicScaleSpellDamage(DamageEvent.getTarget(), DamageEvent.getAmount()))
 
-function tdEnemyMechanicSyncArmor(TDEnemyGuardLink link)
-	for record in tdEnemyMechanicRecords
-		if record.state.link == link and record.state.role == TD_ENEMY_ROLE_BOSS and tdEnemyMechanicRecordValid(record)
-			if link.protects(link.lane, link.wave)
-				if record.enemy.getAbilityLevel(TD_ENEMY_GUARD_ARMOR_ABILITY_ID) == 0
-					record.enemy.addAbility(TD_ENEMY_GUARD_ARMOR_ABILITY_ID)
-			else
-				record.enemy.removeAbility(TD_ENEMY_GUARD_ARMOR_ABILITY_ID)
-
 function tdEnemyMechanicRetireRecord(TDEnemyMechanicRecord record)
-	let link = record.state.link
 	tdEnemyMechanicRecordsByHandle.removeInt(record.enemy.getHandleId())
 	if GetUnitTypeId(record.enemy) != 0
-		if record.state.isSprinting() and record.enemy.isAlive()
-			SetUnitMoveSpeed(record.enemy, record.state.originalBaseSpeed)
-		record.enemy.removeAbility(TD_ENEMY_GUARD_ARMOR_ABILITY_ID)
+		if record.enemy.isAlive()
+			SetUnitMoveSpeed(record.enemy, record.state.originalBaseSpeed * tdPetEnemySpeedFactor(record.enemy))
+	tdDarkTideForgetBoss(record.enemy)
 	record.state.deactivate()
 	destroy record
-	tdEnemyMechanicSyncArmor(link)
 
 public function tdEnemyMechanicUnregister(unit enemy)
 	let record = tdEnemyMechanicRecordFor(enemy)
@@ -83,25 +78,20 @@ public function tdEnemyMechanicUnregister(unit enemy)
 public function tdEnemyMechanicRegister(unit enemy, int lane, int wave, int role)
 	if not tdEnemyMechanicsReady or enemy == null or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or not tdIsLanePlayer(lane) or not tdIsLaneActive(lane) or tdIsLaneDefeated(lane) or tdIsLaneFinished(lane) or tdIsGameOver() or wave < 1 or wave > 32 or not tdEnemyMechanicTracked(wave, role)
 		return
-	// Duplicate registrations cannot increment guard counts or reset one-shot sprint.
+	// Duplicate registrations cannot reset lifetime, one-shot sprint or enrage.
 	if tdEnemyMechanicRecordFor(enemy) != null
 		return
-	let key = lane * 40 + wave
-	if tdEnemyGuardLinks[key] == null
-		tdEnemyGuardLinks[key] = new TDEnemyGuardLink(lane, wave)
-	let link = tdEnemyGuardLinks[key]
-	let state = new TDEnemyMechanicState(link, role, GetUnitDefaultMoveSpeed(enemy))
+	let state = new TDEnemyMechanicState(lane, wave, role, GetUnitDefaultMoveSpeed(enemy))
 	let record = new TDEnemyMechanicRecord(enemy, state)
 	tdEnemyMechanicRecords.add(record)
 	tdEnemyMechanicRecordsByHandle.saveInt(enemy.getHandleId(), record castTo int)
-	tdEnemyMechanicSyncArmor(link)
 
 public function tdEnemyMechanicOnWaypoint(unit enemy, int reachedWaypoint)
 	let record = tdEnemyMechanicRecordFor(enemy)
 	if record == null or not tdEnemyMechanicRecordValid(record) or not record.state.beginSprint(reachedWaypoint)
 		return
 	let generation = record.state.getGeneration()
-	SetUnitMoveSpeed(enemy, tdEnemySprintSpeed(record.state.originalBaseSpeed) * tdPetEnemySpeedFactor(enemy))
+	SetUnitMoveSpeed(enemy, record.state.baseSpeed() * tdPetEnemySpeedFactor(enemy))
 	// Capture only a native handle and token, never a possibly retired class instance.
 	doAfter(TD_ENEMY_SPRINT_DURATION) ->
 		let current = tdEnemyMechanicRecordFor(enemy)
@@ -111,7 +101,7 @@ public function tdEnemyMechanicOnWaypoint(unit enemy, int reachedWaypoint)
 			tdEnemyMechanicUnregister(enemy)
 			return
 		if current.state.finishSprint(generation)
-			SetUnitMoveSpeed(enemy, current.state.originalBaseSpeed * tdPetEnemySpeedFactor(enemy))
+			SetUnitMoveSpeed(enemy, current.state.baseSpeed() * tdPetEnemySpeedFactor(enemy))
 
 // Called by the existing waypoint watcher: only tracked specials, no world scan.
 // This also retires external RemoveUnit records absent from the native unit group.
@@ -122,19 +112,26 @@ public function tdEnemyMechanicsTick()
 		if not tdEnemyMechanicRecordValid(record)
 			iter.remove()
 			tdEnemyMechanicRetireRecord(record)
+		else
+			let oldSpeed = record.state.baseSpeed()
+			let bossEvent = record.state.updateBoss(getElapsedGameTime() - record.bornAt, record.enemy.getHP() / record.enemy.getMaxHP())
+			if bossEvent == TD_BOSS_EVENT_WARNING
+				DisplayTimedTextToPlayer(Player(record.state.lane), 0, 0, 2.0, record.state.wave == 8 ? "裂风猎王将在1秒后冲刺！" : "暗潮将在1秒后压制首领附近的塔！")
+			else if bossEvent == TD_BOSS_EVENT_DARK_TIDE
+				tdDarkTideApply(record.enemy, record.state.lane, record.state.getGeneration())
+			else if bossEvent == TD_BOSS_EVENT_ENRAGE
+				DisplayTimedTextToPlayer(Player(record.state.lane), 0, 0, 3.0, "无冕深渊君王濒危加速，必须击杀！")
+			if oldSpeed != record.state.baseSpeed()
+				SetUnitMoveSpeed(record.enemy, record.state.baseSpeed() * tdPetEnemySpeedFactor(record.enemy))
 	destroy iter
+	tdDarkTideTick()
 
 public function tdEnemyMechanicsShutdown()
 	tdEnemyMechanicsReady = false
 	while not tdEnemyMechanicRecords.isEmpty()
 		let record = tdEnemyMechanicRecords.get(0)
 		tdEnemyMechanicUnregister(record.enemy)
-	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		for wave = 1 to 32
-			let key = lane * 40 + wave
-			if tdEnemyGuardLinks[key] != null
-				destroy tdEnemyGuardLinks[key]
-				tdEnemyGuardLinks[key] = null
+	tdDarkTideShutdown()
 
 public function tdSetupEnemyMechanics()
 	if compiletime
@@ -149,4 +146,7 @@ public function tdEnemyMechanicBaseSpeed(unit enemy) returns real
 	let record = tdEnemyMechanicRecordFor(enemy)
 	if record == null
 		return GetUnitDefaultMoveSpeed(enemy)
-	return record.state.isSprinting() ? tdEnemySprintSpeed(record.state.originalBaseSpeed) : record.state.originalBaseSpeed
+	return record.state.baseSpeed()
+
+public function tdEnemyMechanicIsRegistered(unit enemy) returns boolean
+	return tdEnemyMechanicRecordFor(enemy) != null

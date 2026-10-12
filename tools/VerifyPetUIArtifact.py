@@ -418,12 +418,29 @@ def verify_skill_allowed(script):
                 f'got {actual}, expected {expected}')
 
 
-def verify_lane_enemy_guards(script):
-    """Enumerate 256 compiled enum states, including every guard with matching wave."""
+def verify_lane_enemy_guards(script, require_match_registry=False):
+    """Enumerate every existing guard, plus registration when present.
+
+    Only the exact compiler diagnostic-only trailing-string signature is
+    accepted. It is executed with balanced debug-stack validation, not erased.
+    """
     helper = jass_function(script, 'tdLaneEnemyCheckEnum')
+    header = helper.group(0).splitlines()[0]
+    if header == 'function tdLaneEnemyCheckEnum takes nothing returns nothing':
+        arguments, debug_stack = (), False
+    else:
+        require(header == 'function tdLaneEnemyCheckEnum takes string w__wurst_stackPos returns nothing',
+                'Lane enemy guards unexpected compiler signature')
+        arguments, debug_stack = ('offline lane-enemy guard matrix',), True
+    registered = 'tdEnemyBelongsToCurrentMatch(' in helper.group(1)
+    require(not require_match_registry or registered, 'Lane enemy guards missing current-match registration')
+    if registered:
+        require('enemy_1 == null' in helper.group(1), 'Lane enemy guards missing explicit null rejection')
     field = 'TDSpawn_tdLaneEnemyCheckFound'
-    for wild, same_lane, alive, enemy_owner, nonnull, found, any_wave, same_wave in itertools.product(
-            (False, True), repeat=8):
+    for wild, same_lane, alive, enemy_owner, nonnull, found, any_wave, same_wave, same_match in itertools.product(
+            (False, True), (False, True), (False, True), (False, True),
+            (False, True), (False, True), (False, True), (False, True),
+            (False, True) if registered else (True,)):
         assignments = []
         enemy = 1 if nonnull else None
         constants = {'TDConfig_TD_ENEMY_PLAYER_ID': 4,
@@ -437,14 +454,16 @@ def verify_lane_enemy_guards(script):
                      'Player': lambda player: player,
                      'tdEnemyLaneId': lambda unit: 2 if same_lane else 3,
                      'tdEnemyWave': lambda unit: 7 if same_wave else 8}
+        if registered:
+            functions['tdEnemyBelongsToCurrentMatch'] = lambda unit, provenance: unit is not None and same_match
         qualifies = (not wild and same_lane and alive and enemy_owner and nonnull and
-                     not found and (any_wave or same_wave))
-        actual = _run_scalar_helper(helper, (), constants, functions, field,
-                                    lambda name, value: assignments.append((name, value)))
+                     not found and same_match and (any_wave or same_wave))
+        actual = _run_scalar_helper(helper, arguments, constants, functions, field,
+                                    lambda name, value: assignments.append((name, value)), debug_stack=debug_stack)
         writes = [value for name, value in assignments if name == field]
         require(actual is (found or qualifies) and writes == ([True] if qualifies else []),
                 f'Lane enemy guards wild={wild} lane={same_lane} alive={alive} owner={enemy_owner} '
-                f'nonnull={nonnull} found={found} anywave={any_wave} matchingwave={same_wave}: '
+                f'nonnull={nonnull} found={found} anywave={any_wave} matchingwave={same_wave} registered={same_match}: '
                 f'found={actual}, writes={writes}')
 
 

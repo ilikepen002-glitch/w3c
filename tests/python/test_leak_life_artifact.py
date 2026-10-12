@@ -122,6 +122,8 @@ class Harness:
         self.events = []
         self.units = {1: dict(alive=True, leaked=False, owner=4, wild=False, lane=0, wave=8, kind='boss'),
                       2: dict(alive=True, leaked=False, owner=4, wild=False, lane=0, wave=8, kind='boss')}
+        self.pure_boss = 'function tdSettleBossFailure takes' in script
+        for unit in self.units.values(): unit['registered'] = True
         self.active = [True, True, False, False]
         self.finished = [False] * 4; self.defeated = [False] * 4
         self.over = False; self.trigger = 1; self.reenter = False
@@ -132,11 +134,20 @@ class Harness:
                       'boss': constants['TDWaves_TD_WAVE_8_BOSS_UNIT_ID']}
         self.state = dict(constants, true=True, false=False, null=None, TDConfig_TD_ENEMY_PLAYER_ID=4,
                           TDState_tdLives=[lives, 20, 20, 20])
+        if self.pure_boss:
+            self.state.update({name: int(value) for name, value in re.findall(r'\bset (TDWaveFlowState_TD_\w+) = (\d+)', script)})
+            self.state.update(TDGame_tdBossUnits=[1, None, None, None],
+                TDWaveFlowState_tdFlowBossWave=8, TDWaveFlowState_tdFlowBossResults=[0, 0, 0, 0],
+                TDWaveFlowState_tdFlowPhase=2, TDWaveFlowState_tdFlowMatchEpoch=1,
+                TDSpawn_tdEnemyMatchEpochs=610, TDWaveFlowState_tdFlowBossDeadlines=[0.0]*4,
+                TDWaveFlowState_tdFlowSpawnGeneration=[1]*4, TDWaveFlowState_tdFlowSpawnBusy=[0]*4)
+            self.match_epochs = {}
         def record(name):
             return lambda *args: self.events.append((name, *args))
         hooks = {name: record(name) for name in ['DisplayTimedTextToPlayer', 'tdForgetEquipmentEnemy',
             'tdEnemyMechanicUnregister', 'tdSetResolvedWave', 'tdPetLaneDefeated', 'tdEvolutionClearLaneEffects',
-            'tdClearLaneEnemies', 'tdShowDefeatDialog', 'tdBroadcast', 'tdRefreshHud', 'tdTryScheduleNextWave']}
+            'tdClearLaneEnemies', 'tdShowDefeatDialog', 'tdBroadcast', 'tdRefreshHud', 'tdTryScheduleNextWave',
+            'tdDarkTideClearLane', 'tdHandleWaveFinished']}
         def forbidden(*args):
             raise AssertionError('Leaked/dead/invalid enemy entered kill reward path')
         hooks.update({name: forbidden for name in ['tdEquipmentKillRewardsFor', 'tdGainGold', 'tdAddScore',
@@ -150,13 +161,33 @@ class Harness:
             GetUnitTypeId=lambda u: self.types[self.units[u]['kind']], tdGetLives=lambda p: self.state['TDState_tdLives'][p],
             tdMarkEnemyLeaked=self.mark, tdSetLaneDefeated=self.defeat, unit_kill=self.kill,
             tdHandleGameResolved=self.resolve, GetTriggerUnit=lambda: self.trigger, int_toString=str)
+        if self.pure_boss:
+            # The real registry lookup, epoch comparison and Boss activation
+            # execute. Only native hash-table/handle storage is modeled.
+            hooks.update(handle_getHandleId=lambda handle: handle or 0,
+                dispatch_Table_Table_hasInt=lambda table, key, position: key in self.match_epochs,
+                dispatch_Table_Table_loadInt=lambda table, key, position: self.match_epochs.get(key, 0),
+                dispatch_Table_Table_saveInt=lambda table, key, value, position: self.match_epochs.__setitem__(key, value),
+                dispatch_Table_Table_removeInt=lambda table, key, position: self.match_epochs.pop(key, None),
+                tdEnemyDeathWasSettled=lambda unit: self.units[unit]['leaked'])
         # Execute the real compiled feedback overload, including its amount argument.
         self.vm = Jass(script, self.state, hooks)
+        if self.pure_boss:
+            for handle in self.units:
+                self.vm.expression('dispatch_Table_Table_saveInt(TDSpawn_tdEnemyMatchEpochs, ' + str(handle) + ', 1, "offline registered spawn")', {})
+            if not self.vm.run('tdFlowActivateBoss', [0, 8, 0.0]):
+                raise AssertionError('Real compiled Boss activation failed in leak fixture')
+            if self.state['TDWaveFlowState_tdFlowBossDeadlines'][0] != 90.0:
+                raise AssertionError('Real Boss activation failed to start its 90-second deadline')
 
     def mark(self, u):
         self.events.append(('mark', u)); self.units[u]['leaked'] = True
     def defeat(self, p, value):
-        self.events.append(('defeat', p)); self.defeated[p] = value
+        # Count state transitions rather than harmless repeated setter calls.
+        if self.defeated[p] != value: self.events.append(('defeat', p))
+        self.defeated[p] = value
+    def forget(self, unit):
+        if unit is not None: self.units[unit]['registered'] = False
     def kill(self, u):
         self.events.append(('kill', u)); self.units[u]['alive'] = False
         self.trigger = u
@@ -193,6 +224,7 @@ class LeakLifeArtifactTests(unittest.TestCase):
                     h = Harness(self.script, lives); h.units[1]['kind'] = kind; h.leak()
                     self.assertEqual(h.state['TDState_tdLives'], [max(0, lives-cost), 20, 20, 20])
                     self.assertIn(('DisplayTimedTextToPlayer', 0, 0.0, 0.0, 5.0,
+                                   ('首领突破；' if h.pure_boss and kind == 'boss' else '') +
                                    f'生命 -{cost}，剩余 {max(0, lives-cost)}'), h.events)
                     self.assertEqual(h.count('kill'), 1)
                     self.assertLess(h.events.index(('mark', 1)), h.events.index(('kill', 1)))
@@ -201,7 +233,7 @@ class LeakLifeArtifactTests(unittest.TestCase):
                     before = list(h.events); h.leak(); self.assertEqual(h.events, before)
 
     def test_every_ineligible_guard_blocks_direct_calls(self):
-        for case in ('null', 'dead', 'leaked', 'owner', 'wild', 'gameover', 'negative_lane', 'invalid_lane', 'inactive', 'defeated', 'finished'):
+        for case in ('null', 'dead', 'leaked', 'owner', 'wild', 'gameover', 'negative_lane', 'invalid_lane', 'inactive', 'defeated', 'finished', 'unregistered'):
             with self.subTest(case=case):
                 h = Harness(self.script)
                 if case == 'dead': h.units[1]['alive'] = False
@@ -214,6 +246,8 @@ class LeakLifeArtifactTests(unittest.TestCase):
                 if case == 'inactive': h.active[0] = False
                 if case == 'defeated': h.defeated[0] = True
                 if case == 'finished': h.finished[0] = True
+                if case == 'unregistered': h.units[1]['registered'] = False
+                if case == 'unregistered' and h.pure_boss: h.match_epochs.pop(1)
                 h.leak(None if case == 'null' else 1)
                 self.assertEqual(h.events, []); self.assertEqual(h.state['TDState_tdLives'][0], 20)
 
@@ -239,7 +273,9 @@ class LeakLifeArtifactTests(unittest.TestCase):
             self.assertNotEqual(body, match[2], name + ' mutation must alter real artifact')
             return script[:match.start(2)] + body + script[match.end(2):]
         def check_boss(script):
-            h = Harness(script, 2); h.leak()
+            h = Harness(script, 2)
+            self.assertEqual(h.vm.run('tdEnemyLeakLifeCost', [h.types['boss']]), 3)
+            h.leak()
             self.assertEqual(h.state['TDState_tdLives'][0], 0)
         def check_normal(script):
             h = Harness(script); h.units[1]['kind'] = 'normal'; h.leak()
@@ -248,10 +284,10 @@ class LeakLifeArtifactTests(unittest.TestCase):
             h = Harness(script); h.units[1]['leaked'] = True; h.leak()
             self.assertEqual(h.events, [])
         def check_mark(script):
-            Harness(script).leak()
+            h = Harness(script); h.units[1]['kind'] = 'normal'; h.leak()
         def check_text(script):
-            h = Harness(script); h.leak()
-            self.assertIn(('DisplayTimedTextToPlayer', 0, 0.0, 0.0, 5.0, '生命 -3，剩余 17'), h.events)
+            h = Harness(script); h.units[1]['kind'] = 'elite'; h.leak()
+            self.assertIn(('DisplayTimedTextToPlayer', 0, 0.0, 0.0, 5.0, '生命 -2，剩余 18'), h.events)
         def mark_after_kill(body):
             line = re.search(r'^.*call tdMarkEnemyLeaked\([^\n]*\n', body, re.M)[0]
             body = body.replace(line, '')
@@ -260,7 +296,7 @@ class LeakLifeArtifactTests(unittest.TestCase):
             ('fixed one', 'tdEnemyLeakLifeCost', lambda b: '\treturn 1\n', check_boss),
             ('wave-wide boss', 'tdHandleEnemyLeak', lambda b: re.sub(r'GetUnitTypeId\([^)]*\)',
                  'TDWaves_TD_WAVE_8_BOSS_UNIT_ID', b), check_normal),
-            ('leaked guard', 'tdHandleEnemyLeak', lambda b: re.sub(r' or tdEnemyWasLeaked\([^)]*\)', '', b), check_leaked),
+            ('leaked guard', 'tdHandleEnemyLeak', lambda b: re.sub(r' or tdEnemy(?:DeathWasSettled|WasLeaked)\([^)]*\)', '', b), check_leaked),
             ('mark too late', 'tdHandleEnemyLeak', mark_after_kill, check_mark),
             ('negative lives', 'tdLoseLife', lambda b: re.sub(r'\tif .*?\tendif\n', '', b, flags=re.S), check_boss),
             ('fixed feedback one', 'tdHandleEnemyLeak', lambda b: re.sub(r'(tdLeakLifeText\w*\()lifeCost,',

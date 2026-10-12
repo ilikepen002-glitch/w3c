@@ -220,7 +220,7 @@ class BossJassRuntime(GroundJassRuntime):
                     active = branches.pop()[0]
                 elif line == 'loop':
                     if active:
-                        loops.append(index)
+                        loops.append((index, len(branches), active))
                     else:
                         # Ground runtime's active loops are retained; skip a
                         # complete loop in an inactive conditional branch.
@@ -231,7 +231,9 @@ class BossJassRuntime(GroundJassRuntime):
                             depth += (lines[index] == 'loop') - (lines[index] == 'endloop')
                 elif line == 'endloop':
                     require(bool(loops), f'{name}: unmatched endloop')
-                    index = loops.pop(); continue
+                    loop_start, branch_depth, loop_active = loops.pop()
+                    require(len(branches) == branch_depth, f'{name}: unclosed branch at loop tail')
+                    index = loop_start; active = loop_active; continue
                 elif active and line.startswith('exitwhen '):
                     require(bool(loops), f'{name}: exitwhen outside loop')
                     if self.expression(line[9:], scope):
@@ -240,7 +242,12 @@ class BossJassRuntime(GroundJassRuntime):
                             index += 1
                             require(index < len(lines), 'Unclosed packaged loop')
                             depth += (lines[index] == 'loop') - (lines[index] == 'endloop')
-                        loops.pop()
+                        _, branch_depth, loop_active = loops.pop()
+                        # exitwhen may be inside nested ifs. Its jump leaves
+                        # those branches lexically inside this loop, while
+                        # preserving every branch surrounding the loop.
+                        del branches[branch_depth:]
+                        active = loop_active
                 elif active and line.startswith('return'):
                     raise _Return(self.expression(line[7:], scope) if line != 'return' else None)
                 elif active and line.startswith('local '):
@@ -450,14 +457,16 @@ def verify_pure_and_runtime(script):
     return cases
 
 
-def verify_engine_and_accounting(script):
+def verify_engine_and_accounting(script, runtime_type=BossJassRuntime, boss_results=None):
+    # Original historical callers keep their original factors and state oracle.
+    results = BOSS_RESULTS if boss_results is None else boss_results
     scenarios = 0
     for wave, code, spell, prelife in itertools.product((8, 16, 24, 32), (False, True), (False, True), (40.0, 1000.0, 1990.0)):
-        runtime = BossJassRuntime(script); runtime.seed_record(wave); runtime.setup(ledger=True)
+        runtime = runtime_type(script); runtime.seed_record(wave); runtime.setup(ledger=True)
         runtime.units[100]['life'] = prelife
         if code: runtime.invoke('DamageEvent_setNextDamageFromCode')
         result = runtime.emit(-100.0 if spell else 100.0)
-        expected = BOSS_RESULTS[wave] if spell and not code else 100.0
+        expected = results[wave] if spell and not code else 100.0
         close(result['amount'], expected, 'Actual dependency classification/early amount')
         close(result['unreducedAmount'], expected, 'Actual early setAmount unreduced amount')
         require(result['isCode'] is code and result['isSpell'] is spell,
