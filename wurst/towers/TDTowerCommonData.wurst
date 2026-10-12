@@ -98,18 +98,6 @@ public function tdFarmerUsesFlyingMovement() returns boolean
 public function tdFarmerBaseMoveSpeed() returns int
 	return 522
 
-public function tdFarmerBlinkMaxRange() returns real
-	return 99999.0
-
-public function tdFarmerBlinkCooldown() returns real
-	return 0.0
-
-public function tdFarmerBlinkHotkey() returns string
-	return "F"
-
-public function tdFarmerBlinkIconPath() returns string
-	return Icons.bTNBlink
-
 public function tdFarmerWageCooldown() returns real
 	return 180.0
 

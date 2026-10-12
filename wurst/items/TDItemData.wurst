@@ -312,6 +312,15 @@ public function tdFarmerCraftIconPath() returns string
 public function tdFarmerGroundUpgradeIconPath() returns string
 	return "war3mapImported\\BTNTDActionGroundUpgrade.blp"
 
+public function tdFarmerGroundUpgradeButtonX() returns int
+	return 1
+
+public function tdFarmerGroundUpgradeButtonY() returns int
+	return 1
+
+public function tdFarmerGroundUpgradeHotkey() returns string
+	return "U"
+
 public function tdItemIconPath(int itemId) returns string
 	if itemId == TD_ITEM_SHORT_BOW_ID
 		return "war3mapImported\\BTNTDItemShortBow.blp"

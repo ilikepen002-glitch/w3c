@@ -5,7 +5,6 @@ public constant int TD_PET_CAPTURE_ABILITY_ID = 'Pcap'
 public constant int TD_PET_COLLECTION_ABILITY_ID = 'Pcol'
 public constant int TD_PET_DEPLOY_ABILITY_ID = 'Pdep'
 public constant int TD_PET_BALL_ITEM_ID = 'Ibal'
-public constant int TD_FARMER_MENU_REPAIR_ABILITY_ID = 'Prpr'
 public constant int TD_PET_DAMAGE_ID = 'Pdam'
 public constant int TD_PET_COLLECTION_LIMIT = 12
 public constant int TD_PET_BALL_LIMIT = 60

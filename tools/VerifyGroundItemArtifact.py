@@ -1,4 +1,4 @@
-"""Verify packaged two-command function menu and global Channel contracts.
+"""Verify packaged single-command function book and global Channel contracts.
 
 Usage: python tools/VerifyGroundItemArtifact.py ExampleMap.w3x
 Does not prove native rendering or live gameplay.
@@ -12,7 +12,7 @@ from GenerateTowerTerrainMask import Mpq
 from VerifyEquipmentAbilityArtifact import ability_objects, require
 from VerifyTowerPlacementArtifact import unit_objects
 
-BOOK_SPELLS = ('A119', 'Gupg')
+BOOK_SPELLS = ('A119',)
 REMOVED_CAPTURE_COMMANDS = ('Phnt', 'Pmas', 'Pfor')
 REMOVED_PLAYER_COMMANDS = REMOVED_CAPTURE_COMMANDS + ('Dsta',)
 
@@ -92,16 +92,16 @@ def verify_global_channel_orders(abilities):
 
 def verify_function_book(abilities, units):
     verify_no_hunt_objects(abilities, units)
-    for rawcode in ('Geqb',) + BOOK_SPELLS:
+    for rawcode in ('Geqb', 'A119', 'Gupg'):
         require(rawcode in abilities, f'Missing function book command {rawcode}')
     book_parent, book = abilities['Geqb']
     upgrade_parent, upgrade = abilities['Gupg']
     require(book_parent == 'Aspb', 'Equipment book must inherit Spell Book')
     require(upgrade_parent == 'ANcl', 'Ground upgrade must inherit Channel')
-    require(value(book, 'spb1', 1, 1) == ','.join(BOOK_SPELLS), 'Unexpected book spell list')
+    require(value(book, 'spb1', 1, 1) == ','.join(BOOK_SPELLS), 'Book must contain only A119')
     require(value(book, 'spb2', 1, 2) == 0, 'Book shares spell cooldowns')
-    require(value(book, 'spb3', 1, 3) == 2 and value(book, 'spb4', 1, 4) == 2,
-            'Book must contain exactly two spells')
+    require(value(book, 'spb3', 1, 3) == 1 and value(book, 'spb4', 1, 4) == 1,
+            'Book must contain exactly one spell')
     require(value(book, 'abpx', 0) == 3 and value(book, 'abpy', 0) == 0,
             'Book must occupy farmer function cell 3,0')
     require(value(book, 'ahky', 0) == 'C', 'Book hotkey must be C')
@@ -113,8 +113,8 @@ def verify_function_book(abilities, units):
     manual = abilities['A119'][1]
     require(value(manual, 'abpx', 0) == 0 and value(manual, 'abpy', 0) == 0,
             'Backpack craft must occupy book cell 0,0')
-    require(value(upgrade, 'abpx', 0) == 1 and value(upgrade, 'abpy', 0) == 0,
-            'Ground upgrade must occupy book cell 1,0')
+    require(value(upgrade, 'abpx', 0) == 1 and value(upgrade, 'abpy', 0) == 1,
+            'Ground upgrade must occupy main bar 1,1')
     require(value(manual, 'ahky', 0) == 'C', 'Backpack craft hotkey must remain C')
     require(value(book, 'anam', 0) == '功能', 'Book must be named 功能')
     book_cells, book_hotkeys = {}, {}
@@ -149,9 +149,9 @@ def main():
         verify_no_hunt_objects(abilities, units, unit_objects(artifact.extract('war3map.w3t')))
     farmer, channel_count = verify_function_book(abilities, units)
     print('PASS ground commands:', farmer, 'book=' + ','.join(BOOK_SPELLS),
-          'two distinct cells; no repeated assigned hotkeys', 'point AoE=144',
+          'one A119 spell; Geqb 3,0/C; Gupg main 1,1/U', 'point AoE=144',
           f'{channel_count} globally unique Channel objects; no Phnt/Pmas/Pfor/Dsta ghost/attachment')
-    for rawcode in ('Geqb',) + BOOK_SPELLS:
+    for rawcode in ('Geqb', 'A119', 'Gupg'):
         parent, fields = abilities[rawcode]
         print(json.dumps({'id': rawcode, 'parent': parent, 'fields': [
             {'key': list(key), 'type': kind, 'value': val}

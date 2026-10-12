@@ -30,7 +30,7 @@ class PetUIArtifactTests(unittest.TestCase):
         cls.abilities = ability_objects(cls.artifact.extract("war3map.w3a"))
         cls.units = unit_objects(cls.artifact.extract("war3map.w3u"))
 
-    def test_actual_farmer_grid_is_exactly_eleven_cells_with_empty_repair_slot(self):
+    def test_actual_farmer_grid_is_exactly_eleven_cells_with_empty_blink_slot(self):
         verifier.verify_farmer_grid(self.abilities, self.units)
 
     def test_actual_eight_collection_commands_keep_cells_hotkeys_orders(self):
@@ -86,7 +86,9 @@ class PetUINegativeTests(unittest.TestCase):
         correct_release_contract(cls.corrected_abilities, cls.corrected_units)
         # Negative fixture only; actual-artifact positives above stay raw.
         worker = cls.corrected_units['uF01']
-        worker['uabi'] = worker['uabi'].replace('AHbu', 'AUbu').replace(',Prpr', '')
+        worker['uabi'] = 'AUbu,A109,A117,Geqb,Gupg,Pcap,Pcol,Pdep'
+        cls.corrected_abilities.pop('A108', None)
+        cls.corrected_abilities.pop('Prpr', None)
         # Permit deterministic negative coverage before the next map rebuild.
         for rawcode, (x, y, _, _) in verifier.EXPECTED.items():
             cls.set_field(cls.corrected_abilities, rawcode, "abpx", x)

@@ -240,9 +240,20 @@ class CaptureRemovalActualRuntimeTests(unittest.TestCase):
         data = subprocess.check_output(['git', 'show', '0384ccddcfdbaa868f773573c1f7403fe809d3e2:ExampleMap.w3x'], cwd=ROOT)
         cls.before = Mpq(data).extract('war3map.j').decode('utf-8')
         script = Mpq((ROOT / 'ExampleMap.w3x').read_bytes()).extract('war3map.j').decode('utf-8')
-        cls.current, cls.proved_aliases = inherited_script_view(script, cls.before)
+        # Formal B changed compiler class IDs; prove named allocators and every
+        # comparison against immutable formal A, without weakening the historic
+        # capture-only delta gate or changing actual behavior-oracle input.
+        from VerifyBuilderControlDelta import proved_type_reindex_view
+        a_data = subprocess.check_output(['git', 'show', 'e340d1758c7d72c0f88df3cdb54139ec989a6fcd:ExampleMap.w3x'], cwd=ROOT)
+        a_script = Mpq(a_data).extract('war3map.j').decode('utf-8')
+        cls.actual = script
+        class_view, cls.proved_class_ids = proved_type_reindex_view(script, a_script)
+        cls.current, cls.proved_aliases = inherited_script_view(class_view, cls.before)
 
     def test_actual_packaged_capture_and_inherited_lifecycle_pass(self):
+        removal.verify_spend_and_attempt(self.actual)
+        from VerifyPetDeploymentArtifact import verify_gate
+        verify_gate(self.actual)
         removal.verify_capture_runtime(self.current, self.before)
 
     def test_actual_boss_resistance_and_engine_functions_remain_inherited(self):

@@ -147,7 +147,7 @@ def validate(abilities, units, items):
                 require('合计上限40%' in text, uid)
             elif kind == 'CONTROL_POWER':
                 require('上限60%' in text, uid)
-    actions = ('A119', 'A133', 'A108', 'A109', 'AeEV', 'A130', 'Pcap', 'Pcol', 'Pdep', 'Geqb', 'Gupg') + tuple(f'Pc0{i}' for i in range(8))
+    actions = ('A119', 'A133', 'A109', 'AeEV', 'A130', 'Pcap', 'Pcol', 'Pdep', 'Geqb', 'Gupg') + tuple(f'Pc0{i}' for i in range(8))
     for retired in ('Dsta', 'Pmas', 'Pfor'):
         require(retired not in abilities, f'Removed action {retired} remains')
     for uid in actions:
