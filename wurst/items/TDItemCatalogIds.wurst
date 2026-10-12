@@ -1,0 +1,56 @@
+package TDItemCatalogIds
+
+public constant int TD_ITEM_LINE_SCOPE = 1
+public constant int TD_ITEM_LINE_WAR_AXE = 2
+public constant int TD_ITEM_LINE_SWIFT = 3
+public constant int TD_ITEM_LINE_SHIELD = 4
+public constant int TD_ITEM_LINE_POISON = 5
+public constant int TD_ITEM_LINE_ARMOR = 6
+public constant int TD_ITEM_LINE_COMMAND = 7
+public constant int TD_ITEM_LINE_GOLD = 8
+public constant int TD_ITEM_LINE_WIND = 9
+public constant int TD_ITEM_LINE_FROST = 10
+
+public constant int TD_ITEM_WHITE_SCOPE_ID = 'iW02'
+public constant int TD_ITEM_WHITE_WAR_AXE_ID = 'iW01'
+public constant int TD_ITEM_WHITE_SWIFT_ID = 'iW03'
+public constant int TD_ITEM_WHITE_SHIELD_ID = 'iW09'
+public constant int TD_ITEM_WHITE_POISON_ID = 'iW08'
+public constant int TD_ITEM_WHITE_ARMOR_ID = 'iW06'
+public constant int TD_ITEM_WHITE_COMMAND_ID = 'iW04'
+public constant int TD_ITEM_WHITE_GOLD_ID = 'iW05'
+public constant int TD_ITEM_WHITE_WIND_ID = 'iW07'
+public constant int TD_ITEM_WHITE_FROST_ID = 'iW10'
+
+public constant int TD_ITEM_GREEN_SCOPE_ID = 'iG02'
+public constant int TD_ITEM_GREEN_WAR_AXE_ID = 'iG01'
+public constant int TD_ITEM_GREEN_SWIFT_ID = 'iG05'
+public constant int TD_ITEM_GREEN_SHIELD_ID = 'iG04'
+public constant int TD_ITEM_GREEN_POISON_ID = 'iG09'
+public constant int TD_ITEM_GREEN_ARMOR_ID = 'iG03'
+public constant int TD_ITEM_GREEN_COMMAND_ID = 'iG07'
+public constant int TD_ITEM_GREEN_GOLD_ID = 'iG06'
+public constant int TD_ITEM_GREEN_WIND_ID = 'iG08'
+public constant int TD_ITEM_GREEN_FROST_ID = 'iG10'
+
+public constant int TD_ITEM_BLUE_SCOPE_ID = 'iB01'
+public constant int TD_ITEM_BLUE_WAR_AXE_ID = 'iB02'
+public constant int TD_ITEM_BLUE_SWIFT_ID = 'iB07'
+public constant int TD_ITEM_BLUE_SHIELD_ID = 'iB04'
+public constant int TD_ITEM_BLUE_POISON_ID = 'iB08'
+public constant int TD_ITEM_BLUE_ARMOR_ID = 'iB03'
+public constant int TD_ITEM_BLUE_COMMAND_ID = 'iB06'
+public constant int TD_ITEM_BLUE_GOLD_ID = 'iB05'
+public constant int TD_ITEM_BLUE_WIND_ID = 'iB09'
+public constant int TD_ITEM_BLUE_FROST_ID = 'iB10'
+
+public constant int TD_ITEM_PURPLE_SCOPE_ID = 'iP01'
+public constant int TD_ITEM_PURPLE_WAR_AXE_ID = 'iP02'
+public constant int TD_ITEM_PURPLE_SWIFT_ID = 'iP04'
+public constant int TD_ITEM_PURPLE_SHIELD_ID = 'iP03'
+public constant int TD_ITEM_PURPLE_POISON_ID = 'iP05'
+public constant int TD_ITEM_PURPLE_ARMOR_ID = 'iP06'
+public constant int TD_ITEM_PURPLE_COMMAND_ID = 'iP07'
+public constant int TD_ITEM_PURPLE_GOLD_ID = 'iP08'
+public constant int TD_ITEM_PURPLE_WIND_ID = 'iP09'
+public constant int TD_ITEM_PURPLE_FROST_ID = 'iP10'

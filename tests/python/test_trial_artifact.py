@@ -46,20 +46,46 @@ class TrialArtifactTests(unittest.TestCase):
     def test_no_installation_never_passes_native_model_or_table(self):
         self.assertEqual(verify_installation([])['status'], 'NOT_VERIFIED')
         self.assertEqual(verify_installation([])['attack_type_table'], 'NOT_VERIFIED')
+    def test_legacy009_real_trial_tooltips_remain_strict(self):
+        from GenerateTowerTerrainMask import Mpq
+        from trial_legacy009_fixture import map_bytes, Legacy009SourceFixture
+        frozen = Legacy009SourceFixture()
+        self.addCleanup(frozen.cleanup)
+        mpq = Mpq(map_bytes())
+        report = verify_equipment_tooltips(mpq, profile='legacy009', source_root=frozen.root)
+        self.assertGreater(report['player_tooltip_numeric_cases'], 900)
+        self.assertEqual({code: rule['percent'] for code, rule in report['equipment_bonus_texts'].items()},
+                         {'iB02': 25, 'iP02': 45})
+        class Mutated:
+            def extract(self, filename):
+                data = mpq.extract(filename)
+                old = '普攻命中首领或金币试炼主目标时，追加本次普攻伤害的45%'.encode()
+                if filename == 'war3map.w3t':
+                    self_test.assertEqual(data.count(old), 1)
+                    return data.replace(old, old.replace(b'45%', b'25%'), 1)
+                return data
+        self_test = self
+        with self.assertRaisesRegex(ValueError, 'tooltip/value mismatch: iP02'):
+            verify_equipment_tooltips(Mutated(), profile='legacy009', source_root=frozen.root)
+        with self.assertRaisesRegex(ValueError, 'current40 equipment identity set mismatch'):
+            verify_equipment_tooltips(mpq)
+
     def test_current_packaged_trial_bonus_text_and_percent_mutations(self):
         import os
         path = os.environ.get('TRIAL_CANDIDATE_MAP')
-        if not path: return
+        if not path: self.skipTest('TRIAL_CANDIDATE_MAP is required for current40 real-MPQ mutations')
         from GenerateTowerTerrainMask import Mpq
         mpq = Mpq(Path(path).read_bytes())
-        self.assertGreater(verify_equipment_tooltips(mpq)['inherited_player_tooltip_numeric_cases'], 900)
+        self.assertGreater(verify_equipment_tooltips(mpq)['player_tooltip_numeric_cases'], 900)
         class Mutated:
             def __init__(self, old, new): self.old, self.new = old.encode(), new.encode()
             def extract(self, filename):
                 data = mpq.extract(filename)
+                if filename == 'war3map.w3t': self_test.assertEqual(data.count(self.old), 1)
                 return data.replace(self.old, self.new, 1) if filename == 'war3map.w3t' else data
-        for old, new in [('首领或金币试炼主目标', '首领主目标'),
-                         ('普攻命中首领或金币试炼主目标时，追加本次普攻伤害的25%', '普攻命中首领或金币试炼主目标时，追加本次普攻伤害的26%')]:
+        self_test = self
+        for old, new in [('普攻命中首领或金币试炼主目标时，追加本次普攻伤害的25%', '普攻命中首领主目标时，追加本次普攻伤害的25%'),
+                         ('普攻命中首领或金币试炼主目标时，追加本次普攻伤害的25%', '普攻命中首领或金币试炼主目标时，追加本次普攻伤害的45%')]:
             with self.subTest(old=old), self.assertRaisesRegex(ValueError, 'tooltip/value mismatch'):
                 verify_equipment_tooltips(Mutated(old, new))
 

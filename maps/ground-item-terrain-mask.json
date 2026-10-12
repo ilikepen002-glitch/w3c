@@ -1,0 +1,88 @@
+{
+  "generator": "tools/GenerateGroundItemTerrainMask.py",
+  "read_only_source": "maps/ExampleMap.source.w3x",
+  "reviewed_sha256": {
+    "map": "3fd31a78aaa5d017565fca6c6f3758d40ed6131999c701bdf1f99557ba39e408",
+    "war3map.w3e": "997468b2761ae013507a2696cdb1deb1644b8fd1c1e4cecb4d5da26ffee1f087",
+    "war3map.wpm": "f03db9fe3a24936718f3e9e4de1b3dc878527ad7d598d78ced7239a431d98d49",
+    "war3map.w3r": "6fb69963bcaa599f4932cc7ead21699bad8aa18a5be9cc866330144abb2107b5"
+  },
+  "origin": [
+    -4096,
+    -4096
+  ],
+  "cell_size": 32,
+  "grid_size": [
+    256,
+    256
+  ],
+  "source_raw_layer": 0,
+  "source_connectivity": "4-neighbor within lane from W3R spawn center",
+  "central_protection_half_open": [
+    -1024,
+    -768,
+    1024,
+    896
+  ],
+  "source_cells_per_lane": [
+    1824,
+    1552,
+    1600,
+    1664
+  ],
+  "source_bounds_per_lane": [
+    [
+      -3072,
+      128,
+      -1024,
+      2816
+    ],
+    [
+      1024,
+      384,
+      2816,
+      2816
+    ],
+    [
+      896,
+      -3200,
+      2816,
+      -512
+    ],
+    [
+      -2944,
+      -3200,
+      -896,
+      -512
+    ]
+  ],
+  "spawn_seed_cells": [
+    [
+      55,
+      211
+    ],
+    [
+      204,
+      212
+    ],
+    [
+      201,
+      32
+    ],
+    [
+      55,
+      32
+    ]
+  ],
+  "safe_item_raw_layers": [
+    0,
+    1
+  ],
+  "safe_item_max_quad_height_delta": 8.0,
+  "destination_raw_layer": 1,
+  "destination_checked_pile_positions": 300,
+  "static_walkability": "WPM flags & 0x02 == 0",
+  "dry_ground": "WPM flags & 0x40 != 0",
+  "buildability_used": false,
+  "source_edge_policy": "Reject mixed-layer quads; half-open cells"
+}

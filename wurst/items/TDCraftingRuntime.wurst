@@ -1,0 +1,153 @@
+package TDCraftingRuntime
+import TDItemData
+import TDConfig
+import TDState
+import TDGroundItemRules
+import TDItemOperationState
+import TDCraftingCatalog
+import TDCraftingPlan
+import TDCraftingTransaction
+import TDCraftingNativeBackend
+import ClosureTimers
+
+TDCraftCatalog tdRuntimeCraftCatalog = null
+boolean tdCraftRuntimeReady = false
+
+public function tdCraftCatalogReady() returns boolean
+	if tdRuntimeCraftCatalog == null
+		tdRuntimeCraftCatalog = new TDCraftCatalog()
+		for index = 1 to tdItemDefinitionCount()
+			let rawcode = tdItemIdForCatalogIndex(index)
+			if not tdRuntimeCraftCatalog.register(rawcode, tdItemQuality(rawcode), tdItemFixedNextId(rawcode))
+				return false
+	return tdRuntimeCraftCatalog.seal()
+
+class TDCraftSession
+	TDCraftPlan plan
+	TDCraftNativeBackend backend
+	player caster
+	int nextBatch = 0
+	int successes = 0
+	int cancelled = 0
+	construct(unit farmer, int lane, vec2 origin, boolean inventory)
+		caster = GetOwningPlayer(farmer)
+		plan = new TDCraftPlan(tdRuntimeCraftCatalog)
+		backend = new TDCraftNativeBackend(farmer, lane, origin, inventory)
+	ondestroy
+		destroy plan
+		destroy backend
+		caster = null
+
+TDCraftSession tdCraftSession = null
+int tdCraftCaptureLane = -1
+vec2 tdCraftCapturePoint = vec2(0, 0)
+
+function tdCaptureCraftGroundItem()
+	let itm = GetEnumItem()
+	if itm == null or GetItemTypeId(itm) == 0 or IsItemOwned(itm) or not IsItemVisible(itm)
+		return
+	if not tdItemIsEquipment(GetItemTypeId(itm)) or tdItemQuality(GetItemTypeId(itm)) >= TD_ITEM_QUALITY_PURPLE
+		return
+	let x = GetItemX(itm)
+	let y = GetItemY(itm)
+	if tdGroundItemLane(x, y) != tdCraftCaptureLane
+		return
+	if not tdGroundPointInUpgradeCircle(x, y, tdCraftCapturePoint.x, tdCraftCapturePoint.y)
+		return
+	tdCraftSession.backend.capture(tdCraftSession.plan, itm, -1)
+
+function tdFinishCraftSession()
+	let session = tdCraftSession
+	if not tdIsGameOver()
+		DisplayTimedTextToPlayer(session.caster, 0, 0, 5.0, "合成完成：成功 " + session.successes + " 组，取消 " + session.cancelled + " 组。未成组三的材料保留，产物只升一级并留在操作附近或背包。")
+		if session.backend.deliveryExceptions > 0
+			DisplayTimedTextToPlayer(session.caster, 0, 0, 6.0, "有 " + session.backend.deliveryExceptions + " 个产物交付异常，物品未删除，请按前述句柄核对。")
+	tdCraftSession = null
+	tdCraftCaptureLane = -1
+	destroy session
+	tdItemOperationRelease()
+
+public function tdSetupCraftingRuntime()
+	if tdCraftRuntimeReady
+		return
+	tdCraftRuntimeReady = true
+	tdSetupCraftPickupWatch()
+	doPeriodically(0.03) cb ->
+		if tdCraftSession != null
+			if tdIsGameOver()
+				tdFinishCraftSession()
+			else if not tdCraftSession.plan.isFrozen()
+				tdCraftSession.plan.planningStep(24)
+			else
+				for _operation = 1 to 8
+					if tdCraftSession == null
+						break
+					let session = tdCraftSession
+					if session.nextBatch >= session.plan.batchCount()
+						tdFinishCraftSession()
+						break
+					let batch = session.plan.batch(session.nextBatch)
+					let roll = batch.isSameName() ? 1 : GetRandomInt(1, tdRuntimeCraftCatalog.countAtQuality(batch.sourceQuality() + 1))
+					let result = tdCommitCraftBatch(session.plan, session.nextBatch, tdRuntimeCraftCatalog, session.backend, roll)
+					session.nextBatch += 1
+					if result == TD_CRAFT_COMMIT_SUCCESS
+						session.successes += 1
+					else
+						session.cancelled += 1
+		if tdIsGameOver() and tdCraftSession == null
+			destroy cb
+
+function tdCraftCanStart(unit farmer) returns boolean
+	if farmer == null or GetUnitTypeId(farmer) != TD_FARMER_UNIT_ID or not farmer.isAlive() or tdIsGameOver()
+		return false
+	if not tdIsLanePlayer(GetPlayerId(GetOwningPlayer(farmer)))
+		return false
+	if not tdCraftCatalogReady()
+		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 5.0, "装备目录或配方无效，本次未消耗材料。")
+		return false
+	if not tdItemOperationTryAcquire()
+		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 3.0, "地面整理或合成正在进行，请稍后再试。")
+		return false
+	return true
+
+public function tdStartInventoryCraft(unit farmer)
+	if farmer == null
+		return
+	let first = UnitItemInSlot(farmer, 0)
+	let second = UnitItemInSlot(farmer, 1)
+	let third = UnitItemInSlot(farmer, 2)
+	if first == null or second == null or third == null
+		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 3.0, "前3格必须放入三件同品质装备；两件不能合成。")
+		return
+	let quality = tdItemQuality(GetItemTypeId(first))
+	if quality < TD_ITEM_QUALITY_WHITE or quality >= TD_ITEM_QUALITY_PURPLE or tdItemQuality(GetItemTypeId(second)) != quality or tdItemQuality(GetItemTypeId(third)) != quality
+		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 3.0, "只能合成三件同品质白、绿或蓝装，紫装不能合成。")
+		return
+	if not tdCraftCanStart(farmer)
+		return
+	// Inventory crafting is valid wherever the worker stands. Ground delivery
+	// uses that physical quadrant; holder validation still uses the exact owner.
+	let origin = farmer.getPos()
+	tdCraftSession = new TDCraftSession(farmer, tdGroundItemLane(origin.x, origin.y), origin, true)
+	tdCraftSession.backend.capture(tdCraftSession.plan, first, 0)
+	tdCraftSession.backend.capture(tdCraftSession.plan, second, 1)
+	tdCraftSession.backend.capture(tdCraftSession.plan, third, 2)
+	tdCraftSession.plan.beginFreeze()
+
+public function tdStartGroundCraft(unit farmer, vec2 point)
+	if farmer == null
+		return
+	let lane = GetPlayerId(GetOwningPlayer(farmer))
+	if tdGroundItemLane(point.x, point.y) != lane
+		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 3.0, "只能圈选本路的地面装备。")
+		return
+	if not tdCraftCanStart(farmer)
+		return
+	tdCraftCaptureLane = lane
+	tdCraftCapturePoint = point
+	tdCraftSession = new TDCraftSession(farmer, lane, point, false)
+	let radius = TD_GROUND_UPGRADE_RADIUS
+	let bounds = Rect(point.x - radius, point.y - radius, point.x + radius, point.y + radius)
+	EnumItemsInRect(bounds, null, function tdCaptureCraftGroundItem)
+	RemoveRect(bounds)
+	tdCraftSession.plan.beginFreeze()

@@ -1,0 +1,35 @@
+package TDEquipmentTrialIntegrationTests
+import TDEquipmentTrialRules
+import TDItemData
+import TDTrialRules
+import TDTrialLifeRules
+import TDWaves
+import TDAuraRules
+
+@Test function trialCapturedSlotRevisionRejectsReplacementsAndKeepsOtherOldTargets()
+	tdEquipmentTrialSnapshotMatches(100, 1, 100, 1).assertTrue()
+	tdEquipmentTrialSnapshotMatches(100, 1, 101, 2).assertFalse()
+	tdEquipmentTrialSnapshotMatches(100, 1, 100, 2).assertFalse()
+	tdEquipmentTrialSnapshotMatches(0, 1, 0, 1).assertFalse()
+	// Primary death/removal does not invalidate a separate still-original slot.
+	tdEquipmentTrialSnapshotMatches(102, 7, 102, 7).assertTrue()
+
+@Test function trialBaseSpeedIsIndependentAndReturnsToTwoSixty()
+	tdAuraSpeedForBaseAndFactor(TD_TRIAL_TARGET_SPEED.toReal(), tdCombinedEnemySlowFactor(0.75)).assertEquals(65.0)
+	tdAuraSpeedForBaseAndFactor(TD_TRIAL_TARGET_SPEED.toReal(), 1.0).assertEquals(260.0)
+	tdIsBossUnitTypeId(TD_TRIAL_TARGET_UNIT_ID).assertFalse()
+	tdTrialEquipmentBossBonusEligible(true, 0, 0).assertTrue()
+	tdTrialEquipmentBossBonusEligible(true, 0, 1).assertFalse()
+	tdTrialEquipmentBossBonusEligible(false, 0, 0).assertFalse()
+	tdItemSecondaryEffectValue(TD_ITEM_PURPLE_WAR_AXE_ID).assertEquals(0.25)
+	tdItemSecondaryEffectValue(TD_ITEM_BLUE_WAR_AXE_ID).assertEquals(0.20)
+
+@Test function currentFortyConditionalSingleSegmentEnvelopeStaysUnderFifteenPercent()
+	let nativeBound = tdEquipmentTrialNativeEnvelope()
+	nativeBound.assertEquals(22016.0)
+	tdEquipmentTrialMaxSegment().assertEquals(149708.8, 0.01)
+	(tdEquipmentTrialMaxSegment() < 150000.0).assertTrue()
+	(tdEquipmentTrialMaxSegment() < TD_TRIAL_TARGET_HP * 0.15).assertTrue()
+	(nativeBound * (tdItemSecondaryEffectValue(TD_ITEM_BLUE_WAR_AXE_ID) + tdItemSecondaryEffectValue(TD_ITEM_PURPLE_WAR_AXE_ID)) * 4.0).assertEquals(39628.8, 0.01)
+	(nativeBound * tdItemSpecialDamageFactor(TD_ITEM_PURPLE_SWIFT_ID) * 4.0).assertEquals(44032.0)
+	(nativeBound * tdItemSpecialDamageFactor(TD_ITEM_PURPLE_POISON_ID) * 4.0).assertEquals(44032.0)

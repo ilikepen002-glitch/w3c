@@ -3,6 +3,8 @@
 Usage: python3 tools/VerifyPlayerTooltipArtifact.py ExampleMap.w3x
 No game launch; this does not prove native rendering or live ability semantics.
 """
+import argparse
+import hashlib
 import math
 import re
 import sys
@@ -32,8 +34,120 @@ def text_check(text, label, max_chars=260):
     require(not any(word in plain for word in FORBIDDEN), f'{label}: developer wording')
 
 
-def validate(abilities, units, items):
-    checked = 0
+PROFILES = ('legacy72', 'legacy009', 'current40')
+LEGACY_ITEM_SOURCE_SHA = {
+    'legacy72': '2c3d8a35182bf573acbbca6e5de86a776cb77302a5b7425a947b5a5f873e89e4',
+    'legacy009': '7a2d45e5a650b8dfc798376e360f95a75f8727cc578e4b03afe6dce2646c3b51',
+}
+
+
+def scalar(root, owner, name):
+    text = (root / 'wurst' / owner).read_text()
+    match = re.search(r'public function ' + re.escape(name) + r'\(\) returns real\n(?:\t//[^\n]*\n)*\treturn ([\d.]+)\n', text)
+    require(match is not None, 'Missing source scalar: ' + name)
+    return float(match[1])
+
+
+def verify_current_items(items, root=ROOT):
+    """Every packed item numeric/aura line consumes the single current catalog."""
+    from ReadEquipmentCatalog import catalog
+    entries = catalog(root)
+    expected = {entry.rawcode for entry in entries}
+    actual = {uid for uid in items if re.fullmatch(r'i[WGBP]\d\d', uid)}
+    require(actual == expected, 'current40 equipment identity set mismatch')
+    patterns = {
+        'ATTACK': (r'攻击 \+([\d.]+)', 1),
+        'RANGE': (r'射程 \+([\d.]+)', 1),
+        'ATTACK_SPEED': (r'攻速 \+([\d.]+)%', 100),
+        'COOLDOWN': (r'冷却时间缩短([\d.]+)%', 100),
+        'KILL_GOLD': (r'击杀金币 \+([\d.]+)', 1),
+        'ARMOR_SHRED': (r'护甲降低([\d.]+)', 1),
+        'EXECUTE': (r'不高于50%的主目标时，追加本次普攻伤害的([\d.]+)%', 100),
+        'POISON': (r'每秒([\d.]+)伤害', 1),
+        'CONTROL_POWER': (r'眩晕时间提高([\d.]+)%', 100),
+        'DROP_BONUS': (r'额外抽取([\d.]+)次', 1),
+        'BOSS_DAMAGE': (r'首领或金币试炼主目标时，追加本次普攻伤害的([\d.]+)%', 100),
+    }
+    aura_patterns = {
+        'ATTACK': (r'静态基础攻击的([\d.]+)%', 100),
+        'ATTACK_SPEED': (r'攻速光环：标称攻击速度 \+([\d.]+)%', 100),
+        'COOLDOWN': (r'冷却光环：嗜血、剑刃风暴与精灵主动技能冷却缩短([\d.]+)%', 100),
+        'ARMOR_ON_HIT': (r'普攻主目标破甲([\d.]+)', 1),
+        'ENEMY_SLOW': (r'敌方移动减速光环：标称减速([\d.]+)%', 100),
+    }
+    for entry in entries:
+        fields = items[entry.rawcode]
+        text = fields.get('utub', '')
+        label = entry.rawcode
+        name = re.sub(r'\|c[0-9a-fA-F]{8}|\|r', '', fields.get('unam', ''))
+        require(name == entry.name, label + ': config name mismatch')
+        text_check(text, label, max_chars=650)
+        for phrase in ('同塔不能重复装备同名物品', '前3格三件同品质装备',
+                       '同名确定下一阶', '混名随机下一品质', '紫装不能合成'):
+            require(phrase in text, label + ': current crafting/admission rule missing: ' + phrase)
+        require('同塔第3件同名装备' not in text and '65%' not in text,
+                label + ': retired equipment rule')
+        for kind, amount in ((entry.primary, entry.primary_value), (entry.secondary, entry.secondary_value)):
+            if kind == 'NONE':
+                continue
+            pattern, multiplier = patterns[kind]
+            number(text, pattern, int(amount * multiplier + .5), label)
+            if kind == 'RANGE':
+                require('上限500' in text, label + ': range cap')
+            elif kind == 'CONTROL_POWER':
+                require('上限60%' in text, label + ': control cap')
+            elif kind in ('EXECUTE', 'BOSS_DAMAGE'):
+                require('法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。' in text,
+                        label + ': additional damage eligibility')
+        if entry.aura != 'NONE':
+            pattern, multiplier = aura_patterns[entry.aura]
+            number(text, pattern, int(entry.aura_value * multiplier + .5), label)
+            number(text, r'光环范围([\d.]+)', entry.aura_radius, label)
+            require('同光环仅最高等级生效，异名光环可叠加' in text, label + ': aura stacking rule')
+            require('不受装备射程影响' in text, label + ': aura radius ownership')
+            if entry.aura == 'ENEMY_SLOW':
+                require('总上限75%' in text, label + ': slow cap')
+            else:
+                require('作用于本玩家本路合法塔，包含自己' in text, label + ': aura owner/lane')
+            if entry.aura == 'COOLDOWN':
+                require('合计上限40%' in text and '不刷新已开始的冷却' in text, label + ': cooldown cap/lifecycle')
+            if entry.aura == 'ATTACK_SPEED':
+                require('载体上限120%' in text, label + ': attack-speed cap')
+        if entry.specialization != 'NONE':
+            config = 'items/TDItemCatalogConfig.wurst'
+            if entry.specialization == 'WAR_INTENT':
+                number(text, r'攻速 \+([\d.]+)%', 100 * scalar(root, config, 'tdConfiguredWarAttackSpeed'), label)
+                number(text, r'持续([\d.]+)秒', scalar(root, config, 'tdConfiguredWarDuration'), label)
+                require('4次主普攻击中' in text and '爆发中不叠层不续时' in text, label + ': war-intent lifecycle')
+            elif entry.specialization == 'ARCHER_ARROW':
+                require('额外增加1支副箭' in text, label + ': arrow count')
+            elif entry.specialization in ('CORPSE_BURST', 'POISON_BURST'):
+                count, radius = (6, 180) if entry.specialization == 'CORPSE_BURST' else (3, 220)
+                number(text, r'每([\d.]+)次有效主普攻击中', count, label)
+                number(text, r'事件伤害([\d.]+)%', 50, label)
+                number(text, r'范围伤害，范围([\d.]+)', radius, label)
+                require('最多4个活目标' in text and '每目标法抗只计算一次，副箭与毒伤不回灌' in text,
+                        label + ': burst eligibility/cap')
+            elif entry.specialization == 'SHIELD_SPREAD':
+                require('中心200范围' in text and '扩散最多2名非首领' in text and '首领不额外硬控' in text,
+                        label + ': shield spread/real Boss rule')
+                number(text, r'仅装备破甲([\d.]+)', scalar(root, config, 'tdConfiguredShieldBossArmor'), label)
+    return len(entries)
+
+
+def validate(abilities, units, items, *, profile='current40', source_root=None):
+    require(profile in PROFILES, 'Unknown player tooltip profile')
+    require(profile == 'current40' or source_root is not None,
+            'Historical tooltip profile requires matching frozen source_root')
+    root = ROOT if source_root is None else Path(source_root)
+    current = profile == 'current40'
+    source = (root / 'wurst/items/TDItemData.wurst').read_text()
+    if not current:
+        require(hashlib.sha256(source.encode()).hexdigest() == LEGACY_ITEM_SOURCE_SHA[profile],
+                profile + ': frozen item source identity mismatch')
+        gear = [uid for uid, fields in items.items() if uid != 'Ibal' and '同塔第3件同名装备' in fields.get('utub', '')]
+        require(len(gear) == 28, f'expected 28 gear texts, got {len(gear)}')
+    checked = verify_current_items(items, root) if current else 0
     for rawcode in ('A106', 'A114'):
         fields = abilities[rawcode][1]
         for level in range(1, 62):
@@ -41,7 +155,12 @@ def validate(abilities, units, items):
             label = f'{rawcode}/{level}'
             text_check(text, label)
             number(text, r'每秒([\d.]+)伤害', value(fields, 'Spo1', level, 1), label)
-            number(text, r'移动速度降低([\d.]+)%', 100 * value(fields, 'Spo2', level, 2), label)
+            if current:
+                require(value(fields, 'Spo2', level, 2) == 0.0, label + ': native poison move double application')
+                base = 1 - scalar(root, 'towers/TDTowerCommonData.wurst', 'tdDryadSlowFactor')
+                number(text, r'移动速度降低([\d.]+)%', 100 * min(.70, base * (1 + (level - 1) / 100)), label)
+            else:
+                number(text, r'移动速度降低([\d.]+)%', 100 * value(fields, 'Spo2', level, 2), label)
             number(text, r'攻击速度降低([\d.]+)%', 100 * value(fields, 'Spo3', level, 3), label)
             number(text, r'持续([\d.]+)秒', value(fields, 'adur', level), label)
             number(text, r'英雄([\d.]+)秒', value(fields, 'ahdu', level), label)
@@ -52,10 +171,24 @@ def validate(abilities, units, items):
             text = value(fields, 'aub1', level)
             label = f'{rawcode}/{level}'
             text_check(text, label)
-            number(text, r'有([\d.]+)%概率', value(fields, 'Hbh1', level, 1), label)
-            number(text, r'追加([\d.]+)伤害', value(fields, 'Hbh3', level, 3), label)
-            number(text, r'眩晕([\d.]+)秒', value(fields, 'adur', level), label)
-            number(text, r'英雄([\d.]+)秒', value(fields, 'ahdu', level), label)
+            if current:
+                for field, column, expected in (('Hbh1', 1, 0.0), ('Hbh2', 2, 1.0), ('Hbh3', 3, 0.0), ('adur', 0, 0.0), ('ahdu', 0, 0.0)):
+                    require(value(fields, field, level, column) == expected, label + ': disabled native bash ' + field)
+                common = 'towers/TDTowerCommonData.wurst'
+                config = 'items/TDItemCatalogConfig.wurst'
+                chance = 100 * scalar(root, common, 'tdFootmanBashChance') * (1.2 if rawcode == 'A113' else 1)
+                number(text, r'有([\d.]+)%概率', chance, label)
+                duration = min(scalar(root, config, 'tdConfiguredShieldNormalStunCap'),
+                               scalar(root, config, 'tdConfiguredShieldNormalStunDuration') * (1 + (level - 1) / 100))
+                number(text, r'普通敌人眩晕([\d.]+)秒', duration, label)
+                number(text, r'真正首领眩晕([\d.]+)秒', scalar(root, config, 'tdConfiguredShieldBossStunDuration'), label)
+                require('不同塔共享每名敌人的盾击窗口' in text and '失败施放不扩散' in text,
+                        label + ': shared shield window/failed cast')
+            else:
+                number(text, r'有([\d.]+)%概率', value(fields, 'Hbh1', level, 1), label)
+                number(text, r'追加([\d.]+)伤害', value(fields, 'Hbh3', level, 3), label)
+                number(text, r'眩晕([\d.]+)秒', value(fields, 'adur', level), label)
+                number(text, r'英雄([\d.]+)秒', value(fields, 'ahdu', level), label)
             require('1.45倍' not in text, f'{label}: unproven native multiplier claim')
             checked += 1
     for rawcode in ('A131', 'A132'):
@@ -72,6 +205,8 @@ def validate(abilities, units, items):
     # 16 skills x 4 qualities; also check all four display slots and locked copies.
     pet_tokens = ('攻击力', '基础攻击', '攻击速度', '冷却缩短', '全队所有塔', '600范围', '护甲降低',
                   '第4次普攻', '不高于30%', '分裂箭', '180范围毒域', '持续6秒', '基础攻击', '450范围', '220范围', '220范围')
+    if current:
+        pet_tokens = pet_tokens[:4] + ('仅附身宿主',) + pet_tokens[5:]
     for skill in range(16):
         for quality in range(1, 5):
             variant = skill * 4 + quality - 1
@@ -93,11 +228,15 @@ def validate(abilities, units, items):
                     elif skill == 8:
                         number(text, r'普攻伤害的([\d.]+)%', power * 100, rawcode)
                     elif skill == 15:
-                        number(text, r'移动速度降低([\d.]+)%', min(.75, power) * 100, rawcode)
+                        number(text, r'移动速度降低([\d.]+)%', (power if current else min(.75, power)) * 100, rawcode)
                     else:
                         number(text, r'([\d.]+)%', power * 100, rawcode)
+                    if current and skill in (5, 9, 15):
+                        require('总上限75%' in text, rawcode + ': pet slow total cap')
+                    if current and skill == 4:
+                        require('全队' not in text, rawcode + ': pet command must affect only host')
                     checked += 1
-    catalog = (ROOT / 'wurst/towers/TDTowerCatalogData.wurst').read_text()
+    catalog = (root / 'wurst/towers/TDTowerCatalogData.wurst').read_text()
     tower_ids = re.findall(r"public constant int TD_(?:ARCHER|ORC|FOOT|DRYAD|GHOUL)_LEVEL_[A-Z0-9_]+_ID = '(.{4})'", catalog)
     require(len(tower_ids) == 35, 'tower coverage')
     for uid in tower_ids:
@@ -109,44 +248,44 @@ def validate(abilities, units, items):
         number(text, r'射程：([\d.]+)', fields['ua1r'] - 500, uid)
         require('建在草地' in text if uid[-1] == '1' else '建在草地' not in text, f'{uid}: repeated building instruction')
         checked += 1
-    equipment = [fields for uid, fields in items.items() if uid != 'Ibal' and '同塔第3件同名装备' in fields.get('utub', '')]
-    require(len(equipment) == 28, f'expected 28 gear texts, got {len(equipment)}')
-    for fields in equipment:
-        text = fields['utub']
-        text_check(text, fields['unam'])
-        require('50%' in text and '前3格' in text, fields['unam'])
-        checked += 1
-    source = (ROOT / 'wurst/items/TDItemData.wurst').read_text()
-    ids = dict(re.findall(r"public constant int (TD_ITEM_\w+_ID) = '(.{4})'", source))
-    entries = re.findall(r'tdRegisterItem\((TD_ITEM_\w+_ID), TD_ITEM_QUALITY_\w+, "[^"]+", TD_ITEM_EFFECT_(\w+), ([\d.]+), TD_ITEM_EFFECT_(\w+), ([\d.]+)\)', source)
-    require(len(entries) == 28, 'item numeric matrix coverage')
-    patterns = {
-        'ATTACK': (r'攻击 \+([\d.]+)', 1),
-        'RANGE': (r'射程 \+([\d.]+)', 1),
-        'ATTACK_SPEED': (r'攻速 \+([\d.]+)%', 100),
-        'COOLDOWN': (r'冷却时间缩短([\d.]+)%', 100),
-        'KILL_GOLD': (r'击杀金币 \+([\d.]+)', 1),
-        'ARMOR_SHRED': (r'护甲降低([\d.]+)', 1),
-        'EXECUTE': (r'不高于50%的主目标时，追加本次普攻伤害的([\d.]+)%', 100),
-        'POISON': (r'每秒([\d.]+)伤害', 1),
-        'CONTROL_POWER': (r'眩晕时间提高([\d.]+)%', 100),
-        'DROP_BONUS': (r'额外抽取([\d.]+)次', 1),
-        'BOSS_DAMAGE': (r'首领主目标时，追加本次普攻伤害的([\d.]+)%', 100),
-    }
-    for name, primary, first, secondary, second in entries:
-        uid = ids[name]
-        text = items[uid]['utub']
-        for kind, amount in ((primary, first), (secondary, second)):
-            if kind == 'NONE':
-                continue
-            pattern, multiplier = patterns[kind]
-            number(text, pattern, round(float(amount) * multiplier), uid)
-            if kind == 'RANGE':
-                require('上限500' in text, uid)
-            elif kind == 'COOLDOWN':
-                require('合计上限40%' in text, uid)
-            elif kind == 'CONTROL_POWER':
-                require('上限60%' in text, uid)
+    if not current:
+        equipment = [fields for uid, fields in items.items() if uid != 'Ibal' and '同塔第3件同名装备' in fields.get('utub', '')]
+        require(len(equipment) == 28, f'expected 28 gear texts, got {len(equipment)}')
+        for fields in equipment:
+            text = fields['utub']
+            text_check(text, fields['unam'])
+            require('50%' in text and '前3格' in text, fields['unam'])
+            checked += 1
+        ids = dict(re.findall(r"public constant int (TD_ITEM_\w+_ID) = '(.{4})'", source))
+        entries = re.findall(r'tdRegisterItem\((TD_ITEM_\w+_ID), TD_ITEM_QUALITY_\w+, "[^"]+", TD_ITEM_EFFECT_(\w+), ([\d.]+), TD_ITEM_EFFECT_(\w+), ([\d.]+)\)', source)
+        require(len(entries) == 28, 'item numeric matrix coverage')
+        patterns = {
+            'ATTACK': (r'攻击 \+([\d.]+)', 1),
+            'RANGE': (r'射程 \+([\d.]+)', 1),
+            'ATTACK_SPEED': (r'攻速 \+([\d.]+)%', 100),
+            'COOLDOWN': (r'冷却时间缩短([\d.]+)%', 100),
+            'KILL_GOLD': (r'击杀金币 \+([\d.]+)', 1),
+            'ARMOR_SHRED': (r'护甲降低([\d.]+)', 1),
+            'EXECUTE': (r'不高于50%的主目标时，追加本次普攻伤害的([\d.]+)%', 100),
+            'POISON': (r'每秒([\d.]+)伤害', 1),
+            'CONTROL_POWER': (r'眩晕时间提高([\d.]+)%', 100),
+            'DROP_BONUS': (r'额外抽取([\d.]+)次', 1),
+            'BOSS_DAMAGE': (r'首领' + ('或金币试炼' if profile == 'legacy009' else '') + r'主目标时，追加本次普攻伤害的([\d.]+)%', 100),
+        }
+        for name, primary, first, secondary, second in entries:
+            uid = ids[name]
+            text = items[uid]['utub']
+            for kind, amount in ((primary, first), (secondary, second)):
+                if kind == 'NONE':
+                    continue
+                pattern, multiplier = patterns[kind]
+                number(text, pattern, round(float(amount) * multiplier), uid)
+                if kind == 'RANGE':
+                    require('上限500' in text, uid)
+                elif kind == 'COOLDOWN':
+                    require('合计上限40%' in text, uid)
+                elif kind == 'CONTROL_POWER':
+                    require('上限60%' in text, uid)
     actions = ('A119', 'A133', 'A109', 'AeEV', 'A130', 'Pcap', 'Pcol', 'Pdep', 'Geqb', 'Gupg') + tuple(f'Pc0{i}' for i in range(8))
     for retired in ('Dsta', 'Pmas', 'Pfor'):
         require(retired not in abilities, f'Removed action {retired} remains')
@@ -178,10 +317,15 @@ def validate(abilities, units, items):
     descriptions = [value(abilities[f'Pc0{i}'][1], 'aub1', 1) for i in range(8)]
     require(len(set(descriptions)) == 8, 'collection commands reuse generic description')
     ground = value(abilities['Gupg'][1], 'aub1', 1)
-    require(all(x in ground for x in ('本路', '144范围', '每3件必得1件', '高一品质', '可不同名', '每次只升一级', '对应品质堆', '本次不再参与升级', '余1至2件原地保留')), 'ground craft rule missing')
-    require(not any(x in ground for x in ('65%', '失败', '继续合成至紫')), 'ground craft old rule remains')
     craft = value(abilities['A119'][1], 'aub1', 1)
-    require(all(x in craft for x in ('3件必成', '65%', '失败时材料全部消失', '最高紫装')), 'backpack craft risks missing')
+    if current:
+        require(all(x in ground for x in ('本路', '144范围', '同名三件确定下一阶', '同品质混名三件随机', '每次只升一级', '本次不再参与', '余1至2件', '紫装', '捕获球不消耗')), 'current ground craft rule missing')
+        require(all(x in craft for x in ('前3格', '三件同品质', '同名确定下一阶', '混名', '产物生成失败不消耗材料')), 'current backpack craft risks missing')
+        require(not any(x in craft + ground for x in ('65%', '失败时材料全部消失', '两件必成')), 'current retired craft rule remains')
+    else:
+        require(all(x in ground for x in ('本路', '144范围', '每3件必得1件', '高一品质', '可不同名', '每次只升一级', '对应品质堆', '本次不再参与升级', '余1至2件原地保留')), 'ground craft rule missing')
+        require(not any(x in ground for x in ('65%', '失败', '继续合成至紫')), 'ground craft old rule remains')
+        require(all(x in craft for x in ('3件必成', '65%', '失败时材料全部消失', '最高紫装')), 'backpack craft risks missing')
     require('不返还' in value(abilities['A133'][1], 'aub1', 1), 'sale evolution limit missing')
     for uid in ('A116',):
         for level in (1, 2):
@@ -191,10 +335,14 @@ def validate(abilities, units, items):
 
 
 def main():
-    require(len(sys.argv) == 2, __doc__)
-    mpq = Mpq(Path(sys.argv[1]).read_bytes())
-    count = validate(ability_objects(mpq.extract('war3map.w3a')), unit_objects(mpq.extract('war3map.w3u')), unit_objects(mpq.extract('war3map.w3t')))
-    print(f'PASS: {count} packaged player tooltip instances checked against numeric fields/rules; length and developer-language checks passed.')
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('map', type=Path)
+    parser.add_argument('--profile', choices=PROFILES, default='current40')
+    parser.add_argument('--source-root', type=Path)
+    args = parser.parse_args()
+    mpq = Mpq(args.map.read_bytes())
+    count = validate(ability_objects(mpq.extract('war3map.w3a')), unit_objects(mpq.extract('war3map.w3u')), unit_objects(mpq.extract('war3map.w3t')), profile=args.profile, source_root=args.source_root)
+    print(f'PASS {args.profile}: {count} packaged player tooltip instances checked against numeric fields/rules; length and developer-language checks passed.')
 
 
 if __name__ == '__main__':

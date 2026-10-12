@@ -18,19 +18,23 @@ public function tdEquipmentArmorLevel(real armor) returns int
 	return level
 
 public function tdEquipmentEffectForItems(int item1, int item2, int item3, int kind) returns real
+	// Defensive identity filtering matches tower admission even for pure callers.
 	var total = 0.0
 	for slot = 0 to 2
 		let id = slot == 0 ? item1 : (slot == 1 ? item2 : item3)
-		var copies = 1
 		if slot >= 1 and item1 == id
-			copies += 1
+			continue
 		if slot == 2 and item2 == id
-			copies += 1
-		let factor = copies >= 3 ? 0.5 : 1.0
+			continue
+		var contribution = 0.0
 		if tdItemPrimaryEffectKind(id) == kind
-			total += tdItemPrimaryEffectValue(id) * factor
+			contribution += tdItemPrimaryEffectValue(id)
 		if tdItemSecondaryEffectKind(id) == kind
-			total += tdItemSecondaryEffectValue(id) * factor
+			contribution += tdItemSecondaryEffectValue(id)
+		if tdItemPersonalEffectStacks(kind)
+			total += contribution
+		else
+			total = max(total, contribution)
 	return total
 
 public function tdEquipmentPercentLevel(real value, int cap) returns int

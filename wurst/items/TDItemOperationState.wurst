@@ -1,0 +1,15 @@
+package TDItemOperationState
+
+boolean tdItemOperationBusy = false
+
+public function tdItemOperationTryAcquire() returns boolean
+	if tdItemOperationBusy
+		return false
+	tdItemOperationBusy = true
+	return true
+
+public function tdItemOperationIsBusy() returns boolean
+	return tdItemOperationBusy
+
+public function tdItemOperationRelease()
+	tdItemOperationBusy = false

@@ -1,0 +1,141 @@
+package TDAuraTests
+import TDAuraRules
+import TDAuraMetadata
+import TDItemData
+
+function assertAuraNear(real actual, real expected)
+	((actual - expected).abs() < 0.000001).assertTrue()
+
+@Test function auraCoveragePrecedesHighestRankAndEqualRankChoosesPower()
+	let state = new TDAuraAggregate()
+	state.offer(TD_AURA_VINES, 2, 0.30, false)
+	state.offer(TD_AURA_VINES, 1, 0.18, true)
+	state.rank(TD_AURA_VINES).assertEquals(1)
+	assertAuraNear(state.power(TD_AURA_VINES), 0.18)
+	state.offer(TD_AURA_VINES, 1, 0.25, true)
+	assertAuraNear(state.power(TD_AURA_VINES), 0.25)
+	state.offer(TD_AURA_VINES, 2, 0.21, true)
+	state.rank(TD_AURA_VINES).assertEquals(2)
+	assertAuraNear(state.power(TD_AURA_VINES), 0.21)
+	destroy state
+
+@Test function auraSameIdentityDoesNotSumButOtherIdentitiesDo()
+	let state = new TDAuraAggregate()
+	state.offer(TD_AURA_VINES, 1, 0.18, true)
+	state.offer(TD_AURA_VINES, 1, 0.18, true)
+	state.offer(TD_AURA_PET_STASIS, 1, 0.12, true)
+	state.offer(TD_AURA_EQUIPMENT_FROST, 2, 0.10, true)
+	assertAuraNear(state.enemySlowPower(), 0.40)
+	assertAuraNear(tdCombinedEnemySlowFactor(state.enemySlowPower()), 0.60)
+	state.offer(TD_AURA_PET_WIND, 4, 0.85, true)
+	assertAuraNear(tdCombinedEnemySlowFactor(state.enemySlowPower()), 0.25)
+	assertAuraNear(state.power(TD_AURA_PET_WIND), 0.85)
+	destroy state
+
+@Test function auraReselectionFallsBackAndDifferentIdentitiesSurvive()
+	let state = new TDAuraAggregate()
+	state.offer(TD_AURA_WHITE_TIGER, 2, 0.216, true)
+	state.offer(TD_AURA_COMMANDER, 1, 0.16, true)
+	state.clearIdentity(TD_AURA_WHITE_TIGER)
+	state.offer(TD_AURA_WHITE_TIGER, 1, 0.18, true)
+	state.rank(TD_AURA_WHITE_TIGER).assertEquals(1)
+	assertAuraNear(state.power(TD_AURA_COMMANDER), 0.16)
+	destroy state
+
+@Test function auraFriendlyHostOnlyDoesNotRestrictEnemyDomain()
+	tdAuraCovers(true, true, true, false, 0.0, 600.0).assertFalse()
+	tdAuraCovers(true, true, true, true, 0.0, 0.0).assertTrue()
+	tdAuraCovers(true, true, false, false, 600.0, 600.0).assertTrue()
+	tdAuraCovers(true, true, false, false, 600.1, 600.0).assertFalse()
+	tdAuraCovers(true, false, false, true, 0.0, 600.0).assertFalse()
+	tdAuraCovers(false, true, false, true, 0.0, 600.0).assertFalse()
+
+@Test function unifiedCooldownUsesEachContributionOnceAndCapsForty()
+	assertAuraNear(tdFinalCooldownReduction(0.10, 0.12, 0.18), 0.40)
+	assertAuraNear(tdFinalCooldownReduction(0.0, 0.24, 0.18), 0.40)
+	assertAuraNear(tdFinalCooldownReduction(0.0, 0.12, 0.18), 0.30)
+	assertAuraNear(tdFinalCooldownReduction(-1.0, 0.0, 0.18), 0.18)
+	let lockedReadyAt = 2.0 + 14.0 * (1.0 - tdFinalCooldownReduction(0.0, 0.12, 0.18))
+	assertAuraNear(lockedReadyAt, 11.8)
+	// Recomputing desired future reduction never mutates this locked timestamp.
+	assertAuraNear(tdFinalCooldownReduction(0.0, 0.0, 0.0), 0.0)
+	assertAuraNear(lockedReadyAt, 11.8)
+
+@Test function timedSlowRankExpiryIndependentAcrossSkillsAndStrengths()
+	let state = new TDAuraAggregate()
+	let frostWeak = new TDAuraTimedContribution(null, TD_AURA_PET_FROST_ARROW, 1, 0.12, 5.0)
+	let frostStrong = new TDAuraTimedContribution(null, TD_AURA_PET_FROST_ARROW, 4, 0.24, 2.0)
+	let wind = new TDAuraTimedContribution(null, TD_AURA_PET_WIND, 2, 0.55, 3.0)
+	frostWeak.offerIfActive(state, 1.0)
+	frostStrong.offerIfActive(state, 1.0)
+	wind.offerIfActive(state, 1.0)
+	assertAuraNear(state.enemySlowPower(), 0.79)
+	state.clear()
+	frostWeak.offerIfActive(state, 2.0)
+	frostStrong.offerIfActive(state, 2.0)
+	wind.offerIfActive(state, 2.0)
+	assertAuraNear(state.enemySlowPower(), 0.67)
+	state.clear()
+	frostWeak.offerIfActive(state, 3.0)
+	frostStrong.offerIfActive(state, 3.0)
+	wind.offerIfActive(state, 3.0)
+	assertAuraNear(state.enemySlowPower(), 0.12)
+	frostStrong.expiresAt.assertEquals(2.0)
+	destroy frostWeak
+	destroy frostStrong
+	destroy wind
+	destroy state
+
+@Test function auraLargeSourceSetIsOrderIndependentAndDowngrades()
+	let state = new TDAuraAggregate()
+	for source = 1 to 2000
+		state.offer(TD_AURA_EQUIPMENT_ATTACK, source mod 4 + 1, 0.03 * (source mod 4 + 1), true)
+	state.rank(TD_AURA_EQUIPMENT_ATTACK).assertEquals(4)
+	assertAuraNear(state.power(TD_AURA_EQUIPMENT_ATTACK), 0.12)
+	state.clear()
+	var reverseSource = 2000
+	while reverseSource >= 1
+		state.offer(TD_AURA_EQUIPMENT_ATTACK, reverseSource mod 3 + 1, 0.03 * (reverseSource mod 3 + 1), true)
+		reverseSource -= 1
+	state.rank(TD_AURA_EQUIPMENT_ATTACK).assertEquals(3)
+	assertAuraNear(state.power(TD_AURA_EQUIPMENT_ATTACK), 0.09)
+	destroy state
+
+@Test function equipmentAuraAndFriendlyPetCapsDoNotTruncateFrozenCatalog()
+	// Maximum personal AS 48+32+24, plus gear wind16 =120 at existing cap.
+	let speed = tdItemPrimaryEffectValue(TD_ITEM_PURPLE_SWIFT_ID) + tdItemPrimaryEffectValue(TD_ITEM_BLUE_SWIFT_ID) + tdItemSecondaryEffectValue(TD_ITEM_PURPLE_POISON_ID) + tdItemAuraValue(TD_ITEM_PURPLE_WIND_ID)
+	assertAuraNear(speed, 1.20)
+	(speed * 100.0 <= TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL).assertTrue()
+	// Worst fixed attack: purple34+blue28+shield24, max static base260*command12%.
+	(34.0 + 28.0 + 24.0 + 260.0 * tdItemAuraValue(TD_ITEM_PURPLE_COMMAND_ID) < TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL).assertTrue()
+	tdItemPickupSummary(TD_ITEM_PURPLE_COMMAND_ID, 1).contains("攻击光环 4级").assertTrue()
+	tdAuraStateTooltip(TD_AURA_PET_COMMAND, 1).contains("仅宿主").assertTrue()
+	tdAuraStateTooltip(TD_AURA_PET_WIND, 4).contains("上限75%").assertTrue()
+
+@Test function cooldownIdentityOnlyAppearsOnActualSupportedTarget()
+	tdAuraCooldownTargetSupported(false, false, false, false).assertFalse()
+	tdAuraCooldownTargetSupported(true, false, false, false).assertTrue()
+	tdAuraCooldownTargetSupported(false, true, false, false).assertTrue()
+	// Unlock a supported pet active, bind it, then recall or pause it.
+	tdAuraCooldownTargetSupported(false, false, true, false).assertFalse()
+	tdAuraCooldownTargetSupported(false, false, true, true).assertTrue()
+	tdAuraCooldownTargetSupported(false, false, false, true).assertFalse()
+	let state = new TDAuraAggregate()
+	state.offer(TD_AURA_EQUIPMENT_COOLDOWN, 4, 0.18, tdAuraCooldownTargetSupported(false, false, true, true))
+	state.rank(TD_AURA_EQUIPMENT_COOLDOWN).assertEquals(4)
+	state.clearIdentity(TD_AURA_EQUIPMENT_COOLDOWN)
+	state.offer(TD_AURA_EQUIPMENT_COOLDOWN, 4, 0.18, tdAuraCooldownTargetSupported(false, false, false, true))
+	state.rank(TD_AURA_EQUIPMENT_COOLDOWN).assertEquals(0)
+	destroy state
+
+@Test function missingOrInterruptedAuraCarrierIsNotCommittedAndRepairsSameRank()
+	tdAuraCarrierRepairNeeded(4, 0, false).assertTrue()
+	tdAuraConfirmedAppliedRank(4, false).assertEquals(0)
+	// Interrupted after native attachment but before shown-rank commit.
+	tdAuraCarrierRepairNeeded(4, 0, true).assertTrue()
+	tdAuraConfirmedAppliedRank(4, true).assertEquals(4)
+	// External carrier removal must be repaired even at unchanged source rank.
+	tdAuraCarrierRepairNeeded(4, 4, false).assertTrue()
+	tdAuraCarrierRepairNeeded(4, 4, true).assertFalse()
+	tdAuraCarrierRepairNeeded(0, 4, false).assertTrue()
+	tdAuraConfirmedAppliedRank(0, false).assertEquals(0)

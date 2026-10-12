@@ -17,12 +17,18 @@ import TDInit
 				text.contains("射程：").assertTrue()
 				text.contains("建在草地").assertEquals(level == 1)
 
-@Test function playerEquipmentTooltipsRetainThirdCopyPenalty()
+@Test function playerEquipmentTooltipsExplainTowerUniquenessAndWorkerCopies()
 	for index = 1 to tdItemDefinitionCount()
 		let text = tdItemTooltip(tdItemIdForCatalogIndex(index))
-		text.contains("同塔第3件同名装备仅发挥50%属性").assertTrue()
+		text.contains("同塔不能重复装备同名物品").assertTrue()
+		text.contains("优先退回塔旁").assertTrue()
+		text.contains("拥堵时应急退回同路材料堆").assertTrue()
+		text.contains("工人可持有重复装备").assertTrue()
+		text.contains("第3件").assertFalse()
 		text.contains("前3格").assertTrue()
-		tdItemTooltip(TD_ITEM_HUNTER_SCOPE_ID).contains("上限500").assertTrue()
+		text.contains("同名确定下一阶").assertTrue()
+		text.contains("混名随机下一品质").assertTrue()
+		tdItemTooltip(TD_ITEM_GREEN_SCOPE_ID).contains("上限500").assertTrue()
 
 @Test function playerPetTooltipsPreserveTriggerThresholdAndDamageBasis()
 	for quality = 1 to 4

@@ -1,0 +1,205 @@
+package TDCraftingPlan
+import TDCraftingCatalog
+import LinkedList
+import HashMap
+
+// Snapshot owns its ingredient records and batches. Native item handles are not
+// owned here: runtime adapters will retain a key-to-handle table for one cast.
+public class TDCraftIngredient
+	private int key
+	private int rawcode
+	private int quality
+	boolean reserved = false
+
+	construct(int key, int rawcode, int quality)
+		this.key = key
+		this.rawcode = rawcode
+		this.quality = quality
+
+	function getKey() returns int
+		return key
+
+	function getRawcode() returns int
+		return rawcode
+
+	function getQuality() returns int
+		return quality
+
+public class TDCraftBatch
+	private TDCraftIngredient first
+	private TDCraftIngredient second
+	private TDCraftIngredient third
+	private int fixedResult
+	private boolean attempted = false
+
+	construct(TDCraftIngredient first, TDCraftIngredient second, TDCraftIngredient third, int fixedResult)
+		this.first = first
+		this.second = second
+		this.third = third
+		this.fixedResult = fixedResult
+		first.reserved = true
+		second.reserved = true
+		third.reserved = true
+
+	function ingredient(int slot) returns TDCraftIngredient
+		if slot == 0
+			return first
+		if slot == 1
+			return second
+		if slot == 2
+			return third
+		return null
+
+	function sourceQuality() returns int
+		return first.getQuality()
+
+	function isSameName() returns boolean
+		return first.getRawcode() == second.getRawcode() and second.getRawcode() == third.getRawcode()
+
+	function result(TDCraftCatalog catalog, int roll) returns int
+		if not catalog.isReady()
+			return 0
+		if isSameName()
+			return fixedResult
+		return catalog.nextQualityRoll(sourceQuality(), roll)
+
+	function beginAttempt() returns boolean
+		if attempted
+			return false
+		attempted = true
+		return true
+
+class TDCraftBucket
+	int rawcode
+	int quality
+	LinkedList<TDCraftIngredient> inputs = new LinkedList<TDCraftIngredient>()
+	construct(int rawcode, int quality)
+		this.rawcode = rawcode
+		this.quality = quality
+	ondestroy
+		destroy inputs
+
+public class TDCraftPlan
+	private LinkedList<TDCraftIngredient> inputs = new LinkedList<TDCraftIngredient>()
+	private LinkedList<TDCraftBatch> batches = new LinkedList<TDCraftBatch>()
+	private LinkedList<TDCraftBucket> buckets = new LinkedList<TDCraftBucket>()
+	private HashMap<int, TDCraftIngredient> keys = new HashMap<int, TDCraftIngredient>()
+	private HashMap<int, TDCraftBucket> byRawcode = new HashMap<int, TDCraftBucket>()
+	private TDCraftBucket array[4] residual
+	private TDCraftCatalog catalog
+	private boolean closed = false
+	private boolean frozen = false
+	private int bucketIndex = 0
+	private int residualQuality = 1
+	private boolean residualReady = false
+	private LLIterator<TDCraftIngredient> residualIterator = null
+
+	construct(TDCraftCatalog catalog)
+		this.catalog = catalog
+		for quality = 1 to 3
+			residual[quality] = new TDCraftBucket(0, quality)
+
+	function capture(int key, int rawcode) returns boolean
+		if closed or not catalog.isReady() or key == 0 or catalog.quality(rawcode) == 0 or keys.has(key)
+			return false
+		let input = new TDCraftIngredient(key, rawcode, catalog.quality(rawcode))
+		inputs.add(input)
+		keys.put(key, input)
+		if not byRawcode.has(rawcode)
+			let bucket = new TDCraftBucket(rawcode, input.getQuality())
+			buckets.add(bucket)
+			byRawcode.put(rawcode, bucket)
+		byRawcode.get(rawcode).inputs.add(input)
+		return true
+
+	function beginFreeze() returns boolean
+		if not catalog.isReady()
+			return false
+		closed = true
+		return true
+
+	function planningStep(int operationBudget) returns boolean
+		if not closed or frozen
+			return frozen
+		for _operation = 1 to operationBudget
+			if bucketIndex < buckets.size()
+				let bucket = buckets.get(bucketIndex)
+				if bucket.quality < 4 and bucket.inputs.size() >= 3
+					let first = bucket.inputs.dequeue()
+					let second = bucket.inputs.dequeue()
+					let third = bucket.inputs.dequeue()
+					batches.add(new TDCraftBatch(first, second, third, catalog.nextSameName(bucket.rawcode)))
+				else
+					bucketIndex += 1
+			else if not residualReady
+				// Preserve snapshot order and bound each tick's residual scan too.
+				if residualIterator == null
+					residualIterator = inputs.iterator()
+				else if residualIterator.hasNext()
+					let input = residualIterator.next()
+					if not input.reserved and input.getQuality() < 4
+						residual[input.getQuality()].inputs.add(input)
+				else
+					destroy residualIterator
+					residualIterator = null
+					residualReady = true
+			else if residualQuality <= 3
+				let queue = residual[residualQuality].inputs
+				if queue.size() >= 3
+					let first = queue.dequeue()
+					let second = queue.dequeue()
+					let third = queue.dequeue()
+					batches.add(new TDCraftBatch(first, second, third, 0))
+				else
+					residualQuality += 1
+			else
+				frozen = true
+				return true
+		return frozen
+
+	function freeze() returns boolean
+		if not beginFreeze()
+			return false
+		// Pure tests can freeze synchronously. Native runtime calls planningStep
+		// on separate ticks with a fixed budget instead.
+		while not frozen
+			planningStep(24)
+		return true
+
+	function isFrozen() returns boolean
+		return frozen
+
+	function batchCount() returns int
+		return batches.size()
+
+	function batch(int index) returns TDCraftBatch
+		if not frozen or index < 0 or index >= batches.size()
+			return null
+		return batches.get(index)
+
+	function leftoverCount() returns int
+		var count = 0
+		for input in inputs
+			if not input.reserved
+				count += 1
+		return count
+
+	function usesCatalog(TDCraftCatalog candidate) returns boolean
+		return catalog == candidate
+
+	ondestroy
+		if residualIterator != null
+			destroy residualIterator
+		for batch in batches
+			destroy batch
+		destroy batches
+		for bucket in buckets
+			destroy bucket
+		destroy buckets
+		for quality = 1 to 3
+			destroy residual[quality]
+		destroy keys
+		destroy byRawcode
+		for input in inputs
+			destroy input
+		destroy inputs

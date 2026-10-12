@@ -1,5 +1,8 @@
 package TDInventoryRuntime
 import TDItemData
+import TDAuraState
+import TDEquipmentSpecialState
+import GameTimer
 import TDConfig
 import TDCraftingLogic
 import RegisterEvents
@@ -8,17 +11,17 @@ import TDEquipmentAbilities
 import TDEquipmentCombat
 import Preloader
 import ErrorHandling
+import TDEquipmentAdmissionRules
+import TDGroundItemRules
+import TDItemPlacement
+import TDCraftingRuntime
 
 trigger tdTowerItemPickupTrigger = CreateTrigger()
 trigger tdTowerItemDropTrigger = CreateTrigger()
+boolean tdTowerEquipmentAdmissionBusy = false
 
 public function tdTowerEquipmentSlotCount() returns int
 	return 3
-
-public function tdTowerEquipmentDuplicateFactor(int copyIndex) returns real
-	if copyIndex >= 3
-		return 0.5
-	return 1.0
 
 public function tdTowerEquipmentCooldownCap() returns real
 	return 0.40
@@ -156,75 +159,116 @@ function tdSetTowerEquipmentAbilityLevel(unit tower, int abilityId, int level)
 	if currentLevel != level
 		tower.setAbilityLevel(abilityId, level)
 
+function tdLoadoutHasSpecial(int item1, int item2, int item3, int specialization) returns boolean
+	return tdItemSpecialization(item1) == specialization or tdItemSpecialization(item2) == specialization or tdItemSpecialization(item3) == specialization
+
 function tdRefreshTowerEquipmentBonuses(unit tower, item excludedItem)
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	let item1 = tdTowerEquipmentItemId(tower, 0, excludedItem)
 	let item2 = tdTowerEquipmentItemId(tower, 1, excludedItem)
 	let item3 = tdTowerEquipmentItemId(tower, 2, excludedItem)
-	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID, tdTowerAttackBonusAbilityLevelForItems(item1, item2, item3))
-	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID, tdTowerAttackSpeedAbilityLevelForItems(item1, item2, item3))
+	tdEquipmentSpecialLoadoutChanged(tower, tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_WAR_INTENT), tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_POISON_BURST), tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_CORPSE_BURST), getElapsedGameTime())
+	tdAuraRegisterTarget(tower, true)
+	let base = tdTowerBaseDamageForBranch(tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)), tdTowerBranchForUnitTypeId(GetUnitTypeId(tower)))
+	let attack = tdEquipmentAttackBonusForItems(item1, item2, item3) + base * tdAuraPower(tower, TD_AURA_EQUIPMENT_ATTACK)
+	let speed = tdEquipmentAttackSpeedBonusForItems(item1, item2, item3) + tdAuraPower(tower, TD_AURA_EQUIPMENT_SPEED)
+	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID, tdClampEquipmentAbilityLevel(R2I(attack + 0.5), TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL))
+	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID, tdClampEquipmentAbilityLevel(R2I(speed * 100.0 + 0.5), TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL))
 	tdRefreshEquipmentAbilities(tower, tdEquipmentCooldownReductionForItems(item1, item2, item3), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_CONTROL_POWER))
 	SetUnitAcquireRange(tower, tdTowerEffectiveRangeForLoadout(tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)), tdTowerBranchForUnitTypeId(GetUnitTypeId(tower)), item1, item2, item3))
 
+function tdOtherEquipmentType(unit tower, int slot, item excludedItem) returns int
+	let other = UnitItemInSlot(tower, slot)
+	return other == null or other == excludedItem ? 0 : GetItemTypeId(other)
+
+public function tdTowerCanReceiveEquipment(unit target, item incoming) returns boolean
+	if target == null or incoming == null or GetItemTypeId(incoming) == 0
+		return false
+	return tdEquipmentAdmissionAllowed(tdTowerChoiceForUnitTypeId(GetUnitTypeId(target)) != 0, tdItemIsEquipment(GetItemTypeId(incoming)), GetItemTypeId(incoming), tdOtherEquipmentType(target, 0, incoming), tdOtherEquipmentType(target, 1, incoming), tdOtherEquipmentType(target, 2, incoming), tdOtherEquipmentType(target, 3, incoming), tdOtherEquipmentType(target, 4, incoming), tdOtherEquipmentType(target, 5, incoming))
+
+function tdReturnRejectedEquipment(unit tower, item incoming) returns int
+	let origin = tower.getPos()
+	let lane = tdGroundItemLane(origin.x, origin.y)
+	// The caller guards nested DROP_ITEM. Preserve this exact native handle.
+	UnitRemoveItem(tower, incoming)
+	if tdTryPlaceItemNear(incoming, lane, origin, true)
+		return 1
+	let quality = tdItemQuality(GetItemTypeId(incoming))
+	if tdTryPlaceItemInPile(incoming, lane, quality, 0) >= 0
+		return 2
+	return 0
+
+function tdRejectTowerDuplicate(unit tower, item incoming)
+	let result = tdReturnRejectedEquipment(tower, incoming)
+	if result == 1
+		DisplayTimedTextToPlayer(GetOwningPlayer(tower), 0, 0, 3.0, "同塔不能重复装备同名物品；已有装备保留，重复物品已退回塔旁。")
+	else if result == 2
+		DisplayTimedTextToPlayer(GetOwningPlayer(tower), 0, 0, 5.0, "塔旁拥堵，重复物品已应急退回本路" + tdItemQualityName(tdItemQuality(GetItemTypeId(incoming))) + "材料堆；已有装备保留。")
+	else
+		DisplayTimedTextToPlayer(GetOwningPlayer(tower), 0, 0, 6.0, "重复物品未删除，但没有确认合法退回落点。句柄 " + GetHandleId(incoming) + "，坐标(" + GetItemX(incoming) + "," + GetItemY(incoming) + ")，请收取核对。")
+
+function tdNormalizeTowerEquipment(unit tower)
+	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0 or tdTowerEquipmentAdmissionBusy
+		return
+	tdTowerEquipmentAdmissionBusy = true
+	// Native upgrades preserve/transfer inventory without necessarily emitting a
+	// pickup. Keep the first slot copy and return only later duplicate handles.
+	for slot = 0 to 5
+		let incoming = UnitItemInSlot(tower, slot)
+		if incoming != null and tdItemIsEquipment(GetItemTypeId(incoming))
+			var duplicate = false
+			for earlier = 0 to slot - 1
+				let kept = UnitItemInSlot(tower, earlier)
+				if kept != null and GetItemTypeId(kept) == GetItemTypeId(incoming)
+					duplicate = true
+					break
+			if duplicate
+				tdRejectTowerDuplicate(tower, incoming)
+	tdTowerEquipmentAdmissionBusy = false
+
 public function tdRefreshTowerEquipmentBonuses(unit tower)
+	// Construction and both upgrade finish/cancel paths already use this facade.
+	tdNormalizeTowerEquipment(tower)
 	tdRefreshTowerEquipmentBonuses(tower, null)
+
+public function tdTryGiveEquipmentItem(unit target, item incoming) returns boolean
+	// Scripted additions and transfers use the same admission rule as pickup.
+	// A rejected item already held elsewhere stays with that holder.
+	if not tdTowerCanReceiveEquipment(target, incoming)
+		return false
+	for slot = 0 to 5
+		if UnitItemInSlot(target, slot) == incoming
+			return true
+	if not UnitAddItem(target, incoming)
+		return false
+	tdRefreshTowerEquipmentBonuses(target)
+	for slot = 0 to 5
+		if UnitItemInSlot(target, slot) == incoming
+			return true
+	return false
 
 boolean tdInventoryRuntimeReady = false
 
-function tdFarmerCraftSourceQuality(int quality1, int quality2, int quality3) returns int
-	let mode = tdCraftModeForQualities(quality1, quality2, quality3)
-	if mode == TD_CRAFT_MODE_THREE or quality1 == quality2
-		return quality1
-	if quality1 == quality3
-		return quality1
-	if quality2 == quality3
-		return quality2
-	return 0
-
-function tdConsumeCraftItem(unit farmer, item itm)
-	if itm == null
-		return
-	farmer.removeItem(itm)
-	itm.remove()
-
 function tdHandleFarmerCraftCast() returns boolean
 	let farmer = GetTriggerUnit()
-	if farmer == null or GetUnitTypeId(farmer) != TD_FARMER_UNIT_ID
-		return false
-	let item1 = farmer.itemInSlot(tdCraftVisibleInventorySlot(0))
-	let item2 = farmer.itemInSlot(tdCraftVisibleInventorySlot(1))
-	let item3 = farmer.itemInSlot(tdCraftVisibleInventorySlot(2))
-	let quality1 = item1 != null and tdItemIsEquipment(item1.getTypeId()) ? tdItemQuality(item1.getTypeId()) : 0
-	let quality2 = item2 != null and tdItemIsEquipment(item2.getTypeId()) ? tdItemQuality(item2.getTypeId()) : 0
-	let quality3 = item3 != null and tdItemIsEquipment(item3.getTypeId()) ? tdItemQuality(item3.getTypeId()) : 0
-	let mode = tdCraftModeForQualities(quality1, quality2, quality3)
-	if mode == TD_CRAFT_MODE_NONE
-		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 3.0, "前 3 格没有可合成的同品质装备。")
-		return false
-	let sourceQuality = tdFarmerCraftSourceQuality(quality1, quality2, quality3)
-	if sourceQuality >= TD_ITEM_QUALITY_PURPLE
-		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 3.0, "紫装已经是终点，不能继续合成。")
-		return false
-	if tdCraftConsumesSlot(quality1, quality2, quality3, 2)
-		tdConsumeCraftItem(farmer, item3)
-	if tdCraftConsumesSlot(quality1, quality2, quality3, 1)
-		tdConsumeCraftItem(farmer, item2)
-	if tdCraftConsumesSlot(quality1, quality2, quality3, 0)
-		tdConsumeCraftItem(farmer, item1)
-	if not tdCraftSucceeds(mode, GetRandomInt(1, 100))
-		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 4.0, "合成失败：" + tdItemQualityName(sourceQuality) + "材料已损毁。")
-		return false
-	let resultQuality = tdCraftResultQuality(sourceQuality)
-	let resultItemId = tdRandomItemIdForQuality(resultQuality)
-	farmer.addItemById(resultItemId)
-	DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 4.0, "合成成功：" + tdItemQualityName(sourceQuality) + " -> " + tdItemName(resultItemId))
+	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
+		tdStartInventoryCraft(farmer)
 	return false
 
 function tdHandleTowerInventoryChanged()
 	let tower = GetManipulatingUnit()
-	tdRefreshTowerEquipmentBonuses(tower)
 	let itm = GetManipulatedItem()
+	if tdTowerEquipmentAdmissionBusy
+		return
+	if tower != null and itm != null and not tdTowerCanReceiveEquipment(tower, itm)
+		tdTowerEquipmentAdmissionBusy = true
+		tdRejectTowerDuplicate(tower, itm)
+		tdTowerEquipmentAdmissionBusy = false
+		// Refresh only after removal; nested DROP_ITEM must not count the old slot.
+		tdRefreshTowerEquipmentBonuses(tower, itm)
+		return
+	tdRefreshTowerEquipmentBonuses(tower)
 	if tower != null and itm != null and tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) != 0 and tdItemIsEquipment(itm.getTypeId())
 		for slot = 0 to 2
 			if tower.itemInSlot(slot) == itm
@@ -232,6 +276,8 @@ function tdHandleTowerInventoryChanged()
 				break
 
 function tdHandleTowerItemDropped()
+	if tdTowerEquipmentAdmissionBusy
+		return
 	// Warcraft 1.27 raises DROP_ITEM while the item can still occupy its slot.
 	// Exclude this handle, preserving any other copies of the same item type.
 	tdRefreshTowerEquipmentBonuses(GetManipulatingUnit(), GetManipulatedItem())
@@ -240,6 +286,7 @@ public function tdSetupInventoryRuntime()
 	if tdInventoryRuntimeReady
 		return
 	tdInventoryRuntimeReady = true
+	tdSetupCraftingRuntime()
 	tdSetupEquipmentCombat()
 	tdSetupEquipmentAbilities()
 	registerSpellEffectEvent(TD_FARMER_CRAFT_ABILITY_ID, function tdHandleFarmerCraftCast)

@@ -276,10 +276,11 @@ public function tdFootmanBashChance() returns real
 	return 0.22
 
 public function tdFootmanBashDamageMultiplier() returns real
-	return 1.45
+	// Display compatibility only: scripted shield stun adds no damage.
+	return 1.0
 
 public function tdFootmanBashDamageBonus() returns real
-	return 20
+	return 0.0
 
 public function tdFootmanCommandAuraDamageBonus() returns real
 	return 0.16

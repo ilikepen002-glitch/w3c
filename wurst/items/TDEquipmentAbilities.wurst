@@ -1,5 +1,6 @@
 package TDEquipmentAbilities
 import TDEquipmentRules
+import TDAuraState
 import TDPetState
 import TDTowerData
 import ClosureTimers
@@ -72,7 +73,7 @@ public function tdRefreshEquipmentAbilities(unit tower, real cooldownReduction, 
 	if not tdEquipmentAbilityTowerEligible(tower)
 		tdForgetEquipmentAbilities(tower)
 		return
-	let cooldownLevel = tdEquipmentPercentLevel(cooldownReduction + tdPetCooldownReduction(tower), 40)
+	let cooldownLevel = tdEquipmentPercentLevel(tdFinalCooldownReduction(cooldownReduction, tdPetCooldownReduction(tower), tdAuraPower(tower, TD_AURA_EQUIPMENT_COOLDOWN)), 40)
 	tdEquipmentSyncCooldown(tower, TD_ORC_BLOODLUST_ABILITY_ID, cooldownLevel)
 	tdEquipmentSyncCooldown(tower, TD_ORC_BLADESTORM_ABILITY_ID, cooldownLevel)
 	let controlLevel = tdEquipmentPercentLevel(controlPower, 60)

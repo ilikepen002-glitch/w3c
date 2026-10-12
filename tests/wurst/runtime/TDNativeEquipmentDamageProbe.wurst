@@ -6,6 +6,7 @@ import TDTowers
 import TDItems
 import TDInventory
 import TDEquipmentCombat
+import TDItemTargetRules
 import TDEquipmentAbilities
 import DamageEvent
 import ClosureTimers
@@ -264,7 +265,7 @@ function onEarly()
 					if run == token and valid()
 						advance()
 		return
-	expectedExtra = eventValue * tdEquipmentConditionalBonus(preHp, target.getMaxHP(), tdIsBossUnitTypeId(GetUnitTypeId(target)), 0.12, 0.45)
+	expectedExtra = eventValue * tdEquipmentConditionalBonus(preHp, target.getMaxHP(), tdEquipmentBossDamageEligible(GetUnitTypeId(target)), tdItemSecondaryEffectValue(TD_ITEM_GREEN_WAR_AXE_ID), tdItemSecondaryEffectValue(TD_ITEM_PURPLE_WAR_AXE_ID))
 	if phaseIndex == 8
 		bossNative = eventValue
 	if phaseIndex == 12
@@ -299,9 +300,9 @@ function start()
 	setupTarget(tdWaveUnitId(29), 29)
 	if not valid()
 		return
-	armor = CreateItem(TD_ITEM_ARMOR_DRUM_ID, -1800, 2400)
-	executeItem = CreateItem(TD_ITEM_EXECUTION_DAGGER_ID, -1800, 2400)
-	bossItem = CreateItem(TD_ITEM_BLADEMASTER_SIGIL_ID, -1800, 2400)
+	armor = CreateItem(TD_ITEM_BLUE_ARMOR_ID, -1800, 2400)
+	executeItem = CreateItem(TD_ITEM_GREEN_WAR_AXE_ID, -1800, 2400)
+	bossItem = CreateItem(TD_ITEM_PURPLE_WAR_AXE_ID, -1800, 2400)
 	tdRefreshTowerEquipmentBonuses(source)
 	early = DamageEvent.addUnreducedListener(20) ->
 		onEarly()

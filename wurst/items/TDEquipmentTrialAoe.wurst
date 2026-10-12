@@ -1,0 +1,56 @@
+package TDEquipmentTrialAoe
+import TDTrialIdentity
+import TDEquipmentTrialRules
+
+// Bounded value snapshot: no retained binding/state class can be destroyed or
+// reused by the trial before a delayed equipment explosion executes.
+public tuple tdEquipmentTrialAoeSnapshot(unit first, int firstRevision, unit second, int secondRevision, unit third, int thirdRevision, unit fourth, int fourthRevision, unit fifth, int fifthRevision)
+
+function tdEquipmentTrialSlotTarget(int lane, int slot) returns unit
+	let index = tdTrialSlotIndex(lane, slot)
+	let binding = index < 0 ? null : tdTrialNativeSlots[index]
+	return binding == null ? null : binding.target
+
+function tdEquipmentTrialSlotRevision(int lane, int slot) returns int
+	let index = tdTrialSlotIndex(lane, slot)
+	let binding = index < 0 ? null : tdTrialNativeSlots[index]
+	return binding == null ? 0 : binding.revision
+
+public function tdCaptureEquipmentTrialAoe(int lane, tdTrialCombatContext context) returns tdEquipmentTrialAoeSnapshot
+	if not context.fromTrial
+		return tdEquipmentTrialAoeSnapshot(null, 0, null, 0, null, 0, null, 0, null, 0)
+	return tdEquipmentTrialAoeSnapshot(tdEquipmentTrialSlotTarget(lane, 0), tdEquipmentTrialSlotRevision(lane, 0), tdEquipmentTrialSlotTarget(lane, 1), tdEquipmentTrialSlotRevision(lane, 1), tdEquipmentTrialSlotTarget(lane, 2), tdEquipmentTrialSlotRevision(lane, 2), tdEquipmentTrialSlotTarget(lane, 3), tdEquipmentTrialSlotRevision(lane, 3), tdEquipmentTrialSlotTarget(lane, 4), tdEquipmentTrialSlotRevision(lane, 4))
+
+public function tdEquipmentTrialAoeSnapshot.targetAt(int slot) returns unit
+	if slot == 0
+		return this.first
+	if slot == 1
+		return this.second
+	if slot == 2
+		return this.third
+	if slot == 3
+		return this.fourth
+	return this.fifth
+
+public function tdEquipmentTrialAoeSnapshot.revisionAt(int slot) returns int
+	if slot == 0
+		return this.firstRevision
+	if slot == 1
+		return this.secondRevision
+	if slot == 2
+		return this.thirdRevision
+	if slot == 3
+		return this.fourthRevision
+	return this.fifthRevision
+
+public function tdEquipmentTrialAoeVictimValid(unit target, int lane, tdTrialCombatContext context, int revision) returns boolean
+	if not tdTrialAoeTargetContextValid(target, lane, context)
+		return false
+	if not context.fromTrial
+		return true
+	let binding = tdTrialBindingFor(target)
+	if binding == null
+		return false
+	if not tdEquipmentTrialSnapshotMatches(target.getHandleId(), revision, binding.target.getHandleId(), binding.revision)
+		return false
+	return tdTrialTargetContextValid(target, lane, context, revision)

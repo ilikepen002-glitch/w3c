@@ -1,0 +1,162 @@
+package TDEquipmentSpecialRuntime
+import TDEquipmentSpecialState
+import TDEquipmentCombat
+import TDShieldRuntime
+import TDItemData
+import TDConfig
+import TDState
+import TDTrialIdentity
+import TDEquipmentTrialAoe
+import TDEnemyMechanicRuntime
+import TDTowerData
+import DamageEvent
+import ClosureTimers
+import GameTimer
+
+public constant int TD_EQUIPMENT_CORPSE_BURST_DAMAGE_ID = 'EcBr'
+public constant int TD_EQUIPMENT_POISON_BURST_DAMAGE_ID = 'EpBr'
+boolean tdEquipmentSpecialRuntimeReady = false
+
+function tdSpecialItem(unit tower, int specialization) returns int
+	for slot = 0 to 2
+		let itemId = tdEquipmentItemId(tower, slot)
+		if tdItemSpecialization(itemId) == specialization
+			return itemId
+	return 0
+
+public function tdEquipmentArcherAdditionalArrows(unit tower) returns int
+	let itemId = tdSpecialItem(tower, TD_ITEM_SPECIAL_ARCHER_ARROW)
+	return itemId == 0 ? 0 : tdItemSpecialCount(itemId)
+
+function tdDealSpecialSpell(unit source, unit victim, int lane, real amount, int damageId)
+	if not tdEquipmentSourceValid(source, lane) or not tdEquipmentEnemyValid(victim, lane) or amount <= 0.0
+		return
+	DamageEvent.setNextDamageFromCode()
+	DamageEvent.setNextDamageId(damageId)
+	// One manual spell-resistance pass; code/CHAOS/UNIVERSAL bypasses native re-scale.
+	source.damageTarget(victim, tdEnemyMechanicScaleSpellDamage(victim, amount))
+
+function tdResolveSpecialExplosion(unit source, unit primary, int lane, vec2 center, int itemId, real nativeEventAmount, tdTrialCombatContext context, int primaryRevision, tdEquipmentTrialAoeSnapshot snapshot)
+	if not tdTrialContextValid(context)
+		return
+	if not tdEquipmentSourceValid(source, lane) or tdSpecialItem(source, tdItemSpecialization(itemId)) != itemId
+		return
+	let radius = tdItemSpecialRadius(itemId)
+	let cap = tdItemSpecialTargetCap(itemId)
+	let amount = nativeEventAmount * tdItemSpecialDamageFactor(itemId)
+	let damageId = tdItemSpecialization(itemId) == TD_ITEM_SPECIAL_CORPSE_BURST ? TD_EQUIPMENT_CORPSE_BURST_DAMAGE_ID : TD_EQUIPMENT_POISON_BURST_DAMAGE_ID
+	var hits = 0
+	// Explicitly prioritize a still-live primary. A lethal proc still explodes
+	// at the captured hit position and can affect up to four other live enemies.
+	if tdTrialTargetContextValid(primary, lane, context, primaryRevision) and tdEquipmentEnemyValid(primary, lane) and center.distanceTo(primary.getPos()) <= radius
+		tdDealSpecialSpell(source, primary, lane, amount, damageId)
+		hits = 1
+	if context.fromTrial
+		// Only the original five captured handles/revisions may receive the old
+		// proc. Main death does not cancel other still-live original targets.
+		for slot = 0 to TD_TRIAL_TARGETS_PER_LANE - 1
+			if hits >= cap
+				break
+			let victim = snapshot.targetAt(slot)
+			if victim == primary or not tdEquipmentTrialAoeVictimValid(victim, lane, context, snapshot.revisionAt(slot)) or not tdEquipmentEnemyValid(victim, lane)
+				continue
+			if center.distanceTo(victim.getPos()) > radius
+				continue
+			tdDealSpecialSpell(source, victim, lane, amount, damageId)
+			hits += 1
+	else
+		let targets = CreateGroup()
+		targets.enumUnitsInRange(center, radius)
+		for victim in targets
+			if hits >= cap
+				break
+			if victim == primary or not tdTrialAoeTargetContextValid(victim, lane, context) or not tdEquipmentEnemyValid(victim, lane)
+				continue
+			if center.distanceTo(victim.getPos()) > radius
+				continue
+			tdDealSpecialSpell(source, victim, lane, amount, damageId)
+			hits += 1
+		targets.destr()
+	let visual = AddSpecialEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayDamage.mdl", center.x, center.y)
+	DestroyEffect(visual)
+
+function tdCaptureEquipmentSpecialMainAttack()
+	if not tdEquipmentNativeAttackEligible(DamageEvent.isCode(), DamageEvent.isSpell(), DamageEvent.getId()) or DamageEvent.getAmount() <= 0.0
+		return
+	let source = DamageEvent.getSource()
+	let target = DamageEvent.getTarget()
+	if target == null
+		return
+	let lane = target.getUserData() div 10000
+	if not tdEquipmentSourceValid(source, lane) or not tdEquipmentEnemyValid(target, lane)
+		return
+	let choice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(source))
+	let now = getElapsedGameTime()
+	if choice == TD_TOWER_CHOICE_FOOTMAN
+		tdTryEquipmentShieldProc(source, target, lane)
+		return
+	var specialization = TD_ITEM_SPECIAL_NONE
+	if choice == TD_TOWER_CHOICE_ORC
+		specialization = TD_ITEM_SPECIAL_WAR_INTENT
+	else if choice == TD_TOWER_CHOICE_GHOUL
+		specialization = TD_ITEM_SPECIAL_CORPSE_BURST
+	else if choice == TD_TOWER_CHOICE_DRYAD
+		specialization = TD_ITEM_SPECIAL_POISON_BURST
+	let itemId = tdSpecialItem(source, specialization)
+	if specialization == TD_ITEM_SPECIAL_NONE or itemId == 0
+		return
+	let record = tdEquipmentSpecialFor(source, true)
+	var explode = false
+	if specialization == TD_ITEM_SPECIAL_WAR_INTENT
+		let burstStarted = record.war.hit(target.getHandleId(), now)
+		if burstStarted
+			let endTime = record.war.burstUntil
+			doAfter(tdItemWarDuration()) ->
+				// Keep only a native handle + exact end token across the timer.
+				let current = tdEquipmentSpecialFor(source, false)
+				if current != null and current.war.burstUntil == endTime
+					current.war.tick(getElapsedGameTime())
+					tdEquipmentSpecialSyncStages(current, getElapsedGameTime())
+	else if specialization == TD_ITEM_SPECIAL_CORPSE_BURST
+		explode = record.corpse.hit()
+	else
+		explode = record.poison.hit(target.getHandleId(), now)
+	tdEquipmentSpecialSyncStages(record, now)
+	if explode
+		let center = target.getPos()
+		let primary = target
+		let eventAmount = DamageEvent.getAmount()
+		let context = tdTrialCaptureContext(target)
+		let binding = tdTrialBindingFor(target)
+		let primaryRevision = binding == null ? 0 : binding.revision
+		let snapshot = tdCaptureEquipmentTrialAoe(lane, context)
+		// Timer boundary after native damage; independent of kill-corpse and pet hooks.
+		doAfter(0.0) ->
+			tdResolveSpecialExplosion(source, primary, lane, center, itemId, eventAmount, context, primaryRevision, snapshot)
+
+public function tdSetupEquipmentSpecialRuntime()
+	if tdEquipmentSpecialRuntimeReady
+		return
+	tdEquipmentSpecialRuntimeReady = true
+	tdSetupShieldRuntime()
+	DamageEvent.addUnreducedListener(1) ->
+		tdCaptureEquipmentSpecialMainAttack()
+	doPeriodically(0.10) cb ->
+		let iter = tdEquipmentSpecialRecords.iterator()
+		while iter.hasNext()
+			let record = iter.next()
+			let tower = record.tower
+			let lane = GetPlayerId(GetOwningPlayer(tower))
+			if not tdEquipmentSourceValid(tower, lane)
+				// Detach via the iterator before the lower state removes list ownership.
+				// This facade does not expose/remove another record's native Buff.
+				iter.remove()
+				tdForgetEquipmentSpecial(tower)
+				continue
+			tdEquipmentSpecialLoadoutChanged(tower, tdSpecialItem(tower, TD_ITEM_SPECIAL_WAR_INTENT) != 0, tdSpecialItem(tower, TD_ITEM_SPECIAL_POISON_BURST) != 0, tdSpecialItem(tower, TD_ITEM_SPECIAL_CORPSE_BURST) != 0, getElapsedGameTime())
+			record.war.tick(getElapsedGameTime())
+			record.poison.tick(getElapsedGameTime())
+			tdEquipmentSpecialSyncStages(record, getElapsedGameTime())
+		destroy iter
+		if tdIsGameOver() and tdEquipmentSpecialRecords.isEmpty()
+			destroy cb

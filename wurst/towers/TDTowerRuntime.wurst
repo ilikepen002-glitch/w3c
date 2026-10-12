@@ -16,6 +16,8 @@ import LinkedList
 import TDTowerSaleState
 import TDPetState
 import TDPetCombat
+import TDEquipmentSpecialState
+import TDEquipmentSpecialRuntime
 import TDEquipmentCombat
 import TDEquipmentAbilities
 import TDWaves
@@ -103,6 +105,7 @@ function tdHandleTowerUpgradeStarted()
 	let tower = GetTriggerUnit()
 	if tower != null and tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) != 0
 		tdDarkTideForgetTower(tower)
+		tdForgetEquipmentSpecial(tower)
 		tdGetTowerSaleState(tower).startWork()
 		tdEvolutionWorkStarted(tower)
 		tdPetTowerWorkStarted(tower)
@@ -382,6 +385,7 @@ function tdHandleTowerUpgradeCancelled()
 	let tower = GetTriggerUnit()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
+	tdForgetEquipmentSpecial(tower)
 	let key = tower.getHandleId()
 	let cancelledGeneration = tdGetTowerSaleState(tower).getWorkGeneration()
 	// Cancellation restores native unit fields after the event, including range.
@@ -407,6 +411,7 @@ function tdHandleTowerUpgradeFinished()
 	let towerChoice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
 	if towerChoice == 0
 		return
+	tdForgetEquipmentSpecial(tower)
 	tdGetTowerSaleState(tower).finishWork()
 	tdPetTowerWorkFinished(tower)
 	tdEvolutionWorkFinished(tower)
@@ -604,7 +609,7 @@ function tdCreateArcherSplitArrowVolley(unit source, unit primaryTarget) returns
 	if source.getAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID) <= 0
 		return null
 	let level = tdTowerLevelForUnitTypeId(GetUnitTypeId(source))
-	let remainingTargets = tdArcherSplitArrowTargetCount(level) - 1
+	let remainingTargets = tdArcherSplitArrowTargetCount(level) - 1 + tdEquipmentArcherAdditionalArrows(source)
 	if remainingTargets <= 0
 		return null
 	let laneId = tdEnemyLaneId(primaryTarget)

@@ -1,0 +1,34 @@
+package TDEquipmentBossIntegrationTests
+import TDAuraRules
+import TDEnemyMechanicState
+import TDEnemyMechanicData
+
+@Test function bossEightSlowUsesActualOneThirtyBaseAndNeverEliteOneForty()
+	let boss = new TDEnemyMechanicState(0, 8, TD_ENEMY_ROLE_BOSS, 240.0)
+	boss.updateBoss(11.0, 1.0)
+	tdAuraSpeedForBaseAndFactor(boss.baseSpeed(), tdCombinedEnemySlowFactor(0.40)).assertEquals(187.2, 0.0001)
+	// Last slow disappears while the boss mechanic remains active.
+	tdAuraSpeedForBaseAndFactor(boss.baseSpeed(), 1.0).assertEquals(312.0, 0.0001)
+	boss.updateBoss(13.0, 1.0)
+	tdAuraSpeedForBaseAndFactor(boss.baseSpeed(), 0.60).assertEquals(144.0, 0.0001)
+	destroy boss
+
+@Test function bossFinalEnrageAndSavedRetirementBaseKeepSlowFactorOnce()
+	let boss = new TDEnemyMechanicState(3, 32, TD_ENEMY_ROLE_BOSS, 250.0)
+	boss.updateBoss(1.0, 0.30)
+	tdAuraSpeedForBaseAndFactor(boss.baseSpeed(), 0.60).assertEquals(172.5, 0.0001)
+	tdAuraSpeedForBaseAndFactor(boss.baseSpeed(), 1.0).assertEquals(287.5, 0.0001)
+	// Runtime detaches the record, then supplies originalBaseSpeed explicitly.
+	tdAuraSpeedForBaseAndFactor(boss.originalBaseSpeed, 0.60).assertEquals(150.0, 0.0001)
+	boss.deactivate()
+	tdAuraSpeedForBaseAndFactor(boss.baseSpeed(), 1.0).assertEquals(250.0, 0.0001)
+	destroy boss
+
+@Test function ordinaryEliteSprintStillUsesItsOriginalOneForty()
+	let elite = new TDEnemyMechanicState(0, 12, TD_ENEMY_ROLE_ELITE, 270.0)
+	elite.beginSprint(2).assertTrue()
+	tdAuraSpeedForBaseAndFactor(elite.baseSpeed(), 0.60).assertEquals(226.8, 0.0001)
+	elite.finishSprint(elite.getGeneration()).assertTrue()
+	tdAuraSpeedForBaseAndFactor(elite.baseSpeed(), 0.60).assertEquals(162.0, 0.0001)
+	tdAuraSpeedForBaseAndFactor(elite.originalBaseSpeed, 1.0).assertEquals(270.0, 0.0001)
+	destroy elite

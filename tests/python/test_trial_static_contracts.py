@@ -2,9 +2,13 @@
 from __future__ import annotations
 
 import math
+import json
+import os
 from pathlib import Path
 import re
 import subprocess
+import tempfile
+from unittest.mock import patch
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -15,7 +19,48 @@ def text(path):
     return (ROOT / path).read_text(encoding="utf-8")
 
 
+def locked_stdlib_text(path):
+    """Inspect the configured locked source, never a retired pre1.29 cache."""
+    lock = json.loads(text("tools/stdlib/lock.json"))
+    source = Path(os.environ.get("WURST_STDLIB_SOURCE", str(ROOT / "_build/dependencies/WurstStdlib2-source")))
+    if not source.exists() and "WURST_STDLIB_SOURCE" not in os.environ:
+        source = Path(lock["source"])
+    if not source.is_dir():
+        raise ValueError("Missing trusted locked stdlib source; set WURST_STDLIB_SOURCE")
+    tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=source, text=True).strip()
+    if tree != lock["fixedTree"]:
+        raise ValueError("Configured stdlib source differs from the project fixed tree")
+    try:
+        subprocess.run(["git", "diff", "--exit-code", "HEAD", "--", path], cwd=source, check=True, capture_output=True)
+    except subprocess.CalledProcessError as error:
+        raise ValueError("Selected locked stdlib source file is dirty: " + path) from error
+    if not (source / path).is_file():
+        raise ValueError("Missing file in trusted locked stdlib source: " + path)
+    return (source / path).read_text(encoding="utf-8")
+
+
 class TrialStaticContracts(unittest.TestCase):
+    def test_locked_stdlib_missing_source_is_rejected_without_old_cache_fallback(self):
+        with tempfile.TemporaryDirectory() as directory:
+            absent = str(Path(directory) / "absent")
+            with patch.dict(os.environ, {"WURST_STDLIB_SOURCE": absent}):
+                with self.assertRaisesRegex(ValueError, "Missing trusted locked stdlib source"):
+                    locked_stdlib_text("wurst/objediting/UnitObjEditing.wurst")
+
+    def test_locked_stdlib_wrong_tree_is_rejected_before_reading_api(self):
+        # Inject only the external Git boundary; the actual helper/guard executes.
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.dict(os.environ, {"WURST_STDLIB_SOURCE": directory}), patch("subprocess.check_output", return_value="wrong-tree\n"):
+                with self.assertRaisesRegex(ValueError, "differs from the project fixed tree"):
+                    locked_stdlib_text("wurst/objediting/UnitObjEditing.wurst")
+
+    def test_locked_stdlib_dirty_selected_file_is_rejected(self):
+        fixed = json.loads(text("tools/stdlib/lock.json"))["fixedTree"]
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.dict(os.environ, {"WURST_STDLIB_SOURCE": directory}), patch("subprocess.check_output", return_value=fixed + "\n"), patch("subprocess.run", side_effect=subprocess.CalledProcessError(1, "git diff")):
+                with self.assertRaisesRegex(ValueError, "Selected locked stdlib source file is dirty"):
+                    locked_stdlib_text("wurst/objediting/UnitObjEditing.wurst")
+
     def test_trial_dependency_direction_and_independent_native_runtime(self):
         pure = ("Rules", "Score", "State", "Targets", "LifeRules", "RouteRules")
         for name in pure:
@@ -65,12 +110,12 @@ class TrialStaticContracts(unittest.TestCase):
                            "..setIconGameInterface(tdTrialIconPath())"]:
             self.assertIn(expression, source)
         self.assertNotIn("presetIcon(", source)
-        wrapper = text("_build/dependencies/pre1.29/WurstStdlib2/wurst/objediting/UnitObjEditing.wurst")
+        wrapper = locked_stdlib_text("wurst/objediting/UnitObjEditing.wurst")
         for setter in set(re.findall(r"\.\.(set\w+)\(", source)):
             self.assertIn(f"function {setter}(", wrapper)
-        assets = text("_build/dependencies/pre1.29/WurstStdlib2/wurst/_wurst/assets/Units.wurst")
+        assets = locked_stdlib_text("wurst/_wurst/assets/Units.wurst")
         self.assertIn('golemStatue1 = "Units\\\\Creeps\\\\GolemStatue\\\\GolemStatue.mdx"', assets)
-        ids = text("_build/dependencies/pre1.29/WurstStdlib2/wurst/_wurst/assets/UnitIds.wurst")
+        ids = locked_stdlib_text("wurst/_wurst/assets/UnitIds.wurst")
         self.assertIn("battlegolem = 'narg'", ids)
 
     def test_trial_rawcode_not_added_to_other_objects_or_boss_list(self):
@@ -141,7 +186,7 @@ class TrialStaticContracts(unittest.TestCase):
 
     def test_current_source_damage_bound_stays_far_below_trial_hp(self):
         config = text("wurst/TDConfig.wurst")
-        common = text("wurst/towers/TDTowerCommonData.wurst")
+        common = "\n".join(line.split("//", 1)[0] for line in text("wurst/towers/TDTowerCommonData.wurst").splitlines())
         balance = text("wurst/towers/TDTowerBalanceData.wurst")
         inventory = text("wurst/items/TDItemData.wurst")
         pets = text("wurst/pets/TDPetCombat.wurst")
@@ -153,20 +198,35 @@ class TrialStaticContracts(unittest.TestCase):
         self.assertIn("setAttack1DamageSidesperDie(6 + level)", text("wurst/towers/TDTowerObjectGen.wurst"))
         for function, value in [("tdEvolutionSkillMultiplier", "1.20"),
                                 ("tdOrcCriticalStrikeMultiplier", "2.20"),
-                                ("tdFootmanBashDamageMultiplier", "1.45"),
+                                ("tdFootmanBashDamageMultiplier", "1.0"),
                                 ("tdArcherAuraDamageBonus", "0.18"),
                                 ("tdFootmanCommandAuraDamageBonus", "0.16")]:
-            self.assertRegex(common, rf"function {function}\(\) returns real\n\treturn {re.escape(value)}\n")
+            self.assertRegex(common, rf"function {function}\(\) returns real\n(?:\t\s*\n)*\treturn {re.escape(value)}\n")
         # Provisional source bound assumes armor amplification <2 and attack table <=2.
         # No target installation table is present: this is not an engine guarantee.
         self.assertLessEqual((0.18 + 0.16) * (1 + 1.2), 1.0)
         self.assertLessEqual(2.2 * 1.2, 3.0)
         native_bound = ((260 + 12 + 128 + 512) * 2 * 3 + 32) * 2 * 2
         split_bound = native_bound * 1.2 * 2 * 2
-        equipment_bound = native_bound * (3 * (0.45 + 0.30))
-        pet_bound = native_bound * (2 * (0.25 + 4 * 0.15))
-        self.assertLess(max(native_bound, split_bound, equipment_bound, pet_bound), 120000)
-        self.assertLess(120000, 1000000 / 8)
+        # Current sealed catalog/mechanisms, no retired 45% Boss or native Bash bonus.
+        catalog = text("wurst/items/TDItemCatalogConfig.wurst")
+        self.assertRegex(common, r"function tdFootmanBashDamageBonus\(\) returns real\n(?:\t\s*\n)*\treturn 0.0\n")
+        self.assertIn("TD_ITEM_EFFECT_EXECUTE", catalog)
+        self.assertIn("TD_ITEM_EFFECT_BOSS_DAMAGE", catalog)
+        import sys
+        sys.path.insert(0, str(ROOT / 'tools'))
+        from ReadEquipmentCatalog import catalog as read_catalog
+        items = {item.rawcode: item for item in read_catalog(ROOT)}
+        self.assertEqual(items['iB02'].secondary_value, .20)
+        self.assertEqual(items['iP02'].secondary_value, .25)
+        equipment_bound = native_bound * (items['iB02'].secondary_value + items['iP02'].secondary_value) * 4
+        corpse_poison_bound = native_bound * .5 * 4
+        pet_bound = native_bound * 1.7 * 4
+        self.assertAlmostEqual(native_bound, 22016.0)
+        self.assertAlmostEqual(pet_bound, 149708.8)
+        self.assertLess(max(native_bound, split_bound, equipment_bound, corpse_poison_bound, pet_bound), 150000)
+        self.assertEqual(150000, 1000000 * .15)
+        self.assertIn("tdEquipmentTrialNativeEnvelope()", text("wurst/items/TDEquipmentTrialRules.wurst"))
 
     def test_wurst_sources_include_required_cases_without_generated_staging(self):
         source = text("tests/wurst/TDTrialStateTests.wurst")

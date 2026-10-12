@@ -67,29 +67,49 @@ def verify_icons(mpq):
         result[path] = {'sha256': sha(data), 'mips': [64, 32, 16, 8, 4, 2, 1]}
     return result
 
-def verify_equipment_tooltips(mpq):
+def verify_equipment_tooltips(mpq, *, profile='current40', source_root=None):
     from VerifyTowerPlacementArtifact import unit_objects
+    from VerifyEquipmentAbilityArtifact import ability_objects
+    from VerifyPlayerTooltipArtifact import validate, ROOT
+    require(profile in ('legacy009', 'current40'), 'Unknown trial tooltip profile')
     items = unit_objects(mpq.extract('war3map.w3t'))
     result = {}
-    for code, percent in (('iB02', 25), ('iP02', 45)):
-        require(code in items, 'Trial Boss-bonus equipment item missing')
-        expected = '普攻命中首领或金币试炼主目标时，追加本次普攻伤害的' + str(percent) + '%'
+    if profile == 'legacy009':
+        rules = (('iB02', 25, '首领或金币试炼'), ('iP02', 45, '首领或金币试炼'))
+    else:
+        from ReadEquipmentCatalog import catalog
+        root = ROOT if source_root is None else Path(source_root)
+        definitions = {entry.rawcode: entry for entry in catalog(root)}
+        import re
+        require({code for code in items if re.fullmatch(r'i[WGBP]\d\d', code)} == set(definitions),
+                'current40 equipment identity set mismatch')
+        blue, purple = definitions['iB02'], definitions['iP02']
+        require((blue.secondary, blue.secondary_value) == ('EXECUTE', .20),
+                'Current trial blue equipment source must be half-life 20%')
+        require((purple.secondary, purple.secondary_value) == ('BOSS_DAMAGE', .25),
+                'Current trial purple equipment source must be Boss/trial 25%')
+        rules = (('iB02', 20, '生命值不高于50%的'), ('iP02', 25, '首领或金币试炼'))
+    for code, percent, target in rules:
+        require(code in items, 'Trial bonus equipment item missing: ' + code)
+        expected = '普攻命中' + target + '主目标时，追加本次普攻伤害的' + str(percent) + '%'
         text = items[code].get('utub', '')
-        require(text.count(expected) == 1, 'Trial exact Boss/trial tooltip/value mismatch: ' + code)
-        require('与半血追加比例相加；法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。' in text, 'Trial equipment tooltip lost attack eligibility constraints')
+        require(text.count(expected) == 1, 'Trial exact tooltip/value mismatch: ' + code)
+        require('法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。' in text,
+                'Trial equipment tooltip lost attack eligibility constraints: ' + code)
+        if profile == 'current40' and code == 'iB02':
+            require('普攻命中首领或金币试炼主目标' not in text,
+                    'Trial blue equipment acquired forbidden Boss/trial damage')
+        else:
+            require('与半血追加比例相加' in text, 'Trial Boss/trial addition rule missing: ' + code)
         result[code] = {'percent': percent, 'required_text': expected}
-    # The old player-tooltip grammar remains unchanged. Only these two exact,
-    # already checked and independently approved strings form its read-only
-    # inherited check view. The real new wording/value is validated above.
-    from VerifyEquipmentAbilityArtifact import ability_objects
-    from VerifyPlayerTooltipArtifact import validate
-    import copy
-    inherited_items = copy.deepcopy(items)
-    for code in result:
-        inherited_items[code]['utub'] = inherited_items[code]['utub'].replace('首领或金币试炼主目标', '首领主目标', 1)
-    checked = validate(ability_objects(mpq.extract('war3map.w3a')), unit_objects(mpq.extract('war3map.w3u')), inherited_items)
-    return {'current_trial_bonus_texts': result, 'inherited_player_tooltip_numeric_cases': checked,
-            'view': 'Two exact approved string phrases only, no MPQ rewrite or old grammar expansion'}
+    # Always validate the real objects. Historical source and map are supplied
+    # together; no old-item view, prefix waiver, or auto-detected fallback.
+    checked = validate(ability_objects(mpq.extract('war3map.w3a')),
+                       unit_objects(mpq.extract('war3map.w3u')), items,
+                       profile=profile, source_root=source_root)
+    return {'profile': profile, 'equipment_bonus_texts': result,
+            'player_tooltip_numeric_cases': checked,
+            'view': 'Actual packed objects checked against the explicit matching source profile'}
 
 def verify_installation(archives):
     if not archives:
@@ -116,19 +136,21 @@ def verify_installation(archives):
             'misc_data_sha256': sha(found[r'Units\MiscData.txt']), 'attack_type_rows': rows,
             'version_boundary': 'Archive identity/version must be externally confirmed as the target 1.28 installation'}
 
-def verify(path, archives=()):
+def verify(path, archives=(), *, profile='current40', source_root=None):
     data = Path(path).read_bytes(); mpq = Mpq(data)
     return {'status': 'PASS', 'map': str(Path(path).resolve()), 'map_sha256': sha(data),
             'jass_sha256': sha(mpq.extract('war3map.j')),
             'unit': verify_unit(parse_objects(mpq.extract('war3map.w3u'), False)),
-            'icons': verify_icons(mpq), 'equipment_tooltips': verify_equipment_tooltips(mpq), 'native_installation': verify_installation(archives),
+            'icons': verify_icons(mpq), 'equipment_tooltips': verify_equipment_tooltips(mpq, profile=profile, source_root=source_root), 'native_installation': verify_installation(archives),
             'boundary': 'No native gameplay, visuals, FPS, or arbitrary future equipment damage guarantee'}
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('map'); parser.add_argument('--installation-archive', action='append', default=[])
     parser.add_argument('--output')
-    args = parser.parse_args(); result = verify(args.map, args.installation_archive)
+    parser.add_argument('--profile', choices=('legacy009', 'current40'), default='current40')
+    parser.add_argument('--source-root', type=Path)
+    args = parser.parse_args(); result = verify(args.map, args.installation_archive, profile=args.profile, source_root=args.source_root)
     result['command'] = __import__('sys').argv
     if args.output: Path(args.output).write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps(result, ensure_ascii=False, indent=2))

@@ -179,7 +179,7 @@ function evolvedSkills(int choice, int branch) returns string
 		tdOrcBladestormDamagePerSecond().assertContinuityNear(70.0)
 	(tdArcherAuraDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.216)
 	(tdFootmanBashChance() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.264)
-	(tdFootmanBashDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(24.0)
+	(tdFootmanBashDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.0)
 	(tdFootmanCommandAuraDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.192)
 	(tdDryadPoisonDps() * tdEvolutionSkillMultiplier()).assertContinuityNear(14.4)
 	tdDryadPoisonDps().assertContinuityNear(12.0)

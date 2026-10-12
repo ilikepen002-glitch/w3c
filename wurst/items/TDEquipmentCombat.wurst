@@ -1,6 +1,8 @@
 package TDEquipmentCombat
 import public TDEquipmentRules
 import TDItemData
+import TDAuraState
+import TDEquipmentSpecialState
 import TDConfig
 import TDState
 import TDTowerData
@@ -8,10 +10,10 @@ import DamageEvent
 import ClosureTimers
 import GameTimer
 import LinkedList
-import TDWaves
 import TDEnemyMechanicRuntime
 import TDTrialIdentity
 import TDTrialLifeRules
+import TDItemTargetRules
 
 class TDEquipmentDebuff
 	unit target
@@ -39,15 +41,15 @@ class TDEquipmentDebuff
 LinkedList<TDEquipmentDebuff> tdEquipmentDebuffs = new LinkedList<TDEquipmentDebuff>()
 boolean tdEquipmentCombatReady = false
 
-function tdEquipmentLaneValid(int lane) returns boolean
+public function tdEquipmentLaneValid(int lane) returns boolean
 	return tdIsLanePlayer(lane) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
 
-function tdEquipmentEnemyValid(unit target, int lane) returns boolean
+public function tdEquipmentEnemyValid(unit target, int lane) returns boolean
 	if tdTrialIsTargetType(target)
 		return tdTrialTargetValid(target, lane) and tdEquipmentLaneValid(lane)
 	return target != null and target.isAlive() and GetPlayerId(GetOwningPlayer(target)) == TD_ENEMY_PLAYER_ID and target.getUserData() div 10000 == lane and target.getUserData() mod 100 < 99 and tdEquipmentLaneValid(lane)
 
-function tdEquipmentSourceValid(unit source, int lane) returns boolean
+public function tdEquipmentSourceValid(unit source, int lane) returns boolean
 	return source != null and source.isAlive() and GetPlayerId(GetOwningPlayer(source)) == lane and tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != 0 and tdEquipmentLaneValid(lane)
 
 function tdEquipmentDebuffFor(unit target, int lane) returns TDEquipmentDebuff
@@ -68,11 +70,27 @@ public function tdForgetEquipmentEnemy(unit target)
 	destroy iter
 
 public function tdForgetEquipmentTower(unit tower)
+	tdForgetEquipmentSpecial(tower)
 	for entry in tdEquipmentDebuffs
 		if entry.source == tower
 			entry.source = null
 			entry.poison = 0.0
 			entry.poisonTicks = 0
+
+public function tdApplyEquipmentArmor(unit target, int lane, real armor, real duration)
+	if not tdEquipmentEnemyValid(target, lane) or armor <= 0.0 or duration <= 0.0
+		return
+	let entry = tdEquipmentDebuffFor(target, lane)
+	let now = getElapsedGameTime()
+	if now >= entry.armorUntil
+		entry.armor = 0.0
+	if tdEquipmentDebuffRefreshes(armor, entry.armor)
+		entry.armor = armor
+		entry.armorUntil = now + duration
+		let level = tdEquipmentArmorLevel(armor)
+		if target.getAbilityLevel(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID) == 0
+			target.addAbility(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID)
+		target.setAbilityLevel(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID, level)
 
 public function tdApplyEquipmentAttack(unit source, unit target, int originLane, boolean _boss)
 	if not tdEquipmentNativeAttackEligible(DamageEvent.isCode(), DamageEvent.isSpell(), DamageEvent.getId()) or DamageEvent.getAmount() <= 0.0 or not tdEquipmentSourceValid(source, originLane) or not tdEquipmentEnemyValid(target, originLane)
@@ -80,21 +98,13 @@ public function tdApplyEquipmentAttack(unit source, unit target, int originLane,
 	let item1 = tdEquipmentItemId(source, 0)
 	let item2 = tdEquipmentItemId(source, 1)
 	let item3 = tdEquipmentItemId(source, 2)
-	let armor = tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_ARMOR_SHRED)
+	let armor = RMaxBJ(tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_ARMOR_SHRED), tdAuraPower(source, TD_AURA_EQUIPMENT_ARMOR))
 	let poison = tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_POISON)
 	if armor <= 0.0 and poison <= 0.0
 		return
 	let entry = tdEquipmentDebuffFor(target, originLane)
 	let now = getElapsedGameTime()
-	if now >= entry.armorUntil
-		entry.armor = 0.0
-	if tdEquipmentDebuffRefreshes(armor, entry.armor)
-		entry.armor = armor
-		entry.armorUntil = now + 3.0
-		let level = tdEquipmentArmorLevel(armor)
-		if target.getAbilityLevel(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID) == 0
-			target.addAbility(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID)
-		target.setAbilityLevel(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID, level)
+	tdApplyEquipmentArmor(target, originLane, armor, 3.0)
 	if tdEquipmentDebuffRefreshes(poison, entry.poison)
 		entry.nextPoisonAt = tdEquipmentPoisonNextTick(now, entry.poison, entry.nextPoisonAt)
 		entry.source = source
@@ -116,7 +126,7 @@ function tdCaptureEquipmentAdditionalDamage()
 	let item3 = tdEquipmentItemId(source, 2)
 	// This locked pre1.29 engine receives the native event value, not a guaranteed
 	// pre-armor attack amount. Capture HP before the native hit changes it.
-	let bonus = tdEquipmentConditionalBonus(target.getHP(), target.getMaxHP(), (tdIsBossUnitTypeId(GetUnitTypeId(target)) or tdTrialEquipmentBossBonusEligible(tdTrialTargetValid(target, lane), lane, target.getUserData() div 10000)), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_EXECUTE), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_BOSS_DAMAGE))
+	let bonus = tdEquipmentConditionalBonus(target.getHP(), target.getMaxHP(), tdEquipmentBossDamageEligible(target, lane), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_EXECUTE), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_BOSS_DAMAGE))
 	let additional = DamageEvent.getAmount() * bonus
 	if additional <= 0.0
 		return

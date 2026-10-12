@@ -1,0 +1,38 @@
+package TDEquipmentSpecialObjectGen
+import Annotations
+import TDEquipmentSpecialObjectIds
+import TDItemCatalogConfig
+import TDShieldRules
+import AbilityObjEditing
+
+function tdConfigureShieldStun(AbilityDefinitionMountainKingThunderBolt definition, boolean boss)
+	definition.setName(boss ? "首领盾击短晕" : "盾击短晕")
+	definition.setLevels(boss ? 1 : 61)
+	definition.setHeroAbility(false)
+	definition.setItemAbility(false)
+	definition.setCheckDependencies(false)
+	definition.setMissileArt("")
+	definition.setMissileSpeed(100000)
+	definition.setArtTarget("")
+	for level = 1 to (boss ? 1 : 61)
+		let duration = tdShieldStunDuration(boss, (level - 1) / 100.0)
+		definition.setDamage(level, 0.0)
+		definition.setDurationNormal(level, duration)
+		definition.setDurationHero(level, duration)
+		definition.setManaCost(level, 0)
+		definition.setCooldown(level, 0.0)
+		definition.setCastRange(level, 99999.0)
+		definition.setCastingTime(level, 0.0)
+		definition.setTargetsAllowed(level, "enemy,ground,air,organic,mechanical")
+		definition.setBuffs(level, "BPSE")
+
+@compiletime function tdGenerateEquipmentSpecialAbilities()
+	let speed = new AbilityDefinitionAttackSpeedIncrease(TD_WAR_INTENT_SPEED_CARRIER)
+	speed.setName("剑圣战意攻速载体")
+	speed.setLevels(1)
+	speed.setItemAbility(true)
+	speed.setHeroAbility(false)
+	speed.setCheckDependencies(false)
+	speed.setAttackSpeedIncrease(1, tdConfiguredWarAttackSpeed())
+	tdConfigureShieldStun(new AbilityDefinitionMountainKingThunderBolt(TD_SHIELD_NORMAL_STUN_ID), false)
+	tdConfigureShieldStun(new AbilityDefinitionMountainKingThunderBolt(TD_SHIELD_BOSS_STUN_ID), true)

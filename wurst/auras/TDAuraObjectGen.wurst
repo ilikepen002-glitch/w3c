@@ -1,0 +1,39 @@
+package TDAuraObjectGen
+import Annotations
+import AbilityObjEditing
+import BuffObjEditing
+import ObjectIds
+import TDAuraObjectIds
+import TDAuraRules
+import TDAuraMetadata
+
+@compiletime function tdGenerateAuraPercentageCarriers()
+	for rank = 1 to 2
+		let whiteTiger = new AbilityDefinitionMoonPriestessTrueshotAura(rank == 1 ? TD_AURA_WHITE_TIGER_NORMAL_CARRIER : TD_AURA_WHITE_TIGER_EVOLVED_CARRIER)
+		whiteTiger.setName("白虎百分比载体 " + rank)
+		whiteTiger.setLevels(1)
+		whiteTiger.setAreaofEffect(1, 0.0)
+		whiteTiger.setDamageBonus(1, tdAuraNominalPower(TD_AURA_WHITE_TIGER, rank))
+		whiteTiger.setRangedBonus(1, true)
+		whiteTiger.setMeleeBonus(1, true)
+		whiteTiger.setFlatBonus(1, false)
+		whiteTiger.setTargetsAllowed(1, "self")
+		whiteTiger.setBuffs(1, tdAuraBuff(TD_AURA_WHITE_TIGER, rank).buffId.toRawCode())
+		whiteTiger.setItemAbility(true)
+		whiteTiger.setHeroAbility(false)
+		whiteTiger.setCheckDependencies(false)
+		whiteTiger.setArtTarget("")
+		let commander = new AbilityDefinitionItemAuraCommand(rank == 1 ? TD_AURA_COMMANDER_NORMAL_CARRIER : TD_AURA_COMMANDER_EVOLVED_CARRIER)
+		commander.setName("统帅百分比载体 " + rank)
+		commander.setLevels(1)
+		commander.setAreaofEffect(1, 0.0)
+		commander.setAttackDamageIncrease(1, tdAuraNominalPower(TD_AURA_COMMANDER, rank))
+		commander.setRangedBonus(1, true)
+		commander.setMeleeBonus(1, true)
+		commander.setFlatBonus(1, false)
+		commander.setTargetsAllowed(1, "self")
+		commander.setBuffs(1, tdAuraBuff(TD_AURA_COMMANDER, rank).buffId.toRawCode())
+		commander.setItemAbility(true)
+		commander.setHeroAbility(false)
+		commander.setCheckDependencies(false)
+		commander.setArtTarget("")

@@ -1,0 +1,34 @@
+package TDEquipmentSpecialObjectIds
+import TDEquipmentSpecialRules
+import BuffObjEditing
+import ObjectIdGenerator
+import Icons
+
+constant buffTuple tdWarStage1 = compiletime(createDummyBuffObject(tdWarStageName(1), tdWarStageTooltip(1), Icons.bTNBloodLust))
+constant buffTuple tdWarStage2 = compiletime(createDummyBuffObject(tdWarStageName(2), tdWarStageTooltip(2), Icons.bTNBloodLust))
+constant buffTuple tdWarStage3 = compiletime(createDummyBuffObject(tdWarStageName(3), tdWarStageTooltip(3), Icons.bTNBloodLust))
+constant buffTuple tdWarBurst = compiletime(createDummyBuffObject(tdWarStageName(4), tdWarStageTooltip(4), Icons.bTNBloodLust))
+constant buffTuple tdPoisonStage1 = compiletime(createDummyBuffObject(tdPoisonStageName(1), tdPoisonStageTooltip(1), Icons.bTNSlowPoison))
+constant buffTuple tdPoisonStage2 = compiletime(createDummyBuffObject(tdPoisonStageName(2), tdPoisonStageTooltip(2), Icons.bTNSlowPoison))
+
+public function tdWarStageBuff(int stage) returns buffTuple
+	if stage == 1
+		return tdWarStage1
+	if stage == 2
+		return tdWarStage2
+	if stage == 3
+		return tdWarStage3
+	if stage == 4
+		return tdWarBurst
+	return buffTuple(0, 0)
+
+public function tdPoisonStageBuff(int stage) returns buffTuple
+	if stage == 1
+		return tdPoisonStage1
+	if stage == 2
+		return tdPoisonStage2
+	return buffTuple(0, 0)
+
+public constant int TD_WAR_INTENT_SPEED_CARRIER = compiletime(ABIL_ID_GEN.next())
+public constant int TD_SHIELD_NORMAL_STUN_ID = compiletime(ABIL_ID_GEN.next())
+public constant int TD_SHIELD_BOSS_STUN_ID = compiletime(ABIL_ID_GEN.next())

@@ -1,74 +1,19 @@
 package TDItemData
-
-public constant int TD_ITEM_QUALITY_WHITE = 1
-public constant int TD_ITEM_QUALITY_GREEN = 2
-public constant int TD_ITEM_QUALITY_BLUE = 3
-public constant int TD_ITEM_QUALITY_PURPLE = 4
-
-public constant int TD_ITEM_EFFECT_NONE = 0
-public constant int TD_ITEM_EFFECT_ATTACK = 1
-public constant int TD_ITEM_EFFECT_RANGE = 2
-public constant int TD_ITEM_EFFECT_ATTACK_SPEED = 3
-public constant int TD_ITEM_EFFECT_COOLDOWN = 4
-public constant int TD_ITEM_EFFECT_KILL_GOLD = 5
-public constant int TD_ITEM_EFFECT_ARMOR_SHRED = 6
-public constant int TD_ITEM_EFFECT_EXECUTE = 7
-public constant int TD_ITEM_EFFECT_POISON = 8
-public constant int TD_ITEM_EFFECT_CONTROL_POWER = 9
-public constant int TD_ITEM_EFFECT_DROP_BONUS = 10
-public constant int TD_ITEM_EFFECT_BOSS_DAMAGE = 11
+import public TDItemCatalogSchema
+import public TDItemCatalogIds
+import TDItemCatalogConfig
 
 public constant int TD_FARMER_INVENTORY_ABILITY_ID = 'A117'
 public constant int TD_TOWER_INVENTORY_ABILITY_ID = 'A118'
 public constant int TD_FARMER_CRAFT_ABILITY_ID = 'A119'
 public constant int TD_FARMER_EQUIPMENT_BOOK_ABILITY_ID = 'Geqb'
 public constant int TD_FARMER_GROUND_UPGRADE_ABILITY_ID = 'Gupg'
-public constant int TD_ITEM_ATTACK_BONUS_WHITE_ABILITY_ID = 'A120'
-public constant int TD_ITEM_ATTACK_BONUS_GREEN_ABILITY_ID = 'A121'
-public constant int TD_ITEM_ATTACK_BONUS_BLUE_ABILITY_ID = 'A122'
-public constant int TD_ITEM_ATTACK_BONUS_PURPLE_ABILITY_ID = 'A123'
-public constant int TD_ITEM_ATTACK_SPEED_WHITE_ABILITY_ID = 'A124'
-public constant int TD_ITEM_ATTACK_SPEED_GREEN_ABILITY_ID = 'A125'
-public constant int TD_ITEM_ATTACK_SPEED_BLUE_ABILITY_ID = 'A126'
-public constant int TD_ITEM_ATTACK_SPEED_PURPLE_ABILITY_ID = 'A127'
 public constant int TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID = 'A128'
 public constant int TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID = 'A129'
 public constant int TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL = 128
 public constant int TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL = 120
 public constant int TD_TOWER_EQUIPMENT_POISON_BONUS_MAX_LEVEL = 60
 public constant real TD_TOWER_EQUIPMENT_RANGE_CAP = 500.0
-
-public constant int TD_ITEM_SHORT_BOW_ID = 'iW01'
-public constant int TD_ITEM_EAGLE_SCOPE_ID = 'iW02'
-public constant int TD_ITEM_SWIFT_GLOVES_ID = 'iW03'
-public constant int TD_ITEM_COOLING_RUNE_ID = 'iW04'
-public constant int TD_ITEM_GOLD_RING_ID = 'iW05'
-public constant int TD_ITEM_ARMOR_SPIKE_ID = 'iW06'
-public constant int TD_ITEM_EXECUTION_DAGGER_ID = 'iW07'
-public constant int TD_ITEM_POISON_SAC_ID = 'iW08'
-public constant int TD_ITEM_STABLE_TOTEM_ID = 'iW09'
-public constant int TD_ITEM_SCAVENGER_BAG_ID = 'iW10'
-
-public constant int TD_ITEM_STEEL_LONGBOW_ID = 'iG01'
-public constant int TD_ITEM_HUNTER_SCOPE_ID = 'iG02'
-public constant int TD_ITEM_WAR_AXE_ID = 'iG03'
-public constant int TD_ITEM_RHYTHM_TOTEM_ID = 'iG04'
-public constant int TD_ITEM_TOXIC_VINE_ID = 'iG05'
-public constant int TD_ITEM_MERCENARY_PURSE_ID = 'iG06'
-public constant int TD_ITEM_LACERATING_SPIKE_ID = 'iG07'
-public constant int TD_ITEM_FOCUS_STONE_ID = 'iG08'
-
-public constant int TD_ITEM_WINDRUNNER_BOW_ID = 'iB01'
-public constant int TD_ITEM_BERSERKER_BADGE_ID = 'iB02'
-public constant int TD_ITEM_ARMOR_DRUM_ID = 'iB03'
-public constant int TD_ITEM_FROST_TOME_ID = 'iB04'
-public constant int TD_ITEM_BOUNTY_CONTRACT_ID = 'iB05'
-public constant int TD_ITEM_EXECUTION_MARK_ID = 'iB06'
-
-public constant int TD_ITEM_WHITE_TIGER_BANNER_ID = 'iP01'
-public constant int TD_ITEM_BLADEMASTER_SIGIL_ID = 'iP02'
-public constant int TD_ITEM_COMMAND_SEAL_ID = 'iP03'
-public constant int TD_ITEM_CORRUPTED_HEART_ID = 'iP04'
 
 constant int TD_ITEM_POOL_STRIDE = 32
 boolean tdItemCatalogInitialized = false
@@ -82,67 +27,41 @@ int array tdItemPrimaryEffectKinds
 real array tdItemPrimaryEffectValues
 int array tdItemSecondaryEffectKinds
 real array tdItemSecondaryEffectValues
+int array tdItemLines
+int array tdItemNextIds
+int array tdItemAuraKinds
+real array tdItemAuraValues
+real array tdItemAuraRadii
+int array tdItemSpecializations
 
 function tdItemQualityPoolKey(int quality, int index) returns int
 	return quality * TD_ITEM_POOL_STRIDE + index
 
-function tdRegisterItem(int itemId, int quality, string name, int primaryKind, real primaryValue, int secondaryKind, real secondaryValue)
+function tdRegisterEquipment(tdEquipmentDefinition definition)
 	tdItemDefinitionTotal += 1
-	let definitionIndex = tdItemDefinitionTotal
-	tdItemCatalog[definitionIndex] = itemId
-	tdItemNames[definitionIndex] = name
-	tdItemQualities[definitionIndex] = quality
-	tdItemPrimaryEffectKinds[definitionIndex] = primaryKind
-	tdItemPrimaryEffectValues[definitionIndex] = primaryValue
-	tdItemSecondaryEffectKinds[definitionIndex] = secondaryKind
-	tdItemSecondaryEffectValues[definitionIndex] = secondaryValue
-	tdItemQualitySizes[quality] += 1
-	tdItemQualityPools[tdItemQualityPoolKey(quality, tdItemQualitySizes[quality])] = itemId
-
-function tdRegisterLaunchWhiteItems()
-	tdRegisterItem(TD_ITEM_SHORT_BOW_ID, TD_ITEM_QUALITY_WHITE, "短弓", TD_ITEM_EFFECT_ATTACK, 8.0, TD_ITEM_EFFECT_NONE, 0.0)
-	tdRegisterItem(TD_ITEM_EAGLE_SCOPE_ID, TD_ITEM_QUALITY_WHITE, "鹰眼镜", TD_ITEM_EFFECT_RANGE, 90.0, TD_ITEM_EFFECT_NONE, 0.0)
-	tdRegisterItem(TD_ITEM_SWIFT_GLOVES_ID, TD_ITEM_QUALITY_WHITE, "迅击手套", TD_ITEM_EFFECT_ATTACK_SPEED, 0.12, TD_ITEM_EFFECT_NONE, 0.0)
-	tdRegisterItem(TD_ITEM_COOLING_RUNE_ID, TD_ITEM_QUALITY_WHITE, "冷凝符文", TD_ITEM_EFFECT_COOLDOWN, 0.08, TD_ITEM_EFFECT_NONE, 0.0)
-	tdRegisterItem(TD_ITEM_GOLD_RING_ID, TD_ITEM_QUALITY_WHITE, "猎金指环", TD_ITEM_EFFECT_KILL_GOLD, 1.0, TD_ITEM_EFFECT_NONE, 0.0)
-	tdRegisterItem(TD_ITEM_ARMOR_SPIKE_ID, TD_ITEM_QUALITY_WHITE, "破甲尖刺", TD_ITEM_EFFECT_ARMOR_SHRED, 1.0, TD_ITEM_EFFECT_NONE, 0.0)
-	tdRegisterItem(TD_ITEM_EXECUTION_DAGGER_ID, TD_ITEM_QUALITY_WHITE, "处决匕首", TD_ITEM_EFFECT_EXECUTE, 0.12, TD_ITEM_EFFECT_NONE, 0.0)
-	tdRegisterItem(TD_ITEM_POISON_SAC_ID, TD_ITEM_QUALITY_WHITE, "毒雾囊", TD_ITEM_EFFECT_POISON, 6.0, TD_ITEM_EFFECT_NONE, 0.0)
-	tdRegisterItem(TD_ITEM_STABLE_TOTEM_ID, TD_ITEM_QUALITY_WHITE, "稳固图腾", TD_ITEM_EFFECT_CONTROL_POWER, 0.10, TD_ITEM_EFFECT_NONE, 0.0)
-	tdRegisterItem(TD_ITEM_SCAVENGER_BAG_ID, TD_ITEM_QUALITY_WHITE, "拾荒袋", TD_ITEM_EFFECT_DROP_BONUS, 1.0, TD_ITEM_EFFECT_NONE, 0.0)
-
-function tdRegisterLaunchGreenItems()
-	tdRegisterItem(TD_ITEM_STEEL_LONGBOW_ID, TD_ITEM_QUALITY_GREEN, "精钢长弓", TD_ITEM_EFFECT_ATTACK, 14.0, TD_ITEM_EFFECT_ATTACK_SPEED, 0.20)
-	tdRegisterItem(TD_ITEM_HUNTER_SCOPE_ID, TD_ITEM_QUALITY_GREEN, "猎手望远镜", TD_ITEM_EFFECT_RANGE, 150.0, TD_ITEM_EFFECT_EXECUTE, 0.20)
-	tdRegisterItem(TD_ITEM_WAR_AXE_ID, TD_ITEM_QUALITY_GREEN, "战吼战斧", TD_ITEM_EFFECT_ATTACK, 14.0, TD_ITEM_EFFECT_ARMOR_SHRED, 2.0)
-	tdRegisterItem(TD_ITEM_RHYTHM_TOTEM_ID, TD_ITEM_QUALITY_GREEN, "节律图腾", TD_ITEM_EFFECT_COOLDOWN, 0.12, TD_ITEM_EFFECT_CONTROL_POWER, 0.16)
-	tdRegisterItem(TD_ITEM_TOXIC_VINE_ID, TD_ITEM_QUALITY_GREEN, "淬毒藤囊", TD_ITEM_EFFECT_ATTACK_SPEED, 0.20, TD_ITEM_EFFECT_POISON, 10.0)
-	tdRegisterItem(TD_ITEM_MERCENARY_PURSE_ID, TD_ITEM_QUALITY_GREEN, "佣兵钱袋", TD_ITEM_EFFECT_KILL_GOLD, 2.0, TD_ITEM_EFFECT_DROP_BONUS, 1.0)
-	tdRegisterItem(TD_ITEM_LACERATING_SPIKE_ID, TD_ITEM_QUALITY_GREEN, "裂伤骨刺", TD_ITEM_EFFECT_EXECUTE, 0.20, TD_ITEM_EFFECT_ATTACK, 14.0)
-	tdRegisterItem(TD_ITEM_FOCUS_STONE_ID, TD_ITEM_QUALITY_GREEN, "聚焦符石", TD_ITEM_EFFECT_COOLDOWN, 0.12, TD_ITEM_EFFECT_RANGE, 150.0)
-
-function tdRegisterLaunchBlueItems()
-	tdRegisterItem(TD_ITEM_WINDRUNNER_BOW_ID, TD_ITEM_QUALITY_BLUE, "风行者之弓", TD_ITEM_EFFECT_ATTACK_SPEED, 0.32, TD_ITEM_EFFECT_RANGE, 230.0)
-	tdRegisterItem(TD_ITEM_BERSERKER_BADGE_ID, TD_ITEM_QUALITY_BLUE, "狂战战徽", TD_ITEM_EFFECT_ATTACK, 22.0, TD_ITEM_EFFECT_BOSS_DAMAGE, 0.25)
-	tdRegisterItem(TD_ITEM_ARMOR_DRUM_ID, TD_ITEM_QUALITY_BLUE, "碎甲战鼓", TD_ITEM_EFFECT_ARMOR_SHRED, 3.0, TD_ITEM_EFFECT_ATTACK, 22.0)
-	tdRegisterItem(TD_ITEM_FROST_TOME_ID, TD_ITEM_QUALITY_BLUE, "霜纹法典", TD_ITEM_EFFECT_COOLDOWN, 0.18, TD_ITEM_EFFECT_CONTROL_POWER, 0.25)
-	tdRegisterItem(TD_ITEM_BOUNTY_CONTRACT_ID, TD_ITEM_QUALITY_BLUE, "赏金契约", TD_ITEM_EFFECT_KILL_GOLD, 3.0, TD_ITEM_EFFECT_DROP_BONUS, 2.0)
-	tdRegisterItem(TD_ITEM_EXECUTION_MARK_ID, TD_ITEM_QUALITY_BLUE, "终结者刻印", TD_ITEM_EFFECT_EXECUTE, 0.30, TD_ITEM_EFFECT_ATTACK, 22.0)
-
-function tdRegisterLaunchPurpleItems()
-	tdRegisterItem(TD_ITEM_WHITE_TIGER_BANNER_ID, TD_ITEM_QUALITY_PURPLE, "白虎战旗", TD_ITEM_EFFECT_RANGE, 340.0, TD_ITEM_EFFECT_ATTACK, 34.0)
-	tdRegisterItem(TD_ITEM_BLADEMASTER_SIGIL_ID, TD_ITEM_QUALITY_PURPLE, "剑圣印记", TD_ITEM_EFFECT_ATTACK, 34.0, TD_ITEM_EFFECT_BOSS_DAMAGE, 0.45)
-	tdRegisterItem(TD_ITEM_COMMAND_SEAL_ID, TD_ITEM_QUALITY_PURPLE, "统御圣印", TD_ITEM_EFFECT_COOLDOWN, 0.26, TD_ITEM_EFFECT_CONTROL_POWER, 0.40)
-	tdRegisterItem(TD_ITEM_CORRUPTED_HEART_ID, TD_ITEM_QUALITY_PURPLE, "腐化心核", TD_ITEM_EFFECT_POISON, 24.0, TD_ITEM_EFFECT_ATTACK_SPEED, 0.48)
+	let index = tdItemDefinitionTotal
+	tdItemCatalog[index] = definition.rawcode
+	tdItemNames[index] = definition.name
+	tdItemQualities[index] = definition.quality
+	tdItemPrimaryEffectKinds[index] = definition.primaryKind
+	tdItemPrimaryEffectValues[index] = definition.primaryValue
+	tdItemSecondaryEffectKinds[index] = definition.secondaryKind
+	tdItemSecondaryEffectValues[index] = definition.secondaryValue
+	tdItemLines[index] = definition.line
+	tdItemNextIds[index] = definition.nextId
+	tdItemAuraKinds[index] = definition.auraKind
+	tdItemAuraValues[index] = definition.auraValue
+	tdItemAuraRadii[index] = definition.auraRadius
+	tdItemSpecializations[index] = definition.specialization
+	tdItemQualitySizes[definition.quality] += 1
+	tdItemQualityPools[tdItemQualityPoolKey(definition.quality, tdItemQualitySizes[definition.quality])] = definition.rawcode
 
 function tdEnsureItemCatalog()
 	if tdItemCatalogInitialized
 		return
 	tdItemCatalogInitialized = true
-	tdRegisterLaunchWhiteItems()
-	tdRegisterLaunchGreenItems()
-	tdRegisterLaunchBlueItems()
-	tdRegisterLaunchPurpleItems()
+	for index = 1 to 40
+		tdRegisterEquipment(tdConfiguredEquipment(index))
 
 function tdItemDefinitionIndex(int itemId) returns int
 	// Rawcodes collide in Jass arrays, so item metadata must be resolved through the catalog.
@@ -183,6 +102,54 @@ public function tdItemQuality(int itemId) returns int
 	if definitionIndex == 0
 		return 0
 	return tdItemQualities[definitionIndex]
+
+public function tdItemLine(int itemId) returns int
+	tdEnsureItemCatalog()
+	return tdItemLines[tdItemDefinitionIndex(itemId)]
+
+public function tdItemFixedNextId(int itemId) returns int
+	tdEnsureItemCatalog()
+	return tdItemNextIds[tdItemDefinitionIndex(itemId)]
+
+public function tdItemAuraKind(int itemId) returns int
+	tdEnsureItemCatalog()
+	return tdItemAuraKinds[tdItemDefinitionIndex(itemId)]
+
+public function tdItemAuraValue(int itemId) returns real
+	tdEnsureItemCatalog()
+	return tdItemAuraValues[tdItemDefinitionIndex(itemId)]
+
+public function tdItemAuraRadius(int itemId) returns real
+	tdEnsureItemCatalog()
+	return tdItemAuraRadii[tdItemDefinitionIndex(itemId)]
+
+public function tdItemSpecialization(int itemId) returns int
+	tdEnsureItemCatalog()
+	return tdItemSpecializations[tdItemDefinitionIndex(itemId)]
+
+public function tdItemSpecialCount(int itemId) returns int
+	return tdConfiguredSpecialCount(tdItemSpecialization(itemId))
+
+public function tdItemSpecialTargetCap(int itemId) returns int
+	return tdConfiguredSpecialTargetCap(tdItemSpecialization(itemId))
+
+public function tdItemSpecialDamageFactor(int itemId) returns real
+	return tdConfiguredSpecialDamageFactor(tdItemSpecialization(itemId))
+
+public function tdItemSpecialRadius(int itemId) returns real
+	return tdConfiguredSpecialRadius(tdItemSpecialization(itemId))
+
+public function tdItemWarAttackSpeed() returns real
+	return tdConfiguredWarAttackSpeed()
+
+public function tdItemWarDuration() returns real
+	return tdConfiguredWarDuration()
+
+public function tdItemShieldBossArmor() returns real
+	return tdConfiguredShieldBossArmor()
+
+public function tdItemShieldBossArmorDuration() returns real
+	return tdConfiguredShieldBossArmorDuration()
 
 public function tdItemPrimaryEffectKind(int itemId) returns int
 	tdEnsureItemCatalog()
@@ -265,15 +232,15 @@ function tdItemEffectText(int effectKind, real value) returns string
 	if effectKind == TD_ITEM_EFFECT_ATTACK_SPEED
 		return "攻速 +" + R2I(value * 100.0 + 0.5).toString() + "%"
 	if effectKind == TD_ITEM_EFFECT_COOLDOWN
-		return "嗜血、剑刃风暴冷却时间缩短" + R2I(value * 100.0 + 0.5).toString() + "%（与精灵灵感合计上限40%）"
+		return "嗜血、剑刃风暴冷却时间缩短" + R2I(value * 100.0 + 0.5).toString() + "%（与精灵灵感、有效冷却光环合计上限40%）"
 	if effectKind == TD_ITEM_EFFECT_KILL_GOLD
 		return "本路非首领击杀金币 +" + R2I(value + 0.5).toString() + "\n每路每波额外金币上限：本波非Boss基础击杀金币总额。"
 	if effectKind == TD_ITEM_EFFECT_ARMOR_SHRED
-		return "普攻使目标护甲降低" + R2I(value + 0.5).toString() + "，持续3秒。\n同塔装备减甲相加后四舍五入，最高30；不同塔取最强效果。"
+		return "普攻使目标护甲降低" + R2I(value + 0.5).toString() + "，持续3秒。\n同塔同种装备减甲取最高档后四舍五入，最高30；不同塔取最强效果。"
 	if effectKind == TD_ITEM_EFFECT_EXECUTE
 		return "普攻命中生命值不高于50%的主目标时，追加本次普攻伤害的" + R2I(value * 100.0 + 0.5).toString() + "%\n与首领追加比例相加；法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。"
 	if effectKind == TD_ITEM_EFFECT_POISON
-		return "普攻使目标中毒，每秒" + R2I(value + 0.5).toString() + "伤害，持续3秒。\n同塔装备毒伤相加，不同塔取最强效果。"
+		return "普攻使目标中毒，每秒" + R2I(value + 0.5).toString() + "伤害，持续3秒。\n同塔同种装备毒伤取最高档，不同塔取最强效果。"
 	if effectKind == TD_ITEM_EFFECT_CONTROL_POWER
 		return "毒镖、缓速藤蔓的移动减速与盾击眩晕时间提高" + R2I(value * 100.0 + 0.5).toString() + "%（装备控制强化上限60%）"
 	if effectKind == TD_ITEM_EFFECT_DROP_BONUS
@@ -291,7 +258,42 @@ public function tdItemTooltip(int itemId) returns string
 		tooltip += "\n" + primary
 	if secondary != ""
 		tooltip += "\n" + secondary
-	tooltip += "\n塔可装备；同塔第3件同名装备仅发挥50%属性。\n放入工人前3格可参与同品质合成。"
+	let primaryKind = tdItemPrimaryEffectKind(itemId)
+	let secondaryKind = tdItemSecondaryEffectKind(itemId)
+	if primaryKind != TD_ITEM_EFFECT_NONE and not tdItemPersonalEffectStacks(primaryKind)
+		tooltip += "\n同种个人机制跨品质取最高档，卸下强档后恢复弱档。"
+	else if secondaryKind != TD_ITEM_EFFECT_NONE and not tdItemPersonalEffectStacks(secondaryKind)
+		tooltip += "\n同种个人机制跨品质取最高档，卸下强档后恢复弱档。"
+	let auraKind = tdItemAuraKind(itemId)
+	if auraKind != TD_ITEM_AURA_NONE
+		let value = tdItemAuraValue(itemId)
+		var auraText = ""
+		if auraKind == TD_ITEM_AURA_ATTACK
+			auraText = "攻击光环：按受益塔静态基础攻击的" + R2I(value * 100.0 + 0.5) + "%增加固定攻击；不改变原生塔百分比光环语义。"
+		else if auraKind == TD_ITEM_AURA_ATTACK_SPEED
+			auraText = "攻速光环：标称攻击速度 +" + R2I(value * 100.0 + 0.5) + "%（装备个人攻速与装备攻速光环汇总载体上限120%）。"
+		else if auraKind == TD_ITEM_AURA_COOLDOWN
+			auraText = "冷却光环：嗜血、剑刃风暴与精灵主动技能冷却缩短" + R2I(value * 100.0 + 0.5) + "%；与个人装备、灵感合计上限40%。不刷新已开始的冷却。"
+		else if auraKind == TD_ITEM_AURA_ARMOR_ON_HIT
+			auraText = "破甲光环：授予己方塔普攻主目标破甲" + R2I(value + 0.5) + "，持续3秒。自身装备破甲与授予值取最高，不扩散邻敌。"
+		else if auraKind == TD_ITEM_AURA_ENEMY_SLOW
+			auraText = "敌方移动减速光环：标称减速" + R2I(value * 100.0 + 0.5) + "%；异名移动慢相加，总上限75%。"
+		tooltip += "\n" + auraText + "\n光环范围" + R2I(tdItemAuraRadius(itemId)) + "，不受装备射程影响；同光环仅最高等级生效，异名光环可叠加。"
+		if auraKind != TD_ITEM_AURA_ENEMY_SLOW
+			tooltip += "作用于本玩家本路合法塔，包含自己。"
+	let special = tdItemSpecialization(itemId)
+	if special == TD_ITEM_SPECIAL_ARCHER_ARROW
+		tooltip += "\n弓手专精：分裂箭额外增加" + tdItemSpecialCount(itemId) + "支副箭，复用分裂箭规则。"
+	else if special == TD_ITEM_SPECIAL_WAR_INTENT
+		tooltip += "\n剑圣专精：同目标" + tdItemSpecialCount(itemId) + "次主普攻击中触发战意，攻速 +" + R2I(tdItemWarAttackSpeed() * 100.0 + 0.5) + "%持续" + R2I(tdItemWarDuration()) + "秒。爆发中不叠层不续时；换目标或停攻" + R2I(tdConfiguredWarInactivity()) + "秒清层。"
+	else if special == TD_ITEM_SPECIAL_CORPSE_BURST or special == TD_ITEM_SPECIAL_POISON_BURST
+		let title = special == TD_ITEM_SPECIAL_CORPSE_BURST ? "食尸鬼尸气" : "树妖毒爆"
+		tooltip += "\n" + title + "专精：每" + tdItemSpecialCount(itemId) + "次有效主普攻击中触发本击事件伤害" + R2I(tdItemSpecialDamageFactor(itemId) * 100.0) + "%的范围伤害，范围" + R2I(tdItemSpecialRadius(itemId)) + "，最多" + tdItemSpecialTargetCap(itemId) + "个活目标；每目标法抗只计算一次，副箭与毒伤不回灌。"
+		if special == TD_ITEM_SPECIAL_POISON_BURST
+			tooltip += "同目标计层，换目标或停攻" + R2I(tdConfiguredPoisonBurstInactivity()) + "秒清层。"
+	else if special == TD_ITEM_SPECIAL_SHIELD_SPREAD
+		tooltip += "\n步兵专精：盾击以主目标为中心" + R2I(tdItemSpecialRadius(itemId)) + "范围内额外扩散最多" + tdItemSpecialTargetCap(itemId) + "名非首领；首领不额外硬控，仅装备破甲" + R2I(tdItemShieldBossArmor()) + "持续" + R2I(tdItemShieldBossArmorDuration()) + "秒。"
+	tooltip += "\n塔可装备；同塔不能重复装备同名物品，重复物品优先退回塔旁，拥堵时应急退回同路材料堆。\n工人可持有重复装备，前3格三件同品质装备才可合成：同名确定下一阶，混名随机下一品质，紫装不能合成。"
 	return tooltip
 
 public function tdItemLevel(int itemId) returns int
@@ -322,62 +324,98 @@ public function tdFarmerGroundUpgradeHotkey() returns string
 	return "U"
 
 public function tdItemIconPath(int itemId) returns string
-	if itemId == TD_ITEM_SHORT_BOW_ID
-		return "war3mapImported\\BTNTDItemShortBow.blp"
-	if itemId == TD_ITEM_STEEL_LONGBOW_ID
-		return "war3mapImported\\BTNTDItemSteelLongbow.blp"
-	if itemId == TD_ITEM_WINDRUNNER_BOW_ID
-		return "war3mapImported\\BTNTDItemWindrunnerBow.blp"
-	if itemId == TD_ITEM_EAGLE_SCOPE_ID
-		return "war3mapImported\\BTNTDItemEagleScope.blp"
-	if itemId == TD_ITEM_HUNTER_SCOPE_ID
-		return "war3mapImported\\BTNTDItemHunterScope.blp"
-	if itemId == TD_ITEM_WHITE_TIGER_BANNER_ID
-		return "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
-	if itemId == TD_ITEM_COOLING_RUNE_ID
-		return "war3mapImported\\BTNTDItemCoolingRune.blp"
-	if itemId == TD_ITEM_STABLE_TOTEM_ID
-		return "war3mapImported\\BTNTDItemStableTotem.blp"
-	if itemId == TD_ITEM_RHYTHM_TOTEM_ID
-		return "war3mapImported\\BTNTDItemRhythmTotem.blp"
-	if itemId == TD_ITEM_FOCUS_STONE_ID
-		return "war3mapImported\\BTNTDItemFocusStone.blp"
-	if itemId == TD_ITEM_FROST_TOME_ID
-		return "war3mapImported\\BTNTDItemFrostTome.blp"
-	if itemId == TD_ITEM_COMMAND_SEAL_ID
-		return "war3mapImported\\BTNTDItemCommandSeal.blp"
-	if itemId == TD_ITEM_ARMOR_SPIKE_ID
-		return "war3mapImported\\BTNTDItemArmorSpike.blp"
-	if itemId == TD_ITEM_WAR_AXE_ID
-		return "war3mapImported\\BTNTDItemWarAxe.blp"
-	if itemId == TD_ITEM_LACERATING_SPIKE_ID
-		return "war3mapImported\\BTNTDItemLaceratingSpike.blp"
-	if itemId == TD_ITEM_BERSERKER_BADGE_ID
-		return "war3mapImported\\BTNTDItemBerserkerBadge.blp"
-	if itemId == TD_ITEM_ARMOR_DRUM_ID
-		return "war3mapImported\\BTNTDItemArmorDrum.blp"
-	if itemId == TD_ITEM_BLADEMASTER_SIGIL_ID
-		return "war3mapImported\\BTNTDItemBlademasterSigil.blp"
-	if itemId == TD_ITEM_GOLD_RING_ID
-		return "war3mapImported\\BTNTDItemGoldRing.blp"
-	if itemId == TD_ITEM_SCAVENGER_BAG_ID
-		return "war3mapImported\\BTNTDItemScavengerBag.blp"
-	if itemId == TD_ITEM_MERCENARY_PURSE_ID
-		return "war3mapImported\\BTNTDItemMercenaryPurse.blp"
-	if itemId == TD_ITEM_BOUNTY_CONTRACT_ID
-		return "war3mapImported\\BTNTDItemBountyContract.blp"
-	if itemId == TD_ITEM_EXECUTION_MARK_ID
-		return "war3mapImported\\BTNTDItemExecutionMark.blp"
-	if itemId == TD_ITEM_CORRUPTED_HEART_ID
-		return "war3mapImported\\BTNTDItemCorruptedHeart.blp"
-	if itemId == TD_ITEM_POISON_SAC_ID
-		return "war3mapImported\\BTNTDItemPoisonSac.blp"
-	if itemId == TD_ITEM_TOXIC_VINE_ID
-		return "war3mapImported\\BTNTDItemToxicVine.blp"
-	if itemId == TD_ITEM_SWIFT_GLOVES_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
-	if itemId == TD_ITEM_EXECUTION_DAGGER_ID
-		return "ReplaceableTextures\\CommandButtons\\BTNDaggerOfEscape.blp"
+	let line = tdItemLine(itemId)
+	let quality = tdItemQuality(itemId)
+	if line == 1
+		if quality == 1
+			return "war3mapImported\\BTNTDItemEagleScope.blp"
+		if quality == 2
+			return "war3mapImported\\BTNTDItemHunterScope.blp"
+		if quality == 3
+			return "war3mapImported\\BTNTDItemWindrunnerBow.blp"
+		if quality == 4
+			return "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+	if line == 2
+		if quality == 1
+			return "war3mapImported\\BTNTDItemWarAxe.blp"
+		if quality == 2
+			return "war3mapImported\\BTNTDItemWarAxe.blp"
+		if quality == 3
+			return "war3mapImported\\BTNTDItemBerserkerBadge.blp"
+		if quality == 4
+			return "war3mapImported\\BTNTDItemBlademasterSigil.blp"
+	if line == 3
+		if quality == 1
+			return "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+		if quality == 2
+			return "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+		if quality == 3
+			return "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+		if quality == 4
+			return "war3mapImported\\BTNTDItemCorruptedHeart.blp"
+	if line == 4
+		if quality == 1
+			return "war3mapImported\\BTNTDItemCommandSeal.blp"
+		if quality == 2
+			return "war3mapImported\\BTNTDItemCommandSeal.blp"
+		if quality == 3
+			return "war3mapImported\\BTNTDItemCommandSeal.blp"
+		if quality == 4
+			return "war3mapImported\\BTNTDItemCommandSeal.blp"
+	if line == 5
+		if quality == 1
+			return "war3mapImported\\BTNTDItemPoisonSac.blp"
+		if quality == 2
+			return "war3mapImported\\BTNTDItemToxicVine.blp"
+		if quality == 3
+			return "war3mapImported\\BTNTDItemPoisonSac.blp"
+		if quality == 4
+			return "war3mapImported\\BTNTDItemCorruptedHeart.blp"
+	if line == 6
+		if quality == 1
+			return "war3mapImported\\BTNTDItemArmorSpike.blp"
+		if quality == 2
+			return "war3mapImported\\BTNTDItemLaceratingSpike.blp"
+		if quality == 3
+			return "war3mapImported\\BTNTDItemArmorDrum.blp"
+		if quality == 4
+			return "war3mapImported\\BTNTDItemArmorDrum.blp"
+	if line == 7
+		if quality == 1
+			return "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+		if quality == 2
+			return "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+		if quality == 3
+			return "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+		if quality == 4
+			return "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+	if line == 8
+		if quality == 1
+			return "war3mapImported\\BTNTDItemGoldRing.blp"
+		if quality == 2
+			return "war3mapImported\\BTNTDItemMercenaryPurse.blp"
+		if quality == 3
+			return "war3mapImported\\BTNTDItemBountyContract.blp"
+		if quality == 4
+			return "war3mapImported\\BTNTDItemFrostTome.blp"
+	if line == 9
+		if quality == 1
+			return "war3mapImported\\BTNTDItemArmorDrum.blp"
+		if quality == 2
+			return "war3mapImported\\BTNTDItemArmorDrum.blp"
+		if quality == 3
+			return "war3mapImported\\BTNTDItemArmorDrum.blp"
+		if quality == 4
+			return "war3mapImported\\BTNTDItemArmorDrum.blp"
+	if line == 10
+		if quality == 1
+			return "war3mapImported\\BTNTDItemCoolingRune.blp"
+		if quality == 2
+			return "war3mapImported\\BTNTDItemCoolingRune.blp"
+		if quality == 3
+			return "war3mapImported\\BTNTDItemCoolingRune.blp"
+		if quality == 4
+			return "war3mapImported\\BTNTDItemCoolingRune.blp"
 	return "ReplaceableTextures\\CommandButtons\\BTNScroll.blp"
 
 public function tdItemPassiveAbilityRawcodes(int _itemId) returns string
@@ -387,7 +425,11 @@ public function tdItemPassiveAbilityRawcodes(int _itemId) returns string
 
 
 public function tdItemPickupSummary(int itemId, int slot) returns string
-	let primary = tdItemEffectText(tdItemPrimaryEffectKind(itemId), tdItemPrimaryEffectValue(itemId))
+	var primary = tdItemEffectText(tdItemPrimaryEffectKind(itemId), tdItemPrimaryEffectValue(itemId))
+	if primary == "" and tdItemAuraKind(itemId) != TD_ITEM_AURA_NONE
+		let kind = tdItemAuraKind(itemId)
+		let label = kind == TD_ITEM_AURA_ATTACK ? "攻击光环" : (kind == TD_ITEM_AURA_ATTACK_SPEED ? "攻速光环" : (kind == TD_ITEM_AURA_COOLDOWN ? "冷却光环" : (kind == TD_ITEM_AURA_ARMOR_ON_HIT ? "普攻破甲光环" : "敌方寒霜领域")))
+		primary = label + " " + tdItemQuality(itemId) + "级 · 标称" + (kind == TD_ITEM_AURA_ARMOR_ON_HIT ? R2I(tdItemAuraValue(itemId)) + "破甲" : R2I(tdItemAuraValue(itemId) * 100.0 + 0.5) + "%")
 	// Feedback is one short line; detailed reward limits belong in the tooltip.
 	var lineEnd = StringLength(primary)
 	for index = 0 to StringLength(primary) - 1

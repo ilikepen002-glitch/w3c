@@ -1,9 +1,12 @@
 package TDGroundItemRuntime
 import TDGroundItemRules
+import TDGroundItemTerrainMask
+import TDItemPlacement
+import TDItemOperationState
+import TDCraftingRuntime
 import TDItemData
 import TDConfig
 import TDState
-import TDCraftingLogic
 import LinkedList
 import ClosureTimers
 import RegisterEvents
@@ -11,76 +14,27 @@ import RegisterEvents
 LinkedList<item> array tdGroundQueues
 int array tdGroundPileCounts
 boolean tdGroundBusy = false
-boolean tdGroundCrafting = false
 boolean tdGroundRuntimeReady = false
 int tdGroundQuality = 1
-item tdGroundFirst = null
-item tdGroundSecond = null
-vec2 tdGroundCastPoint = vec2(0, 0)
-player tdGroundCaster = null
-int tdGroundCasterLane = -1
-int tdGroundSuccesses = 0
 
 function tdGroundItemAvailable(item itm, int quality) returns boolean
-	if itm == null or GetItemTypeId(itm) == 0 or IsItemOwned(itm) or not IsItemVisible(itm)
+	if not tdGroundItemHandleValid(itm) or not IsItemVisible(itm)
 		return false
-	if not tdGroundCrafting
-		return tdGroundItemGroup(GetItemTypeId(itm)) == quality
-	if not tdIsLanePlayer(tdGroundCasterLane)
+	if tdGroundSortSourceLane(GetItemX(itm), GetItemY(itm)) < 0
 		return false
-	if not tdItemIsEquipment(GetItemTypeId(itm))
-		return false
-	if tdItemQuality(GetItemTypeId(itm)) != quality
-		return false
-	if tdGroundItemLane(GetItemX(itm), GetItemY(itm)) != tdGroundCasterLane
-		return false
-	return tdGroundPointInUpgradeCircle(GetItemX(itm), GetItemY(itm), tdGroundCastPoint.x, tdGroundCastPoint.y)
+	return tdGroundItemGroup(GetItemTypeId(itm)) == quality
 
 function tdGroundCaptureItem()
 	let itm = GetEnumItem()
 	let pileGroup = tdGroundItemGroup(GetItemTypeId(itm))
-	// Separate guards preserve grouping in the fixed JASS compiler.
 	if pileGroup <= 0 or pileGroup > 5
 		return
-	if tdGroundCrafting
-		if pileGroup >= TD_ITEM_QUALITY_PURPLE
-			return
-	if not tdGroundItemAvailable(itm, pileGroup)
-		return
-	tdGroundQueues[pileGroup].add(itm)
+	if tdGroundItemAvailable(itm, pileGroup)
+		tdGroundQueues[pileGroup].add(itm)
 
 function tdGroundFinish()
-	if tdGroundCrafting and not tdIsGameOver()
-		DisplayTimedTextToPlayer(tdGroundCaster, 0, 0, 5.0, "范围升级完成：3 合 1 必成 " + tdGroundSuccesses.toString() + " 次。余下 1 至 2 件及紫装原地保留，产物已移入对应品质堆。")
-	tdGroundFirst = null
-	tdGroundSecond = null
-	tdGroundCaster = null
-	tdGroundCasterLane = -1
-	tdGroundCrafting = false
 	tdGroundBusy = false
-
-function tdGroundConsumeBatch(item third)
-	// All checks and all removals run in the same callback without yielding.
-	if tdIsGameOver() or third == null
-		return
-	if not tdGroundItemAvailable(tdGroundFirst, tdGroundQuality) or not tdGroundItemAvailable(tdGroundSecond, tdGroundQuality)
-		return
-	if not tdGroundItemAvailable(third, tdGroundQuality)
-		return
-	if tdGroundFirst == tdGroundSecond or tdGroundFirst == third or tdGroundSecond == third
-		return
-	if tdGroundCraftBatchSize(tdGroundQuality, 3) != 3
-		return
-	RemoveItem(tdGroundFirst)
-	RemoveItem(tdGroundSecond)
-	RemoveItem(third)
-	let nextQuality = tdCraftResultQuality(tdGroundQuality)
-	let pileIndex = tdGroundCasterLane * 5 + nextQuality
-	let pos = tdGroundItemPilePosition(tdGroundCasterLane, nextQuality, tdGroundPileCounts[pileIndex])
-	// Products are outside the cast snapshot, even when the target overlaps this pile.
-	CreateItem(tdRandomItemIdForQuality(nextQuality), pos.x, pos.y)
-	tdGroundPileCounts[pileIndex] += 1
-	tdGroundSuccesses += 1
+	tdItemOperationRelease()
 
 function tdGroundProcessOne()
 	if tdGroundQuality > 5
@@ -88,88 +42,67 @@ function tdGroundProcessOne()
 		return
 	let queue = tdGroundQueues[tdGroundQuality]
 	if queue.isEmpty()
-		tdGroundFirst = null
-		tdGroundSecond = null
 		tdGroundQuality += 1
 		return
 	let itm = queue.dequeue()
 	if tdIsGameOver() or not tdGroundItemAvailable(itm, tdGroundQuality)
 		return
-	if not tdGroundCrafting
-		let lane = tdGroundItemLane(GetItemX(itm), GetItemY(itm))
-		let pileIndex = lane * 5 + tdGroundQuality
-		let pos = tdGroundItemPilePosition(lane, tdGroundQuality, tdGroundPileCounts[pileIndex])
-		SetItemPosition(itm, pos.x, pos.y)
-		tdGroundPileCounts[pileIndex] += 1
+	let origin = tdItemActualPosition(itm)
+	let lane = tdGroundSortSourceLane(origin.x, origin.y)
+	if not tdIsLanePlayer(lane) or IsTerrainPathable(origin.x, origin.y, PATHING_TYPE_WALKABILITY)
 		return
-	// A queued ingredient can be picked up between ticks; remove it from pending state.
-	if tdGroundFirst != null and not tdGroundItemAvailable(tdGroundFirst, tdGroundQuality)
-		tdGroundFirst = null
-	if tdGroundSecond != null and not tdGroundItemAvailable(tdGroundSecond, tdGroundQuality)
-		tdGroundSecond = null
-	if tdGroundFirst == null
-		tdGroundFirst = itm
-	else if tdGroundSecond == null
-		tdGroundSecond = itm
-	else
-		tdGroundConsumeBatch(itm)
-		tdGroundFirst = null
-		tdGroundSecond = null
+	let pileIndex = lane * 5 + tdGroundQuality
+	// Move only after source checks. Placement tries every same-pile safe cell,
+	// checking the actual native coordinates each time, never requested coords.
+	let index = tdTryPlaceItemInPile(itm, lane, tdGroundQuality, tdGroundPileCounts[pileIndex])
+	if index >= 0
+		tdGroundPileCounts[pileIndex] = index + 1
+	else if index == -2
+		// No admissible destination was attempted; do not move even to "restore".
+		return
+	else if not tdRestoreSortedItem(itm, lane, origin)
+		// No successful-sort count and no deletion on an abnormal native rollback.
+		DisplayTimedTextToPlayer(Player(lane), 0, 0, 6.0, "整理落点及归位未确认，物品未删除。句柄 " + GetHandleId(itm) + "，坐标(" + GetItemX(itm) + "," + GetItemY(itm) + ")，请核对。")
 
-function tdGroundStart(boolean crafting)
+function tdGroundStart()
+	if not tdItemOperationTryAcquire()
+		return
 	tdGroundBusy = true
-	tdGroundCrafting = crafting
 	tdGroundQuality = 1
-	tdGroundFirst = null
-	tdGroundSecond = null
-	tdGroundSuccesses = 0
-	for pileIndex = 1 to TD_ACTIVE_PLAYER_COUNT * 5
-		tdGroundPileCounts[pileIndex] = 0
-	let bounds = GetWorldBounds()
-	EnumItemsInRect(bounds, null, function tdGroundCaptureItem)
-	RemoveRect(bounds)
+	for index = 1 to TD_ACTIVE_PLAYER_COUNT * 5
+		tdGroundPileCounts[index] = 0
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		let minimum = tdGroundSortSourceMin(lane)
+		let maximum = tdGroundSortSourceMax(lane)
+		let bounds = Rect(minimum.x, minimum.y, maximum.x, maximum.y)
+		EnumItemsInRect(bounds, null, function tdGroundCaptureItem)
+		RemoveRect(bounds)
 
 function tdGroundHandleUpgrade() returns boolean
 	let farmer = GetTriggerUnit()
-	if farmer == null or GetUnitTypeId(farmer) != TD_FARMER_UNIT_ID or tdIsGameOver()
-		return false
-	if tdGroundBusy
-		DisplayTimedTextToPlayer(GetOwningPlayer(farmer), 0, 0, 3.0, "地面物品正在整理或升级，请稍后再试。")
-		return false
-	let caster = GetOwningPlayer(farmer)
-	let lane = GetPlayerId(caster)
-	if not tdIsLanePlayer(lane)
-		return false
-	let castPoint = vec2(GetSpellTargetX(), GetSpellTargetY())
-	if tdGroundItemLane(castPoint.x, castPoint.y) != lane
-		DisplayTimedTextToPlayer(caster, 0, 0, 3.0, "只能圈选本路的地面装备。")
-		return false
-	tdGroundCastPoint = castPoint
-	tdGroundCaster = caster
-	tdGroundCasterLane = lane
-	tdGroundStart(true)
+	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
+		tdStartGroundCraft(farmer, vec2(GetSpellTargetX(), GetSpellTargetY()))
 	return false
 
 public function tdSetupGroundItemRuntime()
 	if tdGroundRuntimeReady
 		return
 	tdGroundRuntimeReady = true
+	tdSetupCraftingRuntime()
 	for pileGroup = 1 to 5
 		tdGroundQueues[pileGroup] = new LinkedList<item>()
 	registerSpellEffectEvent(TD_FARMER_GROUND_UPGRADE_ABILITY_ID, function tdGroundHandleUpgrade)
 	doPeriodically(TD_GROUND_SORT_INTERVAL) cb ->
 		if tdIsGameOver()
 			destroy cb
-		else if not tdGroundBusy
-			tdGroundStart(false)
+		else if not tdGroundBusy and not tdItemOperationIsBusy()
+			tdGroundStart()
 	doPeriodically(0.03) cb ->
 		if tdGroundBusy
-			for operationIndex = 1 to 24
+			for _operation = 1 to 24
 				if tdGroundBusy
 					tdGroundProcessOne()
 		if tdIsGameOver() and not tdGroundBusy
 			for pileGroup = 1 to 5
 				destroy tdGroundQueues[pileGroup]
 			destroy cb
-
-

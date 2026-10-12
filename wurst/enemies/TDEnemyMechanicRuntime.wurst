@@ -1,6 +1,7 @@
 package TDEnemyMechanicRuntime
 import TDEnemyMechanicData
-import TDPetState
+import TDAuraState
+import TDPetWild
 import TDEnemyMechanicState
 import TDEnemyMechanicObjectGen
 import TDConfig
@@ -12,6 +13,7 @@ import DamageEvent
 import GameTimer
 import TDBossDarkTideRuntime
 import TDWaveFlowState
+import TDTrialIdentity
 
 class TDEnemyMechanicRecord
 	unit enemy
@@ -63,7 +65,7 @@ function tdEnemyMechanicRetireRecord(TDEnemyMechanicRecord record)
 	tdEnemyMechanicRecordsByHandle.removeInt(record.enemy.getHandleId())
 	if GetUnitTypeId(record.enemy) != 0
 		if record.enemy.isAlive()
-			SetUnitMoveSpeed(record.enemy, record.state.originalBaseSpeed * tdPetEnemySpeedFactor(record.enemy))
+			tdRefreshEnemyMoveSpeed(record.enemy, record.state.originalBaseSpeed)
 	tdDarkTideForgetBoss(record.enemy)
 	record.state.deactivate()
 	destroy record
@@ -91,7 +93,7 @@ public function tdEnemyMechanicOnWaypoint(unit enemy, int reachedWaypoint)
 	if record == null or not tdEnemyMechanicRecordValid(record) or not record.state.beginSprint(reachedWaypoint)
 		return
 	let generation = record.state.getGeneration()
-	SetUnitMoveSpeed(enemy, record.state.baseSpeed() * tdPetEnemySpeedFactor(enemy))
+	tdRefreshEnemyMoveSpeed(enemy)
 	// Capture only a native handle and token, never a possibly retired class instance.
 	doAfter(TD_ENEMY_SPRINT_DURATION) ->
 		let current = tdEnemyMechanicRecordFor(enemy)
@@ -101,7 +103,7 @@ public function tdEnemyMechanicOnWaypoint(unit enemy, int reachedWaypoint)
 			tdEnemyMechanicUnregister(enemy)
 			return
 		if current.state.finishSprint(generation)
-			SetUnitMoveSpeed(enemy, current.state.baseSpeed() * tdPetEnemySpeedFactor(enemy))
+			tdRefreshEnemyMoveSpeed(enemy)
 
 // Called by the existing waypoint watcher: only tracked specials, no world scan.
 // This also retires external RemoveUnit records absent from the native unit group.
@@ -122,7 +124,7 @@ public function tdEnemyMechanicsTick()
 			else if bossEvent == TD_BOSS_EVENT_ENRAGE
 				DisplayTimedTextToPlayer(Player(record.state.lane), 0, 0, 3.0, "无冕深渊君王濒危加速，必须击杀！")
 			if oldSpeed != record.state.baseSpeed()
-				SetUnitMoveSpeed(record.enemy, record.state.baseSpeed() * tdPetEnemySpeedFactor(record.enemy))
+				tdRefreshEnemyMoveSpeed(record.enemy)
 	destroy iter
 	tdDarkTideTick()
 
@@ -150,3 +152,22 @@ public function tdEnemyMechanicBaseSpeed(unit enemy) returns real
 
 public function tdEnemyMechanicIsRegistered(unit enemy) returns boolean
 	return tdEnemyMechanicRecordFor(enemy) != null
+
+// Unified equipment/pet movement composition. state.baseSpeed() above already
+// includes Boss8 1.30, Boss32 1.15 and the independent elite 1.40 sprint.
+public function tdRefreshEnemyMoveSpeed(unit enemy)
+	if enemy == null or GetUnitTypeId(enemy) == 0 or not enemy.isAlive()
+		return
+	if tdTrialIsTargetType(enemy)
+		if tdTrialTargetValid(enemy, enemy.getUserData() div 10000)
+			tdRefreshEnemyMoveSpeed(enemy, TD_TRIAL_TARGET_SPEED.toReal())
+		return
+	let wild = tdPetWildFor(enemy)
+	tdRefreshEnemyMoveSpeed(enemy, wild != null ? wild.travelSpeed : tdEnemyMechanicBaseSpeed(enemy))
+
+// Detach retirement explicitly supplies its saved original base; never query
+// current native speed or fall back to a potentially unrelated default there.
+function tdRefreshEnemyMoveSpeed(unit enemy, real base)
+	if enemy == null or GetUnitTypeId(enemy) == 0 or not enemy.isAlive()
+		return
+	SetUnitMoveSpeed(enemy, tdAuraSpeedForBaseAndFactor(base, tdAuraEnemySpeedFactor(enemy)))

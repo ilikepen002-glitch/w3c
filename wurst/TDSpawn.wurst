@@ -1,5 +1,6 @@
 package TDSpawn
 import TDConfig
+import TDAuraState
 import TDState
 import initlater TDGame
 import TDWaves
@@ -139,6 +140,7 @@ public function tdCreateEnemy(int playerId, int wave, int unitId) returns unit
 	else if tdIsEliteUnitTypeId(unitId)
 		role = TD_ENEMY_ROLE_ELITE
 	tdEnemyMechanicRegister(enemy, playerId, wave, role)
+	tdAuraRegisterTarget(enemy, false)
 	tdOrderEnemyAlongLane(enemy)
 	return enemy
 

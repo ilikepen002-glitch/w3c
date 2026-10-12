@@ -14,7 +14,9 @@ from VerifyPlayerTooltipArtifact import validate
 class PlayerTooltipArtifactTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        from trial_formal72_fixture import map_bytes
+        from trial_formal72_fixture import map_bytes, Formal72SourceFixture
+        cls.frozen = Formal72SourceFixture()
+        cls.addClassCleanup(cls.frozen.cleanup)
         # Old numeric/text grammar remains exact; current trial additions have
         # separate exact-object and tooltip checks in VerifyTrialArtifact.
         mpq = Mpq(map_bytes())
@@ -26,12 +28,14 @@ class PlayerTooltipArtifactTests(unittest.TestCase):
         a = deepcopy(self.a)
         fields = a[uid][1]
         text = fields['aub1', level, 0][1]
-        fields['aub1', level, 0] = 3, edit(text)
+        changed = edit(text)
+        self.assertNotEqual(changed, text, uid + ': fixture mutation did not change text')
+        fields['aub1', level, 0] = 3, changed
         with self.assertRaisesRegex(ValueError, reason):
-            validate(a, self.u, self.i)
+            validate(a, self.u, self.i, profile='legacy72', source_root=self.frozen.root)
 
     def test_all_packaged_tooltips_match_rules(self):
-        self.assertGreater(validate(self.a, self.u, self.i), 900)
+        self.assertGreater(validate(self.a, self.u, self.i, profile='legacy72', source_root=self.frozen.root), 900)
 
     def test_rejects_fixed_poison_text_at_last_control_level(self):
         self.check_bad('A106', 61, lambda s: s.replace('35.2%', '22%'), 'A106/61')
@@ -60,13 +64,13 @@ class PlayerTooltipArtifactTests(unittest.TestCase):
         a = deepcopy(self.a)
         del a['Pcap']
         with self.assertRaisesRegex(ValueError, 'Missing required action Pcap'):
-            validate(a, self.u, self.i)
+            validate(a, self.u, self.i, profile='legacy72', source_root=self.frozen.root)
 
     def test_rejects_wrong_base_damage_die(self):
         units = deepcopy(self.u)
         units['uO6B']['utub'] = units['uO6B']['utub'].replace('186至197', '185至197')
         with self.assertRaisesRegex(ValueError, 'uO6B: base/die mismatch'):
-            validate(self.a, units, self.i)
+            validate(self.a, units, self.i, profile='legacy72', source_root=self.frozen.root)
 
 
 if __name__ == '__main__':

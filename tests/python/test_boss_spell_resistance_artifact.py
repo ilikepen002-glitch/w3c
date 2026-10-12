@@ -477,10 +477,15 @@ class BossResistanceVerifierUnitTests(unittest.TestCase):
 
     def test_hidden_hp_compensation_any_spell_caller_is_rejected(self):
         baseline = baseline_fixture().source
+        with formal_boss_source() as frozen:
+            self.assertEqual(verifier.verify_source_contract(frozen, baseline), 6)
+            self.assert_source_hp_mutations(frozen, baseline)
+
+    def assert_source_hp_mutations(self, frozen, baseline):
         for relative in ('towers/TDTowerRuntime.wurst', 'items/TDEquipmentCombat.wurst', 'pets/TDPetCombat.wurst'):
             with self.subTest(source=relative), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory) / 'wurst'
-                shutil.copytree(ROOT / 'wurst', root)
+                shutil.copytree(frozen, root)
                 path = root / relative
                 path.write_text(path.read_text(encoding='utf-8') + '\nfunction hiddenCompensation(unit target)\n\ttarget.setLife(1000.0)\n', encoding='utf-8')
                 with self.assertRaisesRegex(ValueError, 'Forbidden HP/abort/type/element compensation'):

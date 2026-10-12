@@ -43,7 +43,9 @@ class TrialJassRuntime(PureBossJassRuntime):
         # Only relevant production package initialization, not main/UI/game boot.
         for name in ('init_TDBossDarkTideRuntime', 'init_TDTowerEvolutionRuntime', 'init_TDPetWild', 'init_TDDamageState', 'init_TDDamageRuntime', 'init_TDEquipmentCombat',
                      'init_TDPetState', 'init_TDPetCombat', 'init_TDTrialIdentity',
-                     'init_TDTrialRuntime', 'init_TDTrialHook', 'init_TDTrialHud'):
+                     'init_TDTrialRuntime', 'init_TDTrialHook', 'init_TDTrialHud',
+                     'init_TDAuraObjectIds', 'init_TDEquipmentSpecialObjectIds',
+                     'init_TDAuraState', 'init_TDShieldRuntime', 'init_TDEquipmentSpecialState'):
             if name in self.functions: self.invoke(name)
         require('TDTrialIdentity_tdTrialState' in self.globals and self.globals['TDTrialIdentity_tdTrialState'] != 0,
                 'Actual production trial state initialization missing')
@@ -111,6 +113,9 @@ class TrialJassRuntime(PureBossJassRuntime):
                 require(last is not None, 'Iterator remove before next'); values.pop(last); self.iterators[args[0]][1:]=[index-1,None]; return True,None
             if op == 'close': del self.iterators[args[0]]; return True,None
         if name == 'dispatch_LLIterator_destroyLLIterator': self.iterators.pop(args[0],None); return True,None
+        if name == 'dispatch_LinkedList_destroyLinkedList':
+            require(args[0] in self.lists and not self.lists[args[0]], 'Destroying unknown/nonempty modeled list')
+            del self.lists[args[0]]; return True,None
         if name.startswith('dispatch_LinkedList_LinkedList_'):
             require(args[0] in self.lists, 'Unknown native list boundary')
             op = name.removeprefix('dispatch_LinkedList_LinkedList_'); values = self.lists[args[0]]
@@ -172,6 +177,8 @@ class TrialJassRuntime(PureBossJassRuntime):
         if name in ('unit_getAbilityLevel','GetUnitAbilityLevel'): return True,self.units.get(args[0],{}).get('abilities',{}).get(args[1],0)
         if name in ('unit_addAbility','UnitAddAbility'):
             self.units.get(args[0],{}).setdefault('abilities',{})[args[1]]=1; self.ability_events.append((name,*args[:2])); return True,True
+        if name == 'UnitMakeAbilityPermanent':
+            return True, args[0] in self.units and args[2] in self.units[args[0]].get('abilities', {})
         if name == 'SetUnitAbilityLevel':
             self.units.get(args[0],{}).setdefault('abilities',{})[args[1]]=args[2]; return True,args[2]
         if name in ('unit_removeAbility','UnitRemoveAbility'):
@@ -350,15 +357,33 @@ def verify_routes(script):
 
 def verify_debuff_and_late_proc(script):
     r=TrialJassRuntime(script);r.initialize_match();r.enter(8);target=r.target(0)
-    r.invoke('tdPetSetupCombat');r.invoke('applySlow',target,0.5,3.0,0)
-    periodic=r.periodics[-1][1];r.invoke('call_doPeriodically_TDPetCombat',periodic,periodic)
-    require(r.units[target]['speed']==130.0 and r.tables[r.globals['TDPetState_tdPetEnemySlowFactors']][target]==0.5,'Real pet debuff tick did not compose base260 slow0.5')
+    r.invoke('tdPetSetupCombat')
+    current40 = 'tdEnemySlowOfferTimed' in r.functions
+    if current40:
+        r.invoke('tdEnemySlowOfferTimed', target, 101, 12, 1, .5, 3.0)
+        r.invoke('applyArmor', target, 2.0)
+        record = r.invoke('tdAuraTargetFor', target)
+        require(r.units[target]['speed']==130.0 and record != 0, 'Unified actual slow did not compose base260 slow0.5')
+    else:
+        r.invoke('applySlow',target,0.5,3.0,0)
+        periodic=r.periodics[-1][1];r.invoke('call_doPeriodically_TDPetCombat',periodic,periodic)
+        require(r.units[target]['speed']==130.0 and r.tables[r.globals['TDPetState_tdPetEnemySlowFactors']][target]==0.5,'Real pet debuff tick did not compose base260 slow0.5')
     r.invoke('tdEquipmentDebuffFor',target,0)
     require(len(r.lists[r.globals['TDPetCombat_debuffs']])==1 and len(r.lists[r.globals['TDEquipmentCombat_tdEquipmentDebuffs']])==1,'Real debuff record creation missing')
+    if current40:
+        r.invoke('tdForgetAuraTarget', target)
     r.invoke('tdPetForgetEnemy',target)
-    require(r.units[target]['speed']==260.0 and target not in r.tables[r.globals['TDPetState_tdPetEnemySlowFactors']] and not r.lists[r.globals['TDPetCombat_debuffs']], 'Explicit single-target pet cleanup did not restore260 and remove slow state')
+    require(r.units[target]['speed']==260.0 and not r.lists[r.globals['TDPetCombat_debuffs']], 'Explicit single-target cleanup did not restore260 and remove pet state')
+    if current40:
+        require(r.invoke('tdAuraTargetFor', target)==0, 'Explicit cleanup retained unified slow record')
+    else:
+        require(target not in r.tables[r.globals['TDPetState_tdPetEnemySlowFactors']], 'Legacy slow state survived cleanup')
     # Keep another real debuff on target through normal release to prove adapter cleanup.
-    r.invoke('applySlow',target,0.25,3.0,1)
+    if current40:
+        r.invoke('tdEnemySlowOfferTimed', target, 101, 13, 1, .25, 3.0)
+        r.invoke('applyArmor', target, 2.0)
+    else:
+        r.invoke('applySlow',target,0.25,3.0,1)
     pet=r.invoke('new_TDPet',0,1,8)
     r.globals['TDPet_host'][pet]=101;r.globals['TDPet_generation'][pet]=1
     r.globals['TDPetState_tdPets'][0]=pet
@@ -372,7 +397,11 @@ def verify_debuff_and_late_proc(script):
     callback=r.scheduled[-1][1]
     require(r.globals['TDPet_pendingSkill'][pet] and r.calls['onAttack']==1,'Real attack did not schedule pending production AoE')
     r.now=r.state_call('getDeadline');r.fire_native_timer(r.globals['TDTrialHook_tdTrialResumeTimer'])
-    require(not r.lists[r.globals['TDPetCombat_debuffs']] and not r.lists[r.globals['TDEquipmentCombat_tdEquipmentDebuffs']] and not r.tables[r.globals['TDPetState_tdPetEnemySlowFactors']], 'Real release left native debuff/slow tables populated')
+    require(not r.lists[r.globals['TDPetCombat_debuffs']] and not r.lists[r.globals['TDEquipmentCombat_tdEquipmentDebuffs']], 'Real release left native debuff records populated')
+    if current40:
+        require(r.invoke('tdAuraTargetFor', target)==0, 'Real release left unified timed-slow target')
+    else:
+        require(not r.tables[r.globals['TDPetState_tdPetEnemySlowFactors']], 'Real release left legacy slow table')
     # New ordinary-wave units are placed at the old stored AoE center.
     r.units[106]={**r.units[102],'type':rawcode('uW09'),'life':500.0,'alive':True,'abilities':{},'userdata':900}
     before_hits=len(r.native_damage);before_groups=r.calls['group_enumUnitsInRange'];ready=r.globals['TDPet_readyAt'][pet]
@@ -404,7 +433,8 @@ def verify_exact_hud(script):
 
 def verify_equipment_segments(script):
     r=TrialJassRuntime(script);r.initialize_match();r.enter(8)
-    r.invoke('tdEnsureItemCatalog');r.inventory_items[90001]=rawcode('iB02');r.units[101]['inventory']={0:90001}
+    r.invoke('tdEnsureItemCatalog');current40='tdEnemySlowOfferTimed' in r.functions
+    r.inventory_items[90001]=rawcode('iP02' if current40 else 'iB02');r.units[101]['inventory']={0:90001}
     r.invoke('tdSetupEquipmentCombat');r.invoke('tdSetupDamageStatistics')
     target=r.target(0)
     require(not r.invoke('tdIsBossUnitTypeId',rawcode('uTrG')), 'Trial contaminated normal Boss whitelist')
@@ -419,7 +449,7 @@ def verify_equipment_segments(script):
     r.emit(100.0,source=101,target=replacement);sealed_late=r.scheduled[-1][1]
     r.now=r.state_call('getDeadline');r.fire_native_timer(r.globals['TDTrialHook_tdTrialResumeTimer']);before=len(r.native_damage);r.run_timer(sealed_late)
     require(len(r.native_damage)==before,'Sealed trial equipment segment hit new ordinary wave')
-    return {'normal_boss_whitelist_excludes_trial':True,'actual_berserker_badge_trial_bonus':25,'actual_delayed_segment_credited':25,
+    return {'normal_boss_whitelist_excludes_trial':True,'actual_equipment_id':'iP02' if current40 else 'iB02','actual_trial_bonus':25,'actual_delayed_segment_credited':25,
             'old_handle_replacement_damage':0,'post_release_segment_damage':0}
 
 

@@ -94,12 +94,16 @@ class SemanticSourceTests(unittest.TestCase):
         self.assertNotIn("TD_PET_FORGE_ABILITY_ID", pets)
         self.assertIn("..setInterfaceIcon(tdPetCaptureIconPath())", pets)
 
-    def test_twenty_eight_equipment_identities_have_explicit_nonshared_mappings(self):
+    def test_forty_equipment_identities_resolve_existing_assets_or_native_icon(self):
         source = (ROOT / "wurst/items/TDItemData.wurst").read_text()
         block = source.split("public function tdItemIconPath(int itemId) returns string\n", 1)[1].split("\npublic function", 1)[0]
-        pairs = re.findall(r'if itemId == (TD_ITEM_\w+_ID)\n\t\treturn "([^"]+)"', block)
-        self.assertEqual(len(pairs), 28)
-        self.assertEqual(len({path for _, path in pairs}), 28)
+        paths = re.findall(r'return "([^"]+)"', block)
+        self.assertEqual(len(paths), 41)  # 40 approved identities plus unknown fallback.
+        for path in paths[:-1]:
+            if path.startswith("war3mapImported"):
+                self.assertTrue((ROOT / "imports" / Path(path.replace("\\\\", "/"))).is_file(), path)
+            else:
+                self.assertEqual(path, "ReplaceableTextures\\\\CommandButtons\\\\BTNGlove.blp")
         self.assertNotIn(" or ", block)
 
     def test_actions_and_critical_strike_bind_to_approved_rawcodes(self):

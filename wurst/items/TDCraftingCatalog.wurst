@@ -1,0 +1,84 @@
+package TDCraftingCatalog
+import LinkedList
+
+public constant int TD_CRAFT_PREP_QUALITY_WHITE = 1
+public constant int TD_CRAFT_PREP_QUALITY_PURPLE = 4
+
+class TDCraftDefinition
+	int rawcode
+	int quality
+	int nextRawcode
+
+	construct(int rawcode, int quality, int nextRawcode)
+		this.rawcode = rawcode
+		this.quality = quality
+		this.nextRawcode = nextRawcode
+
+// Explicitly injected catalog. No current 28-item fallback mapping is invented.
+// A catalog can become usable only after every non-purple link validates.
+public class TDCraftCatalog
+	private LinkedList<TDCraftDefinition> definitions = new LinkedList<TDCraftDefinition>()
+	private boolean sealed = false
+
+	function quality(int rawcode) returns int
+		for definition in definitions
+			if definition.rawcode == rawcode
+				return definition.quality
+		return 0
+
+	function nextSameName(int rawcode) returns int
+		if not sealed
+			return 0
+		for definition in definitions
+			if definition.rawcode == rawcode
+				return definition.nextRawcode
+		return 0
+
+	function register(int rawcode, int quality, int nextRawcode) returns boolean
+		if sealed or rawcode == 0 or quality < 1 or quality > 4 or this.quality(rawcode) != 0
+			return false
+		definitions.add(new TDCraftDefinition(rawcode, quality, nextRawcode))
+		return true
+
+	function countAtQuality(int quality) returns int
+		var count = 0
+		for definition in definitions
+			if definition.quality == quality
+				count += 1
+		return count
+
+	function seal() returns boolean
+		if sealed
+			return true
+		for quality = 1 to 4
+			if countAtQuality(quality) == 0
+				return false
+		for definition in definitions
+			if definition.quality < 4
+				if quality(definition.nextRawcode) != definition.quality + 1
+					return false
+			else if definition.nextRawcode != 0
+				return false
+		sealed = true
+		return true
+
+	function isReady() returns boolean
+		return sealed
+
+	function nextQualityRoll(int sourceQuality, int roll) returns int
+		if not sealed or sourceQuality < 1 or sourceQuality >= 4
+			return 0
+		if roll < 1 or roll > countAtQuality(sourceQuality + 1)
+			return 0
+		var remaining = roll
+		for definition in definitions
+			if definition.quality == sourceQuality + 1
+				remaining -= 1
+				if remaining == 0
+					return definition.rawcode
+		return 0
+
+	ondestroy
+		for definition in definitions
+			destroy definition
+		destroy definitions

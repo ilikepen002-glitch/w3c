@@ -4,6 +4,8 @@ import TDGame
 import TDSpawn
 import TDTowers
 import TDItems
+import TDEquipmentSpecialRuntime
+import TDAuraRuntime
 import TDInventory
 import TDGroundItemRuntime
 import TDConfig
@@ -259,6 +261,8 @@ function tdRunGameplayStartup()
 	tdSetupDialogTrigger()
 	tdStartupStage = "初始化背包与地面物品"
 	tdSetupInventoryRuntime()
+	tdSetupAuraRuntime()
+	tdSetupEquipmentSpecialRuntime()
 	tdSetupGroundItemRuntime()
 	tdStartupStage = "注册路线与怪物监听"
 	tdSetupLaneRects()

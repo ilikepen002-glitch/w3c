@@ -1,0 +1,93 @@
+package TDEquipmentSpecialState
+import public TDEquipmentSpecialRules
+import TDEquipmentSpecialObjectIds
+import BuffObjEditing
+import Table
+import LinkedList
+
+public class TDEquipmentSpecialState
+	unit tower
+	TDWarIntentState war = new TDWarIntentState()
+	TDPoisonBurstState poison = new TDPoisonBurstState()
+	TDCorpseBurstState corpse = new TDCorpseBurstState()
+	int shownWarStage = 0
+	int shownPoisonStage = 0
+	construct(unit tower)
+		this.tower = tower
+	ondestroy
+		destroy war
+		destroy poison
+		destroy corpse
+
+public constant LinkedList<TDEquipmentSpecialState> tdEquipmentSpecialRecords = new LinkedList<TDEquipmentSpecialState>()
+constant Table tdEquipmentSpecialByHandle = new Table()
+
+public function tdEquipmentSpecialFor(unit tower, boolean create) returns TDEquipmentSpecialState
+	if tower == null
+		return null
+	if tdEquipmentSpecialByHandle.hasInt(tower.getHandleId())
+		return tdEquipmentSpecialByHandle.loadInt(tower.getHandleId()) castTo TDEquipmentSpecialState
+	if not create
+		return null
+	let record = new TDEquipmentSpecialState(tower)
+	tdEquipmentSpecialByHandle.saveInt(tower.getHandleId(), record castTo int)
+	tdEquipmentSpecialRecords.add(record)
+	return record
+
+function tdSpecialStageBuff(boolean war, int stage) returns buffTuple
+	return war ? tdWarStageBuff(stage) : tdPoisonStageBuff(stage)
+
+function tdSpecialSyncBuff(unit tower, boolean war, int stage) returns int
+	// Always clean other exact stages. This also repairs an interrupted transition
+	// if the requested stage later returns to the old/zero stage before commit.
+	for previous = 1 to (war ? 4 : 2)
+		if previous == stage
+			continue
+		let obsolete = tdSpecialStageBuff(war, previous)
+		if tower.getAbilityLevel(obsolete.abilId) > 0
+			tower.removeAbility(obsolete.abilId)
+		tower.removeAbility(obsolete.buffId)
+	let desired = tdSpecialStageBuff(war, stage)
+	if desired.abilId == 0
+		return 0
+	if tower.getAbilityLevel(desired.abilId) == 0
+		tower.addPermanentAbility(desired.abilId)
+	return tower.getAbilityLevel(desired.abilId) > 0 ? stage : 0
+
+public function tdEquipmentSpecialSyncStages(TDEquipmentSpecialState record, real now)
+	var warStage = record.war.stage(now)
+	if warStage == 4
+		if record.tower.getAbilityLevel(TD_WAR_INTENT_SPEED_CARRIER) == 0
+			record.tower.addPermanentAbility(TD_WAR_INTENT_SPEED_CARRIER)
+		if record.tower.getAbilityLevel(TD_WAR_INTENT_SPEED_CARRIER) == 0
+			warStage = 0
+	else
+		record.tower.removeAbility(TD_WAR_INTENT_SPEED_CARRIER)
+	record.shownWarStage = tdSpecialSyncBuff(record.tower, true, warStage)
+	if record.shownWarStage != 4
+		record.tower.removeAbility(TD_WAR_INTENT_SPEED_CARRIER)
+	record.shownPoisonStage = tdSpecialSyncBuff(record.tower, false, record.poison.stack)
+
+public function tdEquipmentSpecialLoadoutChanged(unit tower, boolean hasWar, boolean hasPoison, boolean hasCorpse, real now)
+	let record = tdEquipmentSpecialFor(tower, false)
+	if record == null
+		return
+	if not hasWar
+		record.war.clear()
+	if not hasPoison
+		record.poison.clear()
+	if not hasCorpse
+		record.corpse.clear()
+	tdEquipmentSpecialSyncStages(record, now)
+
+public function tdForgetEquipmentSpecial(unit tower)
+	let record = tdEquipmentSpecialFor(tower, false)
+	if record == null
+		return
+	record.war.clear()
+	record.poison.clear()
+	record.corpse.clear()
+	tdEquipmentSpecialSyncStages(record, 0.0)
+	tdEquipmentSpecialByHandle.removeInt(tower.getHandleId())
+	tdEquipmentSpecialRecords.remove(record)
+	destroy record

@@ -65,7 +65,7 @@ def check_ability(objects, object_id, parent_id, level_count, field_id, field_ki
             f'{object_id}: parent {parent!r}, expected object alias {parent_id!r}; '
             'AIas is an engine code, not an inheritable 1.27a object alias')
     require(fields.get(('aite', 0, 0)) == (0, 1), f'{object_id}: item ability flag changed')
-    # The four one-level abilities inherit their level count from the base object.
+    # Require the complete explicit synchronization level count.
     levels = fields.get(('alev', 0, 0), (0, 1))
     require(levels == (0, level_count), f'{object_id}: expected {level_count} levels, got {levels}')
     values = {level: (column, kind, value)
@@ -82,15 +82,13 @@ def check_ability(objects, object_id, parent_id, level_count, field_id, field_ki
                 f'{object_id}: level {level} value {value}, expected {expected}')
 
 
-def main():
-    require(len(sys.argv) == 2, __doc__)
-    artifact = Mpq(Path(sys.argv[1]).read_bytes())
-    objects = ability_objects(artifact.extract('war3map.w3a'))
-    for object_id, bonus in [('A124', 0.12), ('A125', 0.20), ('A126', 0.32), ('A127', 0.48)]:
-        check_ability(objects, object_id, 'AIsx', 1, 'Isx1', 2, lambda _level, value=bonus: value)
+def verify_current_equipment_abilities(objects):
+    for index in range(120, 128):
+        require(f'A{index}' not in objects, f'A{index}: retired fixed-quality item passive remains')
     check_ability(objects, 'A129', 'AIsx', 120, 'Isx1', 2, lambda level: level/100.0)
     check_ability(objects, 'A128', 'AIat', 128, 'Iatt', 0, lambda level: level)
     check_ability(objects, 'A134', 'AId1', 30, 'Idef', 0, lambda level: -level)
+    require('A131' in objects, 'A131: missing Bloodlust')
     parent, fields = objects['A131']
     require(parent == 'Ablo', 'A131: Bloodlust must retain native parent')
     require(fields.get(('alev', 0, 0)) == (0, 41), 'A131: expected 41 cooldown levels')
@@ -99,14 +97,17 @@ def main():
         require(cooldown[0] == 2 and math.isclose(cooldown[1], 12 * (1 - (level - 1) / 100), rel_tol=1e-6),
                 f'A131: incorrect cooldown at level {level}')
         require(fields.get(('abuf', level, 0)) == (3, 'Bblo'), f'A131: native buff missing at {level}')
-    print('PASS: 5 attack-speed abilities inherit AIsx; four fixed bonuses and all 120 synchronization levels verified.')
-    print('PASS: A128 inherits AIat; all 128 attack-bonus levels unchanged.')
+
+
+def main():
+    require(len(sys.argv) == 2, __doc__)
+    artifact = Mpq(Path(sys.argv[1]).read_bytes())
+    objects = ability_objects(artifact.extract('war3map.w3a'))
+    verify_current_equipment_abilities(objects)
+    print('PASS: A129 inherits the AIsx object alias; all 120 speed synchronization levels verified; unused A120–A127 absent.')
+    print('PASS: A128/AIat 128 attack levels, A134/AId1 30 armor levels, A131/Ablo 41 cooldown levels and every Bblo native buff verified.')
     print('NOT TESTED: in-game ability creation and equipment pickup/drop/re-pickup.')
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except (ValueError, KeyError, struct.error, OSError) as exc:
-        print(f'FAIL: {exc}', file=sys.stderr)
-        sys.exit(1)
+    main()

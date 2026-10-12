@@ -1,0 +1,14 @@
+package TDEquipmentTrialRules
+import TDItemData
+import TDPetRules
+
+// Conditional current-system SINGLE damage segment bound, not total hit chain
+// or a guarantee for arbitrary future equipment/native attack-type tables.
+public function tdEquipmentTrialNativeEnvelope() returns real
+	return ((260.0 + 12.0 + TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL + 512.0) * 2.0 * 3.0 + 32.0) * 2.0 * 2.0
+
+public function tdEquipmentTrialMaxSegment() returns real
+	return tdEquipmentTrialNativeEnvelope() * (tdPetSkillPower(7, 4) + tdPetSkillPower(8, 4)) * 4.0
+
+public function tdEquipmentTrialSnapshotMatches(int capturedHandle, int capturedRevision, int currentHandle, int currentRevision) returns boolean
+	return capturedHandle != 0 and capturedHandle == currentHandle and capturedRevision == currentRevision

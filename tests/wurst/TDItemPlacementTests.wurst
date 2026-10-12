@@ -1,0 +1,33 @@
+package TDItemPlacementTests
+import TDItemPlacementRules
+import TDGroundItemRules
+
+@Test function inventoryGroundDeliveryWorksInAllFourPhysicalQuadrants()
+	tdItemNearbyPointEligible(0, vec2(-1, 1), vec2(-1, 1), 144, true, true).assertTrue()
+	tdItemNearbyPointEligible(1, vec2(1, 1), vec2(1, 1), 144, true, true).assertTrue()
+	tdItemNearbyPointEligible(2, vec2(1, -1), vec2(1, -1), 144, true, true).assertTrue()
+	tdItemNearbyPointEligible(3, vec2(-1, -1), vec2(-1, -1), 144, true, true).assertTrue()
+
+@Test function centralOriginAndAxesUseHalfOpenPhysicalQuadrants()
+	tdItemNearbyPointEligible(1, vec2(0, 0), vec2(0, 0), 144, true, true).assertTrue()
+	tdItemNearbyPointEligible(1, vec2(0, 1), vec2(16, 1), 144, true, true).assertTrue()
+	tdItemNearbyPointEligible(1, vec2(1, 0), vec2(1, 16), 144, true, true).assertTrue()
+	tdItemNearbyPointEligible(0, vec2(-1, 0), vec2(-16, 0), 144, true, true).assertTrue()
+	tdItemNearbyPointEligible(2, vec2(0, -1), vec2(0, -16), 144, true, true).assertTrue()
+	tdItemNearbyPointEligible(1, vec2(0, 0), vec2(-1, 0), 144, true, true).assertFalse()
+	tdItemNearbyPointEligible(1, vec2(0, 0), vec2(0, -1), 144, true, true).assertFalse()
+
+@Test function projectionMustStayInsideOperationRadiusAndOnSafeGround()
+	tdItemNearbyPointEligible(1, vec2(0, 0), vec2(144, 0), 144, true, true).assertTrue()
+	tdItemNearbyPointEligible(1, vec2(0, 0), vec2(144.01, 0), 144, true, true).assertFalse()
+	tdItemNearbyPointEligible(1, vec2(0, 0), vec2(16, 16), 144, false, true).assertFalse()
+	tdItemNearbyPointEligible(1, vec2(0, 0), vec2(16, 16), 144, true, false).assertFalse()
+	tdItemNearbyPointEligible(1, vec2(0, 0), vec2(0, 0), -1, true, true).assertFalse()
+
+@Test function physicalDeliveryLaneDoesNotChangeHolderOwnerEligibility()
+	// Owner lane 0 may carry materials while standing in physical lane 2.
+	let origin = vec2(100, -100)
+	let physicalLane = tdGroundItemLane(origin.x, origin.y)
+	physicalLane.assertEquals(2)
+	tdItemNearbyPointEligible(physicalLane, origin, origin, 144, true, true).assertTrue()
+	tdItemNearbyPointEligible(0, origin, origin, 144, true, true).assertFalse()

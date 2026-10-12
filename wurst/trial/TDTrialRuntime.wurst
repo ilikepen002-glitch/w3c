@@ -5,6 +5,9 @@ import TDTrialRouteRules
 import TDTrialLifeRules
 import TDSpawn
 import TDConfig
+import TDAuraRuntime
+import TDAuraState
+import TDShieldRuntime
 import TDEquipmentCombat
 import TDPetCombat
 import DamageEvent
@@ -36,6 +39,8 @@ public function tdTrialRemoveTarget(TDTrialBinding binding)
 	tdTrialForgetBinding(binding)
 	if target != null
 		tdTrialState.unbindTarget(binding.lane, binding.slot, target.getHandleId(), binding.revision, binding.token, binding.generation)
+		tdForgetAuraTarget(target)
+		tdForgetEquipmentShieldEnemy(target)
 		tdForgetEquipmentEnemy(target)
 		tdPetForgetEnemy(target)
 		tdForgetEnemyMatch(target)
@@ -82,6 +87,7 @@ public function tdTrialCreateTarget(int lane, int slot, int token, int generatio
 		target.remove()
 		destroy binding
 		return false
+	tdAuraRegisterTarget(target, false)
 	return true
 
 public function tdTrialStartTargets(int token, int generation, real now) returns boolean

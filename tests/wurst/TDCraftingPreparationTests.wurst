@@ -1,0 +1,311 @@
+package TDCraftingPreparationTests
+import TDCraftingCatalog
+import TDCraftingPlan
+import TDCraftingTransaction
+
+// Synthetic fixture rawcodes belong only to these tests, never production data.
+constant int WHITE_A = 'cw01'
+constant int WHITE_B = 'cw02'
+constant int WHITE_C = 'cw03'
+constant int GREEN_A = 'cg01'
+constant int GREEN_B = 'cg02'
+constant int BLUE_A = 'cb01'
+constant int BLUE_B = 'cb02'
+constant int PURPLE_A = 'cp01'
+constant int PURPLE_B = 'cp02'
+
+function fixtureCatalog() returns TDCraftCatalog
+	let catalog = new TDCraftCatalog()
+	catalog.register(WHITE_A, 1, GREEN_A).assertTrue()
+	catalog.register(WHITE_B, 1, GREEN_B).assertTrue()
+	catalog.register(WHITE_C, 1, GREEN_B).assertTrue()
+	catalog.register(GREEN_A, 2, BLUE_A).assertTrue()
+	catalog.register(GREEN_B, 2, BLUE_B).assertTrue()
+	catalog.register(BLUE_A, 3, PURPLE_A).assertTrue()
+	catalog.register(BLUE_B, 3, PURPLE_B).assertTrue()
+	catalog.register(PURPLE_A, 4, 0).assertTrue()
+	catalog.register(PURPLE_B, 4, 0).assertTrue()
+	catalog.seal().assertTrue()
+	return catalog
+
+class CraftFixtureBackend implements TDCraftCommitBackend
+	int array[32] ids
+	boolean array[32] alive
+	boolean failCreation = false
+	boolean failConsumption = false
+	int invalidateOnCreation = 0
+	int prepared = 0
+	int published = 0
+	int discarded = 0
+	int consumed = 0
+	int resultId = 0
+
+	function put(int key, int rawcode)
+		ids[key] = rawcode
+		alive[key] = true
+
+	override function available(int key, int rawcode) returns boolean
+		return key > 0 and key < 32 and alive[key] and ids[key] == rawcode
+
+	override function prepareResult(int rawcode) returns int
+		if failCreation
+			return 0
+		prepared += 1
+		resultId = rawcode
+		if invalidateOnCreation > 0
+			alive[invalidateOnCreation] = false
+		return 1000 + prepared
+
+	override function consumeThree(int first, int second, int third) returns boolean
+		if failConsumption or not alive[first] or not alive[second] or not alive[third]
+			return false
+		alive[first] = false
+		alive[second] = false
+		alive[third] = false
+		consumed += 3
+		return true
+
+	override function publishResult(int resultKey)
+		(resultKey > 1000).assertTrue()
+		published += 1
+
+	override function discardResult(int resultKey)
+		(resultKey > 1000).assertTrue()
+		discarded += 1
+
+function fixturePlan(TDCraftCatalog catalog, CraftFixtureBackend backend, int first, int second, int third) returns TDCraftPlan
+	let plan = new TDCraftPlan(catalog)
+	plan.capture(1, first).assertTrue()
+	plan.capture(2, second).assertTrue()
+	plan.capture(3, third).assertTrue()
+	backend.put(1, first)
+	backend.put(2, second)
+	backend.put(3, third)
+	plan.freeze().assertTrue()
+	return plan
+
+@Test function catalogRejectsMissingOrWrongQualityNextLink()
+	let incomplete = new TDCraftCatalog()
+	incomplete.register(WHITE_A, 1, GREEN_A).assertTrue()
+	incomplete.seal().assertFalse()
+	incomplete.isReady().assertFalse()
+	incomplete.nextSameName(WHITE_A).assertEquals(0)
+	let plan = new TDCraftPlan(incomplete)
+	plan.capture(1, WHITE_A).assertFalse()
+	plan.freeze().assertFalse()
+	destroy plan
+	destroy incomplete
+	let wrong = new TDCraftCatalog()
+	wrong.register(WHITE_A, 1, BLUE_A)
+	wrong.register(GREEN_A, 2, BLUE_A)
+	wrong.register(BLUE_A, 3, PURPLE_A)
+	wrong.register(PURPLE_A, 4, 0)
+	wrong.seal().assertFalse()
+	destroy wrong
+
+@Test function catalogSealsValidatedLinksAndCannotBeMutatedLater()
+	let catalog = fixtureCatalog()
+	catalog.nextSameName(WHITE_A).assertEquals(GREEN_A)
+	catalog.register('cw04', 1, GREEN_A).assertFalse()
+	catalog.nextQualityRoll(1, 0).assertEquals(0)
+	catalog.nextQualityRoll(1, 3).assertEquals(0)
+	catalog.nextQualityRoll(4, 1).assertEquals(0)
+	destroy catalog
+
+@Test function snapshotRejectsDuplicateKeysUnknownInputsAndLateProducts()
+	let catalog = fixtureCatalog()
+	let plan = new TDCraftPlan(catalog)
+	plan.capture(1, WHITE_A).assertTrue()
+	plan.capture(1, WHITE_B).assertFalse()
+	plan.capture(2, 'none').assertFalse()
+	plan.capture(0, WHITE_A).assertFalse()
+	plan.freeze().assertTrue()
+	plan.capture(3, GREEN_A).assertFalse()
+	plan.batchCount().assertEquals(0)
+	plan.leftoverCount().assertEquals(1)
+	destroy plan
+	destroy catalog
+
+@Test function sameNameTriplesResolveDeterministicallyForEveryRoll()
+	let catalog = fixtureCatalog()
+	let backend = new CraftFixtureBackend()
+	let plan = fixturePlan(catalog, backend, WHITE_A, WHITE_A, WHITE_A)
+	plan.batchCount().assertEquals(1)
+	plan.batch(0).isSameName().assertTrue()
+	plan.batch(0).result(catalog, 1).assertEquals(GREEN_A)
+	plan.batch(0).result(catalog, 2).assertEquals(GREEN_A)
+	plan.batch(0).result(catalog, 100).assertEquals(GREEN_A)
+	destroy plan
+	destroy backend
+	destroy catalog
+
+@Test function twoSameOneDifferentUsesMixedNextQualityPool()
+	let catalog = fixtureCatalog()
+	let backend = new CraftFixtureBackend()
+	let plan = fixturePlan(catalog, backend, WHITE_A, WHITE_A, WHITE_B)
+	plan.batch(0).isSameName().assertFalse()
+	plan.batch(0).result(catalog, 1).assertEquals(GREEN_A)
+	plan.batch(0).result(catalog, 2).assertEquals(GREEN_B)
+	tdCommitCraftBatch(plan, 0, catalog, backend, 2).assertEquals(TD_CRAFT_COMMIT_SUCCESS)
+	backend.consumed.assertEquals(3)
+	backend.published.assertEquals(1)
+	backend.resultId.assertEquals(GREEN_B)
+	destroy plan
+	destroy backend
+	destroy catalog
+
+@Test function threeDifferentNamesUseTheSameMixedPool()
+	let catalog = fixtureCatalog()
+	let backend = new CraftFixtureBackend()
+	let plan = fixturePlan(catalog, backend, WHITE_A, WHITE_B, WHITE_C)
+	plan.batch(0).isSameName().assertFalse()
+	plan.batch(0).result(catalog, 2).assertEquals(GREEN_B)
+	destroy plan
+	destroy backend
+	destroy catalog
+
+@Test function snapshotPlansSameNameBeforeResidualMixedTriples()
+	let catalog = fixtureCatalog()
+	let plan = new TDCraftPlan(catalog)
+	plan.capture(1, WHITE_A)
+	plan.capture(2, WHITE_B)
+	plan.capture(3, WHITE_A)
+	plan.capture(4, WHITE_C)
+	plan.capture(5, WHITE_A)
+	plan.capture(6, WHITE_B)
+	plan.freeze().assertTrue()
+	plan.batchCount().assertEquals(2)
+	plan.batch(0).isSameName().assertTrue()
+	plan.batch(0).ingredient(0).getKey().assertEquals(1)
+	plan.batch(0).ingredient(1).getKey().assertEquals(3)
+	plan.batch(0).ingredient(2).getKey().assertEquals(5)
+	plan.batch(1).isSameName().assertFalse()
+	plan.batch(1).ingredient(0).getKey().assertEquals(2)
+	plan.batch(1).ingredient(1).getKey().assertEquals(4)
+	plan.batch(1).ingredient(2).getKey().assertEquals(6)
+	plan.leftoverCount().assertEquals(0)
+	destroy plan
+	destroy catalog
+
+@Test function differentQualitiesTwoInputsAndPurpleNeverFormBatch()
+	let catalog = fixtureCatalog()
+	let plan = new TDCraftPlan(catalog)
+	plan.capture(1, WHITE_A)
+	plan.capture(2, WHITE_A)
+	plan.capture(3, GREEN_A)
+	plan.capture(4, PURPLE_A)
+	plan.capture(5, PURPLE_A)
+	plan.capture(6, PURPLE_A)
+	plan.freeze().assertTrue()
+	plan.batchCount().assertEquals(0)
+	plan.leftoverCount().assertEquals(6)
+	destroy plan
+	destroy catalog
+
+@Test function zeroThroughNineInputsPreserveOneOrTwoLeftovers()
+	let catalog = fixtureCatalog()
+	for count = 0 to 9
+		let plan = new TDCraftPlan(catalog)
+		for key = 1 to count
+			plan.capture(key, WHITE_A)
+		plan.freeze().assertTrue()
+		plan.batchCount().assertEquals(count div 3)
+		plan.leftoverCount().assertEquals(ModuloInteger(count, 3))
+		destroy plan
+	destroy catalog
+
+@Test function invalidatedGroupCancelsWithoutRefillingFromLeftover()
+	let catalog = fixtureCatalog()
+	let backend = new CraftFixtureBackend()
+	let plan = fixturePlan(catalog, backend, WHITE_A, WHITE_A, WHITE_A)
+	// Fourth object was never in this cast and cannot replace the picked-up one.
+	backend.put(4, WHITE_A)
+	backend.alive[2] = false
+	tdCommitCraftBatch(plan, 0, catalog, backend, 1).assertEquals(TD_CRAFT_COMMIT_CANCELLED)
+	backend.consumed.assertEquals(0)
+	backend.prepared.assertEquals(0)
+	backend.alive[1].assertTrue()
+	backend.alive[3].assertTrue()
+	backend.alive[4].assertTrue()
+	backend.alive[2] = true
+	tdCommitCraftBatch(plan, 0, catalog, backend, 1).assertEquals(TD_CRAFT_COMMIT_ALREADY_ATTEMPTED)
+	destroy plan
+	destroy backend
+	destroy catalog
+
+@Test function resultCreationFailureNeverConsumesInputs()
+	let catalog = fixtureCatalog()
+	let backend = new CraftFixtureBackend()
+	let plan = fixturePlan(catalog, backend, WHITE_A, WHITE_A, WHITE_A)
+	backend.failCreation = true
+	tdCommitCraftBatch(plan, 0, catalog, backend, 1).assertEquals(TD_CRAFT_COMMIT_RESULT_FAILED)
+	backend.consumed.assertEquals(0)
+	backend.published.assertEquals(0)
+	for key = 1 to 3
+		backend.alive[key].assertTrue()
+	destroy plan
+	destroy backend
+	destroy catalog
+
+@Test function invalidationDuringPreparationDiscardsOnlyOutput()
+	let catalog = fixtureCatalog()
+	let backend = new CraftFixtureBackend()
+	let plan = fixturePlan(catalog, backend, WHITE_A, WHITE_A, WHITE_A)
+	backend.invalidateOnCreation = 2
+	tdCommitCraftBatch(plan, 0, catalog, backend, 1).assertEquals(TD_CRAFT_COMMIT_CANCELLED)
+	backend.prepared.assertEquals(1)
+	backend.discarded.assertEquals(1)
+	backend.consumed.assertEquals(0)
+	backend.published.assertEquals(0)
+	backend.alive[1].assertTrue()
+	backend.alive[3].assertTrue()
+	destroy plan
+	destroy backend
+	destroy catalog
+
+@Test function atomicBackendFailureLeavesInputsAndDiscardsOutput()
+	let catalog = fixtureCatalog()
+	let backend = new CraftFixtureBackend()
+	let plan = fixturePlan(catalog, backend, WHITE_A, WHITE_A, WHITE_A)
+	backend.failConsumption = true
+	tdCommitCraftBatch(plan, 0, catalog, backend, 1).assertEquals(TD_CRAFT_COMMIT_CANCELLED)
+	backend.consumed.assertEquals(0)
+	backend.discarded.assertEquals(1)
+	for key = 1 to 3
+		backend.alive[key].assertTrue()
+	destroy plan
+	destroy backend
+	destroy catalog
+
+@Test function wrongCatalogCannotCommitFrozenSnapshot()
+	let catalog = fixtureCatalog()
+	let other = fixtureCatalog()
+	let backend = new CraftFixtureBackend()
+	let plan = fixturePlan(catalog, backend, WHITE_A, WHITE_A, WHITE_A)
+	tdCommitCraftBatch(plan, 0, other, backend, 1).assertEquals(TD_CRAFT_COMMIT_CANCELLED)
+	backend.consumed.assertEquals(0)
+	tdCommitCraftBatch(plan, 0, catalog, backend, 1).assertEquals(TD_CRAFT_COMMIT_SUCCESS)
+	tdCommitCraftBatch(plan, 0, catalog, backend, 1).assertEquals(TD_CRAFT_COMMIT_ALREADY_ATTEMPTED)
+	backend.consumed.assertEquals(3)
+	destroy plan
+	destroy backend
+	destroy other
+	destroy catalog
+
+@Test function incrementalPlanningClosesSnapshotBeforeBudgetedWork()
+	let catalog = fixtureCatalog()
+	let plan = new TDCraftPlan(catalog)
+	for key = 1 to 199
+		plan.capture(key, WHITE_A).assertTrue()
+	plan.beginFreeze().assertTrue()
+	plan.capture(200, WHITE_A).assertFalse()
+	plan.planningStep(1).assertFalse()
+	var steps = 1
+	while not plan.isFrozen()
+		plan.planningStep(1)
+		steps += 1
+		(steps < 400).assertTrue()
+	plan.batchCount().assertEquals(66)
+	plan.leftoverCount().assertEquals(1)
+	destroy plan
+	destroy catalog

@@ -1,0 +1,65 @@
+package TDItemPlacement
+import TDGroundItemRules
+import TDConfig
+import TDGroundItemTerrainMask
+import TDItemPlacementRules
+
+public function tdGroundItemHandleValid(item itm) returns boolean
+	return itm != null and GetItemTypeId(itm) != 0 and not IsItemOwned(itm)
+
+public function tdItemGroundPointSafe(int lane, vec2 point) returns boolean
+	return tdGroundItemLane(point.x, point.y) == lane and tdGroundPointSafeForItem(point.x, point.y) and not IsTerrainPathable(point.x, point.y, PATHING_TYPE_WALKABILITY)
+
+public function tdItemActualPosition(item itm) returns vec2
+	return vec2(GetItemX(itm), GetItemY(itm))
+
+public function tdTryPlaceItemNear(item itm, int lane, vec2 origin, boolean towerNearby) returns boolean
+	if not tdGroundItemHandleValid(itm)
+		return false
+	for index = 0 to 64
+		let candidate = origin + tdItemNearbyOffset(index, towerNearby)
+		let radius = towerNearby ? 512.0 : TD_GROUND_UPGRADE_RADIUS
+		if not tdItemNearbyPointEligible(lane, origin, candidate, radius, tdGroundPointSafeForItem(candidate.x, candidate.y), not IsTerrainPathable(candidate.x, candidate.y, PATHING_TYPE_WALKABILITY))
+			continue
+		SetItemPosition(itm, candidate.x, candidate.y)
+		let actual = tdItemActualPosition(itm)
+		if not tdGroundItemHandleValid(itm)
+			return false
+		if tdItemNearbyPointEligible(lane, origin, actual, radius, tdGroundPointSafeForItem(actual.x, actual.y), not IsTerrainPathable(actual.x, actual.y, PATHING_TYPE_WALKABILITY))
+			return true
+	return false
+
+public function tdItemActualInPile(item itm, int lane, int quality) returns boolean
+	if not tdGroundItemHandleValid(itm)
+		return false
+	let actual = tdItemActualPosition(itm)
+	let center = tdGroundItemPileCenter(lane, quality)
+	return tdGroundSortDestinationAllowed(lane, actual.x, actual.y) and not IsTerrainPathable(actual.x, actual.y, PATHING_TYPE_WALKABILITY) and tdGroundPointInUpgradeCircle(actual.x, actual.y, center.x, center.y)
+
+public function tdTryPlaceItemInPile(item itm, int lane, int quality, int firstIndex) returns int
+	if not tdGroundItemHandleValid(itm)
+		return -1
+	var attempted = false
+	for offset = 0 to 14
+		let index = firstIndex + offset
+		let candidate = tdGroundItemPilePosition(lane, quality, index)
+		if not tdGroundSortDestinationAllowed(lane, candidate.x, candidate.y)
+			continue
+		if IsTerrainPathable(candidate.x, candidate.y, PATHING_TYPE_WALKABILITY)
+			continue
+		attempted = true
+		SetItemPosition(itm, candidate.x, candidate.y)
+		if tdItemActualInPile(itm, lane, quality)
+			return index
+	return attempted ? -1 : -2
+
+public function tdRestoreSortedItem(item itm, int lane, vec2 original) returns boolean
+	if not tdGroundItemHandleValid(itm)
+		return false
+	if tdGroundSortSourceLane(original.x, original.y) != lane or IsTerrainPathable(original.x, original.y, PATHING_TYPE_WALKABILITY)
+		return false
+	if (tdItemActualPosition(itm) - original).lengthSq() <= 0.25
+		return true
+	SetItemPosition(itm, original.x, original.y)
+	let actual = tdItemActualPosition(itm)
+	return tdGroundSortSourceLane(actual.x, actual.y) == lane and (actual - original).lengthSq() <= 0.25 and not IsTerrainPathable(actual.x, actual.y, PATHING_TYPE_WALKABILITY)

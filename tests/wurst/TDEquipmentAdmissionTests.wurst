@@ -1,0 +1,26 @@
+package TDEquipmentAdmissionTests
+import TDEquipmentAdmissionRules
+import TDItemData
+
+@Test function towerRejectsSameRawcodeInEveryInventorySlot()
+	let bow = TD_ITEM_WHITE_WAR_AXE_ID
+	tdEquipmentAdmissionAllowed(true, true, bow, bow, 0, 0, 0, 0, 0).assertFalse()
+	tdEquipmentAdmissionAllowed(true, true, bow, 0, bow, 0, 0, 0, 0).assertFalse()
+	tdEquipmentAdmissionAllowed(true, true, bow, 0, 0, bow, 0, 0, 0).assertFalse()
+	tdEquipmentAdmissionAllowed(true, true, bow, 0, 0, 0, bow, 0, 0).assertFalse()
+	tdEquipmentAdmissionAllowed(true, true, bow, 0, 0, 0, 0, bow, 0).assertFalse()
+	tdEquipmentAdmissionAllowed(true, true, bow, 0, 0, 0, 0, 0, bow).assertFalse()
+
+@Test function workersRetainDuplicateCraftingMaterials()
+	let bow = TD_ITEM_WHITE_WAR_AXE_ID
+	tdEquipmentAdmissionAllowed(false, true, bow, bow, bow, bow, 0, 0, 0).assertTrue()
+
+@Test function towerAllowsDifferentRawcodeAndOrdinaryItems()
+	tdEquipmentAdmissionAllowed(true, true, TD_ITEM_WHITE_SCOPE_ID, TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_GREEN_WAR_AXE_ID, 0, 0, 0, 0).assertTrue()
+	tdEquipmentAdmissionAllowed(true, false, 'test', 'test', 0, 0, 0, 0, 0).assertTrue()
+
+@Test function equipmentReturnSearchIsBoundedNearby()
+	for index = 0 to 63
+		let point = tdEquipmentReturnOffset(index)
+		(point.lengthSq() >= 160.0 * 160.0).assertTrue()
+		(point.lengthSq() <= 544.0 * 544.0).assertTrue()

@@ -1,5 +1,6 @@
 package TDPetState
 import TDPetData
+import TDAuraState
 import TDPetRules
 import TDConfig
 import TDState
@@ -456,21 +457,9 @@ public function tdPetCooldownReduction(unit tower) returns real
 	let pet = tdPetForHost(tower)
 	return pet != null ? pet.skillPower(3) : 0.0
 
-public function tdPetGlobalAura() returns real
-	var best = 0.0
-	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
-			let pet = tdPetAt(lane, slot)
-			if pet != null and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsGameOver() and pet.host != null and pet.host.isAlive() and GetPlayerId(GetOwningPlayer(pet.host)) == lane
-				best = RMaxBJ(best, pet.skillPower(4))
-	return best
-
-public constant Table tdPetEnemySlowFactors = new Table()
+// Compatibility facade for mechanic callers; all identities now share one factor.
 public function tdPetEnemySpeedFactor(unit enemy) returns real
-	return enemy != null and tdPetEnemySlowFactors.hasReal(enemy.getHandleId()) ? tdPetEnemySlowFactors.loadReal(enemy.getHandleId()) : 1.0
-
-
-
+	return tdAuraEnemySpeedFactor(enemy)
 
 // Complete preconditions and consume in one synchronous transaction.
 public function tdPetSpendCaptureBall(int lane, boolean validTarget) returns boolean
