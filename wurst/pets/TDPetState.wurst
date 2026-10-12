@@ -272,18 +272,10 @@ public function tdPetConfirmRelease(int lane, int nonce) returns boolean
 	return true
 
 public int array tdPetResonance
-public int array tdPetMasterBalls
 public int array tdPetRerollStones
 public int array tdPetSlotStones
 public boolean array tdPetTutorialUsed
 public int array tdPetExtraEncounterWave
-
-public function tdPetForgeMasterBall(int lane) returns boolean
-	if not tdIsLanePlayer(lane) or tdPetBalls[lane] < 5 or tdPetMasterBalls[lane] >= 60
-		return false
-	tdPetBalls[lane] -= 5
-	tdPetMasterBalls[lane] += 1
-	return true
 
 public function tdPetBeginReroll(int lane, int slot, int skillSlot) returns boolean
 	let pet = tdPetAt(lane, slot)
@@ -399,7 +391,6 @@ public function tdPetInitializeLane(int lane)
 	tdPetPlayerLeft[lane] = false
 	tdPetBalls[lane] = 3
 	tdPetResonance[lane] = 1
-	tdPetMasterBalls[lane] = 0
 	tdPetRerollStones[lane] = 0
 	tdPetSlotStones[lane] = 0
 	tdPetTutorialUsed[lane] = false
@@ -434,12 +425,7 @@ public function tdPetEnemySpeedFactor(unit enemy) returns real
 
 
 // Complete preconditions and consume in one synchronous transaction.
-public function tdPetSpendCaptureBall(int lane, boolean master, boolean validTarget) returns boolean
+public function tdPetSpendCaptureBall(int lane, boolean validTarget) returns boolean
 	if not tdIsLanePlayer(lane) or not validTarget or tdPetCollectionCount(lane) >= TD_PET_COLLECTION_LIMIT
 		return false
-	if master
-		if tdPetMasterBalls[lane] <= 0
-			return false
-		tdPetMasterBalls[lane] -= 1
-		return true
 	return tdPetTakeBall(lane)

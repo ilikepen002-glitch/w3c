@@ -44,7 +44,7 @@ class BaselineArtifactTests(unittest.TestCase):
     def test_evolution_accepts_complete_inherited_skill_bars(self):
         self.assert_verifier_passes("VerifyEvolutionArtifact.py")
 
-    def test_ground_accepts_exact_five_command_book_without_hunt(self):
+    def test_ground_accepts_exact_three_command_book_without_hunt(self):
         self.assert_verifier_passes("VerifyGroundItemArtifact.py")
 
 
@@ -105,105 +105,90 @@ class ParsedObjectNegativeTests(unittest.TestCase):
                     self.units[uid]["uabi"] = ",".join(skills)
                     self.assert_rejected("VerifyEvolutionArtifact.py", f"{uid}: complete skill bar mismatch")
 
-    def test_ground_rejects_each_missing_pet_command(self):
-        for missing in ("Pmas", "Pfor"):
+    def test_ground_rejects_each_missing_book_command(self):
+        for missing in ("A119", "Gupg", "Dsta"):
             with self.subTest(missing=missing):
-                self.abilities = deepcopy(self.baseline_abilities)
-                spells = self.abilities["Geqb"][1][("spb1", 1, 1)][1].split(",")
-                spells.remove(missing)
-                self.change_field("Geqb", "spb1", ",".join(spells), 1, 1)
-                self.assert_rejected("VerifyGroundItemArtifact.py", "Unexpected book spell list")
+                self.setUp()
+                del self.abilities[missing]
+                self.assert_rejected("VerifyGroundItemArtifact.py", f"Missing function book command {missing}")
 
     def test_ground_rejects_reordered_book(self):
-        spells = self.abilities["Geqb"][1][("spb1", 1, 1)][1].split(",")
-        spells[-1], spells[-2] = spells[-2], spells[-1]
-        self.change_field("Geqb", "spb1", ",".join(spells), 1, 1)
+        self.change_field("Geqb", "spb1", "A119,Dsta,Gupg", 1, 1)
         self.assert_rejected("VerifyGroundItemArtifact.py", "Unexpected book spell list")
 
     def test_ground_rejects_each_wrong_book_capacity(self):
         for field, column in [("spb3", 3), ("spb4", 4)]:
-            for count in (3, 6, 7):
+            for count in (2, 4, 5, 6):
                 with self.subTest(field=field, count=count):
-                    self.abilities = deepcopy(self.baseline_abilities)
+                    self.setUp()
                     self.change_field("Geqb", field, count, 1, column)
-                    self.assert_rejected("VerifyGroundItemArtifact.py", "Book must contain exactly five spells")
+                    self.assert_rejected("VerifyGroundItemArtifact.py", "Book must contain exactly three spells")
 
-    def test_ground_rejects_each_pet_command_wrong_parent(self):
-        for rawcode in ("Pmas", "Pfor"):
-            with self.subTest(command=rawcode):
-                self.abilities = deepcopy(self.baseline_abilities)
-                _, fields = self.abilities[rawcode]
-                self.abilities[rawcode] = ("Aspb", fields)
-                self.assert_rejected("VerifyGroundItemArtifact.py", f"{rawcode}: function command must inherit Channel")
+    def test_ground_rejects_wrong_cells_and_targets(self):
+        for rawcode, field, value, level, column, reason in [
+                ("A119", "abpx", 1, 0, 0, "Backpack craft must occupy book cell 0,0"),
+                ("Gupg", "abpx", 0, 0, 0, "Ground upgrade must occupy book cell 1,0"),
+                ("Dsta", "abpx", 1, 0, 0, "Damage statistics must occupy book cell 2,0"),
+                ("Gupg", "Ncl2", 0, 1, 2, "Ground upgrade must target a point"),
+                ("Dsta", "Ncl2", 1, 1, 2, "Damage statistics must be untargeted")]:
+            with self.subTest(command=rawcode, field=field):
+                self.setUp()
+                self.change_field(rawcode, field, value, level, column)
+                self.assert_rejected("VerifyGroundItemArtifact.py", reason)
 
-    def test_ground_rejects_each_pet_command_wrong_cell(self):
-        for rawcode in ("Pmas", "Pfor"):
-            with self.subTest(command=rawcode):
-                self.abilities = deepcopy(self.baseline_abilities)
-                self.change_field(rawcode, "abpy", 2)
-                self.assert_rejected("VerifyGroundItemArtifact.py", f"{rawcode}: wrong function book cell")
+    def test_ground_rejects_duplicate_assigned_hotkeys(self):
+        self.abilities["Dsta"][1][("ahky", 0, 0)] = (3, "C")
+        self.assert_rejected("VerifyGroundItemArtifact.py", "Function book command hotkeys overlap: A119 and Dsta")
 
-    def test_ground_rejects_each_pet_command_wrong_hotkey(self):
-        for rawcode in ("Pmas", "Pfor"):
-            with self.subTest(command=rawcode):
-                self.abilities = deepcopy(self.baseline_abilities)
-                self.change_field(rawcode, "ahky", "Z")
-                self.assert_rejected("VerifyGroundItemArtifact.py", f"{rawcode}: wrong function book hotkey")
-
-    def test_ground_rejects_each_pet_command_wrong_target(self):
-        for rawcode, wrong_target in [("Pmas", 0), ("Pfor", 1)]:
-            with self.subTest(command=rawcode):
-                self.abilities = deepcopy(self.baseline_abilities)
-                self.change_field(rawcode, "Ncl2", wrong_target, 1, 2)
-                self.assert_rejected("VerifyGroundItemArtifact.py", f"{rawcode}: wrong function command target")
-
-    def test_ground_rejects_overlapping_book_cells(self):
-        self.change_field("Pfor", "abpx", 0)
-        self.assert_rejected("VerifyGroundItemArtifact.py", "Function book command cells overlap: Pmas and Pfor")
-
-    def test_ground_rejects_duplicate_book_hotkeys(self):
-        self.change_field("Pfor", "ahky", "M")
-        self.assert_rejected("VerifyGroundItemArtifact.py", "Function book command hotkeys overlap: Pmas and Pfor")
-
-    def test_ground_corrected_fixture_satisfies_five_command_contract(self):
+    def test_ground_corrected_fixture_satisfies_three_command_contract(self):
         from VerifyGroundItemArtifact import verify_function_book
         self.assertEqual(verify_function_book(self.abilities, self.units)[0], "uF01")
 
-    def test_ground_rejects_ghost_hunt_even_without_any_attachment(self):
-        self.abilities["Phnt"] = deepcopy(self.abilities["Pmas"])
-        self.assert_rejected("VerifyGroundItemArtifact.py", "Removed hunt ability Phnt remains as a ghost object")
-
-    def test_ground_rejects_hunt_attachment_on_unrelated_units_and_books(self):
-        for target in ("farmer", "tower", "book"):
-            with self.subTest(target=target):
+    def test_ground_rejects_each_removed_ghost_even_without_attachment(self):
+        for retired in ("Phnt", "Pmas", "Pfor"):
+            with self.subTest(rawcode=retired):
                 self.setUp()
-                if target == "book":
-                    spells = self.abilities["Geqb"][1][("spb1", 1, 1)][1]
-                    self.change_field("Geqb", "spb1", spells + ",Phnt", 1, 1)
-                    reason = "Geqb: removed Phnt remains in ability field spb1"
-                else:
-                    unit_id = "uF01" if target == "farmer" else "uA11"
-                    self.units[unit_id]["uabi"] += ",Phnt"
-                    reason = f"{unit_id}: removed Phnt remains in unit field uabi"
-                self.assert_rejected("VerifyGroundItemArtifact.py", reason)
+                self.abilities[retired] = deepcopy(self.abilities["Pcol"])
+                self.assert_rejected("VerifyGroundItemArtifact.py", f"Removed capture/hunt ability {retired} remains as a ghost object")
 
-    def test_ground_rejects_six_entry_book_even_without_hunt_object(self):
-        spells = self.abilities["Geqb"][1][("spb1", 1, 1)][1]
-        self.change_field("Geqb", "spb1", spells + ",Pcol", 1, 1)
+    def test_ground_rejects_removed_parents_and_attachments(self):
+        for retired in ("Phnt", "Pmas", "Pfor"):
+            for target in ("parent", "farmer", "tower", "book", "requirement"):
+                with self.subTest(rawcode=retired, target=target):
+                    self.setUp()
+                    if target == "parent":
+                        self.abilities["Xret"] = (retired, {})
+                        reason = f"Xret: removed {retired} remains as ability parent"
+                    elif target == "book":
+                        self.change_field("Geqb", "spb1", "A119,Gupg,Dsta," + retired, 1, 1)
+                        reason = f"Geqb: removed {retired} remains in ability field spb1"
+                    elif target == "requirement":
+                        self.abilities["Gupg"][1][("areq", 0, 0)] = (3, retired)
+                        reason = f"Gupg: removed {retired} remains in ability field areq"
+                    else:
+                        unit_id = "uF01" if target == "farmer" else "uA11"
+                        self.units[unit_id]["uabi"] += "," + retired
+                        reason = f"{unit_id}: removed {retired} remains in unit field uabi"
+                    self.assert_rejected("VerifyGroundItemArtifact.py", reason)
+
+    def test_ground_rejects_removed_item_objects_and_fields(self):
+        from VerifyGroundItemArtifact import verify_no_hunt_objects
+        for retired in ("Phnt", "Pmas", "Pfor"):
+            for items in ({retired: {}}, {"Iret": {"iabi": retired}}):
+                with self.subTest(rawcode=retired, items=items), self.assertRaisesRegex(ValueError, "[Rr]emoved.*" + retired + ".*item"):
+                    verify_no_hunt_objects(self.abilities, self.units, items)
+
+    def test_ground_rejects_extra_book_entry(self):
+        self.change_field("Geqb", "spb1", "A119,Gupg,Dsta,Pcol", 1, 1)
         self.assert_rejected("VerifyGroundItemArtifact.py", "Unexpected book spell list")
 
-    def test_ground_rejects_old_five_to_one_cell(self):
-        self.change_field("Pfor", "abpx", 2)
-        self.assert_rejected("VerifyGroundItemArtifact.py", "Pfor: wrong function book cell")
-
     def test_ground_retains_existing_channel_order_checks(self):
+        shared_order = self.baseline_abilities["Pcol"][1][("Ncl6", 1, 6)][1]
         for rawcode in ("Dsta", "Gupg", "A109", "A133", "Pc02"):
-            reason = "Channel order"
             with self.subTest(command=rawcode):
-                self.abilities = deepcopy(self.baseline_abilities)
-                shared_order = self.abilities["Pmas"][1][("Ncl6", 1, 6)][1]
+                self.setUp()
                 self.change_field(rawcode, "Ncl6", shared_order, 1, 6)
-                self.assert_rejected("VerifyGroundItemArtifact.py", reason)
+                self.assert_rejected("VerifyGroundItemArtifact.py", "Channel order")
 
 
 if __name__ == "__main__":

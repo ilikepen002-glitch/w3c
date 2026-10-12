@@ -31,6 +31,14 @@ class WildPathingArtifactTests(unittest.TestCase):
         for uid in verifier.WILD_IDS:
             self.units[uid]['uabi'] = 'Aeth'
 
+    def test_actual_release_retains_aeth_and_ordinary_capture_contract(self):
+        archive = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        data = archive.extract('war3map.w3u')
+        verifier.verify_wild_units(unit_objects(data), unit_parents(data))
+        verifier.verify_capture_contract(ability_objects(archive.extract('war3map.w3a')))
+        script = archive.extract('war3map.j').decode('utf-8')
+        verifier.verify_runtime(script, script)
+
     def test_actual_pre_fix_mpq_is_red_for_missing_aeth(self):
         with self.assertRaisesRegex(ValueError, 'p011: wild uabi must be exactly Aeth'):
             verifier.verify_archive(self.archive, self.archive)
@@ -86,7 +94,7 @@ class WildPathingArtifactTests(unittest.TestCase):
                     verifier.verify_capture_contract(abilities)
 
     def test_each_capture_level_and_required_target_is_guarded(self):
-        for uid, count in (('Pcap', 61), ('Pmas', 1)):
+        for uid, count in (('Pcap', 61),):
             for level in range(1, count + 1):
                 for missing in sorted(verifier.REQUIRED_TARGETS):
                     with self.subTest(ability=uid, level=level, target=missing):
@@ -99,7 +107,7 @@ class WildPathingArtifactTests(unittest.TestCase):
                         fields[('atar', level, 0)] = old
 
     def test_rejects_capture_level_count_target_type_and_missing_mask(self):
-        for uid in ('Pcap', 'Pmas'):
+        for uid in ('Pcap',):
             for key, value, reason in ((('alev', 0, 0), (0, 2), 'level count'),
                                        (('Ncl2', 1, 2), (0, 0), 'unit-targeted'),
                                        (('atar', 1, 0), None, 'target masks')):

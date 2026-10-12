@@ -36,7 +36,7 @@ EQUIPMENT = {
     'iW08': 'PoisonSac', 'iG05': 'ToxicVine',
 }
 ACTIONS = {'A119': 'InventoryCraft', 'Gupg': 'GroundUpgrade',
-           'Pcap': 'CaptureOrb', 'Pmas': 'MasterCapture', 'Pfor': 'CaptureForge'}
+           'Pcap': 'CaptureOrb'}
 TOWER_ABILITIES = {
     'A100': 'SplitShot', 'A101': 'TrueshotAura',
     'A102': 'CriticalStrike', 'A103': 'SwordDance', 'A104': 'ShieldBash',
@@ -364,8 +364,8 @@ def manifest_contract(manifest):
     require(manifest.get('schemaVersion') == 1, 'Semantic manifest schemaVersion must be 1')
     contract = expected_asset_contract()
     entries = manifest.get('assets', [])
-    require(len(entries) == 32 and {e['name'] for e in entries} == set(contract),
-            'Semantic manifest must contain exactly thirty-two approved assets')
+    require(len(entries) == 30 and {e['name'] for e in entries} == set(contract),
+            'Semantic manifest must contain exactly thirty approved assets')
     for entry in entries:
         stem, rawcodes = contract[entry['name']]
         require(entry['normal'] == icon_path(stem) and entry['disabled'] == icon_path(stem, True),
@@ -389,7 +389,7 @@ def manifest_contract(manifest):
                   for e in manifest[key] for field in ('normal', 'disabled')], 'manifest')
 
 
-def verify_resources(artifact, baseline, root, manifest, paths):
+def verify_resources(artifact, baseline, root, manifest, paths, *, preserved_current_paths=False):
     manifest_contract(manifest)
     source_paths, packed_paths = paths
     decoded, hashes = {}, set()
@@ -413,7 +413,8 @@ def verify_resources(artifact, baseline, root, manifest, paths):
                         require(actual.tobytes() == wanted.tobytes(),
                                 f'{path}: source-conversion pixels/alpha mismatch at mip {level}')
                 else:
-                    old_path = entry['old_' + field] if category == 'towerMigrations' else path
+                    old_path = (entry['old_' + field] if category == 'towerMigrations' and
+                                not preserved_current_paths else path)
                     require(baseline.has(old_path) and data == baseline.extract(old_path),
                             f'{path}: preserved baseline artwork bytes changed')
                 require(sha(data) not in hashes, f'{path}: duplicate semantic artwork bytes')
@@ -480,9 +481,9 @@ def main(argv=None):
     digest = sha(data)
     target = args.contact_sheet or Path('/tmp') / f'semantic-icons-{digest[:12]}-offline.png'
     target = contact_sheet(decoded, manifest, digest, target, args.root)
-    print('PASS: exact rawcode/global-field bindings; 28 equipment, 5 actions, critical strike, '
+    print('PASS: exact rawcode/global-field bindings; 28 equipment, 3 actions, critical strike, '
           'all tower icon uses and 96 wild identities; 516 whole pet slots and 61 Pcap levels unchanged.')
-    print('PASS: 32 source-reproducible + 11 byte-preserved tower + 13 byte-preserved pet UI pairs; '
+    print('PASS: 30 source-reproducible + 11 byte-preserved tower + 13 byte-preserved pet UI pairs; '
           'MPQ/import hashes, all seven decoded mips/alpha, casefold uniqueness and old-path absence.')
     print(f'FINAL MAP SHA256: {digest}')
     print(f'BASELINE MAP SHA256: {sha(before)}')

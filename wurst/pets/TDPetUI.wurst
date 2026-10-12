@@ -92,7 +92,7 @@ function details(int lane) returns string
 	if pet == null
 		return "收藏为空。Q捕获本路野生精灵。"
 	var text = "收藏 " + (tdPetSelectedSlot[lane] + 1).toString() + "/12 · " + pet.summary()
-	text += "|n普通球 " + tdPetBallsForLane(lane).toString() + " · 大师球 " + tdPetMasterBalls[lane].toString()
+	text += "|n普通球 " + tdPetBallsForLane(lane).toString()
 	text += "|n洗练石 " + tdPetRerollStones[lane].toString() + " · 开栏石 " + tdPetSlotStones[lane].toString()
 	for slot = 0 to 3
 		text += "|n栏" + (slot + 1).toString() + ": "

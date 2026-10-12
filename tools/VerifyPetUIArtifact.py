@@ -18,7 +18,7 @@ from VerifyTowerPlacementArtifact import unit_objects
 from VerifyEquipmentAbilityArtifact import ability_objects, check_ability, require
 from VerifyGroundItemArtifact import (verify_function_book,
                                       verify_global_channel_orders,
-                                      verify_no_hunt_objects)
+                                      verify_no_hunt_objects, verify_no_removed_raw_objects)
 
 ROOT = Path(__file__).resolve().parents[1]
 NORMAL_PREFIX = "ReplaceableTextures\\CommandButtons\\"
@@ -42,16 +42,16 @@ EXPECTED = {
 # Observed legacy native move/stop/hold/patrol/build cells stay unchanged.
 NATIVE_CELLS = {(0, 0), (1, 0), (2, 0), (0, 1), (0, 2)}
 FARMER_ICONS = {'Geqb': 'TDPetMenuTools', 'Pcol': 'TDPetCollection', 'Pdep': 'TDPetDeploy'}
-# x, y, hotkey, Channel target type, semantic icon, original base order.
+# x, y, hotkey, Channel target type, semantic icon. Base orders are allocated automatically.
 COLLECTION_COMMANDS = {
-    'Pc00': (0, 0, 'I', 0, 'TDPetCollection', 'weboff'),
-    'Pc01': (1, 0, 'A', 0, 'TDPetPrevious', 'web'),
-    'Pc02': (2, 0, 'D', 0, 'TDPetNext', 'attributemodskill'),
-    'Pc03': (3, 0, 'R', 0, 'TDPetReturnBuilder', 'auraunholy'),
-    'Pc04': (0, 2, 'E', 1, 'TDPetDeploy', 'auravampiric'),
-    'Pc05': (1, 2, 'Q', 0, 'TDPetRecall', 'autodispel'),
-    'Pc06': (2, 2, 'C', 0, 'TDPetCultivate', 'autodispeloff'),
-    'Pc07': (3, 2, 'W', 0, 'TDPetInfo', 'autodispelon'),
+    'Pc00': (0, 0, 'I', 0, 'TDPetCollection'),
+    'Pc01': (1, 0, 'A', 0, 'TDPetPrevious'),
+    'Pc02': (2, 0, 'D', 0, 'TDPetNext'),
+    'Pc03': (3, 0, 'R', 0, 'TDPetReturnBuilder'),
+    'Pc04': (0, 2, 'E', 1, 'TDPetDeploy'),
+    'Pc05': (1, 2, 'Q', 0, 'TDPetRecall'),
+    'Pc06': (2, 2, 'C', 0, 'TDPetCultivate'),
+    'Pc07': (3, 2, 'W', 0, 'TDPetInfo'),
 }
 SPECIES = (
     (r'Units\Human\Phoenix\Phoenix.mdl', 'TDPetFlamePhoenix'),
@@ -135,13 +135,12 @@ def verify_collection_commands(abilities):
         orders.append(field_value(fields, 'Ncl6', 1))
     require(len(set(icons)) == 8, 'Collection command icons must be distinct')
     require(len(set(orders)) == 8, 'Display command base orders collide')
-    for rawcode, (x, y, hotkey, target, stem, order) in COLLECTION_COMMANDS.items():
+    for rawcode, (x, y, hotkey, target, stem) in COLLECTION_COMMANDS.items():
         fields = abilities[rawcode][1]
         require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (x, y),
                 f'{rawcode}: collection command cell changed')
         require(field_value(fields, 'ahky') == hotkey, f'{rawcode}: collection command hotkey changed')
         require(field_value(fields, 'Ncl2', 1) == target, f'{rawcode}: collection target type changed')
-        require(field_value(fields, 'Ncl6', 1) == order, f'{rawcode}: base order changed')
         for field in ('aart', 'arar'):
             require(field_value(fields, field) == icon_path(stem), f'{rawcode}: {field} icon path mismatch')
     verify_global_channel_orders(abilities)
@@ -166,7 +165,7 @@ def verify_cultivation_command(abilities):
 
 def verify_capture_only(abilities, units):
     verify_no_hunt_objects(abilities, units)
-    for rawcode in ('Pcap', 'Pmas', 'Pcol'):
+    for rawcode in ('Pcap', 'Pcol'):
         fields = abilities[rawcode][1]
         for (field, level, _), (_, text) in fields.items():
             if field in ('anam', 'atp1', 'aub1'):
@@ -602,16 +601,18 @@ def verify_pet_core(abilities, units):
     check_ability(abilities, 'Pbar', 'AId1', 8, 'Idef', 0, lambda level: -level)
     print('PASS PET CORE OBJECTS: 96 wild, 3 selectable displays, 3 decorations; '
           '516 passive bright/gray/empty skill variants, globally unique Channel orders; '
-          'five-command function menu/master/five-to-one, capture-only wild descriptions, '
-          'no Phnt ghost/attachment and 0..60 capture inventory levels.')
+          'three-command function menu/ordinary capture, capture-only wild descriptions, '
+          'no Phnt/Pmas/Pfor ghost/attachment and 0..60 capture inventory levels.')
 
 def main():
     require(len(sys.argv) == 2, __doc__)
     artifact = Mpq(Path(sys.argv[1]).read_bytes())
     abilities = ability_objects(artifact.extract('war3map.w3a'))
     units = unit_objects(artifact.extract('war3map.w3u'))
+    verify_no_removed_raw_objects(artifact.extract('war3map.w3u'), False, 'unit')
     if artifact.has('war3map.w3t'):
-        verify_no_hunt_objects(abilities, unit_objects(artifact.extract('war3map.w3t')))
+        verify_no_removed_raw_objects(artifact.extract('war3map.w3t'), False, 'item')
+        verify_no_hunt_objects(abilities, units, unit_objects(artifact.extract('war3map.w3t')))
     farmer = verify_farmer_grid(abilities, units)
     verify_collection_commands(abilities)
     verify_species_identity(units)

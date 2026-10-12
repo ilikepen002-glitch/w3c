@@ -52,7 +52,7 @@ public function tdPetDeploy(TDPet pet, unit tower) returns boolean
 	pet.visual.setPathing(false)
 	return true
 
-function tdPetHandleCaptureWithBall(boolean master) returns boolean
+function tdPetHandleCapture() returns boolean
 	let farmer = GetTriggerUnit()
 	if farmer == null or GetUnitTypeId(farmer) != TD_FARMER_UNIT_ID
 		return false
@@ -73,15 +73,15 @@ function tdPetHandleCaptureWithBall(boolean master) returns boolean
 	if now < tdPetCaptureReadyAt[lane]
 		tdPetNotice(lane, "捕获冷却中。")
 		return false
-	if not tdPetSpendCaptureBall(lane, master, tdPetWildCanCapture(wild, lane))
+	if not tdPetSpendCaptureBall(lane, tdPetWildCanCapture(wild, lane))
 		tdPetNotice(lane, "捕获球不足。")
 		return false
 	tdPetCaptureReadyAt[lane] = now + 1.0
 	tdPetSyncBallAbility(lane)
 	farmer.flashEffect("Abilities\\Spells\\Other\\Charm\\CharmCaster.mdl", "origin")
 	target.flashEffect("Abilities\\Spells\\Other\\Charm\\CharmTarget.mdl", "origin")
-	let guaranteed = master or (wild.tutorial and not tdPetTutorialUsed[lane])
-	if not master and wild.tutorial
+	let guaranteed = wild.tutorial and not tdPetTutorialUsed[lane]
+	if wild.tutorial
 		tdPetTutorialUsed[lane] = true
 	if not guaranteed and GetRandomInt(1, 100) > 60
 		tdPetNotice(lane, "|cffff8080捕获失败|r，宝宝继续行进；剩余球 " + tdPetBallsForLane(lane).toString())
@@ -91,10 +91,7 @@ function tdPetHandleCaptureWithBall(boolean master) returns boolean
 	if not tdPetStore(lane, pet)
 		// No yielding between capacity check and insertion; retain an explicit failure path.
 		destroy pet
-		if master
-			tdPetMasterBalls[lane] += 1
-		else
-			tdPetAddBall(lane)
+		tdPetAddBall(lane)
 		tdPetSyncBallAbility(lane)
 		tdPetNotice(lane, "收藏登记失败，已退还捕获球。")
 		return false
@@ -107,21 +104,6 @@ function tdPetHandleCaptureWithBall(boolean master) returns boolean
 	tdPetNotice(lane, "|cff80ff80捕获成功|r：" + pet.summary() + "。按W选中收藏展示，E点塔上阵；选中展示后按C洗练/开栏/释放。")
 	return false
 
-function tdPetHandleCapture() returns boolean
-	return tdPetHandleCaptureWithBall(false)
-
-function tdPetHandleMaster() returns boolean
-	return tdPetHandleCaptureWithBall(true)
-
-function tdPetHandleForge() returns boolean
-	let farmer = GetTriggerUnit()
-	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
-		let lane = GetPlayerId(GetOwningPlayer(farmer))
-		if tdPetLaneCanAct(lane)
-			let success = tdPetForgeMasterBall(lane)
-			tdPetSyncBallAbility(lane)
-			tdPetNotice(lane, success ? "五合一成功：普通球-5，大师球+1（必定捕获）。" : "普通球不足5个或大师球库存已满，未扣材料。")
-	return false
 public function tdPetHandleEnemyBallDrop(unit enemy, int lane, int wave)
 	if tdPetIsWild(enemy) or enemy == null or GetKillingUnit() == null or not tdPetLaneCanAct(lane) or tdIsBossUnitTypeId(GetUnitTypeId(enemy)) or tdEnemyWasLeaked(enemy)
 		return
@@ -167,8 +149,6 @@ public function tdPetSetupRuntime()
 	tdPetRuntimeReady = true
 	tdPetSetupWild()
 	registerPlayerEvent(EVENT_PLAYER_LEAVE, function tdPetHandlePlayerLeave)
-	registerSpellEffectEvent(TD_PET_MASTER_ABILITY_ID, function tdPetHandleMaster)
-	registerSpellEffectEvent(TD_PET_FORGE_ABILITY_ID, function tdPetHandleForge)
 	registerSpellEffectEvent(TD_PET_CAPTURE_ABILITY_ID, function tdPetHandleCapture)
 	tdPetBallPickupTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
 	tdPetBallPickupTrigger.addAction(function tdPetHandleBallPickup)

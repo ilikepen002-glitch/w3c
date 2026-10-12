@@ -22,9 +22,9 @@ class SemanticSourceTests(unittest.TestCase):
     def setUpClass(cls):
         cls.manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
-    def test_exactly_selected_seven_sources_and_thirty_two_pairs(self):
+    def test_exactly_selected_seven_sources_and_thirty_pairs(self):
         assets = self.manifest["assets"]
-        self.assertEqual(len(assets), 32)
+        self.assertEqual(len(assets), 30)
         self.assertEqual(len({a["source"] for a in assets}), 7)
         expected_sources = {
             "ranged-sheet-source.png", "arcane-sheet-source.png", "combat-sheet-source.png",
@@ -33,7 +33,7 @@ class SemanticSourceTests(unittest.TestCase):
         }
         self.assertEqual({Path(a["source"]).name for a in assets}, expected_sources)
         self.assertEqual({p.name for p in MANIFEST.parent.glob("*.png")}, expected_sources)
-        self.assertEqual(len({a["name"] for a in assets}), 32)
+        self.assertEqual(len({a["name"] for a in assets}), 30)
         for entry in assets:
             with self.subTest(icon=entry["name"]):
                 self.assertEqual(hashlib.sha256((ROOT / entry["source"]).read_bytes()).hexdigest(), entry["source_sha256"])
@@ -90,8 +90,8 @@ class SemanticSourceTests(unittest.TestCase):
             self.assertNotIn("presetIcon(" + helper, item)
         self.assertIn("..setIconNormal(tdPetCaptureIconPath())..setIconResearch(tdPetCaptureIconPath())", pets)
         self.assertNotIn("presetIcon", pets)
-        self.assertIn("Targettype.UNIT, tdPetMasterCaptureIconPath()", pets)
-        self.assertIn("Targettype.NONE, tdPetCaptureForgeIconPath()", pets)
+        self.assertNotIn("TD_PET_MASTER_ABILITY_ID", pets)
+        self.assertNotIn("TD_PET_FORGE_ABILITY_ID", pets)
         self.assertIn("..setInterfaceIcon(tdPetCaptureIconPath())", pets)
 
     def test_twenty_eight_equipment_identities_have_explicit_nonshared_mappings(self):
@@ -106,7 +106,7 @@ class SemanticSourceTests(unittest.TestCase):
         entries = {a["name"]: a["rawcodes"] for a in self.manifest["assets"]}
         for name, rawcodes in {
             "InventoryCraft": ["A119"], "GroundUpgrade": ["Gupg"], "CaptureOrb": ["Ibal", "Pcap"],
-            "MasterCapture": ["Pmas"], "CaptureForge": ["Pfor"], "CriticalStrike": ["A102", "A112"],
+            "CriticalStrike": ["A102", "A112"],
         }.items():
             self.assertEqual(entries[name], rawcodes)
 

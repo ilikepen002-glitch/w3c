@@ -7,12 +7,6 @@ function importedIcon(string name) returns string
 public function tdPetCaptureIconPath() returns string
 	return importedIcon("TDActionCaptureOrb")
 
-public function tdPetMasterCaptureIconPath() returns string
-	return importedIcon("TDActionMasterCapture")
-
-public function tdPetCaptureForgeIconPath() returns string
-	return importedIcon("TDActionCaptureForge")
-
 public function tdPetMenuToolsIconPath() returns string
 	return importedIcon("TDPetMenuTools")
 

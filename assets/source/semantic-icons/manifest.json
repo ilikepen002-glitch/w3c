@@ -512,42 +512,6 @@
       "disabled_sha256": "b2a6a74b7bb83113f1ffb057d0034a285fe527b8102437b2a29ae3b4feda7ac2"
     },
     {
-      "name": "MasterCapture",
-      "source": "assets/source/semantic-icons/actions-sheet-v2-source.png",
-      "crop": [
-        0,
-        484,
-        512,
-        1024
-      ],
-      "rawcodes": [
-        "Pmas"
-      ],
-      "source_sha256": "18389ebd56b8a5c03ff96a8992f56cb8c5fef5dfa16095405754895e344d4115",
-      "normal": "war3mapImported\\BTNTDActionMasterCapture.blp",
-      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDActionMasterCapture.blp",
-      "normal_sha256": "2a9c3b131fe5485ab9a9ace74087296e6bfffad5fcd08aef46bd540f3f629627",
-      "disabled_sha256": "88b4817808ab779a982728464c5d527d83d9b871c6b340348bf81aba6f3a4ff0"
-    },
-    {
-      "name": "CaptureForge",
-      "source": "assets/source/semantic-icons/actions-sheet-v2-source.png",
-      "crop": [
-        512,
-        484,
-        1024,
-        1024
-      ],
-      "rawcodes": [
-        "Pfor"
-      ],
-      "source_sha256": "18389ebd56b8a5c03ff96a8992f56cb8c5fef5dfa16095405754895e344d4115",
-      "normal": "war3mapImported\\BTNTDActionCaptureForge.blp",
-      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDActionCaptureForge.blp",
-      "normal_sha256": "ae49f43e13a354a14a6dfe4c3a96807b14b2a292ab1851024140dddc0bf5f85b",
-      "disabled_sha256": "79efa61f377acdfcdc9b8fd810d918f29114f2768de2c27e6d51c85b6e31973a"
-    },
-    {
       "name": "GroundUpgrade",
       "source": "assets/source/semantic-icons/actions-sheet-v2-source.png",
       "crop": [

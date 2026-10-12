@@ -51,13 +51,8 @@ import TDPetUIData
 	tdFarmerGroundUpgradeIconPath().assertEquals("war3mapImported\\BTNTDActionGroundUpgrade.blp")
 	(tdFarmerCraftIconPath() != tdFarmerGroundUpgradeIconPath()).assertTrue()
 
-@Test function captureActionsSeparateOrdinaryMasterAndFiveToOneForging()
+@Test function ordinaryCaptureRetainsItsDedicatedIcon()
 	tdPetCaptureIconPath().assertEquals("war3mapImported\\BTNTDActionCaptureOrb.blp")
-	tdPetMasterCaptureIconPath().assertEquals("war3mapImported\\BTNTDActionMasterCapture.blp")
-	tdPetCaptureForgeIconPath().assertEquals("war3mapImported\\BTNTDActionCaptureForge.blp")
-	(tdPetCaptureIconPath() != tdPetMasterCaptureIconPath()).assertTrue()
-	(tdPetCaptureIconPath() != tdPetCaptureForgeIconPath()).assertTrue()
-	(tdPetMasterCaptureIconPath() != tdPetCaptureForgeIconPath()).assertTrue()
 
 @Test function orcCriticalStrikeAndSwordDanceCannotShareAnIcon()
 	tdOrcCriticalStrikeIconPath().assertEquals("war3mapImported\\BTNTDTowerCriticalStrike.blp")

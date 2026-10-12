@@ -114,7 +114,7 @@ public function tdPetSpawnWild(int lane, int wave, int species) returns TDPetWil
 	if GetLocalPlayer() == Player(lane)
 		PingMinimapEx(creature.getPos().x, creature.getPos().y, 4.0, 255, 220, 50, false)
 		StartSound(bj_questDiscoveredSound)
-	DisplayTimedTextToPlayer(Player(lane), 0, 0, 7.0, "|cffffdd40野生" + tdPetSpeciesName(species) + "出现！|r保护60秒，Q普通球捕获；功能菜单可投大师球。" + (record.tutorial ? " 教学首只第一次普通球必成。" : ""))
+	DisplayTimedTextToPlayer(Player(lane), 0, 0, 7.0, "|cffffdd40野生" + tdPetSpeciesName(species) + "出现！|r保护60秒，Q普通球捕获。" + (record.tutorial ? " 教学首只第一次普通球必成。" : ""))
 	return record
 
 public function tdPetWildOnWave(int lane, int wave)

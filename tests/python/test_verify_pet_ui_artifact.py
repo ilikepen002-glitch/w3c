@@ -155,14 +155,14 @@ class PetUINegativeTests(unittest.TestCase):
                 if target == "parent":
                     abilities["Xhnt"] = ("Phnt", {})
                 elif target == "requirement":
-                    self.set_field(abilities, "Pfor", "areq", "Phnt")
+                    self.set_field(abilities, "Gupg", "areq", "Phnt")
                 else:
                     units["pv03"]["uabi"] += ",Phnt"
                 with self.assertRaisesRegex(ValueError, "removed Phnt remains"):
                     verifier.verify_no_hunt_objects(abilities, units)
 
     def test_rejects_channel_collision_outside_collection_and_at_later_level(self):
-        for owner in ("A109", "A133", "Pfor"):
+        for owner in ("A109", "A133", "Gupg"):
             with self.subTest(owner=owner):
                 abilities = deepcopy(self.abilities)
                 order = verifier.field_value(abilities[owner][1], "Ncl6", 1)
@@ -171,7 +171,7 @@ class PetUINegativeTests(unittest.TestCase):
                     verifier.verify_global_channel_orders(abilities)
 
     def test_rejects_nonchannel_object_with_colliding_channel_field(self):
-        order = verifier.field_value(self.abilities["Pfor"][1], "Ncl6", 1)
+        order = verifier.field_value(self.abilities["Gupg"][1], "Ncl6", 1)
         self.abilities["Xord"] = ("AOcr", {("Ncl6", 1, 6): (3, order)})
         with self.assertRaisesRegex(ValueError, "Channel order.*collides"):
             verifier.verify_global_channel_orders(self.abilities)
@@ -201,13 +201,19 @@ class PetUINegativeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Pc02: collection cell overlaps Pc01"):
             verifier.verify_collection_commands(self.abilities)
 
-    def test_rejects_collection_wrong_or_colliding_order(self):
-        for order, reason in [("web", "base orders collide"), ("attack", "Pc02: base order changed")]:
-            with self.subTest(order=order):
+    def test_rejects_collection_colliding_or_invalid_order(self):
+        order = verifier.field_value(self.abilities["Pc01"][1], "Ncl6", 1)
+        for changed, reason in ((order, "base orders collide"), ("", "invalid Channel order"),
+                                ("unknown order!", "invalid Channel order")):
+            with self.subTest(order=changed):
                 abilities = deepcopy(self.abilities)
-                self.set_field(abilities, "Pc02", "Ncl6", order, 1)
+                self.set_field(abilities, "Pc02", "Ncl6", changed, 1)
                 with self.assertRaisesRegex(ValueError, reason):
                     verifier.verify_collection_commands(abilities)
+
+    def test_unique_collection_order_is_not_pinned_to_allocator_index(self):
+        self.set_field(self.abilities, "Pc02", "Ncl6", "attack", 1)
+        verifier.verify_collection_commands(self.abilities)
 
     def test_rejects_wrong_custom_path_prefix(self):
         for field in ("aart", "arar"):

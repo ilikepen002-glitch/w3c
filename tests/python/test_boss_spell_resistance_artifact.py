@@ -540,8 +540,38 @@ class BossResistanceFinalArtifactTests(unittest.TestCase):
     def test_final_mpq_zero_engine_event(self): verifier.verify_zero_engine_event(self.script)
     def test_final_mpq_setup_shutdown(self): verifier.verify_setup_lifecycle(self.script)
     def test_final_mpq_scripted_paths(self): verifier.verify_scripted_damage(self.script)
-    def test_final_mpq_full_objects_economy_victory_and_contract(self):
-        verifier.verify_artifact(self.map_path, self.baseline.map, ROOT / 'wurst', self.baseline.source)
+    def test_pinned_formal_boss_release_full_objects_economy_victory(self):
+        # This strict Boss-only predecessor delta must not be weakened for later
+        # independently authorized object removals such as ordinary-only capture.
+        data = subprocess.check_output(['git', 'show',
+            '0384ccddcfdbaa868f773573c1f7403fe809d3e2:ExampleMap.w3x'], cwd=ROOT)
+        self.assertEqual(hashlib.sha256(data).hexdigest(),
+                         '1b2b9671d3ce7b05837811dbfbb8efa0815fe4bcea840f53f8dde4789761f96e')
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'formal-boss-release.w3x'
+            path.write_bytes(data)
+            archive = subprocess.check_output(['git', 'archive',
+                '0384ccddcfdbaa868f773573c1f7403fe809d3e2', 'wurst'], cwd=ROOT)
+            root = Path(directory)
+            with tarfile.open(fileobj=io.BytesIO(archive)) as entries:
+                for entry in entries:
+                    relative = Path(entry.name)
+                    verifier.require(not relative.is_absolute() and '..' not in relative.parts and
+                                     relative.parts[0] == 'wurst' and (entry.isfile() or entry.isdir()),
+                                     'Unsafe formal Boss Git archive entry')
+                    target = root / relative
+                    if entry.isdir():
+                        target.mkdir(parents=True, exist_ok=True)
+                    else:
+                        target.parent.mkdir(parents=True, exist_ok=True)
+                        target.write_bytes(entries.extractfile(entry).read())
+            self.assertEqual(source_digest(root / 'wurst'),
+                             'e17e5a8f6a99003c9ac1979e4b8b7807f084fc3a98b3544bd0e6f329d34c7994')
+            verifier.verify_artifact(path, self.baseline.map, root / 'wurst', self.baseline.source)
+
+    def test_current_source_and_compiled_boss_contract(self):
+        verifier.verify_source_contract(ROOT / 'wurst', self.baseline.source)
+        verifier.verify_compiled_structure(self.script)
 
 
 if __name__ == '__main__': unittest.main(verbosity=2)

@@ -47,8 +47,6 @@ function tdPetCommandDescription(int command) returns string
 		capture.setTargetsAllowed(level, "neutral,enemy,ground,air,organic,invulnerable,vulnerable")
 	command(TD_PET_COLLECTION_ABILITY_ID, "精灵收藏", "W", 2, 2, Targettype.NONE, tdPetCollectionIconPath(), "浏览已捕获精灵，查看技能并上阵、召回或培养。收藏上限12只。|n已有第3/4技能栏在本路完成第4/8波后解锁。")
 	command(TD_PET_DEPLOY_ABILITY_ID, "精灵上阵", "E", 3, 2, Targettype.UNIT, tdPetDeployIconPath(), "先在精灵收藏中选中精灵，再选择本路已完工、未绑定精灵的塔。|n每座塔可上阵1只精灵；换塔保留主动技能冷却。")
-	command(TD_PET_MASTER_ABILITY_ID, "大师球捕获", "M", 0, 1, Targettype.UNIT, tdPetMasterCaptureIconPath(), "消耗1大师球，必定捕获本路野生精灵。|n收藏已满不扣球；库存可在精灵收藏中查看。")
-	command(TD_PET_FORGE_ABILITY_ID, "捕获球升级（5合1）", "B", 1, 1, Targettype.NONE, tdPetCaptureForgeIconPath(), "消耗5普通球，获得1大师球。数量不足不消耗。")
 	new AbilityDefinition(TD_FARMER_MENU_REPAIR_ABILITY_ID, 'Ahrp')..setHotkeyNormal("R")..setButtonPositionNormalX(1)..setButtonPositionNormalY(1)
 	for cmd = 0 to 7
 		var label = "收藏信息"

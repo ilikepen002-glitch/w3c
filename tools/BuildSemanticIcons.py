@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild only the 32 approved semantic icon pairs from selected imagegen art.
+"""Rebuild only the 30 approved semantic icon pairs from selected imagegen art.
 
 No drawing or image generation occurs here: crop, LANCZOS resize, alpha retention,
 grayscale/0.45 disabled transform, and the existing BLP1 encoder are deterministic.
@@ -45,8 +45,8 @@ def disabled_icon(image: Image.Image) -> Image.Image:
 
 def build(manifest_path: Path = MANIFEST, root: Path = ROOT, check: bool = False) -> None:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if len(manifest["assets"]) != 32:
-        raise ValueError("Expected exactly 32 approved new icon pairs")
+    if len(manifest["assets"]) != 30:
+        raise ValueError("Expected exactly 30 approved new icon pairs")
     prepared = []
     with tempfile.TemporaryDirectory(prefix="semantic-icon-build-") as folder:
         rebuilt = Path(folder) / "icon.blp"
@@ -69,7 +69,7 @@ def build(manifest_path: Path = MANIFEST, root: Path = ROOT, check: bool = False
         for path, data in prepared:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(data)
-    print(f"PASS: 32 semantic pairs {'reproduced byte-for-byte' if check else 'built'} (64px BLP1, alpha8, seven mips)")
+    print(f"PASS: 30 semantic pairs {'reproduced byte-for-byte' if check else 'built'} (64px BLP1, alpha8, seven mips)")
 
 
 def main() -> None:

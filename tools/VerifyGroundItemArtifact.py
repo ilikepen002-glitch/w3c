@@ -1,4 +1,4 @@
-"""Verify packaged five-command function menu and global Channel contracts.
+"""Verify packaged three-command function menu and global Channel contracts.
 
 Usage: python tools/VerifyGroundItemArtifact.py ExampleMap.w3x
 Does not prove native rendering or live gameplay.
@@ -12,7 +12,8 @@ from GenerateTowerTerrainMask import Mpq
 from VerifyEquipmentAbilityArtifact import ability_objects, require
 from VerifyTowerPlacementArtifact import unit_objects
 
-BOOK_SPELLS = ('A119', 'Gupg', 'Dsta', 'Pmas', 'Pfor')
+BOOK_SPELLS = ('A119', 'Gupg', 'Dsta')
+REMOVED_CAPTURE_COMMANDS = ('Phnt', 'Pmas', 'Pfor')
 
 
 def value(fields, key, level=1, column=0):
@@ -21,20 +22,37 @@ def value(fields, key, level=1, column=0):
     return fields[(key, level, column)][1]
 
 
-def verify_no_hunt_objects(abilities, units):
-    """Reject the removed ability even when it is no longer in the book."""
-    require('Phnt' not in abilities, 'Removed hunt ability Phnt remains as a ghost object')
-    rawcode = re.compile(r'(?<![A-Za-z0-9_])Phnt(?![A-Za-z0-9_])')
-    for object_id, (parent, fields) in abilities.items():
-        require(parent != 'Phnt', f'{object_id}: removed Phnt remains as ability parent')
-        for field, (_, field_data) in fields.items():
-            require(not isinstance(field_data, str) or not rawcode.search(field_data),
-                    f'{object_id}: removed Phnt remains in ability field {field[0]}')
-    for object_id, fields in units.items():
-        require(object_id != 'Phnt', 'Removed Phnt remains as unit object')
-        for field, field_data in fields.items():
-            require(not isinstance(field_data, str) or not rawcode.search(field_data),
-                    f'{object_id}: removed Phnt remains in unit field {field}')
+def verify_no_hunt_objects(abilities, units, items=None):
+    """Reject retired capture/hunt objects, parents and references everywhere."""
+    for retired in REMOVED_CAPTURE_COMMANDS:
+        require(retired not in abilities,
+                f'Removed capture/hunt ability {retired} remains as a ghost object')
+        rawcode = re.compile(r'(?<![A-Za-z0-9_])' + retired + r'(?![A-Za-z0-9_])')
+        for object_id, (parent, fields) in abilities.items():
+            require(parent != retired, f'{object_id}: removed {retired} remains as ability parent')
+            for field, (_, field_data) in fields.items():
+                require(not isinstance(field_data, str) or not rawcode.search(field_data),
+                        f'{object_id}: removed {retired} remains in ability field {field[0]}')
+        for kind, objects in (('unit', units), ('item', items or {})):
+            for object_id, fields in objects.items():
+                require(object_id != retired, f'Removed {retired} remains as {kind} object')
+                for field, field_data in fields.items():
+                    require(not isinstance(field_data, str) or not rawcode.search(field_data),
+                            f'{object_id}: removed {retired} remains in {kind} field {field}')
+
+
+def verify_no_removed_raw_objects(data, extended, label):
+    """Keep raw object parents, which the convenience unit parser discards."""
+    from VerifySemanticIconArtifact import parse_objects
+    for object_id, obj in parse_objects(data, extended).items():
+        parent = obj.identity[:4].decode('ascii')
+        for retired in REMOVED_CAPTURE_COMMANDS:
+            require(object_id != retired and parent != retired,
+                    f'{object_id}: removed {retired} remains as {label} object/parent')
+            pattern = re.compile(r'(?<![A-Za-z0-9_])' + retired + r'(?![A-Za-z0-9_])')
+            for key, field in obj.fields.items():
+                require(field.kind != 3 or not pattern.search(field.value),
+                        f'{object_id}: removed {retired} remains in {label} field {key[0]}')
 
 
 def verify_global_channel_orders(abilities):
@@ -61,7 +79,7 @@ def verify_global_channel_orders(abilities):
                     f'{object_id}: Channel base order must stay consistent across all levels')
         for level, column, kind, order in orders:
             require(level >= 1 and column == 6 and kind == 3 and
-                    isinstance(order, str) and bool(order.strip()),
+                    isinstance(order, str) and re.fullmatch(r"[a-z][a-z0-9]*", order) is not None,
                     f'{object_id}: invalid Channel order encoding at level {level}')
             previous = owners.get(order)
             require(previous is None or previous == object_id,
@@ -81,8 +99,8 @@ def verify_function_book(abilities, units):
     require(upgrade_parent == 'ANcl', 'Ground upgrade must inherit Channel')
     require(value(book, 'spb1', 1, 1) == ','.join(BOOK_SPELLS), 'Unexpected book spell list')
     require(value(book, 'spb2', 1, 2) == 0, 'Book shares spell cooldowns')
-    require(value(book, 'spb3', 1, 3) == 5 and value(book, 'spb4', 1, 4) == 5,
-            'Book must contain exactly five spells')
+    require(value(book, 'spb3', 1, 3) == 3 and value(book, 'spb4', 1, 4) == 3,
+            'Book must contain exactly three spells')
     require(value(book, 'abpx', 0) == 3 and value(book, 'abpy', 0) == 0,
             'Book must occupy farmer function cell 3,0')
     require(value(book, 'ahky', 0) == 'C', 'Book hotkey must be C')
@@ -118,13 +136,6 @@ def verify_function_book(abilities, units):
         book_cells[cell] = rawcode
         if hotkey:
             book_hotkeys[hotkey] = rawcode
-    for rawcode, x, hotkey, target in [('Pmas', 0, 'M', 1), ('Pfor', 1, 'B', 0)]:
-        parent, fields = abilities[rawcode]
-        require(parent == 'ANcl', f'{rawcode}: function command must inherit Channel')
-        require(value(fields, 'abpx', 0) == x and value(fields, 'abpy', 0) == 1,
-                f'{rawcode}: wrong function book cell')
-        require(value(fields, 'ahky', 0) == hotkey, f'{rawcode}: wrong function book hotkey')
-        require(value(fields, 'Ncl2', 1, 2) == target, f'{rawcode}: wrong function command target')
     channel_count = verify_global_channel_orders(abilities)
     farmer = [(rawcode, fields) for rawcode, fields in units.items()
               if 'Geqb' in fields.get('uabi', '').split(',')]
@@ -139,12 +150,14 @@ def main():
     artifact = Mpq(Path(sys.argv[1]).read_bytes())
     abilities = ability_objects(artifact.extract('war3map.w3a'))
     units = unit_objects(artifact.extract('war3map.w3u'))
+    verify_no_removed_raw_objects(artifact.extract('war3map.w3u'), False, 'unit')
     if artifact.has('war3map.w3t'):
-        verify_no_hunt_objects(abilities, unit_objects(artifact.extract('war3map.w3t')))
+        verify_no_removed_raw_objects(artifact.extract('war3map.w3t'), False, 'item')
+        verify_no_hunt_objects(abilities, units, unit_objects(artifact.extract('war3map.w3t')))
     farmer, channel_count = verify_function_book(abilities, units)
     print('PASS ground commands:', farmer, 'book=' + ','.join(BOOK_SPELLS),
-          'five distinct cells; no repeated assigned hotkeys', 'point AoE=144',
-          f'{channel_count} globally unique Channel objects; no Phnt ghost/attachment')
+          'three distinct cells; no repeated assigned hotkeys', 'point AoE=144',
+          f'{channel_count} globally unique Channel objects; no Phnt/Pmas/Pfor ghost/attachment')
     for rawcode in ('Geqb',) + BOOK_SPELLS:
         parent, fields = abilities[rawcode]
         print(json.dumps({'id': rawcode, 'parent': parent, 'fields': [

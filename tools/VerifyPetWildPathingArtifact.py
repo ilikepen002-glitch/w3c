@@ -39,7 +39,7 @@ def verify_capture_contract(abilities):
     require(not any(uid == 'Aeth' or parent == 'Aeth'
                     for uid, (parent, _) in abilities.items()),
             'Native Aeth must not be overridden or used as a custom ability parent')
-    for uid, count in (('Pcap', 61), ('Pmas', 1)):
+    for uid, count in (('Pcap', 61),):
         require(uid in abilities, f'Missing capture ability {uid}')
         parent, fields = abilities[uid]
         require(parent == 'ANcl', f'{uid}: capture must retain Channel parent')
@@ -149,7 +149,7 @@ def main():
     icons, functions = verify_archive(artifact, baseline)
     print(f'PASS: exactly 96 hpea wild objects use native Aeth only; '
           f'96 uabi changes, {icons} coordinated wild icon field changes; no other W3U changes except wurs.')
-    print(f'PASS: Pcap 61/Pmas 1 unit-target masks; unchanged W3A/W3E/WPM; '
+    print(f'PASS: Pcap 61 ordinary unit-target masks; unchanged W3A/W3E/WPM; '
           f'{functions} unchanged wild/capture/route functions; pause calls confined to FX dummy recycler.')
     print('NOT TESTED: live blocking, selection, Channel click targeting and native Aeth side effects.')
 

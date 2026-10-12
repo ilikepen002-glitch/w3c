@@ -16,8 +16,11 @@ standalone heart sketch are not part of this repository or map. Its superseded
 the selected `actions-sheet-v2-source.png`.
 
 `manifest.json` records the exact source SHA256, per-icon pixel crop, rawcode
-targets, output paths and BLP hashes. There are 32 new pairs: 26 equipment items,
-five actions, and critical strike. The two semantically accurate native equipment
+targets, output paths and BLP hashes. There are 30 active pairs: 26 equipment items,
+three actions, and critical strike. The master-capture and five-to-one action
+pairs are retired; their four dedicated BLP imports are absent. The shared
+actions source and original prompts remain as provenance because its ordinary
+capture and equipment crops are still active. The two semantically accurate native equipment
 icons, glove and dagger, remain native. All eleven existing tower pairs were moved
 to the `TDTower` namespace without changing bytes. All thirteen existing pet UI
 pairs remain byte-identical. No 516-slot quality-variant expansion is included.
@@ -39,3 +42,8 @@ The semantic artifact verifier reads the actual built MPQ, decodes every icon/mi
 checks exact bindings and baseline object deltas, rejects old case-insensitive
 paths, and emits a labeled packed-icon contact sheet. That contact sheet is an
 offline inspection, not evidence of an in-game display or gameplay test.
+
+Ordinary-only capture releases use VerifyCaptureRemovalArtifact.py against
+their exact formal predecessor. Its closed removal delta remains separate
+from the legacy icon-only VerifySemanticIconArtifact.py delta, which still
+rejects object-set changes and arbitrary non-icon fields.

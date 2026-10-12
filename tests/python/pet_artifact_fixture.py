@@ -4,9 +4,6 @@ These corrections enable meaningful mutation tests while ExampleMap.w3x is
 still the pre-release baseline. Actual-artifact positive tests stay uncorrected.
 """
 
-COLLECTION_ORDERS = ('weboff', 'web', 'attributemodskill', 'auraunholy',
-                     'auravampiric', 'autodispel', 'autodispeloff', 'autodispelon')
-
 
 def set_field(abilities, rawcode, field, value, level=0, column=None):
     fields = abilities[rawcode][1]
@@ -22,19 +19,16 @@ def set_field(abilities, rawcode, field, value, level=0, column=None):
 
 
 def correct_release_contract(abilities, units):
-    abilities.pop('Phnt', None)
-    set_field(abilities, 'Geqb', 'spb1', 'A119,Gupg,Dsta,Pmas,Pfor', 1, 1)
+    for rawcode in ('Phnt', 'Pmas', 'Pfor'):
+        abilities.pop(rawcode, None)
+    set_field(abilities, 'Geqb', 'spb1', 'A119,Gupg,Dsta', 1, 1)
     for field, column in [('spb3', 3), ('spb4', 4)]:
-        set_field(abilities, 'Geqb', field, 5, 1, column)
-    set_field(abilities, 'Pfor', 'abpx', 1)
-    set_field(abilities, 'Pfor', 'Ncl6', 'webon', 1, 6)
-    for index, order in enumerate(COLLECTION_ORDERS):
-        set_field(abilities, f'Pc0{index}', 'Ncl6', order, 1, 6)
+        set_field(abilities, 'Geqb', field, 3, 1, column)
     name = '洗练 / 开栏 / 释放(C)'
     set_field(abilities, 'Pc06', 'anam', name)
     set_field(abilities, 'Pc06', 'atp1', name, 1)
     set_field(abilities, 'Pc06', 'aub1', '指定栏洗练并保留旧/替换新，开栏最高4；未上阵精灵可释放。', 1)
-    for rawcode in ('Pcap', 'Pmas', 'Pcol'):
+    for rawcode in ('Pcap', 'Pcol'):
         fields = abilities[rawcode][1]
         for key, (kind, text) in list(fields.items()):
             if key[0] in ('anam', 'atp1', 'aub1'):

@@ -103,7 +103,7 @@ class ObjectDeltaTests(unittest.TestCase):
     def test_exact_bindings_and_only_permitted_binary_delta_pass(self):
         verifier.verify_object_delta(self.objects, self.baseline)
         self.assertEqual(len(verifier.EQUIPMENT), 26)
-        self.assertEqual(len(verifier.expected_asset_contract()), 32)
+        self.assertEqual(len(verifier.expected_asset_contract()), 30)
         self.assertEqual(len([key for key in verifier.BINDINGS
                               if key[0] == 'units' and key[1].startswith('p')]), 192)
         self.assertIn(('units', 'p203', ('ussi', 0, 0)), verifier.BINDINGS)
@@ -134,8 +134,8 @@ class ObjectDeltaTests(unittest.TestCase):
     def test_rejects_action_reuse_and_research_misbinding(self):
         for rawcode in verifier.ACTIONS:
             objects = deepcopy(self.corrected)
-            replace_field(objects, 'abilities', rawcode, 'arar', verifier.icon_path('TDActionCaptureForge')
-                          if rawcode != 'Pfor' else verifier.icon_path('TDActionCaptureOrb'))
+            replace_field(objects, 'abilities', rawcode, 'arar', verifier.icon_path('TDActionGroundUpgrade')
+                          if rawcode != 'Gupg' else verifier.icon_path('TDActionCaptureOrb'))
             with self.subTest(rawcode=rawcode), self.assertRaisesRegex(ValueError, rawcode):
                 verifier.verify_bindings(objects)
 
@@ -396,9 +396,9 @@ class ResourceContractTests(unittest.TestCase):
         return verifier.verify_resources(artifact or self.artifact, self.baseline, self.root,
                                          manifest or self.manifest, paths or self.paths)
 
-    def test_all_32_new_11_migrated_and_13_preserved_pairs_pass_real_mpq(self):
+    def test_all_30_new_11_migrated_and_13_preserved_pairs_pass_real_mpq(self):
         decoded = self.verify()
-        self.assertEqual(len(decoded), 112)
+        self.assertEqual(len(decoded), 108)
 
     def test_cli_verifies_real_mpq_objects_and_resources_without_mutating_inputs(self):
         predecessor = verifier.load_objects(Mpq((ROOT / 'ExampleMap.w3x').read_bytes()))
