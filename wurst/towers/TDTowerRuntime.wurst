@@ -582,17 +582,16 @@ function tdFindFarthestArcherSplitArrowShot(LinkedList<TDArcherSplitArrowShot> s
 function tdTryAddArcherSplitArrowShot(LinkedList<TDArcherSplitArrowShot> shots, unit source, unit victim, int maxTargetCount)
 	if shots == null or source == null or victim == null or maxTargetCount <= 0
 		return
-	let newShot = new TDArcherSplitArrowShot(victim, tdArcherSplitArrowFlightTime(source, victim))
+	let flightTime = tdArcherSplitArrowFlightTime(source, victim)
 	if shots.size() < maxTargetCount
-		shots.add(newShot)
+		shots.add(new TDArcherSplitArrowShot(victim, flightTime))
 		return
 	let farthestShot = tdFindFarthestArcherSplitArrowShot(shots)
-	if farthestShot != null and newShot.flightTime < farthestShot.flightTime
+	if farthestShot != null and flightTime < farthestShot.flightTime
 		if shots.remove(farthestShot)
 			destroy farthestShot
-		shots.add(newShot)
+		shots.add(new TDArcherSplitArrowShot(victim, flightTime))
 		return
-	destroy newShot
 
 function tdArcherSplitArrowVolleyExpireDelay(TDArcherSplitArrowVolley volley) returns real
 	if volley == null

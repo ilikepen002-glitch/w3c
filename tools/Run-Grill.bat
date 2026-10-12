@@ -24,9 +24,24 @@ if not exist "%GRILL_JAR%" (
 	exit /b 1
 )
 
+rem Isolate the reviewed legacy compiler from the user's global/default compiler.
+if not defined WURST_LEGACY_INSTALL_DIR set "WURST_LEGACY_INSTALL_DIR=E:\WurstToolchain\legacy-jass-8192"
+if /i "%~1"=="build" goto verify_compiler
+if /i "%~1"=="typecheck" goto verify_compiler
+if /i "%~1"=="test" goto verify_compiler
+goto launch_grill
+
+:verify_compiler
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0compiler\Verify-LegacyCompiler.ps1" -InstallDir "%WURST_LEGACY_INSTALL_DIR%" -GrillJar "%GRILL_JAR%"
+if errorlevel 1 exit /b 1
+"%WURST_TOOLCHAIN_HOME%\wurst-jdk\bin\java.exe" "-Dwurst.install.dir=%WURST_LEGACY_INSTALL_DIR%" -cp "%GRILL_JAR%" "%~dp0compiler\ProbeCompilerLaunch.java" "%WURST_LEGACY_INSTALL_DIR%\wurst-compiler\wurstscript.jar"
+if errorlevel 1 exit /b 1
+
+:launch_grill
+
 for /f "tokens=2 delims=:" %%A in ('chcp') do for /f "tokens=1" %%B in ("%%A") do set "GRILL_OLD_CP=%%B"
 chcp 65001 >nul
-"%GRILL_JAVA%" -Dfile.encoding=UTF-8 --enable-native-access=ALL-UNNAMED -jar "%GRILL_JAR%" %*
+"%GRILL_JAVA%" "-Dwurst.install.dir=%WURST_LEGACY_INSTALL_DIR%" -Dfile.encoding=UTF-8 --enable-native-access=ALL-UNNAMED -jar "%GRILL_JAR%" %*
 set "GRILL_RESULT=%ERRORLEVEL%"
 rem CMD callers use errorlevel 1; normalize Windows exception exit codes.
 if %GRILL_RESULT% LSS 0 set "GRILL_RESULT=1"

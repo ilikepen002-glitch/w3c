@@ -1,0 +1,245 @@
+diff --git a/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ClassTranslator.java b/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ClassTranslator.java
+index e7ab2278..25220e1a 100644
+--- a/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ClassTranslator.java
++++ b/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ClassTranslator.java
+@@ -359,6 +359,12 @@ public class ClassTranslator {
+         // allocate class
+         f.getBody().add(ImSet(trace, ImVarAccess(thisVar), JassIm.ImAlloc(constr, imClassType())));
+ 
++        // An error handler may return. Never initialize members or invoke user code on the null slot.
++        f.getBody().add(JassIm.ImIf(trace,
++            JassIm.ImOperatorCall(de.peeeq.wurstscript.WurstOperator.EQ,
++                ImExprs(ImVarAccess(thisVar), JassIm.ImIntVal(0))),
++            JassIm.ImStmts(ImReturn(trace, ImVarAccess(thisVar))), JassIm.ImStmts()));
++
+         // call user defined constructor code:
+         ImFunction constrFunc = translator.getConstructFunc(constr);
+         ImExprs arguments = ImExprs(ImVarAccess(thisVar));
+diff --git a/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ClosureTranslator.java b/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ClosureTranslator.java
+index 9fdde539..d88ad869 100644
+--- a/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ClosureTranslator.java
++++ b/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ClosureTranslator.java
+@@ -53,13 +53,19 @@ public class ClosureTranslator {
+             ImStmts stmts = JassIm.ImStmts();
+             // allocate closure
+             stmts.add(JassIm.ImSet(e, JassIm.ImVarAccess(clVar), JassIm.ImAlloc(e, ct)));
+-            callSuperConstructor(clVar, stmts, c);
++            ImStmts initialize = JassIm.ImStmts();
++            callSuperConstructor(clVar, initialize, c);
+             // set closure vars
+             for (Entry<ImVar, ImVar> entry : closureVars.entrySet()) {
+                 ImVar orig = entry.getKey();
+                 ImVar v = entry.getValue();
+-                stmts.add(JassIm.ImSet(e, JassIm.ImMemberAccess(e, JassIm.ImVarAccess(clVar), JassIm.ImTypeArguments(), v, JassIm.ImExprs()), JassIm.ImVarAccess(orig)));
++                initialize.add(JassIm.ImSet(e, JassIm.ImMemberAccess(e, JassIm.ImVarAccess(clVar), JassIm.ImTypeArguments(), v, JassIm.ImExprs()), JassIm.ImVarAccess(orig)));
+             }
++            // A returning error handler must not initialize the superclass or captured fields at id zero.
++            stmts.add(JassIm.ImIf(e,
++                JassIm.ImOperatorCall(de.peeeq.wurstscript.WurstOperator.NOTEQ,
++                    JassIm.ImExprs(JassIm.ImVarAccess(clVar), JassIm.ImIntVal(0))),
++                initialize, JassIm.ImStmts()));
+             return JassIm.ImStatementExpr(stmts, JassIm.ImVarAccess(clVar));
+         }
+     }
+diff --git a/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ImTranslator.java b/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ImTranslator.java
+index 47c6b738..1a8f58c2 100644
+--- a/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ImTranslator.java
++++ b/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/ImTranslator.java
+@@ -289,6 +289,12 @@ public class ImTranslator implements SpecialisationLookup {
+      */
+     public List<ImVar> pinnedGlobals() {
+         List<ImVar> result = new ArrayList<>();
++        // The allocator first reads this target constant after the early tree shake.
++        for (ImVar var : imProg.getGlobals()) {
++            if (!runArgs.isLua() && var.getName().equals("JASS_MAX_ARRAY_SIZE")) {
++                result.add(var);
++            }
++        }
+         if (classManagementVars != null) {
+             Set<ClassManagementVars> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+             for (ClassManagementVars vars : classManagementVars.values()) {
+diff --git a/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/RecycleCodeGeneratorQueue.java b/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/RecycleCodeGeneratorQueue.java
+index de9ca948..0d0f6c77 100644
+--- a/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/RecycleCodeGeneratorQueue.java
++++ b/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/translation/imtranslation/RecycleCodeGeneratorQueue.java
+@@ -55,9 +55,10 @@ public class RecycleCodeGeneratorQueue implements RecycleCodeGenerator {
+                 thenBlock, elseBlock));
+         ImStmts ifEnoughMemory = JassIm.ImStmts();
+         ImStmts ifNotEnoughMemory = JassIm.ImStmts();
+-        //     if maxIndex < JASS_MAX_ARRAY_SIZE
++        // Id zero is reserved; compare before incrementing so capacity is never an index.
+         thenBlock.add(JassIm.ImIf(tr,
+-                JassIm.ImOperatorCall(WurstOperator.LESS, JassIm.ImExprs(JassIm.ImVarAccess(mVars.maxIndex), maxSizeElementFn.get())),
++                JassIm.ImOperatorCall(WurstOperator.LESS, JassIm.ImExprs(JassIm.ImVarAccess(mVars.maxIndex),
++                    JassIm.ImOperatorCall(WurstOperator.MINUS, JassIm.ImExprs(maxSizeElementFn.get(), JassIm.ImIntVal(1))))),
+                 ifEnoughMemory, ifNotEnoughMemory));
+         //         maxIndex = maxIndex + 1
+         ifEnoughMemory.add(JassIm.ImSet(tr, JassIm.ImVarAccess(mVars.maxIndex), JassIm.ImOperatorCall(WurstOperator.PLUS, JassIm.ImExprs(JassIm.ImVarAccess(mVars.maxIndex), JassIm.ImIntVal(1)))));
+diff --git a/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/utils/Constants.java b/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/utils/Constants.java
+index 915df635..6071bf34 100644
+--- a/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/utils/Constants.java
++++ b/de.peeeq.wurstscript/src/main/java/de/peeeq/wurstscript/utils/Constants.java
+@@ -4,5 +4,6 @@ public class Constants {
+     /**
+      * The maximum size of arrays in Jass
+      */
+-    public static final int MAX_ARRAY_SIZE = 32768;
++    // This compiler distribution targets legacy (1.27a) Jass arrays.
++    public static final int MAX_ARRAY_SIZE = 8192;
+ }
+diff --git a/de.peeeq.wurstscript/src/test/java/tests/wurstscript/tests/WurstScriptTest.java b/de.peeeq.wurstscript/src/test/java/tests/wurstscript/tests/WurstScriptTest.java
+index dcf6eb97..9844b42b 100644
+--- a/de.peeeq.wurstscript/src/test/java/tests/wurstscript/tests/WurstScriptTest.java
++++ b/de.peeeq.wurstscript/src/test/java/tests/wurstscript/tests/WurstScriptTest.java
+@@ -133,6 +133,12 @@ public class WurstScriptTest {
+         private boolean uncheckedDispatch = false;
+         private boolean legacyJassTypeChecks = false;
+         private boolean imDump = false;
++        private boolean targetArrayCapacity = false;
++
++        TestConfig targetArrayCapacity() {
++            targetArrayCapacity = true;
++            return this;
++        }
+ 
+         TestConfig(String name) {
+             this.name = name;
+@@ -312,7 +318,8 @@ public class WurstScriptTest {
+             writeImDumps = imDump || IM_DUMPS_FOR_ALL_TESTS;
+             pjassPending.clear();
+             RunArgs runArgs = new RunArgs();
+-            RecycleCodeGeneratorQueue.setTestMode = true;
++            RecycleCodeGeneratorQueue.setTestMode = !targetArrayCapacity;
++            customArrayCapacityPjass = targetArrayCapacity;
+             if (withStdLib) {
+                 runArgs = runArgs.with("-lib", StdLib.getLib());
+             }
+@@ -1230,6 +1237,7 @@ public class WurstScriptTest {
+ 
+     /** The scripts a test has emitted and pjass has not checked yet. */
+     private final List<File> pjassPending = new ArrayList<>();
++    private boolean customArrayCapacityPjass;
+ 
+     /**
+      * Checks the scripts the test has emitted so far with one pjass process. Starting pjass and
+@@ -1252,7 +1260,25 @@ public class WurstScriptTest {
+         if (files.isEmpty()) {
+             return;
+         }
+-        List<Result> results = Pjass.runPjassEach(files);
++        List<Result> results;
++        if (customArrayCapacityPjass) {
++            // The self-contained allocator test supplies its own target capacity. Keep every other common.j
++            // declaration for syntax checking, but do not define that one global twice.
++            try {
++                java.nio.file.Path common = java.nio.file.Files.createTempFile("capacity-common", ".j");
++                try {
++                    String original = java.nio.file.Files.readString(java.nio.file.Path.of(Utils.getResourceFile("common.j")));
++                    java.nio.file.Files.writeString(common, original.replaceAll("(?m)^\\s*constant\\s+integer\\s+JASS_MAX_ARRAY_SIZE\\s*=.*$", ""));
++                    results = Pjass.runPjassEach(common.toString(), Utils.getResourceFile("blizzard.j"), files);
++                } finally {
++                    java.nio.file.Files.deleteIfExists(common);
++                }
++            } catch (IOException e) {
++                throw new RuntimeException("Could not prepare target-capacity pjass input", e);
++            }
++        } else {
++            results = Pjass.runPjassEach(files);
++        }
+         for (int i = 0; i < files.size(); i++) {
+             Result pJassResult = results.get(i);
+             WLogger.info(pJassResult.getMessage());
+diff --git a/de.peeeq.wurstscript/src/test/java/tests/wurstscript/tests/LegacyJassAllocationTests.java b/de.peeeq.wurstscript/src/test/java/tests/wurstscript/tests/LegacyJassAllocationTests.java
+new file mode 100644
+index 00000000..79f8434d
+--- /dev/null
++++ b/de.peeeq.wurstscript/src/test/java/tests/wurstscript/tests/LegacyJassAllocationTests.java
+@@ -0,0 +1,88 @@
++package tests.wurstscript.tests;
++
++import org.testng.annotations.Test;
++
++/** Execute generated Jass as well as IM; returning error handlers expose accidental slot-zero writes. */
++public class LegacyJassAllocationTests extends WurstScriptTest {
++    @Test
++    public void targetCapacitySurvivesEarlyTreeShakeForClassesAndClosures() {
++        test().targetArrayCapacity().executeProg().executeProgOnlyAfterTransforms().lines(
++            "globals",
++            "    constant integer JASS_MAX_ARRAY_SIZE = 3",
++            "endglobals",
++            "package ErrorHandling",
++            "    public int errors = 0",
++            "    public function error(string msg)",
++            "        errors += 1",
++            "endpackage",
++            "package Test",
++            "    import ErrorHandling",
++            "    native testSuccess()",
++            "    int closureInit = 0",
++            "    abstract class F",
++            "        construct()",
++            "            closureInit += 1",
++            "        abstract function run() returns int",
++            "    class A",
++            "        int value = 7",
++            "    class B extends A",
++            "    function runTest()",
++            "        let a = new A()",
++            "        let b = new B()",
++            "        let c = new B()",
++            "        if c != null or errors != 1",
++            "            return",
++            "        let seed = 11",
++            "        F f1 = () -> seed",
++            "        F f2 = () -> seed + 11",
++            "        F f3 = () -> seed + 22",
++            "        if f3 == null and f1.run() == 11 and f2.run() == 22 and errors == 2 and closureInit == 2",
++            "            testSuccess()",
++            "    init",
++            "        runTest()",
++            "endpackage");
++    }
++
++    @Test
++    public void exhaustionDoesNotInitializeNullAndFreeIdsRemainReusable() {
++        test().executeProg().executeProgOnlyAfterTransforms().lines(
++            "package ErrorHandling",
++            "    public int errors = 0",
++            "    public function error(string msg)",
++            "        errors += 1",
++            "endpackage",
++            "package Test",
++            "    import ErrorHandling",
++            "    native testSuccess()",
++            "    int initialized = 0",
++            "    class A",
++            "        int value = 42",
++            "        int array[2] values",
++            "        construct()",
++            "            initialized += 1",
++            "            values[0] = 17",
++            "            values[1] = 29",
++            "    class B extends A",
++            "    function runTest()",
++            "        A first = new B()",
++            "        A last = first",
++            "        for i = 2 to 8191",
++            "            last = new A()",
++            "        if (last castTo int) != 8191 or initialized != 8191",
++            "            return",
++            "        let fail1 = new B()",
++            "        let fail2 = new A()",
++            "        if fail1 != null or fail2 != null or initialized != 8191 or errors != 2",
++            "            return",
++            "        if last.value != 42 or last.values[0] != 17 or last.values[1] != 29",
++            "            return",
++            "        let oldId = first castTo int",
++            "        destroy first",
++            "        let reused = new B()",
++            "        if (reused castTo int) == oldId and reused.values[1] == 29 and initialized == 8192",
++            "            testSuccess()",
++            "    init",
++            "        runTest()",
++            "endpackage");
++    }
++}

@@ -10,13 +10,17 @@ import DamageEvent
 import ClosureTimers
 import GameTimer
 import LinkedList
+import Table
 import TDEnemyMechanicRuntime
 import TDTrialIdentity
 import TDTrialLifeRules
 import TDItemTargetRules
 
+constant Table tdEquipmentDebuffsByHandle = new Table()
+
 class TDEquipmentDebuff
 	unit target
+	int targetKey
 	unit source = null
 	int lane
 	tdTrialCombatContext context
@@ -28,11 +32,15 @@ class TDEquipmentDebuff
 	real nextPoisonAt = 0.0
 	construct(unit target, int lane)
 		this.target = target
+		targetKey = target.getHandleId()
 		this.lane = lane
 		context = tdTrialCaptureContext(target)
 		let binding = tdTrialBindingFor(target)
 		targetRevision = binding == null ? 0 : binding.revision
 	ondestroy
+		// Every retirement path destroys the record before its handle is released.
+		if tdEquipmentDebuffsByHandle.loadInt(targetKey) == this castTo int
+			tdEquipmentDebuffsByHandle.removeInt(targetKey)
 		if target != null and GetUnitTypeId(target) != 0
 			target.removeAbility(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID)
 		target = null
@@ -53,21 +61,20 @@ public function tdEquipmentSourceValid(unit source, int lane) returns boolean
 	return source != null and source.isAlive() and GetPlayerId(GetOwningPlayer(source)) == lane and tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != 0 and tdEquipmentLaneValid(lane)
 
 function tdEquipmentDebuffFor(unit target, int lane) returns TDEquipmentDebuff
-	for entry in tdEquipmentDebuffs
-		if entry.target == target
-			return entry
+	let key = target.getHandleId()
+	if tdEquipmentDebuffsByHandle.hasInt(key)
+		return tdEquipmentDebuffsByHandle.loadInt(key) castTo TDEquipmentDebuff
 	let newEntry = new TDEquipmentDebuff(target, lane)
+	tdEquipmentDebuffsByHandle.saveInt(key, newEntry castTo int)
 	tdEquipmentDebuffs.add(newEntry)
 	return newEntry
 
 public function tdForgetEquipmentEnemy(unit target)
-	let iter = tdEquipmentDebuffs.iterator()
-	while iter.hasNext()
-		let entry = iter.next()
-		if entry.target == target
-			iter.remove()
-			destroy entry
-	destroy iter
+	if target == null or not tdEquipmentDebuffsByHandle.hasInt(target.getHandleId())
+		return
+	let entry = tdEquipmentDebuffsByHandle.loadInt(target.getHandleId()) castTo TDEquipmentDebuff
+	tdEquipmentDebuffs.remove(entry)
+	destroy entry
 
 public function tdForgetEquipmentTower(unit tower)
 	tdForgetEquipmentSpecial(tower)
@@ -77,11 +84,10 @@ public function tdForgetEquipmentTower(unit tower)
 			entry.poison = 0.0
 			entry.poisonTicks = 0
 
-public function tdApplyEquipmentArmor(unit target, int lane, real armor, real duration)
-	if not tdEquipmentEnemyValid(target, lane) or armor <= 0.0 or duration <= 0.0
+function tdApplyEquipmentArmorToEntry(TDEquipmentDebuff entry, real armor, real duration, real now)
+	if armor <= 0.0 or duration <= 0.0
 		return
-	let entry = tdEquipmentDebuffFor(target, lane)
-	let now = getElapsedGameTime()
+	let target = entry.target
 	if now >= entry.armorUntil
 		entry.armor = 0.0
 	if tdEquipmentDebuffRefreshes(armor, entry.armor)
@@ -91,6 +97,11 @@ public function tdApplyEquipmentArmor(unit target, int lane, real armor, real du
 		if target.getAbilityLevel(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID) == 0
 			target.addAbility(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID)
 		target.setAbilityLevel(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID, level)
+
+public function tdApplyEquipmentArmor(unit target, int lane, real armor, real duration)
+	if not tdEquipmentEnemyValid(target, lane) or armor <= 0.0 or duration <= 0.0
+		return
+	tdApplyEquipmentArmorToEntry(tdEquipmentDebuffFor(target, lane), armor, duration, getElapsedGameTime())
 
 public function tdApplyEquipmentAttack(unit source, unit target, int originLane, boolean _boss)
 	if not tdEquipmentNativeAttackEligible(DamageEvent.isCode(), DamageEvent.isSpell(), DamageEvent.getId()) or DamageEvent.getAmount() <= 0.0 or not tdEquipmentSourceValid(source, originLane) or not tdEquipmentEnemyValid(target, originLane)
@@ -104,7 +115,7 @@ public function tdApplyEquipmentAttack(unit source, unit target, int originLane,
 		return
 	let entry = tdEquipmentDebuffFor(target, originLane)
 	let now = getElapsedGameTime()
-	tdApplyEquipmentArmor(target, originLane, armor, 3.0)
+	tdApplyEquipmentArmorToEntry(entry, armor, 3.0, now)
 	if tdEquipmentDebuffRefreshes(poison, entry.poison)
 		entry.nextPoisonAt = tdEquipmentPoisonNextTick(now, entry.poison, entry.nextPoisonAt)
 		entry.source = source

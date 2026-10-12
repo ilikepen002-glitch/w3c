@@ -6,6 +6,8 @@ cd /d "%~dp0"
 set "TARGET_DIR=D:\War3_1.27a\Warcraft III Frozen Throne 1.27a publish\Maps\Test"
 set "MAP_TIMESTAMP="
 if not defined WURST_TOOLCHAIN_HOME set "WURST_TOOLCHAIN_HOME=%USERPROFILE%\.wurst"
+if not defined WURST_LEGACY_INSTALL_DIR set "WURST_LEGACY_INSTALL_DIR=E:\WurstToolchain\legacy-jass-8192"
+set "PATCH_COMPILER_JAR=%WURST_LEGACY_INSTALL_DIR%\wurst-compiler\wurstscript.jar"
 set "PATCH_JAVA=%WURST_TOOLCHAIN_HOME%\wurst-jdk\bin\java.exe"
 set "PATCH_JAVAC=%WURST_TOOLCHAIN_HOME%\wurst-jdk\bin\javac.exe"
 if not exist "%PATCH_JAVA%" goto missing_patch_jdk
@@ -79,14 +81,14 @@ if not defined SOURCE_MAP (
 )
 
 echo [2/3] Patching map display name with timestamp %MAP_TIMESTAMP%...
-"%PATCH_JAVAC%" -cp "%WURST_TOOLCHAIN_HOME%\wurst-compiler\wurstscript.jar" "tools\PatchMapDisplayName.java"
+"%PATCH_JAVAC%" -cp "%PATCH_COMPILER_JAR%" "tools\PatchMapDisplayName.java"
 if errorlevel 1 (
 	echo Failed to compile tools\PatchMapDisplayName.java.
 	pause
 	exit /b 1
 )
 
-"%PATCH_JAVA%" -cp "tools;%WURST_TOOLCHAIN_HOME%\wurst-compiler\wurstscript.jar" PatchMapDisplayName "%SOURCE_MAP%" "%MAP_TIMESTAMP%"
+"%PATCH_JAVA%" -cp "tools;%PATCH_COMPILER_JAR%" PatchMapDisplayName "%SOURCE_MAP%" "%MAP_TIMESTAMP%"
 if errorlevel 1 (
 	echo Failed to patch the built map display name.
 	pause
@@ -94,6 +96,15 @@ if errorlevel 1 (
 )
 
 rem Keep the repository root map as the packaged artifact, never the build input.
+rem Verify the script from the patched final MPQ before publishing or deploying it.
+if not exist "_build\compiler-gate" mkdir "_build\compiler-gate"
+"%PATCH_JAVAC%" -cp "%PATCH_COMPILER_JAR%" -d "_build\compiler-gate" "tools\compiler\VerifyLegacyJass.java"
+if errorlevel 1 exit /b 1
+"%PATCH_JAVA%" -cp "_build\compiler-gate;%PATCH_COMPILER_JAR%" VerifyLegacyJass "%SOURCE_MAP%"
+if errorlevel 1 (
+	echo Legacy Jass artifact gate failed. Map was not published or deployed.
+	exit /b 1
+)
 copy /y "%SOURCE_MAP%" "ExampleMap.w3x" >nul
 if errorlevel 1 (
 	echo Failed to publish the built map to ExampleMap.w3x.

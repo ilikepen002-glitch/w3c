@@ -90,21 +90,20 @@ function tdEquipmentAuraIdentity(int kind) returns int
 		return TD_AURA_EQUIPMENT_FROST
 	return 0
 
-function tdAuraOfferSource(TDAuraTarget record, unit source, TDAuraAggregate aggregate)
+function tdAuraOfferSource(TDAuraTarget record, unit source, TDAuraAggregate aggregate, int targetLane, vec2 targetPos, boolean mechanical, boolean cooldownEligible)
 	if not tdAuraTowerValid(source)
 		return
 	let target = record.target
 	let lane = GetPlayerId(GetOwningPlayer(source))
-	let targetLane = record.tower ? GetPlayerId(GetOwningPlayer(target)) : target.getUserData() div 10000
 	if lane != targetLane
 		return
-	let distance = source.getPos().distanceTo(target.getPos())
+	let distance = source.getPos().distanceTo(targetPos)
 	if record.tower
 		aggregate.offer(TD_AURA_WHITE_TIGER, 1, tdArcherAuraDamageBonus(), source.getAbilityLevel(TD_ARCHER_TRUESHOT_ABILITY_ID) > 0 and distance <= 900.0)
 		aggregate.offer(TD_AURA_WHITE_TIGER, 2, tdArcherAuraDamageBonus() * tdEvolutionSkillMultiplier(), source.getAbilityLevel(TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID) > 0 and distance <= 900.0)
 		aggregate.offer(TD_AURA_COMMANDER, 1, tdFootmanCommandAuraDamageBonus(), source.getAbilityLevel(TD_FOOT_COMMAND_ABILITY_ID) > 0 and distance <= 900.0)
 		aggregate.offer(TD_AURA_COMMANDER, 2, tdFootmanCommandAuraDamageBonus() * tdEvolutionSkillMultiplier(), source.getAbilityLevel(TD_FOOT_EVOLVED_COMMAND_ABILITY_ID) > 0 and distance <= 900.0)
-	else if not IsUnitType(target, UNIT_TYPE_MECHANICAL)
+	else if not mechanical
 		let normal = source.getAbilityLevel(TD_DRYAD_SLOW_AURA_ABILITY_ID)
 		let wide = source.getAbilityLevel(TD_DRYAD_WIDE_SLOW_ABILITY_ID)
 		let evolved = source.getAbilityLevel(TD_DRYAD_EVOLVED_SLOW_ABILITY_ID)
@@ -116,12 +115,12 @@ function tdAuraOfferSource(TDAuraTarget record, unit source, TDAuraAggregate agg
 		let kind = tdItemAuraKind(itemId)
 		if kind == TD_ITEM_AURA_NONE
 			continue
-		if kind == TD_ITEM_AURA_COOLDOWN and not tdAuraCooldownTargetEligible(target)
-			continue
 		if record.tower
 			if kind == TD_ITEM_AURA_ENEMY_SLOW
 				continue
 		else if kind != TD_ITEM_AURA_ENEMY_SLOW
+			continue
+		if kind == TD_ITEM_AURA_COOLDOWN and not cooldownEligible
 			continue
 		aggregate.offer(tdEquipmentAuraIdentity(kind), tdItemQuality(itemId), tdItemAuraValue(itemId), distance <= tdItemAuraRadius(itemId))
 	let pet = tdPetForHost(source)
@@ -139,8 +138,14 @@ function tdAuraRefresh(TDAuraTarget record)
 	// Build off-state: a failed source scan never publishes a half aggregate.
 	let success = try() ->
 		tdEnemySlowExpire(record)
+		// Target properties are stable during this synchronous source scan.
+		let target = record.target
+		let targetLane = record.tower ? GetPlayerId(GetOwningPlayer(target)) : target.getUserData() div 10000
+		let targetPos = target.getPos()
+		let mechanical = not record.tower and IsUnitType(target, UNIT_TYPE_MECHANICAL)
+		let cooldownEligible = record.tower and tdAuraCooldownTargetEligible(target)
 		for source in tdAuraTowers
-			tdAuraOfferSource(record, source.target, prepared)
+			tdAuraOfferSource(record, source.target, prepared, targetLane, targetPos, mechanical, cooldownEligible)
 		if not record.tower
 			tdEnemySlowCollectTimed(record.target, prepared)
 		let old = record.effective
