@@ -8,6 +8,7 @@ BOSS_RESISTANCE_BASELINE_SOURCE can explicitly override map/source paths.
 Without a newly built map those integration tests are explicitly skipped.
 """
 from copy import deepcopy
+from contextlib import contextmanager
 import hashlib
 import io
 import os
@@ -206,6 +207,30 @@ endfunction
     body = body.replace('line 487")))', 'line 487"))))')
     script = replace_body(script, 'tdHandleGhoulCorpseExplosionDamage', body)
     return script
+
+
+@contextmanager
+def formal_boss_source():
+    """Keep the original strict Boss-only source delta on its formal snapshot."""
+    with tempfile.TemporaryDirectory(prefix='formal-boss-source-') as name:
+        root = Path(name)
+        archive = subprocess.check_output(['git', 'archive',
+            '0384ccddcfdbaa868f773573c1f7403fe809d3e2', 'wurst'], cwd=ROOT)
+        with tarfile.open(fileobj=io.BytesIO(archive)) as entries:
+            for entry in entries:
+                relative = Path(entry.name)
+                verifier.require(not relative.is_absolute() and '..' not in relative.parts and
+                                 relative.parts[0] == 'wurst' and (entry.isfile() or entry.isdir()),
+                                 'Unsafe formal Boss source archive entry')
+                target = root / relative
+                if entry.isdir(): target.mkdir(parents=True, exist_ok=True)
+                else:
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(entries.extractfile(entry).read())
+        verifier.require(source_digest(root / 'wurst') ==
+            'e17e5a8f6a99003c9ac1979e4b8b7807f084fc3a98b3544bd0e6f329d34c7994',
+            'Pinned formal Boss source SHA-256 mismatch')
+        yield root / 'wurst'
 
 
 class BossResistanceVerifierUnitTests(unittest.TestCase):
@@ -414,7 +439,8 @@ class BossResistanceVerifierUnitTests(unittest.TestCase):
 
     def test_exhaustive_source_inventory_and_protected_baseline(self):
         baseline = baseline_fixture().source
-        self.assertEqual(verifier.verify_source_contract(ROOT / 'wurst', baseline), 6)
+        with formal_boss_source() as source:
+            self.assertEqual(verifier.verify_source_contract(source, baseline), 6)
 
     def test_unexpected_call_and_mixed_boolean_fail_closed(self):
         runtime = verifier.BossJassRuntime(self.script)
@@ -490,7 +516,8 @@ class BossBaselineResolverTests(unittest.TestCase):
                 generated = baseline.root
                 self.assertEqual(hashlib.sha256(baseline.map.read_bytes()).hexdigest(), BASELINE_MAP_SHA256)
                 self.assertEqual(source_digest(baseline.source), BASELINE_SOURCE_SHA256)
-                self.assertEqual(verifier.verify_source_contract(ROOT / 'wurst', baseline.source), 6)
+                with formal_boss_source() as source:
+                    self.assertEqual(verifier.verify_source_contract(source, baseline.source), 6)
                 self.assertFalse((checkout / 'ExampleMap.w3x').exists())
             self.assertFalse(generated.exists())
 
@@ -570,7 +597,7 @@ class BossResistanceFinalArtifactTests(unittest.TestCase):
             verifier.verify_artifact(path, self.baseline.map, root / 'wurst', self.baseline.source)
 
     def test_current_source_and_compiled_boss_contract(self):
-        verifier.verify_source_contract(ROOT / 'wurst', self.baseline.source)
+        verifier.verify_source_contract(ROOT / 'wurst')
         verifier.verify_compiled_structure(self.script)
 
 

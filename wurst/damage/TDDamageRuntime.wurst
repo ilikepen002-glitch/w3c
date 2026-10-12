@@ -62,7 +62,6 @@ public function tdResetDamageStatistics()
 		destroy binding
 	tdDamageBindings.clear()
 	tdDamageLedger.reset()
-	tdResetDamageViews()
 	// Existing tags still own their expiry decrement, even across a reset.
 
 function tdDamageShowHit(unit target, real amount)

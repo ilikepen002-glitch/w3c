@@ -3,57 +3,57 @@ import TDDamageState
 import TDConfig
 import TDState
 
-public constant int TD_DAMAGE_HUD_ROWS = 15
-string array tdDamageHudLabels
-string array tdDamageHudValues
-string array tdDamageHudDetails
+public constant int TD_DAMAGE_HUD_ROWS = 16
+public constant int TD_DAMAGE_HUD_COLUMNS = 4
+public constant int TD_DAMAGE_TOWER_TOP_COUNT = 10
 
-function tdDamageSetHudRow(int viewer, int row, string label, string value, string details)
-	let key = viewer * TD_DAMAGE_HUD_ROWS + row
-	tdDamageHudLabels[key] = label
-	tdDamageHudValues[key] = value
-	tdDamageHudDetails[key] = details
+// Fixed scalar storage keeps one synchronized snapshot without another class.
+string array tdDamageHudCells
 
-function tdDamagePlayerRank(int lane) returns int
-	let total = tdDamageLedger.playerTotal(lane)
-	var rank = 0
-	for other = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		if tdIsLaneActive(other)
-			let otherTotal = tdDamageLedger.playerTotal(other)
-			if otherTotal > total or (otherTotal == total and other < lane)
-				rank += 1
-	return rank
+public function tdDamageHudCell(int row, int column) returns string
+	if row < 0 or row >= TD_DAMAGE_HUD_ROWS or column < 0 or column >= TD_DAMAGE_HUD_COLUMNS
+		return ""
+	return tdDamageHudCells[row * TD_DAMAGE_HUD_COLUMNS + column]
 
-// Prepare every viewer synchronously: list iterators and ordering are never local.
-function tdDamagePrepareHud()
-	for viewer = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		for row = 0 to TD_DAMAGE_HUD_ROWS - 1
-			tdDamageSetHudRow(viewer, row, "", "", "")
-		let laneFilter = tdDamageViewerLane(viewer)
-		let count = tdDamageLedger.count(laneFilter)
-		let page = tdDamageClampedPage(tdDamageViewerPage(viewer), count)
-		tdDamageSetHudRow(viewer, 0, "伤害榜", "有效", tdDamagePageTitle(viewer))
-		var playerRow = 1
-		for rank = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-			for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-				if tdIsLaneActive(lane) and tdDamagePlayerRank(lane) == rank and (laneFilter == -1 or laneFilter == lane)
-					tdDamageSetHudRow(viewer, playerRow, "P" + (lane + 1).toString(), tdDamageText(tdDamageLedger.playerTotal(lane)), "玩家总伤害（含精灵协战）")
-					playerRow += 1
-		tdDamageSetHudRow(viewer, 5, "防御塔", "伤害", count.toString() + " 座 · 精灵伤害计入宿主塔")
-		for slot = 0 to TD_DAMAGE_PAGE_SIZE - 1
-			let record = tdDamageLedger.ranked(laneFilter, page * TD_DAMAGE_PAGE_SIZE + slot)
-			if record != null
-				let label = "P" + (record.getLane() + 1).toString() + " #" + record.getSerial().toString()
-				let details = record.label + (record.retired ? " [退场]" : "")
-				tdDamageSetHudRow(viewer, 6 + slot, label, tdDamageText(record.getTotal()), details)
-		tdDamageSetHudRow(viewer, 14, "切换", "", "农民 → 功能 → 伤害统计")
+function tdDamageSetHudCell(int row, int column, string value)
+	tdDamageHudCells[row * TD_DAMAGE_HUD_COLUMNS + column] = value
+
+function tdDamageSetPlayerHud(TDDamageLedger ledger, int lane, boolean p0, boolean p1, boolean p2, boolean p3)
+	let total = ledger.playerTotal(lane)
+	let rank = tdDamagePlayerRank(total, lane, ledger.playerTotal(0), p0, ledger.playerTotal(1), p1, ledger.playerTotal(2), p2, ledger.playerTotal(3), p3)
+	tdDamageSetHudCell(1 + rank, 0, "P" + (lane + 1).toString())
+	tdDamageSetHudCell(1 + rank, 1, tdDamageText(total))
+
+public function tdDamagePrepareHud(TDDamageLedger ledger, boolean p0, boolean p1, boolean p2, boolean p3)
+	// Clear every cell, including the unused player and tower tails.
+	for index = 0 to TD_DAMAGE_HUD_ROWS * TD_DAMAGE_HUD_COLUMNS - 1
+		tdDamageHudCells[index] = ""
+	tdDamageSetHudCell(0, 0, "玩家ID")
+	tdDamageSetHudCell(0, 1, "累计伤害")
+	if p0
+		tdDamageSetPlayerHud(ledger, 0, p0, p1, p2, p3)
+	if p1
+		tdDamageSetPlayerHud(ledger, 1, p0, p1, p2, p3)
+	if p2
+		tdDamageSetPlayerHud(ledger, 2, p0, p1, p2, p3)
+	if p3
+		tdDamageSetPlayerHud(ledger, 3, p0, p1, p2, p3)
+	tdDamageSetHudCell(5, 0, "排名")
+	tdDamageSetHudCell(5, 1, "玩家ID")
+	tdDamageSetHudCell(5, 2, "防御塔 Top10")
+	tdDamageSetHudCell(5, 3, "累计伤害")
+	for rank = 0 to TD_DAMAGE_TOWER_TOP_COUNT - 1
+		let record = ledger.ranked(rank)
+		if record != null
+			let row = 6 + rank
+			tdDamageSetHudCell(row, 0, (rank + 1).toString())
+			tdDamageSetHudCell(row, 1, "P" + (record.getLane() + 1).toString())
+			tdDamageSetHudCell(row, 2, record.label + (record.retired ? " [退场]" : ""))
+			tdDamageSetHudCell(row, 3, tdDamageText(record.getTotal()))
 
 public function tdDamageRefreshHud(multiboard board, int firstRow)
-	tdDamagePrepareHud()
-	let localId = GetPlayerId(GetLocalPlayer())
-	let viewer = tdIsLanePlayer(localId) ? localId : 0
+	// Active is the startup participation set; leaving never removes history.
+	tdDamagePrepareHud(tdDamageLedger, tdIsLaneActive(0), tdIsLaneActive(1), tdIsLaneActive(2), tdIsLaneActive(3))
 	for row = 0 to TD_DAMAGE_HUD_ROWS - 1
-		let key = viewer * TD_DAMAGE_HUD_ROWS + row
-		board.setItemValue(firstRow + row, 0, tdDamageHudLabels[key])
-		board.setItemValue(firstRow + row, 1, tdDamageHudValues[key])
-		board.setItemValue(firstRow + row, 2, tdDamageHudDetails[key])
+		for column = 0 to TD_DAMAGE_HUD_COLUMNS - 1
+			board.setItemValue(firstRow + row, column, tdDamageHudCell(row, column))

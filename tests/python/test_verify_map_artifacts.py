@@ -106,41 +106,43 @@ class ParsedObjectNegativeTests(unittest.TestCase):
                     self.assert_rejected("VerifyEvolutionArtifact.py", f"{uid}: complete skill bar mismatch")
 
     def test_ground_rejects_each_missing_book_command(self):
-        for missing in ("A119", "Gupg", "Dsta"):
+        for missing in ("A119", "Gupg"):
             with self.subTest(missing=missing):
                 self.setUp()
                 del self.abilities[missing]
                 self.assert_rejected("VerifyGroundItemArtifact.py", f"Missing function book command {missing}")
 
+    def test_ground_rejects_removed_damage_ghost_without_attachment(self):
+        self.abilities["Dsta"] = deepcopy(self.abilities["Pcol"])
+        self.assert_rejected("VerifyGroundItemArtifact.py", "Removed damage statistics ability Dsta remains as a ghost object")
+
     def test_ground_rejects_reordered_book(self):
-        self.change_field("Geqb", "spb1", "A119,Dsta,Gupg", 1, 1)
+        self.change_field("Geqb", "spb1", "Gupg,A119", 1, 1)
         self.assert_rejected("VerifyGroundItemArtifact.py", "Unexpected book spell list")
 
     def test_ground_rejects_each_wrong_book_capacity(self):
         for field, column in [("spb3", 3), ("spb4", 4)]:
-            for count in (2, 4, 5, 6):
+            for count in (1, 3, 4, 5, 6):
                 with self.subTest(field=field, count=count):
                     self.setUp()
                     self.change_field("Geqb", field, count, 1, column)
-                    self.assert_rejected("VerifyGroundItemArtifact.py", "Book must contain exactly three spells")
+                    self.assert_rejected("VerifyGroundItemArtifact.py", "Book must contain exactly two spells")
 
     def test_ground_rejects_wrong_cells_and_targets(self):
         for rawcode, field, value, level, column, reason in [
                 ("A119", "abpx", 1, 0, 0, "Backpack craft must occupy book cell 0,0"),
                 ("Gupg", "abpx", 0, 0, 0, "Ground upgrade must occupy book cell 1,0"),
-                ("Dsta", "abpx", 1, 0, 0, "Damage statistics must occupy book cell 2,0"),
-                ("Gupg", "Ncl2", 0, 1, 2, "Ground upgrade must target a point"),
-                ("Dsta", "Ncl2", 1, 1, 2, "Damage statistics must be untargeted")]:
+                ("Gupg", "Ncl2", 0, 1, 2, "Ground upgrade must target a point")]:
             with self.subTest(command=rawcode, field=field):
                 self.setUp()
                 self.change_field(rawcode, field, value, level, column)
                 self.assert_rejected("VerifyGroundItemArtifact.py", reason)
 
     def test_ground_rejects_duplicate_assigned_hotkeys(self):
-        self.abilities["Dsta"][1][("ahky", 0, 0)] = (3, "C")
-        self.assert_rejected("VerifyGroundItemArtifact.py", "Function book command hotkeys overlap: A119 and Dsta")
+        self.abilities["A119"][1][("ahky", 0, 0)] = (3, "U")
+        self.assert_rejected("VerifyGroundItemArtifact.py", "Backpack craft hotkey must remain C")
 
-    def test_ground_corrected_fixture_satisfies_three_command_contract(self):
+    def test_ground_corrected_fixture_satisfies_two_command_contract(self):
         from VerifyGroundItemArtifact import verify_function_book
         self.assertEqual(verify_function_book(self.abilities, self.units)[0], "uF01")
 
@@ -160,7 +162,7 @@ class ParsedObjectNegativeTests(unittest.TestCase):
                         self.abilities["Xret"] = (retired, {})
                         reason = f"Xret: removed {retired} remains as ability parent"
                     elif target == "book":
-                        self.change_field("Geqb", "spb1", "A119,Gupg,Dsta," + retired, 1, 1)
+                        self.change_field("Geqb", "spb1", "A119,Gupg," + retired, 1, 1)
                         reason = f"Geqb: removed {retired} remains in ability field spb1"
                     elif target == "requirement":
                         self.abilities["Gupg"][1][("areq", 0, 0)] = (3, retired)
@@ -179,12 +181,12 @@ class ParsedObjectNegativeTests(unittest.TestCase):
                     verify_no_hunt_objects(self.abilities, self.units, items)
 
     def test_ground_rejects_extra_book_entry(self):
-        self.change_field("Geqb", "spb1", "A119,Gupg,Dsta,Pcol", 1, 1)
+        self.change_field("Geqb", "spb1", "A119,Gupg,Pcol", 1, 1)
         self.assert_rejected("VerifyGroundItemArtifact.py", "Unexpected book spell list")
 
     def test_ground_retains_existing_channel_order_checks(self):
         shared_order = self.baseline_abilities["Pcol"][1][("Ncl6", 1, 6)][1]
-        for rawcode in ("Dsta", "Gupg", "A109", "A133", "Pc02"):
+        for rawcode in ("Gupg", "A109", "A133", "Pc02"):
             with self.subTest(command=rawcode):
                 self.setUp()
                 self.change_field(rawcode, "Ncl6", shared_order, 1, 6)

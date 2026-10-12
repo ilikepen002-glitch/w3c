@@ -3,8 +3,6 @@ import TDConfig
 import TDState
 import LinkedList
 
-public constant int TD_DAMAGE_PAGE_SIZE = 8
-
 // Values are finalized event damage capped at pre-hit life, never panel damage.
 public function tdEffectiveDamage(real amount, real preLife) returns real
 	if amount <= 0.0 or preLife <= 0.0
@@ -20,11 +18,41 @@ public function tdDamageText(real amount) returns string
 		return R2SW(amount, 0, 1)
 	return R2SW(amount, 0, 0)
 
-public function tdDamagePageCount(int count) returns int
-	return max(1, (max(0, count) + TD_DAMAGE_PAGE_SIZE - 1) div TD_DAMAGE_PAGE_SIZE)
+// Keep comparator branches explicit: the locked JASS printer drops mixed grouping.
+public function tdDamagePlayerPrecedes(real total, int lane, real otherTotal, int otherLane) returns boolean
+	if total > otherTotal
+		return true
+	if total < otherTotal
+		return false
+	return lane < otherLane
 
-public function tdDamageClampedPage(int page, int count) returns int
-	return max(0, min(page, tdDamagePageCount(count) - 1))
+public function tdDamageTowerPrecedes(real total, int lane, int serial, real otherTotal, int otherLane, int otherSerial) returns boolean
+	if total > otherTotal
+		return true
+	if total < otherTotal
+		return false
+	if lane < otherLane
+		return true
+	if lane > otherLane
+		return false
+	return serial < otherSerial
+
+// Rank only startup participants; each active lane has exactly one distinct row.
+public function tdDamagePlayerRank(real total, int lane, real total0, boolean p0, real total1, boolean p1, real total2, boolean p2, real total3, boolean p3) returns int
+	var rank = 0
+	if p0
+		if tdDamagePlayerPrecedes(total0, 0, total, lane)
+			rank += 1
+	if p1
+		if tdDamagePlayerPrecedes(total1, 1, total, lane)
+			rank += 1
+	if p2
+		if tdDamagePlayerPrecedes(total2, 2, total, lane)
+			rank += 1
+	if p3
+		if tdDamagePlayerPrecedes(total3, 3, total, lane)
+			rank += 1
+	return rank
 
 public class TDDamageRecord
 	private TDDamageLedger owner
@@ -55,11 +83,8 @@ public class TDDamageRecord
 	function getTotal() returns real
 		return total
 
-	function matches(int laneFilter) returns boolean
-		return laneFilter == -1 or lane == laneFilter
-
 	function precedes(TDDamageRecord other) returns boolean
-		return total > other.total or (total == other.total and serial < other.serial)
+		return tdDamageTowerPrecedes(total, lane, serial, other.total, other.lane, other.serial)
 
 constant Comparator<TDDamageRecord> tdDamageComparator = (left, right) -> left.precedes(right) ? -1 : (right.precedes(left) ? 1 : 0)
 
@@ -112,14 +137,10 @@ public class TDDamageLedger
 			return total3
 		return 0.0
 
-	function count(int laneFilter) returns int
-		var result = 0
-		for record in records
-			if record.matches(laneFilter)
-				result += 1
-		return result
+	function count() returns int
+		return records.size()
 
-	function ranked(int laneFilter, int rank) returns TDDamageRecord
+	function ranked(int rank) returns TDDamageRecord
 		if rank < 0
 			return null
 		refreshOrder()
@@ -128,11 +149,10 @@ public class TDDamageLedger
 		let iter = records.iterator()
 		while iter.hasNext()
 			let record = iter.next()
-			if record.matches(laneFilter)
-				if index == rank
-					result = record
-					break
-				index += 1
+			if index == rank
+				result = record
+				break
+			index += 1
 		destroy iter
 		return result
 
@@ -152,62 +172,3 @@ public class TDDamageLedger
 		destroy records
 
 public TDDamageLedger tdDamageLedger = new TDDamageLedger()
-int array tdDamageLaneFilter
-int array tdDamagePage
-
-public constant int TD_DAMAGE_ACTION_CLOSE = 0
-public constant int TD_DAMAGE_ACTION_ALL = 1
-public constant int TD_DAMAGE_ACTION_PLAYER_BASE = 2
-public constant int TD_DAMAGE_ACTION_PREVIOUS = 6
-public constant int TD_DAMAGE_ACTION_NEXT = 7
-
-public function tdDamageViewerLane(int viewer) returns int
-	if viewer < 0 or viewer >= TD_ACTIVE_PLAYER_COUNT
-		return -1
-	return tdDamageLaneFilter[viewer]
-
-public function tdDamageViewerPage(int viewer) returns int
-	if viewer < 0 or viewer >= TD_ACTIVE_PLAYER_COUNT
-		return 0
-	return tdDamagePage[viewer]
-
-public function tdDamageSetView(int viewer, int lane) returns boolean
-	if not tdIsLanePlayer(viewer) or lane < -1 or lane >= TD_ACTIVE_PLAYER_COUNT
-		return false
-	tdDamageLaneFilter[viewer] = lane
-	tdDamagePage[viewer] = 0
-	return true
-
-public function tdDamageMovePage(int viewer, int delta)
-	if not tdIsLanePlayer(viewer)
-		return
-	let count = tdDamageLedger.count(tdDamageViewerLane(viewer))
-	tdDamagePage[viewer] = tdDamageClampedPage(tdDamagePage[viewer] + delta, count)
-
-// The same bounded actions drive native UI and deterministic tests.
-public function tdDamageApplyPageAction(int viewer, int action) returns boolean
-	if not tdIsLanePlayer(viewer)
-		return false
-	if action == TD_DAMAGE_ACTION_CLOSE
-		return true
-	if action == TD_DAMAGE_ACTION_ALL
-		return tdDamageSetView(viewer, -1)
-	if action >= TD_DAMAGE_ACTION_PLAYER_BASE and action < TD_DAMAGE_ACTION_PLAYER_BASE + TD_ACTIVE_PLAYER_COUNT
-		let lane = action - TD_DAMAGE_ACTION_PLAYER_BASE
-		if not tdIsLaneActive(lane)
-			return false
-		return tdDamageSetView(viewer, lane)
-	if action == TD_DAMAGE_ACTION_PREVIOUS or action == TD_DAMAGE_ACTION_NEXT
-		tdDamageMovePage(viewer, action == TD_DAMAGE_ACTION_NEXT ? 1 : -1)
-		return true
-	return false
-
-public function tdDamagePageTitle(int viewer) returns string
-	let lane = tdDamageViewerLane(viewer)
-	let count = tdDamageLedger.count(lane)
-	let page = tdDamageClampedPage(tdDamageViewerPage(viewer), count)
-	return (lane == -1 ? "全部玩家" : "玩家" + (lane + 1).toString()) + " · 第 " + (page + 1).toString() + "/" + tdDamagePageCount(count).toString() + " 页"
-
-public function tdResetDamageViews()
-	for viewer = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		tdDamageSetView(viewer, -1)

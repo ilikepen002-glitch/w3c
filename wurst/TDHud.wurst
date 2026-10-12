@@ -91,12 +91,26 @@ public function tdSetupHud()
 	if compiletime or tdStatusBoard != null
 		return
 	tdStatusBoard = CreateMultiboard()
-	tdStatusBoard.setColumnCount(3)
+	tdStatusBoard.setColumnCount(TD_DAMAGE_HUD_COLUMNS)
 	tdStatusBoard.setRowCount(tdCountActiveLanes() + 5 + TD_DAMAGE_HUD_ROWS)
 	tdStatusBoard.setItemsStyle(true, false)
-	tdStatusBoard.setColumnWidth(0, 0.055)
-	tdStatusBoard.setColumnWidth(1, 0.065)
-	tdStatusBoard.setColumnWidth(2, 0.25)
+	// Keep upper status text widths; a narrow fourth cell is empty above rankings.
+	let firstDamageRow = tdCountActiveLanes() + 5
+	for row = 0 to firstDamageRow - 1
+		tdStatusBoard.setItemWidth(row, 0, 0.055)
+		tdStatusBoard.setItemWidth(row, 1, 0.065)
+		tdStatusBoard.setItemWidth(row, 2, 0.25)
+		tdStatusBoard.setItemWidth(row, 3, 0.005)
+	for row = firstDamageRow to firstDamageRow + TD_DAMAGE_HUD_ROWS - 1
+		tdStatusBoard.setItemWidth(row, 0, 0.07)
+		tdStatusBoard.setItemWidth(row, 1, 0.065)
+		tdStatusBoard.setItemWidth(row, 2, 0.18)
+		tdStatusBoard.setItemWidth(row, 3, 0.06)
+	for row = firstDamageRow to firstDamageRow + 4
+		tdStatusBoard.setItemWidth(row, 0, 0.13)
+		tdStatusBoard.setItemWidth(row, 1, 0.235)
+		tdStatusBoard.setItemWidth(row, 2, 0.005)
+		tdStatusBoard.setItemWidth(row, 3, 0.005)
 	tdStatusBoard.setItemValue(0, 0, "路线")
 	tdStatusBoard.setItemValue(0, 1, "生命")
 	tdStatusBoard.setItemValue(0, 2, "进度 / 下波威胁")

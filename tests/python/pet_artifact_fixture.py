@@ -19,11 +19,11 @@ def set_field(abilities, rawcode, field, value, level=0, column=None):
 
 
 def correct_release_contract(abilities, units):
-    for rawcode in ('Phnt', 'Pmas', 'Pfor'):
+    for rawcode in ('Phnt', 'Pmas', 'Pfor', 'Dsta'):
         abilities.pop(rawcode, None)
-    set_field(abilities, 'Geqb', 'spb1', 'A119,Gupg,Dsta', 1, 1)
+    set_field(abilities, 'Geqb', 'spb1', 'A119,Gupg', 1, 1)
     for field, column in [('spb3', 3), ('spb4', 4)]:
-        set_field(abilities, 'Geqb', field, 3, 1, column)
+        set_field(abilities, 'Geqb', field, 2, 1, column)
     name = '洗练 / 开栏 / 释放(C)'
     set_field(abilities, 'Pc06', 'anam', name)
     set_field(abilities, 'Pc06', 'atp1', name, 1)

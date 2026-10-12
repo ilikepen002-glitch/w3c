@@ -2,8 +2,6 @@ package TDItemObjectGen
 import TDItemData
 import TDPetData
 import TDPetUIData
-import TDDamageData
-import TDDamageObjectGen
 import ChannelAbilityPreset
 import ItemObjEditing
 import TDGroundItemRules
@@ -85,7 +83,6 @@ function tdGenerateEquipmentItem(int itemId)
 	tdGenerateInventoryAbility(TD_TOWER_INVENTORY_ABILITY_ID, 3, false)
 	tdGenerateCraftAbility()
 	tdGenerateGroundEquipmentCommands()
-	tdGenerateDamageStatisticsAbility()
 	tdGenerateAttackBonusAbility(TD_ITEM_ATTACK_BONUS_WHITE_ABILITY_ID, 8)
 	tdGenerateAttackBonusAbility(TD_ITEM_ATTACK_BONUS_GREEN_ABILITY_ID, 14)
 	tdGenerateAttackBonusAbility(TD_ITEM_ATTACK_BONUS_BLUE_ABILITY_ID, 22)
@@ -107,14 +104,14 @@ function tdGenerateGroundEquipmentCommands()
 	new AbilityDefinitionSpellBook(TD_FARMER_EQUIPMENT_BOOK_ABILITY_ID)
 	..setName("功能")
 	..setTooltipNormal(1, "功能 (|cffffcc00C|r)")
-	..setTooltipNormalExtended(1, "打开背包合成、地面范围升级和伤害统计。|n地面物品每30秒整理到所属路线的高台边缘：装备按品质分堆，捕获球单独一堆。")
+	..setTooltipNormalExtended(1, "打开背包合成与地面范围升级功能。|n地面物品每30秒整理到所属路线的高台边缘：装备按品质分堆，捕获球单独一堆。")
 	..setIconNormal(tdPetMenuToolsIconPath())
 	..setHotkeyNormal("C")
 	..setButtonPositionNormalX(3)
 	..setButtonPositionNormalY(0)
-	..setSpellList(1, TD_FARMER_CRAFT_ABILITY_ID.toRawCode() + "," + TD_FARMER_GROUND_UPGRADE_ABILITY_ID.toRawCode() + "," + TD_FARMER_DAMAGE_STATISTICS_ABILITY_ID.toRawCode())
-	..setMinimumSpells(1, 3)
-	..setMaximumSpells(1, 3)
+	..setSpellList(1, TD_FARMER_CRAFT_ABILITY_ID.toRawCode() + "," + TD_FARMER_GROUND_UPGRADE_ABILITY_ID.toRawCode())
+	..setMinimumSpells(1, 2)
+	..setMaximumSpells(1, 2)
 	..setSharedSpellCooldown(1, false)
 	..setBaseOrderID(1, "spellbook")
 	..setHeroAbility(false)

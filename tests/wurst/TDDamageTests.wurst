@@ -1,6 +1,6 @@
 package TDDamageTests
 import TDDamageState
-import TDDamageData
+import TDDamageHud
 import TDState
 
 @Test function damageCountsOnlyPositiveLifeAndCapsOverkill()
@@ -26,15 +26,15 @@ import TDState
 	nextHost.getTotal().assertEquals(40.0)
 	ledger.playerTotal(0).assertEquals(100.0)
 	ledger.playerTotal(1).assertEquals(45.0)
-	ledger.count(0).assertEquals(2)
-	(ledger.ranked(-1, 0) == host).assertTrue()
-	(ledger.ranked(1, 0) == otherPlayerTower).assertTrue()
+	ledger.count().assertEquals(3)
+	(ledger.ranked(0) == host).assertTrue()
+	(ledger.ranked(1) == otherPlayerTower).assertTrue()
 	host.retired = true
 	host.label = "升级后塔"
 	ledger.credit(host, 1.0, 100.0)
 	ledger.playerTotal(0).assertEquals(101.0)
 	ledger.reset()
-	ledger.count(-1).assertEquals(0)
+	ledger.count().assertEquals(0)
 	ledger.playerTotal(0).assertEquals(0.0)
 	let replacement = ledger.register(0, "新塔")
 	replacement.getSerial().assertEquals(1)
@@ -49,12 +49,12 @@ import TDState
 	let second = ledger.register(0, "同名塔")
 	ledger.credit(first, 20.0, 100.0)
 	ledger.credit(second, 20.0, 100.0)
-	(ledger.ranked(0, 0) == first).assertTrue()
-	(ledger.ranked(0, 1) == second).assertTrue()
+	(ledger.ranked(0) == first).assertTrue()
+	(ledger.ranked(1) == second).assertTrue()
 	ledger.credit(second, 1.0, 100.0)
-	(ledger.ranked(0, 0) == second).assertTrue()
-	(ledger.ranked(0, -1) == null).assertTrue()
-	(ledger.ranked(0, 2) == null).assertTrue()
+	(ledger.ranked(0) == second).assertTrue()
+	(ledger.ranked(-1) == null).assertTrue()
+	(ledger.ranked(2) == null).assertTrue()
 	let foreignRecord = foreign.register(0, "")
 	ledger.credit(foreignRecord, 10.0, 10.0).assertEquals(0.0)
 	ledger.credit(null, 10.0, 10.0).assertEquals(0.0)
@@ -63,55 +63,189 @@ import TDState
 	destroy ledger
 	destroy foreign
 
-@Test function damagePagesClampEmptyAndBoundaryCounts()
-	tdDamagePageCount(0).assertEquals(1)
-	tdDamagePageCount(8).assertEquals(1)
-	tdDamagePageCount(9).assertEquals(2)
-	tdDamageClampedPage(99, 9).assertEquals(1)
-	tdDamageClampedPage(-1, 9).assertEquals(0)
+@Test function damageFractionalTotalsPrecedePlayerAndSerialTies()
+	tdEffectiveDamage(0.625, 0.375).assertEquals(0.375)
 	tdDamageText(0.04).assertEquals("<0.1")
 	tdDamageText(0.4).assertEquals("0.4")
 	tdDamageText(0.0).assertEquals("0")
+	tdDamagePlayerPrecedes(0.625, 3, 0.375, 0).assertTrue()
+	tdDamagePlayerPrecedes(0.375, 0, 0.625, 3).assertFalse()
+	tdDamagePlayerPrecedes(0.5, 0, 0.5, 3).assertTrue()
+	tdDamagePlayerPrecedes(0.5, 3, 0.5, 0).assertFalse()
+	tdDamagePlayerPrecedes(0.5, 1, 0.5, 1).assertFalse()
+	tdDamageTowerPrecedes(0.625, 3, 9, 0.375, 0, 1).assertTrue()
+	tdDamageTowerPrecedes(0.375, 0, 1, 0.625, 3, 9).assertFalse()
+	tdDamageTowerPrecedes(0.5, 0, 9, 0.5, 1, 1).assertTrue()
+	tdDamageTowerPrecedes(0.5, 1, 1, 0.5, 0, 9).assertFalse()
+	tdDamageTowerPrecedes(0.5, 1, 1, 0.5, 1, 9).assertTrue()
+	tdDamageTowerPrecedes(0.5, 1, 9, 0.5, 1, 1).assertFalse()
+	tdDamageTowerPrecedes(0.5, 1, 1, 0.5, 1, 1).assertFalse()
 
-@Test function damagePageActionsFilterPlayersAndIsolateViewerState()
+@Test function damageTowerTiesUsePlayerBeforeCreationSerial()
+	let ledger = new TDDamageLedger()
+	let earlyP4 = ledger.register(3, "同名塔")
+	let lateP2 = ledger.register(1, "同名塔")
+	let lastP2 = ledger.register(1, "同名塔")
+	ledger.credit(earlyP4, 0.5, 1.0)
+	ledger.credit(lateP2, 0.5, 1.0)
+	ledger.credit(lastP2, 0.5, 1.0)
+	(ledger.ranked(0) == lateP2).assertTrue()
+	(ledger.ranked(1) == lastP2).assertTrue()
+	(ledger.ranked(2) == earlyP4).assertTrue()
+	ledger.credit(earlyP4, 0.125, 1.0)
+	(ledger.ranked(0) == earlyP4).assertTrue()
+	destroy ledger
+
+@Test function damageSnapshotCoversZeroSingleAndFourPlayers()
+	let ledger = new TDDamageLedger()
+	tdDamagePrepareHud(ledger, false, false, false, false)
+	tdDamageHudCell(0, 0).assertEquals("玩家ID")
+	tdDamageHudCell(5, 0).assertEquals("排名")
+	for row = 1 to 4
+		for column = 0 to 3
+			tdDamageHudCell(row, column).assertEquals("")
+	for row = 6 to 15
+		for column = 0 to 3
+			tdDamageHudCell(row, column).assertEquals("")
+	tdDamagePrepareHud(ledger, false, false, false, true)
+	tdDamageHudCell(1, 0).assertEquals("P4")
+	tdDamageHudCell(1, 1).assertEquals("0")
+	for row = 2 to 4
+		for column = 0 to 3
+			tdDamageHudCell(row, column).assertEquals("")
+	tdDamagePrepareHud(ledger, true, true, true, true)
+	for row = 1 to 4
+		tdDamageHudCell(row, 0).assertEquals("P" + row.toString())
+		tdDamageHudCell(row, 1).assertEquals("0")
+		tdDamageHudCell(row, 2).assertEquals("")
+		tdDamageHudCell(row, 3).assertEquals("")
+	tdDamageHudCell(-1, 0).assertEquals("")
+	tdDamageHudCell(16, 0).assertEquals("")
+	tdDamageHudCell(0, 4).assertEquals("")
+	destroy ledger
+
+@Test function damagePlayerRowsUseOnlyNoncontinuousStartupParticipants()
 	tdResetState()
 	tdSetLaneActive(0, true)
-	tdSetLaneActive(1, true)
-	tdDamageLedger.reset()
-	tdResetDamageViews()
-	for index = 0 to 8
-		tdDamageLedger.register(0, "塔" + index.toString())
-	let otherPlayer = tdDamageLedger.register(1, "另一玩家")
-	tdDamageApplyPageAction(0, TD_DAMAGE_ACTION_NEXT).assertTrue()
-	tdDamageViewerPage(0).assertEquals(1)
-	tdDamageViewerPage(1).assertEquals(0)
-	(tdDamageLedger.ranked(0, 8) != null).assertTrue()
-	tdDamageApplyPageAction(0, TD_DAMAGE_ACTION_NEXT).assertTrue()
-	tdDamageViewerPage(0).assertEquals(1)
-	tdDamageApplyPageAction(0, TD_DAMAGE_ACTION_PLAYER_BASE + 1).assertTrue()
-	tdDamageViewerLane(0).assertEquals(1)
-	tdDamageViewerPage(0).assertEquals(0)
-	(tdDamageLedger.ranked(tdDamageViewerLane(0), 0) == otherPlayer).assertTrue()
-	tdDamageViewerLane(1).assertEquals(-1)
-	tdDamageApplyPageAction(0, TD_DAMAGE_ACTION_NEXT).assertTrue()
-	tdDamageViewerPage(0).assertEquals(0)
-	tdDamageApplyPageAction(0, TD_DAMAGE_ACTION_CLOSE).assertTrue()
-	tdDamageViewerLane(0).assertEquals(1)
-	tdDamageApplyPageAction(0, TD_DAMAGE_ACTION_PLAYER_BASE + 2).assertFalse()
-	tdDamageApplyPageAction(0, -1).assertFalse()
-	tdDamageApplyPageAction(0, 8).assertFalse()
-	tdDamageApplyPageAction(-1, TD_DAMAGE_ACTION_ALL).assertFalse()
-	tdDamageApplyPageAction(0, TD_DAMAGE_ACTION_ALL).assertTrue()
-	tdDamageViewerLane(0).assertEquals(-1)
-	tdDamageApplyPageAction(0, TD_DAMAGE_ACTION_PREVIOUS).assertTrue()
-	tdDamageViewerPage(0).assertEquals(0)
-	tdDamageSetView(0, 4).assertFalse()
-	tdDamagePageTitle(0).assertEquals("全部玩家 · 第 1/2 页")
-	tdDamageLedger.reset()
-	tdResetDamageViews()
+	tdSetLaneActive(2, true)
+	tdSetLaneActive(3, true)
+	tdSetLaneFinished(2, true)
+	tdSetLaneDefeated(3, true)
+	let ledger = new TDDamageLedger()
+	let p1 = ledger.register(0, "P1塔")
+	let p3 = ledger.register(2, "P3塔")
+	let p4 = ledger.register(3, "P4塔")
+	ledger.credit(p1, 0.5, 10.0)
+	ledger.credit(p3, 0.625, 10.0)
+	ledger.credit(p4, 0.625, 10.0)
+	tdDamagePrepareHud(ledger, tdIsLaneActive(0), tdIsLaneActive(1), tdIsLaneActive(2), tdIsLaneActive(3))
+	tdDamageHudCell(1, 0).assertEquals("P3")
+	tdDamageHudCell(2, 0).assertEquals("P4")
+	tdDamageHudCell(3, 0).assertEquals("P1")
+	tdDamageHudCell(4, 0).assertEquals("")
+	// Finished/defeated/left players keep their startup membership and totals.
+	tdIsLaneActive(2).assertTrue()
+	tdIsLaneActive(3).assertTrue()
+	destroy ledger
 	tdResetState()
 
-@Test function damageStatisticsButtonHasItsOwnBookCell()
-	tdDamageStatisticsButtonX().assertEquals(2)
-	tdDamageStatisticsButtonY().assertEquals(0)
-	(TD_FARMER_DAMAGE_STATISTICS_ABILITY_ID != 0).assertTrue()
+@Test function damagePlayerRanksAreUniqueForEveryParticipationMask()
+	for mask = 0 to 15
+		let p0 = mask mod 2 == 1
+		let p1 = (mask div 2) mod 2 == 1
+		let p2 = (mask div 4) mod 2 == 1
+		let p3 = (mask div 8) mod 2 == 1
+		var count = 0
+		var rankSum = 0
+		if p0
+			count += 1
+			rankSum += tdDamagePlayerRank(0.5, 0, 0.5, p0, 0.0, p1, 0.625, p2, 0.625, p3)
+		if p1
+			count += 1
+			rankSum += tdDamagePlayerRank(0.0, 1, 0.5, p0, 0.0, p1, 0.625, p2, 0.625, p3)
+		if p2
+			count += 1
+			rankSum += tdDamagePlayerRank(0.625, 2, 0.5, p0, 0.0, p1, 0.625, p2, 0.625, p3)
+		if p3
+			count += 1
+			rankSum += tdDamagePlayerRank(0.625, 3, 0.5, p0, 0.0, p1, 0.625, p2, 0.625, p3)
+		rankSum.assertEquals(count * (count - 1) div 2)
+	// Actual fractional ordering prevents int-truncation from hiding mistakes.
+	tdDamagePlayerRank(0.5, 0, 0.5, true, 0.0, true, 0.625, true, 0.625, true).assertEquals(2)
+	tdDamagePlayerRank(0.625, 2, 0.5, true, 0.0, true, 0.625, true, 0.625, true).assertEquals(0)
+	tdDamagePlayerRank(0.625, 3, 0.5, true, 0.0, true, 0.625, true, 0.625, true).assertEquals(1)
+
+@Test function damageTopTenPreservesRetiredLateDamageAndUpgradedName()
+	let ledger = new TDDamageLedger()
+	let retired = ledger.register(3, "同名塔")
+	let upgraded = ledger.register(1, "同名塔")
+	for index = 0 to 11
+		let record = ledger.register(index mod 4, "同名塔")
+		ledger.credit(record, (index + 1) * 1.0, 100.0)
+	let serial = upgraded.getSerial()
+	upgraded.label = "升级后的极长中文防御塔名称"
+	ledger.credit(upgraded, 20.0, 100.0)
+	retired.retired = true
+	ledger.credit(retired, 30.0, 100.0)
+	ledger.credit(retired, 0.125, 100.0)
+	upgraded.getSerial().assertEquals(serial)
+	ledger.count().assertEquals(14)
+	tdDamagePrepareHud(ledger, true, true, true, true)
+	tdDamageHudCell(6, 0).assertEquals("1")
+	tdDamageHudCell(6, 1).assertEquals("P4")
+	tdDamageHudCell(6, 2).assertEquals("同名塔 [退场]")
+	tdDamageHudCell(6, 3).assertEquals(tdDamageText(30.125))
+	tdDamageHudCell(7, 1).assertEquals("P2")
+	tdDamageHudCell(7, 2).assertEquals("升级后的极长中文防御塔名称")
+	tdDamageHudCell(15, 0).assertEquals("10")
+	tdDamageHudCell(15, 3).assertEquals("5.0")
+	tdDamageHudCell(16, 0).assertEquals("")
+	destroy ledger
+
+@Test function damageShorterSnapshotsClearAllUnusedCells()
+	let ledger = new TDDamageLedger()
+	for index = 0 to 10
+		ledger.register(index mod 4, "塔")
+	tdDamagePrepareHud(ledger, true, true, true, true)
+	tdDamageHudCell(15, 0).assertEquals("10")
+	ledger.reset()
+	ledger.register(2, "新塔")
+	tdDamagePrepareHud(ledger, false, false, true, false)
+	tdDamageHudCell(1, 0).assertEquals("P3")
+	tdDamageHudCell(6, 2).assertEquals("新塔")
+	for row = 2 to 4
+		for column = 0 to 3
+			tdDamageHudCell(row, column).assertEquals("")
+	for row = 7 to 15
+		for column = 0 to 3
+			tdDamageHudCell(row, column).assertEquals("")
+	tdDamagePrepareHud(ledger, false, false, false, false)
+	tdDamageHudCell(1, 0).assertEquals("")
+	destroy ledger
+
+@Test function damageLargeHistoricalLedgerKeepsTopTenAndClearsTail()
+	let ledger = new TDDamageLedger()
+	for index = 0 to 255
+		// Reverse-owner registration proves lane ties precede creation order.
+		let record = ledger.register(3 - index mod 4, "历史塔" + index.toString())
+		ledger.credit(record, (index div 64 + 1) * 1.0, 10.0)
+	ledger.count().assertEquals(256)
+	for lane = 0 to 3
+		ledger.playerTotal(lane).assertEquals(160.0)
+	tdDamagePrepareHud(ledger, true, true, true, true)
+	for rank = 0 to 9
+		let record = ledger.ranked(rank)
+		record.getLane().assertEquals(0)
+		record.getSerial().assertEquals(196 + 4 * rank)
+		tdDamageHudCell(6 + rank, 0).assertEquals((rank + 1).toString())
+		tdDamageHudCell(6 + rank, 1).assertEquals("P1")
+		tdDamageHudCell(6 + rank, 2).assertEquals("历史塔" + (195 + 4 * rank).toString())
+		tdDamageHudCell(6 + rank, 3).assertEquals("4.0")
+	ledger.reset()
+	ledger.register(3, "仅存塔")
+	tdDamagePrepareHud(ledger, false, false, false, true)
+	tdDamageHudCell(6, 2).assertEquals("仅存塔")
+	for row = 7 to 15
+		for column = 0 to 3
+			tdDamageHudCell(row, column).assertEquals("")
+	destroy ledger

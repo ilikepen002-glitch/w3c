@@ -332,10 +332,14 @@ def verify_dialog_hotkeys(script):
                     f'Dialog hotkey mode={mode} action={action}: got {actual}, '
                     f'expected {expected.get((mode, action), 0)}')
     bridge = jass_function(script, 'addButton').group(1)
-    require(re.search(r'dialog_addButton_1\([^\n]*tdPetDialogHotkey\('
+    candidates = list(re.finditer(r'^function (dialog_addButton(?:_\d+)*) takes dialog (\w+), string (\w+), integer (\w+) returns button\n(.*?)^endfunction',
+                                  script, re.MULTILINE | re.DOTALL))
+    require(len(candidates) == 1, 'Expected one integer-hotkey native dialog overload')
+    name = candidates[0][1]
+    require(re.search(re.escape(name) + r'\([^\n]*tdPetDialogHotkey\('
                       r'[^\n]*TDPetDialogSession_mode[^\n]*TDPetUI_sessions', bridge) is not None,
             'Pet UI addButton must pass session-mode hotkey to native dialog overload')
-    native = jass_function(script, 'dialog_addButton_1').group(0)
+    native = candidates[0][0]
     parameters = re.search(r'takes dialog (\w+), string (\w+), integer (\w+) returns', native)
     require(parameters is not None, 'Native dialog overload lost integer hotkey parameter')
     dialog, label, hotkey = parameters.groups()
@@ -601,7 +605,7 @@ def verify_pet_core(abilities, units):
     check_ability(abilities, 'Pbar', 'AId1', 8, 'Idef', 0, lambda level: -level)
     print('PASS PET CORE OBJECTS: 96 wild, 3 selectable displays, 3 decorations; '
           '516 passive bright/gray/empty skill variants, globally unique Channel orders; '
-          'three-command function menu/ordinary capture, capture-only wild descriptions, '
+          'two-command function menu/ordinary capture, capture-only wild descriptions, '
           'no Phnt/Pmas/Pfor ghost/attachment and 0..60 capture inventory levels.')
 
 def main():

@@ -12,7 +12,6 @@ import TDHud
 import TDPets
 import TDEnemyMechanicRuntime
 import TDDamageRuntime
-import TDDamageUI
 
 trigger tdChatCommandTrigger = CreateTrigger()
 boolean tdGameplayStartupCompleted = false
@@ -223,7 +222,6 @@ function tdRunGameplayStartup()
 			tdPetInitializeFarmer(playerId, tdGetFarmer(playerId))
 	tdSetupPets()
 	tdSetupDamageStatistics()
-	tdSetupDamageUI()
 	tdSetupEnemyMechanics()
 	tdSetupBuildDialog()
 	tdSetupPadSelection()

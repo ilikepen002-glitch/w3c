@@ -8,6 +8,7 @@ from copy import deepcopy
 import io
 from pathlib import Path
 import sys
+import re
 import struct
 import tempfile
 import unittest
@@ -49,6 +50,22 @@ class PetUIArtifactTests(unittest.TestCase):
 
     def test_actual_dialog_buttons_use_real_numeric_hotkeys(self):
         verifier.verify_dialog_hotkeys(self.artifact.extract("war3map.j").decode("utf-8"))
+
+    def test_actual_dialog_overload_rename_keeps_integer_hotkey_contract(self):
+        script = self.artifact.extract("war3map.j").decode("utf-8")
+        native = re.search(r'^function (dialog_addButton(?:_\d+)*) takes dialog \w+, string \w+, integer \w+ returns button', script, re.M)
+        self.assertIsNotNone(native)
+        renamed = re.sub(r'\b' + re.escape(native[1]) + r'\b', 'dialog_addButton_982', script)
+        verifier.verify_dialog_hotkeys(renamed)
+
+    def test_actual_dialog_native_hotkey_removal_is_rejected(self):
+        script = self.artifact.extract("war3map.j").decode("utf-8")
+        native = re.search(r'^function dialog_addButton(?:_\d+)* takes dialog (\w+), string (\w+), integer (\w+) returns button', script, re.M)
+        self.assertIsNotNone(native)
+        old = f'DialogAddButton({native[1]}, {native[2]}, {native[3]})'
+        self.assertIn(old, script)
+        changed = script.replace(old, f'DialogAddButton({native[1]}, {native[2]}, 0)', 1)
+        with self.assertRaisesRegex(ValueError, 'real integer hotkey'): verifier.verify_dialog_hotkeys(changed)
 
     def test_actual_three_species_have_explicit_matching_identity_icons(self):
         verifier.verify_species_identity(self.units)

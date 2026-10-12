@@ -1,4 +1,4 @@
-"""Verify packaged three-command function menu and global Channel contracts.
+"""Verify packaged two-command function menu and global Channel contracts.
 
 Usage: python tools/VerifyGroundItemArtifact.py ExampleMap.w3x
 Does not prove native rendering or live gameplay.
@@ -12,8 +12,9 @@ from GenerateTowerTerrainMask import Mpq
 from VerifyEquipmentAbilityArtifact import ability_objects, require
 from VerifyTowerPlacementArtifact import unit_objects
 
-BOOK_SPELLS = ('A119', 'Gupg', 'Dsta')
+BOOK_SPELLS = ('A119', 'Gupg')
 REMOVED_CAPTURE_COMMANDS = ('Phnt', 'Pmas', 'Pfor')
+REMOVED_PLAYER_COMMANDS = REMOVED_CAPTURE_COMMANDS + ('Dsta',)
 
 
 def value(fields, key, level=1, column=0):
@@ -24,9 +25,9 @@ def value(fields, key, level=1, column=0):
 
 def verify_no_hunt_objects(abilities, units, items=None):
     """Reject retired capture/hunt objects, parents and references everywhere."""
-    for retired in REMOVED_CAPTURE_COMMANDS:
+    for retired in REMOVED_PLAYER_COMMANDS:
         require(retired not in abilities,
-                f'Removed capture/hunt ability {retired} remains as a ghost object')
+                f"Removed {'capture/hunt' if retired in REMOVED_CAPTURE_COMMANDS else 'damage statistics'} ability {retired} remains as a ghost object")
         rawcode = re.compile(r'(?<![A-Za-z0-9_])' + retired + r'(?![A-Za-z0-9_])')
         for object_id, (parent, fields) in abilities.items():
             require(parent != retired, f'{object_id}: removed {retired} remains as ability parent')
@@ -46,7 +47,7 @@ def verify_no_removed_raw_objects(data, extended, label):
     from VerifySemanticIconArtifact import parse_objects
     for object_id, obj in parse_objects(data, extended).items():
         parent = obj.identity[:4].decode('ascii')
-        for retired in REMOVED_CAPTURE_COMMANDS:
+        for retired in REMOVED_PLAYER_COMMANDS:
             require(object_id != retired and parent != retired,
                     f'{object_id}: removed {retired} remains as {label} object/parent')
             pattern = re.compile(r'(?<![A-Za-z0-9_])' + retired + r'(?![A-Za-z0-9_])')
@@ -99,8 +100,8 @@ def verify_function_book(abilities, units):
     require(upgrade_parent == 'ANcl', 'Ground upgrade must inherit Channel')
     require(value(book, 'spb1', 1, 1) == ','.join(BOOK_SPELLS), 'Unexpected book spell list')
     require(value(book, 'spb2', 1, 2) == 0, 'Book shares spell cooldowns')
-    require(value(book, 'spb3', 1, 3) == 3 and value(book, 'spb4', 1, 4) == 3,
-            'Book must contain exactly three spells')
+    require(value(book, 'spb3', 1, 3) == 2 and value(book, 'spb4', 1, 4) == 2,
+            'Book must contain exactly two spells')
     require(value(book, 'abpx', 0) == 3 and value(book, 'abpy', 0) == 0,
             'Book must occupy farmer function cell 3,0')
     require(value(book, 'ahky', 0) == 'C', 'Book hotkey must be C')
@@ -115,19 +116,11 @@ def verify_function_book(abilities, units):
     require(value(upgrade, 'abpx', 0) == 1 and value(upgrade, 'abpy', 0) == 0,
             'Ground upgrade must occupy book cell 1,0')
     require(value(manual, 'ahky', 0) == 'C', 'Backpack craft hotkey must remain C')
-    statistics_parent, statistics = abilities['Dsta']
-    require(statistics_parent == 'ANcl', 'Damage statistics must inherit Channel')
-    require(value(statistics, 'Ncl2', 1, 2) == 0, 'Damage statistics must be untargeted')
-    require(value(statistics, 'Ncl3', 1, 3) & 1 == 1,
-            'Damage statistics button must be visible')
-    require(value(statistics, 'abpx', 0) == 2 and value(statistics, 'abpy', 0) == 0,
-            'Damage statistics must occupy book cell 2,0')
     require(value(book, 'anam', 0) == '功能', 'Book must be named 功能')
     book_cells, book_hotkeys = {}, {}
     for rawcode in BOOK_SPELLS:
         fields = abilities[rawcode][1]
         cell = (value(fields, 'abpx', 0), value(fields, 'abpy', 0))
-        # Dsta intentionally has no hotkey override; check assigned hotkeys.
         hotkey = fields.get(('ahky', 0, 0), (3, ''))[1]
         require(cell not in book_cells,
                 f'Function book command cells overlap: {book_cells.get(cell)} and {rawcode}')
@@ -156,8 +149,8 @@ def main():
         verify_no_hunt_objects(abilities, units, unit_objects(artifact.extract('war3map.w3t')))
     farmer, channel_count = verify_function_book(abilities, units)
     print('PASS ground commands:', farmer, 'book=' + ','.join(BOOK_SPELLS),
-          'three distinct cells; no repeated assigned hotkeys', 'point AoE=144',
-          f'{channel_count} globally unique Channel objects; no Phnt/Pmas/Pfor ghost/attachment')
+          'two distinct cells; no repeated assigned hotkeys', 'point AoE=144',
+          f'{channel_count} globally unique Channel objects; no Phnt/Pmas/Pfor/Dsta ghost/attachment')
     for rawcode in ('Geqb',) + BOOK_SPELLS:
         parent, fields = abilities[rawcode]
         print(json.dumps({'id': rawcode, 'parent': parent, 'fields': [

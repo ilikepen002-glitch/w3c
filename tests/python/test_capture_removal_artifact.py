@@ -15,13 +15,16 @@ sys.path.insert(0, str(ROOT / 'tools'))
 from GenerateTowerTerrainMask import Mpq
 import VerifyCaptureRemovalArtifact as removal
 import VerifySemanticIconArtifact as semantic
+from VerifyInheritedJassAliases import inherited_script_view
 from test_verify_semantic_icon_artifact import import_bytes, mpq_bytes, replace_field, serialize_objects
 
 
 class CaptureRemovalObjectTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        current = semantic.load_objects(Mpq((ROOT / 'ExampleMap.w3x').read_bytes()))
+        # This is the fixed formal A historical delta, independent of later B maps.
+        data = subprocess.check_output(['git', 'show', '0a476154e7269ee0a1c8e619c1349f31ba17b36b:ExampleMap.w3x'], cwd=ROOT)
+        current = semantic.load_objects(Mpq(data))
         for rawcode in removal.REMOVED:
             current['abilities'].pop(rawcode, None)
         for key, value in removal.BOOK_VALUES.items():
@@ -236,7 +239,8 @@ class CaptureRemovalActualRuntimeTests(unittest.TestCase):
     def setUpClass(cls):
         data = subprocess.check_output(['git', 'show', '0384ccddcfdbaa868f773573c1f7403fe809d3e2:ExampleMap.w3x'], cwd=ROOT)
         cls.before = Mpq(data).extract('war3map.j').decode('utf-8')
-        cls.current = Mpq((ROOT / 'ExampleMap.w3x').read_bytes()).extract('war3map.j').decode('utf-8')
+        script = Mpq((ROOT / 'ExampleMap.w3x').read_bytes()).extract('war3map.j').decode('utf-8')
+        cls.current, cls.proved_aliases = inherited_script_view(script, cls.before)
 
     def test_actual_packaged_capture_and_inherited_lifecycle_pass(self):
         removal.verify_capture_runtime(self.current, self.before)
