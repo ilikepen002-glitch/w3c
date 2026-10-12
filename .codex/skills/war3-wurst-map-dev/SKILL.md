@@ -11,7 +11,9 @@ Use this guide for Wurst map work. Discover project-specific paths, commands, co
 
 Use the project's [AGENTS.md](../../../AGENTS.md) as the sole source for risk tiers, required Astra/Sol stages, and the validation matrix. Classify the changed boundary before implementation; an unclear cause or ownership needs focused investigation before classification. Do not impose a second universal review gate from this skill.
 
-Reuse confirmed context while the relevant source, dependencies, configuration, and environment remain unchanged. Read only the affected packages, nearby examples, tests, and references needed for the current decision. Delegate with the goal, relevant files, differences, risks, and validation evidence rather than full conversation history; follow AGENTS.md for model selection and minimal context.
+For low-risk and ordinary changes, the current agent owns diagnosis, implementation, and validation directly. Do not launch routine exploration, implementation, or review subagents, or delegate merely to match a preferred model. A simple task needs a focused edit and the required checks, not a separate written plan or handoff cycle. Uncertainty calls for targeted investigation first; escalate only when the discovered boundary or a specific unresolved issue warrants it under AGENTS.md.
+
+Reuse confirmed context while the relevant source, dependencies, configuration, and environment remain unchanged. Read only the affected packages, nearby examples, tests, and references needed for the current decision. When delegation is required, reuse a suitable existing agent and pass the goal, relevant files, differences, risks, and validation evidence rather than full conversation history; follow AGENTS.md for model selection and minimal context. Keep high-risk planning and review gates intact.
 
 ## Establish the problem and boundary
 
@@ -52,4 +54,4 @@ Select validation by the changed boundary: logic needs relevant checks/tests; ob
 
 Reuse successful checks for the same unchanged source, dependency, configuration, and environment state. Revalidate affected paths after later changes or failures; do not repeat checks merely at each handoff. Related small edits can share one validation batch. Run checks and map builds serially because they share staging and build outputs.
 
-Report separately what is demonstrated by source review, automated checks, compiled objects/deployment, and observed gameplay. Include changed source areas, commands/results, unverified editor or runtime steps, and remaining risks. Treat a plausible hypothesis as unproven until the relevant path is verified.
+Keep delivery proportional to the task: a simple change needs a short result and validation summary, including the risk/model facts required by AGENTS.md, without a stage-by-stage narrative. Distinguish source review, automated checks, compiled objects/deployment, and observed gameplay only where relevant. Include unverified editor or runtime steps and remaining risks. Treat a plausible hypothesis as unproven until the relevant path is verified.

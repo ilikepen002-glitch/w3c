@@ -6,6 +6,19 @@ cd /d "%~dp0"
 set "TARGET_DIR=D:\War3_1.27a\Warcraft III Frozen Throne 1.27a publish\Maps\Test"
 set "MAP_TIMESTAMP="
 if not defined WURST_TOOLCHAIN_HOME set "WURST_TOOLCHAIN_HOME=%USERPROFILE%\.wurst"
+set "PATCH_JAVA=%WURST_TOOLCHAIN_HOME%\wurst-jdk\bin\java.exe"
+set "PATCH_JAVAC=%WURST_TOOLCHAIN_HOME%\wurst-jdk\bin\javac.exe"
+if not exist "%PATCH_JAVA%" goto missing_patch_jdk
+if not exist "%PATCH_JAVAC%" goto missing_patch_jdk
+goto patch_jdk_ready
+
+:missing_patch_jdk
+echo Missing complete JDK for the map display-name patch.
+echo Install a complete JDK 27 at "%WURST_TOOLCHAIN_HOME%\wurst-jdk".
+pause
+exit /b 1
+
+:patch_jdk_ready
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "tools\Sync-WurstTests.ps1" -Mode Clean >nul
 if errorlevel 1 (
@@ -66,14 +79,14 @@ if not defined SOURCE_MAP (
 )
 
 echo [2/3] Patching map display name with timestamp %MAP_TIMESTAMP%...
-javac -cp "%WURST_TOOLCHAIN_HOME%\wurst-compiler\wurstscript.jar" "tools\PatchMapDisplayName.java"
+"%PATCH_JAVAC%" -cp "%WURST_TOOLCHAIN_HOME%\wurst-compiler\wurstscript.jar" "tools\PatchMapDisplayName.java"
 if errorlevel 1 (
 	echo Failed to compile tools\PatchMapDisplayName.java.
 	pause
 	exit /b 1
 )
 
-java -cp "tools;%WURST_TOOLCHAIN_HOME%\wurst-compiler\wurstscript.jar" PatchMapDisplayName "%SOURCE_MAP%" "%MAP_TIMESTAMP%"
+"%PATCH_JAVA%" -cp "tools;%WURST_TOOLCHAIN_HOME%\wurst-compiler\wurstscript.jar" PatchMapDisplayName "%SOURCE_MAP%" "%MAP_TIMESTAMP%"
 if errorlevel 1 (
 	echo Failed to patch the built map display name.
 	pause
