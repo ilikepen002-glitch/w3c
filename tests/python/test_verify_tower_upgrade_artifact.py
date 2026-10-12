@@ -173,7 +173,7 @@ class TowerUpgradeArtifactTests(unittest.TestCase):
             with self.subTest(ability=aid), self.assertRaisesRegex(ValueError, reason):
                 validate_branch_displays(self.units, abilities)
 
-    def test_each_exact_branch_btn_and_disbtn_must_be_packaged(self):
+    def test_each_remaining_custom_btn_and_disbtn_must_be_packaged(self):
         class BlockOneResource:
             def __init__(self, original, blocked):
                 self.original, self.blocked = original, blocked
@@ -181,11 +181,20 @@ class TowerUpgradeArtifactTests(unittest.TestCase):
                 return path != self.blocked and self.original.has(path)
             def extract(self, path):
                 return self.original.extract(path)
-        icons = {self.units[uid]['uico'] for uid in verifier.EVOLUTION_REPLACEMENTS}
+        icons = {verifier.field_value(self.abilities, aid, field)
+                 for aid in ['A140', 'A141'] for field in ['aart', 'arar']}
         icons |= {'ReplaceableTextures\\CommandButtonsDisabled\\DIS' + icon.rsplit('\\', 1)[1] for icon in list(icons)}
         for missing in icons:
             with self.subTest(resource=missing), self.assertRaisesRegex(ValueError, 'Missing exact (?:BTN|DISBTN) resource'):
                 verifier.validate_branch_resources(BlockOneResource(self.artifact, missing), self.units, self.abilities)
+
+    def test_native_branch_icons_are_not_map_imports(self):
+        for uid in verifier.EVOLUTION_REPLACEMENTS:
+            normal = self.units[uid]['uico']
+            self.assertTrue(normal.startswith(verifier.NATIVE_ICON_PREFIX))
+            disabled = 'ReplaceableTextures\\CommandButtonsDisabled\\DIS' + normal.rsplit('\\', 1)[1]
+            self.assertFalse(self.artifact.has(normal))
+            self.assertFalse(self.artifact.has(disabled))
 
     def test_scalar_evaluator_rejects_mixed_jass_boolean_precedence(self):
         evaluator = verifier.JassScalarEvaluator('')

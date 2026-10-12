@@ -97,7 +97,11 @@ def verify_object_delta(current, baseline):
     require(new[('aub1', 1, 0)].value == BOOK_TEXT, 'Function book exact description')
 
 
-def normalize_info(data):
+def normalize_info(data, expected_base_name='深渊守望'):
+    # Historical closed-delta callers retain their frozen original map name.
+    # New branding checks must specify their exact expected base explicitly.
+    require(isinstance(expected_base_name, str) and bool(expected_base_name.strip()),
+            'Expected map base name must be explicit and nonempty')
     r = Reader(data)
     require(r.integer() == 25, 'Unexpected W3I version')
     r.take(8)
@@ -107,12 +111,12 @@ def normalize_info(data):
     r.take(65)
     r.string(); r.string()
     start = r.offset; title = r.string(); spans.append((start, r.offset, title))
-    stamp = re.fullmatch(r'深渊守望 (\d{8})-([0-2]\d[0-5]\d)-UTC\+8', name)
+    stamp = re.fullmatch(re.escape(expected_base_name) + r' (\d{8})-([0-2]\d[0-5]\d)-UTC\+8', name)
     require(name == title and stamp and int(stamp[2][:2]) < 24,
             'Unexpected map/loading title timestamp')
     result, offset = bytearray(), 0
     for start, end, text in spans:
-        result.extend(data[offset:start]); result.extend(b'\xe6\xb7\xb1\xe6\xb8\x8a\xe5\xae\x88\xe6\x9c\x9b BUILD-TIMESTAMP\0'); offset = end
+        result.extend(data[offset:start]); result.extend((expected_base_name + ' BUILD-TIMESTAMP\0').encode('utf-8')); offset = end
     result.extend(data[offset:])
     return bytes(result)
 

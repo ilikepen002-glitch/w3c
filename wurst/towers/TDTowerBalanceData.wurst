@@ -78,11 +78,19 @@ public function tdTowerIconPath(int towerChoice, int level) returns string
 public function tdTowerIconPathForBranch(int towerChoice, int level, int branch) returns string
 	if level < TD_MAX_TOWER_LEVEL
 		return tdTowerIconPath(towerChoice, level)
+	// Upgrade choices share the command card with their existing skills.
+	// Use classic branch emblems, not the skill artwork shown directly above.
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		return branch == TD_TOWER_BRANCH_B ? tdArcherAuraIconPath() : tdTowerBaseSkillIconPath(towerChoice)
+		return branch == TD_TOWER_BRANCH_B ? Icons.bTNElunesBlessing : Icons.bTNImprovedBows
 	if towerChoice == TD_TOWER_CHOICE_ORC
-		return branch == TD_TOWER_BRANCH_B ? tdOrcBladestormIconPath() : tdOrcBloodlustIconPath()
-	return branch == TD_TOWER_BRANCH_B ? tdTowerSupportSkillIconPath(towerChoice) : tdTowerBaseSkillIconPath(towerChoice)
+		return branch == TD_TOWER_BRANCH_B ? Icons.bTNCleavingAttack : Icons.bTNBerserk
+	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
+		return branch == TD_TOWER_BRANCH_B ? Icons.bTNHeroPaladin : Icons.bTNStormBolt
+	if towerChoice == TD_TOWER_CHOICE_DRYAD
+		return branch == TD_TOWER_BRANCH_B ? Icons.bTNEntanglingRoots : Icons.bTNEnvenomedSpear
+	if towerChoice == TD_TOWER_CHOICE_GHOUL
+		return branch == TD_TOWER_BRANCH_B ? Icons.bTNPlagueCloud : Icons.bTNGhoulFrenzy
+	return ""
 
 public function tdTowerIconPath(int towerChoice) returns string
 	return tdTowerIconPath(towerChoice, 1)

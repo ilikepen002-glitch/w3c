@@ -3,6 +3,7 @@ import TDTooltipText
 import TDTowers
 import TDConfig
 import ObjectIds
+import Icons
 import TDEquipmentObjectGen
 import TDPetCombat
 import TDPetRules
@@ -114,8 +115,23 @@ function expectedSkills(int choice, int level, int branch) returns string
 		for level = 1 to 5
 			tdTowerIconPathForBranch(choice, level, TD_TOWER_BRANCH_A).assertEquals(tdTowerIconPath(choice, level))
 		(tdTowerIconPathForBranch(choice, 6, TD_TOWER_BRANCH_A) != tdTowerIconPathForBranch(choice, 6, TD_TOWER_BRANCH_B)).assertTrue()
-	tdTowerIconPathForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_A).assertEquals(tdOrcBloodlustIconPath())
-	tdTowerIconPathForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B).assertEquals(tdOrcBladestormIconPath())
+		for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+			let icon = tdTowerIconPathForBranch(choice, 6, branch)
+			(icon != tdTowerBaseSkillIconPath(choice)).assertTrue()
+			(icon != tdTowerSupportSkillIconPath(choice)).assertTrue()
+			(icon != tdTowerPerfectSkillIconPath(choice)).assertTrue()
+			(icon != tdTowerEvolutionProgressIconPath()).assertTrue()
+			(icon != tdTowerEvolutionStatusIconPath()).assertTrue()
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_ARCHER, 6, TD_TOWER_BRANCH_A).assertEquals(Icons.bTNImprovedBows)
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_ARCHER, 6, TD_TOWER_BRANCH_B).assertEquals(Icons.bTNElunesBlessing)
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_A).assertEquals(Icons.bTNBerserk)
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_ORC, 6, TD_TOWER_BRANCH_B).assertEquals(Icons.bTNCleavingAttack)
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_FOOTMAN, 6, TD_TOWER_BRANCH_A).assertEquals(Icons.bTNStormBolt)
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_FOOTMAN, 6, TD_TOWER_BRANCH_B).assertEquals(Icons.bTNHeroPaladin)
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_DRYAD, 6, TD_TOWER_BRANCH_A).assertEquals(Icons.bTNEnvenomedSpear)
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_DRYAD, 6, TD_TOWER_BRANCH_B).assertEquals(Icons.bTNEntanglingRoots)
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_GHOUL, 6, TD_TOWER_BRANCH_A).assertEquals(Icons.bTNGhoulFrenzy)
+	tdTowerIconPathForBranch(TD_TOWER_CHOICE_GHOUL, 6, TD_TOWER_BRANCH_B).assertEquals(Icons.bTNPlagueCloud)
 	tdOrcUltimateSkillButtonX().assertEquals(2)
 	tdOrcUltimateSkillButtonY().assertEquals(1)
 	tdOrcUltimateSkillHotkey().assertEquals("E")
