@@ -247,12 +247,13 @@ class BloodlustClosedDeltaTests(unittest.TestCase):
         self.assertEqual((proof['allocators'], proof['type_comparisons'], proof['local_temp_alpha']), (81, 226, {}))
         self.assertEqual(proof['diagnostic_relocations'], 288)
 
-    def test_read_only_exact_observed_C_artifact_when_available(self):
-        path = ROOT / 'ExampleMap.w3x'
-        if gate.digest(path.read_bytes()) != '55e8decccc5fada5b3dd21c854ad44a2203c73b64e1fcc1d10bd380bd48daadf':
-            self.skipTest('Exact observed C artifact not present; immutable synthetic C still checked')
+    def test_read_only_exact_frozen_official_C_artifact(self):
+        # Later features replace the root map. History remains the exact official
+        # C input; missing history or wrong bytes fails instead of skipping.
+        data = subprocess.check_output(['git', 'show', 'b7e3d051e98c2b18caafed4ab6e036700a6ee64c:ExampleMap.w3x'], cwd=ROOT)
+        self.assertEqual(gate.digest(data), '55e8decccc5fada5b3dd21c854ad44a2203c73b64e1fcc1d10bd380bd48daadf')
         sources, old_sources = gate.read_sources()
-        proof = gate.validate_closed_bloodlust_delta(Mpq(path.read_bytes()), self.artifact, sources, old_sources)
+        proof = gate.validate_closed_bloodlust_delta(Mpq(data), self.artifact, sources, old_sources)
         self.assertEqual(proof['diagnostic_relocations'], 288)
 
     def test_every_retirement_and_initialization_insertion_is_required(self):

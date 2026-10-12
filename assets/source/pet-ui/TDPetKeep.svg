@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>保留旧技能 / 盾与回转箭</title><desc>Original editable vector artwork. Opaque 64px Warcraft III command-button icon; shared iron frame, distinct semantic silhouette.</desc>
+<defs>
+  <linearGradient id="metal" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#dce8ed"/><stop offset=".45" stop-color="#8499a5"/><stop offset="1" stop-color="#394e59"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#fff0a8"/><stop offset=".45" stop-color="#dfaa47"/><stop offset="1" stop-color="#89551f"/></linearGradient>
+  <linearGradient id="blue" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#d6ffff"/><stop offset=".43" stop-color="#51cee9"/><stop offset="1" stop-color="#237bb7"/></linearGradient>
+  <linearGradient id="green" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#e2ffd0"/><stop offset=".45" stop-color="#71d987"/><stop offset="1" stop-color="#287858"/></linearGradient>
+  <linearGradient id="violet" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#f6caff"/><stop offset=".38" stop-color="#b98bf1"/><stop offset="1" stop-color="#563493"/></linearGradient>
+  <linearGradient id="paper" x1="0" y1="0" x2=".4" y2="1"><stop stop-color="#fff8d5"/><stop offset=".7" stop-color="#e3c68a"/><stop offset="1" stop-color="#a77443"/></linearGradient>
+  <linearGradient id="fire" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe992"/><stop offset=".42" stop-color="#ffa339"/><stop offset="1" stop-color="#c7332b"/></linearGradient>
+  <radialGradient id="wisp"><stop stop-color="#f3ffff"/><stop offset=".45" stop-color="#b9fff1"/><stop offset=".75" stop-color="#55e3dd"/><stop offset="1" stop-color="#3286bc"/></radialGradient>
+  <radialGradient id="back"><stop stop-color="#153d3e"/><stop offset="1" stop-color="#080f19"/></radialGradient>
+</defs>
+<rect x="0" y="0" width="64" height="64" fill="#080b10"/>
+<rect x="4" y="4" width="56" height="56" fill="url(#back)"/>
+<path d="M1 1H63L59 5H5V59L1 63Z" fill="#98a3aa"/>
+<path d="M63 1V63H1L5 59H59V5Z" fill="#26323b"/>
+<path d="M2 2H62M2 2V62" fill="none" stroke="#d5d9d8" stroke-width=".7"/>
+<path d="M5 5H59V59H5Z" fill="none" stroke="#8b794f" stroke-width=".8"/>
+<path d="M6 6H58V58H6Z" fill="none" stroke="#030910" stroke-width="1"/>
+<g stroke-linejoin="round" stroke-linecap="round"><path d="M32 13L49 21V34C49 43 40 49 32 54C24 49 15 43 15 34V21Z" fill="#17333f" stroke="url(#metal)" stroke-width="3"/><path d="M39 25C29 19 21 26 22 34C22 40 27 44 34 43" fill="none" stroke="url(#green)" stroke-width="5"/><path d="M40 20L40 32L29 28Z" fill="url(#green)" stroke="#ddf5d6" stroke-width="1"/></g>
+</svg>

@@ -1,0 +1,34 @@
+{
+  "baseline": "b7e3d051e98c2b18caafed4ab6e036700a6ee64c",
+  "productionSourceFingerprint": "615fa24185af4ac02b05e3d356d934622a6e1094f71ed2b457ebaa78fccdbf83",
+  "mapSHA256": "30714b250dc528275e94c6d1d6779e66dceeafbc2d7eaf3cd9ce7c4e1c7b0f7c",
+  "displayName": "深渊守望 20261012-1546-UTC+8",
+  "wurstTests": {
+    "passed": 347,
+    "total": 347
+  },
+  "managerWurstSequences": 16,
+  "managerDeltaNegatives": 10,
+  "currentCLI": {
+    "passed": 17,
+    "total": 17
+  },
+  "historicalCLI": {
+    "passed": 7,
+    "total": 7
+  },
+  "python": {
+    "passed": 403,
+    "total": 403,
+    "skipped": 0
+  },
+  "astraFinal": {
+    "result": "PASS WITH NOTES",
+    "blockers": [],
+    "nonBlockingNotes": [
+      "396 classified inherited compiler warnings",
+      "No Warcraft 1.27a live gameplay/rendering/network timing or Windows deployment observed"
+    ]
+  },
+  "inGameTested": false
+}

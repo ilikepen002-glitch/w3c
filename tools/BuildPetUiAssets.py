@@ -1,4 +1,4 @@
-"""Render only the 13 pet-menu SVGs, then encode opaque BTN/DISBTN BLP1.
+"""Render only the 28 pet-menu SVGs, then encode opaque BTN/DISBTN BLP1.
 
 Requires Inkscape 1.4 and Pillow 12.3.0 for the recorded deterministic output.
 Reuse the project's existing BLP1 palette/alpha8/mipmap encoder without invoking
@@ -24,6 +24,8 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "assets/source/pet-ui/manifest.json"
 FILE_KEYS = ("source_svg", "normal_blp", "disabled_blp")
 SIZE = 64
+BASE_NAMES = {"TDPetMenuTools", "TDPetCollection", "TDPetPrevious", "TDPetNext", "TDPetReturnBuilder", "TDPetDeploy", "TDPetRecall", "TDPetCultivate", "TDPetInfo", "TDPetEmptySlot", "TDPetFlamePhoenix", "TDPetStormFaerieDragon", "TDPetGhostWisp"}
+EXPECTED_NAMES = BASE_NAMES | {stem + "Q" + str(q) for stem in ("TDPetFlamePhoenix", "TDPetStormFaerieDragon", "TDPetGhostWisp") for q in range(1, 5)} | {"TDPetRelease", "TDPetKeep", "TDPetAdopt"}
 
 
 def sha256(path: Path) -> str:
@@ -116,8 +118,8 @@ def contact_sheet(manifest: dict) -> None:
 
 
 def verify_manifest(manifest: dict, require_hashes: bool) -> None:
-    if len(manifest["assets"]) != 13:
-        raise ValueError("Expected exactly 13 semantic icons")
+    if len(manifest["assets"]) != 28 or {asset["name"] for asset in manifest["assets"]} != EXPECTED_NAMES:
+        raise ValueError("Expected exact 28 icon names: 13 originals + 12 quality borders + release/keep/adopt")
     names, normal_pixels_seen, disabled_pixels_seen = set(), set(), set()
     for asset in manifest["assets"]:
         name = asset["name"]
@@ -158,7 +160,7 @@ def verify_manifest(manifest: dict, require_hashes: bool) -> None:
         raise ValueError("Recorded contact-sheet hash mismatch")
 
 
-def build(manifest: dict, executable: str) -> None:
+def build(manifest: dict, executable: str, only_new: bool = False) -> None:
     version = subprocess.run([executable, "--version"], check=True, capture_output=True, text=True).stdout.strip()
     with tempfile.TemporaryDirectory(prefix="td-pet-ui-") as temporary:
         temp = Path(temporary)
@@ -166,6 +168,8 @@ def build(manifest: dict, executable: str) -> None:
         env["INKSCAPE_PROFILE_DIR"] = str(temp / "profile")
         env["XDG_CACHE_HOME"] = str(temp / "cache")
         for asset in manifest["assets"]:
+            if only_new and all(local_path(asset[key]).is_file() and asset.get("sha256", {}).get(key) == sha256(local_path(asset[key])) for key in FILE_KEYS):
+                continue
             source = local_path(asset["source_svg"])
             check_svg(source)
             rendered = temp / f"{asset['name']}.png"
@@ -197,6 +201,7 @@ def build(manifest: dict, executable: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inkscape", default=shutil.which("inkscape"), help="Path to the Inkscape CLI")
+    parser.add_argument("--only-new", action="store_true", help="Keep unchanged verified SVG/BLP assets; build only new or changed inputs")
     parser.add_argument("--verify-only", action="store_true", help="Check all hashes/paths/BLP mips without rebuilding")
     args = parser.parse_args()
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -205,7 +210,7 @@ def main() -> None:
     elif not args.inkscape:
         parser.error("Inkscape CLI is required for SVG rendering; supply --inkscape PATH")
     else:
-        build(manifest, args.inkscape)
+        build(manifest, args.inkscape, only_new=args.only_new)
 
 
 if __name__ == "__main__":

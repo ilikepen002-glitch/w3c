@@ -1,82 +1,250 @@
 package TDPetUIState
+import TDPetData
+import TDPetRules
 import TDPetState
 
-public constant int TD_PET_DIALOG_NONE = -1
-public constant int TD_PET_DIALOG_LIST = 0
-public constant int TD_PET_DIALOG_CULTIVATE = 1
-public constant int TD_PET_DIALOG_INFO = 2
-public constant int TD_PET_DIALOG_RELEASE_CONFIRM = 3
-public constant int TD_PET_DIALOG_PREVIEW = 4
+public constant int TD_PET_UI_CLOSED = -1
+public constant int TD_PET_UI_LIST = 0
+public constant int TD_PET_UI_DETAIL = 1
+public constant int TD_PET_UI_CULTIVATE = 2
+public constant int TD_PET_UI_PREVIEW = 3
+public constant int TD_PET_UI_RELEASE = 4
+public constant int TD_PET_ACTION_PAGE = 8
+public constant int TD_PET_ACTION_FARMER = 9
+public constant int TD_PET_ACTION_REROLL_FIRST = 10
+public constant int TD_PET_ACTION_OPEN = 14
+public constant int TD_PET_ACTION_RELEASE = 15
+public constant int TD_PET_ACTION_DETAIL = 16
+public constant int TD_PET_ACTION_KEEP = 17
+public constant int TD_PET_ACTION_ADOPT = 18
+public constant int TD_PET_ACTION_CONFIRM = 19
+public constant int TD_PET_ACTION_CANCEL = 20
+public constant int TD_PET_COMMAND_INVALID = -1
+public constant int TD_PET_COMMAND_STALE = -2
+public constant int TD_PET_COMMAND_REFRESH = -3
+public constant int TD_PET_COMMAND_EMPTY = -4
 
-public function tdPetDialogActionAllowed(int mode, int action) returns boolean
-	if mode == TD_PET_DIALOG_LIST
-		if action == 0 or action == 120
-			return true
-		return action >= 100 and action < 112
-	if mode == TD_PET_DIALOG_INFO
-		return action == 0
-	if mode == TD_PET_DIALOG_CULTIVATE
-		if action == 0 or action == 12 or action == 13
-			return true
-		return action >= 1 and action <= 4
-	if mode == TD_PET_DIALOG_PREVIEW
-		return action == 10 or action == 11
-	if mode == TD_PET_DIALOG_RELEASE_CONFIRM
-		return action == 14 or action == 0
-	return false
+// Physical grid is the sole authority for object layout, mounting and admission.
+public function tdPetActionCell(int mode, int action) returns int
+	if mode == TD_PET_UI_LIST
+		if action >= 100 and action < 110
+			return action - 100
+		if action == TD_PET_ACTION_PAGE
+			return 10
+		return action == TD_PET_ACTION_FARMER ? 11 : -1
+	if mode == TD_PET_UI_DETAIL
+		if action >= 0 and action <= 3
+			return action
+		return action >= 4 and action <= 7 ? action + 4 : -1
+	if mode == TD_PET_UI_CULTIVATE
+		if action >= TD_PET_ACTION_REROLL_FIRST and action < TD_PET_ACTION_OPEN
+			return action - TD_PET_ACTION_REROLL_FIRST
+		if action >= TD_PET_ACTION_OPEN and action <= TD_PET_ACTION_DETAIL
+			return action - TD_PET_ACTION_OPEN + 8
+		return action == TD_PET_ACTION_FARMER ? 11 : -1
+	if mode == TD_PET_UI_PREVIEW
+		if action >= 0 and action <= 3
+			return action
+		if action == TD_PET_ACTION_KEEP or action == TD_PET_ACTION_ADOPT
+			return action - TD_PET_ACTION_KEEP + 8
+		if action == TD_PET_ACTION_DETAIL
+			return 10
+		return action == 7 ? 11 : -1
+	if mode == TD_PET_UI_RELEASE
+		if action == TD_PET_ACTION_CONFIRM or action == TD_PET_ACTION_CANCEL
+			return action - TD_PET_ACTION_CONFIRM + 8
+		return action == TD_PET_ACTION_FARMER ? 11 : -1
+	return -1
 
-// The labels and real native DialogAddButton hotkeys share this contract.
-public function tdPetDialogHotkey(int mode, int action) returns int
-	if mode == TD_PET_DIALOG_CULTIVATE and action >= 1 and action <= 4
-		return 48 + action
-	if mode == TD_PET_DIALOG_PREVIEW
-		if action == 10
-			return 49
-		if action == 11
-			return 50
-	if mode == TD_PET_DIALOG_RELEASE_CONFIRM
-		return action == 14 ? 49 : (action == 0 ? 50 : 0)
-	return 0
+public function tdPetActionHotkey(int action) returns string
+	if action == 0
+		return "I"
+	if action == 1
+		return "A"
+	if action == 2
+		return "D"
+	if action == 3 or action == TD_PET_ACTION_FARMER
+		return "R"
+	if action == 4 or action == 12 or action == TD_PET_ACTION_ADOPT
+		return "E"
+	if action == 5 or action == 10 or action == TD_PET_ACTION_KEEP
+		return "Q"
+	if action == 6 or action == TD_PET_ACTION_PAGE or action == TD_PET_ACTION_DETAIL
+		return "C"
+	if action == 7 or action == 11
+		return "W"
+	if action == 13
+		return "T"
+	if action == TD_PET_ACTION_OPEN
+		return "O"
+	if action == TD_PET_ACTION_RELEASE
+		return "X"
+	if action == TD_PET_ACTION_CONFIRM
+		return "Y"
+	return action == TD_PET_ACTION_CANCEL ? "N" : ""
 
-// Used by the actual UI event bridge and by deterministic regression tests.
-public class TDPetDialogSession
+public function tdPetListHotkey(int cell) returns string
+	let keys = "QWETASDFZX"
+	return cell >= 0 and cell < 10 ? SubString(keys, cell, cell + 1) : ""
+
+// A real session used by the event bridge and regression tests. Native events do
+// not carry epoch: currentUnit identity in UI, not this serial, rejects old casts.
+public class TDPetUISession
 	int lane
-	int mode = TD_PET_DIALOG_NONE
-	int round = 0
+	int mode = TD_PET_UI_CLOSED
+	int page = 0
+	int epoch = 0
 	boolean active = false
+	boolean dirty = false
+	int currentKey = 0
+	int selectedSlot = -1
 	TDPet pet = null
 	int revision = 0
 	int generation = 0
+	int resonance = 0
+	boolean paused = false
+	int proposalVersion = 0
+	int proposalSlot = -1
+	int proposalRevision = 0
 	int releaseNonce = 0
+	int array[12] abilities
+	int array[12] levels
+	int array[12] actions
+	TDPet array[10] listPets
+	int array[10] listRevisions
+	int array[10] listGenerations
+	int array[10] listResonances
 
 	construct(int lane)
 		this.lane = lane
 
 	function close()
 		active = false
-		mode = TD_PET_DIALOG_NONE
+		dirty = false
+		currentKey = 0
+		mode = TD_PET_UI_CLOSED
 		pet = null
 		releaseNonce = 0
 
-	function open(int mode, TDPet pet, int nonce) returns boolean
+	function mount(int cell, int abilityId, int level, int action)
+		abilities[cell] = abilityId
+		levels[cell] = level
+		actions[cell] = action
+
+	function open(int mode, int page, int slot, TDPet pet, int nonce, int unitKey) returns boolean
 		close()
-		if round >= 2147483647
+		if epoch >= 2147483647 or unitKey <= 0 or mode < TD_PET_UI_LIST or mode > TD_PET_UI_RELEASE or page < 0 or page > 1
 			return false
-		round += 1
+		if mode != TD_PET_UI_LIST
+			if pet == null or tdPetAt(lane, slot) != pet or pet.released or pet.lane != lane
+				return false
+		if mode == TD_PET_UI_RELEASE
+			if nonce <= 0 or nonce != tdPetReleaseNonce(lane) or pet.host != null or pet.proposalSlot >= 0
+				return false
+		epoch += 1
 		this.mode = mode
+		this.page = page
+		selectedSlot = slot
 		this.pet = pet
+		currentKey = unitKey
+		releaseNonce = nonce
 		if pet != null
 			revision = pet.revision
 			generation = pet.generation
-		releaseNonce = nonce
+			resonance = pet.level
+			paused = pet.paused
+			proposalVersion = pet.proposalVersion
+			proposalSlot = pet.proposalSlot
+			proposalRevision = pet.proposalRevision
+		for cell = 0 to 11
+			mount(cell, 0, 0, -1)
+		for action = 0 to 20
+			let cell = tdPetActionCell(mode, action)
+			if cell >= 0
+				mount(cell, tdPetManagerCommandId(action), 1, action)
+		if mode == TD_PET_UI_LIST
+			for cell = 0 to 9
+				let record = tdPetAt(lane, tdPetPageSlot(page, cell))
+				listPets[cell] = record
+				listRevisions[cell] = record != null ? record.revision : 0
+				listGenerations[cell] = record != null ? record.generation : 0
+				listResonances[cell] = record != null ? record.level : 0
+				mount(cell, tdPetListAbilityId(cell, record != null ? record.species : 0, record != null ? record.quality() : 0), page + 1, 100 + cell)
+		else if mode == TD_PET_UI_DETAIL or mode == TD_PET_UI_CULTIVATE
+			for skillSlot = 0 to 3
+				var variant = 128
+				if skillSlot < pet.skillCount
+					variant = pet.skillAt(skillSlot) * 4 + pet.qualityAt(skillSlot) - 1 + (skillSlot >= tdPetUnlockedSlots(pet.level) ? 64 : 0)
+				mount(skillSlot + 4, tdPetSlotAbilityId(skillSlot, variant), 1, -1)
+		else if mode == TD_PET_UI_PREVIEW
+			if pet.proposalSlot < 0 or pet.proposalOldSkill < 0 or pet.proposalSkill < 0
+				close()
+				return false
+			mount(4, tdPetPreviewAbilityId(0, pet.proposalOldSkill), pet.proposalOldQuality, -1)
+			mount(5, tdPetPreviewAbilityId(1, pet.proposalSkill), pet.proposalQuality, -1)
 		active = true
 		return true
 
 	function matchesPet(TDPet current) returns boolean
-		return current != null and current == pet and current.lane == lane and current.revision == revision and current.generation == generation and not current.released
+		return current != null and current == pet and current.lane == lane and not current.released and current.revision == revision and current.generation == generation and current.level == resonance and current.paused == paused and current.proposalVersion == proposalVersion and current.proposalSlot == proposalSlot and current.proposalRevision == proposalRevision
 
-	function consumeButton(int owner, int buttonRound, int action, boolean currentDialog) returns boolean
-		if not currentDialog or not active or owner != lane or buttonRound != round or not tdPetDialogActionAllowed(mode, action)
+	function matchesListCell(int cell) returns boolean
+		if cell < 0 or cell >= 10
 			return false
-		active = false
+		let current = tdPetAt(lane, tdPetPageSlot(page, cell))
+		if current != listPets[cell]
+			return false
+		if current == null
+			return true
+		return not current.released and current.revision == listRevisions[cell] and current.generation == listGenerations[cell] and current.level == listResonances[cell]
+
+	function snapshotCurrent() returns boolean
+		if mode == TD_PET_UI_LIST
+			for cell = 0 to 9
+				if not matchesListCell(cell)
+					return false
+			return true
+		return matchesPet(tdPetAt(lane, selectedSlot))
+
+	function commandAction(int owner, int casterKey, int abilityId, int actualLevel) returns int
+		if not active or owner != lane or casterKey <= 0 or casterKey != currentKey
+			return -1
+		for cell = 0 to 11
+			if actions[cell] >= 0 and abilities[cell] == abilityId and levels[cell] == actualLevel and tdPetActionCell(mode, actions[cell]) == cell
+				return actions[cell]
+		return -1
+
+	function consumeCommand(int owner, int casterKey, int abilityId, int actualLevel) returns int
+		let action = commandAction(owner, casterKey, abilityId, actualLevel)
+		if action >= 0
+			active = false
+			currentKey = 0
+		return action
+
+	// Native bridge and executable sequences use the same admission transaction.
+	function admitCommand(int owner, int casterKey, int abilityId, int actualLevel) returns int
+		let action = commandAction(owner, casterKey, abilityId, actualLevel)
+		if action < 0
+			return TD_PET_COMMAND_INVALID
+		var stale = dirty or not snapshotCurrent()
+		if mode == TD_PET_UI_RELEASE and releaseNonce != tdPetReleaseNonce(lane)
+			stale = true
+		if stale
+			consumeCommand(owner, casterKey, abilityId, actualLevel)
+			return TD_PET_COMMAND_STALE
+		if action == 7
+			return TD_PET_COMMAND_REFRESH
+		if mode == TD_PET_UI_LIST and action >= 100 and action < 110 and listPets[action - 100] == null
+			return TD_PET_COMMAND_EMPTY
+		return consumeCommand(owner, casterKey, abilityId, actualLevel)
+
+	function selectionCloses(int owner, int eventKey, int typeId, int unitOwner, boolean deselected) returns boolean
+		if not active or owner != lane or currentKey <= 0 or eventKey <= 0
+			return false
+		if deselected
+			return eventKey == currentKey
+		if eventKey == currentKey or typeId == 0
+			return false
+		if tdPetIsDisplayType(typeId) and unitOwner == lane
+			return false
 		return true

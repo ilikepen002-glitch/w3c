@@ -1,0 +1,91 @@
+"""Actual map inheritance proof mutations; no production MPQ edits/writes."""
+from copy import deepcopy
+from dataclasses import replace
+from pathlib import Path
+import re
+import sys
+import unittest
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / 'tools'))
+from GenerateTowerTerrainMask import Mpq
+from VerifySemanticIconArtifact import load_objects
+from VerifyDamageRankingJass import functions
+import VerifyPetManagerDelta as gate
+
+
+class ManagerInheritanceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.current = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        cls.before = gate.baseline_map()
+        cls.script = cls.current.extract('war3map.j').decode()
+        cls.baseline = cls.before.extract('war3map.j').decode()
+        cls.maps = gate.source_maps()
+        cls.objects, cls.prior = load_objects(cls.current), load_objects(cls.before)
+
+    def test_actual_objects_members_sources_and_individual_inherited_bodies(self):
+        proof = gate.validate(self.current)
+        self.assertEqual(proof['objects']['added_abilities'], 175)
+        self.assertEqual(proof['objects']['added_units'], 10)
+        self.assertEqual(proof['archive']['new_assets'], 30)
+        self.assertEqual(proof['global_channels'], 158)
+        self.assertGreaterEqual(proof['jass']['protected_functions'], 1550)
+
+    def assert_changed_function_rejected(self, name, transform):
+        body = functions(self.script)[name][0]
+        changed = transform(body)
+        self.assertNotEqual(changed, body)
+        script = self.script.replace(body, changed, 1)
+        with self.assertRaises(ValueError):
+            gate.prove_jass(script, self.baseline, self.maps)
+
+    def test_rejects_inherited_boss_bloodlust_rank_and_wild_behavior(self):
+        for name in ('tdWaveBossSpellDamageTakenFactor', 'tdRestoreBloodlustAutocast',
+                     'tdDamagePlayerPrecedes', 'tdPetWildTravelSpeed'):
+            with self.subTest(function=name):
+                self.assert_changed_function_rejected(name, lambda t: t.replace('\n', '\n\tcall ClearTextMessages()\n', 1))
+
+    def test_rejects_type_assignment_operator_reference_or_duplicate_owner(self):
+        allocator = next(n for n in functions(self.script) if n.startswith('alloc_') and 'TDPetUISession' not in n)
+        self.assert_changed_function_rejected(allocator, lambda t: gate.ASSIGN.sub(lambda m: m[1] + str(int(m[3])+1)+m[4], t, count=1))
+        self.assert_changed_function_rejected('dispatch_TDPet_TDPet_setSkill', lambda t: t.replace(' == 0', ' != 0', 1))
+
+    def test_rejects_diagnostic_line_even_when_behavior_text_is_equal(self):
+        self.assert_changed_function_rejected('tdPetStore', lambda t: gate.DIAGNOSTIC.sub(lambda m: '"'+m[1]+str(int(m[3])+1)+'"', t, count=1))
+        self.assert_changed_function_rejected('TDPet_skillPower', lambda t: gate.DIAGNOSTIC.sub(lambda m: '"'+m[1]+str(int(m[3])+1)+'"', t, count=1))
+
+    def test_rejects_temp_type_or_inconsistent_use_site(self):
+        self.assert_changed_function_rejected('call_doAfter_TDPetCombat', lambda t: t.replace('local real temp171_x', 'local integer temp171_x'))
+        self.assert_changed_function_rejected('call_doAfter_TDPetCombat', lambda t: t.replace('set temp171_x = tuple_assignment', 'set temp171_x = tuple_assignment_1'))
+
+    def test_rejects_callback_dispatch_target_and_argument_change(self):
+        self.assert_changed_function_rejected('dispatch_CallbackSingle_CallbackSingle_call', lambda t: t.replace('call call_doAfter_TDPetUIView(this_1)', 'call call_doAfter_TDTowerRuntime(this_1)'))
+        self.assert_changed_function_rejected('dispatch_CallbackSingle_CallbackSingle_call', lambda t: t.replace('call call_doAfter_TDPetUIView(this_1)', 'call call_doAfter_TDPetUIView(0)'))
+
+    def test_rejects_main_init_glue_or_inherited_global_change(self):
+        self.assert_changed_function_rejected('main', lambda t: t.replace('ref_function_init_TDPetUI)', 'ref_function_init_TDInit)'))
+        changed = self.script.replace('integer TDPetData_TD_PET_BALL_LIMIT=0', 'integer TDPetData_TD_PET_BALL_LIMIT=1')
+        self.assertNotEqual(changed, self.script)
+        with self.assertRaises(ValueError): gate.prove_global_declarations(changed, self.baseline)
+
+    def test_rejects_unrelated_object_field_and_locked_tooltip_change(self):
+        for kind, rawcode, key in [('abilities', 'A131', ('acdn',1,0)),
+                                   ('abilities', 's240', ('aub1',1,0)),
+                                   ('units', 'p011', ('uabi',0,0))]:
+            objects = deepcopy(self.objects)
+            item = objects[kind][rawcode].fields[key]
+            objects[kind][rawcode].fields[key] = replace(item, value='wrong', raw=item.raw+b'x')
+            with self.subTest(object=rawcode), self.assertRaises(ValueError): gate.verify_objects(objects,self.prior)
+
+    def test_rejects_display_metadata_without_shape_or_value_change(self):
+        objects=deepcopy(self.objects);key=('uico',0,0)
+        item=objects['units']['pd01'].fields[key]
+        objects['units']['pd01'].fields[key]=replace(item,raw=item.raw[:-4]+b'evil')
+        with self.assertRaisesRegex(ValueError,'metadata'): gate.verify_objects(objects,self.prior)
+
+    def test_rejects_extra_object_without_allowlisting_new_set(self):
+        objects=deepcopy(self.objects);objects['abilities']['Extra']=deepcopy(objects['abilities']['Pcol'])
+        with self.assertRaises(ValueError):gate.verify_objects(objects,self.prior)
+
+
+if __name__ == '__main__': unittest.main()

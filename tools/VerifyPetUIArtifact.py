@@ -29,7 +29,9 @@ ICON_STEMS = (
     'TDPetReturnBuilder', 'TDPetDeploy', 'TDPetRecall', 'TDPetCultivate',
     'TDPetInfo', 'TDPetEmptySlot', 'TDPetFlamePhoenix',
     'TDPetStormFaerieDragon', 'TDPetGhostWisp',
-)
+) + tuple(stem + 'Q' + str(quality) for _, stem in (
+    ('', 'TDPetFlamePhoenix'), ('', 'TDPetStormFaerieDragon'), ('', 'TDPetGhostWisp'))
+    for quality in range(1, 5)) + ('TDPetRelease', 'TDPetKeep', 'TDPetAdopt')
 EXPECTED = {
     'Geqb': (3, 0, 'C', 'Aspb'),
     'Gupg': (1, 1, 'U', 'ANcl'),
@@ -163,7 +165,7 @@ def verify_cultivation_command(abilities):
             'Pc06: cultivation command must remain at 2,2')
 
 
-def verify_capture_only(abilities, units):
+def verify_capture_only(abilities, units, current_manager=False):
     verify_no_hunt_objects(abilities, units)
     for rawcode in ('Pcap', 'Pcol'):
         fields = abilities[rawcode][1]
@@ -458,7 +460,7 @@ def verify_species_identity(units):
                 f'{uid}: collection command attachment/order changed')
 
 
-def verify_slot_icons(abilities):
+def verify_slot_icons(abilities, current_manager=False):
     for slot in range(4):
         for variant in range(129):
             rawcode = f's{slot}{variant:02X}'
@@ -496,7 +498,7 @@ def verify_slot_icons(abilities):
                 if variant >= 64:
                     expected_label += ' [共鸣锁定]'
                     bright_fields = abilities[f's{slot}{base_variant:02X}'][1]
-                    lock_prefix = f'技能已获得，尚未生效。完成本路第{4 if slot == 2 else 8}波解锁。|n'
+                    lock_prefix = (f'技能已获得；共鸣锁定，完成本路第{4 if slot == 2 else 8}波解锁。|n' if current_manager else f'技能已获得，尚未生效。完成本路第{4 if slot == 2 else 8}波解锁。|n')
                     require(description == lock_prefix + field_value(bright_fields, 'aub1', 1),
                             f'{rawcode}: locked skill description mismatch')
                 require(label == expected_label and field_value(fields, 'anam') == expected_label,
@@ -608,34 +610,300 @@ def verify_pet_core(abilities, units):
           'single A119 function book and main-bar Gupg/ordinary capture, capture-only wild descriptions, '
           'no Phnt/Pmas/Pfor ghost/attachment and 0..60 capture inventory levels.')
 
+# Current manager contract. The older eight-button/dialog helpers above are
+# retained only for historical mutation fixtures; main never calls them.
+MANAGER_COMMANDS = {
+    'Pc00': (0, 0, 'I', 0, 'TDPetCollection'),
+    'Pc01': (1, 0, 'A', 0, 'TDPetPrevious'),
+    'Pc02': (2, 0, 'D', 0, 'TDPetNext'),
+    'Pc03': (3, 0, 'R', 0, 'TDPetReturnBuilder'),
+    'Pc04': (0, 2, 'E', 1, 'TDPetDeploy'),
+    'Pc05': (1, 2, 'Q', 0, 'TDPetRecall'),
+    'Pc06': (2, 2, 'C', 0, 'TDPetCultivate'),
+    'Pc07': (3, 2, 'W', 0, 'TDPetInfo'),
+    'Pm00': (2, 2, 'C', 0, 'TDPetNext'),
+    'Pm01': (3, 2, 'R', 0, 'TDPetReturnBuilder'),
+    'Pm02': (0, 0, 'Q', 0, 'TDPetCultivate'),
+    'Pm03': (1, 0, 'W', 0, 'TDPetCultivate'),
+    'Pm04': (2, 0, 'E', 0, 'TDPetCultivate'),
+    'Pm05': (3, 0, 'T', 0, 'TDPetCultivate'),
+    'Pm06': (0, 2, 'O', 0, 'TDPetCultivate'),
+    'Pm07': (1, 2, 'X', 0, 'TDPetRelease'),
+    'Pm08': (2, 2, 'C', 0, 'TDPetInfo'),
+    'Pm09': (0, 2, 'Q', 0, 'TDPetKeep'),
+    'Pm0A': (1, 2, 'E', 0, 'TDPetAdopt'),
+    'Pm0B': (0, 2, 'Y', 0, 'TDPetRelease'),
+    'Pm0C': (1, 2, 'N', 0, 'TDPetKeep'),
+}
+PAGE_ACTIONS = {
+    0: list(range(100, 110)) + [8, 9],
+    1: list(range(8)),
+    2: [10, 11, 12, 13, 14, 15, 16, 9],
+    3: [0, 1, 2, 3, 17, 18, 16, 7],
+    4: [19, 20, 9],
+}
+LIST_KEYS = 'QWETASDFZX'
+
+
+def manager_rawcode(action):
+    return f'Pc{action:02X}' if action < 8 else f'Pm{action - 8:02X}'
+
+
+def expected_action_cell(mode, action):
+    if action not in PAGE_ACTIONS.get(mode, []):
+        return -1
+    if mode == 0:
+        return action - 100 if action >= 100 else action + 2
+    rawcode = manager_rawcode(action)
+    x, y = MANAGER_COMMANDS[rawcode][:2]
+    return y * 4 + x
+
+
+def verify_manager_commands(abilities):
+    for rawcode, (x, y, key, target, stem) in MANAGER_COMMANDS.items():
+        require(rawcode in abilities, f'Missing manager command {rawcode}')
+        parent, fields = abilities[rawcode]
+        require(parent == 'ANcl', f'{rawcode}: manager command must inherit Channel')
+        require(field_value(fields, 'alev') == 1, f'{rawcode}: expected one command level')
+        require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (x, y),
+                f'{rawcode}: manager cell changed')
+        require(field_value(fields, 'ahky') == key, f'{rawcode}: manager hotkey changed')
+        require(field_value(fields, 'Ncl2', 1) == target, f'{rawcode}: manager target changed')
+        for field in ('aart', 'arar'):
+            require(field_value(fields, field) == icon_path(stem), f'{rawcode}: {field} icon path mismatch')
+    for mode, actions in PAGE_ACTIONS.items():
+        cells, keys = set(), set()
+        for action in actions:
+            if action >= 100:
+                cell, key = action - 100, LIST_KEYS[action - 100]
+            else:
+                x, y, key = MANAGER_COMMANDS[manager_rawcode(action)][:3]
+                cell = y * 4 + x
+            require(cell not in cells, f'Manager mode {mode}: overlapping cell {cell}')
+            require(key not in keys, f'Manager mode {mode}: duplicate hotkey {key}')
+            cells.add(cell)
+            keys.add(key)
+        skill_cells = {4, 5, 6, 7} if mode in (1, 2) else {4, 5} if mode == 3 else set()
+        require(not cells & skill_cells, f'Manager mode {mode}: passive skill overlap')
+    verify_cultivation_command(abilities)
+    require(verify_global_channel_orders(abilities) <= 335, "Global Channel count exceeds the fixed native order pool")
+
+
+def verify_manager_list(abilities):
+    for cell in range(10):
+        for variant in range(13):
+            rawcode = f'Pl{cell * 13 + variant:02X}'
+            require(rawcode in abilities, f'Missing fixed collection state {rawcode}')
+            parent, fields = abilities[rawcode]
+            require(parent == 'ANcl' and field_value(fields, 'alev') == 2,
+                    f'{rawcode}: expected two-level native list Channel')
+            require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (cell % 4, cell // 4),
+                    f'{rawcode}: incorrect physical list cell')
+            require(field_value(fields, 'ahky') == LIST_KEYS[cell], f'{rawcode}: wrong list hotkey')
+            stem = 'TDPetEmptySlot' if variant == 0 else SPECIES[(variant - 1) // 4][1] + f'Q{(variant - 1) % 4 + 1}'
+            for field in ('aart', 'arar'):
+                require(field_value(fields, field) == icon_path(stem), f'{rawcode}: quality/empty icon mismatch')
+            for level in (1, 2):
+                number = f'{(level - 1) * 10 + cell + 1:02d}'
+                label, description = field_value(fields, 'atp1', level), field_value(fields, 'aub1', level)
+                require(label.startswith(number + ' · ') and label.endswith(f'({LIST_KEYS[cell]})'),
+                        f'{rawcode} level {level}: fixed number/hotkey tooltip mismatch')
+                require(field_value(fields, 'Ncl2', level) == 0, f'{rawcode}: list must be no-target')
+                if variant == 0:
+                    require('空位' in label and number in description and '无副作用' in description,
+                            f'{rawcode}: empty fixed slot must be explained')
+                else:
+                    quality = (variant - 1) % 4
+                    require(QUALITY_NAMES[quality] in label and '共鸣锁定技能' in description and '候选不计' in description,
+                            f'{rawcode}: owned quality policy missing')
+    require(len([raw for raw in abilities if re.fullmatch(r'Pl[0-9A-F]{2}', raw)]) == 130,
+            'Expected exactly 130 collection Channel states')
+
+
+def verify_manager_preview(abilities):
+    for position, skill in itertools.product(range(2), range(16)):
+        rawcode = f'Ps{position * 16 + skill:02X}'
+        require(rawcode in abilities, f'Missing comparison passive {rawcode}')
+        parent, fields = abilities[rawcode]
+        require(parent == 'AOcr' and field_value(fields, 'alev') == 4,
+                f'{rawcode}: expected four-quality passive comparison')
+        require(not any(key == 'Ncl6' for key, _, _ in fields), f'{rawcode}: comparison allocates Channel order')
+        require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (position, 1),
+                f'{rawcode}: wrong comparison cell')
+        require(field_value(fields, 'aart') == NORMAL_PREFIX + SKILL_ICONS[skill] + '.blp',
+                f'{rawcode}: wrong comparison skill icon')
+        for field in ('aher', 'aite', 'achd'):
+            require(field_value(fields, field) == 0, f'{rawcode}: unsafe comparison flag {field}')
+        require(field_value(fields, 'areq') == '', f'{rawcode}: comparison has requirements')
+        for quality in range(1, 5):
+            label = ('旧：' if position == 0 else '新：') + QUALITY_NAMES[quality - 1] + ' ' + SKILL_NAMES[skill]
+            require(field_value(fields, 'atp1', quality) == label, f'{rawcode}: comparison identity mismatch')
+            require(field_value(fields, 'Ocr1', quality) == 0.0 and field_value(fields, 'Ocr2', quality) == 1.0,
+                    f'{rawcode}: comparison must have zero combat effect')
+            description = field_value(fields, 'aub1', quality)
+            require('真实洗练栏' in description and '候选采用前不计入品质' in description,
+                    f'{rawcode}: comparison restriction contract missing')
+    require(len([raw for raw in abilities if re.fullmatch(r'Ps[0-9A-F]{2}', raw)]) == 32,
+            'Expected exactly 32 comparison passives')
+
+
+def verify_manager_units(units):
+    expected = {'pd00': (SPECIES[2][0], 'TDPetCollection')}
+    for species, (model, stem) in enumerate(SPECIES):
+        for quality in range(1, 5):
+            expected[f'pd{species * 4 + quality:02X}'] = (model, stem + f'Q{quality}')
+    actual = {raw for raw in units if re.fullmatch(r'pd[0-9A-F]{2}', raw)}
+    require(actual == set(expected), 'Expected exactly list + twelve species/quality prototypes')
+    for rawcode, (model, stem) in expected.items():
+        fields = units[rawcode]
+        require(fields.get('umdl') == model, f'{rawcode}: display model mismatch')
+        for field in ('uico', 'ussi'):
+            require(fields.get(field) == icon_path(stem), f'{rawcode}: display quality icon mismatch')
+        require(fields.get('uabi', '').split(',') == ['Avul'],
+                f'{rawcode}: base display must contain only Avul; runtime owns page mounting')
+        require(fields.get('ubdg') == 1 and fields.get('uaen') == 0 and fields.get('umvs') == 0 and fields.get('ufoo') == 0,
+                f'{rawcode}: display must be stationary/noncombat/zero-food building')
+        for field in ('ubui', 'utra', 'uupt', 'upat'):
+            require(fields.get(field, '') == '', f'{rawcode}: display exposes native build/train/upgrade/pathing')
+
+
+def verify_manager_farmer(abilities, units):
+    verify_farmer_grid(abilities, units)
+    candidates = [(raw, fields) for raw, fields in units.items()
+                  if {'Pcap', 'Pcol'}.issubset(fields.get('uabi', '').split(','))]
+    require(len(candidates) == 1, 'Expected one farmer with capture and collection entrances')
+    rawcode, farmer = candidates[0]
+    require(field_value(abilities['Pcap'][1], 'ahky') == 'Q', 'Farmer Q capture must remain')
+    require(field_value(abilities['Pcol'][1], 'ahky') == 'W', 'Farmer W collection must remain')
+    require('20' in field_value(abilities['Pcol'][1], 'aub1', 1), 'Collection entrance must advertise twenty slots')
+    if 'Pdep' in farmer.get('uabi', '').split(','):
+        require(field_value(abilities['Pdep'][1], 'Ncl2', 1) == 0,
+                'Legacy farmer Pdep must be navigation-only, never target/deploy directly')
+    require('Pmas' not in abilities and 'Pfor' not in abilities,
+            'Predecessor master/forge removal must be preserved on final integrated map')
+    ghost = re.compile(r'(?<![A-Za-z0-9_])(?:Pmas|Pfor)(?![A-Za-z0-9_])')
+    for object_id, (_, fields) in abilities.items():
+        require(not any(isinstance(value, str) and ghost.search(value)
+                        for _, value in fields.values()), f'{object_id}: removed master/forge reference remains')
+    for object_id, fields in units.items():
+        require(not any(isinstance(value, str) and ghost.search(value) for value in fields.values()),
+                f'{object_id}: removed master/forge unit attachment remains')
+    require('TD_PET_DEPLOY_LIMIT' not in (ROOT / 'wurst/pets/TDPetData.wurst').read_text(),
+            'Removed lane-wide three-spirit cap must stay absent')
+    return rawcode
+
+
+def verify_manager_jass(script):
+    require(re.search(r'^\s*local \w+ array ', script, re.M) is None, 'Native 1.27 JASS cannot use local arrays')
+    constants = {name: int(number) for name, number in re.findall(r'\bset (\w*TD_PET_\w+)\s*=\s*(-?\d+)\b', script)}
+    helper = jass_function(script, 'tdPetActionCell')
+    for mode in range(-1, 6):
+        for action in range(-1, 122):
+            actual = _run_scalar_helper(helper, (mode, action), constants)
+            require(actual == expected_action_cell(mode, action),
+                    f'Packaged page whitelist mode={mode} action={action}: {actual}')
+    for name in ('onCommand', 'showCultivation', 'showReleaseConfirmation', 'tdPetRenderPage',
+                 'tdPetCloseManager', 'onSelected', 'onDeselected'):
+        body = jass_function(script, name).group(1)
+        require(not any(native in body for native in ('DialogDisplay', 'DialogCreate', 'Blz', 'Dz')),
+                f'{name}: non-native/pause-based manager UI is forbidden')
+    bridge = jass_function(script, 'onCommand').group(1)
+    for text in ('TDPetUIView_tdPetDisplays', 'tdPetDisplayOwners', 'admitCommand',
+                 'GetUnitAbilityLevel', 'tdPetResolveRerollVersion'):
+        require(text in bridge, f'Packaged command bridge missing {text}')
+    render = jass_function(script, 'tdPetRenderPage').group(1)
+    require('addPermanentAbility' in render and 'tdPetDisplayOwners' in render and 'GetLocalPlayer' in render,
+            'Renderer must mount synchronized page before local selection')
+    invalidate = jass_function(script, 'tdPetRefreshDisplay').group(1)
+    require('createUnit' not in invalidate and 'tdPetRenderPage' not in invalidate and 'SelectUnit' not in invalidate,
+            'Polling must only invalidate, never rebuild or select')
+    farmer = jass_function(script, 'onDeploy').group(1)
+    require('tdPetDeploy(' not in farmer, 'Farmer bypasses manager binding session')
+    require(re.search(r'\bset TDPetData_TD_PET_COLLECTION_LIMIT\s*=\s*20\b', script),
+            'Packaged collection capacity must be twenty')
+    require('TDPetData_TD_PET_DEPLOY_LIMIT' not in script, 'Packaged lane-wide cap remains')
+
+
+def verify_manager_core(abilities, units):
+    targets = {'neutral', 'enemy', 'ground', 'air', 'organic', 'invulnerable', 'vulnerable'}
+    require(field_value(abilities['Pcap'][1], 'alev') == 61, 'Capture must cover inventory 0..60')
+    for level in range(1, 62):
+        require(set(field_value(abilities['Pcap'][1], 'atar', level).split(',')) == targets,
+                f'Pcap level {level}: capture target filter changed')
+    deploy_targets = set(field_value(abilities['Pc04'][1], 'atar', 1).split(','))
+    require({'organic', 'mechanical', 'structure'}.issubset(deploy_targets),
+            'Manager binding must target organic/mechanical towers')
+    for species, (model, _) in enumerate(SPECIES, 1):
+        visual = units[f'pv0{species}']
+        require(visual.get('umdl') == model and 'Aloc' in visual.get('uabi', '').split(','),
+                'Decorative spirit must retain species model and non-selectability')
+        for wave in range(1, 33):
+            rawcode = f'p{wave:02X}{species}'
+            wild = units[rawcode]
+            require(wild.get('umdl') == model and wild.get('uaen') == 0 and wild.get('ubba') == 0,
+                    f'{rawcode}: wild model/noncombat/zero bounty changed')
+    check_ability(abilities, 'Pbat', 'AIat', 512, 'Iatt', 0, lambda level: level)
+    check_ability(abilities, 'Pbsp', 'AIsx', 150, 'Isx1', 2, lambda level: level / 100.0)
+    check_ability(abilities, 'Pbar', 'AId1', 8, 'Idef', 0, lambda level: -level)
+
+
+def verify_manager_objects(abilities, units):
+    verify_manager_commands(abilities)
+    verify_manager_list(abilities)
+    verify_manager_preview(abilities)
+    verify_manager_units(units)
+    # Reuse the 516-slot combat-neutrality contract with the current lock wording.
+    verify_slot_icons(abilities, current_manager=True)
+    require(not set(abilities) & {raw for raw in units if raw.startswith('pd')},
+            'Manager ability and unit rawcodes collide')
+    verify_no_hunt_objects(abilities, units)
+    require(len(MANAGER_COMMANDS) + 130 == 151, 'Manager Channel object budget changed')
+
+
+def verify_global_rawcode_uniqueness(artifact):
+    # Strict decoder rejects duplicate objects/fields before dictionaries can
+    # hide them; identities are checked across every actual object table.
+    from VerifySemanticIconArtifact import parse_objects
+    files = {'war3map.w3u': False, 'war3map.w3t': False, 'war3map.w3b': False,
+             'war3map.w3a': True, 'war3map.w3h': False,
+             'war3map.w3q': True, 'war3map.w3d': True}
+    owners = {}
+    for path, extended in files.items():
+        if not artifact.has(path):
+            continue
+        for rawcode in parse_objects(artifact.extract(path), extended):
+            require(rawcode not in owners, f'Global rawcode {rawcode} collides: {owners.get(rawcode)} and {path}')
+            owners[rawcode] = path
+    require(bool(owners), 'No actual object tables found')
+    print(f'PASS GLOBAL RAWCODES: {len(owners)} unique strict-decoded object identities')
+
+
 def main():
     require(len(sys.argv) == 2, __doc__)
     artifact = Mpq(Path(sys.argv[1]).read_bytes())
+    verify_global_rawcode_uniqueness(artifact)
     abilities = ability_objects(artifact.extract('war3map.w3a'))
     units = unit_objects(artifact.extract('war3map.w3u'))
     verify_no_removed_raw_objects(artifact.extract('war3map.w3u'), False, 'unit')
     if artifact.has('war3map.w3t'):
         verify_no_removed_raw_objects(artifact.extract('war3map.w3t'), False, 'item')
         verify_no_hunt_objects(abilities, units, unit_objects(artifact.extract('war3map.w3t')))
-    farmer = verify_farmer_grid(abilities, units)
-    verify_collection_commands(abilities)
-    verify_species_identity(units)
-    verify_slot_icons(abilities)
-    verify_pet_core(abilities, units)
-    verify_dialog_hotkeys(artifact.extract('war3map.j').decode('utf-8'))
-    verify_skill_fit_abilities(artifact.extract('war3map.j').decode('utf-8'))
-    verify_skill_allowed(artifact.extract('war3map.j').decode('utf-8'))
-    verify_lane_enemy_guards(artifact.extract('war3map.j').decode('utf-8'))
+    farmer = verify_manager_farmer(abilities, units)
+    verify_manager_objects(abilities, units)
+    verify_manager_core(abilities, units)
+    # Wild object layout and skill rules remain independent of collection UI.
+    verify_capture_only(abilities, units, current_manager=True)
+    script = artifact.extract('war3map.j').decode('utf-8')
+    verify_manager_jass(script)
+    verify_skill_fit_abilities(script)
+    verify_skill_allowed(script)
+    verify_lane_enemy_guards(script)
     verify_imported_icons(artifact)
     require(not artifact.has(r'Units\CommandFunc.txt'), 'Global CommandFunc override is forbidden')
-    print(f'PASS PET UI: {farmer}; exact 11-cell farmer grid (2,1 empty); eight distinct collection icons, '
-          'unchanged cells/hotkeys, reallocated globally unique base orders; '
-          'explicit cultivation/release command; three explicit species identities; '
-          '516 exact bright/locked/empty variants; real native dialog numeric hotkeys; '
-          '64 compiled skill/host capability combinations; '
-          '2176 compiled skill admission and 256 lane-enemy guard combinations; '
-          '26 packaged 64px BTN/DIS assets match source hashes.')
-    print('NOT TESTED: native rendering/portrait/selection, actual command placement and live skill effects.')
+    print(f'PASS PET MANAGER: {farmer}; 20 fixed slots/two pages; 151 Channels + 548 passives; '
+          '13 runtime-mounted display prototypes; all page cells/hotkeys/targets; '
+          'native synchronized session bridge; 56 packaged BTN/DIS assets match source.')
+    print('NOT TESTED: live rendering/selection/queued network events, actual placement, performance or skill effects.')
 
 
 if __name__ == '__main__':

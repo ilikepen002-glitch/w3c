@@ -1,0 +1,9 @@
+{
+  "all170MembersSameExceptTwoDisplayTimestamps": true,
+  "changedMembers": [
+    "war3map.w3i"
+  ],
+  "beforeMapSHA256": "aee5ad8d55b56f715f11f0d8d7e731636d17c90eb370cc5b712fd1e399d9e721",
+  "finalMapSHA256": "30714b250dc528275e94c6d1d6779e66dceeafbc2d7eaf3cd9ce7c4e1c7b0f7c",
+  "jassSHA256": "e8d2ac4c0f26bbd7ae18749cfca66c2cc3b5252f86f9a688b3bbb362158a7998"
+}

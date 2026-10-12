@@ -1,7 +1,6 @@
 package TDPetReleaseTests
 import TDPetState
 import TDPetRules
-import TDPetUIState
 import TDPetWild
 import TDState
 import BitSet
@@ -70,7 +69,7 @@ function wildCount() returns int
 	tdPetConfirmRelease(0, nonce0).assertFalse()
 	tdPetRerollStones[0].assertEquals(0)
 	pet.lane = 0
-	tdPetBeginRelease(0, 12).assertEquals(0)
+	tdPetBeginRelease(0, 20).assertEquals(0)
 	tdPetBeginRelease(0, -1).assertEquals(0)
 	tdPetConfirmRelease(1, nonce1).assertTrue()
 	tdPetRerollStones[1].assertEquals(1)
@@ -194,67 +193,6 @@ function wildCount() returns int
 	success.assertEquals(2)
 	tdPetReleaseGetsSlotStone(0).assertFalse()
 	tdPetReleaseGetsSlotStone(101).assertFalse()
-
-@Test function realDialogSessionRejectsWrongModeOwnerRoundDialogAndRepeat()
-	let pet = ownedPet(0)
-	let session = new TDPetDialogSession(0)
-	session.open(TD_PET_DIALOG_CULTIVATE, pet, 0).assertTrue()
-	let oldRound = session.round
-	session.consumeButton(0, oldRound, 14, true).assertFalse()
-	session.consumeButton(1, oldRound, 1, true).assertFalse()
-	session.consumeButton(0, oldRound, 1, false).assertFalse()
-	session.consumeButton(0, oldRound, 1, true).assertTrue()
-	session.consumeButton(0, oldRound, 1, true).assertFalse()
-	session.open(TD_PET_DIALOG_CULTIVATE, pet, 0).assertTrue()
-	session.consumeButton(0, oldRound, 1, true).assertFalse()
-	session.consumeButton(0, session.round, 13, true).assertTrue()
-	session.close()
-	session.consumeButton(0, session.round, 13, true).assertFalse()
-	destroy session
-
-@Test function realReleaseDialogModeConsumesTicketExactlyOnce()
-	let pet = ownedPet(0)
-	let session = new TDPetDialogSession(0)
-	let nonce = tdPetBeginRelease(0, 0)
-	session.open(TD_PET_DIALOG_RELEASE_CONFIRM, pet, nonce).assertTrue()
-	session.matchesPet(pet).assertTrue()
-	session.consumeButton(0, session.round, 11, true).assertFalse()
-	session.consumeButton(0, session.round, 14, true).assertTrue()
-	tdPetConfirmRelease(0, session.releaseNonce).assertTrue()
-	session.matchesPet(pet).assertFalse()
-	session.consumeButton(0, session.round, 14, true).assertFalse()
-	tdPetConfirmRelease(0, nonce).assertFalse()
-	tdPetRerollStones[0].assertEquals(1)
-	destroy session
-
-@Test function realDialogSnapshotAndCancelTrackPetChanges()
-	let pet = ownedPet(0)
-	let session = new TDPetDialogSession(0)
-	let nonce = tdPetBeginRelease(0, 0)
-	session.open(TD_PET_DIALOG_RELEASE_CONFIRM, pet, nonce).assertTrue()
-	pet.revision += 1
-	session.matchesPet(pet).assertFalse()
-	session.open(TD_PET_DIALOG_RELEASE_CONFIRM, pet, nonce).assertTrue()
-	pet.generation += 1
-	session.matchesPet(pet).assertFalse()
-	session.open(TD_PET_DIALOG_RELEASE_CONFIRM, pet, nonce).assertTrue()
-	session.consumeButton(0, session.round, 0, true).assertTrue()
-	tdPetCancelRelease(0)
-	session.close()
-	tdPetConfirmRelease(0, nonce).assertFalse()
-	tdPetRerollStones[0].assertEquals(0)
-	destroy session
-
-@Test function realDialogNumericHotkeysMatchAdvertisedActions()
-	for action = 1 to 4
-		tdPetDialogHotkey(TD_PET_DIALOG_CULTIVATE, action).assertEquals(48 + action)
-	tdPetDialogHotkey(TD_PET_DIALOG_PREVIEW, 10).assertEquals(49)
-	tdPetDialogHotkey(TD_PET_DIALOG_PREVIEW, 11).assertEquals(50)
-	tdPetDialogHotkey(TD_PET_DIALOG_RELEASE_CONFIRM, 14).assertEquals(49)
-	tdPetDialogHotkey(TD_PET_DIALOG_RELEASE_CONFIRM, 0).assertEquals(50)
-	tdPetDialogHotkey(TD_PET_DIALOG_INFO, 14).assertEquals(0)
-	tdPetDialogActionAllowed(TD_PET_DIALOG_INFO, 14).assertFalse()
-	tdPetDialogActionAllowed(TD_PET_DIALOG_PREVIEW, 14).assertFalse()
 
 @Test function capturedAndRerolledSkillEligibilityKeepsExactCategoryActiveAndMaskRules()
 	for skill = 0 to 15

@@ -1,0 +1,328 @@
+#!/usr/bin/env python3
+"""Bounded source-only manager checks. Never runs Wurst, staging, map build or game.
+
+Executes selected real scalar/navigation source bodies in a small Python subset,
+then checks runtime wiring and the exact source asset manifest. This cannot prove
+Wurst syntax/types, compiletime objects, packaged MPQ, or native selection events.
+"""
+from __future__ import annotations
+import hashlib
+import itertools
+import json
+from pathlib import Path
+import re
+import subprocess
+
+ROOT = Path(__file__).resolve().parents[1]
+BASELINE = 'b7e3d051e98c2b18caafed4ab6e036700a6ee64c'
+ASSET_BASELINE = '0330fd12de4d66c4a1ca4980e10b771f0903fbfc'
+FILES = ('TDPetData', 'TDPetRules', 'TDPetState', 'TDPetUIState', 'TDPetUIView', 'TDPetUI', 'TDPetObjectGen')
+
+
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def source(name):
+    return (ROOT / f'wurst/pets/{name}.wurst').read_text(encoding='utf-8')
+
+
+def function_body(text, name, arity=None):
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        match = re.fullmatch(r'(\t*)(?:public )?function ' + re.escape(name) + r'\((.*?)\)(?: returns \w+)?', line)
+        if not match:
+            continue
+        parameters = [p.strip().split()[-1] for p in match[2].split(',') if p.strip()]
+        if arity is not None and len(parameters) != arity:
+            continue
+        indent = len(match[1])
+        body = []
+        for following in lines[index + 1:]:
+            if following.strip() and len(following) - len(following.lstrip('\t')) <= indent:
+                break
+            body.append(following[indent + 1:])
+        return parameters, '\n'.join(body).rstrip()
+    raise ValueError(f'Missing real source function {name}/{arity}')
+
+
+def _expression(text):
+    """Only the controlled subset in selected helper bodies, fail on leftovers."""
+    # Recursively normalize parenthesized ternaries and comma-separated arguments.
+    def nested(value):
+        result, i = '', 0
+        while i < len(value):
+            ch = value[i]
+            if ch in ('"', "'"):
+                quote, end = ch, i + 1
+                while end < len(value):
+                    if value[end] == '\\':
+                        end += 2
+                    elif value[end] == quote:
+                        break
+                    else:
+                        end += 1
+                require(end < len(value), 'Unterminated source string')
+                result += value[i:end + 1]
+                i = end + 1
+            elif ch == '(':
+                end, depth, quote = i + 1, 1, None
+                while end < len(value) and depth:
+                    c = value[end]
+                    if quote:
+                        if c == '\\':
+                            end += 1
+                        elif c == quote:
+                            quote = None
+                    elif c in ('"', "'"):
+                        quote = c
+                    elif c == '(':
+                        depth += 1
+                    elif c == ')':
+                        depth -= 1
+                    end += 1
+                require(depth == 0, 'Unbalanced source parentheses')
+                result += '(' + nested(value[i + 1:end - 1]) + ')'
+                i = end
+            else:
+                result += ch
+                i += 1
+        # Find top-level separators, ignoring quoted literals and nested groups.
+        depth, quote, comma, question, colon = 0, None, [], None, None
+        i = 0
+        while i < len(result):
+            ch = result[i]
+            if quote:
+                if ch == '\\':
+                    i += 1
+                elif ch == quote:
+                    quote = None
+            elif ch in ('"', "'"):
+                quote = ch
+            elif ch in '([':
+                depth += 1
+            elif ch in ')]':
+                depth -= 1
+            elif depth == 0:
+                if ch == ',':
+                    comma.append(i)
+                elif ch == '?' and question is None:
+                    question = i
+                elif ch == ':' and question is not None:
+                    colon = i
+                    break
+            i += 1
+        if comma:
+            indices = [-1] + comma + [len(result)]
+            return ','.join(nested(result[a + 1:b]) for a, b in zip(indices, indices[1:]))
+        if question is not None:
+            require(colon is not None, 'Malformed source ternary')
+            return '(' + nested(result[question + 1:colon]) + ' if ' + nested(result[:question]) + ' else ' + nested(result[colon + 1:]) + ')'
+        return result
+    text = nested(text)
+    # Wurst implicitly converts an integer in string concatenation. This
+    # controlled source helper retains the independent false-branch conversion.
+    text = re.sub(r'("0"\s*\+\s*)(\(slot\s*\+\s*1\))', r'\1str(\2)', text)
+    text = re.sub(r'\bdiv\b', '//', text)
+    text = re.sub(r'\bmod\b', '%', text)
+    text = re.sub(r'\btrue\b', 'True', text)
+    text = re.sub(r'\bfalse\b', 'False', text)
+    text = re.sub(r'\bnull\b', 'None', text)
+    text = re.sub(r"'([^']{4})'", lambda m: str(int.from_bytes(m[1].encode('ascii'), 'big')), text)
+    text = re.sub(r'(\([^()]+\)|\w+)\.toString\(\)', r'str(\1)', text)
+    if text.endswith('.fromRawCode()'):
+        text = 'rawcode(' + text[:-len('.fromRawCode()')] + ')'
+    require('?' not in text and ' castTo ' not in text and '.fromRawCode' not in text and '.toString' not in text,
+            f'Unsupported source-only expression: {text}')
+    return text
+
+
+def compile_source_helper(text, name, namespace, arity=None):
+    parameters, body = function_body(text, name, arity)
+    output = [f'def {name}(' + ','.join(parameters) + '):']
+    for raw in body.splitlines():
+        line = raw.lstrip('\t')
+        if not line.strip() or line.startswith('//'):
+            continue
+        indent = 1 + len(raw) - len(line)
+        if line.startswith('let ') or line.startswith('var '):
+            line = line[4:]
+        if line.startswith('else if '):
+            line = 'elif ' + _expression(line[8:]) + ':'
+        elif line.startswith('if '):
+            line = 'if ' + _expression(line[3:]) + ':'
+        elif line == 'else':
+            line = 'else:'
+        elif line.startswith('for '):
+            match = re.fullmatch(r'for (\w+) = (.*?) to (.*)', line)
+            require(match is not None, 'Unsupported source-only loop')
+            line = f'for {match[1]} in range({_expression(match[2])}, ({_expression(match[3])}) + 1):'
+        elif line.startswith('return '):
+            line = 'return ' + _expression(line[7:])
+        elif ' = ' in line:
+            left, right = line.split(' = ', 1)
+            line = left + ' = ' + _expression(right)
+        elif ' += ' in line:
+            left, right = line.split(' += ', 1)
+            line = left + ' += ' + _expression(right)
+        else:
+            raise ValueError(f'Unsupported source-only statement: {line}')
+        output.append('    ' * indent + line)
+    exec('\n'.join(output), {'__builtins__': {}, **namespace}, namespace)
+    # Functions need one shared global namespace for cross-helper calls.
+    namespace[name] = type(namespace[name])(namespace[name].__code__, namespace, name)
+    return namespace[name]
+
+
+def scalar_helpers():
+    namespace = {'range': range, 'str': str, 'IMaxBJ': max, 'IMinBJ': min,
+                 'SubString': lambda text, start, end: text[start:end],
+                 'rawcode': lambda text: int.from_bytes(text.encode('ascii'), 'big'),
+                 'tdIsLanePlayer': lambda lane: 0 <= lane < 4,
+                 'tdPetAt': lambda _lane, _slot: None, '__builtins__': {}}
+    for name in FILES:
+        for constant, value in re.findall(r'public constant int (\w+) = (-?\d+)', source(name)):
+            namespace[constant] = int(value)
+    targets = {
+        'TDPetData': [('tdPetHexRawcode', 3), ('tdPetDisplayUnitId', 2), ('tdPetListAbilityId', 3), ('tdPetPreviewAbilityId', 2), ('tdPetUICommandId', 1), ('tdPetManagerCommandId', 1), ('tdPetSlotAbilityId', 2)],
+        'TDPetRules': [('tdPetCollectionNumber', 1), ('tdPetPageSlot', 2), ('tdPetStepSlot', 2), ('tdPetOwnedQuality', 5)],
+        'TDPetUIState': [('tdPetActionCell', 2), ('tdPetActionHotkey', 1), ('tdPetListHotkey', 1)],
+        'TDPetState': [('tdPetNextOccupied', 3)],
+    }
+    for package, helpers in targets.items():
+        for name, arity in helpers:
+            compile_source_helper(source(package), name, namespace, arity)
+    return namespace
+
+
+def verify_scalar_contracts(namespace=None):
+    from VerifyPetUIArtifact import MANAGER_COMMANDS, PAGE_ACTIONS, expected_action_cell, manager_rawcode
+    n = namespace or scalar_helpers()
+    for mode, action in itertools.product(range(-1, 6), range(-1, 122)):
+        require(n['tdPetActionCell'](mode, action) == expected_action_cell(mode, action), f'Source page whitelist {mode}/{action}')
+    for action in range(21):
+        require(n['tdPetActionHotkey'](action) == MANAGER_COMMANDS[manager_rawcode(action)][2], f'Source hotkey {action}')
+    channels = {n['tdPetManagerCommandId'](action) for action in range(21)}
+    for cell, variant in itertools.product(range(10), range(13)):
+        species, quality = (0, 0) if variant == 0 else ((variant - 1) // 4 + 1, (variant - 1) % 4 + 1)
+        identifier = n['tdPetListAbilityId'](cell, species, quality)
+        require(identifier == int.from_bytes(f'Pl{cell * 13 + variant:02X}'.encode(), 'big'), 'Source list rawcode mismatch')
+        require(identifier not in channels, 'Source manager Channel collision')
+        channels.add(identifier)
+    passives = {n['tdPetSlotAbilityId'](slot, variant) for slot, variant in itertools.product(range(4), range(129))}
+    passives.update(n['tdPetPreviewAbilityId'](position, skill) for position, skill in itertools.product(range(2), range(16)))
+    require(len(channels) == 151 and len(passives) == 548 and not channels & passives, 'Source object/rawcode budget mismatch')
+    for cell in range(10):
+        require(n['tdPetListHotkey'](cell) == 'QWETASDFZX'[cell], 'Source list hotkey mismatch')
+        for page in range(2):
+            slot = n['tdPetPageSlot'](page, cell)
+            require(slot == page * 10 + cell and n['tdPetCollectionNumber'](slot) == f'{slot + 1:02d}', 'Source fixed-page number mismatch')
+    for count in range(5):
+        for qualities in itertools.product(range(1, 5), repeat=4):
+            require(n['tdPetOwnedQuality'](count, *qualities) == max((1, *qualities[:count])), 'Owned quality must include every owned skill only')
+    for occupied in (set(), {0}, {19}, {0, 3, 10, 19}, set(range(20))):
+        n['tdPetAt'] = lambda lane, slot, occupied=occupied: object() if lane == 0 and slot in occupied else None
+        for slot, direction in itertools.product(range(20), (-1, 1)):
+            expected = next(((slot + step * direction) % 20 for step in range(1, 21) if (slot + step * direction) % 20 in occupied), -1)
+            require(n['tdPetNextOccupied'](0, slot, direction) == expected, 'Source skip-hole navigation mismatch')
+            require(n['tdPetNextOccupied'](1, slot, direction) == -1, 'Source lane isolation mismatch')
+    for function, args in [('tdPetListAbilityId', (10, 1, 1)), ('tdPetListAbilityId', (0, 4, 1)), ('tdPetPreviewAbilityId', (2, 0)), ('tdPetManagerCommandId', (21,)), ('tdPetSlotAbilityId', (4, 0)), ('tdPetSlotAbilityId', (0, 129)), ('tdPetDisplayUnitId', (4, 1))]:
+        require(n[function](*args) == 0, 'Source out-of-partition rawcode must fail closed')
+    # Full source literal collision scan, not merely the new namespace itself.
+    reserved = channels | passives | {n['tdPetDisplayUnitId'](species, quality) for species, quality in itertools.product(range(1, 4), range(1, 5))} | {int.from_bytes(b'pd00', 'big')}
+    allowed = {'TDPetData.wurst', 'TDPetObjectGen.wurst'}
+    for path in (ROOT / 'wurst').rglob('*.wurst'):
+        if path.name in allowed or '_tests' in path.parts:
+            continue
+        for literal in re.findall(r"'([A-Za-z0-9]{4})'", path.read_text(encoding='utf-8')):
+            require(int.from_bytes(literal.encode(), 'big') not in reserved, f'Rawcode reservation collision in {path.relative_to(ROOT)}: {literal}')
+    print('PASS SOURCE SCALARS: 861 page/action cases; 151/548 unique ability partitions; 20 numbers; 1,280 quality cases; 200 real-source skip-hole/200 lane-isolation cases; boundary guards')
+
+
+def verify_wiring():
+    texts = {name: source(name) for name in FILES}
+    ui, view, state, session, objects = (texts[n] for n in ('TDPetUI', 'TDPetUIView', 'TDPetState', 'TDPetUIState', 'TDPetObjectGen'))
+    require('TD_PET_COLLECTION_LIMIT = 20' in texts['TDPetData'], 'Collection capacity must be twenty')
+    require('tdPetOwnedQuality(skillCount, qualities[0], qualities[1], qualities[2], qualities[3])' in function_body(state, 'quality')[1], 'Record quality must include all four owned slots independently of resonance/proposal')
+    for name in ('TDPetUI', 'TDPetUIView', 'TDPetUIState'):
+        require(not re.search(r'\b(?:Dialog\w*|Blz\w*|Dz\w*)\b', texts[name]), f'{name}: forbidden dialog/modern native')
+    for text in texts.values():
+        for line in text.splitlines():
+            code = line.split('//', 1)[0]
+            # Explicit guards avoid the known mixed and/or JASS printer defect.
+            require(not (' and ' in code and ' or ' in code), 'Mixed boolean precedence in new pet source: ' + line)
+    command = function_body(ui, 'onCommand')[1]
+    for phrase in ('caster != tdPetDisplays[lane]', 'tdPetDisplayOwners.hasInt', 'GetUnitAbilityLevel', 'session.admitCommand', 'tdPetResolveRerollVersion'):
+        require(phrase in command, 'Missing synchronized command authority: ' + phrase)
+    require(command.index('session.admitCommand') < command.index('tdPetDeploy('), 'Consume authority before transaction')
+    admission = function_body(session, 'admitCommand')[1]
+    for phrase in ('commandAction(', 'dirty or not snapshotCurrent()', 'releaseNonce != tdPetReleaseNonce(lane)', 'consumeCommand(', 'TD_PET_COMMAND_STALE', 'TD_PET_COMMAND_REFRESH', 'TD_PET_COMMAND_EMPTY'):
+        require(phrase in admission, 'Missing production admission: ' + phrase)
+    require('tdPetDeploy(' not in function_body(ui, 'onDeploy')[1], 'Farmer deployment bypass remains')
+    poll = ui.split('doPeriodically(0.5)', 1)[1]
+    require(not any(x in poll for x in ('showPage(', 'tdPetRenderPage(', 'SelectUnit(', 'createUnit(')), 'Poller churns display/selection')
+    refresh = function_body(view, 'tdPetRefreshDisplay')[1]
+    require('dirty = true' in refresh and 'tdPetCancelRelease' in refresh, 'Poll invalidation must dirty snapshot/cancel release')
+    render = function_body(view, 'tdPetRenderPage')[1]
+    require(render.index('fresh.addPermanentAbility') < render.index('tdPetDisplays[lane] = fresh') < render.index('retire(old)') < render.index('GetLocalPlayer'), 'Prepare/publish/retire/local selection order')
+    retire = function_body(view, 'retire')[1]
+    require('tdPetDisplayOwners.removeInt' in retire and 'doAfter(0.0)' in retire and 'old.remove()' in retire and 'pet.' not in retire and 'session.' not in retire, 'Retirement captures only the old unit')
+    for function in ('tdPetSelectFarmer', 'tdPetRenderPage'):
+        body = function_body(view, function)[1]
+        local = body.split('if GetLocalPlayer()', 1)[1]
+        require(not any(x in local for x in ('createUnit(', 'addPermanentAbility(', 'saveInt(', ' = ', 'tdPetCancelRelease(')), 'Local selection writes synchronized authority')
+    for name, suffix in (('onSelected', 'false)'), ('onDeselected', 'true)')):
+        require('tdPetHandleSelectionIdentity(' in function_body(ui, name)[1] and suffix in function_body(ui, name)[1], 'Native selection must use production identity bridge: ' + name)
+    selection = function_body(session, 'selectionCloses')[1]
+    for phrase in ('owner != lane', 'return eventKey == currentKey', 'typeId == 0', 'tdPetIsDisplayType(typeId)', 'unitOwner == lane'):
+        require(phrase in selection, 'Selection identity protection missing: ' + phrase)
+    require('selectionCloses(' in function_body(view, 'tdPetHandleSelectionIdentity')[1] and 'tdPetCloseManager(lane)' in function_body(view, 'tdPetHandleSelectionIdentity')[1], 'Selection bridge must call real close transaction')
+    require('if pet.paused' in function_body(view, 'tdPetSkillRestriction')[1], 'Paused skills require an explicit reason')
+    require('tdPetCancelRelease(lane)' in function_body(view, 'tdPetCloseManager')[1], 'Leaving must invalidate release')
+    require('tdPetResolveReroll' not in function_body(view, 'tdPetCloseManager')[1], 'Leaving silently resolves proposal')
+    begin, resolve, opened = (function_body(state, name)[1] for name in ('tdPetBeginReroll', 'tdPetResolveRerollVersion', 'tdPetOpenSlot'))
+    require(begin.index('let candidate = pet.rollSkill') < begin.index('tdPetRerollStones[lane] -= 1'), 'Roll failure must not charge')
+    require('pet.proposalVersion += 1' in begin and 'pet.proposalRevision = pet.revision' in begin, 'Proposal version/source revision missing')
+    require('pet.proposalVersion != candidateVersion' in resolve and 'pet.revision != pet.proposalRevision' in resolve, 'Adoption version guard missing')
+    require('readyAt =' not in begin + resolve + opened, 'Cultivation resets cooldown')
+    require('proposalVersion' in session and 'listRevisions' in session and 'actualLevel' in session, 'Session snapshots/admission incomplete')
+    require('setNormalAbilities("Avul")' in function_body(objects, 'displayUnit')[1], 'Displays must be runtime-mounted only')
+    require('new ChannelAbilityPreset(tdPetListAbilityId(cell, species, quality), 2, true)' in objects, 'List object levels mismatch')
+    require('new AbilityDefinitionBladeMasterCriticalStrike(tdPetPreviewAbilityId' in objects and '..setLevels(4)' in objects, 'Preview must use four-quality passives')
+    summary = function_body(view, 'tdPetPageSummary')[1]
+    for phrase in ('旧：', '新：', '已扣1洗练石', 'record ', '永久释放', '20.0'):
+        require(phrase in summary + function_body(view, 'tdPetShowPageSummary')[1], 'Missing page summary: ' + phrase)
+    require(not re.search(r'\[生效|生效技能\s*\d|生效数', ui + view + session), 'Unrequested effective-status label/count')
+    hud = (ROOT / 'wurst/TDHud.wurst').read_text()
+    before = subprocess.run(['git', 'show', BASELINE + ':wurst/TDHud.wurst'], cwd=ROOT, check=True, capture_output=True, text=True).stdout
+    require(hud.count('CreateMultiboard') == before.count('CreateMultiboard'), 'Manager replaces ranking board')
+    require('setColumnCount(TD_DAMAGE_HUD_COLUMNS)' in hud and 'tdPetHudSummaries[playerId]' in hud and 'tdPetHudSummaries[lane]' in hud, 'Keep ranking columns and synchronous lane summaries')
+    for path in ('wurst/pets/TDPetWild.wurst', 'wurst/pets/TDPetWildState.wurst'):
+        before = subprocess.run(['git', 'show', BASELINE + ':' + path], cwd=ROOT, check=True, capture_output=True).stdout
+        require((ROOT / path).read_bytes() == before, 'Wild encounter changes outside scope: ' + path)
+    print('PASS SOURCE WIRING: fresh caster authority, exact level/page whitelist, consume-before-transaction, dirty-only polling, synchronized mounts/local-only selection, proposal preservation, release cancellation, unchanged wild spawning/HUD board ownership')
+
+
+def verify_assets():
+    from BuildPetUiAssets import EXPECTED_NAMES, verify_manifest
+    manifest = json.loads((ROOT / 'assets/source/pet-ui/manifest.json').read_text())
+    verify_manifest(manifest, require_hashes=True)
+    original = json.loads(subprocess.run(['git', 'show', ASSET_BASELINE + ':assets/source/pet-ui/manifest.json'], cwd=ROOT, check=True, capture_output=True, text=True).stdout)
+    current = {asset['name']: asset for asset in manifest['assets']}
+    require(set(current) == EXPECTED_NAMES, 'Exact twenty-eight source assets required')
+    for asset in original['assets']:
+        for key in ('source_svg', 'normal_blp', 'disabled_blp'):
+            require(hashlib.sha256((ROOT / current[asset['name']][key]).read_bytes()).hexdigest() == asset['sha256'][key], 'Original pet artwork changed: ' + asset['name'])
+    print('PASS ASSET PRESERVATION: original thirteen SVG/BTN/DIS inputs byte-locked; exact twelve quality frames + release/keep/adopt')
+
+
+def main():
+    verify_scalar_contracts()
+    verify_wiring()
+    verify_assets()
+    print('NOT RUN: Wurst syntax/typecheck/tests; full build; W3A/W3U/MPQ artifact gates; in-game selection/rendering/network timing/performance; final Astra implementation review')
+
+
+if __name__ == '__main__':
+    main()

@@ -34,3 +34,18 @@ import TDPetUIData
 		tdPetSlotIconPath(variant + 64).assertEquals("ReplaceableTextures\\CommandButtonsDisabled\\DIS" + tdPetSkillIconName(skill) + ".blp")
 		(tdPetSlotIconPath(variant) != tdPetSlotIconPath(128)).assertTrue()
 		(tdPetSlotIconPath(variant + 64) != tdPetSlotIconPath(128)).assertTrue()
+
+@Test function petSpeciesQualityBordersAreTwelveDistinctOwnedQualityStates()
+	for species = 1 to 3
+		for quality = 1 to 4
+			let stem = species == 1 ? "TDPetFlamePhoenix" : (species == 2 ? "TDPetStormFaerieDragon" : "TDPetGhostWisp")
+			tdPetSpeciesQualityIconPath(species, quality).assertEquals("war3mapImported\\BTN" + stem + "Q" + quality + ".blp")
+			for other = quality + 1 to 4
+				(tdPetSpeciesQualityIconPath(species, quality) != tdPetSpeciesQualityIconPath(species, other)).assertTrue()
+
+@Test function petPreviewAndReleaseCommandsUseExplicitPurposeArtwork()
+	tdPetManagerCommandIconPath(15).assertEquals("war3mapImported\\BTNTDPetRelease.blp")
+	tdPetManagerCommandIconPath(17).assertEquals("war3mapImported\\BTNTDPetKeep.blp")
+	tdPetManagerCommandIconPath(18).assertEquals("war3mapImported\\BTNTDPetAdopt.blp")
+	tdPetManagerCommandIconPath(19).assertEquals(tdPetManagerCommandIconPath(15))
+	tdPetManagerCommandIconPath(20).assertEquals(tdPetManagerCommandIconPath(17))

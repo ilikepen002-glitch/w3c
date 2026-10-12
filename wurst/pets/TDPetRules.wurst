@@ -139,3 +139,32 @@ public function tdPetReleaseGetsSlotStone(int roll) returns boolean
 
 public function tdPetReleaseLifecycleAllows(boolean deployed, boolean released, boolean proposal) returns boolean
 	return not deployed and not released and not proposal
+
+// Stable collection numbers are independent of count and never compact on release.
+public function tdPetCollectionNumber(int slot) returns string
+	if slot < 0 or slot >= 20
+		return "--"
+	return slot < 9 ? "0" + (slot + 1) : (slot + 1).toString()
+
+public function tdPetPageSlot(int page, int cell) returns int
+	return page >= 0 and page <= 1 and cell >= 0 and cell < 10 ? page * 10 + cell : -1
+
+public function tdPetStepSlot(int slot, int direction) returns int
+	if slot < 0 or slot >= 20
+		return -1
+	if direction != -1 and direction != 1
+		return -1
+	return (slot + direction + 20) mod 20
+
+// Include every owned skill, even resonance-locked ones. Candidate qualities are absent.
+public function tdPetOwnedQuality(int count, int first, int second, int third, int fourth) returns int
+	var quality = 1
+	if count >= 1
+		quality = IMaxBJ(quality, first)
+	if count >= 2
+		quality = IMaxBJ(quality, second)
+	if count >= 3
+		quality = IMaxBJ(quality, third)
+	if count >= 4
+		quality = IMaxBJ(quality, fourth)
+	return IMinBJ(4, quality)

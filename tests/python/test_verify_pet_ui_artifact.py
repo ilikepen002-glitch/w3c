@@ -10,6 +10,7 @@ from pathlib import Path
 import sys
 import re
 import struct
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -30,11 +31,13 @@ class PetUIArtifactTests(unittest.TestCase):
         cls.abilities = ability_objects(cls.artifact.extract("war3map.w3a"))
         cls.units = unit_objects(cls.artifact.extract("war3map.w3u"))
 
-    def test_actual_farmer_grid_is_exactly_eleven_cells_with_empty_blink_slot(self):
-        verifier.verify_farmer_grid(self.abilities, self.units)
+    def test_actual_farmer_grid_is_eleven_cells_with_empty_blink_slot(self):
+        verifier.verify_manager_farmer(self.abilities, self.units)
 
-    def test_actual_eight_collection_commands_keep_cells_hotkeys_orders(self):
-        verifier.verify_collection_commands(self.abilities)
+    def test_actual_twenty_one_manager_commands_match_pages(self):
+        verifier.verify_manager_commands(self.abilities)
+        verifier.verify_manager_list(self.abilities)
+        verifier.verify_manager_preview(self.abilities)
 
     def test_actual_no_removed_hunt_ghost_or_attachment_remains(self):
         verifier.verify_no_hunt_objects(self.abilities, self.units)
@@ -43,52 +46,33 @@ class PetUIArtifactTests(unittest.TestCase):
         verifier.verify_global_channel_orders(self.abilities)
 
     def test_actual_wild_and_capture_tooltips_are_capture_only(self):
-        verifier.verify_capture_only(self.abilities, self.units)
+        verifier.verify_capture_only(self.abilities, self.units, current_manager=True)
 
     def test_actual_cultivation_command_explicitly_exposes_release(self):
         verifier.verify_cultivation_command(self.abilities)
 
-    def test_actual_dialog_buttons_use_real_numeric_hotkeys(self):
-        verifier.verify_dialog_hotkeys(self.artifact.extract("war3map.j").decode("utf-8"))
+    def test_actual_native_manager_uses_real_session_whitelists(self):
+        verifier.verify_manager_jass(self.artifact.extract("war3map.j").decode("utf-8"))
 
-    def test_actual_dialog_overload_rename_keeps_integer_hotkey_contract(self):
-        script = self.artifact.extract("war3map.j").decode("utf-8")
-        native = re.search(r'^function (dialog_addButton(?:_\d+)*) takes dialog \w+, string \w+, integer \w+ returns button', script, re.M)
-        self.assertIsNotNone(native)
-        renamed = re.sub(r'\b' + re.escape(native[1]) + r'\b', 'dialog_addButton_982', script)
-        verifier.verify_dialog_hotkeys(renamed)
-
-    def test_actual_dialog_native_hotkey_removal_is_rejected(self):
-        script = self.artifact.extract("war3map.j").decode("utf-8")
-        native = re.search(r'^function dialog_addButton(?:_\d+)* takes dialog (\w+), string (\w+), integer (\w+) returns button', script, re.M)
-        self.assertIsNotNone(native)
-        old = f'DialogAddButton({native[1]}, {native[2]}, {native[3]})'
-        self.assertIn(old, script)
-        changed = script.replace(old, f'DialogAddButton({native[1]}, {native[2]}, 0)', 1)
-        with self.assertRaisesRegex(ValueError, 'real integer hotkey'): verifier.verify_dialog_hotkeys(changed)
-
-    def test_actual_three_species_have_explicit_matching_identity_icons(self):
-        verifier.verify_species_identity(self.units)
+    def test_actual_thirteen_displays_have_species_quality_identity(self):
+        verifier.verify_manager_units(self.units)
 
     def test_actual_all_516_slots_distinguish_bright_locked_and_empty(self):
-        verifier.verify_slot_icons(self.abilities)
+        verifier.verify_slot_icons(self.abilities, current_manager=True)
 
     def test_actual_imports_decode_and_match_source_hashes(self):
         verifier.verify_imported_icons(self.artifact, ROOT)
 
 
-class PetUINegativeTests(unittest.TestCase):
+class HistoricalPetUINegativeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        artifact = Mpq((ROOT / "ExampleMap.w3x").read_bytes())
+        artifact = Mpq(subprocess.run(["git", "show", "b7e3d051e98c2b18caafed4ab6e036700a6ee64c:ExampleMap.w3x"], cwd=ROOT, check=True, capture_output=True).stdout)
         cls.corrected_abilities = ability_objects(artifact.extract("war3map.w3a"))
         cls.corrected_units = unit_objects(artifact.extract("war3map.w3u"))
         correct_release_contract(cls.corrected_abilities, cls.corrected_units)
-        # Negative fixture only; actual-artifact positives above stay raw.
-        worker = cls.corrected_units['uF01']
-        worker['uabi'] = 'AUbu,A109,A117,Geqb,Gupg,Pcap,Pcol,Pdep'
-        cls.corrected_abilities.pop('A108', None)
-        cls.corrected_abilities.pop('Prpr', None)
+        # Frozen formal predecessor; current-artifact positives above stay raw.
+        cls.historical_script = artifact.extract('war3map.j').decode('utf-8')
         # Permit deterministic negative coverage before the next map rebuild.
         for rawcode, (x, y, _, _) in verifier.EXPECTED.items():
             cls.set_field(cls.corrected_abilities, rawcode, "abpx", x)
@@ -120,6 +104,22 @@ class PetUINegativeTests(unittest.TestCase):
     def setUp(self):
         self.abilities = deepcopy(self.corrected_abilities)
         self.units = deepcopy(self.corrected_units)
+
+    def test_historical_dialog_overload_rename_keeps_integer_hotkey_contract(self):
+        script = self.historical_script
+        native = re.search(r'^function (dialog_addButton(?:_\d+)*) takes dialog \w+, string \w+, integer \w+ returns button', script, re.M)
+        self.assertIsNotNone(native)
+        renamed = re.sub(r'\b' + re.escape(native[1]) + r'\b', 'dialog_addButton_982', script)
+        verifier.verify_dialog_hotkeys(renamed)
+
+    def test_historical_dialog_native_hotkey_removal_is_rejected(self):
+        script = self.historical_script
+        native = re.search(r'^function dialog_addButton(?:_\d+)* takes dialog (\w+), string (\w+), integer (\w+) returns button', script, re.M)
+        self.assertIsNotNone(native)
+        old = f'DialogAddButton({native[1]}, {native[2]}, {native[3]})'
+        self.assertIn(old, script)
+        changed = script.replace(old, f'DialogAddButton({native[1]}, {native[2]}, 0)', 1)
+        with self.assertRaisesRegex(ValueError, 'real integer hotkey'): verifier.verify_dialog_hotkeys(changed)
 
     def test_corrected_fixture_satisfies_all_object_contracts(self):
         verifier.verify_farmer_grid(self.abilities, self.units)

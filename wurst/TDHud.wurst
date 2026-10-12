@@ -9,6 +9,7 @@ import TDDamageHud
 import TDDamageRuntime
 
 multiboard tdStatusBoard = null
+string array tdPetHudSummaries
 
 public function tdHudLaneStatus(boolean active, boolean finished, boolean defeated, int wave, int waveCount) returns string
 	if not active
@@ -74,12 +75,14 @@ public function tdRefreshStatusBoard()
 	tdStatusBoard.setItemValue(row, 1, "")
 	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() or nextWave > tdWaveCount() ? "无后续机制" : tdEnemyMechanicHint(nextWave))
 	row += 1
-	// Only presentation differs locally; all pet state and counts stay synchronized.
+	// Compute every lane on all clients before selecting only display text locally.
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdPetHudSummaries[playerId] = "球" + tdPetBallsForLane(playerId) + " · 收藏" + tdPetCollectionCount(playerId) + "/20 · 洗" + tdPetRerollStones[playerId] + " · 开" + tdPetSlotStones[playerId]
 	let lane = GetPlayerId(GetLocalPlayer())
 	tdStatusBoard.setItemValue(row, 0, "宝宝")
 	tdStatusBoard.setItemValue(row, 1, "")
 	if tdIsLanePlayer(lane)
-		tdStatusBoard.setItemValue(row, 2, "球 " + tdPetBallsForLane(lane).toString() + " · 收藏 " + tdPetCollectionCount(lane).toString() + " · 上阵 " + tdPetDeployedCount(lane).toString())
+		tdStatusBoard.setItemValue(row, 2, tdPetHudSummaries[lane])
 	else
 		tdStatusBoard.setItemValue(row, 2, "旁观")
 

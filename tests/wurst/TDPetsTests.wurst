@@ -7,6 +7,7 @@ import TDPetWild
 import TDPetEffectState
 import TDConfig
 import TDWaves
+import TDState
 
 @Test function ordinaryPetCaptureIsFixedSixtyPercent()
 	tdPetCaptureChance(100.0, 100.0).assertEquals(0.60)
@@ -152,12 +153,14 @@ import TDWaves
 	let extra = new TDPet(0, 1, 1)
 	tdPetStore(0, extra).assertFalse()
 	destroy extra
-	tdPetCollectionCount(0).assertEquals(12)
+	tdPetCollectionCount(0).assertEquals(20)
 	tdPetDiscardOwned(0, 2).assertTrue()
 	tdPetDiscardOwned(0, 2).assertFalse()
-	tdPetCollectionCount(0).assertEquals(11)
+	tdPetCollectionCount(0).assertEquals(19)
 
 @Test function petCultivationConsumesOnPreviewAndPreservesCooldown()
+	tdResetState()
+	tdSetLaneActive(3, true)
 	tdPetInitializeLane(3)
 	let pet = new TDPet(3, 1, 1)
 	pet.setSkill(0, 0, 1)
@@ -231,7 +234,7 @@ import TDWaves
 @Test function fullCollectionAndInvalidTargetsDoNotSpendOrdinaryBalls()
 	tdPetInitializeLane(0)
 	tdPetSpendCaptureBall(0, false).assertFalse()
-	for slot = 0 to 11
+	for slot = 0 to 19
 		tdPetStore(0, new TDPet(0, 1, 1)).assertTrue()
 	tdPetSpendCaptureBall(0, true).assertFalse()
 	tdPetBallsForLane(0).assertEquals(3)

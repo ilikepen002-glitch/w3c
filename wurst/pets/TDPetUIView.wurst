@@ -1,0 +1,154 @@
+package TDPetUIView
+import TDPetData
+import TDPetRules
+import TDPetState
+import TDPetUIState
+import TDPetRuntime
+import TDPetCombat
+import TDConfig
+import ClosureTimers
+import Table
+
+public int array tdPetSelectedSlot
+public unit array tdPetDisplays
+public TDPetUISession array tdPetUISessions
+public constant Table tdPetDisplayOwners = new Table()
+
+function retire(unit old)
+	if old == null
+		return
+	tdPetDisplayOwners.removeInt(old.getHandleId())
+	// Only capture the retired handle, never a session or record. New identity
+	// already owns the lane; zero delay is cleanup, not a network-drain guarantee.
+	doAfter(0.0) ->
+		old.remove()
+
+public function tdPetCloseManager(int lane)
+	if not tdIsLanePlayer(lane)
+		return
+	tdPetCancelRelease(lane)
+	if tdPetUISessions[lane] != null
+		tdPetUISessions[lane].close()
+	let old = tdPetDisplays[lane]
+	tdPetDisplays[lane] = null
+	retire(old)
+
+// Event facts are passed directly from native selection triggers. Shared closure
+// is the real close/release transaction, including ordinary shift-add selection.
+public function tdPetHandleSelectionIdentity(int lane, int eventKey, int typeId, int unitOwner, boolean deselected)
+	if not tdIsLanePlayer(lane) or tdPetUISessions[lane] == null
+		return
+	if tdPetUISessions[lane].selectionCloses(lane, eventKey, typeId, unitOwner, deselected)
+		tdPetCloseManager(lane)
+
+public function tdPetSelectFarmer(int lane)
+	tdPetCloseManager(lane)
+	if GetLocalPlayer() == Player(lane) and tdPetFarmers[lane] != null
+		ClearSelection()
+		SelectUnit(tdPetFarmers[lane], true)
+
+public function tdPetRenderPage(int lane, int mode, int page, int slot, int nonce) returns boolean
+	if not tdPetLaneCanManage(lane) or tdPetUISessions[lane] == null
+		tdPetCloseManager(lane)
+		return false
+	let pet = tdPetAt(lane, slot)
+	if mode != TD_PET_UI_LIST and pet == null
+		tdPetCloseManager(lane)
+		return false
+	if mode != TD_PET_UI_RELEASE
+		tdPetCancelRelease(lane)
+	let typeId = mode == TD_PET_UI_LIST ? tdPetListUnitId() : tdPetDisplayUnitId(pet.species, pet.quality())
+	let fresh = createUnit(Player(lane), typeId, tdFarmerSpawnPosition(lane) + vec2(120.0, 0.0), 0 .fromDeg())
+	if fresh == null
+		tdPetCloseManager(lane)
+		return false
+	fresh.setPathing(false)
+	fresh.setInvulnerable(true)
+	let session = tdPetUISessions[lane]
+	if not session.open(mode, page, slot, pet, nonce, fresh.getHandleId())
+		fresh.remove()
+		tdPetCloseManager(lane)
+		return false
+	for cell = 0 to 11
+		if session.abilities[cell] != 0
+			fresh.addPermanentAbility(session.abilities[cell], session.levels[cell])
+	let old = tdPetDisplays[lane]
+	// Publish synchronized authority only after the new command card is ready.
+	tdPetSelectedSlot[lane] = slot
+	tdPetDisplays[lane] = fresh
+	tdPetDisplayOwners.saveInt(fresh.getHandleId(), lane)
+	retire(old)
+	if GetLocalPlayer() == Player(lane)
+		ClearSelection()
+		SelectUnit(fresh, true)
+	return true
+
+// Polling and external callers invalidate; they never rebuild or force selection.
+public function tdPetRefreshDisplay(int lane)
+	if not tdIsLanePlayer(lane) or tdPetUISessions[lane] == null
+		return
+	let session = tdPetUISessions[lane]
+	if session.active and not session.snapshotCurrent()
+		session.dirty = true
+		if session.mode == TD_PET_UI_RELEASE
+			tdPetCancelRelease(lane)
+
+public function tdPetSkillRestriction(TDPet pet, int slot, int skill) returns string
+	if slot >= tdPetUnlockedSlots(pet.level)
+		return " [共鸣锁定：本路第" + (slot == 2 ? "4" : "8") + "波完成解锁]"
+	if pet.paused
+		return " [施工/升级暂停：完工后恢复]"
+	if pet.host == null
+		return " [未绑定：需绑定塔]"
+	if not tdPetSkillFitsHost(skill, pet.host)
+		return " [不适配：宿主需要" + (skill == 9 ? "分裂箭能力" : "尸爆能力") + "]"
+	return ""
+
+public function tdPetPageSummary(int lane) returns string
+	let session = tdPetUISessions[lane]
+	if session == null or session.mode == TD_PET_UI_CLOSED
+		return ""
+	var text = "收藏" + tdPetCollectionCount(lane) + "/20 · 球" + tdPetBallsForLane(lane) + " · 洗练石" + tdPetRerollStones[lane] + " · 开栏石" + tdPetSlotStones[lane]
+	if session.mode == TD_PET_UI_LIST
+		text += "|n固定编号 " + (session.page == 0 ? "01–10" : "11–20") + " · C切页 / R返回农民；释放留空，新捕获填首个空位。"
+		for cell = 0 to 9
+			let slot = tdPetPageSlot(session.page, cell)
+			let listPet = tdPetAt(lane, slot)
+			text += "|n" + tdPetCollectionNumber(slot) + " · " + (listPet != null ? listPet.summary() : "空位")
+		return text
+	let pet = tdPetAt(lane, session.selectedSlot)
+	if pet == null
+		return text + "|n此编号已空，请重新打开收藏。"
+	text += "|n编号" + tdPetCollectionNumber(session.selectedSlot) + " · " + pet.summary()
+	if session.mode == TD_PET_UI_RELEASE
+		return text + " · record " + (pet castTo int) + "|n永久释放此精灵，不退球和已用材料。必得1洗练石，独立2%概率得1开栏石；奖励进入本路材料账户。|nY确认 / N取消回养成 / R返回农民；离开即取消确认。"
+	if session.mode == TD_PET_UI_PREVIEW and pet.proposalSlot >= 0
+		let slot = pet.proposalSlot
+		text += "|n洗练栏" + (slot + 1) + " · 已扣1洗练石（不退） · Q保留旧 / E采用新"
+		text += "|n旧：" + tdPetQualityName(pet.proposalOldQuality) + " " + tdPetSkillNameById(pet.proposalOldSkill) + tdPetSkillRestriction(pet, slot, pet.proposalOldSkill)
+		text += "|n" + tdPetSkillDescriptionById(pet.proposalOldSkill, pet.proposalOldQuality)
+		text += "|n新：" + tdPetQualityName(pet.proposalQuality) + " " + tdPetSkillNameById(pet.proposalSkill) + tdPetSkillRestriction(pet, slot, pet.proposalSkill)
+		text += "|n" + tdPetSkillDescriptionById(pet.proposalSkill, pet.proposalQuality)
+		if pet.proposalRevision != pet.revision
+			text += "|n技能本体已变化，此候选不可采用；Q明确丢弃候选。"
+		return text + "|n当前品质按全部已拥有技能计算；候选尚未采用。离开/选塔保留结果，再入养成恢复；主动冷却保留。"
+	for slot = 0 to 3
+		text += "|n栏" + (slot + 1) + "："
+		if slot >= pet.skillCount
+			text += "空栏（开栏石可扩展，最多4）"
+		else
+			let skill = pet.skillAt(slot)
+			text += tdPetQualityName(pet.qualityAt(slot)) + " " + tdPetSkillNameById(skill) + tdPetSkillRestriction(pet, slot, skill)
+			text += "|n" + tdPetSkillDescriptionById(skill, pet.qualityAt(slot))
+	if session.mode == TD_PET_UI_CULTIVATE
+		text += "|nQ/W/E/T洗练对应已有栏，每次1洗练石；锁定栏可洗练。O开栏（1石）/ X释放 / C详情 / R农民。"
+		if pet.host != null
+			text += "|n释放前须回详情Q解绑。"
+	else
+		text += "|nI收藏 / A前 / D后 / R农民；E绑定换绑 / Q解绑 / C养成 / W刷新。每塔1只。"
+	return text
+
+public function tdPetShowPageSummary(int lane)
+	let text = tdPetPageSummary(lane)
+	if text != ""
+		DisplayTimedTextToPlayer(Player(lane), 0, 0, 20.0, text)

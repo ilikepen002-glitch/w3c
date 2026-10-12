@@ -31,6 +31,10 @@ public class TDPet
 	int proposalSlot = -1
 	int proposalSkill = -1
 	int proposalQuality = 0
+	int proposalVersion = 0
+	int proposalRevision = 0
+	int proposalOldSkill = -1
+	int proposalOldQuality = 0
 
 	construct(int lane, int species, int captureWave)
 		this.lane = lane
@@ -54,6 +58,8 @@ public class TDPet
 		for skill = 0 to 15
 			if tdPetSkillAllowed(skill, slot, mask, hasActiveExcept(slot))
 				count += 1
+		if count <= 0
+			return -1
 		let rank = GetRandomInt(0, count - 1)
 		var remaining = rank
 		for skill = 0 to 15
@@ -113,8 +119,11 @@ public class TDPet
 			visual.remove()
 			visual = null
 
+	function quality() returns int
+		return tdPetOwnedQuality(skillCount, qualities[0], qualities[1], qualities[2], qualities[3])
+
 	function summary() returns string
-		return tdPetSpeciesName(species) + " · " + skillCount.toString() + "技能 · 共鸣Lv" + level.toString() + (host == null ? " [收藏]" : " [上阵]")
+		return tdPetQualityName(quality()) + " " + tdPetSpeciesName(species) + " · " + skillCount.toString() + "技能 · 共鸣Lv" + level.toString() + (host == null ? " [收藏]" : " [上阵]")
 public TDPet array tdPets
 public LinkedList<TDPet> tdPetMatchRecords = new LinkedList<TDPet>()
 int array tdPetBalls
@@ -279,20 +288,35 @@ public int array tdPetExtraEncounterWave
 
 public function tdPetBeginReroll(int lane, int slot, int skillSlot) returns boolean
 	let pet = tdPetAt(lane, slot)
-	if pet == null or skillSlot < 0 or skillSlot >= pet.skillCount or pet.proposalSlot >= 0 or tdPetRerollStones[lane] <= 0
+	if not tdPetLaneCanManage(lane) or pet == null or pet.released or skillSlot < 0 or skillSlot >= pet.skillCount or pet.proposalSlot >= 0 or tdPetRerollStones[lane] <= 0 or pet.proposalVersion >= 2147483647
 		return false
-	tdPetRerollStones[lane] -= 1
+	// rollSkill refuses an empty candidate set before invoking random natives.
+	let candidate = pet.rollSkill(skillSlot)
+	if candidate < 0
+		return false
+	let quality = tdPetQualityForRoll(GetRandomInt(1, 100))
+	pet.proposalVersion += 1
+	pet.proposalRevision = pet.revision
+	pet.proposalOldSkill = pet.skillAt(skillSlot)
+	pet.proposalOldQuality = pet.qualityAt(skillSlot)
 	pet.proposalSlot = skillSlot
-	pet.proposalSkill = pet.rollSkill(skillSlot)
-	pet.proposalQuality = tdPetQualityForRoll(GetRandomInt(1, 100))
+	pet.proposalSkill = candidate
+	pet.proposalQuality = quality
+	tdPetRerollStones[lane] -= 1
 	return true
 
-public function tdPetResolveReroll(int lane, int slot, boolean replace) returns boolean
+public function tdPetResolveRerollVersion(int lane, int slot, int candidateVersion, boolean replace) returns boolean
 	let pet = tdPetAt(lane, slot)
-	if pet == null or pet.proposalSlot < 0
+	if not tdPetLaneCanManage(lane) or pet == null or pet.released or pet.proposalSlot < 0 or candidateVersion <= 0 or pet.proposalVersion != candidateVersion
 		return false
 	if replace
+		// An explicit keep may discard a stale candidate; adoption must match its source.
+		if pet.revision != pet.proposalRevision
+			return false
+		let revision = pet.revision
 		pet.setSkill(pet.proposalSlot, pet.proposalSkill, pet.proposalQuality)
+		if pet.revision == revision
+			return false
 		pet.buffUntil = 0.0
 		pet.buffSkill = -1
 		pet.buffPower = 0.0
@@ -301,18 +325,39 @@ public function tdPetResolveReroll(int lane, int slot, boolean replace) returns 
 	pet.proposalSlot = -1
 	pet.proposalSkill = -1
 	pet.proposalQuality = 0
+	pet.proposalOldSkill = -1
+	pet.proposalOldQuality = 0
 	return true
+
+public function tdPetResolveReroll(int lane, int slot, boolean replace) returns boolean
+	let pet = tdPetAt(lane, slot)
+	return pet != null and tdPetResolveRerollVersion(lane, slot, pet.proposalVersion, replace)
 
 public function tdPetOpenSlot(int lane, int slot) returns boolean
 	let pet = tdPetAt(lane, slot)
-	if pet == null or pet.skillCount >= 4 or pet.proposalSlot >= 0 or tdPetSlotStones[lane] <= 0
+	if not tdPetLaneCanManage(lane) or pet == null or pet.released or pet.skillCount >= 4 or pet.proposalSlot >= 0 or tdPetSlotStones[lane] <= 0
 		return false
 	let skill = pet.rollSkill(pet.skillCount)
 	if skill < 0
 		return false
-	tdPetSlotStones[lane] -= 1
+	let revision = pet.revision
 	pet.setSkill(pet.skillCount, skill, tdPetQualityForRoll(GetRandomInt(1, 100)))
+	if pet.revision == revision
+		return false
+	tdPetSlotStones[lane] -= 1
 	return true
+
+public function tdPetNextOccupied(int lane, int slot, int direction) returns int
+	if not tdIsLanePlayer(lane)
+		return -1
+	if direction != -1 and direction != 1
+		return -1
+	var candidate = slot >= 0 and slot < TD_PET_COLLECTION_LIMIT ? slot : (direction == 1 ? TD_PET_COLLECTION_LIMIT - 1 : 0)
+	for _step = 1 to TD_PET_COLLECTION_LIMIT
+		candidate = tdPetStepSlot(candidate, direction)
+		if tdPetAt(lane, candidate) != null
+			return candidate
+	return -1
 
 public function tdPetCreditWave(int lane, int wave)
 	if not tdIsLanePlayer(lane) or wave < 1 or wave > 32

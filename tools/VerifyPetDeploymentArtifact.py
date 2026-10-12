@@ -3,7 +3,9 @@
 
 Usage: python3 tools/VerifyPetDeploymentArtifact.py ExampleMap.w3x \
     --previous /path/to/previous.w3x --baseline HEAD
-Use --expect-capped for the preserved old-map behavioral reproduction only.
+Use --expect-capped or --historical-differential for preserved old-map checks.
+The default current-manager mode admits twenty-slot fixture boundaries without
+requiring the previous single-tail source differential to remain unchanged.
 This is a gate test, not a Warcraft runtime or combat/performance simulation.
 """
 import argparse
@@ -42,24 +44,24 @@ def packaged_script(path):
     return Mpq(path.read_bytes()).extract('war3map.j').decode('utf-8')
 
 
-def run_gate(script, existing, *, lane=0, other_existing=0,
+def run_gate(script, existing, *, lane=0, other_existing=0, capacity=20,
              pet_present=True, released=False, tower_present=True,
              alive=True, lane_allowed=True, owner=None, tower_choice=1, busy=False,
              occupied=False, rebind=False, repeated=False):
-    """A twelve-slot fixture; all gate dependencies/natives below are controlled stubs.
+    """A bounded twenty-slot fixture (capacity=12 for historical checks); all gate dependencies/natives below are controlled stubs.
 
     Deployed count and occupied-host stubs read concrete fixture hosts, rather
     than returning an asserted expected answer. No deploy/recall is simulated.
     """
-    require(lane in (0, 1) and 0 <= existing <= 11 and 0 <= other_existing <= 11,
-            'Gate fixture must fit two independent 12-slot lane collections')
+    require(lane in (0, 1) and capacity in (12, 20) and 0 <= existing < capacity and 0 <= other_existing < capacity,
+            'Gate fixture must fit two independent bounded lane collections')
     other_lane = 1 - lane
     base = lane * 100
     hosts = {base + index + 1: 1000 + base + index for index in range(existing)}
     pet = base + existing + 1
-    slots = {lane: list(range(base + 1, base + existing + 2)) + [0] * (11 - existing),
+    slots = {lane: list(range(base + 1, base + existing + 2)) + [0] * (capacity - 1 - existing),
              other_lane: [other_lane * 100 + index + 1 for index in range(other_existing)]
-                         + [0] * (12 - other_existing)}
+                         + [0] * (capacity - other_existing)}
     hosts.update({record: 1000 + record - 1 for record in slots[other_lane] if record})
     hosts[pet] = None
     if rebind or repeated:
@@ -127,10 +129,10 @@ def run_gate(script, existing, *, lane=0, other_existing=0,
     return actual, calls
 
 
-def verify_gate(script, capped=False):
+def verify_gate(script, capped=False, capacity=20):
     for lane in (0, 1):
-        for existing in (0, 1, 2, 3, 4, 9, 11):
-            actual, calls = run_gate(script, existing, lane=lane, other_existing=11 - existing)
+        for existing in sorted({0, 1, 2, 3, 4, 9, capacity - 1}):
+            actual, calls = run_gate(script, existing, lane=lane, other_existing=capacity - 1 - existing, capacity=capacity)
             expected = existing < 3 if capped else True
             require(actual is expected,
                     f'Real packaged gate: lane={lane} existing={existing}, new candidate got {actual}, '
@@ -152,22 +154,22 @@ def verify_gate(script, capped=False):
         for name, options in guards:
             if name == 'foreign owner':
                 options = {'owner': 1 - lane}
-            actual, _ = run_gate(script, 3, lane=lane, other_existing=9, **options)
+            actual, _ = run_gate(script, 3, lane=lane, other_existing=9, capacity=capacity, **options)
             require(actual is False, f'Real packaged gate failed to reject {name} in lane={lane}')
-        for existing in (3, 4, 9, 11):
-            actual, _ = run_gate(script, existing, lane=lane, other_existing=2, rebind=True)
+        for existing in sorted({3, 4, 9, capacity - 1}):
+            actual, _ = run_gate(script, existing, lane=lane, other_existing=2, rebind=True, capacity=capacity)
             require(actual is True, f'Legal empty-tower rebind failed at lane={lane} existing={existing}')
     if capped:
         print('PASS OLD RED: three concrete fixture records already hosted; the real '
               'packaged tdPetCanDeploy rejects a fourth unbound record. '
               'Parsing, all earlier legal guards and legal rebind execute successfully.')
     else:
-        print('PASS NEW GATE: two independent lanes with existing 3/4/9/11 admit another record; '
+        print(f'PASS NEW GATE: two independent {capacity}-slot lanes through existing {capacity - 1} admit another record; '
               'ten rejection guards per lane '
-              'and legal empty-tower rebind pass. 11 is synthetic gate coverage; '
+              'and legal empty-tower rebind pass. Upper boundary is synthetic gate coverage; '
               'normal tower population remains at most 10.')
     print('CONTROLLED STUBS: lane eligibility, tower/native properties, busy table, '
-          '12-slot deployed count and host lookup. Only the real packaged admission '
+          f'{capacity}-slot deployed count and host lookup. Only the real packaged admission '
           'function is executed; no deploy/recall/combat/native engine is modeled.')
 
 
@@ -219,7 +221,7 @@ def verify_source(baseline):
           'state/combat/rules, collection/release/cooldown tests and population tests unchanged.')
 
 
-def verify_tooltips(path, script):
+def verify_tooltips(path, script, current_manager=True):
     abilities = ability_objects(Mpq(path.read_bytes()).extract('war3map.w3a'))
     for rawcode, expected_levels in (('Pdep', 1), ('Pcap', 61)):
         fields = abilities[rawcode][1]
@@ -236,8 +238,9 @@ def verify_tooltips(path, script):
     require(not any(OLD_HINT.search(value) for (_, _, _), (_, value) in fields.items()
                     if isinstance(value, str)), 'Pc04 still advertises an old three-pet cap')
     require(not OLD_HINT.search(script), 'Packaged UI/JASS still advertises an old three-pet cap')
-    require(DEPLOY_HINT in jass_function(script, 'onCommand').group(1),
-            'Packaged deployment UI lacks the one-pet-per-tower hint')
+    if not current_manager:
+        require(DEPLOY_HINT in jass_function(script, 'onCommand').group(1),
+                'Packaged deployment UI lacks the one-pet-per-tower hint')
     print('PASS PLAYER HINTS: Pdep, all 61 Pcap levels, Pc04 and packaged UI have no old '
           'three-pet total cap; deployment hints state one pet per tower.')
 
@@ -248,18 +251,28 @@ def main():
     parser.add_argument('--previous', type=Path)
     parser.add_argument('--baseline', default='HEAD')
     parser.add_argument('--expect-capped', action='store_true')
+    parser.add_argument('--historical-differential', action='store_true', help='Reproduce the older twelve-slot single-tail cap-removal contract only')
     args = parser.parse_args()
     script = packaged_script(args.map)
     if args.expect_capped:
-        verify_gate(script, capped=True)
+        verify_gate(script, capped=True, capacity=12)
         return
-    require(args.previous is not None, 'Uncapped acceptance requires the preserved predecessor map')
-    previous = packaged_script(args.previous)
-    verify_gate(previous, capped=True)
-    verify_gate(script)
-    verify_source(args.baseline)
-    verify_unchanged_packaged(previous, script)
-    verify_tooltips(args.map, script)
+    if args.historical_differential:
+        require(args.previous is not None, 'Historical differential requires the predecessor map')
+        previous = packaged_script(args.previous)
+        verify_gate(previous, capped=True, capacity=12)
+        verify_gate(script, capacity=12)
+        verify_source(args.baseline)
+        verify_unchanged_packaged(previous, script)
+        verify_tooltips(args.map, script, current_manager=False)
+    else:
+        verify_gate(script, capacity=20)
+        require(re.search(r'\bset TDPetData_TD_PET_COLLECTION_LIMIT\s*=\s*20\b', script),
+                'Current manager packaged capacity must be twenty')
+        require('TDPetData_TD_PET_DEPLOY_LIMIT' not in script, 'Removed deployment cap remains')
+        require('tdPetDeploy(' not in jass_function(script, 'onDeploy').group(1),
+                'Farmer Pdep bypasses the authorized manager session')
+        verify_tooltips(args.map, script)
     print('NOT TESTED: live Warcraft deployment/effects, native engine lifecycle, '
           'rendering or higher active-combat load/performance.')
 

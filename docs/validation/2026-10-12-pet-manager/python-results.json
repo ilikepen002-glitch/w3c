@@ -1,0 +1,20 @@
+{
+  "allPython": {
+    "tests": 403,
+    "seconds": 268.293,
+    "passed": true,
+    "skipped": 0
+  },
+  "managerDelta": {
+    "tests": 10,
+    "seconds": 7.558,
+    "passed": true,
+    "skipped": 0
+  },
+  "frozenC": {
+    "tests": 14,
+    "seconds": 17.394,
+    "passed": true,
+    "skipped": 0
+  }
+}

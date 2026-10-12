@@ -1,0 +1,237 @@
+{
+  "sha256": "615fa24185af4ac02b05e3d356d934622a6e1094f71ed2b457ebaa78fccdbf83",
+  "files": [
+    {
+      "path": "wurst/Hello.wurst",
+      "sha256": "adde6e5f136ab66bec83bd89111f20b5398839f285813019d45e1fa9322c529e"
+    },
+    {
+      "path": "wurst/TDConfig.wurst",
+      "sha256": "350e9e3498768dfe2675b4dc9b28a7521f4db34c1f66a260123ed693a2915dfc"
+    },
+    {
+      "path": "wurst/TDCrafting.wurst",
+      "sha256": "cccea2de54904fed3753aecabc7be42b8f4f81f3680a5cbad6dcbf781737446a"
+    },
+    {
+      "path": "wurst/TDDrops.wurst",
+      "sha256": "729acef28f32013b78ed0247a9c22bef002702ebdc93c653e02b8a38433b130d"
+    },
+    {
+      "path": "wurst/TDGame.wurst",
+      "sha256": "62cd9efea9eee295b09d0d4d4beddd4df6debd637368a70615f4995cdd990a50"
+    },
+    {
+      "path": "wurst/TDHud.wurst",
+      "sha256": "f4ddf242ef2755fe11a703b95e3057c38dc0a259873d890501ba55e0de656782"
+    },
+    {
+      "path": "wurst/TDInit.wurst",
+      "sha256": "c1d966de6ba7c3f0ee75d9bd3436dd5ad3edba4935a15df90862e44afe349ae0"
+    },
+    {
+      "path": "wurst/TDInventory.wurst",
+      "sha256": "6c8094db671accc4ede69fc8fae61c7ddc43b08ad789c9e35b3dca421f2e6f8c"
+    },
+    {
+      "path": "wurst/TDItems.wurst",
+      "sha256": "d00ebe7c7db5e15c2464339e7b8cc2de880ed854814abb898b5481cefd12b42e"
+    },
+    {
+      "path": "wurst/TDPets.wurst",
+      "sha256": "1db417ace695bc7d274bf4adb8988777ad2ac5017abbe78008768aaf8ecd5b84"
+    },
+    {
+      "path": "wurst/TDSpawn.wurst",
+      "sha256": "d7641776daae9e244b90635a627f8ca2f78c38abda48d29f0080eb4ad995e748"
+    },
+    {
+      "path": "wurst/TDState.wurst",
+      "sha256": "6c2396076c3ee39e23b47ee31c04476f5f00d29712b3d27d6a4723464a37cac8"
+    },
+    {
+      "path": "wurst/TDTooltipText.wurst",
+      "sha256": "53c9668a7ae2980e63fd1df42c649e58867854df13f7a6a982eae69e0019b664"
+    },
+    {
+      "path": "wurst/TDTowers.wurst",
+      "sha256": "c89ed2064a2d3787ea0d67eefb4e66bedbf50e395d1b177aed026f34bb928a70"
+    },
+    {
+      "path": "wurst/TDWaves.wurst",
+      "sha256": "314296087a7fb1995f83e4d61ea29389703efa65f3647f36c2c5ef59aa11037a"
+    },
+    {
+      "path": "wurst/damage/TDDamageHud.wurst",
+      "sha256": "3ccdf4e1e879651e93417a32277d7b347ea8fd5ca6cea4b3597928b282108bb8"
+    },
+    {
+      "path": "wurst/damage/TDDamageRuntime.wurst",
+      "sha256": "cc642c5db899d588c3d2c7da7bec3eff77086e4b358436d5eb99836f02d37e48"
+    },
+    {
+      "path": "wurst/damage/TDDamageState.wurst",
+      "sha256": "c749c66e457bf6adc339bf0e213bd8c9272d6cc9e27a5bc25956a85f980bc141"
+    },
+    {
+      "path": "wurst/enemies/TDEnemyMechanicData.wurst",
+      "sha256": "1ceb70729e684510de2aa431da6cf571bf1e48d8efe91e92b768bf473a8ab27e"
+    },
+    {
+      "path": "wurst/enemies/TDEnemyMechanicObjectGen.wurst",
+      "sha256": "e4b9bec634a7644009e898a9091ea1baf9435e72a4ba314e047573599d9df60b"
+    },
+    {
+      "path": "wurst/enemies/TDEnemyMechanicRuntime.wurst",
+      "sha256": "9040673a6b3ce517ec7611ccc5b295b4f66094ba78112bdeec62802fdad520e5"
+    },
+    {
+      "path": "wurst/enemies/TDEnemyMechanicState.wurst",
+      "sha256": "d04e6f4d982ccb7c912b9c2432c4c115a0b3f69bc8305c379da1c2fd6bfa440e"
+    },
+    {
+      "path": "wurst/items/TDCraftingLogic.wurst",
+      "sha256": "26af9ae1b3dc417f0c1e1c45fac76ed63c7b8dc1986118f74034167c5d96707b"
+    },
+    {
+      "path": "wurst/items/TDDropLogic.wurst",
+      "sha256": "3f2ee3f28b0eedfaa6462cbcdb083cc396f5e0207352d578968de753e69dbbdd"
+    },
+    {
+      "path": "wurst/items/TDEquipmentAbilities.wurst",
+      "sha256": "2da1a2eb263bcdc19d9dcfa4c87f36f07d47c9061eec15f064120936b06c6e01"
+    },
+    {
+      "path": "wurst/items/TDEquipmentCombat.wurst",
+      "sha256": "4312c3329576be85710fb64027e7359721623253f35ecac568f51abc9f442126"
+    },
+    {
+      "path": "wurst/items/TDEquipmentObjectGen.wurst",
+      "sha256": "7fb2aaece482858b408070e167cce600571b33ccfab834d27f609505a7bf9469"
+    },
+    {
+      "path": "wurst/items/TDEquipmentRules.wurst",
+      "sha256": "b9b07c72364e3a10dbce1f5a642472f8fb0805b990b65064474efaec0b708f8e"
+    },
+    {
+      "path": "wurst/items/TDGroundItemRules.wurst",
+      "sha256": "8b4aaf7c46d7f7e61ebf01eaabcb3a2b476997fe23bad3c6ff8f11a0ef183da1"
+    },
+    {
+      "path": "wurst/items/TDGroundItemRuntime.wurst",
+      "sha256": "d82f6fff72d77a377cd44b718f64c903391c48852d4345d6ca53a567014178d5"
+    },
+    {
+      "path": "wurst/items/TDInventoryRuntime.wurst",
+      "sha256": "a4efb430b40692d658794a00c9ee28452c3b7c0a4e687f9564ed407f703971fa"
+    },
+    {
+      "path": "wurst/items/TDItemData.wurst",
+      "sha256": "2c3d8a35182bf573acbbca6e5de86a776cb77302a5b7425a947b5a5f873e89e4"
+    },
+    {
+      "path": "wurst/items/TDItemObjectGen.wurst",
+      "sha256": "154ac6aca80ff28339de23a67b1ac419c29cb13186b1c799bbe99d9a9f274b53"
+    },
+    {
+      "path": "wurst/pets/TDPetCombat.wurst",
+      "sha256": "c72a268e524ed568c46ee7d8487495f36781ed03c18b287c95a609f1d8a71c07"
+    },
+    {
+      "path": "wurst/pets/TDPetData.wurst",
+      "sha256": "045c7135b9ce640b12732cb2d73ce0b9e7426b07da565e338019173b99dcd238"
+    },
+    {
+      "path": "wurst/pets/TDPetEffectState.wurst",
+      "sha256": "647b108a7bee686aa1017f38c64974aef15c38cc259d2b6241f5d07f317cd517"
+    },
+    {
+      "path": "wurst/pets/TDPetObjectGen.wurst",
+      "sha256": "f6044da5abf05c5e531f59639d7ae136ddb08f126c8ec76eabcab96daaa773aa"
+    },
+    {
+      "path": "wurst/pets/TDPetRules.wurst",
+      "sha256": "a53a62b290b9f9d8e020789bf7ec4588c9fef9430bfc705c4e179b029af4b6ba"
+    },
+    {
+      "path": "wurst/pets/TDPetRuntime.wurst",
+      "sha256": "6e55a2c1f90af349f49c05757532130ef3969cd3e9f440e884ce0b790ca90d4a"
+    },
+    {
+      "path": "wurst/pets/TDPetState.wurst",
+      "sha256": "5064bb8c4569a9bc320cb8fb4c3638a869c6a780a42bf0f78b07e4af22f7e32b"
+    },
+    {
+      "path": "wurst/pets/TDPetUI.wurst",
+      "sha256": "5012ceb0ab6e1c20ee11b62a16373088fa61624e5642e15288c8b99b6e9f24aa"
+    },
+    {
+      "path": "wurst/pets/TDPetUIData.wurst",
+      "sha256": "9e5bd2c6865dc7a17bb24ba563559ffb94e139fa4f4eca0cd0a9896870d1f5f8"
+    },
+    {
+      "path": "wurst/pets/TDPetUIState.wurst",
+      "sha256": "db0232ed36d5fe825e58b3bd425387f42e689f47c111c00d5a8fc7e250403ae6"
+    },
+    {
+      "path": "wurst/pets/TDPetUIView.wurst",
+      "sha256": "dd8bf18d2d897a80fcc9b2284190744490edf760a80d04e86fe6d9cee02d5512"
+    },
+    {
+      "path": "wurst/pets/TDPetWild.wurst",
+      "sha256": "ff96a2c1635a82c1a792ef59dca1da499a44c2ae94b9b6bb6008858f01ff15a7"
+    },
+    {
+      "path": "wurst/pets/TDPetWildState.wurst",
+      "sha256": "26a7b6abe2d5a6d3ae91a6bbcd06a9a39a240e345a31746a8d88696081088187"
+    },
+    {
+      "path": "wurst/towers/TDTowerBalanceData.wurst",
+      "sha256": "cec99ccc204b2cf3c837d8fbcc5264bbf95bc769c90d7693c5a9e0aacd4e593a"
+    },
+    {
+      "path": "wurst/towers/TDTowerBloodlustAutocast.wurst",
+      "sha256": "0a2a8bb6158c4815ede6b9448a8191b58bac46283df242f7dafe879b76f04009"
+    },
+    {
+      "path": "wurst/towers/TDTowerCatalogData.wurst",
+      "sha256": "a7ae819937d9ef3dc23f230a52bc1a2f95662778fa7b3d47b0d83663beee6926"
+    },
+    {
+      "path": "wurst/towers/TDTowerCommonData.wurst",
+      "sha256": "e24c64cf98ba0d847b7ad2f1093d63f4d27ae288b0e2557ba6115304542aa885"
+    },
+    {
+      "path": "wurst/towers/TDTowerData.wurst",
+      "sha256": "c4bfd9b27d425e40746cb8ebe2f09d45acf4846da5259eb4127d1d860f47724e"
+    },
+    {
+      "path": "wurst/towers/TDTowerEvolutionRuntime.wurst",
+      "sha256": "1f4061ca30a8455461b2f8b0ac82575246359d7fb37cbbdaaeedb6e807b8ac64"
+    },
+    {
+      "path": "wurst/towers/TDTowerEvolutionState.wurst",
+      "sha256": "a85a7fa2cbc40150b5cb59256c5e3875c9480512e8ae58b5d601b47a5c3c99a7"
+    },
+    {
+      "path": "wurst/towers/TDTowerObjectGen.wurst",
+      "sha256": "8ef1f715e8712629d2f07400dfa10dc40e4249e602d5e869ee4026784d813a92"
+    },
+    {
+      "path": "wurst/towers/TDTowerPlacementRules.wurst",
+      "sha256": "160048afaac9058fc3631f054b48cdd3ca34309b3ca0be029c1bc0fce5aee6d4"
+    },
+    {
+      "path": "wurst/towers/TDTowerRuntime.wurst",
+      "sha256": "800ff79b68d0f69f7e7acdf45724b09b07f1019a33542c4285e184641bcf7bb8"
+    },
+    {
+      "path": "wurst/towers/TDTowerSaleState.wurst",
+      "sha256": "312ee22d09c14ca5acbff2106d73314184ae6b639fc32a5a65f8915e48a83c02"
+    },
+    {
+      "path": "wurst/towers/TDTowerTerrainMask.wurst",
+      "sha256": "2247e172b135b289252ebeaf6784331b5569d62370135906166dfc76df88f9b4"
+    }
+  ]
+}

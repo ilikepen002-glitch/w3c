@@ -136,23 +136,23 @@ def canonical_packaged_function(body):
     return re.sub(r'\btemp\d+\b', lambda match: mapping.get(match[0], match[0]), body)
 
 
-def verify_spend_and_attempt(script):
+def verify_spend_and_attempt(script, capacity=12):
     """Execute real scalar helper/conditions with explicit controlled dependencies."""
     from VerifyPetUIArtifact import _integer_expression, _run_scalar_helper, jass_function
     spend = jass_function(script, 'tdPetSpendCaptureBall')
     for lane in (-1, 0, 1, 3, 4):
         for valid in (False, True):
-            for count in (0, 11, 12, 13):
+            for count in (0, capacity - 1, capacity, capacity + 1):
                 for balls in (0, 1, 60):
                     calls = []
                     def take(requested_lane):
                         calls.append(requested_lane)
                         return balls > 0
                     actual = _run_scalar_helper(spend, (lane, valid),
-                        {'TDPetData_TD_PET_COLLECTION_LIMIT': 12},
+                        {'TDPetData_TD_PET_COLLECTION_LIMIT': capacity},
                         {'tdIsLanePlayer': lambda value: 0 <= value < 4,
                          'tdPetCollectionCount': lambda _lane: count, 'tdPetTakeBall': take})
-                    eligible = 0 <= lane < 4 and valid and count < 12
+                    eligible = 0 <= lane < 4 and valid and count < capacity
                     require(actual is (eligible and balls > 0) and
                             calls == ([lane] if eligible else []),
                             f'Ordinary spend precondition/charge changed: {lane, valid, count, balls}')

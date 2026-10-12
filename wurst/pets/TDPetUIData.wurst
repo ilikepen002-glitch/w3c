@@ -40,6 +40,27 @@ public function tdPetSpeciesIconPath(int species) returns string
 		return importedIcon("TDPetStormFaerieDragon")
 	return importedIcon("TDPetGhostWisp")
 
+public function tdPetSpeciesQualityIconPath(int species, int quality) returns string
+	let stem = species == 1 ? "TDPetFlamePhoenix" : (species == 2 ? "TDPetStormFaerieDragon" : "TDPetGhostWisp")
+	return importedIcon(stem + "Q" + quality)
+
+public function tdPetManagerCommandIconPath(int action) returns string
+	if action <= 7
+		return tdPetUICommandIconPath(action)
+	if action == 8
+		return importedIcon("TDPetNext")
+	if action == 9
+		return importedIcon("TDPetReturnBuilder")
+	if action >= 10 and action <= 14
+		return importedIcon("TDPetCultivate")
+	if action == 15 or action == 19
+		return importedIcon("TDPetRelease")
+	if action == 16
+		return importedIcon("TDPetInfo")
+	if action == 17 or action == 20
+		return importedIcon("TDPetKeep")
+	return importedIcon("TDPetAdopt")
+
 public function tdPetSkillIconName(int skill) returns string
 	if skill == 0
 		return "BTNGauntletsOfOgrePower"

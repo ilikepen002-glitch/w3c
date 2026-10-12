@@ -1,0 +1,63 @@
+{
+  "mapCommits": {
+    "967": "967699580510791022408cd067513a92ba675792",
+    "71": "71a0c42b054370d7136dd2f687a6b4e7da830f19",
+    "0330": "0330fd12de4d66c4a1ca4980e10b771f0903fbfc",
+    "0384": "0384ccddcfdbaa868f773573c1f7403fe809d3e2",
+    "0a476": "0a476154e7269ee0a1c8e619c1349f31ba17b36b",
+    "a129": "a1293716c6b06b31e4b1cb9625efe3d9db3da572",
+    "e340": "e340d1758c7d72c0f88df3cdb54139ec989a6fcd",
+    "697d": "697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5"
+  },
+  "results": [
+    {
+      "stage": "A-native",
+      "exit_code": 0,
+      "sourceCommit": "697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5",
+      "tool": "tools/VerifyBuilderConstructionArtifact.py",
+      "toolSHA256": "99d65a6c8b765d03f9ba194a82c24c37c89add8abad74d3ab7481e77710a7f95"
+    },
+    {
+      "stage": "B-controls",
+      "exit_code": 0,
+      "sourceCommit": "697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5",
+      "tool": "tools/VerifyBuilderControlArtifact.py",
+      "toolSHA256": "a6daefa82167225eb34fb4d48786688dc50e068f9f81627e1ace8a6557ab260c"
+    },
+    {
+      "stage": "rank",
+      "exit_code": 0,
+      "sourceCommit": "a1293716c6b06b31e4b1cb9625efe3d9db3da572",
+      "tool": "tools/VerifyGlobalRankingsArtifact.py",
+      "toolSHA256": "808e5d213ec7aaabb0f8689983e9def70a52cb4993cdb60b97d7adf7941bcea0"
+    },
+    {
+      "stage": "capture",
+      "exit_code": 0,
+      "sourceCommit": "0a476154e7269ee0a1c8e619c1349f31ba17b36b",
+      "tool": "tools/VerifyCaptureRemovalArtifact.py",
+      "toolSHA256": "d24123cfa5de8a70837cb658650d6bf05b5704ff140398df07f4ebbb07198520"
+    },
+    {
+      "stage": "boss",
+      "exit_code": 0,
+      "sourceCommit": "697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5",
+      "tool": "tools/VerifyBossSpellResistanceArtifact.py",
+      "toolSHA256": "468030b8af34f7b7fdcaf7634f86657a43e85308e23475627d7710f8059fa4b3"
+    },
+    {
+      "stage": "wild",
+      "exit_code": 0,
+      "sourceCommit": "697d0f3e7ce8c1ff9f1f163bcf9b72ea09afdda5",
+      "tool": "tools/VerifyPetWildPathingArtifact.py",
+      "toolSHA256": "112dfafbffcd97d411b23af80c4d0d2dc9d235f0264eec2865238dd1241af54a"
+    },
+    {
+      "stage": "deployment",
+      "exit_code": 0,
+      "sourceCommit": "0330fd12de4d66c4a1ca4980e10b771f0903fbfc",
+      "tool": "tools/VerifyPetDeploymentArtifact.py",
+      "toolSHA256": "fbe51347f9882f001bcf7e72f8dab871da349e07f5b72f3ce3015c9e3fd0d883"
+    }
+  ]
+}

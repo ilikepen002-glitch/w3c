@@ -1,4 +1,4 @@
-"""Real-dialog hotkey regressions for source wiring and compiled JASS contracts."""
+"""Historical real-dialog hotkey regressions for source wiring and compiled JASS contracts."""
 from pathlib import Path
 import re
 import sys
@@ -115,30 +115,6 @@ class CompiledHotkeyContractTests(unittest.TestCase):
             with self.subTest(text=text):
                 with self.assertRaisesRegex(ValueError, 'dialog lacks label'):
                     verifier.verify_dialog_hotkeys(CORRECTED_JASS.replace(text, text[2:]))
-
-
-class DialogSourceWiringTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.helper = (ROOT / 'wurst/pets/TDPetUIState.wurst').read_text(encoding='utf-8')
-        cls.ui = (ROOT / 'wurst/pets/TDPetUI.wurst').read_text(encoding='utf-8')
-
-    def test_actual_ui_uses_tested_helper_for_real_button_hotkeys(self):
-        self.assertEqual(source_hotkey_problems(self.helper, self.ui), [])
-
-    def test_detects_numeric_label_without_real_native_argument(self):
-        bad = self.ui.replace('dialogs[lane].addButton(label, tdPetDialogHotkey(sessions[lane].mode, action))',
-                              'dialogs[lane].addButton(label)')
-        self.assertIn('UI buttons bypass real session-mode hotkey argument',
-                      source_hotkey_problems(self.helper, bad))
-
-    def test_detects_wrong_hotkey_helper_for_each_dialog_context(self):
-        for old, new, name in [('48 + action', '49 + action', 'cultivate'),
-                               ('if action == 10\n\t\t\treturn 49', 'if action == 10\n\t\t\treturn 50', 'preview'),
-                               ('action == 0 ? 50', 'action == 0 ? 49', 'release')]:
-            with self.subTest(context=name):
-                self.assertIn(name + ' numeric hotkey mapping changed',
-                              source_hotkey_problems(self.helper.replace(old, new), self.ui))
 
 
 if __name__ == '__main__':

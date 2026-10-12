@@ -67,7 +67,7 @@ function tdPetHandleCapture() returns boolean
 		tdPetNotice(lane, "这个目标不是野生宝宝。")
 		return false
 	if tdPetCollectionCount(lane) >= TD_PET_COLLECTION_LIMIT
-		tdPetNotice(lane, "收藏已满12只。按W选中收藏展示，再按C释放；上阵精灵须先召回。")
+		tdPetNotice(lane, "收藏已满20只。按W打开收藏，选择精灵后C养成、X释放；上阵精灵须先解绑。")
 		return false
 	let now = getElapsedGameTime()
 	if now < tdPetCaptureReadyAt[lane]
@@ -101,7 +101,7 @@ function tdPetHandleCapture() returns boolean
 	tdEnemyMechanicUnregister(target)
 	target.remove()
 	wild.creature = null
-	tdPetNotice(lane, "|cff80ff80捕获成功|r：" + pet.summary() + "。按W选中收藏展示，E点塔上阵；选中展示后按C洗练/开栏/释放。")
+	tdPetNotice(lane, "|cff80ff80捕获成功|r：" + pet.summary() + "。按W打开收藏，选择编号后E点塔绑定、C养成。")
 	return false
 
 public function tdPetHandleEnemyBallDrop(unit enemy, int lane, int wave)
