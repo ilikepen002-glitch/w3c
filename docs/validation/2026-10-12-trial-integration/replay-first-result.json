@@ -1,0 +1,66 @@
+{
+  "status": "PASS",
+  "production": {
+    "allocator": {
+      "array": "TDBossTransitionHook_typeId",
+      "type_id": 821
+    },
+    "registration": "production compiled hook; no dummy callback interception"
+  },
+  "cases": [
+    {
+      "wave": 8,
+      "order": "trialTimerFirst",
+      "targets_created": 20,
+      "targets_removed": 20,
+      "next_wave": 9,
+      "resume_synchronous": true
+    },
+    {
+      "wave": 8,
+      "order": "gameWatchdogFirst",
+      "targets_created": 20,
+      "targets_removed": 20,
+      "next_wave": 9,
+      "resume_synchronous": true
+    },
+    {
+      "wave": 24,
+      "order": "trialTimerFirst",
+      "targets_created": 20,
+      "targets_removed": 20,
+      "next_wave": 25,
+      "resume_synchronous": true
+    },
+    {
+      "wave": 24,
+      "order": "gameWatchdogFirst",
+      "targets_created": 20,
+      "targets_removed": 20,
+      "next_wave": 25,
+      "resume_synchronous": true
+    }
+  ],
+  "damage_chain": {
+    "cases": 11,
+    "listeners": {
+      "refill": 0,
+      "final_credit": 4
+    },
+    "ordinary_ledger": "actual production register/credit/playerTotal executed, unaffected by trial hits",
+    "score": "123.75 effective actual segments, rendered 124 after aggregate rounding"
+  },
+  "boundaries": [
+    "Warcraft native unit/timer/rendering boundary modeled; no game launched",
+    "Collections modeled, all gameplay guards, hook dispatch, score, ledger and cleanup ownership execute packaged JASS"
+  ],
+  "command": [
+    "tools/VerifyTrialReplay.py",
+    "/workspace/scratch/2106c0ab1fac/toolchain-recovery-20261012/state/transaction-dce3616eea294914b569902060bb5da4/candidate.w3x",
+    "--output",
+    "docs/validation/2026-10-12-trial-integration/replay-first-result.json"
+  ],
+  "map_sha256": "7c62b3469490d1bb380f215c3c7edd58f452d54df0d8956af5d566e353fac8fc",
+  "jass_sha256": "76f7d692fee8b31da31d17fbc92ea0b3d6853ed221094c6d9dd4d426eb6ef7d4",
+  "tool_sha256": "b7d7319042415b2812438310884e822d19cdff1e713a128c581b37836885948c"
+}

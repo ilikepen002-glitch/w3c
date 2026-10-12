@@ -17,6 +17,8 @@ import TDEnemyMechanicRuntime
 import MapBounds
 import Preloader
 import ErrorHandling
+import TDTrialIdentity
+import TDWaveFlowState
 
 boolean tdPetCombatReady = false
 
@@ -67,6 +69,20 @@ class TDPetDebuff
 			target.removeAbility(TD_PET_ARMOR_ID)
 
 LinkedList<TDPetDebuff> debuffs = new LinkedList<TDPetDebuff>()
+
+public function tdPetForgetEnemy(unit target)
+	let iter = debuffs.iterator()
+	while iter.hasNext()
+		let entry = iter.next()
+		if entry.target == target
+			iter.remove()
+			destroy entry
+	iter.close()
+	if target != null
+		tdPetEnemySlowFactors.removeReal(target.getHandleId())
+
+public function tdPetEnemyDebuffCount() returns int
+	return debuffs.size()
 
 function debuffFor(unit target) returns TDPetDebuff
 	for entry in debuffs
@@ -140,8 +156,9 @@ public function tdPetOnCorpseExplosion(unit source, vec2 center)
 		return
 	let generation = pet.generation
 	let amount = tdGhoulCorpseExplosionDamage() * power
+	let context = tdTrialCaptureContext(null)
 	doPeriodicallyCounted(1.0, 3) cb ->
-		if not tdPetBindingValid(pet, source, generation)
+		if not tdTrialContextValid(context) or not tdPetBindingValid(pet, source, generation)
 			destroy cb
 			return
 		let poisonEffect = AddSpecialEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayDamage.mdl", center.x, center.y)
@@ -150,12 +167,12 @@ public function tdPetOnCorpseExplosion(unit source, vec2 center)
 		targets.enumUnitsInRange(center, tdGhoulCorpseExplosionRadius())
 		var hits = 0
 		for target in targets
-			if tdPetEnemyIsValid(target, pet.lane) and hits < 12
+			if tdTrialAoeTargetContextValid(target, pet.lane, context) and tdPetEnemyIsValid(target, pet.lane) and hits < 12
 				spellDamage(pet, source, generation, target, amount)
 				hits += 1
 		targets.destr()
 
-function resolveActive(TDPet pet, unit host, int generation, vec2 center, int skill, real power, real base)
+function resolveActive(TDPet pet, unit host, int generation, vec2 center, int skill, real power, real base, tdTrialCombatContext context)
 	if skill == 11 or skill == 12
 		pet.buffSkill = skill
 		pet.buffPower = power
@@ -166,7 +183,7 @@ function resolveActive(TDPet pet, unit host, int generation, vec2 center, int sk
 	targets.enumUnitsInRange(center, skill == 13 ? 450.0 : 220.0)
 	var hits = 0
 	for victim in targets
-		if tdPetEnemyIsValid(victim, pet.lane) and hits < (skill == 13 ? 3 : 12)
+		if tdTrialAoeTargetContextValid(victim, pet.lane, context) and tdPetEnemyIsValid(victim, pet.lane) and hits < (skill == 13 ? 3 : 12)
 			if skill == 15
 				applySlow(victim, RMinBJ(0.75, power), 3.0, 4 + ((power - 0.25) / 0.15 + 0.5).toInt() - 1)
 				victim.flashEffect("Abilities\\Spells\\Other\\Tornado\\TornadoElementalSmall.mdl", "origin")
@@ -214,12 +231,17 @@ function onAttack()
 	let strength = power
 	if proc
 		pet.pendingSkill = true
+		pet.pendingSerial += 1
+	let pendingSerial = pet.pendingSerial
+	let context = tdTrialCaptureContext(target)
+	let binding = tdTrialBindingFor(target)
+	let targetRevision = binding == null ? 0 : binding.revision
 	doAfter(0.0) ->
-		if not tdPetBindingValid(pet, host, generation)
-			if pet.generation == generation
+		if not tdTrialTargetContextValid(target, pet.lane, context, targetRevision) or not tdPetBindingValid(pet, host, generation)
+			if proc and context.epoch == tdFlowEpoch() and context.generation == tdTrialState.getGeneration() and pet.generation == generation and pet.pendingSerial == pendingSerial
 				pet.pendingSkill = false
 			return
-		if proc
+		if proc and pet.pendingSerial == pendingSerial
 			pet.pendingSkill = false
 		damage(pet, host, generation, target, base * extra)
 		if proc
@@ -228,13 +250,13 @@ function onAttack()
 				nearby.enumUnitsInRange(center, skill == 13 ? 450.0 : 220.0)
 				var found = false
 				for candidate in nearby
-					if tdPetEnemyIsValid(candidate, pet.lane)
+					if tdTrialAoeTargetContextValid(candidate, pet.lane, context) and tdPetEnemyIsValid(candidate, pet.lane)
 						found = true
 				nearby.destr()
 				if not found
 					return
 			pet.readyAt = getElapsedGameTime() + (skill <= 12 ? 14.0 : 10.0) * (1.0 - RMinBJ(0.40, pet.skillPower(3)))
-			resolveActive(pet, host, generation, center, skill, strength, base)
+			resolveActive(pet, host, generation, center, skill, strength, base, context)
 
 public function tdPetSetupCombat()
 	if tdPetCombatReady
@@ -265,7 +287,7 @@ public function tdPetSetupCombat()
 		let iter = debuffs.iterator()
 		while iter.hasNext()
 			let entry = iter.next()
-			if not entry.target.isAlive() or GetUnitTypeId(entry.target) == 0 or tdIsGameOver() or not tdPetLaneCanAct(entry.target.getUserData() div 10000)
+			if not tdPetEnemyIsValid(entry.target, entry.target.getUserData() div 10000) or tdIsGameOver() or not tdPetLaneCanAct(entry.target.getUserData() div 10000)
 				iter.remove()
 				destroy entry
 			else

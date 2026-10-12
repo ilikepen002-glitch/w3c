@@ -10,11 +10,15 @@ import GameTimer
 import LinkedList
 import TDWaves
 import TDEnemyMechanicRuntime
+import TDTrialIdentity
+import TDTrialLifeRules
 
 class TDEquipmentDebuff
 	unit target
 	unit source = null
 	int lane
+	tdTrialCombatContext context
+	int targetRevision
 	real armor = 0.0
 	real armorUntil = 0.0
 	real poison = 0.0
@@ -23,6 +27,9 @@ class TDEquipmentDebuff
 	construct(unit target, int lane)
 		this.target = target
 		this.lane = lane
+		context = tdTrialCaptureContext(target)
+		let binding = tdTrialBindingFor(target)
+		targetRevision = binding == null ? 0 : binding.revision
 	ondestroy
 		if target != null and GetUnitTypeId(target) != 0
 			target.removeAbility(TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID)
@@ -36,6 +43,8 @@ function tdEquipmentLaneValid(int lane) returns boolean
 	return tdIsLanePlayer(lane) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
 
 function tdEquipmentEnemyValid(unit target, int lane) returns boolean
+	if tdTrialIsTargetType(target)
+		return tdTrialTargetValid(target, lane) and tdEquipmentLaneValid(lane)
 	return target != null and target.isAlive() and GetPlayerId(GetOwningPlayer(target)) == TD_ENEMY_PLAYER_ID and target.getUserData() div 10000 == lane and target.getUserData() mod 100 < 99 and tdEquipmentLaneValid(lane)
 
 function tdEquipmentSourceValid(unit source, int lane) returns boolean
@@ -107,14 +116,17 @@ function tdCaptureEquipmentAdditionalDamage()
 	let item3 = tdEquipmentItemId(source, 2)
 	// This locked pre1.29 engine receives the native event value, not a guaranteed
 	// pre-armor attack amount. Capture HP before the native hit changes it.
-	let bonus = tdEquipmentConditionalBonus(target.getHP(), target.getMaxHP(), tdIsBossUnitTypeId(GetUnitTypeId(target)), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_EXECUTE), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_BOSS_DAMAGE))
+	let bonus = tdEquipmentConditionalBonus(target.getHP(), target.getMaxHP(), (tdIsBossUnitTypeId(GetUnitTypeId(target)) or tdTrialEquipmentBossBonusEligible(tdTrialTargetValid(target, lane), lane, target.getUserData() div 10000)), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_EXECUTE), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_BOSS_DAMAGE))
 	let additional = DamageEvent.getAmount() * bonus
 	if additional <= 0.0
 		return
 	// Ordinary addListener.setAmount does not write HP in this locked engine.
 	// A separate, tagged segment executes after the native hit; lethal hits skip it.
+	let context = tdTrialCaptureContext(target)
+	let binding = tdTrialBindingFor(target)
+	let revision = binding == null ? 0 : binding.revision
 	doAfter(0.01) ->
-		if tdEquipmentSourceValid(source, lane) and tdEquipmentEnemyValid(target, lane)
+		if tdTrialTargetContextValid(target, lane, context, revision) and tdEquipmentSourceValid(source, lane) and tdEquipmentEnemyValid(target, lane)
 			DamageEvent.setNextDamageFromCode()
 			DamageEvent.setNextDamageId(TD_EQUIPMENT_ADDITIONAL_DAMAGE_ID)
 			// The locked library classifies ATTACK_TYPE_NORMAL as spell damage.
@@ -127,7 +139,7 @@ function tdTickEquipmentDebuffs()
 	let iter = tdEquipmentDebuffs.iterator()
 	while iter.hasNext()
 		let entry = iter.next()
-		if not tdEquipmentEnemyValid(entry.target, entry.lane)
+		if not tdTrialTargetContextValid(entry.target, entry.lane, entry.context, entry.targetRevision) or not tdEquipmentEnemyValid(entry.target, entry.lane)
 			iter.remove()
 			destroy entry
 			continue
@@ -147,8 +159,10 @@ function tdTickEquipmentDebuffs()
 			if entry.poisonTicks == 0
 				entry.poison = 0.0
 			let lane = entry.lane
+			let context = entry.context
+			let revision = entry.targetRevision
 			doAfter(0.0) ->
-				if tdEquipmentEnemyValid(target, lane) and tdEquipmentSourceValid(source, lane)
+				if tdTrialTargetContextValid(target, lane, context, revision) and tdEquipmentEnemyValid(target, lane) and tdEquipmentSourceValid(source, lane)
 					DamageEvent.setNextDamageFromCode()
 					source.damageTarget(target, tdEnemyMechanicScaleSpellDamage(target, amount))
 		if entry.armor == 0.0 and entry.poison == 0.0

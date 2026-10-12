@@ -32,7 +32,10 @@ class WildPathingArtifactTests(unittest.TestCase):
             self.units[uid]['uabi'] = 'Aeth'
 
     def test_actual_release_retains_aeth_and_ordinary_capture_contract(self):
-        archive = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        from trial_formal72_fixture import map_bytes
+        # Historical broad body-scope oracle is frozen. Trial route calls use
+        # the same coordinate helpers but are not wild-spirit lifecycle code.
+        archive = Mpq(map_bytes())
         data = archive.extract('war3map.w3u')
         verifier.verify_wild_units(unit_objects(data), unit_parents(data))
         verifier.verify_capture_contract(ability_objects(archive.extract('war3map.w3a')))

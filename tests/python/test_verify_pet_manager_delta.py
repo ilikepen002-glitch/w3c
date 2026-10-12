@@ -29,7 +29,10 @@ class ManagerInheritanceTests(unittest.TestCase):
         cls.directory = tempfile.TemporaryDirectory(prefix='formal-manager-stage-')
         cls.addClassCleanup(cls.directory.cleanup)
         frozen = Path(cls.directory.name)
-        (frozen / '.git').write_bytes((ROOT / '.git').read_bytes())
+        gitdir = Path(subprocess.check_output(['git', 'rev-parse', '--absolute-git-dir'], cwd=ROOT).decode().strip())
+        # Read-only shared git object lookup supports clone directories and
+        # linked-worktree .git files; no index, refs or configuration is changed.
+        (frozen / '.git').write_text('gitdir: ' + str(gitdir) + '\n')
         paths = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', commit, 'wurst'], cwd=ROOT).decode().splitlines()
         for relative in paths:
             target = frozen / relative; target.parent.mkdir(parents=True, exist_ok=True)

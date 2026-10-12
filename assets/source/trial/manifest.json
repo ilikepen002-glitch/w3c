@@ -1,0 +1,34 @@
+{
+  "generator": "Built-in image_gen",
+  "date": "2026-10-12",
+  "prompt": "Use case: stylized-concept. Create a square original Warcraft-era dark-fantasy tower-defense reward trial monster concept, clearly distinct from ordinary monsters and grim bosses. One huge GOLD COIN GOLEM: thick circular upright gold coin torso with large embossed geometric treasure emblem (no letters or numbers), sturdy short articulated bronze-and-gold arms and legs, slightly mischievous glowing amber eyes inset into the coin face, heavy embossed rim, luminous warm golden aura and a few floating coin sparks. It should look like a walking jackpot training target, imposing and satisfying to attack, not horror, not a cartoon mascot, not a literal real-world currency coin. High-end stylized painterly game concept art with chunky readable silhouette and strong highlights, front three-quarter full body centered, dark charcoal ruined stone background with minimal detail, warm gold dominates to contrast blue/purple/black bosses. No extra creatures, no words, no watermark, no UI. This is concept art and future icon reference, not a 3D model. Keep face, circular coin body and limbs clearly readable for small icons.",
+  "transparent_background": false,
+  "reference_images": [],
+  "source": "assets/source/trial/gold-coin-golem.png",
+  "sha256": "e18b1efb8a91a2fcea6179335ae6effe11006a867f632333d4035b166d8966c8",
+  "library_file_id": "libfile_3f732c23e1b48191a2bbd457fe5ca8e2",
+  "use": "Concept art and 64px BTN/DISBTN, not a 3D model. Runtime uses native Units.golemStatue1 / UnitIds.battlegolem as a gold-colored approximation, pending target 1.28 asset verification.",
+  "conversion": {
+    "script": "tools/BuildTrialAssets.py",
+    "encoder": "BuildEvolutionAssets.blp",
+    "size": [
+      64,
+      64
+    ],
+    "format": "BLP1 palette alpha8",
+    "mips": [
+      64,
+      32,
+      16,
+      8,
+      4,
+      2,
+      1
+    ],
+    "disabled": "grayscale then brightness 0.45; preserve alpha",
+    "normal": "war3mapImported\\BTNTDTrialGoldGolem.blp",
+    "disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTrialGoldGolem.blp",
+    "normal_sha256": "5095926333d0e730aa9195cc25a5ee13800abb885ca96c0a8eb0a2813cc2be4f",
+    "disabled_sha256": "5acaa9f091a83f87b91e83b6b101191955167f1b7de3b39d9b2497c07e43f911"
+  }
+}

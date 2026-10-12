@@ -9,6 +9,7 @@ import TDDamageHud
 import TDDamageRuntime
 import TDWaveFlowState
 import GameTimer
+import TDTrialHud
 
 multiboard tdStatusBoard = null
 string array tdPetHudSummaries
@@ -112,13 +113,14 @@ public function tdRefreshStatusBoard()
 	row += 1
 	tdDamageRefreshCatalog()
 	tdDamageRefreshHud(tdStatusBoard, row)
+	tdTrialRefreshHud(tdStatusBoard, row + TD_DAMAGE_HUD_ROWS)
 
 public function tdSetupHud()
 	if compiletime or tdStatusBoard != null
 		return
 	tdStatusBoard = CreateMultiboard()
 	tdStatusBoard.setColumnCount(TD_DAMAGE_HUD_COLUMNS)
-	tdStatusBoard.setRowCount(tdCountActiveLanes() + 5 + TD_DAMAGE_HUD_ROWS)
+	tdStatusBoard.setRowCount(tdCountActiveLanes() + 5 + TD_DAMAGE_HUD_ROWS + TD_TRIAL_HUD_ROWS)
 	tdStatusBoard.setItemsStyle(true, false)
 	// Keep upper status text widths; a narrow fourth cell is empty above rankings.
 	let firstDamageRow = tdCountActiveLanes() + 5
@@ -132,6 +134,11 @@ public function tdSetupHud()
 		tdStatusBoard.setItemWidth(row, 1, 0.065)
 		tdStatusBoard.setItemWidth(row, 2, 0.18)
 		tdStatusBoard.setItemWidth(row, 3, 0.06)
+	for row = firstDamageRow + TD_DAMAGE_HUD_ROWS to firstDamageRow + TD_DAMAGE_HUD_ROWS + TD_TRIAL_HUD_ROWS - 1
+		tdStatusBoard.setItemWidth(row, 0, 0.14)
+		tdStatusBoard.setItemWidth(row, 1, 0.10)
+		tdStatusBoard.setItemWidth(row, 2, 0.18)
+		tdStatusBoard.setItemWidth(row, 3, 0.08)
 	for row = firstDamageRow to firstDamageRow + 4
 		tdStatusBoard.setItemWidth(row, 0, 0.13)
 		tdStatusBoard.setItemWidth(row, 1, 0.235)

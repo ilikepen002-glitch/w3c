@@ -1,0 +1,88 @@
+{
+  "status": "PASS",
+  "baseline_commit": "72b2c9c3406868d33969c087dd5e6015abc3ac7b",
+  "map_sha256": "03921c61e64e5392f8f9100291ca62df539b3f0bb8c7c4af47e82fa2bba21dde",
+  "source_owners": [
+    "TDHud.wurst",
+    "TDInit.wurst",
+    "damage/TDDamageRuntime.wurst",
+    "items/TDEquipmentCombat.wurst",
+    "items/TDItemData.wurst",
+    "pets/TDPetCombat.wurst",
+    "pets/TDPetRuntime.wurst",
+    "pets/TDPetState.wurst",
+    "towers/TDTowerRuntime.wurst",
+    "trial/TDTrialHook.wurst",
+    "trial/TDTrialHud.wurst",
+    "trial/TDTrialIdentity.wurst",
+    "trial/TDTrialLifeRules.wurst",
+    "trial/TDTrialObjectGen.wurst",
+    "trial/TDTrialRouteRules.wurst",
+    "trial/TDTrialRules.wurst",
+    "trial/TDTrialRuntime.wurst",
+    "trial/TDTrialScore.wurst",
+    "trial/TDTrialState.wurst",
+    "trial/TDTrialTargets.wurst"
+  ],
+  "jass_added": 239,
+  "jass_changed": 404,
+  "jass_deleted": 0,
+  "jass_preserved": 1354,
+  "objects": {
+    "war3map.w3u": {
+      "added": {
+        "uTrG": "c6dd3692136c4e833fc7281a1f36707385733655855020c1b35ca8650835bfac"
+      },
+      "changed": {},
+      "preserved_count": 194
+    },
+    "war3map.w3a": {
+      "added": {},
+      "changed": {},
+      "preserved_count": 757
+    },
+    "war3map.w3t": {
+      "added": {},
+      "changed": {
+        "iB02": {
+          "('utub', 0, 0)": {
+            "before_raw": "7574756203000000e8939de8a385e8a385e5a4870ae694bbe587bb202b32320ae699aee694bbe591bde4b8ade9a696e9a286e4b8bbe79baee6a087e697b6efbc8ce8bfbde58aa0e69cace6aca1e699aee694bbe4bca4e5aeb3e79a843235250ae4b88ee58d8ae8a180e8bfbde58aa0e6af94e4be8be79bb8e58aa0efbc9be6b395e69cafe38081e58886e8a382e7aeade5928ce7b2bee781b5e4bca4e5aeb3e4b88de7949fe69588e38082e699aee694bbe587bbe69d80e697b6e4b88de5868de8bfbde58aa0e380820ae5a194e58fafe8a385e5a487efbc9be5908ce5a194e7acac33e4bbb6e5908ce5908de8a385e5a487e4bb85e58f91e68ca5353025e5b19ee680a7e380820ae694bee585a5e5b7a5e4babae5898d33e6a0bce58fafe58f82e4b88ee5908ce59381e8b4a8e59088e68890e380820000000000",
+            "after_raw": "7574756203000000e8939de8a385e8a385e5a4870ae694bbe587bb202b32320ae699aee694bbe591bde4b8ade9a696e9a286e68896e98791e5b881e8af95e782bce4b8bbe79baee6a087e697b6efbc8ce8bfbde58aa0e69cace6aca1e699aee694bbe4bca4e5aeb3e79a843235250ae4b88ee58d8ae8a180e8bfbde58aa0e6af94e4be8be79bb8e58aa0efbc9be6b395e69cafe38081e58886e8a382e7aeade5928ce7b2bee781b5e4bca4e5aeb3e4b88de7949fe69588e38082e699aee694bbe587bbe69d80e697b6e4b88de5868de8bfbde58aa0e380820ae5a194e58fafe8a385e5a487efbc9be5908ce5a194e7acac33e4bbb6e5908ce5908de8a385e5a487e4bb85e58f91e68ca5353025e5b19ee680a7e380820ae694bee585a5e5b7a5e4babae5898d33e6a0bce58fafe58f82e4b88ee5908ce59381e8b4a8e59088e68890e380820000000000",
+            "before_value": "蓝装装备\n攻击 +22\n普攻命中首领主目标时，追加本次普攻伤害的25%\n与半血追加比例相加；法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。\n塔可装备；同塔第3件同名装备仅发挥50%属性。\n放入工人前3格可参与同品质合成。",
+            "after_value": "蓝装装备\n攻击 +22\n普攻命中首领或金币试炼主目标时，追加本次普攻伤害的25%\n与半血追加比例相加；法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。\n塔可装备；同塔第3件同名装备仅发挥50%属性。\n放入工人前3格可参与同品质合成。"
+          }
+        },
+        "iP02": {
+          "('utub', 0, 0)": {
+            "before_raw": "7574756203000000e7b4abe8a385e8a385e5a4870ae694bbe587bb202b33340ae699aee694bbe591bde4b8ade9a696e9a286e4b8bbe79baee6a087e697b6efbc8ce8bfbde58aa0e69cace6aca1e699aee694bbe4bca4e5aeb3e79a843435250ae4b88ee58d8ae8a180e8bfbde58aa0e6af94e4be8be79bb8e58aa0efbc9be6b395e69cafe38081e58886e8a382e7aeade5928ce7b2bee781b5e4bca4e5aeb3e4b88de7949fe69588e38082e699aee694bbe587bbe69d80e697b6e4b88de5868de8bfbde58aa0e380820ae5a194e58fafe8a385e5a487efbc9be5908ce5a194e7acac33e4bbb6e5908ce5908de8a385e5a487e4bb85e58f91e68ca5353025e5b19ee680a7e380820ae694bee585a5e5b7a5e4babae5898d33e6a0bce58fafe58f82e4b88ee5908ce59381e8b4a8e59088e68890e380820000000000",
+            "after_raw": "7574756203000000e7b4abe8a385e8a385e5a4870ae694bbe587bb202b33340ae699aee694bbe591bde4b8ade9a696e9a286e68896e98791e5b881e8af95e782bce4b8bbe79baee6a087e697b6efbc8ce8bfbde58aa0e69cace6aca1e699aee694bbe4bca4e5aeb3e79a843435250ae4b88ee58d8ae8a180e8bfbde58aa0e6af94e4be8be79bb8e58aa0efbc9be6b395e69cafe38081e58886e8a382e7aeade5928ce7b2bee781b5e4bca4e5aeb3e4b88de7949fe69588e38082e699aee694bbe587bbe69d80e697b6e4b88de5868de8bfbde58aa0e380820ae5a194e58fafe8a385e5a487efbc9be5908ce5a194e7acac33e4bbb6e5908ce5908de8a385e5a487e4bb85e58f91e68ca5353025e5b19ee680a7e380820ae694bee585a5e5b7a5e4babae5898d33e6a0bce58fafe58f82e4b88ee5908ce59381e8b4a8e59088e68890e380820000000000",
+            "before_value": "紫装装备\n攻击 +34\n普攻命中首领主目标时，追加本次普攻伤害的45%\n与半血追加比例相加；法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。\n塔可装备；同塔第3件同名装备仅发挥50%属性。\n放入工人前3格可参与同品质合成。",
+            "after_value": "紫装装备\n攻击 +34\n普攻命中首领或金币试炼主目标时，追加本次普攻伤害的45%\n与半血追加比例相加；法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。\n塔可装备；同塔第3件同名装备仅发挥50%属性。\n放入工人前3格可参与同品质合成。"
+          }
+        }
+      },
+      "preserved_count": 27
+    }
+  },
+  "archive_changed": [
+    "(listfile)",
+    "war3map.imp",
+    "war3map.j",
+    "war3map.w3i",
+    "war3map.w3t",
+    "war3map.w3u"
+  ],
+  "boundary": "Exact approved bytes; gameplay semantics require separate production replay and Astra review",
+  "command": [
+    "tools/VerifyTrialDelta.py",
+    "ExampleMap.w3x",
+    "--source",
+    "wurst",
+    "--reviewed-contract",
+    "docs/validation/2026-10-12-trial-integration/exact-contract-PROPOSED.json",
+    "--output",
+    "docs/validation/2026-10-12-trial-integration/strict-delta-final-result.json"
+  ],
+  "tool_sha256": "d5486109d5ef45fdc63587224dc43f19c4d55adaee57d15029bc83c0653c8bdb",
+  "contract_sha256": "144aab9d9c31f08f1eea33d90f4f3ce64b71ae2a13bbaf36292057097492f1cf"
+}

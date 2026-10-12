@@ -1,0 +1,92 @@
+package TDTrialHook
+import TDTrialRuntime
+import TDGame
+import TDState
+import TDWaveFlowState
+import GameTimer
+
+TDTrialHook tdTrialRegisteredHook = null
+timer tdTrialResumeTimer = null
+int tdTrialResumeToken = 0
+int tdTrialResumeGeneration = 0
+
+function tdTrialStopResumeTimer()
+	if tdTrialResumeTimer != null
+		DestroyTimer(tdTrialResumeTimer)
+		tdTrialResumeTimer = null
+	tdTrialResumeToken = 0
+	tdTrialResumeGeneration = 0
+
+function tdTrialOnDeadline()
+	if tdTrialResumeTimer == null or GetExpiredTimer() != tdTrialResumeTimer
+		return
+	let token = tdTrialResumeToken
+	let generation = tdTrialResumeGeneration
+	if not tdTrialState.shouldResume(token, generation, getElapsedGameTime())
+		return
+	let accepted = tdResumeBossTransition(token)
+	// Resume may synchronously seal, remove targets and start 9/25.
+	if accepted
+		tdTrialState.noteResumeAccepted(token, generation)
+	else if tdTrialResumeTimer != null and tdTrialState.shouldResume(token, generation, getElapsedGameTime())
+		TimerStart(tdTrialResumeTimer, 0.10, false, function tdTrialOnDeadline)
+
+public class TDTrialHook implements TDBossTransitionHook
+	private int generation
+	construct(int generation)
+		this.generation = generation
+
+	override function onReady(int completedWave, int transitionToken) returns boolean
+		let now = getElapsedGameTime()
+		if not tdTrialState.prepare(completedWave, transitionToken, generation, now)
+			return false
+		for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+			tdTrialState.snapshotLane(lane, tdTrialLaneContinues(lane))
+		tdTrialClearDamageDiagnostics()
+		if not tdTrialStartTargets(transitionToken, generation, now) or not tdTrialState.activate(transitionToken, generation, getElapsedGameTime())
+			tdTrialClearTargets()
+			tdTrialState.rollback(transitionToken, generation)
+			return false
+		tdTrialBeginRouteWatcher()
+		tdTrialResumeToken = transitionToken
+		tdTrialResumeGeneration = generation
+		tdTrialResumeTimer = CreateTimer()
+		TimerStart(tdTrialResumeTimer, TD_TRIAL_DURATION, false, function tdTrialOnDeadline)
+		return true
+
+	override function onRelease(int transitionToken, int reason)
+		if not tdTrialState.current(transitionToken, generation) or tdTrialState.getPhase() != TD_TRIAL_ACTIVE
+			return
+		// Reconcile at the settlement boundary, even if the last route tick missed a leave.
+		for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+			tdTrialState.reconcileLane(lane, tdTrialLaneContinues(lane))
+		if not tdTrialState.seal(transitionToken, generation, reason, getElapsedGameTime())
+			return
+		tdTrialStopResumeTimer()
+		tdTrialClearTargets()
+		if not tdTrialState.markTargetsCleared(transitionToken, generation)
+			return
+		for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+			let prize = tdTrialState.takeReward(lane, transitionToken, generation)
+			if prize > 0
+				tdGainGold(lane, prize)
+			if tdTrialState.isParticipant(lane)
+				DisplayTimedTextToPlayer(Player(lane), 0, 0, 8.0, "金币试炼：有效伤害 " + tdTrialState.totalText(lane) + "，奖励 " + prize + " 金币。")
+
+public function tdResetAndRegisterTrialHook() returns boolean
+	// TDInit calls this after Game reset has dropped the old hook reference.
+	if tdFlowHasTransitionHook()
+		return false
+	tdTrialStopResumeTimer()
+	tdTrialClearTargets()
+	tdTrialState.reset()
+	if tdTrialRegisteredHook != null
+		destroy tdTrialRegisteredHook
+		tdTrialRegisteredHook = null
+	let hook = new TDTrialHook(tdTrialState.getGeneration())
+	if not tdRegisterBossTransitionHook(hook)
+		destroy hook
+		return false
+	tdTrialRegisteredHook = hook
+	tdTrialSetupRuntime()
+	return true

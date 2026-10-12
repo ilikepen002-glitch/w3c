@@ -1,0 +1,71 @@
+package TDTrialHudTests
+import TDTrialHud
+import TDTrialIdentity
+import TDState
+
+function trialHudPrepare(TDTrialState state)
+	let generation = state.getGeneration()
+	state.prepare(8, 5, generation, 0.0)
+	for lane = 0 to 3
+		state.snapshotLane(lane, true)
+		for slot = 0 to 4
+			state.bindTarget(lane, slot, lane * 5 + slot + 1, 5, generation, 0.0)
+	state.activate(5, generation, 0.0)
+
+function trialHudCredit(TDTrialState state, int lane, real amount)
+	let ticket = state.hitTicket(lane, 0, lane * 5 + 1, 5, state.getGeneration(), 1.0, 1000000.0)
+	state.credit(ticket, lane, amount, 1.0)
+	destroy ticket
+
+@Test function trialHudHasSeparateFixedSectionAndClearWaitingText()
+	let state = new TDTrialState()
+	tdTrialPrepareHud(state, 0.0)
+	TD_TRIAL_HUD_ROWS.assertEquals(6)
+	tdTrialHudCell(0, 0).assertEquals("金币试炼")
+	tdTrialHudCell(0, 2).assertEquals("8/24波后各120秒")
+	tdTrialHudCell(1, 1).assertEquals("")
+	tdTrialHudCell(6, 0).assertEquals("")
+	destroy state
+
+@Test function trialHudTiesHaveDistinctRowsAndIdenticalPrizes()
+	let state = new TDTrialState()
+	trialHudPrepare(state)
+	trialHudCredit(state, 3, 20.0)
+	trialHudCredit(state, 0, 20.25)
+	trialHudCredit(state, 1, 10.0)
+	tdTrialPrepareHud(state, 20.0)
+	tdTrialHudCell(0, 0).assertEquals("试炼1 · 100s")
+	tdTrialHudCell(1, 0).assertEquals("P1 · 第1")
+	tdTrialHudCell(2, 0).assertEquals("P4 · 第1")
+	tdTrialHudCell(3, 0).assertEquals("P2 · 第3")
+	state.seal(5, state.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 120.0)
+	tdTrialPrepareHud(state, 120.0)
+	tdTrialHudCell(1, 3).assertEquals("27金")
+	tdTrialHudCell(2, 3).assertEquals("27金")
+	destroy state
+
+@Test function trialHudPositiveSubOneAndWithdrawnRowsCannotLookLikeZeroWinner()
+	let state = new TDTrialState()
+	trialHudPrepare(state)
+	trialHudCredit(state, 2, 0.125)
+	trialHudCredit(state, 1, 100.0)
+	state.withdraw(1)
+	state.seal(5, state.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 120.0)
+	tdTrialPrepareHud(state, 120.0)
+	tdTrialHudCell(1, 3).assertEquals("退出 · 0金")
+	tdTrialHudCell(2, 1).assertEquals("<1")
+	tdTrialHudCell(2, 3).assertEquals("24金")
+	tdTrialHudCell(3, 1).assertEquals("0")
+	tdTrialHudCell(3, 3).assertEquals("0金")
+	destroy state
+
+@Test function trialContextFromEarlierMatchOrGenerationIsRejected()
+	tdResetState()
+	tdTrialState.reset()
+	let context = tdTrialCaptureContext(null)
+	tdTrialContextValid(context).assertTrue()
+	tdTrialState.reset()
+	tdTrialContextValid(context).assertFalse()
+	let newer = tdTrialCaptureContext(null)
+	tdResetState()
+	tdTrialContextValid(newer).assertFalse()

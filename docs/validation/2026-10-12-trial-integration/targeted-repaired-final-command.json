@@ -1,0 +1,78 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "-v",
+    "test_capture_removal_artifact",
+    "test_global_rankings_artifact",
+    "test_pet_compiled_rule_guards",
+    "test_player_tooltip_artifact",
+    "test_verify_pet_wild_pathing_artifact",
+    "test_verify_pet_manager_delta",
+    "test_trial_artifact",
+    "test_trial_delta",
+    "test_trial_replay",
+    "test_trial_static_contracts"
+  ],
+  "environment": {
+    "TRIAL_CANDIDATE_MAP": "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/integration-worktree/ExampleMap.w3x",
+    "TRIAL_CANDIDATE_MAP_SHA256": "03921c61e64e5392f8f9100291ca62df539b3f0bb8c7c4af47e82fa2bba21dde",
+    "PURE_BOSS_CANDIDATE_MAP": "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/verification/formal72/ExampleMap.w3x",
+    "PURE_BOSS_CANDIDATE_SOURCE": "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/verification/formal72/wurst",
+    "PURE_BOSS_BASELINE_SOURCE": "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/verification/formal654/wurst",
+    "PURE_BOSS_REVIEWED_JASS_TEMPLATES": "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/integration-worktree/docs/validation/2026-10-12-pure-boss-rounds/reviewed-jass-templates.json",
+    "PURE_BOSS_HOOK_HARNESS_MAP": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/combined-harness-07-NON-RELEASE.w3x",
+    "PYTHONPATH": "tests/python"
+  },
+  "returncode": 0,
+  "runtime_seconds": 62.73100733757019,
+  "log_sha256": "366d9bf06b94b493fb2800928decc0253cc225aa320f2bfc87859e0dc8e00870",
+  "map_sha256": "03921c61e64e5392f8f9100291ca62df539b3f0bb8c7c4af47e82fa2bba21dde",
+  "all_frozen_code_unchanged": true,
+  "changed_during_run": [],
+  "changes_after_full_run": {
+    "tests/python/test_capture_removal_artifact.py": {
+      "before_sha256": "717e8f0d7b5fa589a67b18343222f5c86b29831dc5d831d9415c6d499bf3aefc",
+      "after_sha256": "b00a5cd6b5a5fe403814d5427e9bbb0ea1253d21bc244878c8a6ddb95c13ec56"
+    },
+    "tests/python/test_global_rankings_artifact.py": {
+      "before_sha256": "87420819c81a2e572669ecf5d67303b7a1e252bfaefb3a45578edb2205783ad5",
+      "after_sha256": "7164ae3a9ba2e7404da8d3de8c3503751ab6c2dad37ddbba30bfb3d10363319a"
+    },
+    "tests/python/test_pet_compiled_rule_guards.py": {
+      "before_sha256": "c50fdfc7229d180b5b5d690cff674d9dfc6f8cdfb2ba07187c74b33810788e5e",
+      "after_sha256": "ac1e5a8bde0349f23f4885b10301d107d51865b1e0487a41127c902fe9065e8e"
+    },
+    "tests/python/test_player_tooltip_artifact.py": {
+      "before_sha256": "072a502406cdb06d2097278c643eec9047677e9cb40d6ede48c653f01f737b45",
+      "after_sha256": "14b074f1f753603f1fbc255c1a078a673e3991744ed49c8330bf7450f557fa20"
+    },
+    "tests/python/test_trial_artifact.py": {
+      "before_sha256": "c21e6456baa56e009d430c022d00bfefca964ebf1773fc40d5bf7abca7a5e985",
+      "after_sha256": "dcf9fc90d4be353c0516507189ffe55d987a25789c0292298f5988e0ed09f1a7"
+    },
+    "tests/python/test_trial_replay.py": {
+      "before_sha256": "9475ebe696c1c39ab03bddc18eae5a200f5161686c8268146dc9c5237898c341",
+      "after_sha256": "0efb86e6215f49921643ad021a9b49ee9629ce4c1d44bedfadad7d020acbc1db"
+    },
+    "tests/python/test_verify_pet_manager_delta.py": {
+      "before_sha256": "ffeb2e9ee736500504ea3be2f2b4f1c0c838676ba5b4b32c7e7651cff96f37a3",
+      "after_sha256": "3581ecc3b8a0a069e5327b505e164a0c1c14d6c4654a517cac64b2fe505ce590"
+    },
+    "tests/python/test_verify_pet_wild_pathing_artifact.py": {
+      "before_sha256": "8ddcefcf0e9b9ed13c9579945db6107a856c78f11a7641ef99e150ad286686ed",
+      "after_sha256": "936aa18583e7fad1cd4863bc72abe0386ecd1bb67b1f2b6e3a40a6ba86e0d0e0"
+    },
+    "tools/VerifyTrialArtifact.py": {
+      "before_sha256": "3733320aa19a35f4720c7522c32ad3d81347708cd6d0f77109e26d316a9ce032",
+      "after_sha256": "00390dad12053ca97d111156fc4d574256a4f05234b18a40fdd782446cbe80a2"
+    },
+    "tools/VerifyTrialReplay.py": {
+      "before_sha256": "a170844221b661ef8b9193436768f41212bda6c48c1138b8b75941043d5ef942",
+      "after_sha256": "1fe638c2bb8c271d8c0d8753f656f9b229107d3175abec199334889d4a832fef"
+    }
+  },
+  "full_run_command_record_sha256": "7f1ce27207466cd5c09385a8c0e94fa31987ae6003284e63fc481b57cdba1842",
+  "validation_mode": "Complete frozen full run plus targeted rerun of six failed fixture/mutation files and their current trial dependencies; not described as one all-green run"
+}

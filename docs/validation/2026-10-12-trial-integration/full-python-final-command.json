@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests/python",
+    "-v"
+  ],
+  "environment": {
+    "TRIAL_CANDIDATE_MAP": "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/integration-worktree/ExampleMap.w3x",
+    "TRIAL_CANDIDATE_MAP_SHA256": "03921c61e64e5392f8f9100291ca62df539b3f0bb8c7c4af47e82fa2bba21dde",
+    "PURE_BOSS_CANDIDATE_MAP": "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/verification/formal72/ExampleMap.w3x",
+    "PURE_BOSS_CANDIDATE_SOURCE": "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/verification/formal72/wurst",
+    "PURE_BOSS_BASELINE_SOURCE": "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/verification/formal654/wurst",
+    "PURE_BOSS_REVIEWED_JASS_TEMPLATES": "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/integration-worktree/docs/validation/2026-10-12-pure-boss-rounds/reviewed-jass-templates.json",
+    "PURE_BOSS_HOOK_HARNESS_MAP": "/workspace/scratch/2106c0ab1fac/pure-boss-rounds-20261012/combined-harness-07-NON-RELEASE.w3x"
+  },
+  "returncode": 1,
+  "runtime_seconds": 369.12514066696167,
+  "log_sha256": "c1e04a586ca8735dbc5f8d600c3fb54975d15e06cf0f620db2d8f13d8f4d8217",
+  "map_sha256": "03921c61e64e5392f8f9100291ca62df539b3f0bb8c7c4af47e82fa2bba21dde",
+  "frozen_code_files": 209,
+  "code_snapshot_sha256": "52df7147e3859206f34faad1335e9c7a6758123a862198f13ceb3880c60b97a1",
+  "changed_during_run": [],
+  "all_frozen_code_unchanged": true
+}

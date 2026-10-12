@@ -1,0 +1,55 @@
+package TDTrialTargets
+import TDTrialRules
+
+// Pure slot identities. Runtime will own native unit handles outside this class.
+// Native userData is not a trial registration and never enters the wave registry.
+public class TDTrialTargets
+	private int array[20] identities
+	private int array[20] revisions
+	private int liveCount = 0
+
+	function count() returns int
+		return liveCount
+
+	function identity(int lane, int slot) returns int
+		let index = tdTrialSlotIndex(lane, slot)
+		return index < 0 ? 0 : identities[index]
+
+	function revision(int lane, int slot) returns int
+		let index = tdTrialSlotIndex(lane, slot)
+		return index < 0 ? 0 : revisions[index]
+
+	function matches(int lane, int slot, int identity, int revision) returns boolean
+		let index = tdTrialSlotIndex(lane, slot)
+		if index < 0 or identity == 0
+			return false
+		return identities[index] == identity and revisions[index] == revision
+
+	function bind(int lane, int slot, int identity) returns boolean
+		let index = tdTrialSlotIndex(lane, slot)
+		if index < 0 or identity == 0 or identities[index] != 0
+			return false
+		for other = 0 to TD_TRIAL_MAX_TARGETS - 1
+			if identities[other] == identity
+				return false
+		identities[index] = identity
+		revisions[index] += 1
+		liveCount += 1
+		return true
+
+	function unbind(int lane, int slot, int expectedIdentity) returns boolean
+		let index = tdTrialSlotIndex(lane, slot)
+		if index < 0 or expectedIdentity == 0 or identities[index] != expectedIdentity
+			return false
+		identities[index] = 0
+		revisions[index] += 1
+		liveCount -= 1
+		return true
+
+	function clearLane(int lane)
+		for slot = 0 to TD_TRIAL_TARGETS_PER_LANE - 1
+			unbind(lane, slot, identity(lane, slot))
+
+	function clear()
+		for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+			clearLane(lane)

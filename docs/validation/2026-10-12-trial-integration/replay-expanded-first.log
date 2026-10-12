@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/integration-worktree/tools/VerifyTrialReplay.py", line 361, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/integration-worktree/tools/VerifyTrialReplay.py", line 357, in main
+    data=Path(a.map).read_bytes();script=Mpq(data).extract('war3map.j').decode();result=verify_replay(script)
+                                                                                        ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/integration-worktree/tools/VerifyTrialReplay.py", line 348, in verify_replay
+    lifecycle = verify_lifecycle(script)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/integration-worktree/tools/VerifyTrialReplay.py", line 283, in verify_lifecycle
+    require(r.state_call('isWithdrawn',0) and r.invoke('tdGetGold',0)==100 and r.invoke('tdGetGold',1)==124,
+  File "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/integration-worktree/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: Final-tick departed leader gained gold or redistributed its frozen ranking place

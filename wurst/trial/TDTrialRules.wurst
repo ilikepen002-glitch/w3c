@@ -1,0 +1,71 @@
+package TDTrialRules
+
+public constant int TD_TRIAL_LANE_COUNT = 4
+public constant int TD_TRIAL_TARGETS_PER_LANE = 5
+public constant int TD_TRIAL_MAX_TARGETS = 20
+public constant real TD_TRIAL_DURATION = 120.0
+public constant int TD_TRIAL_TARGET_HP = 1000000
+public constant int TD_TRIAL_TARGET_SPEED = 260
+public constant int TD_TRIAL_TARGET_UNIT_ID = 'uTrG'
+public constant int TD_TRIAL_RELEASE_COMPLETED = 1
+public constant int TD_TRIAL_RELEASE_TIME_LIMIT = 2
+public constant int TD_TRIAL_RELEASE_ABORTED = 3
+public constant int TD_TRIAL_IDLE = 0
+public constant int TD_TRIAL_PREPARING = 1
+public constant int TD_TRIAL_ACTIVE = 2
+public constant int TD_TRIAL_SEALED = 3
+
+public function tdTrialLaneValid(int lane) returns boolean
+	return lane >= 0 and lane < TD_TRIAL_LANE_COUNT
+
+public function tdTrialSlotIndex(int lane, int slot) returns int
+	if not tdTrialLaneValid(lane) or slot < 0 or slot >= TD_TRIAL_TARGETS_PER_LANE
+		return -1
+	return lane * TD_TRIAL_TARGETS_PER_LANE + slot
+
+public function tdTrialRoundForWave(int completedWave) returns int
+	if completedWave == 8
+		return 1
+	if completedWave == 24
+		return 2
+	return 0
+
+public function tdTrialPrize(int round, int rank) returns int
+	if round < 1 or round > 2 or rank < 0 or rank >= TD_TRIAL_LANE_COUNT
+		return 0
+	return (30 - rank * 6) * round
+
+public function tdTrialTiePrize(int round, int firstRank, int tiedCount) returns int
+	if tiedCount <= 0 or firstRank < 0 or firstRank + tiedCount > TD_TRIAL_LANE_COUNT
+		return 0
+	var pool = 0
+	for rank = firstRank to firstRank + tiedCount - 1
+		pool += tdTrialPrize(round, rank)
+	return pool div tiedCount
+
+// Comparisons explicitly reject NaN and infinities before arithmetic/conversion.
+public function tdTrialFiniteWithin(real value, real low, real high) returns boolean
+	if value != value
+		return false
+	return value >= low and value <= high
+
+public function tdTrialClockValid(real now) returns boolean
+	// Over three years of uninterrupted game time; reject corrupted clocks.
+	return tdTrialFiniteWithin(now, 0.0, 100000000.0)
+
+public function tdTrialEffectiveDamage(real amount, real preLife) returns real
+	if amount != amount or amount <= 0.0 or not tdTrialFiniteWithin(preLife, 0.0, TD_TRIAL_TARGET_HP * 1.0)
+		return 0.0
+	// Finite anomalous overkill (and positive infinity) stays capped to real life.
+	// The runtime adapter must diagnose abnormal input; this never creates NaN totals.
+	return min(amount, preLife)
+
+public function tdTrialFirstSegmentSpacing(real length) returns real
+	if not tdTrialFiniteWithin(length, 0.0, 100000000.0)
+		return 0.0
+	return min(96.0, length / 8.0)
+
+public function tdTrialElapsed(real startedAt, real now) returns real
+	if not tdTrialClockValid(startedAt) or not tdTrialClockValid(now) or now < startedAt
+		return 0.0
+	return min(TD_TRIAL_DURATION, now - startedAt)

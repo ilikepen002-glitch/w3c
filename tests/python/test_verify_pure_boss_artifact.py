@@ -1,6 +1,6 @@
 """Closed-delta mutation tests using immutable formal manager 654771b, never MPQ editing.
 
-Source tests inspect the real candidate sources. Object/resource fixtures are
+Source tests inspect immutable formal72, keeping this historical Boss oracle strict. Object/resource fixtures are
 explicit synthetic expected deltas; they are NOT described as compiled output.
 Set PURE_BOSS_CANDIDATE_MAP and PURE_BOSS_BASELINE_SOURCE to add actual final-MPQ
 runtime tests after the serial, authorized build has produced a candidate.
@@ -25,6 +25,7 @@ from VerifySemanticIconArtifact import Field, Object, parse_objects
 from GenerateTowerTerrainMask import Mpq
 from VerifyBossSpellResistanceArtifact import BossJassRuntime
 from VerifyTowerUpgradeArtifact import JassScalarEvaluator
+from trial_formal72_fixture import sources as formal72_sources, Formal72SourceFixture
 
 FORMAL_B7 = '654771baa872241cf572b16a0ef884436fe4818c'
 
@@ -134,7 +135,7 @@ def synthetic_expected_objects(before):
 class PureBossSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.current, cls.formal = gate.source_files(ROOT / 'wurst'), formal_sources()
+        cls.current, cls.formal = formal72_sources(), formal_sources()
 
     def verify(self, source):
         return gate.verify_source_delta(source, self.formal, gate.CHANGED_OWNERS)
@@ -439,7 +440,7 @@ class PureBossActualCompiledTests(unittest.TestCase):
         # manifest and matching formal source; missing evidence is an error.
         reviewed = json.loads(Path(os.environ['PURE_BOSS_REVIEWED_JASS_TEMPLATES']).read_text())
         result = gate.validate_pure_boss_artifact(self.candidate, self.baseline,
-            ROOT / 'wurst', Path(os.environ['PURE_BOSS_BASELINE_SOURCE']),
+            Path(os.environ['PURE_BOSS_CANDIDATE_SOURCE']), Path(os.environ['PURE_BOSS_BASELINE_SOURCE']),
             gate.CHANGED_OWNERS, reviewed)
         self.assertEqual(result['jass']['preserved_functions'], 1525)
         self.assertEqual(len(result['jass']['exact_reviewed_compiler_adaptations']), 47)
