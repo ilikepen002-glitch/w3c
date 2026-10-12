@@ -304,8 +304,11 @@ class CaptureRemovalHistoricalRuntimeTests(unittest.TestCase):
 
 
 class CaptureRemovalCurrentManagerTests(unittest.TestCase):
+    # Historical ordinary-capture oracle stays bound to immutable formal72;
+    # VerifyTrialReplay separately checks current compiled capture helpers.
     def test_current_twenty_slot_ordinary_spend_tutorial_roll_and_refund(self):
-        script = Mpq((ROOT / 'ExampleMap.w3x').read_bytes()).extract('war3map.j').decode('utf-8')
+        from trial_formal72_fixture import map_bytes
+        script = Mpq(map_bytes()).extract('war3map.j').decode('utf-8')
         self.assertIn('set TDPetData_TD_PET_COLLECTION_LIMIT = 20', script)
         removal.verify_spend_and_attempt(script, capacity=20)
 

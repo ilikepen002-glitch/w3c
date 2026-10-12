@@ -1,0 +1,174 @@
+package TDTrialRulesTests
+import TDTrialRules
+import TDTrialScore
+import TDTrialRouteRules
+import TDTrialTargets
+import TDTrialLifeRules
+import TDTrialObjectGen
+import TDWaves
+
+@Test function trialRulesHaveExactlyTwo120SecondFiveTargetNodes()
+	tdTrialRoundForWave(7).assertEquals(0)
+	tdTrialRoundForWave(8).assertEquals(1)
+	tdTrialRoundForWave(16).assertEquals(0)
+	tdTrialRoundForWave(24).assertEquals(2)
+	tdTrialRoundForWave(32).assertEquals(0)
+	TD_TRIAL_DURATION.assertEquals(120.0)
+	TD_TRIAL_TARGETS_PER_LANE.assertEquals(5)
+	TD_TRIAL_MAX_TARGETS.assertEquals(20)
+	TD_TRIAL_TARGET_HP.assertEquals(1000000)
+	TD_TRIAL_TARGET_SPEED.assertEquals(260)
+	tdIsBossUnitTypeId(TD_TRIAL_TARGET_UNIT_ID).assertFalse()
+
+@Test function trialRewardsPoolOccupiedRanksAndFloorOnce()
+	tdTrialPrize(1, 0).assertEquals(30)
+	tdTrialPrize(1, 1).assertEquals(24)
+	tdTrialPrize(1, 2).assertEquals(18)
+	tdTrialPrize(1, 3).assertEquals(12)
+	tdTrialPrize(2, 0).assertEquals(60)
+	tdTrialPrize(2, 3).assertEquals(24)
+	tdTrialTiePrize(1, 0, 2).assertEquals(27)
+	tdTrialTiePrize(1, 0, 3).assertEquals(24)
+	tdTrialTiePrize(1, 0, 4).assertEquals(21)
+	tdTrialTiePrize(1, 1, 3).assertEquals(18)
+	tdTrialTiePrize(2, 0, 2).assertEquals(54)
+	tdTrialTiePrize(1, -1, 1).assertEquals(0)
+	tdTrialTiePrize(1, 3, 2).assertEquals(0)
+	tdTrialTiePrize(3, 0, 4).assertEquals(0)
+
+@Test function trialDamageCapsOverkillAndRejectsCorruptRanges()
+	tdTrialEffectiveDamage(20.0, 10.0).assertEquals(10.0)
+	tdTrialEffectiveDamage(0.375, 10.0).assertEquals(0.375)
+	tdTrialEffectiveDamage(-1.0, 10.0).assertEquals(0.0)
+	tdTrialEffectiveDamage(2000000.0, 1000000.0).assertEquals(1000000.0)
+	tdTrialEffectiveDamage(1000000000000.0, 1000000.0).assertEquals(1000000.0)
+	tdTrialEffectiveDamage(1.0, 1000001.0).assertEquals(0.0)
+	tdTrialEffectiveDamage(1.0, -1.0).assertEquals(0.0)
+	// At 1e9 the native real ULP exceeds 1; use a representable out-of-range value.
+	tdTrialFiniteWithin(1000001024.0, 0.0, 1000000000.0).assertFalse()
+
+@Test function trialScoreKeepsFractionsAndRoundsOnlyFinalTotal()
+	let first = new TDTrialScore()
+	let second = new TDTrialScore()
+	first.add(0.25).assertTrue()
+	first.add(0.25).assertTrue()
+	first.add(0.25).assertTrue()
+	first.total().assertEquals(0.75)
+	first.roundedRemainder().assertEquals(1)
+	second.add(1.0)
+	first.sameRankValue(second).assertTrue()
+	first.outranks(second).assertFalse()
+	second.add(0.50)
+	second.roundedRemainder().assertEquals(2)
+	second.outranks(first).assertTrue()
+	first.add(1000001.0).assertFalse()
+	first.isFaulted().assertTrue()
+	first.add(1.0).assertFalse()
+	first.total().assertEquals(0.75)
+	destroy first
+	destroy second
+
+@Test function trialScoreHandlesLargeTotalsWithoutUnboundedR2I()
+	let score = new TDTrialScore()
+	// Over the signed-int limit in total, every converted carry stays <= 1.
+	for index = 0 to 2147
+		score.add(1000000.0).assertTrue()
+	score.roundedChunks().assertEquals(2048)
+	score.roundedRemainder().assertEquals(516352)
+	score.isFaulted().assertFalse()
+	destroy score
+
+@Test function trialRoundedCarryAndZeroBoundaryStayDeterministic()
+	let first = new TDTrialScore()
+	let second = new TDTrialScore()
+	let zero = new TDTrialScore()
+	first.add(1000000.0)
+	first.add(48575.5)
+	first.roundedChunks().assertEquals(1)
+	first.roundedRemainder().assertEquals(0)
+	second.add(0.125)
+	second.roundedRemainder().assertEquals(0)
+	second.sameRankValue(zero).assertFalse()
+	second.outranks(zero).assertTrue()
+	destroy first
+	destroy second
+	destroy zero
+
+@Test function trialFirstSegmentPositionsRemainInsideFirstSegment()
+	tdTrialFirstSegmentSpacing(1152.0).assertEquals(96.0)
+	tdTrialFirstSegmentSpacing(128.0).assertEquals(16.0)
+	tdTrialFirstSegmentSpacing(0.0).assertEquals(0.0)
+	tdTrialFirstSegmentSpacing(-1.0).assertEquals(0.0)
+	let spawn = vec2(0.0, 0.0)
+	let firstWaypoint = vec2(128.0, 0.0)
+	tdTrialInitialPosition(spawn, firstWaypoint, 0).x.assertEquals(0.0)
+	tdTrialInitialPosition(spawn, firstWaypoint, 4).x.assertEquals(64.0)
+	tdTrialInitialPosition(spawn, spawn, 4).x.assertEquals(0.0)
+	tdTrialInitialPosition(spawn, firstWaypoint, 5).x.assertEquals(0.0)
+	tdTrialResetWaypoint().assertEquals(0)
+
+@Test function trialTwentySlotIdentityRejectsDuplicatesAndStaleReplacement()
+	let targets = new TDTrialTargets()
+	for lane = 0 to 3
+		for slot = 0 to 4
+			targets.bind(lane, slot, lane * 5 + slot + 1).assertTrue()
+	targets.count().assertEquals(20)
+	targets.bind(0, 0, 21).assertFalse()
+	targets.bind(4, 0, 21).assertFalse()
+	let revision = targets.revision(0, 0)
+	targets.unbind(0, 0, 2).assertFalse()
+	targets.unbind(0, 0, 1).assertTrue()
+	targets.bind(0, 0, 2).assertFalse()
+	targets.bind(0, 0, 21).assertTrue()
+	targets.matches(0, 0, 21, revision).assertFalse()
+	targets.matches(0, 0, 1, revision).assertFalse()
+	targets.clearLane(0)
+	targets.count().assertEquals(15)
+	targets.clear()
+	targets.clear()
+	targets.count().assertEquals(0)
+	destroy targets
+
+@Test function trialAssetsUseExplicitExclusiveFullPaths()
+	tdTrialIconPath().assertEquals("war3mapImported\\BTNTDTrialGoldGolem.blp")
+	tdTrialDisabledIconPath().assertEquals("ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTrialGoldGolem.blp")
+	tdTrialNativeModelPath().assertEquals("Units\\Creeps\\GolemStatue\\GolemStatue.mdx")
+
+@Test function trialLifeAndEquipmentEligibilityRemainIndependentOfBossIdentity()
+	TD_TRIAL_REFILL_PRIORITY.assertEquals(0)
+	TD_TRIAL_CREDIT_PRIORITY.assertEquals(4)
+	tdTrialShouldRefill(true, 1.0).assertTrue()
+	tdTrialShouldRefill(true, 0.0).assertFalse()
+	tdTrialShouldRefill(true, -1.0).assertFalse()
+	tdTrialShouldRefill(false, 1.0).assertFalse()
+	tdTrialEquipmentBossBonusEligible(true, 0, 0).assertTrue()
+	tdTrialEquipmentBossBonusEligible(true, 1, 0).assertFalse()
+	tdTrialEquipmentBossBonusEligible(false, 0, 0).assertFalse()
+	tdIsBossUnitTypeId(TD_TRIAL_TARGET_UNIT_ID).assertFalse()
+
+@Test function trialExactDecimalTextDistinguishesLargeTotalsByOne()
+	let first = new TDTrialScore()
+	let second = new TDTrialScore()
+	for index = 0 to 2147
+		first.add(1000000.0)
+		second.add(1000000.0)
+	first.text().assertEquals("2148000000")
+	second.add(1.0)
+	second.text().assertEquals("2148000001")
+	second.outranks(first).assertTrue()
+	first.sameRankValue(second).assertFalse()
+	destroy first
+	destroy second
+
+@Test function trialExactDecimalTextHandlesChunkBoundaryAndPositiveSubOne()
+	let score = new TDTrialScore()
+	score.text().assertEquals("0")
+	score.add(0.125)
+	score.text().assertEquals("<1")
+	score.add(999999.875)
+	score.text().assertEquals("1000000")
+	score.add(48576.0)
+	score.text().assertEquals("1048576")
+	score.add(1.0)
+	score.text().assertEquals("1048577")
+	destroy score

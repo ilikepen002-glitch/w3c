@@ -1,0 +1,54 @@
+package TDTrialHud
+import TDTrialIdentity
+import TDTrialObjectGen
+import GameTimer
+
+public constant int TD_TRIAL_HUD_ROWS = 6
+string array tdTrialHudCells
+
+public function tdTrialHudCell(int row, int column) returns string
+	if row < 0 or row >= TD_TRIAL_HUD_ROWS or column < 0 or column >= 4
+		return ""
+	return tdTrialHudCells[row * 4 + column]
+
+function tdTrialSetHudCell(int row, int column, string value)
+	tdTrialHudCells[row * 4 + column] = value
+
+public function tdTrialPrepareHud(TDTrialState state, real now)
+	for cell = 0 to TD_TRIAL_HUD_ROWS * 4 - 1
+		tdTrialHudCells[cell] = ""
+	if state.getRound() == 0 or state.getPhase() == TD_TRIAL_IDLE
+		tdTrialSetHudCell(0, 0, "金币试炼")
+		tdTrialSetHudCell(0, 2, "8/24波后各120秒")
+		tdTrialSetHudCell(5, 2, "每路5目标 · 屠王有效")
+		return
+	let active = state.getPhase() == TD_TRIAL_ACTIVE
+	let remaining = active ? IMaxBJ(0, R2I(state.getDeadline() - now + 0.999)) : 0
+	tdTrialSetHudCell(0, 0, "试炼" + state.getRound() + (active ? " · " + remaining + "s" : " · 结算"))
+	tdTrialSetHudCell(0, 1, "有效伤害")
+	tdTrialSetHudCell(0, 2, "平均DPS")
+	tdTrialSetHudCell(0, 3, "金币/状态")
+	for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+		if state.isParticipant(lane)
+			let row = 1 + state.displayRank(lane)
+			tdTrialSetHudCell(row, 0, "P" + (lane + 1) + " · 第" + (state.rank(lane) + 1))
+			tdTrialSetHudCell(row, 1, state.totalText(lane))
+			tdTrialSetHudCell(row, 2, R2SW(state.averageDps(lane, now), 0, 1))
+			var status = active ? "计分中" : state.reward(lane) + "金"
+			if state.isWithdrawn(lane)
+				status = "退出 · 0金"
+			else if state.isFaulted(lane)
+				status = "异常 · 0金"
+			tdTrialSetHudCell(row, 3, status)
+	tdTrialSetHudCell(5, 0, "名次奖励")
+	tdTrialSetHudCell(5, 2, state.getRound() == 1 ? "30/24/18/12 · 同分均分" : "60/48/36/24 · 同分均分")
+
+public function tdTrialRefreshHud(multiboard board, int firstRow)
+	tdTrialPrepareHud(tdTrialState, getElapsedGameTime())
+	for row = 0 to TD_TRIAL_HUD_ROWS - 1
+		for column = 0 to 3
+			board.setItemValue(firstRow + row, column, tdTrialHudCell(row, column))
+	board.setItemIcon(firstRow, 0, tdTrialIconPath())
+	let header = board.getItem(firstRow, 0)
+	header.setStyle(true, true)
+	header.release()

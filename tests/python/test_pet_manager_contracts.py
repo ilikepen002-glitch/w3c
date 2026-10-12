@@ -1,4 +1,6 @@
-"""Independent source/asset/current-verifier mutation checks; no map or compiler."""
+"""Historical formal72 manager oracle mutation checks; no map or compiler.
+Current trial manager inheritance is separately verified by VerifyTrialDelta.
+"""
 from contextlib import redirect_stdout
 from copy import deepcopy
 import io
@@ -14,6 +16,7 @@ import VerifyPetManagerSource as checker
 import VerifyPetUIArtifact as artifact
 import VerifyPureBossArtifact as boss
 from BuildPetUiAssets import verify_manifest
+from trial_formal72_fixture import Formal72SourceFixture, sources as formal72_sources
 
 
 def quiet(call, *args):
@@ -74,6 +77,19 @@ def current_manager_fixture():
 
 
 class RealSourceContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.formal72 = Formal72SourceFixture()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.formal72.cleanup()
+
+    def setUp(self):
+        self.addCleanup(patch.stopall)
+        patch.object(checker, 'ROOT', self.formal72.root).start()
+        patch.object(boss, 'source_files', return_value=formal72_sources()).start()
+
     def test_execute_actual_page_quality_rawcode_and_navigation_bodies(self):
         quiet(checker.verify_scalar_contracts)
 
@@ -117,7 +133,8 @@ class RealSourceContractTests(unittest.TestCase):
                 quiet(boss.verify_manager_inherited_wiring)
 
     def test_current_manifest_28_assets_and_original_13_remain_exact(self):
-        quiet(checker.verify_assets)
+        with patch.object(checker, 'ROOT', ROOT):
+            quiet(checker.verify_assets)
 
     def test_manifest_rejects_missing_quality_or_semantic_name(self):
         original = json.loads((ROOT / 'assets/source/pet-ui/manifest.json').read_text())

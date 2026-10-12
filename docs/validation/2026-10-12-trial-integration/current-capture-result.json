@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "actual_lane_identifier": "lane_3",
+  "typed_lane_view": "lane_2",
+  "actual_compiled_cases": "120 spend eligibility/charge cases; tutorial guarantee/used flags; 200 ordinary60% roll cases; explicit one refund + sync after failed store",
+  "scope": "Actual current capture bodies, no gameplay values/control-flow normalization"
+}

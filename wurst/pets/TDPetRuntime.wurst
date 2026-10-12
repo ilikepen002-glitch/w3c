@@ -15,6 +15,7 @@ import TDEquipmentCombat
 import TDEnemyMechanicRuntime
 import TDBossRewardRules
 import TDWaveFlowState
+import TDTrialIdentity
 
 public unit array tdPetFarmers
 real array tdPetCaptureReadyAt
@@ -31,6 +32,8 @@ public function tdPetSyncBallAbility(int lane)
 		farmer.setAbilityLevel(TD_PET_CAPTURE_ABILITY_ID, IMinBJ(tdPetBallsForLane(lane), 60) + 1)
 
 public function tdPetEnemyIsValid(unit enemy, int lane) returns boolean
+	if tdTrialIsTargetType(enemy)
+		return tdTrialTargetValid(enemy, lane)
 	return enemy != null and enemy.isAlive() and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == lane and not tdEnemyWasLeaked(enemy)
 
 public function tdPetLaneCanAct(int lane) returns boolean

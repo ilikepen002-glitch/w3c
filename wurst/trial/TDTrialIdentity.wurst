@@ -1,0 +1,116 @@
+package TDTrialIdentity
+import public TDTrialState
+import public TDTrialRules
+import TDState
+import TDConfig
+import TDWaveFlowState
+import GameTimer
+import Table
+
+public TDTrialState tdTrialState = new TDTrialState()
+public TDTrialBinding array tdTrialNativeSlots
+constant Table tdTrialNativeByHandle = new Table()
+boolean array tdTrialDamageDiagnosticShown
+
+public tuple tdTrialCombatContext(int epoch, int generation, int token, boolean fromTrial)
+
+public class TDTrialBinding
+	unit target
+	int lane
+	int slot
+	int generation
+	int token
+	int revision
+	int waypoint = 0
+	vec2 origin
+
+	construct(unit target, int lane, int slot, vec2 origin)
+		this.target = target
+		this.lane = lane
+		this.slot = slot
+		this.origin = origin
+		generation = tdTrialState.getGeneration()
+		token = tdTrialState.getToken()
+		revision = tdTrialState.targetRevision(lane, slot)
+
+public function tdTrialIsTargetType(unit target) returns boolean
+	return target != null and GetUnitTypeId(target) == TD_TRIAL_TARGET_UNIT_ID
+
+public function tdTrialBindingFor(unit target) returns TDTrialBinding
+	if target == null or not tdTrialNativeByHandle.hasInt(target.getHandleId())
+		return null
+	let binding = tdTrialNativeByHandle.loadInt(target.getHandleId()) castTo TDTrialBinding
+	return binding.target == target ? binding : null
+
+public function tdTrialLaneContinues(int lane) returns boolean
+	return tdIsLanePlayer(lane) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
+
+public function tdTrialRegisterBinding(TDTrialBinding binding) returns boolean
+	let index = tdTrialSlotIndex(binding.lane, binding.slot)
+	if index < 0 or tdTrialNativeSlots[index] != null or binding.target == null or tdTrialNativeByHandle.hasInt(binding.target.getHandleId())
+		return false
+	tdTrialNativeSlots[index] = binding
+	tdTrialNativeByHandle.saveInt(binding.target.getHandleId(), binding castTo int)
+	return true
+
+public function tdTrialForgetBinding(TDTrialBinding binding)
+	let index = tdTrialSlotIndex(binding.lane, binding.slot)
+	if index >= 0 and tdTrialNativeSlots[index] == binding
+		tdTrialNativeSlots[index] = null
+	if binding.target != null and tdTrialBindingFor(binding.target) == binding
+		tdTrialNativeByHandle.removeInt(binding.target.getHandleId())
+
+public function tdTrialTargetValid(unit target, int lane) returns boolean
+	let binding = tdTrialBindingFor(target)
+	if binding == null or binding.lane != lane or not tdTrialIsTargetType(target) or not target.isAlive() or not tdTrialLaneContinues(lane)
+		return false
+	return tdTrialState.canHit(binding.token, binding.generation, lane, binding.slot, target.getHandleId(), binding.revision, getElapsedGameTime())
+
+public function tdTrialCaptureContext(unit originTarget) returns tdTrialCombatContext
+	if tdTrialIsTargetType(originTarget)
+		let binding = tdTrialBindingFor(originTarget)
+		return tdTrialCombatContext(tdFlowEpoch(), tdTrialState.getGeneration(), binding == null ? 0 : binding.token, true)
+	return tdTrialCombatContext(tdFlowEpoch(), tdTrialState.getGeneration(), 0, false)
+
+public function tdTrialContextValid(tdTrialCombatContext context) returns boolean
+	if context.epoch != tdFlowEpoch() or context.generation != tdTrialState.getGeneration()
+		return false
+	if not context.fromTrial
+		return true
+	return context.token != 0 and context.token == tdTrialState.getToken() and tdTrialState.getPhase() == TD_TRIAL_ACTIVE and getElapsedGameTime() < tdTrialState.getDeadline() and not tdIsGameOver()
+
+public function tdTrialTargetContextValid(unit target, int lane, tdTrialCombatContext context, int revision) returns boolean
+	if target == null or GetUnitTypeId(target) == 0
+		return false
+	if not tdTrialContextValid(context)
+		return false
+	if context.fromTrial
+		let binding = tdTrialBindingFor(target)
+		return binding != null and binding.token == context.token and binding.revision == revision and tdTrialTargetValid(target, lane)
+	// A normal-origin segment never retargets into a newly-created trial.
+	return not tdTrialIsTargetType(target)
+
+public function tdTrialClearDamageDiagnostics()
+	for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+		tdTrialDamageDiagnosticShown[lane] = false
+
+public function tdTrialDiagnoseDamage(int lane, real amount)
+	if not tdTrialLaneValid(lane) or tdTrialDamageDiagnosticShown[lane]
+		return
+	if amount == amount and amount <= TD_TRIAL_TARGET_HP and not tdTrialState.isFaulted(lane)
+		return
+	tdTrialDamageDiagnosticShown[lane] = true
+	DisplayTimedTextToPlayer(Player(lane), 0, 0, 6.0, "试炼出现异常伤害；超额按生命封顶，累计溢出时冻结成绩且无奖励。")
+
+public function tdTrialCurrentContext() returns tdTrialCombatContext
+	let active = tdTrialState.getPhase() == TD_TRIAL_ACTIVE
+	return tdTrialCombatContext(tdFlowEpoch(), tdTrialState.getGeneration(), active ? tdTrialState.getToken() : 0, active)
+
+public function tdTrialAoeTargetContextValid(unit target, int lane, tdTrialCombatContext context) returns boolean
+	if target == null or GetUnitTypeId(target) == 0
+		return false
+	if not tdTrialContextValid(context)
+		return false
+	if context.fromTrial
+		return tdTrialTargetValid(target, lane)
+	return not tdTrialIsTargetType(target)

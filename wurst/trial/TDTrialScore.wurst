@@ -1,0 +1,83 @@
+package TDTrialScore
+import TDTrialRules
+
+// Two bounded components avoid converting the unbounded display total to int.
+// Only the small carry and final remainder are converted, without per-hit integer truncation.
+// Native single-precision rounding still applies; tiny additions may lose precision.
+public constant real TD_TRIAL_SCORE_CHUNK = 1048576.0
+public constant int TD_TRIAL_SCORE_MAX_CHUNKS = 1000000
+
+public class TDTrialScore
+	private int chunks = 0
+	private real remainder = 0.0
+	private boolean faulted = false
+
+	function reset()
+		chunks = 0
+		remainder = 0.0
+		faulted = false
+
+	function isFaulted() returns boolean
+		return faulted
+
+	function hasDamage() returns boolean
+		return chunks > 0 or remainder > 0.0
+
+	function add(real effective) returns boolean
+		if faulted
+			return false
+		if not tdTrialFiniteWithin(effective, 0.0, TD_TRIAL_TARGET_HP * 1.0)
+			faulted = true
+			return false
+		if effective == 0.0
+			return false
+		let sum = remainder + effective
+		// sum < 2^20 + 10^6, hence carry is 0 or 1 and R2I is safe.
+		let carry = R2I(sum / TD_TRIAL_SCORE_CHUNK)
+		if chunks > TD_TRIAL_SCORE_MAX_CHUNKS - carry
+			faulted = true
+			return false
+		chunks += carry
+		remainder = sum - carry * TD_TRIAL_SCORE_CHUNK
+		return true
+
+	function total() returns real
+		return chunks * TD_TRIAL_SCORE_CHUNK + remainder
+
+	function roundedChunks() returns int
+		return chunks + (R2I(remainder + 0.5) >= R2I(TD_TRIAL_SCORE_CHUNK) ? 1 : 0)
+
+	function roundedRemainder() returns int
+		let rounded = R2I(remainder + 0.5)
+		return rounded >= R2I(TD_TRIAL_SCORE_CHUNK) ? 0 : rounded
+
+	function sameRankValue(TDTrialScore other) returns boolean
+		// Positive sub-one totals remain distinct from truly zero damage.
+		return hasDamage() == other.hasDamage() and roundedChunks() == other.roundedChunks() and roundedRemainder() == other.roundedRemainder()
+
+	function outranks(TDTrialScore other) returns boolean
+		if hasDamage() != other.hasDamage()
+			return hasDamage()
+		if roundedChunks() != other.roundedChunks()
+			return roundedChunks() > other.roundedChunks()
+		return roundedRemainder() > other.roundedRemainder()
+
+	// Exact decimal text from bounded integer components, never recombine into real.
+	function text() returns string
+		let a = roundedChunks()
+		let b = roundedRemainder()
+		if a == 0 and b == 0
+			return hasDamage() ? "<1" : "0"
+		let hi = a div 10000
+		let lo = a mod 10000
+		let carry = lo * 8576 + b
+		let low = carry mod 10000
+		let middleCarry = lo * 104 + hi * 8576 + carry div 10000
+		let middle = middleCarry mod 10000
+		let high = hi * 104 + middleCarry div 10000
+		let lowText = (10000 + low).toString().substring(1, 5)
+		if high > 0
+			return high + (10000 + middle).toString().substring(1, 5) + lowText
+		if middle > 0
+			return middle + lowText
+		return low.toString()

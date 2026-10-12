@@ -23,6 +23,7 @@ import TDTowerEvolutionRuntime
 import TDDamageRuntime
 import TDTowerBloodlustAutocast
 import TDEnemyMechanicRuntime
+import TDTrialIdentity
 
 unit array tdFarmers
 constant Table tdOrcBladestormStates = new Table()
@@ -109,10 +110,15 @@ function tdHandleTowerUpgradeStarted()
 class TDArcherSplitArrowShot
 	unit target
 	real flightTime
+	tdTrialCombatContext context
+	int targetRevision
 
 	construct(unit target, real flightTime)
 		this.target = target
 		this.flightTime = flightTime
+		context = tdTrialCaptureContext(target)
+		let binding = tdTrialBindingFor(target)
+		targetRevision = binding == null ? 0 : binding.revision
 
 class TDArcherSplitArrowVolley
 	unit source
@@ -442,7 +448,7 @@ function tdClearOrcBladestormState(unit tower)
 	if tower.isAlive()
 		tower.setAnimation("stand")
 
-function tdPulseOrcBladestorm(unit tower)
+function tdPulseOrcBladestorm(unit tower, tdTrialCombatContext context)
 	if tower == null or not tower.isAlive()
 		return
 	let center = tower.getPos()
@@ -451,7 +457,7 @@ function tdPulseOrcBladestorm(unit tower)
 	let g = CreateGroup()
 	g.enumUnitsInRange(center, tdOrcBladestormRadius())
 	for victim in g
-		if victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == ownerPlayerId
+		if tdTrialAoeTargetContextValid(victim, ownerPlayerId, context) and victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == ownerPlayerId
 			DamageEvent.setNextDamageFromCode()
 			tower.damageTarget(victim, tdEnemyMechanicScaleSpellDamage(victim, damagePerTick))
 	g.destr()
@@ -466,12 +472,13 @@ function tdHandleOrcBladestormCast() returns boolean
 	// The classic Blademaster embeds its blade trail in Attack Walk Stand Spin.
 	tower.addAnimationProperties("spin")
 	tower.setAnimation("stand spin")
+	let context = tdTrialCurrentContext()
 	doPeriodicallyCounted(tdOrcBladestormTickInterval(), pulseCount) cb ->
-		if not tdOrcBladestormIsActive(tower) or not tower.isAlive()
+		if not tdTrialContextValid(context) or not tdOrcBladestormIsActive(tower) or not tower.isAlive()
 			tdClearOrcBladestormState(tower)
 			destroy cb
 		else
-			tdPulseOrcBladestorm(tower)
+			tdPulseOrcBladestorm(tower, context)
 			if cb.isLast()
 				tdClearOrcBladestormState(tower)
 				destroy cb
@@ -483,6 +490,9 @@ function tdHandleGhoulCorpseExplosionDamage()
 	let source = DamageEvent.getSource()
 	let target = DamageEvent.getTarget()
 	if source == null or target == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != TD_TOWER_CHOICE_GHOUL
+		return
+	// Trial abnormal death never becomes a corpse-explosion/drop farming source.
+	if GetUnitTypeId(target) == 0 or tdTrialIsTargetType(target)
 		return
 	if source.getAbilityLevel(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID) <= 0
 		return
@@ -678,8 +688,10 @@ function tdHandleArcherSplitArrowAttack()
 function tdArcherSplitArrowNativeAttackType() returns attacktype
 	return ATTACK_TYPE_PIERCE
 
-function tdDealArcherSplitArrowAttackDamage(unit source, unit target, real amount)
+function tdDealArcherSplitArrowAttackDamage(unit source, unit target, real amount, tdTrialCombatContext context, int revision)
 	if source == null or target == null or not target.isAlive() or amount <= 0.0
+		return
+	if not tdTrialTargetContextValid(target, GetPlayerId(GetOwningPlayer(source)), context, revision)
 		return
 	tdPetOnSplitArrowImpact(source, target)
 	DamageEvent.setNextDamageId(TD_ARCHER_SPLIT_ARROW_DAMAGE_EVENT_ID)
@@ -701,12 +713,14 @@ function tdHandleArcherSplitArrowDamage()
 	for shot in volley.extraShots
 		if shot != null and shot.target != null and shot.target.isAlive()
 			let victim = shot.target
+			let context = shot.context
+			let revision = shot.targetRevision
 			let impactDelay = shot.flightTime - volley.primaryFlightTime
 			if impactDelay <= 0.03
-				tdDealArcherSplitArrowAttackDamage(source, victim, attackDamage)
+				tdDealArcherSplitArrowAttackDamage(source, victim, attackDamage, context, revision)
 			else
 				doAfter(impactDelay) ->
-					tdDealArcherSplitArrowAttackDamage(source, victim, attackDamage)
+					tdDealArcherSplitArrowAttackDamage(source, victim, attackDamage, context, revision)
 
 function tdUnlockFarmerWageAbility()
 	if tdFarmerWageUnlocked

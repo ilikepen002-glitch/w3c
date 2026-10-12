@@ -1,0 +1,97 @@
+{
+  "status": "PASS",
+  "map": "/workspace/scratch/2106c0ab1fac/damage-trial-implementation-20261012/integration-worktree/ExampleMap.w3x",
+  "map_sha256": "03921c61e64e5392f8f9100291ca62df539b3f0bb8c7c4af47e82fa2bba21dde",
+  "jass_sha256": "a47a8d6226776bf27ab033bb6539fae258f3e889ed55746ccc6b9d219445536c",
+  "unit": {
+    "unam": "金币试炼魔像",
+    "umdl": "Units\\Creeps\\GolemStatue\\GolemStatue.mdx",
+    "uico": "war3mapImported\\BTNTDTrialGoldGolem.blp",
+    "ussi": "war3mapImported\\BTNTDTrialGoldGolem.blp",
+    "uclr": 255,
+    "uclg": 220,
+    "uclb": 120,
+    "uhpm": 1000000,
+    "udef": 0,
+    "udup": 0,
+    "udty": "normal",
+    "uabi": "",
+    "udaa": "",
+    "utyp": "",
+    "utar": "ground",
+    "upgr": "",
+    "umvs": 260,
+    "umis": 1,
+    "umas": 260,
+    "umvt": "foot",
+    "uaen": 0,
+    "uacq": 0.0,
+    "ucol": 0.0,
+    "ubba": 0,
+    "ubdi": 0,
+    "ubsi": 0,
+    "ulba": 0,
+    "ulbd": 0,
+    "ulbs": 0,
+    "upoi": 0,
+    "udea": 0,
+    "uhpr": 0.0,
+    "uhrt": "none",
+    "ufle": 0,
+    "usle": 0,
+    "ufoo": 0
+  },
+  "icons": {
+    "war3mapImported\\BTNTDTrialGoldGolem.blp": {
+      "sha256": "5095926333d0e730aa9195cc25a5ee13800abb885ca96c0a8eb0a2813cc2be4f",
+      "mips": [
+        64,
+        32,
+        16,
+        8,
+        4,
+        2,
+        1
+      ]
+    },
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTrialGoldGolem.blp": {
+      "sha256": "5acaa9f091a83f87b91e83b6b101191955167f1b7de3b39d9b2497c07e43f911",
+      "mips": [
+        64,
+        32,
+        16,
+        8,
+        4,
+        2,
+        1
+      ]
+    }
+  },
+  "equipment_tooltips": {
+    "current_trial_bonus_texts": {
+      "iB02": {
+        "percent": 25,
+        "required_text": "普攻命中首领或金币试炼主目标时，追加本次普攻伤害的25%"
+      },
+      "iP02": {
+        "percent": 45,
+        "required_text": "普攻命中首领或金币试炼主目标时，追加本次普攻伤害的45%"
+      }
+    },
+    "inherited_player_tooltip_numeric_cases": 1455,
+    "view": "Two exact approved string phrases only, no MPQ rewrite or old grammar expansion"
+  },
+  "native_installation": {
+    "status": "NOT_VERIFIED",
+    "reason": "No actual target 1.28 installation archives supplied",
+    "model": "Units\\Creeps\\GolemStatue\\GolemStatue.mdx",
+    "attack_type_table": "NOT_VERIFIED"
+  },
+  "boundary": "No native gameplay, visuals, FPS, or arbitrary future equipment damage guarantee",
+  "command": [
+    "tools/VerifyTrialArtifact.py",
+    "ExampleMap.w3x",
+    "--output",
+    "docs/validation/2026-10-12-trial-integration/artifact-final-result.json"
+  ]
+}

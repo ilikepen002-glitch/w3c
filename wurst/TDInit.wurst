@@ -12,6 +12,7 @@ import TDHud
 import TDPets
 import TDEnemyMechanicRuntime
 import TDDamageRuntime
+import TDTrialHook
 import RegisterEvents
 
 trigger tdChatCommandTrigger = CreateTrigger()
@@ -284,6 +285,8 @@ public function tdStartGame()
 	tdShutdownGameFlow()
 	tdResetState()
 	tdResetDamageStatistics()
+	if not tdResetAndRegisterTrialHook()
+		DisplayTimedTextToPlayer(Player(0), 0, 0, 8.0, "试炼挂接失败，当前局使用常规首领休整。")
 	tdGameplayStartupCompleted = false
 	tdRevealWholeMap()
 	let setupDelay = tdMapBootstrapDelay()

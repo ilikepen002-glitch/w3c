@@ -279,7 +279,7 @@ function tdItemEffectText(int effectKind, real value) returns string
 	if effectKind == TD_ITEM_EFFECT_DROP_BONUS
 		return "本路非首领装备掉落品质额外抽取" + R2I(value + 0.5).toString() + "次，取最好结果。\n不增加掉落件数，不改变首领奖励。"
 	if effectKind == TD_ITEM_EFFECT_BOSS_DAMAGE
-		return "普攻命中首领主目标时，追加本次普攻伤害的" + R2I(value * 100.0 + 0.5).toString() + "%\n与半血追加比例相加；法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。"
+		return "普攻命中首领或金币试炼主目标时，追加本次普攻伤害的" + R2I(value * 100.0 + 0.5).toString() + "%\n与半血追加比例相加；法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。"
 	return ""
 
 public function tdItemTooltip(int itemId) returns string

@@ -1,0 +1,327 @@
+package TDTrialState
+import TDTrialRules
+import TDTrialScore
+import TDTrialTargets
+
+// A ticket belongs to one event, never a shared last-target variable.
+// The adapter must destroy tickets after the event; nested hits keep separate ones.
+public class TDTrialHitTicket
+	TDTrialState owner
+	int token
+	int generation
+	int lane
+	int slot
+	int identity
+	int revision
+	real preLife
+	boolean consumed = false
+
+	construct(TDTrialState owner, int token, int generation, int lane, int slot, int identity, int revision, real preLife)
+		this.owner = owner
+		this.token = token
+		this.generation = generation
+		this.lane = lane
+		this.slot = slot
+		this.identity = identity
+		this.revision = revision
+		this.preLife = preLife
+
+// No Game, timers, gold writes, ordinary damage ledger or native unit ownership.
+public class TDTrialState
+	private TDTrialScore array[4] scores
+	private boolean array[4] snapshotted
+	private boolean array[4] participants
+	private boolean array[4] withdrawn
+	private boolean array[4] rewardTaken
+	private int array[4] rewards
+	private boolean array[2] attempted
+	private boolean array[2] completed
+	private int array[2] nodeTokens
+	private TDTrialTargets targets = new TDTrialTargets()
+	private int phase = TD_TRIAL_IDLE
+	private int token = 0
+	private int generation = 0
+	private int round = 0
+	private int snapshotCount = 0
+	private int participantCount = 0
+	private real startedAt = 0.0
+	private real deadline = 0.0
+	private real sealedElapsed = 0.0
+	private boolean resumeAccepted = false
+	private boolean targetsCleared = false
+
+	construct()
+		for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+			scores[lane] = new TDTrialScore()
+		reset()
+
+	private function clearRound()
+		targets.clear()
+		for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+			scores[lane].reset()
+			snapshotted[lane] = false
+			participants[lane] = false
+			withdrawn[lane] = false
+			rewardTaken[lane] = false
+			rewards[lane] = 0
+		snapshotCount = 0
+		participantCount = 0
+		resumeAccepted = false
+		targetsCleared = false
+		sealedElapsed = 0.0
+
+	// Call only after runtime has removed prior units/debuffs, then re-register hook.
+	function reset()
+		generation += 1
+		clearRound()
+		phase = TD_TRIAL_IDLE
+		token = 0
+		round = 0
+		startedAt = 0.0
+		deadline = 0.0
+		for node = 0 to 1
+			attempted[node] = false
+			completed[node] = false
+			nodeTokens[node] = 0
+
+	function getGeneration() returns int
+		return generation
+
+	function getToken() returns int
+		return token
+
+	function getPhase() returns int
+		return phase
+
+	function getRound() returns int
+		return round
+
+	function getDeadline() returns real
+		return deadline
+
+	function wasAttempted(int nodeRound) returns boolean
+		return nodeRound >= 1 and nodeRound <= 2 and attempted[nodeRound - 1]
+
+	function wasCompleted(int nodeRound) returns boolean
+		return nodeRound >= 1 and nodeRound <= 2 and completed[nodeRound - 1]
+
+	function current(int expectedToken, int expectedGeneration) returns boolean
+		return token != 0 and token == expectedToken and generation == expectedGeneration
+
+	function prepare(int completedWave, int nextToken, int expectedGeneration, real now) returns boolean
+		let nextRound = tdTrialRoundForWave(completedWave)
+		if nextRound == 0 or nextToken == 0 or expectedGeneration != generation or not tdTrialClockValid(now)
+			return false
+		if phase == TD_TRIAL_PREPARING or phase == TD_TRIAL_ACTIVE or attempted[nextRound - 1]
+			return false
+		if phase == TD_TRIAL_SEALED and not targetsCleared
+			return false
+		if nextToken == nodeTokens[0] or nextToken == nodeTokens[1]
+			return false
+		if now > 100000000.0 - TD_TRIAL_DURATION
+			return false
+		clearRound()
+		round = nextRound
+		token = nextToken
+		attempted[nextRound - 1] = true
+		nodeTokens[nextRound - 1] = nextToken
+		startedAt = now
+		deadline = now + TD_TRIAL_DURATION
+		phase = TD_TRIAL_PREPARING
+		return true
+
+	function snapshotLane(int lane, boolean continuing) returns boolean
+		if phase != TD_TRIAL_PREPARING or not tdTrialLaneValid(lane) or snapshotted[lane]
+			return false
+		snapshotted[lane] = true
+		participants[lane] = continuing
+		snapshotCount += 1
+		if continuing
+			participantCount += 1
+		return true
+
+	function bindTarget(int lane, int slot, int identity, int expectedToken, int expectedGeneration, real now) returns boolean
+		if not current(expectedToken, expectedGeneration) or not tdTrialLaneValid(lane) or not participants[lane] or withdrawn[lane]
+			return false
+		if phase != TD_TRIAL_PREPARING and phase != TD_TRIAL_ACTIVE
+			return false
+		if not tdTrialClockValid(now) or now < startedAt or now >= deadline
+			return false
+		return targets.bind(lane, slot, identity)
+
+	function targetCount() returns int
+		return targets.count()
+
+	function targetRevision(int lane, int slot) returns int
+		return targets.revision(lane, slot)
+
+	function targetMatches(int lane, int slot, int identity, int revision) returns boolean
+		return targets.matches(lane, slot, identity, revision)
+
+	function unbindTarget(int lane, int slot, int identity, int revision, int expectedToken, int expectedGeneration) returns boolean
+		if phase != TD_TRIAL_ACTIVE or not current(expectedToken, expectedGeneration) or not targets.matches(lane, slot, identity, revision)
+			return false
+		return targets.unbind(lane, slot, identity)
+
+	function activate(int expectedToken, int expectedGeneration, real now) returns boolean
+		if phase != TD_TRIAL_PREPARING or not current(expectedToken, expectedGeneration)
+			return false
+		if snapshotCount != TD_TRIAL_LANE_COUNT or participantCount == 0 or targets.count() != participantCount * TD_TRIAL_TARGETS_PER_LANE
+			return false
+		if not tdTrialClockValid(now) or now < startedAt or now >= deadline
+			return false
+		phase = TD_TRIAL_ACTIVE
+		return true
+
+	// Failed prepare is one-shot for this node: Game continues its own transition.
+	// Caller first removes all partially created native units, then calls this.
+	function rollback(int expectedToken, int expectedGeneration) returns boolean
+		if phase != TD_TRIAL_PREPARING or not current(expectedToken, expectedGeneration)
+			return false
+		targets.clear()
+		phase = TD_TRIAL_IDLE
+		token = 0
+		return true
+
+	function canHit(int expectedToken, int expectedGeneration, int lane, int slot, int identity, int revision, real now) returns boolean
+		if phase != TD_TRIAL_ACTIVE or not current(expectedToken, expectedGeneration) or not tdTrialLaneValid(lane)
+			return false
+		if not participants[lane] or withdrawn[lane] or not tdTrialClockValid(now) or now < startedAt or now >= deadline
+			return false
+		return targets.matches(lane, slot, identity, revision)
+
+	function hitTicket(int lane, int slot, int identity, int expectedToken, int expectedGeneration, real now, real preLife) returns TDTrialHitTicket
+		let revision = targets.revision(lane, slot)
+		if not canHit(expectedToken, expectedGeneration, lane, slot, identity, revision, now) or not tdTrialFiniteWithin(preLife, 0.0, TD_TRIAL_TARGET_HP * 1.0)
+			return null
+		return new TDTrialHitTicket(this, token, generation, lane, slot, identity, revision, preLife)
+
+	function credit(TDTrialHitTicket ticket, int sourceLane, real amount, real now) returns real
+		if ticket == null or ticket.owner != this or ticket.consumed
+			return 0.0
+		ticket.consumed = true
+		if sourceLane != ticket.lane or not canHit(ticket.token, ticket.generation, ticket.lane, ticket.slot, ticket.identity, ticket.revision, now)
+			return 0.0
+		let effective = tdTrialEffectiveDamage(amount, ticket.preLife)
+		return scores[ticket.lane].add(effective) ? effective : 0.0
+
+	function withdraw(int lane) returns boolean
+		if phase != TD_TRIAL_ACTIVE or not tdTrialLaneValid(lane) or not participants[lane] or withdrawn[lane]
+			return false
+		withdrawn[lane] = true
+		// Runtime removes native handles and debuffs, preserving this lane's score.
+		targets.clearLane(lane)
+		return true
+
+	function reconcileLane(int lane, boolean continuing) returns boolean
+		if continuing
+			return false
+		return withdraw(lane)
+
+	function shouldResume(int expectedToken, int expectedGeneration, real now) returns boolean
+		return phase == TD_TRIAL_ACTIVE and current(expectedToken, expectedGeneration) and not resumeAccepted and tdTrialClockValid(now) and now >= deadline
+
+	function noteResumeAccepted(int expectedToken, int expectedGeneration) returns boolean
+		if phase != TD_TRIAL_ACTIVE or not current(expectedToken, expectedGeneration) or resumeAccepted
+			return false
+		resumeAccepted = true
+		return true
+
+	function rank(int lane) returns int
+		if not tdTrialLaneValid(lane) or not participants[lane]
+			return -1
+		var higher = 0
+		for other = 0 to TD_TRIAL_LANE_COUNT - 1
+			if participants[other] and scores[other].outranks(scores[lane])
+				higher += 1
+		return higher
+
+	function tiedCount(int lane) returns int
+		if not tdTrialLaneValid(lane) or not participants[lane]
+			return 0
+		var count = 0
+		for other = 0 to TD_TRIAL_LANE_COUNT - 1
+			if participants[other] and scores[other].sameRankValue(scores[lane])
+				count += 1
+		return count
+
+	// The ONLY settlement entry, called by the registered hook's onRelease.
+	function seal(int expectedToken, int expectedGeneration, int reason, real now) returns boolean
+		if phase != TD_TRIAL_ACTIVE or not current(expectedToken, expectedGeneration)
+			return false
+		// Close first: callbacks and old projectiles can no longer score or refill.
+		phase = TD_TRIAL_SEALED
+		sealedElapsed = tdTrialElapsed(startedAt, now)
+		let normal = reason == TD_TRIAL_RELEASE_COMPLETED or reason == TD_TRIAL_RELEASE_TIME_LIMIT
+		// Unexpected early/invalid releases fail closed, but always allow cleanup.
+		if normal and tdTrialClockValid(now) and now >= deadline
+			completed[round - 1] = true
+			sealedElapsed = TD_TRIAL_DURATION
+			for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+				if participants[lane] and not withdrawn[lane] and scores[lane].hasDamage() and not scores[lane].isFaulted()
+					rewards[lane] = tdTrialTiePrize(round, rank(lane), tiedCount(lane))
+		// Identity is invalidated before native cleanup; no KillUnit or rewards here.
+		targets.clear()
+		return true
+
+	// Adapter calls this only after all native targets AND debuffs are removed.
+	function markTargetsCleared(int expectedToken, int expectedGeneration) returns boolean
+		if phase != TD_TRIAL_SEALED or not current(expectedToken, expectedGeneration) or targetsCleared
+			return false
+		targetsCleared = true
+		return true
+
+	function canReturnToGame() returns boolean
+		return phase == TD_TRIAL_SEALED and targetsCleared
+
+	function reward(int lane) returns int
+		return tdTrialLaneValid(lane) ? rewards[lane] : 0
+
+	function takeReward(int lane, int expectedToken, int expectedGeneration) returns int
+		if not canReturnToGame() or not current(expectedToken, expectedGeneration) or not tdTrialLaneValid(lane) or rewardTaken[lane]
+			return 0
+		rewardTaken[lane] = true
+		return rewards[lane]
+
+	function total(int lane) returns real
+		return tdTrialLaneValid(lane) ? scores[lane].total() : 0.0
+
+	function averageDps(int lane, real now) returns real
+		let elapsed = phase == TD_TRIAL_SEALED ? sealedElapsed : tdTrialElapsed(startedAt, now)
+		return elapsed > 0.0 ? total(lane) / elapsed : 0.0
+
+	function isParticipant(int lane) returns boolean
+		return tdTrialLaneValid(lane) and participants[lane]
+
+	function isWithdrawn(int lane) returns boolean
+		return tdTrialLaneValid(lane) and withdrawn[lane]
+
+	function isFaulted(int lane) returns boolean
+		return tdTrialLaneValid(lane) and scores[lane].isFaulted()
+
+	function totalText(int lane) returns string
+		return tdTrialLaneValid(lane) ? scores[lane].text() : "0"
+
+	function roundedChunks(int lane) returns int
+		return tdTrialLaneValid(lane) ? scores[lane].roundedChunks() : 0
+
+	function roundedRemainder(int lane) returns int
+		return tdTrialLaneValid(lane) ? scores[lane].roundedRemainder() : 0
+
+	function targetIdentity(int lane, int slot) returns int
+		return targets.identity(lane, slot)
+
+	function displayRank(int lane) returns int
+		let position = rank(lane)
+		if position < 0
+			return -1
+		var earlierTies = 0
+		for other = 0 to lane - 1
+			if participants[other] and scores[other].sameRankValue(scores[lane])
+				earlierTies += 1
+		return position + earlierTies
+
+	ondestroy
+		for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+			destroy scores[lane]
+		destroy targets

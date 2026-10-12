@@ -14,7 +14,10 @@ from VerifyPlayerTooltipArtifact import validate
 class PlayerTooltipArtifactTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        mpq = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        from trial_formal72_fixture import map_bytes
+        # Old numeric/text grammar remains exact; current trial additions have
+        # separate exact-object and tooltip checks in VerifyTrialArtifact.
+        mpq = Mpq(map_bytes())
         cls.a = ability_objects(mpq.extract('war3map.w3a'))
         cls.u = unit_objects(mpq.extract('war3map.w3u'))
         cls.i = unit_objects(mpq.extract('war3map.w3t'))

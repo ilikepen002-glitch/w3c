@@ -8,6 +8,8 @@ import DamageEvent
 import Table
 import ClosureTimers
 import LinkedList
+import TDTrialIdentity
+import GameTimer
 
 // Keep source references for the match: lingering native damage retains its tower.
 class TDDamageTowerBinding
@@ -89,6 +91,20 @@ function tdDamageCaptureHit()
 	let source = DamageEvent.getSource()
 	let target = DamageEvent.getTarget()
 	if source == null or target == null or GetPlayerId(GetOwningPlayer(target)) != TD_ENEMY_PLAYER_ID
+		return
+	// All trial rawcodes are intercepted, including stale/unregistered targets.
+	if tdTrialIsTargetType(target)
+		let trialRecord = tdDamageTrackTower(source)
+		if trialRecord == null or not tdTrialTargetValid(target, trialRecord.getLane())
+			return
+		let binding = tdTrialBindingFor(target)
+		let ticket = tdTrialState.hitTicket(binding.lane, binding.slot, target.getHandleId(), binding.token, binding.generation, getElapsedGameTime(), min(target.getLife(), TD_TRIAL_TARGET_HP * 1.0))
+		let effective = tdTrialState.credit(ticket, trialRecord.getLane(), DamageEvent.getAmount(), getElapsedGameTime())
+		if ticket != null
+			destroy ticket
+		tdTrialDiagnoseDamage(trialRecord.getLane(), DamageEvent.getAmount())
+		if effective > 0.0
+			tdDamageShowHit(target, effective)
 		return
 	let amount = tdEffectiveDamage(DamageEvent.getAmount(), target.getLife())
 	if amount <= 0.0 or not tdIsLanePlayer(tdEnemyLaneId(target)) or tdEnemyWave(target) <= 0 or tdEnemyWasLeaked(target)

@@ -202,9 +202,11 @@ class ArchiveTests(unittest.TestCase):
 
 class SourceTests(unittest.TestCase):
     def test_source_contract_and_duplicate_player_mutation(self):
-        gate.verify_source(ROOT)
+        from trial_formal72_fixture import Formal72SourceFixture
+        frozen = Formal72SourceFixture(); self.addCleanup(frozen.cleanup)
+        gate.verify_source(frozen.root)
         with tempfile.TemporaryDirectory() as name:
-            root = Path(name); shutil.copytree(ROOT / 'wurst', root / 'wurst')
+            root = Path(name); shutil.copytree(frozen.root / 'wurst', root / 'wurst')
             p = root / 'wurst/damage/TDDamageHud.wurst'
             p.write_text(p.read_text().replace('tdDamageSetPlayerHud(ledger, 2, p0, p1, p2, p3)', 'tdDamageSetPlayerHud(ledger, 1, p0, p1, p2, p3)'))
             with self.assertRaisesRegex(ValueError, 'selected exactly once|Duplicate'): gate.verify_source(root)

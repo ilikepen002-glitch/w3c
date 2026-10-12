@@ -19,6 +19,11 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.script = Mpq((ROOT / 'ExampleMap.w3x').read_bytes()).extract('war3map.j').decode('utf-8')
+        from VerifyDamageRankingJass import functions
+        signature = functions(cls.script)['tdPetSkillAllowed'][2].split(',')
+        if len(signature) != 4 or not signature[1].strip().startswith('integer '):
+            raise AssertionError('Actual skill-slot signature changed')
+        cls.actual_slot = signature[1].strip().split()[1]
 
     def test_actual_all_2176_skill_admission_combinations(self):
         verifier.verify_skill_allowed(self.script)
@@ -43,6 +48,7 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
     endif
     return ( not tdPetSkillIsNumeric(skill_1)) and slot != 1 or tdPetSkillIsUniversal(skill_1) and ( not hasActive) or ( not tdPetSkillIsActive(skill_1))
 '''
+        body = re.sub(r'\bslot\b', self.actual_slot, body)
         with self.assertRaisesRegex(ValueError, 'Ambiguous packaged scalar boolean precedence'):
             verifier.verify_skill_allowed(replace_body(self.script, 'tdPetSkillAllowed', body))
 
@@ -50,9 +56,9 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
         original = verifier.jass_function(self.script, 'tdPetSkillAllowed').group(1)
         cases = [
             ('duplicate', original.replace(' or bitset_get(usedMask, skill_1)', '')),
-            ('first numeric', original.replace('if slot == 0 then', 'if slot != 0 then')),
+            ('first numeric', original.replace(f'if {self.actual_slot} == 0 then', f'if {self.actual_slot} != 0 then')),
             ('later numeric', original.replace('\tif tdPetSkillIsNumeric(skill_1) then\n\t\treturn false\n\tendif\n', '')),
-            ('second universal', original.replace('if slot == 1 and', 'if slot == 2 and')),
+            ('second universal', original.replace(f'if {self.actual_slot} == 1 and', f'if {self.actual_slot} == 2 and')),
             ('one active', original.replace('\tif hasActive and tdPetSkillIsActive(skill_1) then\n\t\treturn false\n\tendif\n', '')),
         ]
         for name, body in cases:

@@ -23,6 +23,7 @@ public class TDPet
 	int buffSkill = -1
 	real buffPower = 0.0
 	boolean pendingSkill = false
+	int pendingSerial = 0
 	unit host = null
 	unit visual = null
 	int generation = 0
@@ -109,6 +110,7 @@ public class TDPet
 	function recall()
 		generation += 1
 		pendingSkill = false
+		pendingSerial += 1
 		buffUntil = 0.0
 		buffSkill = -1
 		if host != null
