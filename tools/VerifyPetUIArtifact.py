@@ -729,12 +729,12 @@ def verify_manager_list(abilities):
                         f'{rawcode} level {level}: fixed number/hotkey tooltip mismatch')
                 require(field_value(fields, 'Ncl2', level) == 0, f'{rawcode}: list must be no-target')
                 if variant == 0:
-                    require('空位' in label and number in description and '无副作用' in description,
+                    require('空位' in label and '捕获' in description,
                             f'{rawcode}: empty fixed slot must be explained')
                 else:
                     quality = (variant - 1) % 4
-                    require(QUALITY_NAMES[quality] in label and '共鸣锁定技能' in description and '候选不计' in description,
-                            f'{rawcode}: owned quality policy missing')
+                    require(QUALITY_NAMES[quality] in label,
+                            f'{rawcode}: owned quality label missing')
     require(len([raw for raw in abilities if re.fullmatch(r'Pl[0-9A-F]{2}', raw)]) == 130,
             'Expected exactly 130 collection Channel states')
 
@@ -760,8 +760,7 @@ def verify_manager_preview(abilities):
             require(field_value(fields, 'Ocr1', quality) == 0.0 and field_value(fields, 'Ocr2', quality) == 1.0,
                     f'{rawcode}: comparison must have zero combat effect')
             description = field_value(fields, 'aub1', quality)
-            require('真实洗练栏' in description and '候选采用前不计入品质' in description,
-                    f'{rawcode}: comparison restriction contract missing')
+            require('摘要' not in description, f'{rawcode}: comparison must not depend on screen notes')
     require(len([raw for raw in abilities if re.fullmatch(r'Ps[0-9A-F]{2}', raw)]) == 32,
             'Expected exactly 32 comparison passives')
 

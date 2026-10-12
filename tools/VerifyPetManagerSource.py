@@ -291,8 +291,12 @@ def verify_wiring(*, verify_legacy_wild_scope=True):
     require('new ChannelAbilityPreset(tdPetListAbilityId(cell, species, quality), 2, true)' in objects, 'List object levels mismatch')
     require('new AbilityDefinitionBladeMasterCriticalStrike(tdPetPreviewAbilityId' in objects and '..setLevels(4)' in objects, 'Preview must use four-quality passives')
     summary = function_body(view, 'tdPetPageSummary')[1]
-    for phrase in ('旧：', '新：', '已扣1洗练石', 'record ', '永久释放', '20.0'):
-        require(phrase in summary + function_body(view, 'tdPetShowPageSummary')[1], 'Missing page summary: ' + phrase)
+    require('tdPetShowPageSummary' not in function_body(ui, 'showPage')[1],
+            'Navigation must not emit automatic screen notes')
+    require('session.mode != TD_PET_UI_DETAIL' in summary and '共鸣Lv' in summary,
+            'Explicit status query must be limited to current pet details')
+    require('tdPetSkillDescriptionById' not in summary and 'record ' not in summary,
+            'Status query must not repeat skill tooltips or expose internal record IDs')
     require(not re.search(r'\[生效|生效技能\s*\d|生效数', ui + view + session), 'Unrequested effective-status label/count')
     hud = (ROOT / 'wurst/TDHud.wurst').read_text()
     before = subprocess.run(['git', 'show', BASELINE + ':wurst/TDHud.wurst'], cwd=ROOT, check=True, capture_output=True, text=True).stdout

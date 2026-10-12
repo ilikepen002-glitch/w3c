@@ -16,8 +16,7 @@ trigger deselectionTrigger = CreateTrigger()
 boolean ready = false
 
 function showPage(int lane, int mode, int page, int slot, int nonce)
-	if tdPetRenderPage(lane, mode, page, slot, nonce)
-		tdPetShowPageSummary(lane)
+	tdPetRenderPage(lane, mode, page, slot, nonce)
 
 function showCultivation(int lane)
 	let pet = tdPetAt(lane, tdPetSelectedSlot[lane])
@@ -59,7 +58,7 @@ function showReleaseConfirmation(int lane)
 	let slot = tdPetSelectedSlot[lane]
 	let nonce = tdPetBeginRelease(lane, slot)
 	if nonce <= 0
-		tdPetNotice(lane, "无法释放：上阵精灵须先解绑，待选洗练须先处理，路线须仍可管理。精灵保留。")
+		tdPetNotice(lane, "暂时无法释放。请先解绑精灵，并完成洗练选择。")
 		showCultivation(lane)
 		return
 	showPage(lane, TD_PET_UI_RELEASE, slot div 10, slot, nonce)
@@ -89,7 +88,7 @@ function onCommand() returns boolean
 	if action == TD_PET_COMMAND_STALE
 		// Admission consumed old authority; never apply the click to new state.
 		tdPetDisplayOwners.removeInt(caster.getHandleId())
-		tdPetNotice(lane, "收藏或技能状态已变化，本次操作未执行。已刷新，请重新选择。")
+		tdPetNotice(lane, "精灵信息已更新，请重新选择。")
 		refreshStale(lane, mode)
 		return false
 	if action == TD_PET_COMMAND_REFRESH
@@ -116,7 +115,7 @@ function onCommand() returns boolean
 	else if action == 4
 		// Target cursor/ESC has no effect event. Actual click validates before recall.
 		if not tdPetDeploy(pet, GetSpellTargetUnit())
-			tdPetNotice(lane, "请选择本路已完工、存活且未绑定的塔。失败保留原绑定和冷却。")
+			tdPetNotice(lane, "请选择本路已完工、尚未上阵精灵的塔。")
 		showPage(lane, TD_PET_UI_DETAIL, page, slot, 0)
 	else if action == 5
 		pet.recall()
@@ -137,15 +136,15 @@ function onCommand() returns boolean
 		showPage(lane, TD_PET_UI_DETAIL, page, slot, 0)
 	else if action == TD_PET_ACTION_KEEP or action == TD_PET_ACTION_ADOPT
 		if not tdPetResolveRerollVersion(lane, slot, proposalVersion, action == TD_PET_ACTION_ADOPT)
-			tdPetNotice(lane, "候选或原技能已变化，未替换；可Q明确丢弃候选。")
+			tdPetNotice(lane, "本次洗练结果已无法使用。请保留旧技能后重新洗练。")
 		showCultivation(lane)
 	else if action == TD_PET_ACTION_CONFIRM
 		let oldExtra = tdPetSlotStones[lane]
 		if tdPetConfirmRelease(lane, nonce)
-			tdPetNotice(lane, "释放奖励：洗练石 +1" + (tdPetSlotStones[lane] > oldExtra ? " · 开栏石 +1" : "") + "。编号留空。")
+			tdPetNotice(lane, "释放奖励：洗练石 +1" + (tdPetSlotStones[lane] > oldExtra ? " · 开栏石 +1" : ""))
 			showPage(lane, TD_PET_UI_LIST, page, slot, 0)
 		else
-			tdPetNotice(lane, "释放未完成：状态变化或材料账户已满，精灵保留。")
+			tdPetNotice(lane, "释放失败，精灵仍在收藏中。请检查材料是否已满，或重新选择精灵。")
 			showCultivation(lane)
 	else if action == TD_PET_ACTION_CANCEL
 		tdPetCancelRelease(lane)

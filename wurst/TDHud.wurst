@@ -12,7 +12,17 @@ import GameTimer
 import TDTrialHud
 
 multiboard tdStatusBoard = null
+boolean tdHudRefreshPending = false
 string array tdPetHudSummaries
+
+// Presentation runs on its own timer thread, once per batch of gameplay events.
+public function tdRequestHudRefresh()
+	if compiletime or tdStatusBoard == null or tdHudRefreshPending
+		return
+	tdHudRefreshPending = true
+	doAfter(0.0) ->
+		tdHudRefreshPending = false
+		tdRefreshStatusBoard()
 
 public function tdHudLaneStatus(boolean active, boolean finished, boolean defeated, int wave, int waveCount) returns string
 	if not active
@@ -147,11 +157,11 @@ public function tdSetupHud()
 	tdStatusBoard.setItemValue(0, 0, "路线")
 	tdStatusBoard.setItemValue(0, 1, "生命")
 	tdStatusBoard.setItemValue(0, 2, "进度 / 下波威胁")
-	tdRefreshStatusBoard()
+	tdRequestHudRefresh()
 	tdStatusBoard.show()
 	tdStatusBoard.maximize()
 	doPeriodically(1.0) cb ->
-		tdRefreshStatusBoard()
+		tdRequestHudRefresh()
 		if tdIsGameOver()
 			destroy cb
 

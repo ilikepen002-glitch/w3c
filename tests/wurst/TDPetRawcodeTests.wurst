@@ -1,0 +1,27 @@
+package TDPetRawcodeTests
+import TDPetData
+import ObjectIds
+
+function referenceHexId(string prefix, int index) returns int
+	let digits = "0123456789ABCDEF"
+	return (prefix + SubString(digits, index div 16, index div 16 + 1) + SubString(digits, index mod 16, index mod 16 + 1)).fromRawCode()
+
+@Test function petStartupIdsKeepEveryExistingObjectReference()
+	for cell = 0 to 9
+		tdPetListAbilityId(cell, 0, 0).assertEquals(referenceHexId("Pl", cell * 13))
+		for species = 1 to 3
+			for quality = 1 to 4
+				tdPetListAbilityId(cell, species, quality).assertEquals(referenceHexId("Pl", cell * 13 + (species - 1) * 4 + quality))
+	for action = 0 to 20
+		let expected = action < 8 ? referenceHexId("Pc", action) : referenceHexId("Pm", action - 8)
+		tdPetManagerCommandId(action).assertEquals(expected)
+
+@Test function petHexIdsKeepDisplayAndPreviewPartitions()
+	for species = 1 to 3
+		for quality = 1 to 4
+			tdPetDisplayUnitId(species, quality).assertEquals(referenceHexId("pd", (species - 1) * 4 + quality))
+	for position = 0 to 1
+		for skill = 0 to 15
+			tdPetPreviewAbilityId(position, skill).assertEquals(referenceHexId("Ps", position * 16 + skill))
+	tdPetHexRawcode('Pl00', -1, 130).assertEquals(0)
+	tdPetHexRawcode('Pl00', 130, 130).assertEquals(0)

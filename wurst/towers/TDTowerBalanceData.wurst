@@ -506,7 +506,7 @@ public function tdTowerBaseRange(int towerChoice, int level) returns int
 public function tdTowerLore(int towerChoice, int level) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		if level >= TD_MAX_TOWER_LEVEL
-			return "终极白虎分支，提供更明确的终局职责。"
+			return "箭雨清理成群敌人，战吼强化周围友塔。"
 		if level == 5
 			return "白虎形态，月刃箭雨覆盖整段沟壑。"
 		return "远程压制，站位安全，后期成长稳定。"

@@ -9,9 +9,9 @@ Use this guide for Wurst map work. Discover project-specific paths, commands, co
 
 ## Route by impact and reuse context
 
-Use the project's [AGENTS.md](../../../AGENTS.md) as the sole source for risk tiers, required Astra/Sol stages, and the validation matrix. Classify the changed boundary before implementation; an unclear cause or ownership needs focused investigation before classification. Do not impose a second universal review gate from this skill.
+Use the project's [AGENTS.md](../../../AGENTS.md) as the sole source for risk tiers, required Astra/Sol stages, and the validation matrix. Classify the actual scope, coupling, and behavioral impact before implementation; an unclear cause or ownership needs focused investigation before classification. Touching initialization, object generation, rawcodes, abilities, or build scripts does not by itself require full planning and review. When escalating under AGENTS.md, identify the concrete system-level change and affected contracts. Do not impose a second universal review gate from this skill.
 
-For low-risk and ordinary changes, the current agent owns diagnosis, implementation, and validation directly. Do not launch routine exploration, implementation, or review subagents, or delegate merely to match a preferred model. A simple task needs a focused edit and the required checks, not a separate written plan or handoff cycle. Uncertainty calls for targeted investigation first; escalate only when the discovered boundary or a specific unresolved issue warrants it under AGENTS.md.
+For low-risk and ordinary changes, the current agent owns diagnosis, implementation, and validation directly. Do not launch routine exploration, implementation, or review subagents, or delegate merely to match a preferred model. A simple task needs a focused edit and the required checks, not a separate written plan or handoff cycle. Uncertainty calls for targeted investigation first; escalate when the discovered scope meets AGENTS.md's criteria, before implementing the system-level change. Select checks and builds independently from collaboration complexity: a local fix can require a full map build while remaining ordinary work.
 
 Reuse confirmed context while the relevant source, dependencies, configuration, and environment remain unchanged. Read only the affected packages, nearby examples, tests, and references needed for the current decision. When delegation is required, reuse a suitable existing agent and pass the goal, relevant files, differences, risks, and validation evidence rather than full conversation history; follow AGENTS.md for model selection and minimal context. Keep high-risk planning and review gates intact.
 
@@ -30,6 +30,15 @@ Keep shared rules/data, runtime behavior, compiletime assets, and tests separate
 For this project, when the user's initial task does not request in-game validation, complete development and only the automated checks, build/deployment, and offline artifact inspection required by the project's validation matrix, without launching or controlling Warcraft III. Gameplay, UI, performance, or visual changes do not implicitly authorize a playtest. Do not routinely ask whether to add one or block delivery merely because runtime behavior remains unobserved; report that boundary briefly.
 
 A later explicit request to play, reproduce in game, or verify live behavior changes this scope. Only then use `war3-map-playtest` for the requested scenario. Build/deployment does not mean starting the game. Documentation or skill-only edits need skill/document validation, not a map rebuild or playtest.
+
+## Player-facing text
+
+Write map text for someone learning to play, not for a developer reviewing the design. For tooltips, HUD text, announcements and errors, keep only what helps the player choose an action: what it does, how to use it, its effect, cost, target and relevant limits. Preserve meaningful numbers and irreversible consequences; do not turn concise copy into incomplete or misleading rules.
+
+- Put details on the relevant ability or action. Navigation buttons need only their destination or purpose; do not repeat rules already visible on the command card or HUD, or broadcast them whenever a page opens.
+- Remove design rationale, implementation vocabulary, bookkeeping policies and defensive explanations that do not change the player's decision. For example, a collection entry should say “查看技能、上阵或培养”, not explain how its displayed quality is computed. Keep such rationale in source comments or developer documentation when needed.
+- Phrase errors as an understandable outcome and a useful next step. Mention lost or unspent resources when relevant; do not expose record IDs, revision checks or account internals. Keep genuine diagnostic reporting separate from routine gameplay guidance.
+- Read edited strings as a player before delivery. Check neighboring tooltips for the same problem, without expanding a wording change into gameplay redesign. Update obsolete text assertions instead of preserving developer-facing copy merely to satisfy them; retain tests of the underlying gameplay rules.
 
 ## Generated art and imported assets
 

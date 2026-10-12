@@ -90,7 +90,7 @@ public function tdSetupLaneRects()
 
 // Preserve the game-facing entry point while presentation owns its native handles.
 public function tdRefreshHud()
-	tdRefreshStatusBoard()
+	tdRequestHudRefresh()
 
 function tdAllLanesResolved() returns boolean
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1

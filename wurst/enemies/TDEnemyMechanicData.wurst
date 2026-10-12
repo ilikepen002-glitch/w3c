@@ -50,7 +50,7 @@ public function tdEnemyMechanicHint(int wave) returns string
 	if wave == 8
 		return "裂风猎王：每10秒预告1秒，冲刺2秒"
 	if wave == 16
-		return "黑曜棺卫：稳定重甲，保留原生法伤减免"
+		return "黑曜棺卫：护甲坚固，可减免部分法术伤害"
 	if wave == 24
 		return "蚀月织咒者：暗潮预告1秒，附近塔攻速减20个百分点3秒"
 	if wave == 32

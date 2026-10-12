@@ -19,6 +19,16 @@ trigger tdChatCommandTrigger = CreateTrigger()
 boolean tdGameplayStartupCompleted = false
 // This listener lives for the process, independently of match resets.
 boolean tdLanePlayerLeaveWatcherReady = false
+timer tdStartupWatchdog = null
+string tdStartupStage = ""
+
+function tdReportIncompleteStartup()
+	if GetExpiredTimer() != tdStartupWatchdog
+		return
+	DestroyTimer(tdStartupWatchdog)
+	tdStartupWatchdog = null
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		DisplayTimedTextToPlayer(Player(playerId), 0, 0, 60.0, "|cffff4040地图启动未完成：" + tdStartupStage + "。请反馈这条提示。|r")
 
 public function tdMapBootstrapDelay() returns real
 	return 0.10
@@ -232,26 +242,30 @@ function tdRunGameplayStartup()
 		SetPlayerAlliance(enemyPlayer, Player(playerId), ALLIANCE_PASSIVE, false)
 		SetPlayerAlliance(Player(playerId), enemyPlayer, ALLIANCE_PASSIVE, false)
 	// 这里以后只装配运行时系统；地形/pathing 之类的可视布局仍由地图文件维护。
+	tdStartupStage = "创建农民"
 	tdCreatePads()
+	tdStartupStage = "初始化精灵数据"
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		if tdIsLaneActive(playerId)
 			tdPetInitializeFarmer(playerId, tdGetFarmer(playerId))
+	tdStartupStage = "注册精灵事件与界面"
 	tdSetupPets()
+	tdStartupStage = "注册伤害与建造事件"
 	tdSetupLanePlayerLeaveWatcher()
 	tdSetupDamageStatistics()
 	tdSetupEnemyMechanics()
 	tdSetupBuildDialog()
 	tdSetupPadSelection()
 	tdSetupDialogTrigger()
+	tdStartupStage = "初始化背包与地面物品"
 	tdSetupInventoryRuntime()
 	tdSetupGroundItemRuntime()
+	tdStartupStage = "注册路线与怪物监听"
 	tdSetupLaneRects()
 	tdStartLaneWaypointWatcher()
 	tdStartEnemyDeathWatcher()
 	tdStartLeakWatcher()
 	tdSetupChatCommands()
-	tdSetupHud()
-	tdRefreshHud()
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		if tdIsLaneActive(playerId)
 			DisplayTimedTextToPlayer(Player(playerId), 0, 0, 10.0, tdStartupGuideMessage())
@@ -260,15 +274,24 @@ function tdRunGameplayStartup()
 		for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 			if tdIsLaneActive(playerId)
 				DisplayTimedTextToPlayer(Player(playerId), 0, 0, 8.0, inactiveLaneNotice)
+	tdStartupStage = "登记首波计时"
 	tdStartWaveSchedule()
+	// Finish gameplay and camera startup before creating or refreshing the HUD.
+	doAfter(0.0) ->
+		tdSetupHud()
 
 function tdFinalizeGameplayBootstrap()
 	// 镜头先落到稳定距离，再启动玩法，最后重新聚焦工人，减少开局镜头被初始化覆盖。
 	tdApplyStartingCamera()
 	tdStartCameraDistanceClamp()
 	tdRunGameplayStartup()
+	tdStartupStage = "定位农民镜头"
 	tdFocusStartingCameraOnFarmers()
 	tdLiftStartingCameraAgain()
+	if tdStartupWatchdog != null
+		DestroyTimer(tdStartupWatchdog)
+		tdStartupWatchdog = null
+	tdStartupStage = ""
 
 function tdBootstrapGameplayWhenPlayersReady(int retryCount)
 	tdDetectActiveLanes()
@@ -282,12 +305,19 @@ function tdBootstrapGameplayWhenPlayersReady(int retryCount)
 
 // 游戏主启动流程。路线本身交给地图静态布局，只保留起点/终点等区域驱动的运行时逻辑。
 public function tdStartGame()
+	if tdStartupWatchdog != null
+		DestroyTimer(tdStartupWatchdog)
+	tdStartupStage = "重置对局与试炼"
+	tdStartupWatchdog = CreateTimer()
+	// A separate native timer can report a crash in the startup callback itself.
+	TimerStart(tdStartupWatchdog, 5.0, false, function tdReportIncompleteStartup)
 	tdShutdownGameFlow()
 	tdResetState()
 	tdResetDamageStatistics()
 	if not tdResetAndRegisterTrialHook()
-		DisplayTimedTextToPlayer(Player(0), 0, 0, 8.0, "试炼挂接失败，当前局使用常规首领休整。")
+		DisplayTimedTextToPlayer(Player(0), 0, 0, 8.0, "本局试炼未能开启，首领战后将正常休整。")
 	tdGameplayStartupCompleted = false
+	tdStartupStage = "等待玩家槽位"
 	tdRevealWholeMap()
 	let setupDelay = tdMapBootstrapDelay()
 	doAfter(setupDelay) ->
