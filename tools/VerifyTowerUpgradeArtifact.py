@@ -19,12 +19,13 @@ FAMILIES = 'A O H D G'.split()
 COMMON = ['A118', 'A133', 'A130']
 HIDDEN = {'A103', 'A107', 'A110', 'A140', 'AeSL', 'A115', 'A118'}
 BRANCH_ICONS = {
-    'A': ('BTNTDTowerSplitShot', 'BTNTDTowerTrueshotAura'),
-    'O': ('BTNTDTowerBloodlust', 'BTNTDTowerBladestorm'),
-    'H': ('BTNTDTowerShieldBash', 'BTNTDTowerCommandAura'),
-    'D': ('BTNTDTowerPoisonDart', 'BTNTDTowerVinesAura'),
-    'G': ('BTNTDTowerFrenzy', 'BTNTDTowerCorpseExplosion'),
+    'A': ('BTNImprovedBows', 'BTNElunesBlessing'),
+    'O': ('BTNBerserk', 'BTNCleavingAttack'),
+    'H': ('BTNStormBolt', 'BTNHeroPaladin'),
+    'D': ('BTNEnvenomedSpear', 'BTNEntanglingRoots'),
+    'G': ('BTNGhoulFrenzy', 'BTNPlagueCloud'),
 }
+NATIVE_ICON_PREFIX = 'ReplaceableTextures\\CommandButtons\\'
 IDENTITIES = {
     'A': ('Archer', 'Units\\NightElf\\Archer\\Archer.mdx', 'HeroMoonPriestess', 'Units\\NightElf\\HeroMoonPriestess\\HeroMoonPriestess.mdx'),
     'O': ('Grunt', 'Units\\Orc\\Grunt\\grunt.mdx', 'HeroBlademaster', 'Units\\Orc\\HeroBladeMaster\\HeroBladeMaster.mdx'),
@@ -122,7 +123,7 @@ def validate_tower_identity(units):
             model = low_model if index < 4 else high_model
             icon = 'ReplaceableTextures\\CommandButtons\\BTN' + (low_icon if index < 4 else high_icon) + '.blp'
             if index >= 5:
-                icon = 'war3mapImported\\' + BRANCH_ICONS[family][index - 5] + '.blp'
+                icon = NATIVE_ICON_PREFIX + BRANCH_ICONS[family][index - 5] + '.blp'
             require(fields.get('umdl') == model, f'{uid}: model changed')
             for key in ['uico', 'ussi']:
                 require(fields.get(key) == icon, f'{uid}: {key} identity mismatch')
@@ -157,6 +158,7 @@ def validate_command_ui(units, abilities):
         require(obj.get('uhot') == key, f'{uid}: wrong build/upgrade hotkey')
     for uid, attached in EXPECTED_TOWERS.items():
         obj = units[uid]
+        family, suffix = uid[1], uid[2:]
         # Native hidden effects are not visible commands. Include dynamic status,
         # plus successor buttons in the selected tower's actual command card.
         commands = []
@@ -166,6 +168,18 @@ def validate_command_ui(units, abilities):
         for successor in obj['uupt'].split(',') if obj['uupt'] else []:
             commands.append((successor, (units[successor]['ubpx'], units[successor]['ubpy']), units[successor]['uhot']))
         check_command_conflicts(uid, commands)
+        if suffix == '15':
+            # Include evolved replacements and both progress/status displays;
+            # none may become indistinguishable from either upgrade choice.
+            skill_ids = set(attached) | {'AeEV'}
+            for branch in ('A', 'B'):
+                skill_ids.update(EXPECTED_TOWERS['u' + family + '6' + branch])
+                skill_ids.update(EVOLUTION_REPLACEMENTS['u' + family + '6' + branch].values())
+            skill_icons = {field_value(abilities, aid, field, default='').casefold()
+                           for aid in skill_ids for field in ('aart', 'arar', 'auar')}
+            choices = [units['u' + family + '6' + branch]['uico'].casefold() for branch in ('A', 'B')]
+            require(len(set(choices)) == 2, f'{uid}: branch choices share icon')
+            require(not set(choices) & skill_icons, f'{uid}: branch choice reuses co-visible skill icon')
 
 
 def check_command_conflicts(uid, commands):
@@ -182,8 +196,14 @@ def validate_branch_resources(artifact, units, abilities):
     paths = set()
     for uid in EXPECTED_TOWERS:
         if uid[2] == '6':
-            paths.add(units[uid]['uico'])
-            paths.add(units[uid]['ussi'])
+            expected = NATIVE_ICON_PREFIX + BRANCH_ICONS[uid[1]][0 if uid[-1] == 'A' else 1] + '.blp'
+            for field in ('uico', 'ussi'):
+                require(units[uid][field] == expected, f'{uid}: native branch icon mismatch')
+            disabled = 'ReplaceableTextures\\CommandButtonsDisabled\\DIS' + expected.rsplit('\\', 1)[1]
+            # Native assets are supplied by Warcraft, not by this map. Reject
+            # accidental map overrides, but never call their absence missing.
+            for path in (expected, disabled):
+                require(not artifact.has(path), f'Native branch icon shadowed by import: {path}')
     for aid in ['A140', 'A141']:
         for field in ['aart', 'arar']:
             paths.add(field_value(abilities, aid, field))

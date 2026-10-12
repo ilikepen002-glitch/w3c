@@ -54,6 +54,12 @@ TOWER_UNITS = dict(zip(
     ('SplitShot', 'TrueshotAura', 'Bloodlust', 'Bladestorm', 'ShieldBash',
      'CommandAura', 'PoisonDart', 'VinesAura', 'Frenzy', 'CorpseExplosion')))
 TOWER_STEMS = tuple(sorted(set(TOWER_UNITS.values()) | {'SwordDance'}))
+# The preserved tower artwork above still belongs to abilities; upgrade choices
+# now use classic native emblems independently of those same-screen skills.
+TOWER_BRANCH_ICONS = dict(zip(TOWER_UNITS, (
+    'BTNImprovedBows', 'BTNElunesBlessing', 'BTNBerserk', 'BTNCleavingAttack',
+    'BTNStormBolt', 'BTNHeroPaladin', 'BTNEnvenomedSpear', 'BTNEntanglingRoots',
+    'BTNGhoulFrenzy', 'BTNPlagueCloud')))
 PET_STEMS = ('TDPetMenuTools', 'TDPetCollection', 'TDPetPrevious', 'TDPetNext',
              'TDPetReturnBuilder', 'TDPetDeploy', 'TDPetRecall', 'TDPetCultivate',
              'TDPetInfo', 'TDPetEmptySlot', 'TDPetFlamePhoenix',
@@ -166,8 +172,9 @@ def expected_bindings():
         add('abilities', rawcode, ('aart', 'arar'), 'TDTower' + name)
         if rawcode in ('A131', 'A132'):
             add('abilities', rawcode, ('auar',), 'TDTower' + name)
-    for rawcode, name in TOWER_UNITS.items():
-        add('units', rawcode, ('uico', 'ussi'), 'TDTower' + name)
+    for rawcode, name in TOWER_BRANCH_ICONS.items():
+        for field in ('uico', 'ussi'):
+            bindings['units', rawcode, (field, 0, 0)] = NATIVE + name + '.blp'
     for wave in range(1, 33):
         for species, stem in enumerate(SPECIES_STEMS, 1):
             add('units', f'p{wave:02X}{species}', ('uico', 'ussi'), stem)
