@@ -23,7 +23,9 @@ import ObjEditingCommons
 	tdTowerCost(999).assertEquals(0)
 
 @Test function farmerUsesNativeBuildMenuForFiveBaseTowers()
-	tdFarmerBuildAbilityId().assertEquals('AHbu')
+	tdFarmerBuildAbilityId().assertEquals('AUbu')
+	tdFarmerRaceObjectStringForTest().assertEquals("undead")
+	tdTowerRaceObjectStringForTest().assertEquals("human")
 	tdFarmerBuildableTowerCount().assertEquals(5)
 
 @Test function openingTowersHaveEnoughRangeToCoverGrassBesideRoad()

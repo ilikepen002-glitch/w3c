@@ -32,7 +32,6 @@ ICON_STEMS = (
 )
 EXPECTED = {
     'Geqb': (3, 0, 'C', 'Aspb'),
-    'Prpr': (1, 1, 'R', 'Ahrp'),
     'A108': (2, 1, 'F', 'AEbl'),
     'A109': (3, 1, 'G', 'ANcl'),
     'Pcap': (1, 2, 'Q', 'ANcl'),
@@ -98,8 +97,8 @@ def verify_farmer_grid(abilities, units):
         require(cell not in occupied,
                 f'{rawcode}: farmer cell overlaps {occupied.get(cell)} at {cell}')
         occupied[cell] = rawcode
-    require(set(occupied) == {(x, y) for x in range(4) for y in range(3)},
-            'Farmer command grid must fill exactly twelve distinct cells')
+    require(set(occupied) == {(x, y) for x in range(4) for y in range(3)} - {(1, 1)},
+            'Farmer command grid must occupy exactly eleven cells, leaving 1,1 empty')
     for rawcode, (x, y, hotkey, parent) in EXPECTED.items():
         actual_parent, fields = abilities[rawcode]
         require(actual_parent == parent, f'{rawcode}: wrong parent {actual_parent}')
@@ -108,9 +107,9 @@ def verify_farmer_grid(abilities, units):
         require(field_value(fields, 'ahky') == hotkey, f'{rawcode}: wrong farmer hotkey')
     candidates = [(uid, fields) for uid, fields in units.items()
                   if set(EXPECTED).issubset(fields.get('uabi', '').split(','))]
-    require(len(candidates) == 1, 'Expected exactly one farmer with all seven commands')
+    require(len(candidates) == 1, 'Expected exactly one farmer with all six commands')
     uid, farmer = candidates[0]
-    require(farmer['uabi'].split(',') == ['AHbu', 'Prpr', 'A108', 'A109', 'A117',
+    require(farmer['uabi'].split(',') == ['AUbu', 'A108', 'A109', 'A117',
                                         'Geqb', 'Pcap', 'Pcol', 'Pdep'],
             f'{uid}: farmer ability attachment/order changed')
     require('Amov' not in abilities, 'Native Amov must not be modified or disabled')
@@ -628,7 +627,7 @@ def main():
     verify_lane_enemy_guards(artifact.extract('war3map.j').decode('utf-8'))
     verify_imported_icons(artifact)
     require(not artifact.has(r'Units\CommandFunc.txt'), 'Global CommandFunc override is forbidden')
-    print(f'PASS PET UI: {farmer}; exact 12-cell farmer grid; eight distinct collection icons, '
+    print(f'PASS PET UI: {farmer}; exact 11-cell farmer grid (1,1 empty); eight distinct collection icons, '
           'unchanged cells/hotkeys, reallocated globally unique base orders; '
           'explicit cultivation/release command; three explicit species identities; '
           '516 exact bright/locked/empty variants; real native dialog numeric hotkeys; '

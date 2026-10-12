@@ -28,6 +28,13 @@ public function tdTowerSellTooltip() returns string
 public function tdFarmerBuildAbilityId() returns int
 	return TD_FARMER_BUILD_ABILITY_ID
 
+public function tdFarmerRaceForObjectGen() returns Race
+	// Native autonomous construction follows worker race, not tower race.
+	return Race.Undead
+
+public function tdFarmerRaceObjectStringForTest() returns string
+	return tdFarmerRaceForObjectGen().toObjectString()
+
 public function tdFarmerBuildableTowerCount() returns int
 	return TD_TOWER_CHOICE_COUNT
 

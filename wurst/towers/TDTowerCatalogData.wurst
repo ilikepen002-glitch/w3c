@@ -2,7 +2,7 @@ package TDTowerCatalogData
 import TDConfig
 import ObjectIds
 
-public constant int TD_FARMER_BUILD_ABILITY_ID = 'AHbu'
+public constant int TD_FARMER_BUILD_ABILITY_ID = 'AUbu'
 public constant int TD_FARMER_REPAIR_ABILITY_ID = 'Ahrp'
 public constant int TD_FARMER_BLINK_ABILITY_ID = 'A108'
 public constant int TD_FARMER_WAGE_ABILITY_ID = 'A109'
