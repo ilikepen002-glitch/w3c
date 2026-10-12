@@ -1,0 +1,4 @@
+PASS: 35/35 tower variants: explicit building, 192 footprint, collision96, placement filters, food1.
+PASS: actual 6x6 magenta TGA, identical source W3E/WPM, five-entry flying-worker build menu.
+PASS: packaged static mask and construction/cancel/upgrade hooks; no obsolete plot claims or128 snapping; enemy owner4 retained.
+NOT TESTED: Warcraft native preview, construction/refund/population lifecycle and playability.

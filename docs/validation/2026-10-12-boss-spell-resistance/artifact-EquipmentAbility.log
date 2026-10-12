@@ -1,0 +1,3 @@
+PASS: 5 attack-speed abilities inherit AIsx; four fixed bonuses and all 120 synchronization levels verified.
+PASS: A128 inherits AIat; all 128 attack-bonus levels unchanged.
+NOT TESTED: in-game ability creation and equipment pickup/drop/re-pickup.

@@ -46,6 +46,10 @@ function damage(TDPet pet, unit host, int generation, unit target, real amount)
 	DamageEvent.setNextDamageId(TD_PET_DAMAGE_ID)
 	host.damageTarget(target, amount)
 
+// Only spell procs use this wrapper; combo/execute derived attacks use damage.
+function spellDamage(TDPet pet, unit host, int generation, unit target, real amount)
+	damage(pet, host, generation, target, tdEnemyMechanicScaleSpellDamage(target, amount))
+
 class TDPetDebuff
 	unit target
 	real slow = 0.0
@@ -147,7 +151,7 @@ public function tdPetOnCorpseExplosion(unit source, vec2 center)
 		var hits = 0
 		for target in targets
 			if tdPetEnemyIsValid(target, pet.lane) and hits < 12
-				damage(pet, source, generation, target, amount)
+				spellDamage(pet, source, generation, target, amount)
 				hits += 1
 		targets.destr()
 
@@ -168,7 +172,7 @@ function resolveActive(TDPet pet, unit host, int generation, vec2 center, int sk
 				victim.flashEffect("Abilities\\Spells\\Other\\Tornado\\TornadoElementalSmall.mdl", "origin")
 			else
 				victim.flashEffect(skill == 13 ? "Abilities\\Spells\\Other\\Monsoon\\MonsoonBoltTarget.mdl" : "Abilities\\Spells\\Other\\Incinerate\\FireLordDeathExplode.mdl", "origin")
-				damage(pet, host, generation, victim, base * power)
+				spellDamage(pet, host, generation, victim, base * power)
 			hits += 1
 	targets.destr()
 

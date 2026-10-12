@@ -8,6 +8,7 @@ import TDState
 import Table
 import LinkedList
 import ClosureTimers
+import DamageEvent
 
 class TDEnemyMechanicRecord
 	unit enemy
@@ -25,6 +26,8 @@ constant Table tdEnemyMechanicRecordsByHandle = new Table()
 LinkedList<TDEnemyMechanicRecord> tdEnemyMechanicRecords = new LinkedList<TDEnemyMechanicRecord>()
 TDEnemyGuardLink array tdEnemyGuardLinks
 boolean tdEnemyMechanicsReady = false
+// DamageEvent listeners persist across shutdown. Never reset this with records.
+boolean tdEnemySpellResistanceListenerReady = false
 
 function tdEnemyMechanicRecordFor(unit enemy) returns TDEnemyMechanicRecord
 	if enemy == null or not tdEnemyMechanicRecordsByHandle.hasInt(enemy.getHandleId())
@@ -34,6 +37,21 @@ function tdEnemyMechanicRecordFor(unit enemy) returns TDEnemyMechanicRecord
 function tdEnemyMechanicRecordValid(TDEnemyMechanicRecord record) returns boolean
 	let lane = record.state.link.lane
 	return record.state.isActive() and record.enemy != null and record.enemy.isAlive() and GetUnitTypeId(record.enemy) != 0 and GetOwningPlayer(record.enemy) == Player(TD_ENEMY_PLAYER_ID) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
+
+// Use the existing valid record and its original wave, never the displayed wave.
+public function tdEnemyMechanicScaleSpellDamage(unit target, real amount) returns real
+	if not tdEnemyMechanicsReady or amount <= 0.0
+		return amount
+	let record = tdEnemyMechanicRecordFor(target)
+	if record == null or not tdEnemyMechanicRecordValid(record)
+		return amount
+	return record.state.scaledSpellAmount(amount)
+
+function tdEnemyMechanicScaleNativeSpellDamage()
+	if not tdEnemyMechanicsReady or not tdEnemyMechanicNativeSpellEligible(DamageEvent.isSpell(), DamageEvent.isCode())
+		return
+	// Early setAmount reaches the locked engine's HP settlement and priority-4 ledger.
+	DamageEvent.setAmount(tdEnemyMechanicScaleSpellDamage(DamageEvent.getTarget(), DamageEvent.getAmount()))
 
 function tdEnemyMechanicSyncArmor(TDEnemyGuardLink link)
 	for record in tdEnemyMechanicRecords
@@ -119,7 +137,14 @@ public function tdEnemyMechanicsShutdown()
 				tdEnemyGuardLinks[key] = null
 
 public function tdSetupEnemyMechanics()
+	if compiletime
+		return
 	tdEnemyMechanicsReady = true
+	if not tdEnemySpellResistanceListenerReady
+		tdEnemySpellResistanceListenerReady = true
+		DamageEvent.addUnreducedListener(2) ->
+			tdEnemyMechanicScaleNativeSpellDamage()
+
 public function tdEnemyMechanicBaseSpeed(unit enemy) returns real
 	let record = tdEnemyMechanicRecordFor(enemy)
 	if record == null

@@ -1,0 +1,2 @@
+PASS actual JASS ground upgrade: 123 batch scenarios; 256 availability states; 600 independently fixed pile coordinates and 144/145 boundaries; capture, stale ingredients, snapshot, no-cascade, frozen lane; backpack probabilities unchanged
+NOT TESTED: native handle reuse, relocation/pathing, timer registration/UI, multiplayer synchronization or gameplay.

@@ -1,0 +1,4 @@
+Error TDBossSpellResistanceTests.wurst:10: Variable link hides another local variable with the same name.
+Error TDBossSpellResistanceTests.wurst:11: Variable boss hides another local variable with the same name.
+Error TDBossSpellResistanceTests.wurst:12: Condition must be of type boolean, but found (real or boolean)
+❌ Wurst typecheck failed. (Errors: 3)

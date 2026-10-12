@@ -1,0 +1,2 @@
+PASS: all 35 towers have A133; no-target visible V button (3, 1), zero mana/cooldown and independent Channel order verified.
+NOT TESTED: native in-game sale/refund, cancelled upgrade, item drops and placement reuse.

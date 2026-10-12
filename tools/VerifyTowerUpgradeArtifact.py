@@ -391,7 +391,7 @@ def validate_evolution_jass(script, units, abilities):
     for setter in ['DamageEvent_setAmount(', 'DamageEvent_setDamage(', 'BlzSetEventDamage(']:
         require(setter not in split_body, 'Jass split evolution changes primary-arrow damage')
     corpse_body = function_body(script, 'tdHandleGhoulCorpseExplosionDamage')
-    require(re.search(r'call unit_damageTarget(?:_\d+)?\((\w+), \w+, tdGhoulCorpseExplosionDamageForBranch\(tdTowerLevelForUnitTypeId\(GetUnitTypeId\(\1\)\), tdTowerBranchForUnitTypeId\(GetUnitTypeId\(\1\)\), tdTowerIsEvolved\(\1,', corpse_body), 'Jass corpse helper result does not reach damage')
+    require(re.search(r'call unit_damageTarget(?:_\d+)?\((\w+), (\w+), (?:tdEnemyMechanicScaleSpellDamage\(\2, )?tdGhoulCorpseExplosionDamageForBranch\(tdTowerLevelForUnitTypeId\(GetUnitTypeId\(\1\)\), tdTowerBranchForUnitTypeId\(GetUnitTypeId\(\1\)\), tdTowerIsEvolved\(\1,', corpse_body), 'Jass corpse helper result does not reach damage')
     pet_corpse = function_body(script, 'tdPetOnCorpseExplosion')
     require(re.search(r'set (\w+) = tdGhoulCorpseExplosionDamage\(\) \* power', pet_corpse), 'Jass pet poison domain must retain base corpse damage times power')
     require('tdGhoulCorpseExplosionDamageForBranch(' not in pet_corpse, 'Jass pet poison domain must not inherit evolved corpse multiplier')

@@ -1,5 +1,6 @@
 package TDEnemyMechanicState
 import TDEnemyMechanicData
+import TDWaves
 
 int tdEnemyMechanicGeneration = 0
 
@@ -40,6 +41,11 @@ public class TDEnemyMechanicState
 
 	function isActive() returns boolean
 		return active
+
+	function scaledSpellAmount(real amount) returns real
+		if amount <= 0.0 or not active or role != TD_ENEMY_ROLE_BOSS or not tdEnemyGuardArmorEnabled(link.wave)
+			return amount
+		return amount * tdWaveBossSpellDamageTakenFactor(link.wave)
 
 	function isSprinting() returns boolean
 		return sprintRunning

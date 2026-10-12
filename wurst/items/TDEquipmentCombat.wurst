@@ -9,6 +9,7 @@ import ClosureTimers
 import GameTimer
 import LinkedList
 import TDWaves
+import TDEnemyMechanicRuntime
 
 class TDEquipmentDebuff
 	unit target
@@ -149,7 +150,7 @@ function tdTickEquipmentDebuffs()
 			doAfter(0.0) ->
 				if tdEquipmentEnemyValid(target, lane) and tdEquipmentSourceValid(source, lane)
 					DamageEvent.setNextDamageFromCode()
-					source.damageTarget(target, amount)
+					source.damageTarget(target, tdEnemyMechanicScaleSpellDamage(target, amount))
 		if entry.armor == 0.0 and entry.poison == 0.0
 			iter.remove()
 			destroy entry

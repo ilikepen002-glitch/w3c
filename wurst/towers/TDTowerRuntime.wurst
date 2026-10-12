@@ -20,6 +20,7 @@ import TDEquipmentAbilities
 import TDWaves
 import TDTowerEvolutionRuntime
 import TDDamageRuntime
+import TDEnemyMechanicRuntime
 
 unit array tdFarmers
 constant Table tdOrcBladestormStates = new Table()
@@ -438,7 +439,7 @@ function tdPulseOrcBladestorm(unit tower)
 	for victim in g
 		if victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == ownerPlayerId
 			DamageEvent.setNextDamageFromCode()
-			tower.damageTarget(victim, damagePerTick)
+			tower.damageTarget(victim, tdEnemyMechanicScaleSpellDamage(victim, damagePerTick))
 	g.destr()
 
 function tdHandleOrcBladestormCast() returns boolean
@@ -484,7 +485,7 @@ function tdHandleGhoulCorpseExplosionDamage()
 	for victim in g
 		if victim != target and victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == laneId
 			DamageEvent.setNextDamageFromCode()
-			source.damageTarget(victim, tdGhoulCorpseExplosionDamageForBranch(tdTowerLevelForUnitTypeId(GetUnitTypeId(source)), tdTowerBranchForUnitTypeId(GetUnitTypeId(source)), tdTowerIsEvolved(source)))
+			source.damageTarget(victim, tdEnemyMechanicScaleSpellDamage(victim, tdGhoulCorpseExplosionDamageForBranch(tdTowerLevelForUnitTypeId(GetUnitTypeId(source)), tdTowerBranchForUnitTypeId(GetUnitTypeId(source)), tdTowerIsEvolved(source))))
 	g.destr()
 	let corpseExplosionEffect = AddSpecialEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayDamage.mdl", center.x, center.y)
 	DestroyEffect(corpseExplosionEffect)

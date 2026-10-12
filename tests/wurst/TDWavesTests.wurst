@@ -130,6 +130,9 @@ function tdWavePressureProxyForTest(int wave) returns real
 
 @Test function lateBossesHaveSpellDamageEhpGuardrails()
 	tdWaveBossSpellDamageTakenFactor(8).assertEquals(1.00)
+	tdWaveBossSpellDamageTakenFactor(16).assertEquals(0.82)
+	tdWaveBossSpellDamageTakenFactor(24).assertEquals(0.68)
+	tdWaveBossSpellDamageTakenFactor(32).assertEquals(0.58)
 	(tdWaveBossSpellDamageTakenFactor(24) < tdWaveBossSpellDamageTakenFactor(16)).assertTrue()
 	(tdWaveBossSpellDamageTakenFactor(32) < tdWaveBossSpellDamageTakenFactor(24)).assertTrue()
 

@@ -515,6 +515,8 @@ public function tdWaveBossSpeed(int wave) returns int
 	return 0
 
 public function tdWaveBossSpellDamageTakenFactor(int wave) returns real
+	// Additional stage factor on the existing damage channel's native result.
+	// Wave 8 stays unchanged; this is not a replacement for native hero resistance.
 	if wave == 32
 		return 0.58
 	if wave == 24

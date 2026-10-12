@@ -13,6 +13,11 @@ public constant real TD_ENEMY_SPRINT_DURATION = 2.0
 public function tdEnemyGuardArmorEnabled(int wave) returns boolean
 	return wave == 8 or wave == 16 or wave == 24 or wave == 32
 
+// Code spells are scaled explicitly at their existing production damage site.
+// Code-derived attacks share the engine's code flag and must stay unchanged.
+public function tdEnemyMechanicNativeSpellEligible(boolean spellDamage, boolean codeDamage) returns boolean
+	return spellDamage and not codeDamage
+
 public function tdEnemySprintEnabled(int wave, int role) returns boolean
 	return (role == TD_ENEMY_ROLE_ELITE and (wave == 12 or wave == 20 or wave == 28)) or (role == TD_ENEMY_ROLE_GUARD and wave == 32)
 
