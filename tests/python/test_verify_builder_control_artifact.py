@@ -4,6 +4,7 @@ from dataclasses import replace
 from pathlib import Path
 import sys
 import unittest
+from python_check_inputs import candidate_map
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 from GenerateTowerTerrainMask import Mpq
@@ -192,7 +193,7 @@ class BuilderControlRawObjectNegativeTests(unittest.TestCase):
 
 class BuilderControlActualNewArtifactTests(unittest.TestCase):
     def test_raw_new_artifact_exact_main_bar_book_no_ghosts_and_channel_orders(self):
-        artifact = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        artifact = Mpq((candidate_map()).read_bytes())
         verifier.verify_raw_control_tables(artifact)
         abilities = ability_objects(artifact.extract('war3map.w3a'))
         data = artifact.extract('war3map.w3u')

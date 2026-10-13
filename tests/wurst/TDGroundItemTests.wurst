@@ -164,3 +164,31 @@ import TDCraftingLogic
 	// Lowland source points can be safe to return an item, never pile targets.
 	tdGroundPointSafeForItem(-2320.0, 2672.0).assertTrue()
 	tdGroundSortDestinationAllowed(0, -2320.0, 2672.0).assertFalse()
+
+@Test function groundUpgradeSortKeepsItsLaneAndIncludesAllEquipmentQualities()
+	for requestedLane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for sourceLane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			for quality = TD_ITEM_QUALITY_WHITE to TD_ITEM_QUALITY_PURPLE
+				tdGroundSortItemEligible(requestedLane, sourceLane, quality).assertEquals(requestedLane == sourceLane)
+			tdGroundSortItemEligible(requestedLane, sourceLane, 5).assertFalse()
+
+@Test function groundUpgradeSortLeavesGrassPilesAndCentralMergerAlone()
+	for quality = TD_ITEM_QUALITY_WHITE to TD_ITEM_QUALITY_PURPLE
+		tdGroundSortItemEligible(0, tdGroundSortSourceLane(-2320.0, 2672.0), quality).assertTrue()
+		tdGroundSortItemEligible(0, tdGroundSortSourceLane(-2048.0, 2048.0), quality).assertFalse()
+		tdGroundSortItemEligible(0, tdGroundSortSourceLane(-1008.0, 16.0), quality).assertFalse()
+		let pile = tdGroundItemPileCenter(0, quality)
+		tdGroundSortItemEligible(0, tdGroundSortSourceLane(pile.x, pile.y), quality).assertFalse()
+
+@Test function groundPeriodicSortRetainsAllLanesAndCaptureBalls()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for pileGroup = 1 to 5
+			tdGroundSortItemEligible(-1, lane, pileGroup).assertTrue()
+		for requestedLane = -2 to TD_ACTIVE_PLAYER_COUNT
+			tdGroundSortItemEligible(requestedLane, lane, 0).assertFalse()
+			tdGroundSortItemEligible(requestedLane, lane, 6).assertFalse()
+		tdGroundSortItemEligible(-2, lane, 1).assertFalse()
+		tdGroundSortItemEligible(TD_ACTIVE_PLAYER_COUNT, lane, 1).assertFalse()
+	for requestedLane = -1 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdGroundSortItemEligible(requestedLane, -1, 1).assertFalse()
+		tdGroundSortItemEligible(requestedLane, TD_ACTIVE_PLAYER_COUNT, 1).assertFalse()

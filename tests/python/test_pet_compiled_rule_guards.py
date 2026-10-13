@@ -3,6 +3,7 @@ from pathlib import Path
 import re
 import sys
 import unittest
+from python_check_inputs import candidate_map
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
@@ -18,7 +19,7 @@ def replace_body(script, name, body):
 class PetCompiledRuleGuardTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.script = Mpq((ROOT / 'ExampleMap.w3x').read_bytes()).extract('war3map.j').decode('utf-8')
+        cls.script = Mpq((candidate_map()).read_bytes()).extract('war3map.j').decode('utf-8')
         from VerifyDamageRankingJass import functions
         signature = functions(cls.script)['tdPetSkillAllowed'][2].split(',')
         if len(signature) != 4 or not signature[1].strip().startswith('integer '):

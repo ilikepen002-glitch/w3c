@@ -892,7 +892,9 @@ def verify_inventory(evaluator):
                         known |= canonical(arguments[0]) in {canonical(x) for x in support}
                     require(known, 'Unknown dynamic ability mount: ' + path + ':' + name + ':' + expression)
             for arguments in calls(body, 'registerSpellEffectEvent'):
-                require(path in registered_paths, 'Unknown spell registration owner: ' + path)
+                ground_craft_owner = (path == 'items/TDCraftingRuntime.wurst' and name == 'tdSetupCraftingRuntime' and
+                                      arguments == ['TD_FARMER_GROUND_UPGRADE_ABILITY_ID', 'function tdGroundHandleUpgrade'])
+                require(path in registered_paths or ground_craft_owner, 'Unknown spell registration owner: ' + path)
                 first = arguments[0]
                 if re.fullmatch(r'TD_\w+', first):
                     identity = evaluator.constant(first)

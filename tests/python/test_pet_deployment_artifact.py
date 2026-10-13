@@ -3,6 +3,7 @@ from pathlib import Path
 import re
 import sys
 import unittest
+from python_check_inputs import candidate_map
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
@@ -62,7 +63,7 @@ class ScalarSubsetTests(unittest.TestCase):
 class ActualDeploymentGateTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.script = packaged_script(ROOT / 'ExampleMap.w3x')
+        cls.script = packaged_script(candidate_map())
 
     def test_real_packaged_gate_counts_guards_and_rebind(self):
         verify_gate(self.script)

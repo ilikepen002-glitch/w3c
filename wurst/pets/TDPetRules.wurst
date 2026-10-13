@@ -106,11 +106,11 @@ public function tdPetSkillDescriptionById(int skill, int quality) returns string
 	if skill == 2
 		return "附身塔攻击速度 +" + (power * 100.0 + 0.5).toInt().toString() + "%"
 	if skill == 3
-		return "附身塔全部主动技能冷却缩短" + (power * 100.0 + 0.5).toInt().toString() + "%（包括精灵主动技能）。|n个人装备、精灵灵感及有效冷却光环合计上限40%；已经发动的冷却不被进出光环刷新。"
+		return "附身塔全部主动技能冷却缩短" + (power * 100.0 + 0.5).toInt().toString() + "%（包括精灵主动技能）。|n与装备、光环合计上限40%；不重置进行中的冷却。"
 	if skill == 4
-		return "仅附身宿主攻击速度 +" + (power * 100.0 + 0.5).toInt().toString() + "%；同身份不同等级取最高，异名攻速光环可叠加。"
+		return "仅附身塔攻击速度 +" + (power * 100.0 + 0.5).toInt().toString() + "%；同名取最高等级，可叠加其他攻速光环。"
 	if skill == 5
-		return "附身塔600范围内本路敌人移动速度降低 " + (power * 100.0 + 0.5).toInt().toString() + "%；同身份不同等级取最高；异名移动慢相加，总上限75%。"
+		return "附身塔600范围内本路敌人移动速度降低 " + (power * 100.0 + 0.5).toInt().toString() + "%；同名取最高等级，其他减速可叠加，总上限75%。"
 	if skill == 6
 		return "普攻使目标护甲降低" + power.toInt().toString() + "，持续3秒。同类精灵破甲取最强效果。"
 	if skill == 7
@@ -118,18 +118,18 @@ public function tdPetSkillDescriptionById(int skill, int quality) returns string
 	if skill == 8
 		return "普攻命中生命值不高于30%的敌人时，追加本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%。"
 	if skill == 9
-		return "分裂箭命中后，敌人移动速度降低" + (power * 100.0 + 0.5).toInt().toString() + "%，持续3秒；同身份不同等级取最高；异名移动慢相加，总上限75%。|n仅对拥有分裂箭的附身塔生效。"
+		return "分裂箭命中后，敌人移动速度降低" + (power * 100.0 + 0.5).toInt().toString() + "%，持续3秒；同名取最高等级，其他减速可叠加，总上限75%。|n仅对拥有分裂箭的附身塔生效。"
 	if skill == 10
 		return "尸爆在原地留下180范围毒域，持续3秒，每秒对最多12名本路敌人造成" + tdTooltipNumber(36.0 * power) + "伤害。|n仅对拥有尸爆的附身塔生效；不随尸爆进化增伤。"
 	if skill == 11
-		return "普攻自动触发：附身塔攻击速度 +" + (power * 100.0 + 0.5).toInt().toString() + "%，持续6秒；基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，受个人装备、灵感及冷却光环共同缩短，合计上限40%"
+		return "普攻自动触发：附身塔攻击速度 +" + (power * 100.0 + 0.5).toInt().toString() + "%，持续6秒；基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，可被装备、灵感及光环缩短，合计上限40%"
 	if skill == 12
-		return "普攻自动触发：附身塔基础攻击 +" + (power * 100.0 + 0.5).toInt().toString() + "%，持续6秒；基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，受个人装备、灵感及冷却光环共同缩短，合计上限40%"
+		return "普攻自动触发：附身塔基础攻击 +" + (power * 100.0 + 0.5).toInt().toString() + "%，持续6秒；基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，可被装备、灵感及光环缩短，合计上限40%"
 	if skill == 13
-		return "普攻自动触发雷链：攻击目标周围450范围内最多3名本路敌人，各受本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%。|n基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，受个人装备、灵感及冷却光环共同缩短，合计上限40%。"
+		return "普攻自动触发雷链：攻击目标周围450范围内最多3名本路敌人，各受本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%。|n基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，可被装备、灵感及光环缩短，合计上限40%。"
 	if skill == 14
-		return "普攻自动触发火焰冲击：攻击目标周围220范围内最多12名本路敌人，各受本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%。|n基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，受个人装备、灵感及冷却光环共同缩短，合计上限40%。"
-	return "普攻自动触发风缚：攻击目标周围220范围内最多12名本路敌人移动速度降低" + (power * 100.0 + 0.5).toInt().toString() + "%，持续3秒；同身份不同等级取最高；异名移动慢相加，总上限75%。|n基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，受个人装备、灵感及冷却光环共同缩短，合计上限40%。"
+		return "普攻自动触发火焰冲击：攻击目标周围220范围内最多12名本路敌人，各受本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%。|n基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，可被装备、灵感及光环缩短，合计上限40%。"
+	return "普攻自动触发风缚：攻击目标周围220范围内最多12名本路敌人移动速度降低" + (power * 100.0 + 0.5).toInt().toString() + "%，持续3秒；同名取最高等级，其他减速可叠加，总上限75%。|n基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，可被装备、灵感及光环缩短，合计上限40%。"
 
 
 

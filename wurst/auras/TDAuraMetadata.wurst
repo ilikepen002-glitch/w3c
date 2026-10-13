@@ -96,29 +96,32 @@ public function tdAuraNominalRadius(int identity, int rank) returns real
 
 public function tdAuraStateTooltip(int identity, int rank) returns string
 	let power = tdAuraNominalPower(identity, rank)
-	var description = "标称强度 " + R2I(power * 100.0 + 0.5) + "%"
-	if identity == TD_AURA_EQUIPMENT_ARMOR
-		description = "普攻主目标破甲 " + R2I(power) + "；与个人装备破甲取最高，不扩散邻敌"
+	let percent = tdPreciseBonusPercentString(power)
+	var description = "基础移动减速" + percent + "。"
+	if identity <= TD_AURA_COMMANDER
+		description = "攻击力提高" + percent + "。"
 	else if identity == TD_AURA_EQUIPMENT_ATTACK
-		description += "，按受益塔静态基础攻击换固定加值"
-	else if identity <= TD_AURA_COMMANDER
-		description += "，保留原生百分比攻击语义"
+		description = "增加基础攻击的" + percent + "攻击力。"
+	else if identity == TD_AURA_EQUIPMENT_SPEED
+		description = "攻击速度提高" + percent + "；与装备攻速合计上限120%。"
+	else if identity == TD_AURA_EQUIPMENT_COOLDOWN
+		description = "全部主动技能冷却缩短（包括附身精灵主动技能）" + percent + "；与装备、灵感合计上限40%，不重置进行中的冷却。"
+	else if identity == TD_AURA_EQUIPMENT_ARMOR
+		description = "普攻主目标破甲" + R2I(power) + "，持续3秒；与装备破甲取最高。"
+	else if identity == TD_AURA_PET_COMMAND
+		description = "附身塔攻击速度提高" + percent + "。"
 	let radius = tdAuraNominalRadius(identity, rank)
 	if radius > 0.0 and identity != TD_AURA_VINES
-		description += "；来源范围 " + R2I(radius)
-	if identity == TD_AURA_PET_COMMAND
-		description += "；友方增益仅宿主"
+		description += "范围" + R2I(radius) + "。"
 	if identity == TD_AURA_VINES
-		description += "；普通/宽域各按自身实际范围选源，受来源控制强度加成；普通范围" + R2I(tdDryadAuraSlowRadius()) + "，宽域/进化范围" + R2I(tdDryadWideAuraSlowRadius()) + ""
+		description += "范围：普通" + R2I(tdDryadAuraSlowRadius()) + "，宽域" + R2I(tdDryadWideAuraSlowRadius()) + "；减速受装备控制强化影响。"
 	if identity == TD_AURA_POISON_DART
-		description += "；命中时控制强度生效，普通5秒/英雄1秒；原生毒伤与攻速慢保留"
+		description += "持续5秒（英雄1秒），减速受装备控制强化影响。"
 	if identity == TD_AURA_PET_FROST_ARROW or identity == TD_AURA_PET_WIND
-		description += "；各品质独立3秒期限，强效到期退回仍有效弱效"
-	description += "。同身份最高等级，同等级取强；异名身份可叠加。"
-	if identity == TD_AURA_EQUIPMENT_COOLDOWN
-		description += "个人冷却、精灵灵感与有效冷却光环合计上限40%；封顶后按有效合计计算。"
+		description += "持续3秒；强效结束后，尚未到期的弱效仍生效。"
+	description += "同名取最高等级，异名可叠加。"
 	if identity == TD_AURA_EQUIPMENT_FROST or identity >= TD_AURA_PET_STASIS
-		description += "异名移动慢相加，总上限75%；此图标标识有效来源等级，并非封顶后的全额强度。"
+		description += "减速合计上限75%。"
 	return description
 
 public function tdAuraIcon(int identity) returns string

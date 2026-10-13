@@ -3,12 +3,14 @@ import TDItemData
 import TDConfig
 import TDState
 import TDGroundItemRules
+import TDGroundItemRuntime
 import TDItemOperationState
 import TDCraftingCatalog
 import TDCraftingPlan
 import TDCraftingTransaction
 import TDCraftingNativeBackend
 import ClosureTimers
+import RegisterEvents
 
 TDCraftCatalog tdRuntimeCraftCatalog = null
 boolean tdCraftRuntimeReady = false
@@ -58,20 +60,35 @@ function tdCaptureCraftGroundItem()
 
 function tdFinishCraftSession()
 	let session = tdCraftSession
+	let groundLane = tdCraftCaptureLane
 	if not tdIsGameOver()
-		DisplayTimedTextToPlayer(session.caster, 0, 0, 5.0, "合成完成：成功 " + session.successes + " 组，取消 " + session.cancelled + " 组。未成组三的材料保留，产物只升一级并留在操作附近或背包。")
+		DisplayTimedTextToPlayer(session.caster, 0, 0, 5.0, "合成完成：成功 " + session.successes + " 组，取消 " + session.cancelled + " 组。未成组三的材料保留，产物只升一级。")
+		if tdIsLanePlayer(groundLane)
+			DisplayTimedTextToPlayer(session.caster, 0, 0, 4.0, "本路坑道内装备正在按品质归堆；坑外物品保留原位。")
 		if session.backend.deliveryExceptions > 0
 			DisplayTimedTextToPlayer(session.caster, 0, 0, 6.0, "有 " + session.backend.deliveryExceptions + " 个产物交付异常，物品未删除，请按前述句柄核对。")
 	tdCraftSession = null
 	tdCraftCaptureLane = -1
 	destroy session
 	tdItemOperationRelease()
+	// Synchronous release/reacquire: no yield or second craft can enter between
+	// snapshot cleanup and the sort. Empty/cancelled batches also sort leftovers.
+	if tdIsLanePlayer(groundLane) and not tdIsGameOver()
+		tdSortGroundEquipmentAfterUpgrade(groundLane)
+
+function tdGroundHandleUpgrade() returns boolean
+	let farmer = GetTriggerUnit()
+	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
+		tdStartGroundCraft(farmer, vec2(GetSpellTargetX(), GetSpellTargetY()))
+	return false
 
 public function tdSetupCraftingRuntime()
 	if tdCraftRuntimeReady
 		return
 	tdCraftRuntimeReady = true
+	tdSetupGroundItemRuntime()
 	tdSetupCraftPickupWatch()
+	registerSpellEffectEvent(TD_FARMER_GROUND_UPGRADE_ABILITY_ID, function tdGroundHandleUpgrade)
 	doPeriodically(0.03) cb ->
 		if tdCraftSession != null
 			if tdIsGameOver()

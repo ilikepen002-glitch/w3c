@@ -22,7 +22,7 @@ class TrialProductionGateTests(unittest.TestCase):
         path = os.environ.get('TRIAL_CANDIDATE_MAP')
         if not path:
             self.assertNotEqual(__import__('VerifyTrialDelta').REVIEWED_CONTRACT_SHA, '', 'Pending artifact boundary must remain visible')
-            return
+            self.skipTest('Actual map NOT COVERED: TRIAL_CANDIDATE_MAP is required')
         data = Path(path).read_bytes()
         expected = os.environ.get('TRIAL_CANDIDATE_MAP_SHA256')
         self.assertTrue(expected, 'Final production replay requires frozen actual map SHA')
@@ -30,7 +30,7 @@ class TrialProductionGateTests(unittest.TestCase):
         self.assertEqual(verify_replay(Mpq(data).extract('war3map.j').decode())['status'], 'PASS')
     def test_actual_production_native_timer_identity_mutation_rejected(self):
         path = os.environ.get('TRIAL_CANDIDATE_MAP')
-        if not path: return
+        if not path: self.skipTest('Actual map NOT COVERED: TRIAL_CANDIDATE_MAP is required')
         script = Mpq(Path(path).read_bytes()).extract('war3map.j').decode()
         needle = 'GetExpiredTimer() != TDTrialHook_tdTrialResumeTimer'
         self.assertIn(needle, script)
@@ -43,7 +43,7 @@ class TrialProductionGateTests(unittest.TestCase):
 
     def test_actual_production_refill_amount_mutation_rejected(self):
         path = os.environ.get('TRIAL_CANDIDATE_MAP')
-        if not path: return
+        if not path: self.skipTest('Actual map NOT COVERED: TRIAL_CANDIDATE_MAP is required')
         from VerifyDamageRankingJass import functions
         script = Mpq(Path(path).read_bytes()).extract('war3map.j').decode()
         body = functions(script)['tdTrialRefillBeforeDamage'][0]
@@ -54,7 +54,7 @@ class TrialProductionGateTests(unittest.TestCase):
 
     def test_actual_current_capture_and_refund_mutation_rejected(self):
         path = os.environ.get('TRIAL_CANDIDATE_MAP')
-        if not path: return
+        if not path: self.skipTest('Actual map NOT COVERED: TRIAL_CANDIDATE_MAP is required')
         from VerifyDamageRankingJass import functions
         script = Mpq(Path(path).read_bytes()).extract('war3map.j').decode()
         result = verify_current_capture(script)

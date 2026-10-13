@@ -20,6 +20,15 @@ public function tdGroundItemGroup(int itemId) returns int
 		return 5
 	return 0
 
+public function tdGroundSortItemEligible(int requestedLane, int sourceLane, int pileGroup) returns boolean
+	if sourceLane < 0 or sourceLane >= TD_ACTIVE_PLAYER_COUNT or pileGroup < TD_ITEM_QUALITY_WHITE or pileGroup > 5
+		return false
+	// Periodic sorting includes capture balls on all lanes. A completed upgrade
+	// sorts only equipment still inside that player's connected lowland road.
+	if requestedLane == -1
+		return true
+	return requestedLane == sourceLane and pileGroup <= TD_ITEM_QUALITY_PURPLE
+
 public function tdGroundPointInUpgradeCircle(real x, real y, real centerX, real centerY) returns boolean
 	let dx = x - centerX
 	let dy = y - centerY

@@ -17,6 +17,7 @@ import runpy
 import subprocess
 import sys
 import unittest
+from python_check_inputs import candidate_map
 from unittest.mock import patch
 
 
@@ -34,7 +35,7 @@ from pet_artifact_fixture import correct_release_contract
 class BaselineArtifactTests(unittest.TestCase):
     def assert_verifier_passes(self, script):
         result = subprocess.run(
-            [sys.executable, str(TOOLS / script), str(ARTIFACT)],
+            [sys.executable, str(TOOLS / script), str(candidate_map())],
             cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
             env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
         )

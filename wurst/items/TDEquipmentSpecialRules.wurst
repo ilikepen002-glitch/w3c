@@ -78,11 +78,11 @@ public function tdWarStageName(int stage) returns string
 	return stage == 4 ? "剑圣战意 爆发" : "剑圣战意 " + stage + "/" + tdConfiguredSpecialCount(TD_ITEM_SPECIAL_WAR_INTENT)
 
 public function tdWarStageTooltip(int stage) returns string
-	let description = stage == 4 ? "爆发中" : "同目标主普攻层数 " + stage + "/" + tdConfiguredSpecialCount(TD_ITEM_SPECIAL_WAR_INTENT)
-	return description + "；达到所需层数触发固定" + R2I(tdConfiguredWarDuration()) + "秒攻速" + R2I(tdConfiguredWarAttackSpeed() * 100.0) + "%。期间不叠层不续时；换目标/停攻" + R2I(tdConfiguredWarInactivity()) + "秒/卸装清除。"
+	let description = stage == 4 ? "爆发中：" : "同目标普攻 " + stage + "/" + tdConfiguredSpecialCount(TD_ITEM_SPECIAL_WAR_INTENT) + "；达到后"
+	return description + "攻速提高" + R2I(tdConfiguredWarAttackSpeed() * 100.0) + "%，持续" + R2I(tdConfiguredWarDuration()) + "秒。期间不叠层、不续时；换目标、停攻" + R2I(tdConfiguredWarInactivity()) + "秒或卸下装备后清除。"
 
 public function tdPoisonStageName(int stage) returns string
 	return "森蚀 " + stage + "/" + tdConfiguredSpecialCount(TD_ITEM_SPECIAL_POISON_BURST)
 
 public function tdPoisonStageTooltip(int stage) returns string
-	return "宿主同目标主普攻层数 " + stage + "/" + tdConfiguredSpecialCount(TD_ITEM_SPECIAL_POISON_BURST) + "；第三击先清层再爆炸，范围" + R2I(tdConfiguredSpecialRadius(TD_ITEM_SPECIAL_POISON_BURST)) + "，最多" + tdConfiguredSpecialTargetCap(TD_ITEM_SPECIAL_POISON_BURST) + "活目标，伤害为本击事件的" + R2I(tdConfiguredSpecialDamageFactor(TD_ITEM_SPECIAL_POISON_BURST) * 100.0) + "%。换目标/停攻" + R2I(tdConfiguredPoisonBurstInactivity()) + "秒清层；图标只在宿主，不共享敌方层数。"
+	return "同目标普攻 " + stage + "/" + tdConfiguredSpecialCount(TD_ITEM_SPECIAL_POISON_BURST) + "。达到所需次数后，对目标周围" + R2I(tdConfiguredSpecialRadius(TD_ITEM_SPECIAL_POISON_BURST)) + "范围内最多" + tdConfiguredSpecialTargetCap(TD_ITEM_SPECIAL_POISON_BURST) + "名敌人，造成本次普攻伤害的" + R2I(tdConfiguredSpecialDamageFactor(TD_ITEM_SPECIAL_POISON_BURST) * 100.0) + "%。换目标或停攻" + R2I(tdConfiguredPoisonBurstInactivity()) + "秒清除次数。"

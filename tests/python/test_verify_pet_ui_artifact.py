@@ -13,6 +13,7 @@ import struct
 import subprocess
 import tempfile
 import unittest
+from python_check_inputs import candidate_map
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -27,7 +28,7 @@ from pet_artifact_fixture import correct_release_contract
 class PetUIArtifactTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.artifact = Mpq((ROOT / "ExampleMap.w3x").read_bytes())
+        cls.artifact = Mpq((candidate_map()).read_bytes())
         cls.abilities = ability_objects(cls.artifact.extract("war3map.w3a"))
         cls.units = unit_objects(cls.artifact.extract("war3map.w3u"))
 
@@ -65,15 +66,20 @@ class PetUIArtifactTests(unittest.TestCase):
 
     def test_actual_current_ui_preserves_complete_global_startup_sequence(self):
         from VerifyStartupArtifact import verify
-        result = verify(self.artifact.extract('war3map.j').decode('utf-8'),
-                        expected_pet_registrations=515)
+        result = verify(self.artifact.extract('war3map.j').decode('utf-8'))
         self.assertIn('first-wave epoch', result)
         self.assertIn('watchdog lifecycle', result)
 
-    def test_historical_startup_default_still_rejects_current_ui_contract(self):
+    def test_obsolete_per_button_registration_contract_is_not_current_startup(self):
         from VerifyStartupArtifact import verify
         with self.assertRaisesRegex(ValueError, 'Pet UI startup missed handlers'):
-            verify(self.artifact.extract('war3map.j').decode('utf-8'))
+            verify(self.artifact.extract('war3map.j').decode('utf-8'), expected_pet_registrations=515)
+
+    def test_actual_shared_listener_registers_once_and_routes_all_buttons(self):
+        from VerifyPetStartupArtifact import measure, verify_routing
+        script = self.artifact.extract('war3map.j').decode('utf-8')
+        self.assertEqual(measure(script)['registrations'], 2)
+        self.assertIn('513 button IDs', verify_routing(script))
 
 
 class HistoricalPetUINegativeTests(unittest.TestCase):

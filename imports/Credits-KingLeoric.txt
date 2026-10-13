@@ -1,0 +1,8 @@
+King Leoric / Diablo III King Leoric (original, unchanged model)
+Mesh: HappyTauren (TotallyAwesome)
+Texture: AnemicRoyalty (A.R.)
+Animation and particles: Tarrasque / Jigrael
+Original description spells the animation author Terrasque.
+Source: https://www.hiveworkshop.com/threads/diablo-iii-king-leoric.224358/
+Imported for the wave 16 boss 黑曜棺卫 in 契灵守卫战.
+The creators retain ownership. No standalone model redistribution is granted here.

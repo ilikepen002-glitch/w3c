@@ -52,3 +52,27 @@ python3 tools/Run-WurstLinux.py build --tools /绝对路径/verified-wurst-tools
 `checks` 串行 typecheck 和全部 Wurst tests，失败即中断；`typecheck` 和 `test` 可定向诊断。`build` 在没有测试 staging 的新事务中构建。检查/构建都复制实际 tracked、未提交/新增及 ignored imports 字节，拒绝未知链接和既有 staging，并记录输入哈希；只在临时配置精确映射那一条 stdlib URL。原始模板另复制给 Grill，不直接交给可能写 MPQ 的工具。
 
 全仓库各 worktree 共用 Linux checks/build 锁。事务目录 `_build/linux-*` 保留日志和 manifest；结束或中断前停止整个子进程组，再清理该事务的测试 staging。编译前后校验工具/stdlib，最终地图先追加显示名，再通过原 `VerifyLegacyJass` 的真实 MPQ/JASS 门禁和独立 Python MPQ/对象表/全部 imports 字节检查；输入或候选变化、缺少/多个/旧输出均拒绝发布。所有门禁通过才原子更新根目录 `ExampleMap.w3x`（或显式 `--output` 地图路径），旧根图副本保留在事务目录。历史封闭 delta 检查仍要各自的真实历史基线，不能拿当前图冒充或放宽断言。
+
+## 局部 Python 检查与计时
+
+`tools/Run-PythonChecks.py` 仅选择和运行现有 unittest，不编译 Wurst、不构图、不部署；不替代上面的构建入口或最终同图完整验收。入口本身只用 Python 标准库，具体测试仍需要原有依赖。
+
+```bash
+# 按模块、文件或单个测试选择；重复选择自动去重
+python3 tools/Run-PythonChecks.py test_purple_pet_release tests/python/test_pet_ui_workflow.py
+python3 tools/Run-PythonChecks.py test_pet_deployment_artifact.ScalarSubsetTests
+# 列出全部测试及分类，不执行测试/fixture；局部源码检查
+python3 tools/Run-PythonChecks.py --all --list
+python3 tools/Run-PythonChecks.py test_runtime_hotpath_replay --group source
+# 对显式候选跑真实地图检查；可同时校验事先冻结的 SHA-256
+python3 tools/Run-PythonChecks.py test_pet_deployment_artifact --candidate-map /绝对路径/candidate.w3x
+python3 tools/Run-PythonChecks.py --all --candidate-map /绝对路径/candidate.w3x --candidate-sha256 已冻结的SHA256
+```
+
+分类按实际测试类/混合方法登记：`source` 检查当前源码/导入资产，`regression` 包含历史基线、合成负例和工具测试，`map` 检查显式候选。可重复 `--group`；新增未登记类显示 `unclassified` 并阻止执行，不能默默遗漏。历史 fixture（部分读取根图作变异素材）不算候选通过；历史比较所需的 baseline/source 参数保持原义，不用候选替换。
+
+地图检查必须传 `--candidate-map`，不会从旧环境变量或根图自动挑选；输出绝对路径和 SHA，统一传给现有候选接口，并在结束时复核字节未变。Pure Boss 个别检查仍额外需要原有 `PURE_BOSS_REVIEWED_JASS_TEMPLATES`、`PURE_BOSS_CANDIDATE_SOURCE`、`PURE_BOSS_BASELINE_SOURCE` 或 `PURE_BOSS_HOOK_HARNESS_MAP`；四项整合的实际字段比较还要求独立的 `COMBINED_PARENT_MAP`，不会用候选替代父图。`COMBINED_CANDIDATE_MAP` 同样绑定显式候选。缺材料明确报告未覆盖。直接运行 unittest 时，原硬编码根图的真实检查现在要求 `PYTHON_CANDIDATE_MAP`，缺失明确 skip；CD/Bloodlust 保留显式 `W3C_ACTIVE_COOLDOWN_MAP` 接口，runner 将它也绑定到同一候选；其混合源码类里的真实地图方法单独归入 `map`。Trial 实图检查也不再无输入即通过。
+
+输出每测试耗时、导入/发现准备耗时、共享 fixture 准备/收尾耗时、最慢 10 项，以及失败/错误/跳过/未覆盖计数。退出码：`0` 所选检查通过（普通 skip 仍明确列出）；`1` 测试/装载/候选稳定性失败；`2` 输入错误或所选检查未覆盖（含地图 skip、缺候选和未分类）。`PASSED_SELECTED` 只代表所选范围，SHA 相同也不证明源码对应、刚构建或游戏内行为；最终验收仍需同一候选及完整构建门禁。
+
+开发中选相关模块；校验器变化加对应历史负例；一个完成批次再走必要 Wurst 检查/构建，最终对同一候选完整验收。当前先记录耗时，不缓存结果，也未接入 `Run-WurstLinux.py` 的阶段计时。
