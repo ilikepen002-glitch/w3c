@@ -85,16 +85,20 @@ public function tdPetIsDisplayType(int typeId) returns boolean
 			return true
 	return false
 
-// Ten physical cells, thirteen icon states each, two tooltip levels for fixed pages.
-public function tdPetListAbilityId(int cell, int species, int quality) returns int
+// Ten cells, forty-nine mutually exclusive portrait/count states per cell.
+public function tdPetListAbilityId(int cell, int species, int quality, int ownedCount) returns int
 	if cell < 0 or cell >= 10
 		return 0
 	var variant = 0
-	if species >= 1 and species <= 3 and quality >= 1 and quality <= 4
-		variant = 1 + (species - 1) * 4 + quality - 1
-	else if species != 0 or quality != 0
+	if species >= 1 and species <= 3 and quality >= 1 and quality <= 4 and ownedCount >= 1 and ownedCount <= 4
+		variant = (species - 1) * 16 + (quality - 1) * 4 + ownedCount
+	else if species != 0 or quality != 0 or ownedCount != 0
 		return 0
-	return tdPetHexRawcode('Pl00', cell * 13 + variant, 130)
+	let index = cell * 49 + variant
+	return tdPetHexRawcode('L000', index mod 256, 256) + (index div 256) * 65536
+
+public function tdPetPreviewArrowAbilityId(int position) returns int
+	return tdPetHexRawcode('Pa00', position, 2)
 
 public function tdPetPreviewAbilityId(int position, int skill) returns int
 	if position < 0 or position > 1 or skill < 0 or skill >= TD_PET_SKILL_COUNT
@@ -113,7 +117,7 @@ public function tdPetUICommandId(int command) returns int
 public function tdPetManagerCommandId(int action) returns int
 	if action >= 0 and action <= 7
 		return tdPetUICommandId(action)
-	return tdPetHexRawcode('Pm00', action - 8, 13)
+	return tdPetHexRawcode('Pm00', action - 8, 15)
 
 
 

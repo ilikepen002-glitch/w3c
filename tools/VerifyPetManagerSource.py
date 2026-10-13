@@ -166,6 +166,9 @@ def compile_source_helper(text, name, namespace, arity=None):
         elif ' += ' in line:
             left, right = line.split(' += ', 1)
             line = left + ' += ' + _expression(right)
+        elif ' -= ' in line:
+            left, right = line.split(' -= ', 1)
+            line = left + ' -= ' + _expression(right)
         else:
             raise ValueError(f'Unsupported source-only statement: {line}')
         output.append('    ' * indent + line)
@@ -185,7 +188,7 @@ def scalar_helpers():
         for constant, value in re.findall(r'public constant int (\w+) = (-?\d+)', source(name)):
             namespace[constant] = int(value)
     targets = {
-        'TDPetData': [('tdPetHexRawcode', 3), ('tdPetDisplayUnitId', 2), ('tdPetListAbilityId', 3), ('tdPetPreviewAbilityId', 2), ('tdPetUICommandId', 1), ('tdPetManagerCommandId', 1), ('tdPetSlotAbilityId', 2)],
+        'TDPetData': [('tdPetHexRawcode', 3), ('tdPetDisplayUnitId', 2), ('tdPetListAbilityId', 4), ('tdPetPreviewAbilityId', 2), ('tdPetPreviewArrowAbilityId', 1), ('tdPetUICommandId', 1), ('tdPetManagerCommandId', 1), ('tdPetSlotAbilityId', 2)],
         'TDPetRules': [('tdPetCollectionNumber', 1), ('tdPetPageSlot', 2), ('tdPetStepSlot', 2), ('tdPetOwnedQuality', 5)],
         'TDPetUIState': [('tdPetActionCell', 2), ('tdPetActionHotkey', 1), ('tdPetListHotkey', 1)],
         'TDPetState': [('tdPetNextOccupied', 3)],
@@ -201,18 +204,22 @@ def verify_scalar_contracts(namespace=None):
     n = namespace or scalar_helpers()
     for mode, action in itertools.product(range(-1, 6), range(-1, 122)):
         require(n['tdPetActionCell'](mode, action) == expected_action_cell(mode, action), f'Source page whitelist {mode}/{action}')
-    for action in range(21):
+    for action in range(23):
         require(n['tdPetActionHotkey'](action) == MANAGER_COMMANDS[manager_rawcode(action)][2], f'Source hotkey {action}')
-    channels = {n['tdPetManagerCommandId'](action) for action in range(21)}
-    for cell, variant in itertools.product(range(10), range(13)):
-        species, quality = (0, 0) if variant == 0 else ((variant - 1) // 4 + 1, (variant - 1) % 4 + 1)
-        identifier = n['tdPetListAbilityId'](cell, species, quality)
-        require(identifier == int.from_bytes(f'Pl{cell * 13 + variant:02X}'.encode(), 'big'), 'Source list rawcode mismatch')
+    channels = {n['tdPetManagerCommandId'](action) for action in range(23)}
+    for cell, variant in itertools.product(range(10), range(49)):
+        species, quality, count = (0, 0, 0) if variant == 0 else ((variant - 1) // 16 + 1, ((variant - 1) % 16) // 4 + 1, (variant - 1) % 4 + 1)
+        identifier = n['tdPetListAbilityId'](cell, species, quality, count)
+        require(identifier == int.from_bytes(f'L{cell * 49 + variant:03X}'.encode(), 'big'), 'Source list rawcode mismatch')
         require(identifier not in channels, 'Source manager Channel collision')
         channels.add(identifier)
     passives = {n['tdPetSlotAbilityId'](slot, variant) for slot, variant in itertools.product(range(4), range(129))}
     passives.update(n['tdPetPreviewAbilityId'](position, skill) for position, skill in itertools.product(range(2), range(16)))
-    require(len(channels) == 151 and len(passives) == 548 and not channels & passives, 'Source object/rawcode budget mismatch')
+    passives.update(n['tdPetPreviewArrowAbilityId'](position) for position in range(2))
+    require(len(channels) == 513 and len(passives) == 550 and not channels & passives, 'Source object/rawcode budget mismatch')
+    for cell, species, quality, count in itertools.product(range(-1, 11), range(-1, 5), range(-1, 6), range(-1, 6)):
+        valid = 0 <= cell < 10 and ((species, quality, count) == (0, 0, 0) or (1 <= species <= 3 and 1 <= quality <= 4 and 1 <= count <= 4))
+        require((n['tdPetListAbilityId'](cell, species, quality, count) != 0) == valid, 'Invalid list portrait/count must fail closed')
     for cell in range(10):
         require(n['tdPetListHotkey'](cell) == 'QWETASDFZX'[cell], 'Source list hotkey mismatch')
         for page in range(2):
@@ -227,7 +234,7 @@ def verify_scalar_contracts(namespace=None):
             expected = next(((slot + step * direction) % 20 for step in range(1, 21) if (slot + step * direction) % 20 in occupied), -1)
             require(n['tdPetNextOccupied'](0, slot, direction) == expected, 'Source skip-hole navigation mismatch')
             require(n['tdPetNextOccupied'](1, slot, direction) == -1, 'Source lane isolation mismatch')
-    for function, args in [('tdPetListAbilityId', (10, 1, 1)), ('tdPetListAbilityId', (0, 4, 1)), ('tdPetPreviewAbilityId', (2, 0)), ('tdPetManagerCommandId', (21,)), ('tdPetSlotAbilityId', (4, 0)), ('tdPetSlotAbilityId', (0, 129)), ('tdPetDisplayUnitId', (4, 1))]:
+    for function, args in [('tdPetListAbilityId', (10, 1, 1, 1)), ('tdPetListAbilityId', (0, 4, 1, 1)), ('tdPetPreviewAbilityId', (2, 0)), ('tdPetPreviewArrowAbilityId', (2,)), ('tdPetManagerCommandId', (23,)), ('tdPetSlotAbilityId', (4, 0)), ('tdPetSlotAbilityId', (0, 129)), ('tdPetDisplayUnitId', (4, 1))]:
         require(n[function](*args) == 0, 'Source out-of-partition rawcode must fail closed')
     # Full source literal collision scan, not merely the new namespace itself.
     reserved = channels | passives | {n['tdPetDisplayUnitId'](species, quality) for species, quality in itertools.product(range(1, 4), range(1, 5))} | {int.from_bytes(b'pd00', 'big')}
@@ -237,7 +244,7 @@ def verify_scalar_contracts(namespace=None):
             continue
         for literal in re.findall(r"'([A-Za-z0-9]{4})'", path.read_text(encoding='utf-8')):
             require(int.from_bytes(literal.encode(), 'big') not in reserved, f'Rawcode reservation collision in {path.relative_to(ROOT)}: {literal}')
-    print('PASS SOURCE SCALARS: 861 page/action cases; 151/548 unique ability partitions; 20 numbers; 1,280 quality cases; 200 real-source skip-hole/200 lane-isolation cases; boundary guards')
+    print('PASS SOURCE SCALARS: 861 page/action cases; 513/550 unique ability partitions; exhaustive count inputs; 20 numbers; 1,280 quality cases; navigation and boundary guards')
 
 
 def verify_wiring(*, verify_legacy_wild_scope=True):
@@ -288,7 +295,8 @@ def verify_wiring(*, verify_legacy_wild_scope=True):
     require('readyAt =' not in begin + resolve + opened, 'Cultivation resets cooldown')
     require('proposalVersion' in session and 'listRevisions' in session and 'actualLevel' in session, 'Session snapshots/admission incomplete')
     require('setNormalAbilities("Avul")' in function_body(objects, 'displayUnit')[1], 'Displays must be runtime-mounted only')
-    require('new ChannelAbilityPreset(tdPetListAbilityId(cell, species, quality), 2, true)' in objects, 'List object levels mismatch')
+    require('new ChannelAbilityPreset(tdPetListAbilityId(cell, 0, 0, 0), 2, true)' in objects and 'new AbilityDefinitionIllidanChannel(tdPetListAbilityId(cell, species, quality, ownedCount))' in objects and 'anchor.getOrderString()' in objects,
+            'List must allocate only one shared order per physical cell')
     require('new AbilityDefinitionBladeMasterCriticalStrike(tdPetPreviewAbilityId' in objects and '..setLevels(4)' in objects, 'Preview must use four-quality passives')
     summary = function_body(view, 'tdPetPageSummary')[1]
     require('tdPetShowPageSummary' not in function_body(ui, 'showPage')[1],
@@ -306,6 +314,7 @@ def verify_wiring(*, verify_legacy_wild_scope=True):
         for path in ('wurst/pets/TDPetWild.wurst', 'wurst/pets/TDPetWildState.wurst'):
             before = subprocess.run(['git', 'show', BASELINE + ':' + path], cwd=ROOT, check=True, capture_output=True).stdout
             require((ROOT / path).read_bytes() == before, 'Wild encounter changes outside scope: ' + path)
+    verify_ui_workflow()
     print('PASS SOURCE WIRING: fresh caster authority, exact level/page whitelist, consume-before-transaction, dirty-only polling, synchronized mounts/local-only selection, proposal preservation, release cancellation, HUD board ownership; ' +
           ('unchanged historical wild bytes' if verify_legacy_wild_scope else 'wild scope must be proven by the separate exact Boss delta'))
 
@@ -316,16 +325,60 @@ def verify_assets():
     verify_manifest(manifest, require_hashes=True)
     original = json.loads(subprocess.run(['git', 'show', ASSET_BASELINE + ':assets/source/pet-ui/manifest.json'], cwd=ROOT, check=True, capture_output=True, text=True).stdout)
     current = {asset['name']: asset for asset in manifest['assets']}
-    require(set(current) == EXPECTED_NAMES, 'Exact twenty-eight source assets required')
+    require(set(current) == EXPECTED_NAMES, 'Exact seventy-eight source assets required')
     for asset in original['assets']:
         for key in ('source_svg', 'normal_blp', 'disabled_blp'):
             require(hashlib.sha256((ROOT / current[asset['name']][key]).read_bytes()).hexdigest() == asset['sha256'][key], 'Original pet artwork changed: ' + asset['name'])
-    print('PASS ASSET PRESERVATION: original thirteen SVG/BTN/DIS inputs byte-locked; exact twelve quality frames + release/keep/adopt')
+    # Preserve all 28 predecessor artworks, not only the first 13 originals.
+    before = json.loads(subprocess.check_output(['git', 'show', '28f16681bc07b58066f10d51e8aed7ba626fb768:assets/source/pet-ui/manifest.json'], cwd=ROOT))
+    for asset in before['assets']:
+        for key in ('source_svg', 'normal_blp', 'disabled_blp'):
+            require(hashlib.sha256((ROOT / current[asset['name']][key]).read_bytes()).hexdigest() == asset['sha256'][key], 'Predecessor pet artwork changed: ' + asset['name'])
+    print('PASS ASSET PRESERVATION: all 28 predecessor SVG/BTN/DIS inputs byte-locked; exact 48 count portraits + 2 readable choices')
+
+
+def verify_ui_workflow():
+    data, ui, session, objects, state = (source(n) for n in ('TDPetData', 'TDPetUI', 'TDPetUIState', 'TDPetObjectGen', 'TDPetState'))
+    before = subprocess.check_output(['git', 'show', '28f16681bc07b58066f10d51e8aed7ba626fb768:wurst/pets/TDPetData.wurst'], cwd=ROOT).decode()
+    require(function_body(data, 'tdPetHexRawcode')[1] == function_body(before, 'tdPetHexRawcode')[1], 'Keep the integer-only startup rawcode fix')
+    for helper in ('tdPetListAbilityId', 'tdPetManagerCommandId', 'tdPetPreviewArrowAbilityId'):
+        body = function_body(data, helper)[1]
+        require('SubString' not in body and '.fromRawCode' not in body, 'Startup helper performs runtime string work: ' + helper)
+    setup = function_body(ui, 'tdPetSetupUI')[1]
+    require(setup.index('if ready') < setup.index('ready = true') < setup.index('registerSpellEffectEvent'), 'Setup must guard repeated registration')
+    for text in ('for action = 0 to TD_PET_ACTION_PREVIEW_DETAIL', 'tdPetListAbilityId(cell, 0, 0, 0)', 'for ownedCount = 1 to 4', 'tdPetListAbilityId(cell, species, quality, ownedCount)'):
+        require(text in setup, 'Incomplete 515 startup registration partition: ' + text)
+    opened = function_body(session, 'open')[1]
+    require('if abilityId == 0\n\t\t\tclose()\n\t\t\treturn false' in opened, 'Malformed occupied portrait must reject, never mount an empty fallback')
+    require('current.skillCount == ownedCount' in function_body(session, 'matchesPet')[1] and 'current.skillCount == listOwnedCounts[cell]' in function_body(session, 'matchesListCell')[1], 'Count changes must stale both list and detail snapshots')
+    for text in ('mount(0, tdPetPreviewAbilityId(0', 'mount(1, tdPetPreviewArrowAbilityId(0)', 'mount(2, tdPetPreviewArrowAbilityId(1)', 'mount(3, tdPetPreviewAbilityId(1'):
+        require(text in opened, 'Preview old/arrow/arrow/new layout missing: ' + text)
+    config = function_body(objects, 'listCommand')[1]
+    for text in ('setLevels(2)', 'presetBaseOrderID(lvl -> order)', 'presetTargetType(lvl -> 0)', 'presetOptions(lvl -> 1)', 'presetDisableOtherAbilities(lvl -> false)', 'presetFollowThroughTime(lvl -> 0.0)', 'presetArtDuration(lvl -> 0.0)', 'setHeroAbility(false)', 'setItemAbility(false)', 'presetManaCost(lvl -> 0)', 'presetCooldown(lvl -> 0.0)', 'setArtCaster("")', 'setArtEffect("")', 'setArtSpecial("")', 'setArtTarget("")'):
+        require(text in config, 'Incomplete shared list Channel configuration: ' + text)
+    continued = function_body(state, 'tdPetContinueReroll')[1]
+    for text in ('tdPetLaneCanManage(lane)', 'pet != expected', 'pet.released', 'pet.proposalSlot >= pet.skillCount', 'pet.proposalSlot >= 4', 'candidateVersion <= 0', 'pet.proposalVersion != candidateVersion', 'pet.proposalVersion >= 2147483647', 'pet.proposalRevision != sourceRevision', 'pet.revision != sourceRevision', 'tdPetRerollStones[lane] < 1', 'candidate < 0'):
+        require(text in continued, 'Missing atomic continue guard: ' + text)
+    require(continued.index('pet.rollSkill') < continued.index('pet.proposalVersion += 1') < continued.index('tdPetRerollStones[lane] -= 1'), 'Continue must validate/draw before one version and charge')
+    require(continued.count('tdPetRerollStones[lane] -= 1') == 1 and continued.count('pet.proposalVersion += 1') == 1, 'Continue must charge/increment exactly once')
+    require(not any(text in continued for text in ('setSkill(', 'tdPetBeginReroll(', 'proposalSlot = -1', 'readyAt =', 'skillCount =')), 'Continue clears candidate or mutates owned skills/cooldown')
+    command = function_body(ui, 'onCommand')[1]
+    require(command.index('session.admitCommand') < command.index('tdPetContinueReroll(lane, slot, session.pet, proposalVersion, proposalRevision)'), 'Continue must consume exact snapshot authority before mutation')
+    fallback = function_body(ui, 'showDetailOrList')[1]
+    require('current != null and current == expected' in fallback and 'TD_PET_UI_DETAIL' in fallback and 'TD_PET_UI_LIST' in fallback, 'Failure/cancel must revalidate record before detail')
+    cancel = command.split('else if action == TD_PET_ACTION_CANCEL\n', 1)[1]
+    require('tdPetCancelRelease(lane)\n\tshowDetailOrList(lane, page, slot, pet)' in cancel, 'Cancel must revoke ticket and return safely')
+    release = function_body(ui, 'showReleaseConfirmation')[1]
+    require('tdPetBeginRelease(lane, slot)' in release and 'showDetailOrList(lane, slot div 10, slot, expected)' in release, 'Release entrance must reuse the existing guarded ticket and safe return')
+    require('TD_PET_UI_RELEASE' not in function_body(ui, 'refreshStale')[1], 'Stale release must not route back into cultivation')
+    require('label = "保留原技能"' in objects and 'label = "换成新技能"' in objects, 'Choice tooltips must name the actual operation')
+    print('PASS UI WORKFLOW: 515 exact registrations/guard; integer startup; count snapshots; complete shared Channels; eight-cell preview; atomic continue; safe release return')
 
 
 def main():
     verify_scalar_contracts()
     verify_wiring()
+    verify_ui_workflow()
     verify_assets()
     print('NOT RUN: Wurst syntax/typecheck/tests; full build; W3A/W3U/MPQ artifact gates; in-game selection/rendering/network timing/performance; final Astra implementation review')
 

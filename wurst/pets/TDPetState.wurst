@@ -276,7 +276,10 @@ public function tdPetConfirmRelease(int lane, int nonce) returns boolean
 	// Refuse before removal when either possible material reward would overflow.
 	if tdPetRerollStones[lane] < 0 or tdPetSlotStones[lane] < 0 or tdPetRerollStones[lane] >= TD_PET_MATERIAL_LIMIT or tdPetSlotStones[lane] >= TD_PET_MATERIAL_LIMIT
 		return false
-	let extra = tdPetReleaseGetsSlotStone(GetRandomInt(1, 100))
+	// Owned quality includes resonance-locked skills; decide before removing the record.
+	var extra = pet.quality() == 4
+	if not extra
+		extra = tdPetReleaseGetsSlotStone(GetRandomInt(1, 100))
 	if not tdPetDiscardOwned(lane, slot)
 		return false
 	tdPetRerollStones[lane] += 1
@@ -304,6 +307,28 @@ public function tdPetBeginReroll(int lane, int slot, int skillSlot) returns bool
 	pet.proposalOldSkill = pet.skillAt(skillSlot)
 	pet.proposalOldQuality = pet.qualityAt(skillSlot)
 	pet.proposalSlot = skillSlot
+	pet.proposalSkill = candidate
+	pet.proposalQuality = quality
+	tdPetRerollStones[lane] -= 1
+	return true
+
+// Validate the old candidate before drawing or charging; failure preserves it.
+public function tdPetContinueReroll(int lane, int slot, TDPet expected, int candidateVersion, int sourceRevision) returns boolean
+	let pet = tdPetAt(lane, slot)
+	if not tdPetLaneCanManage(lane) or pet == null or pet != expected or pet.released
+		return false
+	if pet.proposalSlot < 0 or pet.proposalSlot >= pet.skillCount or pet.proposalSlot >= 4 or candidateVersion <= 0 or pet.proposalVersion != candidateVersion or pet.proposalVersion >= 2147483647
+		return false
+	if pet.proposalRevision != sourceRevision or pet.revision != sourceRevision or tdPetRerollStones[lane] < 1 or tdPetRerollStones[lane] > TD_PET_MATERIAL_LIMIT
+		return false
+	let candidate = pet.rollSkill(pet.proposalSlot)
+	if candidate < 0
+		return false
+	let quality = tdPetQualityForRoll(GetRandomInt(1, 100))
+	pet.proposalVersion += 1
+	pet.proposalRevision = pet.revision
+	pet.proposalOldSkill = pet.skillAt(pet.proposalSlot)
+	pet.proposalOldQuality = pet.qualityAt(pet.proposalSlot)
 	pet.proposalSkill = candidate
 	pet.proposalQuality = quality
 	tdPetRerollStones[lane] -= 1

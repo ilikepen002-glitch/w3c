@@ -34,7 +34,7 @@ class PetUIArtifactTests(unittest.TestCase):
     def test_actual_farmer_grid_is_eleven_cells_with_empty_blink_slot(self):
         verifier.verify_manager_farmer(self.abilities, self.units)
 
-    def test_actual_twenty_one_manager_commands_match_pages(self):
+    def test_actual_twenty_three_manager_commands_match_pages(self):
         verifier.verify_manager_commands(self.abilities)
         verifier.verify_manager_list(self.abilities)
         verifier.verify_manager_preview(self.abilities)
@@ -48,8 +48,8 @@ class PetUIArtifactTests(unittest.TestCase):
     def test_actual_wild_and_capture_tooltips_are_capture_only(self):
         verifier.verify_capture_only(self.abilities, self.units, current_manager=True)
 
-    def test_actual_cultivation_command_explicitly_exposes_release(self):
-        verifier.verify_cultivation_command(self.abilities)
+    def test_actual_cultivation_command_omits_detail_release_entrance(self):
+        verifier.verify_cultivation_command(self.abilities, current_manager=True)
 
     def test_actual_native_manager_uses_real_session_whitelists(self):
         verifier.verify_manager_jass(self.artifact.extract("war3map.j").decode("utf-8"))
@@ -62,6 +62,18 @@ class PetUIArtifactTests(unittest.TestCase):
 
     def test_actual_imports_decode_and_match_source_hashes(self):
         verifier.verify_imported_icons(self.artifact, ROOT)
+
+    def test_actual_current_ui_preserves_complete_global_startup_sequence(self):
+        from VerifyStartupArtifact import verify
+        result = verify(self.artifact.extract('war3map.j').decode('utf-8'),
+                        expected_pet_registrations=515)
+        self.assertIn('first-wave epoch', result)
+        self.assertIn('watchdog lifecycle', result)
+
+    def test_historical_startup_default_still_rejects_current_ui_contract(self):
+        from VerifyStartupArtifact import verify
+        with self.assertRaisesRegex(ValueError, 'Pet UI startup missed handlers'):
+            verify(self.artifact.extract('war3map.j').decode('utf-8'))
 
 
 class HistoricalPetUINegativeTests(unittest.TestCase):

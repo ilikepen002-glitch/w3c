@@ -7,11 +7,13 @@ import subprocess
 import tempfile
 import re
 import sys
+import types
 import unittest
 from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 from GenerateTowerTerrainMask import Mpq
+from VerifyEquipmentAbilityArtifact import ability_objects
 from VerifySemanticIconArtifact import load_objects
 from VerifyDamageRankingJass import functions
 import VerifyPetManagerDelta as gate
@@ -38,6 +40,16 @@ class ManagerInheritanceTests(unittest.TestCase):
             target = frozen / relative; target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(subprocess.check_output(['git', 'show', commit + ':' + relative], cwd=ROOT))
         scope = patch.object(gate, 'ROOT', frozen); scope.start(); cls.addClassCleanup(scope.stop)
+        # This test proves the immutable published Manager stage. Its UI object
+        # oracle must come from that same commit, never the current shortcut.
+        ui_path = frozen / 'tools/VerifyPetUIArtifact.py'
+        ui_path.parent.mkdir(parents=True, exist_ok=True)
+        ui_path.write_bytes(subprocess.check_output(['git', 'show', commit + ':tools/VerifyPetUIArtifact.py'], cwd=ROOT))
+        cls.frozen_ui = types.ModuleType('formal_manager_ui_oracle')
+        cls.frozen_ui.__file__ = str(ui_path)
+        exec(compile(ui_path.read_bytes(), str(ui_path), 'exec'), cls.frozen_ui.__dict__)
+        ui_scope = patch.object(gate, 'verify_manager_objects', cls.frozen_ui.verify_manager_objects)
+        ui_scope.start(); cls.addClassCleanup(ui_scope.stop)
         cls.current = Mpq(data)
         cls.before = gate.baseline_map()
         cls.script = cls.current.extract('war3map.j').decode()
@@ -52,6 +64,16 @@ class ManagerInheritanceTests(unittest.TestCase):
         self.assertEqual(proof['archive']['new_assets'], 30)
         self.assertEqual(proof['global_channels'], 158)
         self.assertGreaterEqual(proof['jass']['protected_functions'], 1550)
+
+    def test_historical_manager_oracle_rejects_current_release_cell_and_hotkey(self):
+        original = ability_objects(self.current.extract('war3map.w3a'))
+        for name, value in [('abpx', 3), ('ahky', 'W')]:
+            abilities = deepcopy(original)
+            key = next(k for k in abilities['Pm07'][1] if k[0] == name)
+            kind, _ = abilities['Pm07'][1][key]
+            abilities['Pm07'][1][key] = (kind, value)
+            with self.subTest(field=name), self.assertRaises(ValueError):
+                self.frozen_ui.verify_manager_commands(abilities)
 
     def assert_changed_function_rejected(self, name, transform):
         body = functions(self.script)[name][0]

@@ -56,13 +56,49 @@ def verify_no_removed_raw_objects(data, extended, label):
                         f'{object_id}: removed {retired} remains in {label} field {key[0]}')
 
 
+def verify_list_channel_families(abilities):
+    """The only shared-order exception: 49 exclusive variants in each cell."""
+    actual = {raw for raw in abilities if re.fullmatch(r'L[0-9A-F]{3}', raw)}
+    if not actual:
+        return {}
+    expected = {f'L{i:03X}' for i in range(490)}
+    require(actual == expected, 'List shared-order whitelist must contain exactly L000..L1E9')
+    groups, cell_orders = {}, {}
+    for cell in range(10):
+        order = None
+        for variant in range(49):
+            raw = f'L{cell * 49 + variant:03X}'
+            parent, fields = abilities[raw]
+            require(parent == 'ANcl' and value(fields, 'alev', 0) == 2,
+                    f'{raw}: shared list family must be two-level Channel')
+            require((value(fields, 'abpx', 0), value(fields, 'abpy', 0)) == (cell % 4, cell // 4),
+                    f'{raw}: shared list family cell changed')
+            require(value(fields, 'ahky', 0) == 'QWETASDFZX'[cell], f'{raw}: shared list family hotkey changed')
+            for level in (1, 2):
+                require(value(fields, 'Ncl2', level, 2) == 0, f'{raw}: shared list family must be no-target')
+                current = value(fields, 'Ncl6', level, 6)
+                if order is None:
+                    order = current
+                require(current == order, f'{raw}: shared list family order differs')
+            groups[raw] = ('list-cell', cell)
+        require(order not in cell_orders, 'Shared list orders collide across cells')
+        cell_orders[order] = cell
+    return groups
+
+
+def unique_channel_order_count(abilities):
+    return len({order for _, fields in abilities.values() for (key, _, _), (_, order) in fields.items() if key == 'Ncl6'})
+
+
 def verify_global_channel_orders(abilities):
     """Check every packaged Channel and every Ncl6 field, not just UI commands.
 
     One ability may reuse its own order across synchronization levels. Two
-    different abilities must never own the same order at any level.
+    different abilities cannot share an order, except the exact validated list
+    family whose variants are mutually exclusive within one physical cell.
     """
     owners = {}
+    families = verify_list_channel_families(abilities)
     channel_count = 0
     for object_id, (parent, fields) in abilities.items():
         orders = [(level, column, kind, order)
@@ -82,11 +118,12 @@ def verify_global_channel_orders(abilities):
             require(level >= 1 and column == 6 and kind == 3 and
                     isinstance(order, str) and re.fullmatch(r"[a-z][a-z0-9]*", order) is not None,
                     f'{object_id}: invalid Channel order encoding at level {level}')
+            owner = families.get(object_id, ('object', object_id))
             previous = owners.get(order)
-            require(previous is None or previous == object_id,
+            require(previous is None or previous == owner,
                     f'Channel order {order!r} collides: {previous} and {object_id} '
                     f'(level {level})')
-            owners[order] = object_id
+            owners[order] = owner
     return channel_count
 
 

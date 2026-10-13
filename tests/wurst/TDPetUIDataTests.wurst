@@ -45,7 +45,7 @@ import TDPetUIData
 
 @Test function petPreviewAndReleaseCommandsUseExplicitPurposeArtwork()
 	tdPetManagerCommandIconPath(15).assertEquals("war3mapImported\\BTNTDPetRelease.blp")
-	tdPetManagerCommandIconPath(17).assertEquals("war3mapImported\\BTNTDPetKeep.blp")
-	tdPetManagerCommandIconPath(18).assertEquals("war3mapImported\\BTNTDPetAdopt.blp")
+	tdPetManagerCommandIconPath(17).assertEquals("war3mapImported\\BTNTDPetKeepOld.blp")
+	tdPetManagerCommandIconPath(18).assertEquals("war3mapImported\\BTNTDPetUseNew.blp")
 	tdPetManagerCommandIconPath(19).assertEquals(tdPetManagerCommandIconPath(15))
-	tdPetManagerCommandIconPath(20).assertEquals(tdPetManagerCommandIconPath(17))
+	tdPetManagerCommandIconPath(20).assertEquals("war3mapImported\\BTNTDPetKeep.blp")

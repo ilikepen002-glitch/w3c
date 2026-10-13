@@ -51,7 +51,9 @@ class StartupRuntime(PetStartupRuntime):
         return super().native(name, args)
 
 
-def verify(script):
+def verify(script, expected_pet_registrations=153):
+    # Historical fixtures retain 153; the collection manager contract is 515.
+    require(expected_pet_registrations in (153, 515), 'Unknown pet UI startup contract')
     packaged = functions(script)
     setup = packaged['tdSetupHud'][4]
     require('call tdRequestHudRefresh(' in setup and 'call tdRefreshStatusBoard(' not in setup,
@@ -65,7 +67,7 @@ def verify(script):
     runtime.invoke('tdRefreshHud')
     require(not runtime.scheduled, 'Refresh before board creation should be ignored')
     runtime.invoke('tdFinalizeGameplayBootstrap')
-    require(len(runtime.registered) == 153 and runtime.calls['string_indexOf'] == 0,
+    require(len(runtime.registered) == expected_pet_registrations and runtime.calls['string_indexOf'] == 0,
             'Pet UI startup missed handlers or performed expensive string scans')
     require(len(runtime.scheduled) == 2, 'Startup must register first wave and one deferred HUD setup')
     require(runtime.scheduled[0][0] > 0 and runtime.scheduled[1][0] == 0, 'First wave must register before HUD setup')
@@ -110,5 +112,8 @@ def verify(script):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('map')
+    parser.add_argument('--current-pet-ui', action='store_true',
+                        help='Require the current manager\'s exact 515 registrations (historical default: 153)')
     args = parser.parse_args()
-    print(verify(Mpq(Path(args.map).read_bytes()).extract('war3map.j').decode()))
+    print(verify(Mpq(Path(args.map).read_bytes()).extract('war3map.j').decode(),
+                 expected_pet_registrations=515 if args.current_pet_ui else 153))

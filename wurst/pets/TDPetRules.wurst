@@ -133,7 +133,7 @@ public function tdPetSkillDescriptionById(int skill, int quality) returns string
 
 
 
-// Same fixed independent 2% bucket as the former wild-kill material reward.
+// Non-purple releases keep the former fixed 2% extra-material chance.
 public function tdPetReleaseGetsSlotStone(int roll) returns boolean
 	return roll >= 1 and roll <= 2
 

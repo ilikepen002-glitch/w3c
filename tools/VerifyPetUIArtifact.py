@@ -18,6 +18,7 @@ from VerifyTowerPlacementArtifact import unit_objects
 from VerifyEquipmentAbilityArtifact import ability_objects, check_ability, require
 from VerifyGroundItemArtifact import (verify_function_book,
                                       verify_global_channel_orders,
+                                      unique_channel_order_count,
                                       verify_no_hunt_objects, verify_no_removed_raw_objects)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,7 +32,7 @@ ICON_STEMS = (
     'TDPetStormFaerieDragon', 'TDPetGhostWisp',
 ) + tuple(stem + 'Q' + str(quality) for _, stem in (
     ('', 'TDPetFlamePhoenix'), ('', 'TDPetStormFaerieDragon'), ('', 'TDPetGhostWisp'))
-    for quality in range(1, 5)) + ('TDPetRelease', 'TDPetKeep', 'TDPetAdopt')
+    for quality in range(1, 5)) + ('TDPetRelease', 'TDPetKeep', 'TDPetAdopt') + tuple(stem + f'Q{q}N{n}' for stem in ('TDPetFlamePhoenix', 'TDPetStormFaerieDragon', 'TDPetGhostWisp') for q in range(1, 5) for n in range(1, 5)) + ('TDPetKeepOld', 'TDPetUseNew')
 EXPECTED = {
     'Geqb': (3, 0, 'C', 'Aspb'),
     'Gupg': (1, 1, 'U', 'ANcl'),
@@ -149,16 +150,18 @@ def verify_collection_commands(abilities):
     verify_cultivation_command(abilities)
 
 
-def verify_cultivation_command(abilities):
+def verify_cultivation_command(abilities, current_manager=False):
     fields = abilities['Pc06'][1]
-    name = '洗练 / 开栏 / 释放(C)'
+    name = '洗练 / 开栏(C)' if current_manager else '洗练 / 开栏 / 释放(C)'
     require(field_value(fields, 'anam') == name,
-            'Pc06: cultivation name must explicitly say 洗练 / 开栏 / 释放(C)')
+            f'Pc06: cultivation name must explicitly say {name}')
     require(field_value(fields, 'atp1', 1) == name,
-            'Pc06: cultivation tooltip must explicitly say 洗练 / 开栏 / 释放(C)')
+            f'Pc06: cultivation tooltip must explicitly say {name}')
     description = field_value(fields, 'aub1', 1)
-    require(all(word in description for word in ('洗练', '开栏', '释放')),
+    require(all(word in description for word in (('洗练', '开栏') if current_manager else ('洗练', '开栏', '释放'))),
             'Pc06: cultivation description must explain reroll, slot opening and release')
+    if current_manager:
+        require('释放' not in description, 'Pc06: obsolete cultivation release entrance')
     for field in ('ahky', 'arhk', 'auhk'):
         require(field_value(fields, field) == 'C', f'Pc06: {field} cultivation hotkey must remain C')
     require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (2, 2),
@@ -647,18 +650,20 @@ MANAGER_COMMANDS = {
     'Pm04': (2, 0, 'E', 0, 'TDPetCultivate'),
     'Pm05': (3, 0, 'T', 0, 'TDPetCultivate'),
     'Pm06': (0, 2, 'O', 0, 'TDPetCultivate'),
-    'Pm07': (1, 2, 'X', 0, 'TDPetRelease'),
+    'Pm07': (3, 2, 'W', 0, 'TDPetRelease'),
     'Pm08': (2, 2, 'C', 0, 'TDPetInfo'),
-    'Pm09': (0, 2, 'Q', 0, 'TDPetKeep'),
-    'Pm0A': (1, 2, 'E', 0, 'TDPetAdopt'),
+    'Pm09': (0, 1, 'Q', 0, 'TDPetKeepOld'),
+    'Pm0A': (3, 1, 'E', 0, 'TDPetUseNew'),
     'Pm0B': (0, 2, 'Y', 0, 'TDPetRelease'),
     'Pm0C': (1, 2, 'N', 0, 'TDPetKeep'),
+    'Pm0D': (0, 2, 'W', 0, 'TDPetCultivate'),
+    'Pm0E': (3, 2, 'R', 0, 'TDPetInfo'),
 }
 PAGE_ACTIONS = {
     0: list(range(100, 110)) + [8, 9],
-    1: list(range(8)),
-    2: [10, 11, 12, 13, 14, 15, 16, 9],
-    3: [0, 1, 2, 3, 17, 18, 16, 7],
+    1: list(range(7)) + [15],
+    2: [10, 11, 12, 13, 14, 16, 9],
+    3: [17, 18, 21, 22],
     4: [19, 20, 9],
 }
 LIST_KEYS = 'QWETASDFZX'
@@ -702,16 +707,19 @@ def verify_manager_commands(abilities):
             require(key not in keys, f'Manager mode {mode}: duplicate hotkey {key}')
             cells.add(cell)
             keys.add(key)
-        skill_cells = {4, 5, 6, 7} if mode in (1, 2) else {4, 5} if mode == 3 else set()
+        skill_cells = {4, 5, 6, 7} if mode in (1, 2) else {0, 1, 2, 3} if mode == 3 else set()
         require(not cells & skill_cells, f'Manager mode {mode}: passive skill overlap')
-    verify_cultivation_command(abilities)
-    require(verify_global_channel_orders(abilities) <= 335, "Global Channel count exceeds the fixed native order pool")
+    verify_cultivation_command(abilities, current_manager=True)
+    require(field_value(abilities['Pm09'][1], 'anam') == '保留原技能', 'Keep choice must name the original skill')
+    require(field_value(abilities['Pm0A'][1], 'anam') == '换成新技能', 'Adopt choice must name the new skill')
+    verify_global_channel_orders(abilities)
+    require(unique_channel_order_count(abilities) <= 335, "Global unique Channel orders exceed the native order pool")
 
 
 def verify_manager_list(abilities):
     for cell in range(10):
-        for variant in range(13):
-            rawcode = f'Pl{cell * 13 + variant:02X}'
+        for variant in range(49):
+            rawcode = f'L{cell * 49 + variant:03X}'
             require(rawcode in abilities, f'Missing fixed collection state {rawcode}')
             parent, fields = abilities[rawcode]
             require(parent == 'ANcl' and field_value(fields, 'alev') == 2,
@@ -719,10 +727,14 @@ def verify_manager_list(abilities):
             require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (cell % 4, cell // 4),
                     f'{rawcode}: incorrect physical list cell')
             require(field_value(fields, 'ahky') == LIST_KEYS[cell], f'{rawcode}: wrong list hotkey')
-            stem = 'TDPetEmptySlot' if variant == 0 else SPECIES[(variant - 1) // 4][1] + f'Q{(variant - 1) % 4 + 1}'
+            for flag in ('aher', 'aite'):
+                require(field_value(fields, flag) == 0, f'{rawcode}: list must be a non-item unit ability')
+            stem = 'TDPetEmptySlot' if variant == 0 else SPECIES[(variant - 1) // 16][1] + f'Q{((variant - 1) % 16) // 4 + 1}N{(variant - 1) % 4 + 1}'
             for field in ('aart', 'arar'):
                 require(field_value(fields, field) == icon_path(stem), f'{rawcode}: quality/empty icon mismatch')
             for level in (1, 2):
+                for key, expected in (('Ncl1', 0.0), ('Ncl3', 1), ('Ncl4', 0.0), ('Ncl5', 0), ('amcs', 0), ('acdn', 0.0)):
+                    require(field_value(fields, key, level) == expected, f'{rawcode}: unsafe list field {key} level {level}')
                 number = f'{(level - 1) * 10 + cell + 1:02d}'
                 label, description = field_value(fields, 'atp1', level), field_value(fields, 'aub1', level)
                 require(label.startswith(number + ' · ') and label.endswith(f'({LIST_KEYS[cell]})'),
@@ -732,11 +744,13 @@ def verify_manager_list(abilities):
                     require('空位' in label and '捕获' in description,
                             f'{rawcode}: empty fixed slot must be explained')
                 else:
-                    quality = (variant - 1) % 4
+                    quality = ((variant - 1) % 16) // 4
                     require(QUALITY_NAMES[quality] in label,
                             f'{rawcode}: owned quality label missing')
-    require(len([raw for raw in abilities if re.fullmatch(r'Pl[0-9A-F]{2}', raw)]) == 130,
-            'Expected exactly 130 collection Channel states')
+                    require(str((variant - 1) % 4 + 1) + '个技能' in description, f'{rawcode}: owned skill count missing')
+    require({raw for raw in abilities if re.fullmatch(r'L[0-9A-F]{3}', raw)} == {f'L{i:03X}' for i in range(490)},
+            'Expected exactly 490 collection Channel states')
+    require(not any(re.fullmatch(r'Pl[0-9A-F]{2}', raw) for raw in abilities), 'Retired Pl list objects remain')
 
 
 def verify_manager_preview(abilities):
@@ -747,7 +761,7 @@ def verify_manager_preview(abilities):
         require(parent == 'AOcr' and field_value(fields, 'alev') == 4,
                 f'{rawcode}: expected four-quality passive comparison')
         require(not any(key == 'Ncl6' for key, _, _ in fields), f'{rawcode}: comparison allocates Channel order')
-        require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (position, 1),
+        require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (0 if position == 0 else 3, 0),
                 f'{rawcode}: wrong comparison cell')
         require(field_value(fields, 'aart') == NORMAL_PREFIX + SKILL_ICONS[skill] + '.blp',
                 f'{rawcode}: wrong comparison skill icon')
@@ -763,6 +777,19 @@ def verify_manager_preview(abilities):
             require('摘要' not in description, f'{rawcode}: comparison must not depend on screen notes')
     require(len([raw for raw in abilities if re.fullmatch(r'Ps[0-9A-F]{2}', raw)]) == 32,
             'Expected exactly 32 comparison passives')
+    for position in range(2):
+        rawcode = f'Pa{position:02X}'
+        require(rawcode in abilities, f'Missing static preview arrow {rawcode}')
+        parent, fields = abilities[rawcode]
+        require(parent == 'AOcr' and field_value(fields, 'alev') == 1, f'{rawcode}: arrow must be passive')
+        require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (position + 1, 0), f'{rawcode}: arrow cell changed')
+        require(field_value(fields, 'aart') == icon_path('TDPetNext'), f'{rawcode}: arrow artwork changed')
+        require(not any(key == 'Ncl6' for key, _, _ in fields), f'{rawcode}: arrow allocates order')
+        require(field_value(fields, 'Ocr1', 1) == 0.0 and field_value(fields, 'Ocr2', 1) == 1.0, f'{rawcode}: arrow combat effect')
+        for key in ('aher', 'aite', 'achd'):
+            require(field_value(fields, key) == 0, f'{rawcode}: unsafe arrow flag')
+        require(field_value(fields, 'areq') == '', f'{rawcode}: arrow requirements')
+    require({raw for raw in abilities if re.fullmatch(r'Pa[0-9A-F]{2}', raw)} == {'Pa00', 'Pa01'}, 'Unexpected preview arrow object')
 
 
 def verify_manager_units(units):
@@ -875,7 +902,7 @@ def verify_manager_objects(abilities, units):
     require(not set(abilities) & {raw for raw in units if raw.startswith('pd')},
             'Manager ability and unit rawcodes collide')
     verify_no_hunt_objects(abilities, units)
-    require(len(MANAGER_COMMANDS) + 130 == 151, 'Manager Channel object budget changed')
+    require(len(MANAGER_COMMANDS) + 490 == 513, 'Manager Channel object budget changed')
 
 
 def verify_global_rawcode_uniqueness(artifact):
@@ -918,9 +945,9 @@ def main():
     verify_lane_enemy_guards(script)
     verify_imported_icons(artifact)
     require(not artifact.has(r'Units\CommandFunc.txt'), 'Global CommandFunc override is forbidden')
-    print(f'PASS PET MANAGER: {farmer}; 20 fixed slots/two pages; 151 Channels + 548 passives; '
+    print(f'PASS PET MANAGER: {farmer}; 20 fixed slots/two pages; 513 Channels + 550 passives; '
           '13 runtime-mounted display prototypes; all page cells/hotkeys/targets; '
-          'native synchronized session bridge; 56 packaged BTN/DIS assets match source.')
+          'native synchronized session bridge; 156 packaged BTN/DIS assets match source.')
     print('NOT TESTED: live rendering/selection/queued network events, actual placement, performance or skill effects.')
 
 

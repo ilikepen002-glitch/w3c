@@ -18,6 +18,13 @@ boolean ready = false
 function showPage(int lane, int mode, int page, int slot, int nonce)
 	tdPetRenderPage(lane, mode, page, slot, nonce)
 
+function showDetailOrList(int lane, int page, int slot, TDPet expected)
+	let current = tdPetAt(lane, slot)
+	if current != null and current == expected and current.lane == lane and not current.released
+		showPage(lane, TD_PET_UI_DETAIL, page, slot, 0)
+	else
+		showPage(lane, TD_PET_UI_LIST, page, slot, 0)
+
 function showCultivation(int lane)
 	let pet = tdPetAt(lane, tdPetSelectedSlot[lane])
 	if pet == null
@@ -42,7 +49,7 @@ function refreshStale(int lane, int previousMode)
 	tdPetCancelRelease(lane)
 	if previousMode == TD_PET_UI_LIST or current == null or current != session.pet
 		showPage(lane, TD_PET_UI_LIST, session.page, slot, 0)
-	else if previousMode == TD_PET_UI_CULTIVATE or previousMode == TD_PET_UI_PREVIEW or previousMode == TD_PET_UI_RELEASE
+	else if previousMode == TD_PET_UI_CULTIVATE or previousMode == TD_PET_UI_PREVIEW
 		showCultivation(lane)
 	else
 		showPage(lane, TD_PET_UI_DETAIL, slot div 10, slot, 0)
@@ -56,10 +63,11 @@ function navigate(int lane, int direction)
 
 function showReleaseConfirmation(int lane)
 	let slot = tdPetSelectedSlot[lane]
+	let expected = tdPetAt(lane, slot)
 	let nonce = tdPetBeginRelease(lane, slot)
 	if nonce <= 0
 		tdPetNotice(lane, "暂时无法释放。请先解绑精灵，并完成洗练选择。")
-		showCultivation(lane)
+		showDetailOrList(lane, slot div 10, slot, expected)
 		return
 	showPage(lane, TD_PET_UI_RELEASE, slot div 10, slot, nonce)
 
@@ -82,6 +90,7 @@ function onCommand() returns boolean
 	let pet = tdPetAt(lane, slot)
 	let nonce = session.releaseNonce
 	let proposalVersion = session.proposalVersion
+	let proposalRevision = session.proposalRevision
 	let action = session.admitCommand(lane, caster.getHandleId(), abilityId, level)
 	if action == TD_PET_COMMAND_INVALID or action == TD_PET_COMMAND_EMPTY
 		return false
@@ -134,6 +143,12 @@ function onCommand() returns boolean
 		showReleaseConfirmation(lane)
 	else if action == TD_PET_ACTION_DETAIL
 		showPage(lane, TD_PET_UI_DETAIL, page, slot, 0)
+	else if action == TD_PET_ACTION_PREVIEW_DETAIL
+		showDetailOrList(lane, page, slot, pet)
+	else if action == TD_PET_ACTION_CONTINUE
+		if not tdPetContinueReroll(lane, slot, session.pet, proposalVersion, proposalRevision)
+			tdPetNotice(lane, "无法继续洗练，请检查洗练石。本次结果保留。")
+		showCultivation(lane)
 	else if action == TD_PET_ACTION_KEEP or action == TD_PET_ACTION_ADOPT
 		if not tdPetResolveRerollVersion(lane, slot, proposalVersion, action == TD_PET_ACTION_ADOPT)
 			tdPetNotice(lane, "本次洗练结果已无法使用。请保留旧技能后重新洗练。")
@@ -145,10 +160,10 @@ function onCommand() returns boolean
 			showPage(lane, TD_PET_UI_LIST, page, slot, 0)
 		else
 			tdPetNotice(lane, "释放失败，精灵仍在收藏中。请检查材料是否已满，或重新选择精灵。")
-			showCultivation(lane)
+			showDetailOrList(lane, page, slot, pet)
 	else if action == TD_PET_ACTION_CANCEL
 		tdPetCancelRelease(lane)
-		showCultivation(lane)
+		showDetailOrList(lane, page, slot, pet)
 	return false
 
 function onCollection() returns boolean
@@ -190,13 +205,14 @@ public function tdPetSetupUI()
 		tdPetSelectedSlot[lane] = -1
 	registerSpellEffectEvent(TD_PET_COLLECTION_ABILITY_ID, function onCollection)
 	registerSpellEffectEvent(TD_PET_DEPLOY_ABILITY_ID, function onDeploy)
-	for action = 0 to 20
+	for action = 0 to TD_PET_ACTION_PREVIEW_DETAIL
 		registerSpellEffectEvent(tdPetManagerCommandId(action), function onCommand)
 	for cell = 0 to 9
-		registerSpellEffectEvent(tdPetListAbilityId(cell, 0, 0), function onCommand)
+		registerSpellEffectEvent(tdPetListAbilityId(cell, 0, 0, 0), function onCommand)
 		for species = 1 to 3
 			for quality = 1 to 4
-				registerSpellEffectEvent(tdPetListAbilityId(cell, species, quality), function onCommand)
+				for ownedCount = 1 to 4
+					registerSpellEffectEvent(tdPetListAbilityId(cell, species, quality, ownedCount), function onCommand)
 	selectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SELECTED)
 	deselectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DESELECTED)
 	selectionTrigger.addAction(function onSelected)

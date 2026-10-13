@@ -1,4 +1,4 @@
-"""Render only the 28 pet-menu SVGs, then encode opaque BTN/DISBTN BLP1.
+"""Render the 78 pet-menu SVGs, then encode opaque BTN/DISBTN BLP1.
 
 Requires Inkscape 1.4 and Pillow 12.3.0 for the recorded deterministic output.
 Reuse the project's existing BLP1 palette/alpha8/mipmap encoder without invoking
@@ -26,6 +26,7 @@ FILE_KEYS = ("source_svg", "normal_blp", "disabled_blp")
 SIZE = 64
 BASE_NAMES = {"TDPetMenuTools", "TDPetCollection", "TDPetPrevious", "TDPetNext", "TDPetReturnBuilder", "TDPetDeploy", "TDPetRecall", "TDPetCultivate", "TDPetInfo", "TDPetEmptySlot", "TDPetFlamePhoenix", "TDPetStormFaerieDragon", "TDPetGhostWisp"}
 EXPECTED_NAMES = BASE_NAMES | {stem + "Q" + str(q) for stem in ("TDPetFlamePhoenix", "TDPetStormFaerieDragon", "TDPetGhostWisp") for q in range(1, 5)} | {"TDPetRelease", "TDPetKeep", "TDPetAdopt"}
+EXPECTED_NAMES |= {stem + f"Q{q}N{n}" for stem in ("TDPetFlamePhoenix", "TDPetStormFaerieDragon", "TDPetGhostWisp") for q in range(1, 5) for n in range(1, 5)} | {"TDPetKeepOld", "TDPetUseNew"}
 
 
 def sha256(path: Path) -> str:
@@ -118,8 +119,8 @@ def contact_sheet(manifest: dict) -> None:
 
 
 def verify_manifest(manifest: dict, require_hashes: bool) -> None:
-    if len(manifest["assets"]) != 28 or {asset["name"] for asset in manifest["assets"]} != EXPECTED_NAMES:
-        raise ValueError("Expected exact 28 icon names: 13 originals + 12 quality borders + release/keep/adopt")
+    if len(manifest["assets"]) != 78 or {asset["name"] for asset in manifest["assets"]} != EXPECTED_NAMES:
+        raise ValueError("Expected exact 78 icon names: 28 preserved + 48 owned-count portraits + 2 readable choice buttons")
     names, normal_pixels_seen, disabled_pixels_seen = set(), set(), set()
     for asset in manifest["assets"]:
         name = asset["name"]

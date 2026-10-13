@@ -19,6 +19,8 @@ public constant int TD_PET_ACTION_KEEP = 17
 public constant int TD_PET_ACTION_ADOPT = 18
 public constant int TD_PET_ACTION_CONFIRM = 19
 public constant int TD_PET_ACTION_CANCEL = 20
+public constant int TD_PET_ACTION_CONTINUE = 21
+public constant int TD_PET_ACTION_PREVIEW_DETAIL = 22
 public constant int TD_PET_COMMAND_INVALID = -1
 public constant int TD_PET_COMMAND_STALE = -2
 public constant int TD_PET_COMMAND_REFRESH = -3
@@ -35,21 +37,23 @@ public function tdPetActionCell(int mode, int action) returns int
 	if mode == TD_PET_UI_DETAIL
 		if action >= 0 and action <= 3
 			return action
-		return action >= 4 and action <= 7 ? action + 4 : -1
+		if action >= 4 and action <= 6
+			return action + 4
+		return action == TD_PET_ACTION_RELEASE ? 11 : -1
 	if mode == TD_PET_UI_CULTIVATE
 		if action >= TD_PET_ACTION_REROLL_FIRST and action < TD_PET_ACTION_OPEN
 			return action - TD_PET_ACTION_REROLL_FIRST
-		if action >= TD_PET_ACTION_OPEN and action <= TD_PET_ACTION_DETAIL
+		if action == TD_PET_ACTION_OPEN or action == TD_PET_ACTION_DETAIL
 			return action - TD_PET_ACTION_OPEN + 8
 		return action == TD_PET_ACTION_FARMER ? 11 : -1
 	if mode == TD_PET_UI_PREVIEW
-		if action >= 0 and action <= 3
-			return action
-		if action == TD_PET_ACTION_KEEP or action == TD_PET_ACTION_ADOPT
-			return action - TD_PET_ACTION_KEEP + 8
-		if action == TD_PET_ACTION_DETAIL
-			return 10
-		return action == 7 ? 11 : -1
+		if action == TD_PET_ACTION_KEEP
+			return 4
+		if action == TD_PET_ACTION_ADOPT
+			return 7
+		if action == TD_PET_ACTION_CONTINUE
+			return 8
+		return action == TD_PET_ACTION_PREVIEW_DETAIL ? 11 : -1
 	if mode == TD_PET_UI_RELEASE
 		if action == TD_PET_ACTION_CONFIRM or action == TD_PET_ACTION_CANCEL
 			return action - TD_PET_ACTION_CONFIRM + 8
@@ -63,7 +67,7 @@ public function tdPetActionHotkey(int action) returns string
 		return "A"
 	if action == 2
 		return "D"
-	if action == 3 or action == TD_PET_ACTION_FARMER
+	if action == 3 or action == TD_PET_ACTION_FARMER or action == TD_PET_ACTION_PREVIEW_DETAIL
 		return "R"
 	if action == 4 or action == 12 or action == TD_PET_ACTION_ADOPT
 		return "E"
@@ -71,14 +75,12 @@ public function tdPetActionHotkey(int action) returns string
 		return "Q"
 	if action == 6 or action == TD_PET_ACTION_PAGE or action == TD_PET_ACTION_DETAIL
 		return "C"
-	if action == 7 or action == 11
+	if action == 7 or action == 11 or action == TD_PET_ACTION_RELEASE or action == TD_PET_ACTION_CONTINUE
 		return "W"
 	if action == 13
 		return "T"
 	if action == TD_PET_ACTION_OPEN
 		return "O"
-	if action == TD_PET_ACTION_RELEASE
-		return "X"
 	if action == TD_PET_ACTION_CONFIRM
 		return "Y"
 	return action == TD_PET_ACTION_CANCEL ? "N" : ""
@@ -102,6 +104,7 @@ public class TDPetUISession
 	int revision = 0
 	int generation = 0
 	int resonance = 0
+	int ownedCount = 0
 	boolean paused = false
 	int proposalVersion = 0
 	int proposalSlot = -1
@@ -114,6 +117,7 @@ public class TDPetUISession
 	int array[10] listRevisions
 	int array[10] listGenerations
 	int array[10] listResonances
+	int array[10] listOwnedCounts
 
 	construct(int lane)
 		this.lane = lane
@@ -152,13 +156,14 @@ public class TDPetUISession
 			revision = pet.revision
 			generation = pet.generation
 			resonance = pet.level
+			ownedCount = pet.skillCount
 			paused = pet.paused
 			proposalVersion = pet.proposalVersion
 			proposalSlot = pet.proposalSlot
 			proposalRevision = pet.proposalRevision
 		for cell = 0 to 11
 			mount(cell, 0, 0, -1)
-		for action = 0 to 20
+		for action = 0 to TD_PET_ACTION_PREVIEW_DETAIL
 			let cell = tdPetActionCell(mode, action)
 			if cell >= 0
 				mount(cell, tdPetManagerCommandId(action), 1, action)
@@ -169,7 +174,12 @@ public class TDPetUISession
 				listRevisions[cell] = record != null ? record.revision : 0
 				listGenerations[cell] = record != null ? record.generation : 0
 				listResonances[cell] = record != null ? record.level : 0
-				mount(cell, tdPetListAbilityId(cell, record != null ? record.species : 0, record != null ? record.quality() : 0), page + 1, 100 + cell)
+				listOwnedCounts[cell] = record != null ? record.skillCount : 0
+				let abilityId = tdPetListAbilityId(cell, record != null ? record.species : 0, record != null ? record.quality() : 0, record != null ? record.skillCount : 0)
+				if abilityId == 0
+					close()
+					return false
+				mount(cell, abilityId, page + 1, 100 + cell)
 		else if mode == TD_PET_UI_DETAIL or mode == TD_PET_UI_CULTIVATE
 			for skillSlot = 0 to 3
 				var variant = 128
@@ -180,13 +190,15 @@ public class TDPetUISession
 			if pet.proposalSlot < 0 or pet.proposalOldSkill < 0 or pet.proposalSkill < 0
 				close()
 				return false
-			mount(4, tdPetPreviewAbilityId(0, pet.proposalOldSkill), pet.proposalOldQuality, -1)
-			mount(5, tdPetPreviewAbilityId(1, pet.proposalSkill), pet.proposalQuality, -1)
+			mount(0, tdPetPreviewAbilityId(0, pet.proposalOldSkill), pet.proposalOldQuality, -1)
+			mount(1, tdPetPreviewArrowAbilityId(0), 1, -1)
+			mount(2, tdPetPreviewArrowAbilityId(1), 1, -1)
+			mount(3, tdPetPreviewAbilityId(1, pet.proposalSkill), pet.proposalQuality, -1)
 		active = true
 		return true
 
 	function matchesPet(TDPet current) returns boolean
-		return current != null and current == pet and current.lane == lane and not current.released and current.revision == revision and current.generation == generation and current.level == resonance and current.paused == paused and current.proposalVersion == proposalVersion and current.proposalSlot == proposalSlot and current.proposalRevision == proposalRevision
+		return current != null and current == pet and current.lane == lane and not current.released and current.revision == revision and current.generation == generation and current.level == resonance and current.skillCount == ownedCount and current.paused == paused and current.proposalVersion == proposalVersion and current.proposalSlot == proposalSlot and current.proposalRevision == proposalRevision
 
 	function matchesListCell(int cell) returns boolean
 		if cell < 0 or cell >= 10
@@ -196,7 +208,7 @@ public class TDPetUISession
 			return false
 		if current == null
 			return true
-		return not current.released and current.revision == listRevisions[cell] and current.generation == listGenerations[cell] and current.level == listResonances[cell]
+		return not current.released and current.revision == listRevisions[cell] and current.generation == listGenerations[cell] and current.level == listResonances[cell] and current.skillCount == listOwnedCounts[cell]
 
 	function snapshotCurrent() returns boolean
 		if mode == TD_PET_UI_LIST
