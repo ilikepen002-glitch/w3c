@@ -32,7 +32,7 @@ class PetUIArtifactTests(unittest.TestCase):
         cls.abilities = ability_objects(cls.artifact.extract("war3map.w3a"))
         cls.units = unit_objects(cls.artifact.extract("war3map.w3u"))
 
-    def test_actual_farmer_grid_is_eleven_cells_with_empty_blink_slot(self):
+    def test_actual_farmer_grid_is_ten_cells_without_tower_detail(self):
         verifier.verify_manager_farmer(self.abilities, self.units)
 
     def test_actual_twenty_three_manager_commands_match_pages(self):
@@ -90,6 +90,10 @@ class HistoricalPetUINegativeTests(unittest.TestCase):
         cls.corrected_abilities = ability_objects(artifact.extract("war3map.w3a"))
         cls.corrected_units = unit_objects(artifact.extract("war3map.w3u"))
         correct_release_contract(cls.corrected_abilities, cls.corrected_units)
+        # Adapt only the historical negative fixture to the current farmer grid.
+        for fields in cls.corrected_units.values():
+            if "Pcol" in fields.get("uabi", "").split(","):
+                fields["uabi"] = ",".join(a for a in fields["uabi"].split(",") if a != "Pdep")
         # Frozen formal predecessor; current-artifact positives above stay raw.
         cls.historical_script = artifact.extract('war3map.j').decode('utf-8')
         # Permit deterministic negative coverage before the next map rebuild.

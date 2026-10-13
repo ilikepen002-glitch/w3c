@@ -603,7 +603,7 @@ def source_towers(evaluator):
             for branch in range(1, branches + 1):
                 uid = rawstring(evaluator.call('tdTowerUnitIdForLevelBranch', [choice, level, branch]))
                 abilities = evaluator.call('tdTowerNormalAbilitiesRawcodesForBranch', [choice, level, branch]).split(',')
-                abilities += [rawstring(evaluator.constant(name)) for name in ('TD_TOWER_INVENTORY_ABILITY_ID', 'TD_TOWER_SELL_ABILITY_ID', 'TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID')]
+                abilities += [rawstring(evaluator.constant(name)) for name in ('TD_TOWER_INVENTORY_ABILITY_ID', 'TD_TOWER_SELL_ABILITY_ID', 'TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID', 'TD_PET_DEPLOY_ABILITY_ID')]
                 result[uid] = abilities
     require(result, 'No resolvable tower hosts')
     return result
@@ -654,10 +654,11 @@ def source_mount_roles(evaluator, towers, active):
     for code in mounts:
         require(code in parents, 'Undefined/unresolved mounted ability object: ' + code)
         if code not in native:
-            # The only tower-owned management Channel is the zero-CD sell
-            # command. Farmer salary/craft/UI responsibilities cannot migrate
-            # to a tower merely by reusing their owner function or parent.
-            tower_command = parents[code] == 'ANcl' and code == rawstring(evaluator.constant('TD_TOWER_SELL_ABILITY_ID'))
+            # These two management Channels are zero-CD commands, not combat
+            # actives. Other farmer/craft/collection roles remain forbidden.
+            tower_command = parents[code] == 'ANcl' and code in {
+                rawstring(evaluator.constant(name)) for name in
+                ('TD_TOWER_SELL_ABILITY_ID', 'TD_PET_DEPLOY_ABILITY_ID')}
             require(parents[code] in PASSIVE_PARENTS or tower_command,
                     'Undefined mounted combat active/unknown parent: ' + code + ':' + parents[code])
     native_ids = {d.abilityId for d in active if d.abilityId}
@@ -985,8 +986,8 @@ def verify_inventory(evaluator):
     inventories = calls(evaluator.body('tdGenerateEquipmentSupportObjects'), 'tdGenerateInventoryAbility')
     require(['TD_TOWER_INVENTORY_ABILITY_ID', '3', 'false'] in inventories,
             'Tower inventory source must not enable item use')
-    tower_mount = canonical('abilities + "," + TD_TOWER_INVENTORY_ABILITY_ID.toRawCode() + "," + TD_TOWER_SELL_ABILITY_ID.toRawCode() + "," + TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID.toRawCode()')
-    farmer_mount = canonical('TD_FARMER_BUILD_ABILITY_ID.toRawCode() + "," + TD_FARMER_WAGE_ABILITY_ID.toRawCode() + "," + TD_FARMER_INVENTORY_ABILITY_ID.toRawCode() + "," + TD_FARMER_EQUIPMENT_BOOK_ABILITY_ID.toRawCode() + "," + TD_FARMER_GROUND_UPGRADE_ABILITY_ID.toRawCode() + "," + TD_PET_CAPTURE_ABILITY_ID.toRawCode() + "," + TD_PET_COLLECTION_ABILITY_ID.toRawCode() + "," + TD_PET_DEPLOY_ABILITY_ID.toRawCode()')
+    tower_mount = canonical('abilities + "," + TD_TOWER_INVENTORY_ABILITY_ID.toRawCode() + "," + TD_TOWER_SELL_ABILITY_ID.toRawCode() + "," + TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID.toRawCode() + "," + TD_PET_DEPLOY_ABILITY_ID.toRawCode()')
+    farmer_mount = canonical('TD_FARMER_BUILD_ABILITY_ID.toRawCode() + "," + TD_FARMER_WAGE_ABILITY_ID.toRawCode() + "," + TD_FARMER_INVENTORY_ABILITY_ID.toRawCode() + "," + TD_FARMER_EQUIPMENT_BOOK_ABILITY_ID.toRawCode() + "," + TD_FARMER_GROUND_UPGRADE_ABILITY_ID.toRawCode() + "," + TD_PET_CAPTURE_ABILITY_ID.toRawCode() + "," + TD_PET_COLLECTION_ABILITY_ID.toRawCode()')
     for path, source in evaluator.sources.items():
         for arguments in calls(source, 'setNormalAbilities'):
             if path == 'towers/TDTowerObjectGen.wurst':

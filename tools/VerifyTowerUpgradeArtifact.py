@@ -16,7 +16,7 @@ from VerifyEquipmentAbilityArtifact import ability_objects, require
 from VerifyTowerPlacementArtifact import unit_objects
 
 FAMILIES = 'A O H D G'.split()
-COMMON = ['A118', 'A133', 'A130']
+COMMON = ['A118', 'A133', 'A130', 'Pdep']
 HIDDEN = {'A103', 'A107', 'A110', 'A140', 'AeSL', 'A115', 'A118'}
 BRANCH_ICONS = {
     'A': ('BTNImprovedBows', 'BTNElunesBlessing'),
@@ -142,8 +142,10 @@ def validate_command_ui(units, abilities):
         require(field_value(abilities, aid, 'ahky') == 'E', f'{aid}: wrong active skill hotkey')
         require((field_value(abilities, aid, 'aubx'), field_value(abilities, aid, 'auby')) == (2, 1), f'{aid}: wrong off-state skill cell')
         require(field_value(abilities, aid, 'auhk') == 'E', f'{aid}: wrong off-state skill hotkey')
-    for aid, cell in [('A133', (3, 1)), ('A130', (2, 2)), ('AeEV', (3, 2))]:
+    for aid, cell in [('A133', (3, 1)), ('A130', (2, 2)), ('AeEV', (3, 2)), ('Pdep', (0, 0))]:
         require((field_value(abilities, aid, 'abpx'), field_value(abilities, aid, 'abpy')) == cell, f'{aid}: shared command cell changed')
+    require(field_value(abilities, 'Pdep', 'ahky') == 'D', 'Pdep: tower detail hotkey changed')
+    require(field_value(abilities, 'Pdep', 'Ncl2', 1, 2) == 0, 'Pdep: detail must not target another unit')
     require(field_value(abilities, 'A133', 'ahky') == 'V', 'A133: sale hotkey changed')
     require(field_value(abilities, 'A133', 'auhk') == 'V', 'A133: sale off hotkey changed')
     for uid, attached in EXPECTED_TOWERS.items():
@@ -161,7 +163,8 @@ def validate_command_ui(units, abilities):
         family, suffix = uid[1], uid[2:]
         # Native hidden effects are not visible commands. Include dynamic status,
         # plus successor buttons in the selected tower's actual command card.
-        commands = []
+        # Immobile attack towers retain native Stop and Attack; Move is absent.
+        commands = [("native stop", (1, 0), "S"), ("native attack", (3, 0), "A")]
         for aid in attached + ['AeEV']:
             if aid not in HIDDEN:
                 commands.append((aid, (field_value(abilities, aid, 'abpx'), field_value(abilities, aid, 'abpy')), field_value(abilities, aid, 'ahky', default='')))

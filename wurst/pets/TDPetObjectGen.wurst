@@ -78,7 +78,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 		capture.setTooltipNormalExtended(level, tdPetCaptureTooltip(level - 1))
 		capture.setTargetsAllowed(level, "neutral,enemy,ground,air,organic,invulnerable,vulnerable")
 	command(TD_PET_COLLECTION_ABILITY_ID, "精灵收藏", "W", 2, 2, Targettype.NONE, tdPetCollectionIconPath(), "管理已捕获的精灵，最多收藏20只。")
-	command(TD_PET_DEPLOY_ABILITY_ID, "精灵绑定详情", "E", 3, 2, Targettype.NONE, tdPetDeployIconPath(), "打开精灵详情，在详情中E选择本路已完工空塔绑定或换绑。|n每座塔可上阵1只精灵；换塔保留主动技能冷却。")
+	command(TD_PET_DEPLOY_ABILITY_ID, "精灵绑定详情", "D", 0, 0, Targettype.NONE, tdPetDeployIconPath(), "查看本塔绑定的精灵详情；未绑定时提示没有精灵。")
 	for cmd = 0 to 7
 		var label = "精灵收藏"
 		var key = tdPetActionHotkey(cmd)

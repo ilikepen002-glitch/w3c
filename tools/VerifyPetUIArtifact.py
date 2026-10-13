@@ -39,7 +39,6 @@ EXPECTED = {
     'A109': (3, 1, 'G', 'ANcl'),
     'Pcap': (1, 2, 'Q', 'ANcl'),
     'Pcol': (2, 2, 'W', 'ANcl'),
-    'Pdep': (3, 2, 'E', 'ANcl'),
 }
 # Observed legacy native move/stop/hold/patrol/build cells stay unchanged.
 NATIVE_CELLS = {(0, 0), (1, 0), (2, 0), (0, 1), (0, 2)}
@@ -114,8 +113,8 @@ def verify_farmer_grid(abilities, units):
         require(cell not in occupied,
                 f'{rawcode}: farmer cell overlaps {occupied.get(cell)} at {cell}')
         occupied[cell] = rawcode
-    require(set(occupied) == {(x, y) for x in range(4) for y in range(3)} - {(2, 1)},
-            'Farmer command grid must occupy exactly eleven cells, leaving 2,1 empty')
+    require(set(occupied) == {(x, y) for x in range(4) for y in range(3)} - {(2, 1), (3, 2)},
+            'Farmer command grid must occupy exactly ten cells, leaving 2,1 and 3,2 empty')
     for rawcode, (x, y, hotkey, parent) in EXPECTED.items():
         actual_parent, fields = abilities[rawcode]
         require(actual_parent == parent, f'{rawcode}: wrong parent {actual_parent}')
@@ -124,10 +123,10 @@ def verify_farmer_grid(abilities, units):
         require(field_value(fields, 'ahky') == hotkey, f'{rawcode}: wrong farmer hotkey')
     candidates = [(uid, fields) for uid, fields in units.items()
                   if set(EXPECTED).issubset(fields.get('uabi', '').split(','))]
-    require(len(candidates) == 1, 'Expected exactly one farmer with all six commands')
+    require(len(candidates) == 1, 'Expected exactly one farmer with all five commands')
     uid, farmer = candidates[0]
     require(farmer['uabi'].split(',') == ['AUbu', 'A109', 'A117', 'Geqb',
-                                        'Gupg', 'Pcap', 'Pcol', 'Pdep'],
+                                        'Gupg', 'Pcap', 'Pcol'],
             f'{uid}: farmer ability attachment/order changed')
     require('A108' not in abilities and 'Prpr' not in abilities, 'Removed blink/repair objects remain')
     require('Amov' not in abilities, 'Native Amov must not be modified or disabled')
@@ -1016,9 +1015,7 @@ def verify_manager_farmer(abilities, units):
     require(field_value(abilities['Pcap'][1], 'ahky') == 'Q', 'Farmer Q capture must remain')
     require(field_value(abilities['Pcol'][1], 'ahky') == 'W', 'Farmer W collection must remain')
     require('20' in field_value(abilities['Pcol'][1], 'aub1', 1), 'Collection entrance must advertise twenty slots')
-    if 'Pdep' in farmer.get('uabi', '').split(','):
-        require(field_value(abilities['Pdep'][1], 'Ncl2', 1) == 0,
-                'Legacy farmer Pdep must be navigation-only, never target/deploy directly')
+    require('Pdep' not in farmer.get('uabi', '').split(','), 'Tower detail must not remain on farmer')
     require('Pmas' not in abilities and 'Pfor' not in abilities,
             'Predecessor master/forge removal must be preserved on final integrated map')
     ghost = re.compile(r'(?<![A-Za-z0-9_])(?:Pmas|Pfor)(?![A-Za-z0-9_])')

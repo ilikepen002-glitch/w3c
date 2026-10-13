@@ -48,7 +48,7 @@ def verify_builder_function_book(abilities, units):
     candidates = [(uid, fields) for uid, fields in units.items() if 'Geqb' in fields.get('uabi', '').split(',')]
     require(len(candidates) == 1, 'Expected exactly one function-book farmer')
     uid, farmer = candidates[0]
-    require(farmer['uabi'].split(',') == ['AUbu', 'A109', 'A117', 'Geqb', 'Gupg', 'Pcap', 'Pcol', 'Pdep'],
+    require(farmer['uabi'].split(',') == ['AUbu', 'A109', 'A117', 'Geqb', 'Gupg', 'Pcap', 'Pcol'],
             'Farmer exact command attachment/order changed')
     return uid, verify_global_channel_orders(abilities)
 

@@ -17,6 +17,7 @@ import TDDamageRuntime
 import TDTrialHook
 import RegisterEvents
 import TDDifficultyDialog
+import TDMusic
 
 trigger tdChatCommandTrigger = CreateTrigger()
 boolean tdGameplayStartupCompleted = false
@@ -298,6 +299,7 @@ function tdFinalizeGameplayBootstrap()
 		DestroyTimer(tdStartupWatchdog)
 		tdStartupWatchdog = null
 	tdStartupStage = ""
+	tdSetupBackgroundMusic()
 
 function tdBootstrapGameplayWhenPlayersReady(int retryCount)
 	tdDetectActiveLanes()

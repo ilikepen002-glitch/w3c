@@ -5,6 +5,7 @@ import TDPetRules
 import TDPetRuntime
 import TDPetUIState
 import public TDPetUIView
+import TDTowerCatalogData
 import TDConfig
 import TDState
 import RegisterEvents
@@ -176,18 +177,24 @@ function onCollection() returns boolean
 		tdPetShowCollection(GetPlayerId(GetOwningPlayer(farmer)))
 	return false
 
-function onDeploy() returns boolean
-	let farmer = GetTriggerUnit()
-	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
-		let lane = GetPlayerId(GetOwningPlayer(farmer))
-		// Legacy farmer entrance is navigation only. All binding requires session.
-		var slot = tdIsLanePlayer(lane) ? tdPetSelectedSlot[lane] : -1
-		if tdPetAt(lane, slot) == null
-			slot = tdPetNextOccupied(lane, slot, 1)
-		if slot >= 0
+// Resolve by this tower, never by the last collection selection.
+public function tdPetShowTowerDetail(unit tower)
+	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return
+	let lane = GetPlayerId(GetOwningPlayer(tower))
+	if not tdIsLanePlayer(lane) or not tdPetLaneCanManage(lane)
+		return
+	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+		let pet = tdPetAt(lane, slot)
+		if pet != null and pet.lane == lane and not pet.released and pet.host == tower
 			showPage(lane, TD_PET_UI_DETAIL, slot div 10, slot, 0)
-		else
-			tdPetShowCollection(lane)
+			return
+	tdPetNotice(lane, "没有精灵")
+
+function onDeploy() returns boolean
+	let tower = GetTriggerUnit()
+	if tower != null and GetTriggerPlayer() == GetOwningPlayer(tower)
+		tdPetShowTowerDetail(tower)
 	return false
 
 function onSelected()

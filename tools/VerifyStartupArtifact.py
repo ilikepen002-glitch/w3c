@@ -21,9 +21,16 @@ class StartupRuntime(PetStartupRuntime):
         self.click_player = 0
         super().__init__(script)
         self.invoke('init_TDDifficultyDialog')
+        # Run packaged asset initialization rather than inventing music paths.
+        if 'init_Sounds' in self.functions:
+            self.invoke('init_Sounds')
         self.globals['ALLIANCE_PASSIVE'] = 'passive'
 
     def native(self, name, args):
+        if name in {'SetMusicVolume', 'SetMapMusic', 'PlayMusic'}:
+            # Engine audio is a recording boundary; execute the real map setup.
+            self.events.append((name, *args))
+            return True, None
         if name in {'DialogCreate', 'DialogAddButton'}:
             self.trigger_serial += 1
             handle = self.trigger_serial

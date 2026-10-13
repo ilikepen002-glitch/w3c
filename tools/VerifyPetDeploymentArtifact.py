@@ -230,8 +230,8 @@ def verify_tooltips(path, script, current_manager=True):
         for level in range(1, expected_levels + 1):
             tooltip = field_value(fields, 'aub1', level)
             require(not OLD_HINT.search(tooltip) and
-                    (rawcode == 'Pcap' or DEPLOY_HINT in tooltip),
-                    f'{rawcode} level {level}: missing per-tower rule or obsolete total cap')
+                    (rawcode == 'Pcap' or (current_manager and '本塔' in tooltip and '没有精灵' in tooltip) or (not current_manager and DEPLOY_HINT in tooltip)),
+                    f'{rawcode} level {level}: missing navigation/deployment hint or obsolete total cap')
     fields = abilities['Pc04'][1]
     require(DEPLOY_HINT in field_value(fields, 'aub1', 1),
             'Pc04 deployment tooltip lacks the one-pet-per-tower hint')
@@ -242,7 +242,7 @@ def verify_tooltips(path, script, current_manager=True):
         require(DEPLOY_HINT in jass_function(script, 'onCommand').group(1),
                 'Packaged deployment UI lacks the one-pet-per-tower hint')
     print('PASS PLAYER HINTS: Pdep, all 61 Pcap levels, Pc04 and packaged UI have no old '
-          'three-pet total cap; deployment hints state one pet per tower.')
+          'three-pet total cap; tower details and manager deployment hints are current.')
 
 
 def main():
@@ -271,7 +271,7 @@ def main():
                 'Current manager packaged capacity must be twenty')
         require('TDPetData_TD_PET_DEPLOY_LIMIT' not in script, 'Removed deployment cap remains')
         require('tdPetDeploy(' not in jass_function(script, 'onDeploy').group(1),
-                'Farmer Pdep bypasses the authorized manager session')
+                'Tower Pdep bypasses the authorized manager session')
         verify_tooltips(args.map, script)
     print('NOT TESTED: live Warcraft deployment/effects, native engine lifecycle, '
           'rendering or higher active-combat load/performance.')

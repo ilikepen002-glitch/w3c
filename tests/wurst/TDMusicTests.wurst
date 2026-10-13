@@ -1,0 +1,11 @@
+package TDMusicTests
+import TDMusic
+import Sounds
+
+@Test function backgroundPlaylistUsesThreeClassicBuiltInTracks()
+	tdBackgroundMusicPlaylist().assertEquals(Sounds.nightElf1 + "," + Sounds.nightElf2 + "," + Sounds.nightElf3)
+
+@Test function backgroundMusicUsesModestNativeVolume()
+	tdBackgroundMusicVolume().assertEquals(45)
+	tdBackgroundMusicVolume().assertGreaterThan(0)
+	(tdBackgroundMusicVolume() < 64).assertTrue()

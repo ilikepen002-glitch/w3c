@@ -1,0 +1,24 @@
+package TDMusic
+import Sounds
+
+// Native music owns playback/looping. Keep this map-lifetime flag outside match
+// resets so restarting a match never restarts a track or reapplies the volume.
+boolean tdBackgroundMusicStarted = false
+
+public function tdBackgroundMusicPlaylist() returns string
+	// Classic built-in assets, verified against the pinned stdlib Sounds catalog.
+	return Sounds.nightElf1 + "," + Sounds.nightElf2 + "," + Sounds.nightElf3
+
+public function tdBackgroundMusicVolume() returns int
+	// Native range is 0..127 (see Blizzard's SetMusicVolumeBJ). Leave combat clear.
+	return 45
+
+public function tdSetupBackgroundMusic()
+	if tdBackgroundMusicStarted
+		return
+	tdBackgroundMusicStarted = true
+	// common.j documents that the music interface does nothing when disabled.
+	// Never use EnableSound, sound-effect handles, or a timer to bypass that.
+	SetMusicVolume(tdBackgroundMusicVolume())
+	SetMapMusic(tdBackgroundMusicPlaylist(), false, 0)
+	PlayMusic(tdBackgroundMusicPlaylist())

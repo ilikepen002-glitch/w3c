@@ -156,7 +156,7 @@ public function TDPetCastContext.stepPeriodic(real now) returns boolean
 	if this.skill == 25
 		if tdPetEffectDue(now, this.nextAt) and now < this.expiresAt
 			for flower = 0 to 2
-				if not this.valid()
+				if not this.valid() or this.victimCount >= 12
 					break
 				this.candidates.enumUnitsInRange(this.road.pointAt(flower), 100.0)
 				for target in this.candidates

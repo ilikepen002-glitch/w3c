@@ -63,7 +63,7 @@ class BuilderControlNegativeTests(unittest.TestCase):
         # Local desired-interface fixture only, never used by raw positives.
         for code in verifier.B_REMOVED + verifier.PREDECESSOR_REMOVED:
             cls.abilities.pop(code, None)
-        cls.units['uF01']['uabi'] = 'AUbu,A109,A117,Geqb,Gupg,Pcap,Pcol,Pdep'
+        cls.units['uF01']['uabi'] = 'AUbu,A109,A117,Geqb,Gupg,Pcap,Pcol'
         set_field(cls.abilities, 'Geqb', 'spb1', 'A119', 1, 1)
         set_field(cls.abilities, 'Geqb', 'spb3', 1, 1, 3)
         set_field(cls.abilities, 'Geqb', 'spb4', 1, 1, 4)
@@ -138,7 +138,7 @@ class BuilderControlNegativeTests(unittest.TestCase):
                 verify_farmer_grid(abilities, self.u)
         set_field(self.a, 'Gupg', 'abpx', 2)
         set_field(self.a, 'Gupg', 'abpy', 1)
-        with self.assertRaisesRegex(ValueError, 'eleven cells'):
+        with self.assertRaisesRegex(ValueError, 'ten cells'):
             verify_farmer_grid(self.a, self.u)
 
     def test_reallocated_collection_orders_are_allowed_when_globally_unique(self):
@@ -170,7 +170,7 @@ class BuilderControlRawObjectNegativeTests(unittest.TestCase):
         # Correct only this in-memory worker attachment from the formal A artifact.
         worker = cls.objects['units']['uF01']
         key = ('uabi', 0, 0)
-        worker.fields[key] = replace(worker.fields[key], value='AUbu,A109,A117,Geqb,Gupg,Pcap,Pcol,Pdep')
+        worker.fields[key] = replace(worker.fields[key], value='AUbu,A109,A117,Geqb,Gupg,Pcap,Pcol')
 
     def test_corrected_raw_fixture_accepts_every_object_table(self):
         for kind, entries in self.objects.items():

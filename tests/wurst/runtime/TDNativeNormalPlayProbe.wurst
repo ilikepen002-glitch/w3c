@@ -251,7 +251,7 @@ function normalOnCaptureEffect()
 		normalWageReadyAt = getElapsedGameTime() + tdFarmerWageCooldown()
 		normalWagePending = false
 		normalLog("WAGE actual SPELL_EFFECT; next available after180s")
-	if normalRunning and GetTriggerUnit() == tdGetFarmer(0) and (GetSpellAbilityId() == TD_PET_DEPLOY_ABILITY_ID or GetSpellAbilityId() == TD_PET_COLLECTION_ABILITY_ID)
+	if normalRunning and GetOwningPlayer(GetTriggerUnit()) == Player(0) and (GetSpellAbilityId() == TD_PET_DEPLOY_ABILITY_ID or GetSpellAbilityId() == TD_PET_COLLECTION_ABILITY_ID)
 		normalLog("MANUAL pet UI spell=" + GetSpellAbilityId().toRawCode())
 	if normalCaptureTarget != null and GetTriggerUnit() == tdGetFarmer(0) and GetSpellAbilityId() == TD_PET_CAPTURE_ABILITY_ID and GetSpellTargetUnit() == normalCaptureTarget
 		normalCaptureEffect = true
