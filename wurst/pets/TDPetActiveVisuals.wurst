@@ -1,6 +1,7 @@
 package TDPetActiveVisuals
 import TDPetCastContext
 import TDPetRouteSnapshot
+import TDPetActiveVisualData
 
 // Native 1.27 resources from the locked stdlib Abilities catalogue. Each stage
 // owns <=8 handles and the shared context cap is 128; omitted art never gates
@@ -32,6 +33,14 @@ public constant string TD_PET_VFX_FAN = "Abilities\\Spells\\Orc\\WarStomp\\WarSt
 public constant string TD_PET_VFX_SEAL = "Abilities\\Spells\\Orc\\EarthQuake\\EarthquakeTarget.mdx"
 public constant string TD_PET_VFX_RIFT = "Abilities\\Spells\\Undead\\Impale\\ImpaleHitTarget.mdx"
 
+// These three shapes are authored MDX800 meshes, not recoloured Impale.
+public constant string TD_PET_VFX_SWORD_ARRAY = "war3mapImported\\TDPetVfxSwordArray.mdx"
+public constant string TD_PET_VFX_VERDANT_ROOT = "war3mapImported\\TDPetVfxVerdantRoot.mdx"
+public constant string TD_PET_VFX_FAULT_RIDGE = "war3mapImported\\TDPetVfxFaultRidge.mdx"
+public constant string TD_PET_VFX_METEOR_BODY = "Abilities\\Weapons\\FireBallMissile\\FireBallMissile.mdx"
+public constant string TD_PET_VFX_METAL_SPARK = "Abilities\\Weapons\\Rifle\\RifleImpact.mdx"
+public constant string TD_PET_VFX_SEED_CORE = "Abilities\\Spells\\NightElf\\MoonWell\\MoonWellTarget.mdx"
+
 public function TDPetCastContext.visualRing(string model, vec2 point, real radius)
 	this.clearVisuals()
 	this.addVisual(model, point)
@@ -44,40 +53,235 @@ public function TDPetCastContext.visualPoint(string model, vec2 point)
 	this.clearVisuals()
 	this.addVisual(model, point)
 
-public function TDPetCastContext.visualFlight(string model, real length, real progress)
+function TDPetCastContext.visualTrace(vec2 startPoint, vec2 endPoint, int element)
+	let lightningCode = element == 2 ? "DRAL" : (element == 3 ? "DRAM" : (element == 4 ? "AFOD" : "SPLK"))
+	let red = element == 2 ? 0.25 : (element == 3 ? 0.50 : 1.0)
+	let green = element == 4 ? 0.30 : (element == 5 ? 0.68 : 0.95)
+	let blue = element == 1 ? 0.30 : (element == 2 ? 0.35 : (element == 3 ? 1.0 : 0.15))
+	this.addTimedLine(lightningCode, startPoint.withTerrainZ(45.0), endPoint.withTerrainZ(45.0), red, green, blue, 0.85, 0.20)
+
+// Full-line feedback is emitted in the same step as the existing instant hit.
+// There is no cosmetic flight that pretends to authorize a later impact.
+public function TDPetCastContext.visualInstantLine(boolean returning)
 	this.clearVisuals()
-	for index = 0 to 2
-		this.addVisual(model, this.origin + this.direction * (length * RMaxBJ(0.0, RMinBJ(1.0, progress - index * 0.12))))
+	let endpoint = this.origin + this.direction * (this.skill == 19 ? 650.0 : 600.0)
+	this.visualTrace(returning ? endpoint : this.origin, returning ? this.origin : endpoint, this.skill == 19 ? 1 : 3)
+	this.addVisual(this.skill == 19 ? TD_PET_VFX_BLADE : TD_PET_VFX_TIDE, returning ? this.origin : endpoint)
+	this.addVisual(this.skill == 19 ? TD_PET_VFX_SWORD : TD_PET_VFX_RETURN, this.origin + this.direction * 300.0)
+
+public function TDPetCastContext.visualStrike(vec2 point)
+	this.clearVisuals()
+	if this.skill == 20
+		this.addVisual(TD_PET_VFX_ARMOR, point)
+		this.addVisual(TD_PET_VFX_SWORD, point)
+		this.addVisual(TD_PET_VFX_METAL_SPARK, point + vec2(30.0, 0.0))
+		this.addVisual(TD_PET_VFX_METAL_SPARK, point + vec2(-30.0, 0.0))
+		this.visualTrace(point - this.direction * 120.0, point, 1)
+	else if this.skill == 23
+		this.addVisual(TD_PET_VFX_ROOT, point)
+		this.addVisual(TD_PET_VFX_POISON, point + vec2(35.0, 20.0))
+		this.addVisual(TD_PET_VFX_POISON, point + vec2(-35.0, -20.0))
+		this.addVisual(TD_PET_VFX_SEED_CORE, point)
+	else if this.skill == 27
+		this.addVisual(TD_PET_VFX_COLD, point)
+		this.addVisual(TD_PET_VFX_WARNING, point)
+		this.visualTrace(this.origin, point, 3)
+	else if this.skill == 35
+		this.addMoving(0, TD_PET_VFX_FAULT_RIDGE, point.withTerrainZ(), this.direction.getAngle(), 0.60)
+		this.addVisual(TD_PET_VFX_ROCK, point)
+		this.addVisual(TD_PET_VFX_METAL_SPARK, point + vec2(55.0, 0.0))
+		this.addVisual(TD_PET_VFX_METAL_SPARK, point + vec2(-55.0, 0.0))
+
+public function TDPetCastContext.visualSwordCut(vec2 point)
+	this.clearVisuals()
+	let start = point + tdPetVisualSwordOffset(this.stage)
+	this.visualTrace(start, point, 1)
+	this.addVisual(TD_PET_VFX_BLADE, start)
+	this.addVisual(TD_PET_VFX_SWORD, point)
+
+public function TDPetCastContext.visualSwordDrop()
+	this.clearVisuals()
+	if this.visualFrame == 0
+		this.addVisual(TD_PET_VFX_SWORD_ARRAY, this.center)
+	this.addVisual(TD_PET_VFX_GOLD, this.center)
+	for index = 0 to 3
+		this.addVisual(TD_PET_VFX_SWORD, this.center + tdPetVisualSwordOffset(index))
+
+public function TDPetCastContext.visualSeedPulse(vec2 point)
+	this.clearVisuals()
+	this.addVisual(TD_PET_VFX_SEED, point)
+	this.addVisual(TD_PET_VFX_SEED_CORE, point)
+	this.addVisual(TD_PET_VFX_POISON, point + vec2(35.0, 0.0))
+	this.addVisual(TD_PET_VFX_POISON, point + vec2(-35.0, 0.0))
+
+public function TDPetCastContext.visualSeedBranch(vec2 startPoint, vec2 endPoint)
+	// The caller has already selected and remembered this exact weak seed.
+	this.visualTrace(startPoint, endPoint, 2)
+	this.addVisual(TD_PET_VFX_POISON, endPoint)
+
+public function TDPetCastContext.visualFlowerContact(int flower)
+	if not tdPetVisualFlowerAlreadyBloomed(this.visualFrame, flower)
+		this.visualFrame += tdPetVisualFlowerBit(flower)
+		this.addVisual(TD_PET_VFX_SEED_CORE, this.road.pointAt(flower))
+
+public function TDPetCastContext.visualRoadSegment(int current)
+	if this.skill == 38
+		this.clearVisuals()
+	let point = this.road.pointAt(current)
+	let previous = current == 0 ? this.origin : this.road.pointAt(current - 1)
+	let facing = tdPetVisualRoadFacing(previous, point, this.direction)
+	let model = this.skill == 26 ? TD_PET_VFX_VERDANT_ROOT : TD_PET_VFX_FAULT_RIDGE
+	let scale = this.skill == 26 ? 0.85 : 0.70
+	if current == 0
+		this.addMoving(0, model, point.withTerrainZ(), facing, scale)
+	else
+		this.moveMoving(0, point.withTerrainZ(), facing, scale)
+	// Wood retains its three rooted silhouettes; rock leaves short Death rubble.
+	this.addVisual(model, point)
+	if this.skill == 26
+		this.visualTrace(point - facing.direction(90.0), point + facing.direction(90.0), 2)
+		this.addVisual(TD_PET_VFX_POISON, point)
+	else
+		this.addVisual(TD_PET_VFX_METAL_SPARK, point)
+		if current == 3
+			this.addVisual(TD_PET_VFX_ROCK, point)
+
+public function TDPetCastContext.visualFreeze()
+	this.clearVisuals()
+	this.moveMoving(0, (this.center + vec2(90.0, 0.0)).withTerrainZ(), this.direction.getAngle(), 0.55)
+	this.moveMoving(1, (this.center - vec2(90.0, 0.0)).withTerrainZ(), this.direction.getAngle(), 0.55)
+
+public function TDPetCastContext.visualIceBreak()
+	this.clearMoving()
+	this.visualRing(TD_PET_VFX_SHATTER, this.center, 180.0)
+
+public function TDPetCastContext.visualVortexPulse()
+	this.clearVisuals()
+	if this.visualFrame == 0
+		this.addVisual(TD_PET_VFX_VORTEX, this.center)
+	this.addVisual(TD_PET_VFX_SHATTER, this.center)
+	this.visualTrace(this.center + vec2(160.0, 0.0), this.center + vec2(0.0, 160.0), 3)
+	this.visualTrace(this.center - vec2(160.0, 0.0), this.center - vec2(0.0, 160.0), 3)
+
+public function TDPetCastContext.visualBrandPulse(vec2 point)
+	this.clearVisuals()
+	this.addVisual(TD_PET_VFX_BRAND, point)
+	this.addVisual(TD_PET_VFX_GROUND_FIRE, point + vec2(25.0, 0.0))
+	this.addVisual(TD_PET_VFX_GROUND_FIRE, point - vec2(25.0, 0.0))
+
+public function TDPetCastContext.visualLotus()
+	this.clearVisuals()
+	this.addVisual(TD_PET_VFX_LOTUS, this.center)
+	for index = 0 to 3
+		this.addVisual(TD_PET_VFX_BRAND, this.center + tdPetVisualSwordOffset(index))
+	this.visualTrace(this.center, this.center + vec2(120.0, 0.0), 4)
+	this.visualTrace(this.center, this.center - vec2(120.0, 0.0), 4)
+
+public function TDPetCastContext.visualMeteorImpact()
+	if this.stage == 0
+		this.clearMoving()
+		this.clearVisuals()
+		this.addVisual(TD_PET_VFX_METEOR, this.center)
+		for index = 0 to 3
+			this.addVisual(TD_PET_VFX_GROUND_FIRE, this.center + tdPetVisualSwordOffset(index))
+	else
+		this.visualRing(TD_PET_VFX_GROUND_FIRE, this.center, 100.0)
+
+public function TDPetCastContext.visualChainBurst(vec2 point)
+	this.clearVisuals()
+	this.addVisual(TD_PET_VFX_EXPLODE, point)
+	this.addVisual(TD_PET_VFX_GROUND_FIRE, point)
+	if this.stage + 1 < this.markCount
+		this.visualTrace(point, this.lastPosition(this.stage + 1), 4)
+
+public function TDPetCastContext.visualRockFan()
+	this.clearVisuals()
+	let side = vec2(-this.direction.y, this.direction.x)
+	this.addMoving(0, TD_PET_VFX_FAULT_RIDGE, (this.origin + this.direction * 300.0).withTerrainZ(), this.direction.getAngle(), 0.60)
+	for index = -1 to 1
+		let point = this.origin + this.direction * 350.0 + side * (index * 200.0)
+		this.addVisual(TD_PET_VFX_FAULT_RIDGE, point)
+		this.visualTrace(this.origin, point, 5)
+
+function TDPetCastContext.visualSealPulse()
+	this.clearVisuals()
+	this.addVisual(TD_PET_VFX_SEAL, this.center)
+	for index = 0 to 3
+		let startPoint = this.center + tdPetVisualSwordOffset(index) * 1.6
+		let endPoint = this.center + tdPetVisualSwordOffset((index + 1) mod 4) * 1.6
+		this.visualTrace(startPoint, endPoint, 5)
 
 public function TDPetCastContext.visualPrepare()
-	if this.skill == 24
-		this.visualPoint(TD_PET_VFX_SEED, this.center)
+	if this.skill == 22
+		this.visualFrame = 1
+		if not this.addMoving(0, TD_PET_VFX_SWORD_ARRAY, this.center.withTerrainZ(260.0), this.direction.getAngle(), 0.75)
+			this.visualFrame = 0
+			this.addVisual(TD_PET_VFX_SWORD_ARRAY, this.center)
+		for index = 0 to 3
+			this.addVisual(TD_PET_VFX_METAL_SPARK, this.center + tdPetVisualSwordOffset(index))
+	else if this.skill == 24
+		this.visualSeedPulse(this.center)
 	else if this.skill == 25
+		this.visualFrame = 0
 		for flower = 0 to 2
 			this.addVisual(TD_PET_VFX_FLOWER, this.road.pointAt(flower))
 	else if this.skill == 29
-		this.visualRing(TD_PET_VFX_WARNING, this.center, 180.0)
+		for index = 0 to 3
+			this.addVisual(TD_PET_VFX_WARNING, this.center + tdPetVisualSwordOffset(index) * 1.5)
+		this.addMoving(0, TD_PET_VFX_FREEZE, (this.center + vec2(180.0, 0.0)).withTerrainZ(100.0), this.direction.getAngle(), 0.55)
+		this.addMoving(1, TD_PET_VFX_FREEZE, (this.center - vec2(180.0, 0.0)).withTerrainZ(100.0), this.direction.getAngle(), 0.55)
+		this.visualTrace(this.center + vec2(180.0, 0.0), this.center + vec2(0.0, 180.0), 3)
+		this.visualTrace(this.center - vec2(180.0, 0.0), this.center - vec2(0.0, 180.0), 3)
 	else if this.skill == 30
-		this.visualRing(TD_PET_VFX_VORTEX, this.center, 200.0)
+		this.visualFrame = 1
+		if not this.addMoving(0, TD_PET_VFX_VORTEX, this.center.withTerrainZ(), this.direction.getAngle(), 0.80)
+			this.visualFrame = 0
+			this.addVisual(TD_PET_VFX_VORTEX, this.center)
+	else if this.skill == 31
+		this.addVisual(TD_PET_VFX_BRAND, this.center)
 	else if this.skill == 33
-		this.visualRing(TD_PET_VFX_MARK, this.center, 180.0)
+		this.addMoving(0, TD_PET_VFX_METEOR_BODY, this.center.withTerrainZ(520.0), this.direction.getAngle(), 1.10)
+		for index = 0 to 3
+			this.addVisual(TD_PET_VFX_MARK, this.center + tdPetVisualSwordOffset(index) * 1.25)
 	else if this.skill == 34
 		for index = 0 to this.markCount - 1
 			this.addVisual(TD_PET_VFX_MARK, this.lastPosition(index))
 	else if this.skill == 37
-		this.visualRing(TD_PET_VFX_SEAL, this.center, 190.0)
+		this.visualFrame = 0
+		this.visualSealPulse()
 
 public function TDPetCastContext.visualTick(real now)
-	if this.skill == 19
-		this.visualFlight(TD_PET_VFX_BLADE, 650.0, (now - this.createdAt) / 0.25)
-	if this.skill == 27
-		if now < this.createdAt + 0.25
-			this.visualFlight(TD_PET_VFX_COLD, this.origin.distanceTo(this.center), (now - this.createdAt) / 0.25)
-		else if this.visualFrame != 1
-			this.visualPoint(TD_PET_VFX_WARNING, this.center)
-			this.visualFrame = 1
-	if this.skill == 28
-		if now < this.createdAt + 0.30
-			this.visualFlight(TD_PET_VFX_TIDE, 600.0, (now - this.createdAt) / 0.30)
-		else if now >= this.createdAt + 0.60
-			this.visualFlight(TD_PET_VFX_RETURN, 600.0, 1.0 - (now - this.createdAt - 0.60) / 0.30)
+	let elapsed = now - this.createdAt
+	if this.skill == 22
+		this.moveMoving(0, this.center.withTerrainZ(tdPetVisualSwordHeight(elapsed, this.stage)), this.direction.getAngle(), 0.75)
+	else if this.skill == 29 and this.stage == 0
+		let radius = tdPetVisualMirrorRadius(elapsed)
+		let height = 100.0 * (1.0 - tdPetVisualProgress(elapsed, 0.60))
+		this.moveMoving(0, (this.center + vec2(radius, 0.0)).withTerrainZ(height), this.direction.getAngle(), 0.55)
+		this.moveMoving(1, (this.center - vec2(radius, 0.0)).withTerrainZ(height), this.direction.getAngle(), 0.55)
+	else if this.skill == 30
+		this.moveMoving(0, this.center.withTerrainZ(), (elapsed * 180.0).asAngleDegrees(), 0.80 + 0.04 * Sin(elapsed * 6.283185))
+	else if this.skill == 33 and this.stage == 0
+		this.moveMoving(0, this.center.withTerrainZ(tdPetVisualMeteorHeight(elapsed)), this.direction.getAngle(), 1.10)
+	else if this.skill == 37 and elapsed < 4.0
+		let frame = elapsed.toInt()
+		if this.visualFrame != frame
+			this.visualFrame = frame
+			this.visualSealPulse()
+
+// Normal completion may emit one native Death tail. Cancellation adds nothing;
+// the shared cast owner still destroys every native/Fx/line before releasing it.
+public function TDPetCastContext.visualFinish()
+	if not this.valid()
+		return
+	this.clearVisuals()
+	if this.skill <= 22
+		this.addVisual(TD_PET_VFX_SWORD, this.center)
+	else if this.skill <= 26
+		this.addVisual(TD_PET_VFX_SEED, this.center)
+	else if this.skill <= 30
+		this.addVisual(TD_PET_VFX_SHATTER, this.center)
+	else if this.skill <= 34
+		this.addVisual(TD_PET_VFX_GROUND_FIRE, this.center)
+	else
+		this.addVisual(TD_PET_VFX_ROCK, this.skill == 38 ? this.road.pointAt(3) : this.center)

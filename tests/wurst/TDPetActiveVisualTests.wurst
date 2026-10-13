@@ -1,0 +1,47 @@
+package TDPetActiveVisualTests
+import TDPetActiveVisualData
+
+@Test function elementalVisualProgressClampsCosmeticClock()
+	tdPetVisualProgress(-0.1, 0.75).assertEquals(0.0)
+	tdPetVisualProgress(0.375, 0.75).assertEquals(0.5)
+	tdPetVisualProgress(1.5, 0.75).assertEquals(1.0)
+
+@Test function swordArrayReusesFourExistingOneSecondRounds()
+	for round = 0 to 3
+		tdPetVisualSwordHeight(round * 1.0, round).assertEquals(260.0)
+		tdPetVisualSwordHeight(round + 0.5, round).assertEquals(130.0)
+		tdPetVisualSwordHeight(round + 1.0, round).assertEquals(0.0)
+
+@Test function meteorStopsAtExistingPointSevenFiveImpact()
+	tdPetVisualMeteorHeight(0.0).assertEquals(520.0)
+	tdPetVisualMeteorHeight(0.375).assertEquals(260.0)
+	tdPetVisualMeteorHeight(0.75).assertEquals(0.0)
+	tdPetVisualMeteorHeight(3.75).assertEquals(0.0)
+
+@Test function mirrorConvergesOnlyBeforeExistingFreeze()
+	tdPetVisualMirrorRadius(0.0).assertEquals(180.0)
+	tdPetVisualMirrorRadius(0.30).assertEquals(150.0)
+	tdPetVisualMirrorRadius(0.60).assertEquals(120.0)
+	tdPetVisualMirrorRadius(0.95).assertEquals(120.0)
+
+@Test function fourShortSwordsHaveFourDistinctCardinalStarts()
+	tdPetVisualSwordOffset(0).assertEquals(vec2(120.0, 0.0))
+	tdPetVisualSwordOffset(1).assertEquals(vec2(0.0, 120.0))
+	tdPetVisualSwordOffset(2).assertEquals(vec2(-120.0, 0.0))
+	tdPetVisualSwordOffset(3).assertEquals(vec2(0.0, -120.0))
+
+@Test function eachCapturedRoadFlowerBloomsOnceWithoutAnotherTargetScan()
+	for mask = 0 to 7
+		for flower = 0 to 2
+			let bit = tdPetVisualFlowerBit(flower)
+			tdPetVisualFlowerAlreadyBloomed(mask, flower).assertEquals((mask div bit) mod 2 == 1)
+	var accumulatedMask = 0
+	for flower = 0 to 2
+		tdPetVisualFlowerAlreadyBloomed(accumulatedMask, flower).assertFalse()
+		accumulatedMask += tdPetVisualFlowerBit(flower)
+		tdPetVisualFlowerAlreadyBloomed(accumulatedMask, flower).assertTrue()
+	accumulatedMask.assertEquals(7)
+
+@Test function roadMeshFacingUsesCapturedSegmentOrImmutableCastDirection()
+	tdPetVisualRoadFacing(vec2(0.0, 0.0), vec2(100.0, 0.0), vec2(0.0, 1.0)).radians.assertEquals(0.0)
+	tdPetVisualRoadFacing(vec2(100.0, 0.0), vec2(100.0, 0.0), vec2(1.0, 0.0)).radians.assertEquals(0.0)

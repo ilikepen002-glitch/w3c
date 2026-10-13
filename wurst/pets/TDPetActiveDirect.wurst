@@ -52,15 +52,17 @@ function TDPetCastContext.line(boolean returning)
 public function TDPetCastContext.stepDirect(real now) returns boolean
 	if this.skill == 19 or this.skill == 28
 		if this.stage == 0
+			this.visualInstantLine(false)
 			this.line(false)
 			this.stage = 1
 		else if this.skill == 28 and this.stage == 1 and now >= this.createdAt + 0.60
+			this.visualInstantLine(true)
 			this.line(true)
 			this.stage = 2
 		return now < this.expiresAt
 	if this.skill == 20
 		if this.stage == 0 and this.primaryValid()
-			this.visualPoint(TD_PET_VFX_ARMOR, this.primary.getPos())
+			this.visualStrike(this.primary.getPos())
 			this.hitPrimary(1.30)
 			if this.primaryValid()
 				tdPetApplyBladeArmor(this.pet, this.host, this.primary, this castTo int)
@@ -71,29 +73,25 @@ public function TDPetCastContext.stepDirect(real now) returns boolean
 		if this.stage == 0
 			this.remember(this.primary)
 			// Control/slow applies before the tagged hit can synchronously kill it.
+			this.visualStrike(this.primary.getPos())
 			if this.skill == 23
-				this.visualPoint(TD_PET_VFX_ROOT, this.primary.getPos())
 				this.control(this.primary, 1, 0.75)
 			else if this.skill == 27
 				this.slow(this.primary, TD_AURA_PET_COLD, 0.25, 2.0)
 			else
-				this.visualPoint(TD_PET_VFX_ROCK, this.primary.getPos())
 				this.control(this.primary, 3, 0.25)
 			this.hitPrimary(this.skill == 23 ? 0.65 : (this.skill == 27 ? 0.95 : 1.10))
 			this.stage = 1
 		return now < this.expiresAt
 	if this.skill == 32
 		if this.stage == 0
-			this.visualRing(TD_PET_VFX_LOTUS, this.center, 160.0)
+			this.visualLotus()
 			this.circle(this.center, 230.0, 1.40, 12)
 			this.stage = 1
 		return now < this.expiresAt
 	if this.skill == 36
 		if this.stage == 0
-			this.clearVisuals()
-			let side = vec2(-this.direction.y, this.direction.x)
-			for index = -1 to 1
-				this.addVisual(TD_PET_VFX_FAN, this.origin + this.direction * 350.0 + side * (index * 200.0))
+			this.visualRockFan()
 			this.candidates.enumUnitsInRange(this.origin, 500.0)
 			var hits = 0
 			for target in this.candidates
@@ -106,7 +104,7 @@ public function TDPetCastContext.stepDirect(real now) returns boolean
 		return now < this.expiresAt
 	if this.skill == 29
 		if this.stage == 0 and now >= this.createdAt + 0.60
-			this.clearVisuals()
+			this.visualFreeze()
 			this.candidates.enumUnitsInRange(this.center, 240.0)
 			for target in this.candidates
 				if not this.valid()
@@ -118,7 +116,7 @@ public function TDPetCastContext.stepDirect(real now) returns boolean
 						this.controlCount += 1
 			this.stage = 1
 		if this.stage == 1 and now >= this.createdAt + 0.95
-			this.visualRing(TD_PET_VFX_SHATTER, this.center, 180.0)
+			this.visualIceBreak()
 			this.circle(this.center, 240.0, 1.40, 12)
 			this.stage = 2
 		return now < this.expiresAt

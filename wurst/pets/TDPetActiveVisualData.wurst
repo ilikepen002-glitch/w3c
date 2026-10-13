@@ -1,0 +1,37 @@
+package TDPetActiveVisualData
+
+// Cosmetic geometry only. These clocks never authorize a hit or a control.
+public function tdPetVisualProgress(real elapsed, real duration) returns real
+	return RMaxBJ(0.0, RMinBJ(1.0, elapsed / duration))
+
+public function tdPetVisualSwordHeight(real elapsed, int completedRounds) returns real
+	return 260.0 * (1.0 - tdPetVisualProgress(elapsed - completedRounds, 1.0))
+
+public function tdPetVisualMeteorHeight(real elapsed) returns real
+	return 520.0 * (1.0 - tdPetVisualProgress(elapsed, 0.75))
+
+public function tdPetVisualMirrorRadius(real elapsed) returns real
+	return 180.0 - 60.0 * tdPetVisualProgress(elapsed, 0.60)
+
+public function tdPetVisualSwordOffset(int stage) returns vec2
+	if stage == 0
+		return vec2(120.0, 0.0)
+	if stage == 1
+		return vec2(0.0, 120.0)
+	if stage == 2
+		return vec2(-120.0, 0.0)
+	return vec2(0.0, -120.0)
+
+public function tdPetVisualFlowerAlreadyBloomed(int mask, int flower) returns boolean
+	if flower == 0
+		return mask mod 2 == 1
+	if flower == 1
+		return (mask div 2) mod 2 == 1
+	return (mask div 4) mod 2 == 1
+
+public function tdPetVisualFlowerBit(int flower) returns int
+	return flower == 0 ? 1 : (flower == 1 ? 2 : 4)
+
+public function tdPetVisualRoadFacing(vec2 previous, vec2 point, vec2 fallback) returns angle
+	let delta = point - previous
+	return delta.lengthSq() > 0.001 ? delta.getAngle() : fallback.getAngle()
