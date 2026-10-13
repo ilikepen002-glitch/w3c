@@ -52,8 +52,10 @@ public function tdPetManagerCommandIconPath(int action) returns string
 		return importedIcon("TDPetNext")
 	if action == 9
 		return importedIcon("TDPetReturnBuilder")
-	if action >= 10 and action <= 14
+	if action >= 10 and action <= 13
 		return importedIcon("TDPetCultivate")
+	if action == 14
+		return importedIcon("TDPetEmptySlot")
 	if action == 15 or action == 19
 		return importedIcon("TDPetRelease")
 	if action == 16 or action == 22
@@ -74,19 +76,19 @@ public function tdPetSkillIconName(int skill) returns string
 	if skill == 19
 		return "BTNImpalingBolt"
 	if skill == 20
-		return "BTNFaerieFire"
+		return "BTNTDPetSkillSunderingBlade"
 	if skill == 21
-		return "BTNCriticalStrike"
+		return "BTNTDPetSkillBladeRain"
 	if skill == 22
-		return "BTNSteelMelee"
+		return "BTNTDPetSkillSwordFormation"
 	if skill == 23
-		return "BTNEntanglingRoots"
+		return "BTNTDPetSkillVineBind"
 	if skill == 24
-		return "BTNEnvenomedSpear"
+		return "BTNTDPetSkillParasiticSeed"
 	if skill == 25
-		return "BTNDeathAndDecay"
+		return "BTNTDPetSkillCorrosiveBlossom"
 	if skill == 26
-		return "BTNEntanglingRoots"
+		return "BTNTDPetSkillAdvancingRoots"
 	if skill == 27
 		return "BTNColdArrows"
 	if skill == 28
@@ -98,25 +100,25 @@ public function tdPetSkillIconName(int skill) returns string
 	if skill == 31
 		return "BTNImmolationOn"
 	if skill == 32
-		return "BTNImmolationOn"
+		return "BTNTDPetSkillCrimsonLotus"
 	if skill == 33
 		return "BTNInfernal"
 	if skill == 34
-		return "BTNImmolationOn"
+		return "BTNTDPetSkillChainConflagration"
 	if skill == 35
 		return "BTNThunderClap"
 	if skill == 36
-		return "BTNThunderClap"
+		return "BTNTDPetSkillMountainShockwave"
 	if skill == 37
 		return "BTNDevotion"
 	if skill == 38
-		return "BTNThunderClap"
+		return "BTNTDPetSkillEarthFracture"
 	if skill == 0
 		return "BTNGauntletsOfOgrePower"
 	if skill == 1
 		return "BTNSteelMelee"
 	if skill == 2
-		return "BTNGlove"
+		return "BTNTDPetSkillSwiftAssault"
 	if skill == 3
 		return "BTNBrilliance"
 	if skill == 4
@@ -126,7 +128,7 @@ public function tdPetSkillIconName(int skill) returns string
 	if skill == 6
 		return "BTNFaerieFire"
 	if skill == 7
-		return "BTNCleavingAttack"
+		return "BTNTDPetSkillChargedHit"
 	if skill == 8
 		return "BTNCriticalStrike"
 	if skill == 9
@@ -142,16 +144,24 @@ public function tdPetSkillIconName(int skill) returns string
 	if skill == 14
 		return "BTNImmolationOn"
 	if skill == TD_PET_SKILL_COMBO
-		return "BTNGlove"
+		return "BTNTDPetSkillComboAttack"
 	if skill == TD_PET_SKILL_RESOLVE
-		return "BTNCriticalStrike"
+		return "BTNTDPetSkillResoluteStrike"
 	if skill == TD_PET_SKILL_HEAVY
-		return "BTNSteelMelee"
+		return "BTNTDPetSkillHeavyBlow"
 	return "BTNCyclone"
+
+// Shared by collection slots and cultivation previews. Keep DISBTN native lookup
+// intact while custom normal artwork uses its actual imported MPQ path.
+public function tdPetSkillIconPath(int skill, boolean disabled) returns string
+	let name = tdPetSkillIconName(skill)
+	if disabled
+		return "ReplaceableTextures\\CommandButtonsDisabled\\DIS" + name + ".blp"
+	if SubString(name, 0, 13) == "BTNTDPetSkill"
+		return "war3mapImported\\" + name + ".blp"
+	return "ReplaceableTextures\\CommandButtons\\" + name + ".blp"
 
 public function tdPetSlotIconPath(int variant) returns string
 	if variant == TD_PET_SLOT_EMPTY
 		return importedIcon("TDPetEmptySlot")
-	let skill = variant mod TD_PET_SKILL_COUNT
-	let name = tdPetSkillIconName(skill)
-	return variant >= TD_PET_SKILL_COUNT ? "ReplaceableTextures\\CommandButtonsDisabled\\DIS" + name + ".blp" : "ReplaceableTextures\\CommandButtons\\" + name + ".blp"
+	return tdPetSkillIconPath(variant mod TD_PET_SKILL_COUNT, variant >= TD_PET_SKILL_COUNT)

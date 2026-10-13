@@ -1,0 +1,440 @@
+{
+  "schema": 1,
+  "generator": "image_gen.imagegen (built-in)",
+  "prompt": "assets/source/spirit-skill-icons/prompt.txt",
+  "source_kind": "new original 5x5 atlas; no screenshot used as input",
+  "normal_size": [
+    64,
+    64
+  ],
+  "disabled_transform": "grayscale, preserve alpha, brightness 0.45",
+  "format": "BLP1 palette256 alpha8 seven mipmaps",
+  "max_added_mpq_bytes": 262144,
+  "assets": [
+    {
+      "skill_id": 2,
+      "name": "SwiftAssault",
+      "display_name": "疾攻",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        4,
+        4,
+        244,
+        236
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillSwiftAssault.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillSwiftAssault.blp",
+      "normal_sha256": "6e1fe04d11a63d551f5d796ce39364724762c27e29c2f939f6a032442a2ab460",
+      "disabled_sha256": "12a69f9e06bed9ba423151a38e614d7a361c3dbb5320ae1ba13ffb06d0b2f801"
+    },
+    {
+      "skill_id": 7,
+      "name": "ChargedHit",
+      "display_name": "蓄击",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        257,
+        4,
+        496,
+        236
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillChargedHit.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillChargedHit.blp",
+      "normal_sha256": "4604175af485f27ae0f035a521e98defa3568ec8bf923ed5dae7da292dca2ce5",
+      "disabled_sha256": "f3f9692b057c5bc06a5411e66110e51f310754e78f17cb964577337da80cc347"
+    },
+    {
+      "skill_id": 16,
+      "name": "ComboAttack",
+      "display_name": "连击",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        508,
+        4,
+        747,
+        236
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillComboAttack.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillComboAttack.blp",
+      "normal_sha256": "935da29063336ee22bfe27be61a31bd04002de5d6a330354e61737ccb73b1688",
+      "disabled_sha256": "4a300c53fc4a8d83f209ed0b7efc1de8b124090b4d1caf4a3f87323a485917fe"
+    },
+    {
+      "skill_id": 17,
+      "name": "ResoluteStrike",
+      "display_name": "决意一击",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        759,
+        4,
+        998,
+        236
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillResoluteStrike.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillResoluteStrike.blp",
+      "normal_sha256": "0647bf092ebe85dcd9f8697cbc688879e9aa66f49045ce5c4869418f9cffce87",
+      "disabled_sha256": "c736075aa0941af5a13c5a4a59c67413ed17eeabe7a6fb5657d12c9d00e4a8f7"
+    },
+    {
+      "skill_id": 18,
+      "name": "HeavyBlow",
+      "display_name": "猛击",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        1010,
+        4,
+        1250,
+        236
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillHeavyBlow.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillHeavyBlow.blp",
+      "normal_sha256": "c9417aa5deb269cd8c3844652f2b1237c5c1c7cab29965f6728e01e498040fc7",
+      "disabled_sha256": "b508e5f4a0e8f0a32bb65608dc9722408c7328ce5d7c2ae1f4e2a2f923f990d7"
+    },
+    {
+      "skill_id": 20,
+      "name": "SunderingBlade",
+      "display_name": "裂甲天锋",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        4,
+        249,
+        244,
+        486
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillSunderingBlade.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillSunderingBlade.blp",
+      "normal_sha256": "271aaa164e88ebadb301e4c096e8bcf1c7a8fdd373aee130f698d3fbcc4ac985",
+      "disabled_sha256": "19a08a0bf7c3ae64cf10ed641aba9f26be5060a2986497b539d31543be03b0fd"
+    },
+    {
+      "skill_id": 21,
+      "name": "BladeRain",
+      "display_name": "万刃归宗",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        257,
+        249,
+        496,
+        486
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillBladeRain.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillBladeRain.blp",
+      "normal_sha256": "4170f0fba85f33ad86cd6adfeed15f2ec8f6846f1add7ec49ac2294679adfbbf",
+      "disabled_sha256": "93a7696ea1573a3a165447e5320eb1e77e333ed419cf451a5e67c395c6618889"
+    },
+    {
+      "skill_id": 22,
+      "name": "SwordFormation",
+      "display_name": "天诛剑阵",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        508,
+        249,
+        747,
+        486
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillSwordFormation.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillSwordFormation.blp",
+      "normal_sha256": "612c4c19def16aea32fe1812bb2bed7b7bfec7f1d6a005102794a7f67f37f98a",
+      "disabled_sha256": "0809d153cb3a531d6adf6e1e11aadd4530a54f8706ae46c5ee00ec71488ea812"
+    },
+    {
+      "skill_id": 23,
+      "name": "VineBind",
+      "display_name": "青藤缚足",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        759,
+        249,
+        998,
+        486
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillVineBind.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillVineBind.blp",
+      "normal_sha256": "a77d5d320906c53967a2c8d3dfc71d5f7118c9ecbd4ef883da5a2e3f5c43fc98",
+      "disabled_sha256": "2db1ea71cb0e19ab9353bedd54a1eed0a65b03dbceaf798a67abae5723958a5c"
+    },
+    {
+      "skill_id": 24,
+      "name": "ParasiticSeed",
+      "display_name": "噬生寄种",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        1010,
+        249,
+        1250,
+        486
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillParasiticSeed.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillParasiticSeed.blp",
+      "normal_sha256": "b743717b4e7e8c1420ae7ada4e465b4e4235aefbba668e86a8dc0891ef2455c8",
+      "disabled_sha256": "3c6ad4c413a646baeffbcab41fb1afbb805a5a46fd307dfe0a2993b5f40527a5"
+    },
+    {
+      "skill_id": 26,
+      "name": "AdvancingRoots",
+      "display_name": "万象森罗",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        4,
+        500,
+        244,
+        733
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillAdvancingRoots.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillAdvancingRoots.blp",
+      "normal_sha256": "aee5e3b828b51d4caefccfb195dbc8ac88f3258c8f66a70ae37bc6bd853d40bd",
+      "disabled_sha256": "d1efcd575976d04d9822d73c88aa02f72a1e96a60d4ec3ea1d3757446b061eb9"
+    },
+    {
+      "skill_id": 32,
+      "name": "CrimsonLotus",
+      "display_name": "赤莲绽",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        257,
+        500,
+        496,
+        733
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillCrimsonLotus.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillCrimsonLotus.blp",
+      "normal_sha256": "8dfdf0279ed24943d4098559c79f09a860342fa3e01aec09230725babf78bee2",
+      "disabled_sha256": "578cf9c44faa33df75865e987bc07cf4094abaae57bd76c24eadbac6cc3df7cf"
+    },
+    {
+      "skill_id": 34,
+      "name": "ChainConflagration",
+      "display_name": "业火连城",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        508,
+        500,
+        747,
+        733
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillChainConflagration.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillChainConflagration.blp",
+      "normal_sha256": "64ea088f1936e2213884b6f60e4f17ac61f14071af6aabcb68c250ba29b53f22",
+      "disabled_sha256": "a8a264ee23804101f215ea37bb894a3b1e422d9ba9a429e9afdddf21c5f54957"
+    },
+    {
+      "skill_id": 36,
+      "name": "MountainShockwave",
+      "display_name": "崩山震",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        759,
+        500,
+        998,
+        733
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillMountainShockwave.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillMountainShockwave.blp",
+      "normal_sha256": "48207e2f7d7ef835c7eecebe6038d04561c10c88d304fca8fc938c3d74053347",
+      "disabled_sha256": "0b49f1456176f1b505f199938a7bea8c0bd3649cdeed44f7f40ec89a61ffb9a3"
+    },
+    {
+      "skill_id": 38,
+      "name": "EarthFracture",
+      "display_name": "地脉天崩",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        1010,
+        500,
+        1250,
+        733
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillEarthFracture.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillEarthFracture.blp",
+      "normal_sha256": "94d4569ecbb8108a0869404a32c3c244bea985c21e1f509f2eef82a8f9dbd8eb",
+      "disabled_sha256": "4dca1ec0c5db0eaa89aa08c500f5f4eeb854cb0f6d263971c0e5c078fcf4d442"
+    },
+    {
+      "skill_id": 39,
+      "name": "StarFrostArrows",
+      "display_name": "星轨霜箭",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        4,
+        747,
+        244,
+        979
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillStarFrostArrows.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillStarFrostArrows.blp",
+      "normal_sha256": "ae7b74b4a388fed0ea02cac8f99ec9735168b1735a75107245c01574f3215b7b",
+      "disabled_sha256": "ae8b7df780ecc7c5db6d989a52e357e5cbc6194d148580b5b5d81b42a5c7dd9f"
+    },
+    {
+      "skill_id": 40,
+      "name": "MoonBeacon",
+      "display_name": "月光信标",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        257,
+        747,
+        496,
+        979
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillMoonBeacon.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillMoonBeacon.blp",
+      "normal_sha256": "42d97004769230432535e55895e38a76edc1d33e90c24c56fe6738b30e4728f8",
+      "disabled_sha256": "e642bd547121ef4cf8c5feee92977f56cbfcdc2184aeeba22ed9f08e29889844"
+    },
+    {
+      "skill_id": 41,
+      "name": "KingslayerPact",
+      "display_name": "屠王血契",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        508,
+        747,
+        747,
+        979
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillKingslayerPact.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillKingslayerPact.blp",
+      "normal_sha256": "979de41ed7d6745e231c968879432e766c4cb4e4bb6876c2d2709c6cbe6097b2",
+      "disabled_sha256": "b7bb0913a741a8b5b4eb6692472d29b8b234bef5c3c288e480aa62dd94e1f420"
+    },
+    {
+      "skill_id": 43,
+      "name": "DelayedJudgement",
+      "display_name": "迟临审判",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        759,
+        747,
+        998,
+        979
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillDelayedJudgement.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillDelayedJudgement.blp",
+      "normal_sha256": "194f0796ad65d55f6355591cc5c9881dd3c27d75d03c57b0bb1ad2841b3c8d02",
+      "disabled_sha256": "2afdfa89bf59031fc8f0dde80992d44d77e6b90b620dbc92f28de2dc8fa1bc7b"
+    },
+    {
+      "skill_id": 44,
+      "name": "HolySealRelay",
+      "display_name": "圣印接力",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        1010,
+        747,
+        1250,
+        979
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillHolySealRelay.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillHolySealRelay.blp",
+      "normal_sha256": "acb347eb96dd2a2cb92f2e5ebe228c56e48dd6e5403da6ec7e2e98f7c3e20402",
+      "disabled_sha256": "c232892bded7072c8890aa762157034d7b9216036e70453fe459dccb75e4f845"
+    },
+    {
+      "skill_id": 45,
+      "name": "PoisonSprout",
+      "display_name": "寄生毒芽",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        4,
+        993,
+        244,
+        1250
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillPoisonSprout.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillPoisonSprout.blp",
+      "normal_sha256": "79ff39f87f59c363d6d17d5ebbac662bf3ef4907a79e128be49d3c9e3fa85306",
+      "disabled_sha256": "0198dc53f03018a6ea29023b1418460ec374b6110b8b770c1a27b9550167bad7"
+    },
+    {
+      "skill_id": 46,
+      "name": "RootAmbush",
+      "display_name": "伏根刺",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        257,
+        993,
+        496,
+        1250
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillRootAmbush.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillRootAmbush.blp",
+      "normal_sha256": "c172eef0393ed44a7dc206757dfa26dc967cdee67e12e3287baface29dc53c01",
+      "disabled_sha256": "6bf417c0d3a18c0b144ac4ff55b176b726b72e01c9bbf3012b09fe6c6ee8d096"
+    },
+    {
+      "skill_id": 47,
+      "name": "HuntMomentum",
+      "display_name": "嗜猎余势",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        508,
+        993,
+        747,
+        1250
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillHuntMomentum.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillHuntMomentum.blp",
+      "normal_sha256": "da1501960e53a68de57584577b14d34433c73dd734c09a08744931f46abf9d3b",
+      "disabled_sha256": "11fc1af8f64e1bae746bba06889bf067f91d2669336a9f646300b60beb10d199"
+    },
+    {
+      "skill_id": 48,
+      "name": "EpidemicRelay",
+      "display_name": "疫爆接力",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        759,
+        993,
+        998,
+        1250
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillEpidemicRelay.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillEpidemicRelay.blp",
+      "normal_sha256": "9c44d47d26d20a4a7df2c5b30ebec8865b801ae54bd17fc525b60113791c4009",
+      "disabled_sha256": "e8e93becbbe474d29d2300b3c9483396971f0c92dc80d60d0658d8684638ab0d"
+    },
+    {
+      "skill_id": 25,
+      "name": "CorrosiveBlossom",
+      "display_name": "繁花蚀骨",
+      "source": "assets/source/spirit-skill-icons/atlas.png",
+      "source_sha256": "ce2a6accfd87568774222f56893f33a92d40ea29032e82ce48a7af2dac107b6b",
+      "crop": [
+        1010,
+        993,
+        1250,
+        1250
+      ],
+      "normal": "war3mapImported\\BTNTDPetSkillCorrosiveBlossom.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillCorrosiveBlossom.blp",
+      "normal_sha256": "496133ceec3ed36972ee0354c827a50b64b9f850ce9da925050bacd534153419",
+      "disabled_sha256": "6924432c384c8176bf565fcb355efc39fcfe9d4e6b24b949e47e91ce7e24fed1"
+    }
+  ]
+}

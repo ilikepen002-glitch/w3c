@@ -22,6 +22,8 @@ TEST_DIR = ROOT / 'tests/python'
 # New classes are unclassified until their inputs have been reviewed.
 CLASS_GROUPS = {
     'source': '''
+        test_spirit_skill_icons.SpiritSkillIconTests
+        test_equipment_icon_refresh.EquipmentIconRefreshTests
         test_resource_retirement.ResourceRetirementTests
         test_tower_target_priority_artifact.TowerTargetPrioritySourceTests
         test_tower_pet_detail_source.TowerPetDetailTests

@@ -340,16 +340,16 @@ public function tdItemIconPath(int itemId) returns string
 		if quality == 2
 			return "war3mapImported\\BTNTDItemHunterScope.blp"
 		if quality == 3
-			return "war3mapImported\\BTNTDItemWindrunnerBow.blp"
+			return "war3mapImported\\BTNTDItemHunterScope.blp"
 		if quality == 4
-			return "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+			return "war3mapImported\\BTNTDItemWindrunnerBanner.blp"
 	if line == 2
 		if quality == 1
 			return "war3mapImported\\BTNTDItemWarAxe.blp"
 		if quality == 2
 			return "war3mapImported\\BTNTDItemWarAxe.blp"
 		if quality == 3
-			return "war3mapImported\\BTNTDItemBerserkerBadge.blp"
+			return "war3mapImported\\BTNTDItemWarAxe.blp"
 		if quality == 4
 			return "war3mapImported\\BTNTDItemBlademasterSigil.blp"
 	if line == 3
@@ -378,14 +378,14 @@ public function tdItemIconPath(int itemId) returns string
 		if quality == 3
 			return "war3mapImported\\BTNTDItemPoisonSac.blp"
 		if quality == 4
-			return "war3mapImported\\BTNTDItemCorruptedHeart.blp"
+			return "war3mapImported\\BTNTDItemForestSeed.blp"
 	if line == 6
 		if quality == 1
 			return "war3mapImported\\BTNTDItemArmorSpike.blp"
 		if quality == 2
 			return "war3mapImported\\BTNTDItemLaceratingSpike.blp"
 		if quality == 3
-			return "war3mapImported\\BTNTDItemArmorDrum.blp"
+			return "war3mapImported\\BTNTDItemSunderingSeal.blp"
 		if quality == 4
 			return "war3mapImported\\BTNTDItemArmorDrum.blp"
 	if line == 7
@@ -396,7 +396,7 @@ public function tdItemIconPath(int itemId) returns string
 		if quality == 3
 			return "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
 		if quality == 4
-			return "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+			return "war3mapImported\\BTNTDItemCommandHorn.blp"
 	if line == 8
 		if quality == 1
 			return "war3mapImported\\BTNTDItemGoldRing.blp"
@@ -408,13 +408,13 @@ public function tdItemIconPath(int itemId) returns string
 			return "war3mapImported\\BTNTDItemFrostTome.blp"
 	if line == 9
 		if quality == 1
-			return "war3mapImported\\BTNTDItemArmorDrum.blp"
+			return "war3mapImported\\BTNTDItemWindDrum.blp"
 		if quality == 2
-			return "war3mapImported\\BTNTDItemArmorDrum.blp"
+			return "war3mapImported\\BTNTDItemWindDrum.blp"
 		if quality == 3
-			return "war3mapImported\\BTNTDItemArmorDrum.blp"
+			return "war3mapImported\\BTNTDItemWindDrum.blp"
 		if quality == 4
-			return "war3mapImported\\BTNTDItemArmorDrum.blp"
+			return "war3mapImported\\BTNTDItemWindDrum.blp"
 	if line == 10
 		if quality == 1
 			return "war3mapImported\\BTNTDItemCoolingRune.blp"

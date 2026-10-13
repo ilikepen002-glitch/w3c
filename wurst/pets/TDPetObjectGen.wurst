@@ -173,7 +173,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			if not tdPetSkillDefined(skill)
 				continue
 			let displaySkill = new AbilityDefinitionBladeMasterCriticalStrike(tdPetPreviewAbilityId(position, skill))
-			displaySkill..setName((position == 0 ? "旧技能 · " : "新技能 · ") + tdPetSkillNameById(skill))..setLevels(4)..setIconNormal("ReplaceableTextures\\CommandButtons\\" + tdPetSkillIconName(skill) + ".blp")..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setRequirements("")..setButtonPositionNormalX(position == 0 ? 0 : 3)..setButtonPositionNormalY(0)
+			displaySkill..setName((position == 0 ? "旧技能 · " : "新技能 · ") + tdPetSkillNameById(skill))..setLevels(4)..setIconNormal(tdPetSkillIconPath(skill, false))..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setRequirements("")..setButtonPositionNormalX(position == 0 ? 0 : 3)..setButtonPositionNormalY(0)
 			for quality = 1 to 4
 				displaySkill.setTooltipNormal(quality, (position == 0 ? "旧：" : "新：") + tdPetQualityName(quality) + " " + tdPetSkillNameById(skill))
 				displaySkill.setTooltipNormalExtended(quality, tdPetSkillDescriptionById(skill, quality))

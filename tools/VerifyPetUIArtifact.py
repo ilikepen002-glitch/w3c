@@ -578,6 +578,7 @@ def phase_one_catalog():
     from VerifyPetManagerSource import scalar_helpers, compile_source_helper, source
     n = scalar_helpers()
     compile_source_helper(source('TDPetUIData'), 'tdPetSkillIconName', n, 1)
+    compile_source_helper(source('TDPetUIData'), 'tdPetSkillIconPath', n, 2)
     from VerifyActiveCooldownContract import SourceScalarEvaluator, read_sources, definitions
     active_ids = {d.petSkillId for d in definitions(SourceScalarEvaluator(read_sources())) if d.petSkillId >= 0}
     n['tdPetSkillIsActive'] = lambda skill: skill in active_ids
@@ -609,7 +610,7 @@ def verify_phase_one_slots(abilities):
             for field in ('aher', 'aite', 'achd'):
                 require(field_value(fields, field) == 0, rawcode + ': unsafe display flag ' + field)
             require(field_value(fields, 'areq') == '', rawcode + ': unexpected requirements')
-            icon = icon_path('TDPetEmptySlot') if is_empty else (DISABLED_PREFIX if locked else NORMAL_PREFIX) + n['tdPetSkillIconName'](skill) + '.blp'
+            icon = icon_path('TDPetEmptySlot') if is_empty else n['tdPetSkillIconPath'](skill, locked)
             require(field_value(fields, 'aart') == icon, rawcode + ': bright/locked/empty icon mismatch')
             require(field_value(fields, 'anam') == ('空栏' if is_empty else n['tdPetSkillNameById'](skill)), rawcode + ': skill identity name')
             for quality in range(1, 2 if is_empty else 5):
@@ -840,7 +841,7 @@ MANAGER_COMMANDS = {
     'Pm03': (1, 0, 'W', 0, 'TDPetCultivate'),
     'Pm04': (2, 0, 'E', 0, 'TDPetCultivate'),
     'Pm05': (3, 0, 'T', 0, 'TDPetCultivate'),
-    'Pm06': (0, 2, 'O', 0, 'TDPetCultivate'),
+    'Pm06': (0, 2, 'O', 0, 'TDPetEmptySlot'),
     'Pm07': (3, 2, 'W', 0, 'TDPetRelease'),
     'Pm08': (2, 2, 'C', 0, 'TDPetInfo'),
     'Pm09': (0, 1, 'Q', 0, 'TDPetKeepOld'),
@@ -964,7 +965,7 @@ def verify_phase_one_preview(abilities):
         parent, fields = abilities[rawcode]
         require(parent == 'AOcr' and field_value(fields, 'alev') == 4, rawcode + ': comparison quality levels')
         require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (0 if position == 0 else 3, 0), rawcode + ': comparison position')
-        require(field_value(fields, 'aart') == NORMAL_PREFIX + n['tdPetSkillIconName'](skill) + '.blp', rawcode + ': comparison icon')
+        require(field_value(fields, 'aart') == n['tdPetSkillIconPath'](skill, False), rawcode + ': comparison icon')
         require(not any(key == 'Ncl6' for key, _, _ in fields), rawcode + ': comparison Channel order')
         for field in ('aher', 'aite', 'achd'):
             require(field_value(fields, field) == 0, rawcode + ': unsafe comparison flag')
