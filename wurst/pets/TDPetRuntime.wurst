@@ -111,21 +111,31 @@ function tdPetHandleCapture() returns boolean
 	tdPetNotice(lane, "|cff80ff80捕获成功|r：" + pet.summary() + "。按W打开收藏，选择编号后E点塔绑定、C养成。")
 	return false
 
+// A successful roll owns one reward: credit it directly, or preserve it on the
+// ground at capacity. The shared counter does not require a live farmer handle.
+function tdPetDeliverBallDrop(int lane, vec2 position)
+	if not tdPetLaneCanAct(lane)
+		return
+	if tdPetAddBall(lane)
+		tdPetSyncBallAbility(lane)
+		tdPetNotice(lane, "捕获球 +1 · " + tdPetBallsForLane(lane).toString() + "/60")
+		return
+	let ball = createItem(TD_PET_BALL_ITEM_ID, position)
+	tdPetBallOwners.saveInt(ball.getHandleId(), lane + 1)
+
 public function tdPetHandleEnemyBallDrop(unit enemy, int lane, int wave)
 	if tdPetIsWild(enemy) or enemy == null or GetKillingUnit() == null or not tdPetLaneCanAct(lane) or tdIsBossUnitTypeId(GetUnitTypeId(enemy)) or tdEnemyWasLeaked(enemy)
 		return
 	if wave > 25 or GetRandomInt(1, 100) > (tdIsEliteUnitTypeId(GetUnitTypeId(enemy)) ? 2 : 1) or not tdPetTakeDropBudget(lane, wave)
 		return
-	let ball = createItem(TD_PET_BALL_ITEM_ID, enemy.getPos())
-	tdPetBallOwners.saveInt(ball.getHandleId(), lane + 1)
+	tdPetDeliverBallDrop(lane, enemy.getPos())
 
 public function tdPetHandleBossBallCompensation(unit enemy, int lane, int wave)
 	if enemy == null or GetKillingUnit() == null or not tdPetLaneCanAct(lane) or tdEnemyWasLeaked(enemy) or tdFlowBossResult(lane, wave) != TD_BOSS_RESULT_KILLED or not tdFlowClaimBossBallCompensation(lane, wave)
 		return
 	for _attempt = 1 to tdBossBallDropAttempts(wave)
 		if tdBossBallDropSucceeds(GetRandomInt(1, 100)) and tdPetTakeDropBudget(lane, wave)
-			let ball = createItem(TD_PET_BALL_ITEM_ID, enemy.getPos())
-			tdPetBallOwners.saveInt(ball.getHandleId(), lane + 1)
+			tdPetDeliverBallDrop(lane, enemy.getPos())
 			return
 
 function tdPetHandleBallPickup()

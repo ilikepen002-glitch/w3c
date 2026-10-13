@@ -171,12 +171,11 @@ def verify_ground_runtime(script):
         require(match is not None, 'Missing compiled ground entry ' + name)
         return match.group(1)
     finish = body('tdFinishCraftSession')
-    sequence = ['= TDCraftingRuntime_tdCraftCaptureLane', 'set TDCraftingRuntime_tdCraftSession = 0', 'set TDCraftingRuntime_tdCraftCaptureLane = -1',
-                'call dispatch_TDCraftSession_destroyTDCraftSession', 'call tdItemOperationRelease', 'call tdSortGroundEquipmentAfterUpgrade']
+    sequence = ['set TDCraftingRuntime_tdCraftSession = 0', 'set TDCraftingRuntime_tdCraftCaptureLane = -1',
+                'call dispatch_TDCraftSession_destroyTDCraftSession', 'call tdItemOperationRelease']
     positions = [finish.find(part) for part in sequence]
-    require(all(p >= 0 for p in positions) and positions == sorted(positions), 'Compiled ground finish lost lane/cleanup/release/sort order')
-    require(finish.count('call tdSortGroundEquipmentAfterUpgrade') == 1 and not re.search(r'doAfter|doPeriodically|TriggerSleepAction', finish), 'Compiled sort handoff deferred/duplicated')
-    require('call tdGroundStart(' in body('tdSortGroundEquipmentAfterUpgrade'), 'Compiled lane sorter not connected')
+    require(all(p >= 0 for p in positions) and positions == sorted(positions), 'Compiled ground finish lost cleanup/release order')
+    require('tdSortGroundEquipmentAfterUpgrade' not in finish and not re.search(r'doAfter|doPeriodically|TriggerSleepAction', finish), 'Compiled ground finish still sorts unrelated items')
     for name in ('tdGroundCaptureItem', 'tdGroundProcessOne'):
         require('tdGroundItemAvailable(' in body(name), name + ': captured/dequeued item lacks shared admission guard')
     require('tdGroundSortItemEligible(' in body('tdGroundItemAvailable'), 'Compiled shared admission lacks lane/quality guard')

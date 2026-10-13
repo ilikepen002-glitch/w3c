@@ -1,4 +1,4 @@
-"""Upgrade-to-sort source contracts, not compiled or Warcraft runtime proof."""
+"""Direct upgrade delivery and periodic-sort source contracts, not compiled or Warcraft runtime proof."""
 from pathlib import Path
 import re
 import shutil
@@ -34,35 +34,36 @@ class GroundUpgradeSortSourceTests(unittest.TestCase):
         cls.ground = (ROOT / 'wurst/items/TDGroundItemRuntime.wurst').read_text()
         cls.rules = (ROOT / 'wurst/items/TDGroundItemRules.wurst').read_text()
 
-    def test_finish_preserves_lane_and_cleans_session_before_lock_handoff(self):
+    def test_finish_cleans_up_without_sorting_any_leftovers(self):
         finish = function_body(self.crafting, 'tdFinishCraftSession')
-        steps = ('let groundLane = tdCraftCaptureLane', 'tdCraftSession = null',
-                 'tdCraftCaptureLane = -1', 'destroy session',
-                 'tdItemOperationRelease()', 'tdSortGroundEquipmentAfterUpgrade(groundLane)')
+        steps = ('tdCraftSession = null', 'tdCraftCaptureLane = -1',
+                 'destroy session', 'tdItemOperationRelease()')
         positions = [finish.index(step) for step in steps]
         self.assertEqual(positions, sorted(positions))
-        self.assertEqual(finish.count('tdSortGroundEquipmentAfterUpgrade('), 1)
+        self.assertEqual(finish.split('tdItemOperationRelease()', 1)[1].strip(), '')
+        self.assertNotIn('tdSortGroundEquipmentAfterUpgrade', self.crafting + self.ground)
+        self.assertNotIn('EnumItemsInRect', finish)
 
-    def test_finish_sorts_zero_success_empty_and_all_cancelled_sessions(self):
-        finish = function_body(self.crafting, 'tdFinishCraftSession')
-        hook = finish.split('tdItemOperationRelease()', 1)[1].strip()
-        self.assertEqual(hook, 'if tdIsLanePlayer(groundLane) and not tdIsGameOver()\n'
-                              '\t\ttdSortGroundEquipmentAfterUpgrade(groundLane)')
-        # Counts are display-only, never a prerequisite for sorting leftovers.
-        conditions = '\n'.join(row.strip() for row in finish.splitlines()
-                               if row.strip().startswith(('if ', 'else if ')))
-        for field in ('successes', 'cancelled', 'batchCount', 'recordCount'):
-            self.assertNotIn(field, conditions)
-
-    def test_handoff_has_no_yield_or_deferred_start(self):
-        path = '\n'.join((function_body(self.crafting, 'tdFinishCraftSession'),
-                          function_body(self.ground, 'tdSortGroundEquipmentAfterUpgrade'),
-                          function_body(self.ground, 'tdGroundStart')))
-        for deferred in ('doAfter(', 'doPeriodically(', 'TriggerSleepAction(', 'PolledWait(', '.execute('):
-            self.assertNotIn(deferred, path)
-        start = function_body(self.ground, 'tdGroundStart')
-        self.assertLess(start.index('tdItemOperationTryAcquire()'), start.index('tdGroundBusy = true'))
-        self.assertLess(start.index('tdGroundSortLane = requestedLane'), start.index('EnumItemsInRect('))
+    def test_hidden_output_is_prepared_directly_in_result_quality_pile(self):
+        source = (ROOT / 'wurst/items/TDCraftingNativeBackend.wurst').read_text()
+        prepare = source.split('override function prepareResult', 1)[1].split('override function consumeThree', 1)[0]
+        self.assertIn('private int array[5] pileCounts', source)
+        self.assertIn('if inventory\n\t\t\t\tplaced = tdTryPlaceItemNear(output, lane, origin, false)\n\t\t\telse', prepare)
+        self.assertIn('let quality = tdItemQuality(rawcode)', prepare)
+        self.assertIn('tdTryPlaceItemInPile(output, lane, quality, pileCounts[quality])', prepare)
+        self.assertIn('if index >= 0\n\t\t\t\t\tpileCounts[quality] = index + 1\n\t\t\t\t\tplaced = true', prepare)
+        self.assertLess(prepare.index('SetItemVisible(output, false)'), prepare.index('tdTryPlaceItemInPile'))
+        self.assertIn('if not placed\n\t\t\tRemoveItem(output)\n\t\t\toutput = null\n\t\t\treturn 0', prepare)
+        self.assertNotIn('RemoveItem(one.itemHandle)', prepare)
+        self.assertNotIn('tdGroundSortSourceLane', prepare)
+        self.assertNotIn('EnumItemsInRect', prepare)
+        consume = source.split('override function consumeThree', 1)[1].split('override function publishResult', 1)[0]
+        guard = 'if not inventory and not tdItemActualInPile(output, lane, tdItemQuality(outputId))'
+        self.assertIn(guard, consume)
+        self.assertLess(consume.index(guard), consume.index('RemoveItem(one.itemHandle)'))
+        publish = source.split('override function publishResult', 1)[1].split('override function discardResult', 1)[0]
+        self.assertIn('SetItemVisible(result, true)\n\t\tif inventory', publish)
+        self.assertNotIn('tdTryPlaceItemInPile', publish)
 
     def test_inventory_and_rejected_ground_requests_do_not_start_sorting(self):
         inventory = function_body(self.crafting, 'tdStartInventoryCraft')
@@ -113,13 +114,10 @@ class GroundUpgradeSortSourceTests(unittest.TestCase):
             pending.extend(graph.get(name, []))
         self.assertNotIn('TDCraftingRuntime', seen)
 
-    def test_periodic_sort_keeps_all_lanes_and_balls_while_upgrade_is_lane_only(self):
+    def test_periodic_sort_keeps_all_lanes_and_balls(self):
         setup = function_body(self.ground, 'tdSetupGroundItemRuntime')
         self.assertIn('doPeriodically(TD_GROUND_SORT_INTERVAL)', setup)
         self.assertIn('tdGroundStart(-1)', setup)
-        entry = function_body(self.ground, 'tdSortGroundEquipmentAfterUpgrade')
-        self.assertIn('if tdGroundRuntimeReady and tdIsLanePlayer(lane) and not tdIsGameOver()', entry)
-        self.assertIn('tdGroundStart(lane)', entry)
         start = function_body(self.ground, 'tdGroundStart')
         self.assertIn('if requestedLane >= 0 and lane != requestedLane\n\t\t\tcontinue', start)
         eligibility = function_body(self.rules, 'tdGroundSortItemEligible')
@@ -152,11 +150,11 @@ class GroundUpgradeSortSourceTests(unittest.TestCase):
         finish = function_body(self.ground, 'tdGroundFinish')
         self.assertLess(finish.index('tdGroundSortLane = -1'), finish.index('tdItemOperationRelease()'))
 
-    def test_player_tooltip_describes_immediate_start_without_claiming_sync_completion(self):
+    def test_player_tooltip_describes_direct_delivery_and_preserved_leftovers(self):
         objects = (ROOT / 'wurst/items/TDItemObjectGen.wurst').read_text()
-        self.assertIn('结束后立即开始整理本路坑道内的装备，按品质归堆', objects)
+        self.assertIn('新装备直接送到本路对应品质收纳点，无论材料在坑道内外', objects)
         for rule in ('新产物本次不再参与', '余1至2件、紫装、背包和捕获球不消耗',
-                     '坑外产物留在操作附近，其他坑外物品不移动'):
+                     '未消耗的装备保留原位', '收纳落点不可用时，该组不消耗材料'):
             self.assertIn(rule, objects)
 
 
@@ -167,7 +165,7 @@ class GroundUpgradeEntryOwnerMutationTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.items = self.root / 'wurst/items'
         self.items.mkdir(parents=True)
-        for name in ('TDInventoryRuntime.wurst', 'TDGroundItemRuntime.wurst', 'TDCraftingRuntime.wurst'):
+        for name in ('TDInventoryRuntime.wurst', 'TDGroundItemRuntime.wurst', 'TDCraftingRuntime.wurst', 'TDCraftingNativeBackend.wurst'):
             shutil.copyfile(ROOT / 'wurst/items' / name, self.items / name)
         verify_runtime_entrypoints(self.root)
 
@@ -182,6 +180,22 @@ class GroundUpgradeEntryOwnerMutationTests(unittest.TestCase):
     def test_old_ground_owner_cannot_pass_current_entry_checker(self):
         self.mutate('TDCraftingRuntime.wurst', 'tdStartGroundCraft(farmer,',
                     'tdLegacyGroundCraft(farmer,', 'Ground craft entry not connected in crafting runtime')
+
+    def test_legacy_post_sort_reintroduction_is_rejected(self):
+        self.mutate('TDCraftingRuntime.wurst', 'tdItemOperationRelease()',
+                    'tdItemOperationRelease()\n\ttdSortGroundEquipmentAfterUpgrade(0)',
+                    'Ground craft must not sort unrelated equipment')
+
+    def test_source_quality_or_foreign_lane_delivery_is_rejected(self):
+        self.mutate('TDCraftingNativeBackend.wurst',
+                    'tdTryPlaceItemInPile(output, lane, quality, pileCounts[quality])',
+                    'tdTryPlaceItemInPile(output, 0, quality - 1, 0)',
+                    'Ground craft must prepare output in its result-quality lane pile')
+
+    def test_missing_output_pile_revalidation_is_rejected(self):
+        self.mutate('TDCraftingNativeBackend.wurst',
+                    'if not inventory and not tdItemActualInPile(output, lane, tdItemQuality(outputId))',
+                    'if false', 'Ground craft must revalidate the final output pile before consumption')
 
     def test_reverse_import_is_rejected(self):
         self.mutate('TDGroundItemRuntime.wurst', 'import TDConfig',
