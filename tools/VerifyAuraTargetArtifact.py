@@ -147,11 +147,12 @@ def verify_tower_targets(script):
 
 def verify_pet_targets(script):
     r = fixture(script)
-    pet = r.invoke('new_TDPet', 0, 0, 1)
+    final_catalog = r.globals.get('TDPetData_TD_PET_SKILL_COUNT') == 49
+    pet = r.invoke('new_TDPet', 0, 1 if final_catalog else 0, 1)
     require(r.invoke('tdPetStore', 0, pet), 'Fixture pet registration failed')
     r.globals['TDPet_host'][pet] = 101
     r.globals['TDPet_level'][pet] = 10
-    r.invoke('TDPet_setSkill', pet, 0, 0, 1)
+    r.invoke('TDPet_setSkill', pet, 0, 19 if final_catalog else 0, 1)
     if 'tdPetApplyAttackDebuffs' in r.functions:
         require(not r.invoke('tdPetSkillDefined', 4), 'Retired command-aura skill is selectable')
         r.invoke('TDPet_setSkill', pet, 1, 4, 2)

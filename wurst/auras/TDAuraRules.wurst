@@ -43,6 +43,9 @@ public function tdCombinedEnemySlowFactor(real combined) returns real
 public class TDAuraAggregate
 	private int array[18] ranks
 	private real array[18] powers
+	construct()
+		// Class IDs are recycled; their array cells still hold the previous owner.
+		clear()
 
 	function clear()
 		for identity = 1 to TD_AURA_ID_COUNT

@@ -72,6 +72,8 @@ function tdAuraRankCarrier(int identity, int rank) returns int
 
 public function tdAuraSyncDisplayedRank(TDAuraTarget record, int identity, int rank)
 	let oldRank = record.shownRanks[identity]
+	if rank == 0 and oldRank == 0 and not record.pendingApplications[identity]
+		return
 	let target = record.target
 	let carrier = tdAuraRankCarrier(identity, rank)
 	var carrierPresent = carrier != 0 and target.getAbilityLevel(carrier) > 0

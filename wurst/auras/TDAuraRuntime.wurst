@@ -84,11 +84,11 @@ function tdEquipmentAuraIdentity(int kind) returns int
 	return 0
 
 function tdAuraOfferSource(TDAuraTarget record, unit source, TDAuraAggregate aggregate, int targetLane, vec2 targetPos, boolean mechanical, boolean cooldownEligible)
-	if not tdAuraTowerValid(source)
+	if source == null
 		return
 	let target = record.target
 	let lane = GetPlayerId(GetOwningPlayer(source))
-	if lane != targetLane
+	if lane != targetLane or not tdAuraTowerValid(source)
 		return
 	let distance = source.getPos().distanceTo(targetPos)
 	if record.tower
@@ -104,8 +104,14 @@ function tdAuraOfferSource(TDAuraTarget record, unit source, TDAuraAggregate agg
 		aggregate.offer(TD_AURA_VINES, 1, tdEquipmentControlReduction(1.0 - tdDryadAuraSlowFactor(), wide), wide > 0 and distance <= tdDryadWideAuraSlowRadius())
 		aggregate.offer(TD_AURA_VINES, 2, tdEquipmentControlReduction((1.0 - tdDryadAuraSlowFactor()) * tdEvolutionSkillMultiplier(), evolved), evolved > 0 and distance <= tdDryadWideAuraSlowRadius())
 	for slot = 0 to 2
-		let itemId = tdEquipmentItemId(source, slot)
-		let kind = tdItemAuraKind(itemId)
+		let equipped = source.itemInSlot(slot)
+		if equipped == null
+			continue
+		let itemId = equipped.getTypeId()
+		if itemId <= 0
+			continue
+		let aura = tdItemAuraDefinition(itemId)
+		let kind = aura.kind
 		if kind == TD_ITEM_AURA_NONE
 			continue
 		if record.tower
@@ -115,7 +121,7 @@ function tdAuraOfferSource(TDAuraTarget record, unit source, TDAuraAggregate agg
 			continue
 		if kind == TD_ITEM_AURA_COOLDOWN and not cooldownEligible
 			continue
-		aggregate.offer(tdEquipmentAuraIdentity(kind), tdItemQuality(itemId), tdItemAuraValue(itemId), distance <= tdItemAuraRadius(itemId))
+		aggregate.offer(tdEquipmentAuraIdentity(kind), aura.quality, aura.power, distance <= aura.radius)
 
 function tdAuraRefresh(TDAuraTarget record)
 	let prepared = new TDAuraAggregate()

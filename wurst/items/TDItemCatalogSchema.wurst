@@ -34,5 +34,8 @@ public constant int TD_ITEM_SPECIAL_POISON_BURST = 5
 
 public tuple tdEquipmentDefinition(int rawcode, int quality, int line, int nextId, string name, int primaryKind, real primaryValue, int secondaryKind, real secondaryValue, int auraKind, real auraValue, real auraRadius, int specialization)
 
+// A value snapshot from the same catalog, not an allocated/cache-owned record.
+public tuple tdEquipmentAuraDefinition(int kind, int quality, real power, real radius)
+
 public function tdItemPersonalEffectStacks(int kind) returns boolean
 	return kind == TD_ITEM_EFFECT_ATTACK or kind == TD_ITEM_EFFECT_ATTACK_SPEED or kind == TD_ITEM_EFFECT_RANGE

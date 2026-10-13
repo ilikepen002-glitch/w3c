@@ -6,6 +6,24 @@ import TDItemData
 function assertAuraNear(real actual, real expected)
 	((actual - expected).abs() < 0.000001).assertTrue()
 
+@Test function recycledAuraAggregateStartsEmptyForEveryIdentity()
+	let strong = new TDAuraAggregate()
+	for identity = 1 to TD_AURA_ID_COUNT
+		strong.offer(identity, 4, 0.20, true)
+	destroy strong
+	let weak = new TDAuraAggregate()
+	for identity = 1 to TD_AURA_ID_COUNT
+		weak.rank(identity).assertEquals(0)
+		assertAuraNear(weak.power(identity), 0.0)
+	weak.offer(TD_AURA_EQUIPMENT_FROST, 1, 0.06, true)
+	weak.rank(TD_AURA_EQUIPMENT_FROST).assertEquals(1)
+	assertAuraNear(weak.power(TD_AURA_EQUIPMENT_FROST), 0.06)
+	destroy weak
+	let empty = new TDAuraAggregate()
+	empty.rank(TD_AURA_EQUIPMENT_FROST).assertEquals(0)
+	assertAuraNear(empty.enemySlowPower(), 0.0)
+	destroy empty
+
 @Test function auraCoveragePrecedesHighestRankAndEqualRankChoosesPower()
 	let state = new TDAuraAggregate()
 	state.offer(TD_AURA_VINES, 2, 0.30, false)

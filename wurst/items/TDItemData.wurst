@@ -65,6 +65,8 @@ function tdEnsureItemCatalog()
 
 function tdItemDefinitionIndex(int itemId) returns int
 	// Rawcodes collide in Jass arrays, so item metadata must be resolved through the catalog.
+	if itemId <= 0
+		return 0
 	for index = 1 to tdItemDefinitionTotal
 		if tdItemCatalog[index] == itemId
 			return index
@@ -114,6 +116,11 @@ public function tdItemFixedNextId(int itemId) returns int
 public function tdItemAuraKind(int itemId) returns int
 	tdEnsureItemCatalog()
 	return tdItemAuraKinds[tdItemDefinitionIndex(itemId)]
+
+public function tdItemAuraDefinition(int itemId) returns tdEquipmentAuraDefinition
+	tdEnsureItemCatalog()
+	let index = tdItemDefinitionIndex(itemId)
+	return tdEquipmentAuraDefinition(tdItemAuraKinds[index], tdItemQualities[index], tdItemAuraValues[index], tdItemAuraRadii[index])
 
 public function tdItemAuraValue(int itemId) returns real
 	tdEnsureItemCatalog()

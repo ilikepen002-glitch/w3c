@@ -5,6 +5,7 @@ they do not produce a map or stand in for a rebuilt candidate or live Warcraft.
 """
 from copy import deepcopy
 from pathlib import Path
+import re
 import sys
 import unittest
 from python_check_inputs import candidate_map
@@ -41,8 +42,11 @@ class AuraTargetArtifactTests(unittest.TestCase):
         self.assertEqual(result['wind_application']['own_towers_A129_level'], 4)
 
     def test_rejects_lost_same_player_guard(self):
+        body = jass_function(self.script, 'tdAuraOfferSource').group(1)
+        guard = re.search(r'if (\w+ != targetLane)(?: or [^\n]+)? then', body)
+        self.assertIsNotNone(guard, 'Actual same-lane source guard must be present')
         script = replace_body(self.script, 'tdAuraOfferSource',
-                              'if lane_4 != targetLane then', 'if false then')
+                              guard.group(1), 'false')
         with self.assertRaisesRegex(ValueError, 'ally tower'):
             gate.verify_equipment_targets(script)
 
@@ -55,8 +59,11 @@ class AuraTargetArtifactTests(unittest.TestCase):
 
     def test_rejects_pet_host_only_rule_removed(self):
         if 'function tdPetApplyAttackDebuffs ' in self.script:
-            script = replace_body(self.script, 'tdAuraOfferSource', 'set slot_1 = 0',
-                                  'call dispatch_TDAuraAggregate_TDAuraAggregate_offer(aggregate, 8, 2, 0.12, true, "retired-aura negative fixture")\nset slot_1 = 0')
+            body = jass_function(self.script, 'tdAuraOfferSource').group(1)
+            initialization = re.search(r'set slot(?:_\d+)? = 0', body)
+            self.assertIsNotNone(initialization, 'Actual equipment slot loop must be present')
+            script = replace_body(self.script, 'tdAuraOfferSource', initialization.group(),
+                                  'call dispatch_TDAuraAggregate_TDAuraAggregate_offer(aggregate, 8, 2, 0.12, true, "retired-aura negative fixture")\n' + initialization.group())
             with self.assertRaisesRegex(ValueError, 'Retired pet aura target 101'):
                 gate.verify_pet_targets(script)
             return
