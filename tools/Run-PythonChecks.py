@@ -52,6 +52,8 @@ CLASS_GROUPS = {
         test_verify_pet_ui_artifact.PetUISourceTests
     '''.split(),
     'regression': '''
+        test_eclipse_boss_artifact.EclipseVisualDeltaTests
+        test_eclipse_boss_artifact.EclipseFrozenFormatTests
         test_pet_attack_phase_one.PetAttackPhaseOneSourceTests
         test_king_leoric_assets.AssetTests
         test_active_cooldown_contract.SyntheticPackagedObjectMutationTests

@@ -914,6 +914,8 @@ function tdWaveObjectParentId(int wave) returns int
 	..tdApplyEscaperStats(tdWaveBossName(24), tdWaveBossHitPoints(24), tdWaveBossArmor(24), tdWaveBossSpeed(24))
 	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(24, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(24)))
 	..setIconGameInterface(tdBossIconPath(24))
+	..setModelFile("war3mapImported\\EclipseSpellweaver.mdx")
+	..setScalingValue(1.50)
 	new UnitDefinition(TD_WAVE_32_BOSS_UNIT_ID, 'Ulic')
 	..tdApplyEscaperStats(tdWaveBossName(32), tdWaveBossHitPoints(32), tdWaveBossArmor(32), tdWaveBossSpeed(32))
 	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(32, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(32)))

@@ -1,0 +1,157 @@
+{
+  "model": "EclipseSpellweaver v3",
+  "unitRawcode": "uB24",
+  "wave": 24,
+  "baseUnitRawcode": "Udre",
+  "visualApproved": true,
+  "game127aTested": false,
+  "assets": [
+    {
+      "role": "model",
+      "sourceRelative": "original/EclipseSpellweaver.mdx",
+      "importPath": "war3mapImported\\EclipseSpellweaver.mdx",
+      "sha256": "b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406",
+      "bytes": 763754,
+      "repositoryImportPath": "imports/war3mapImported/EclipseSpellweaver.mdx"
+    },
+    {
+      "role": "texture",
+      "sourceRelative": "original/EclipseSpellweaverAtlas.blp",
+      "importPath": "Textures\\EclipseSpellweaverAtlas.blp",
+      "sha256": "1a9f47821ef2dad33f47b52dc986df1f996a7ebe1a7ad18de693a12539fd1cec",
+      "bytes": 350705,
+      "repositoryImportPath": "imports/Textures/EclipseSpellweaverAtlas.blp"
+    }
+  ],
+  "rawAssetBytes": 1114459,
+  "format": 800,
+  "triangles": 5654,
+  "bones": 25,
+  "blp": {
+    "version": 1,
+    "width": 512,
+    "height": 512,
+    "mipmaps": 10,
+    "alphaBits": 0
+  },
+  "sequences": [
+    {
+      "sequence": "Stand",
+      "samples": 25,
+      "loop": true
+    },
+    {
+      "sequence": "Walk",
+      "samples": 25,
+      "loop": true
+    },
+    {
+      "sequence": "Spell",
+      "samples": 25,
+      "loop": false
+    },
+    {
+      "sequence": "Stand Hit",
+      "samples": 25,
+      "loop": false
+    },
+    {
+      "sequence": "Death",
+      "samples": 25,
+      "loop": false
+    },
+    {
+      "sequence": "Portrait",
+      "samples": 25,
+      "loop": true
+    }
+  ],
+  "portrait": {
+    "embeddedCamera": "Portrait",
+    "clientFallbackMustBeTested": true,
+    "separatePortraitMdxProvided": false,
+    "pngBytes": 376913,
+    "pngSha256": "f33aa2b1f1df62a502313ae9a47dc360acbc2cfaa7c98e8b0430e7ffb0f629d3",
+    "pngShippedInRepository": false
+  },
+  "visualScaleSuggestion": 1.5,
+  "visualScaleBasis": "Stand sampled Z 9.74–139.98; 1.50 gives top about 210 and overall height195.36 Warcraft units, a readable Boss scale; compare Leoric base Stand max Z155.74 x1.30 approx202.46. This is an offline estimate, not in-game verified.",
+  "allowedObjectChanges": [
+    "modelFile",
+    "visualScalingValue"
+  ],
+  "doNotChange": [
+    "collisionSize",
+    "speed",
+    "movementType",
+    "movementHeight",
+    "pathing",
+    "health",
+    "armor",
+    "skills",
+    "selectionScale"
+  ],
+  "minimumRebuildSource": [
+    "build_eclipse.py",
+    "primitives.py",
+    "export_validate.cjs",
+    "check_roundtrip.cjs",
+    "check_surfaces.cjs",
+    "original/eclipse-source.json",
+    "original/EclipseSpellweaverAtlas_source.png",
+    "README.md",
+    "PROVENANCE.md",
+    "production-manifest.json"
+  ],
+  "previewRebuildSource": [
+    "render_sampled.py",
+    "package_delivery.py"
+  ],
+  "sourceRuntimeVariable": "MDX_PARSER_RUNTIME",
+  "originalAssetProvenance": "All geometry, rig, animation, UV and diffuse were authored for this project; no third-party model or texture pixels.",
+  "integration": {
+    "baseCommit": "11cf4bb4bf08a5cc69a772bd7bd1d7115e49d512",
+    "unit": "uB24",
+    "modelPath": "war3mapImported\\EclipseSpellweaver.mdx",
+    "scale": 1.5,
+    "scope": "Only modelFile and visualScalingValue; all other unit fields and JASS unchanged"
+  },
+  "sourceHashes": {
+    "build_eclipse.py": {
+      "sha256": "646e300ad72818b3f5f0cbd07798bac1c5384e238280f92f6e0bda4194c26609",
+      "bytes": 20511
+    },
+    "primitives.py": {
+      "sha256": "9c0f2d6452a9f08bf230c1aaeedfaa4cfa8455f5d1ae598d93472aa16299cf1e",
+      "bytes": 3145
+    },
+    "export_validate.cjs": {
+      "sha256": "3a6e78e61f3e5641c5e6bc5bcfb74d06a03abbdd6a66892acd2c3e1e8c37d4bd",
+      "bytes": 8582
+    },
+    "check_roundtrip.cjs": {
+      "sha256": "7df38b65997301aaff6b15a1aa0a1db4daa0eaea127bf60b776b92951156ffa6",
+      "bytes": 2872
+    },
+    "check_surfaces.cjs": {
+      "sha256": "970d2ec8849ac8b3cd27dd0661216178a751708c32a3495435a8ba4578b99bce",
+      "bytes": 3042
+    },
+    "original/eclipse-source.json": {
+      "sha256": "02b92037f85396ef4a02cfb36ad0aa41ae000eb709b533624d6ca0a906266a4e",
+      "bytes": 592875
+    },
+    "original/EclipseSpellweaverAtlas_source.png": {
+      "sha256": "8f8e5706b8826015718175d6f52019bd3b64acf529a639ee08f083f61f2c77d4",
+      "bytes": 68893
+    },
+    "README.md": {
+      "sha256": "a84c92040154bf466f0d2c1ebab7aa9605a33c031b27e2f736afcc9162ef3c28",
+      "bytes": 3176
+    },
+    "PROVENANCE.md": {
+      "sha256": "d42c05c0b6dbff0aae1b78db15113a25618ac7ea19c68fcd963aa45b56e51603",
+      "bytes": 852
+    }
+  }
+}
