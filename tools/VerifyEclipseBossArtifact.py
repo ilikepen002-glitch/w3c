@@ -56,29 +56,40 @@ def check_model(mdx, blp):
             'texture': 'BLP1 512x512/10mips/alpha0', 'portrait': 'embedded sequence and camera; no separate Portrait MDX'}
 
 
-def validate(current, baseline, manifest, *, check_formats=True):
+def validate(current, baseline, manifest, *, check_formats=True, scale_only=False):
     require(manifest['unitRawcode'] == 'uB24' and manifest['baseUnitRawcode'] == 'Udre' and
             manifest['integration']['modelPath'] == 'war3mapImported\\EclipseSpellweaver.mdx' and
-            manifest['integration']['scale'] == 1.5, 'Unexpected visual scope')
+            manifest['integration']['scale'] == 8.0, 'Unexpected visual scope')
     now = parse_objects(current.extract('war3map.w3u'), False)
     old = parse_objects(baseline.extract('war3map.w3u'), False)
     require(list(now) == list(old), 'Unit identity/order changed')
     target = now['uB24']
     require(target.fields['umdl', 0, 0].value == manifest['integration']['modelPath'] and
-            target.fields['usca', 0, 0].value == 1.5, 'Wrong model or visual scale')
+            target.fields['usca', 0, 0].value == 8.0, 'Wrong model or visual scale')
+    if scale_only:
+        require(old['uB24'].fields['umdl', 0, 0] == target.fields['umdl', 0, 0] and
+                old['uB24'].fields['usca', 0, 0].value == 1.5, 'Unexpected scale-only baseline')
+        a, b = target.fields['usca', 0, 0], old['uB24'].fields['usca', 0, 0]
+        require(a.kind == b.kind and b.kind in (1, 2) and
+                a.raw == b.raw[:8] + struct.pack('<f', 8.0) + b.raw[12:], 'Scale encoding changed beyond value')
+    allowed = {('usca', 0, 0)} if scale_only else {('umdl', 0, 0), ('usca', 0, 0)}
     for code in now:
         a, b = now[code], old[code]
         require(a.identity == b.identity and a.table == b.table, 'Unit parent changed: ' + code)
+        if scale_only:
+            require(list(a.fields) == list(b.fields), 'Unit field order changed: ' + code)
         for key in set(a.fields) | set(b.fields):
-            if code == 'uB24' and key in (('umdl', 0, 0), ('usca', 0, 0)):
+            if code == 'uB24' and key in allowed:
                 continue
             require(a.fields.get(key) == b.fields.get(key), 'Nonvisual unit field changed: ' + code + str(key))
     specs = manifest['assets']
     expected = {'war3mapImported\\EclipseSpellweaver.mdx', 'Textures\\EclipseSpellweaverAtlas.blp'}
     require(len(specs) == 2 and {s['importPath'] for s in specs} == expected, 'Unexpected import allowlist')
     before, after = members(baseline), members(current)
-    require(set(after) == set(before) | {s.casefold() for s in expected}, 'Unexpected MPQ member addition/removal')
-    mutable = {'war3map.w3u', 'war3map.imp', '(listfile)', '(attributes)'}
+    require(set(after) == (set(before) if scale_only else set(before) | {s.casefold() for s in expected}), 'Unexpected MPQ member addition/removal')
+    mutable = {'war3map.w3u', '(listfile)', '(attributes)'}
+    if not scale_only:
+        mutable.add('war3map.imp')
     for key, (path, data) in before.items():
         name, packed = after[key]
         require(name == path, 'Resource path spelling changed')
@@ -88,7 +99,8 @@ def validate(current, baseline, manifest, *, check_formats=True):
         elif path not in mutable:
             require(packed == data, 'Inherited MPQ bytes changed: ' + path)
     records = import_records(current.extract('war3map.imp'))
-    require([r for r in records if r[1] not in expected] == import_records(baseline.extract('war3map.imp')),
+    inherited_records = records if scale_only else [r for r in records if r[1] not in expected]
+    require(inherited_records == import_records(baseline.extract('war3map.imp')),
             'Existing import table changed')
     packed_assets = {}
     for spec in specs:
@@ -99,15 +111,17 @@ def validate(current, baseline, manifest, *, check_formats=True):
                 'Frozen original asset hash mismatch: ' + path)
         packed_assets[spec['role']] = data
     formats = check_model(packed_assets['model'], packed_assets['texture']) if check_formats else 'synthetic tests only'
-    return {'status': 'PASS', 'scope': 'Only uB24 umdl/usca and two new original assets; all other fields/resources and JASS byte-identical',
-            'unit': 'uB24', 'visualScale': 1.5, 'formats': formats,
+    return {'status': 'PASS', 'scope': ('Only uB24 usca 1.50 to 8.00; models/assets and all other fields/resources and JASS byte-identical'
+                                        if scale_only else 'Only uB24 umdl/usca and two new original assets; all other fields/resources and JASS byte-identical'),
+            'unit': 'uB24', 'visualScale': 8.0, 'formats': formats,
             'notTested': 'Warcraft 1.27a rendering, embedded Portrait fallback, occlusion, animation feel and performance'}
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__); p.add_argument('map', type=Path); p.add_argument('baseline', type=Path)
+    p.add_argument('--scale-only', action='store_true', help='Require existing 1.50 model/assets; allow only usca to 8.00')
     args = p.parse_args(); result = validate(Mpq(args.map.read_bytes()), Mpq(args.baseline.read_bytes()),
-                                            json.loads(MANIFEST.read_text(encoding='utf-8')))
+                                            json.loads(MANIFEST.read_text(encoding='utf-8')), scale_only=args.scale_only)
     result['mapSha256'] = hashlib.sha256(args.map.read_bytes()).hexdigest()
     print(json.dumps(result, ensure_ascii=False, indent=2))
 

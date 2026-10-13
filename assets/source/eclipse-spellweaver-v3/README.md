@@ -27,4 +27,4 @@ Python3 + numpy/Pillow；Node + mdx-m3-viewer 5.7.9 / TypeScript 4.9.5 / gl-matr
 build_eclipse.py + primitives.py 是最小原创建模、骨架、动画和纹理源码，生成 original/eclipse-source.json 与 atlas_source.png/BLP。export_validate.cjs 是实际MDX导出和再解析采样入口，render_sampled.py 只使用重新解析的MDX姿态与真实BLP解码贴图。所有离线图片和视频均不是游戏截图。生产接入映射、哈希和建议视觉比例见 production-manifest.json。
 
 ## 当前仓库接入
-仅第24波 uB24，模型 war3mapImported\EclipseSpellweaver.mdx，视觉比例1.50。此目录只带最小原创再生源码；地图资源在 imports/。未附视频/Blender大预览。最小实体再生只需上述第1至4步；Blender/FFmpeg仅供预览，不是地图构建依赖。运行 Node 脚本必须显式设置 MDX_PARSER_RUNTIME 为既有 node_modules 路径，不使用工作区相对回退。再生后核对本清单 SHA 再将 MDX/BLP 复制到精确 imports 路径，不改项目工具链锁。
+仅第24波 uB24，模型 war3mapImported\EclipseSpellweaver.mdx，视觉比例8.00（按用户确认）；原1.50仅为历史离线建议，生产使用8.00。碰撞、选择圈、速度及战斗数值均沿用原值。8倍画面遮挡及客户端效果尚未实机验证。此目录只带最小原创再生源码；地图资源在 imports/。未附视频/Blender大预览。最小实体再生只需上述第1至4步；Blender/FFmpeg仅供预览，不是地图构建依赖。运行 Node 脚本必须显式设置 MDX_PARSER_RUNTIME 为既有 node_modules 路径，不使用工作区相对回退。再生后核对本清单 SHA 再将 MDX/BLP 复制到精确 imports 路径，不改项目工具链锁。

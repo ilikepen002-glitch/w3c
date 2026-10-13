@@ -20,7 +20,7 @@ class EclipseVisualDeltaTests(unittest.TestCase):
                       'uB16': ('Ocbh', {'uhpm': 6800, 'ucol': 0.})}
         self.before['war3map.w3u'] = w3u(self.units)
         self.current = deepcopy(self.before)
-        self.new_units = deepcopy(self.units); self.new_units['uB24'][1].update(umdl='war3mapImported\\EclipseSpellweaver.mdx', usca=1.5)
+        self.new_units = deepcopy(self.units); self.new_units['uB24'][1].update(umdl='war3mapImported\\EclipseSpellweaver.mdx', usca=8.0)
         self.current['war3map.w3u'] = w3u(self.new_units)
         self.manifest = json.loads(verify.MANIFEST.read_text(encoding='utf-8'))
         for spec in self.manifest['assets']:
@@ -50,7 +50,7 @@ class EclipseVisualDeltaTests(unittest.TestCase):
             with self.assertRaises(AssertionError): self.run_gate()
 
     def test_wrong_visual_values_reject(self):
-        for key, value in (('umdl', 'wrong.mdx'), ('usca', 1.3)):
+        for key, value in (('umdl', 'wrong.mdx'), ('usca', 1.5)):
             changed=deepcopy(self.new_units); changed['uB24'][1][key]=value; self.current['war3map.w3u']=w3u(changed)
             with self.assertRaisesRegex(AssertionError, 'Wrong model'): self.run_gate()
 
@@ -77,6 +77,41 @@ class EclipseVisualDeltaTests(unittest.TestCase):
     def test_metadata_description_change_rejects(self):
         self.current['war3map.w3i']=self.current['war3map.w3i'].replace(b'description',b'changed')
         with self.assertRaisesRegex(AssertionError, 'Metadata'): self.run_gate()
+
+    def scale_fixture(self):
+        self.before = deepcopy(self.current)
+        old_units = deepcopy(self.new_units); old_units['uB24'][1]['usca'] = 1.5
+        self.before['war3map.w3u'] = w3u(old_units)
+
+    def run_scale_gate(self):
+        return verify.validate(FakeMpq(self.current), FakeMpq(self.before), self.manifest,
+                               check_formats=False, scale_only=True)
+
+    def test_scale_only_exact_single_field_passes(self):
+        self.scale_fixture()
+        self.assertEqual(self.run_scale_gate()['visualScale'], 8.0)
+
+    def test_scale_only_rejects_model_assets_imports_and_combat_changes(self):
+        self.scale_fixture()
+        valid = deepcopy(self.current)
+        for path in ('war3map.j', 'war3map.w3a', 'war3map.w3e', 'war3map.imp') + tuple(s['importPath'] for s in self.manifest['assets']):
+            with self.subTest(resource=path):
+                self.current = deepcopy(valid); self.current[path] += b'x'
+                with self.assertRaises(AssertionError): self.run_scale_gate()
+        for key, value in (('umdl', 'wrong.mdx'), ('usca', 1.5), ('usca', 7.99), ('uhpm', 1),
+                           ('ucol', 50.), ('ussc', 2.), ('umvt', 'fly'), ('umvs', 400), ('uabi', 'newSkill')):
+            with self.subTest(field=key, value=value):
+                self.current = deepcopy(valid); changed = deepcopy(self.new_units); changed['uB24'][1][key] = value
+                self.current['war3map.w3u'] = w3u(changed)
+                with self.assertRaises(AssertionError): self.run_scale_gate()
+        self.current = deepcopy(valid); changed = deepcopy(self.new_units); changed['uB24'][1]['usca'] = 8
+        self.current['war3map.w3u'] = w3u(changed)
+        with self.assertRaisesRegex(AssertionError, 'encoding'): self.run_scale_gate()
+        self.current = deepcopy(valid); changed = deepcopy(self.new_units); changed['uB16'][1]['usca'] = 8.0
+        self.current['war3map.w3u'] = w3u(changed)
+        with self.assertRaises(AssertionError): self.run_scale_gate()
+        self.current = deepcopy(valid); self.current['new.mdx'] = b'x'
+        with self.assertRaises(AssertionError): self.run_scale_gate()
 
 class EclipseFrozenFormatTests(unittest.TestCase):
     def test_frozen_real_model_and_texture_formats(self):

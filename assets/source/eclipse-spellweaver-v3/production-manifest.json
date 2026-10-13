@@ -110,11 +110,11 @@
   "sourceRuntimeVariable": "MDX_PARSER_RUNTIME",
   "originalAssetProvenance": "All geometry, rig, animation, UV and diffuse were authored for this project; no third-party model or texture pixels.",
   "integration": {
-    "baseCommit": "11cf4bb4bf08a5cc69a772bd7bd1d7115e49d512",
+    "baseCommit": "2528a3b356c31350b966078d62aa639d640b44b2",
     "unit": "uB24",
     "modelPath": "war3mapImported\\EclipseSpellweaver.mdx",
-    "scale": 1.5,
-    "scope": "Only modelFile and visualScalingValue; all other unit fields and JASS unchanged"
+    "scale": 8.0,
+    "scope": "Only uB24 visualScalingValue from 1.50 to 8.00; model/assets, all other fields and JASS unchanged"
   },
   "sourceHashes": {
     "build_eclipse.py": {
@@ -146,12 +146,13 @@
       "bytes": 68893
     },
     "README.md": {
-      "sha256": "a84c92040154bf466f0d2c1ebab7aa9605a33c031b27e2f736afcc9162ef3c28",
-      "bytes": 3176
+      "sha256": "b3bfa5969d55bd2b8d8ae2976b560d85da1e10effb592d7831078ad2b2e3fd52",
+      "bytes": 3365
     },
     "PROVENANCE.md": {
       "sha256": "d42c05c0b6dbff0aae1b78db15113a25618ac7ea19c68fcd963aa45b56e51603",
       "bytes": 852
     }
-  }
+  },
+  "visualScaleSuggestionStatus": "Historical offline suggestion only; user-approved production scale is 8.00"
 }
