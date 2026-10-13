@@ -11,6 +11,8 @@ BASE = '38189ec7bc629ef1801563be0b0fb2edf3192527'
 PATH = 'wurst/pets/TDPetActivePeriodic.wurst'
 BEFORE = '\t\t\t\tif not this.valid()\n\t\t\t\t\tbreak\n\t\t\t\tthis.candidates.enumUnitsInRange(this.road.pointAt(flower), 100.0)'
 AFTER = BEFORE.replace('if not this.valid()', 'if not this.valid() or this.victimCount >= 12')
+INNER_BEFORE = '\t\t\t\t\tif not this.valid()\n\t\t\t\t\t\tbreak\n\t\t\t\t\tif this.aoeValid(target) and this.victimIndex(target) < 0 and this.victimCount < 12'
+INNER_AFTER = INNER_BEFORE.replace('if not this.valid()', 'if not this.valid() or this.victimCount >= 12')
 
 
 def historical(path):
@@ -19,7 +21,11 @@ def historical(path):
 
 def replay(text, scenario, cancel_at=None, cancel_hit=None):
     hits, contacts, visits, finished, enumerations, clocks = [], [], [], [], [], []
-    state = dict(now=0., cancelled=False)
+    state = dict(now=0., cancelled=False, candidate_visits=0, aoe_checks=0)
+
+    def aoe_valid(target):
+        state['aoe_checks'] += 1
+        return target not in scenario(state['now'], 'invalid')
     n = dict(skill=25, stage=0, createdAt=0., nextAt=0., expiresAt=4.,
              victimCount=0, victims={}, revisions={}, targetPositions={},
              valid=lambda: not state['cancelled'],
@@ -27,12 +33,16 @@ def replay(text, scenario, cancel_at=None, cancel_hit=None):
              road=SimpleNamespace(pointAt=lambda index: index),
              revisionFor=lambda target: 1, setLastPosition=lambda *args: None,
              tdPetCaptureEffectTarget=lambda *args: object(),
-             aoeValid=lambda target: target not in scenario(state['now'], 'invalid'),
+             aoeValid=aoe_valid,
              visualFlowerContact=lambda flower: contacts.append((state['now'], flower)),
              visualTick=lambda now: visits.append(now), visualFinish=lambda: finished.append(state['now']),
              pet=1, host=2, generation=3, damageBase=100.)
 
     class Candidates(list):
+        def __iter__(self):
+            for target in super().__iter__():
+                state['candidate_visits'] += 1
+                yield target
         def enumUnitsInRange(self, point, radius):
             assert radius == 100.
             enumerations.append((state['now'], point))
@@ -61,13 +71,16 @@ def replay(text, scenario, cancel_at=None, cancel_hit=None):
         if not continuing:
             break
     return dict(hits=hits, contacts=contacts, visits=visits, finished=finished,
-                clocks=clocks, victims=n['victims'], enumerations=enumerations)
+                clocks=clocks, victims=n['victims'], enumerations=enumerations,
+                candidate_visits=state['candidate_visits'], aoe_checks=state['aoe_checks'])
 
 
 def scenario(kind):
     def targets(now, point):
         if point == 'invalid':
             return list(range(1, 13)) if kind == 'dead_or_left' and now >= .25 else []
+        if kind == 'oversized':
+            return list(range(1, 1001))
         if kind == 'never_full':
             return [2 * point + 1, 2 * point + 2]
         if kind in ('first_full', 'dead_or_left'):
@@ -96,12 +109,15 @@ class FlowerFullRosterSourceTests(unittest.TestCase):
         self.assertLessEqual(len(new['enumerations']), len(old['enumerations']))
         old_enums = len(old.pop('enumerations'))
         new.pop('enumerations')
+        for key in ('candidate_visits', 'aoe_checks'):
+            self.assertLessEqual(new.pop(key), old.pop(key))
         self.assertEqual(new, old, 'Hit identity/order/damage, clock, visual and completion trace changed')
         return old_enums, new
 
-    def test_one_guard_is_the_entire_production_change(self):
+    def test_two_guards_are_the_entire_production_change(self):
         self.assertEqual(self.before.count(BEFORE), 1)
-        self.assertEqual(self.after, self.before.replace(BEFORE, AFTER, 1))
+        self.assertEqual(self.before.count(INNER_BEFORE), 1)
+        self.assertEqual(self.after, self.before.replace(BEFORE, AFTER, 1).replace(INNER_BEFORE, INNER_AFTER, 1))
         # Lifecycle, visual dispatch, CD/fence/source and scheduler remain verbatim.
         for name in ('TDPetCastContext', 'TDPetActiveRuntime', 'TDPetActiveVisuals',
                      'TDPetCombat', 'TDPetEffectScheduler', 'TDPetAttackQueue'):
@@ -154,8 +170,7 @@ class FlowerFullRosterSourceTests(unittest.TestCase):
     def test_cap_11_and_early_finish_mutations_change_actual_trace(self):
         expected = replay(self.after, scenario('first_full'))
         threshold = self.after.replace('or this.victimCount >= 12', 'or this.victimCount >= 11', 1)
-        # Twelve targets in one native enumeration still finish that group;
-        # use gradual arrival to expose an erroneously shortened roster.
+        # Gradual arrival also catches an erroneously shortened outer roster.
         self.assertNotEqual(replay(threshold, scenario('one_by_one')),
                             replay(self.after, scenario('one_by_one')))
         early = self.after.replace('if not this.valid() or this.victimCount >= 12\n\t\t\t\t\tbreak',
@@ -167,6 +182,22 @@ class FlowerFullRosterSourceTests(unittest.TestCase):
         removed = self.after.replace(AFTER, BEFORE, 1)
         self.assertEqual(len(replay(removed, scenario('first_full'))['enumerations']), 48)
         self.assertEqual(len(replay(self.after, scenario('first_full'))['enumerations']), 1)
+
+    def test_oversized_group_stops_checks_after_twelfth_hit(self):
+        count, result = self.equal_trace('oversized', 1)
+        self.assertEqual(count, 48)
+        self.assertEqual([hit[1] for hit in result['hits']], list(range(1, 13)))
+        self.assertEqual(len(result['visits']), 81)
+        self.assertEqual(result['finished'], [4.])
+        self.assertEqual(result['clocks'][-1], (4., False, 16, 4., 12))
+        guarded = replay(self.after, scenario('oversized'))
+        outer_only = replay(self.after.replace(INNER_AFTER, INNER_BEFORE, 1), scenario('oversized'))
+        # Foreach fetches the thirteenth candidate only to break. The hit helper
+        # separately revalidates each of the 12 actual damage targets.
+        self.assertEqual((guarded['candidate_visits'], guarded['aoe_checks']), (13, 24))
+        self.assertEqual((outer_only['candidate_visits'], outer_only['aoe_checks']), (1000, 1012))
+        self.equal_trace('oversized', 1, cancel_hit=5)
+        self.equal_trace('oversized', 1, cancel_at=.30)
 
 
 if __name__ == '__main__':

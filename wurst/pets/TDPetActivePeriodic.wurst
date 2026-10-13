@@ -160,7 +160,7 @@ public function TDPetCastContext.stepPeriodic(real now) returns boolean
 					break
 				this.candidates.enumUnitsInRange(this.road.pointAt(flower), 100.0)
 				for target in this.candidates
-					if not this.valid()
+					if not this.valid() or this.victimCount >= 12
 						break
 					if this.aoeValid(target) and this.victimIndex(target) < 0 and this.victimCount < 12
 						this.remember(target)

@@ -46,7 +46,7 @@ class TrialJassRuntime(PureBossJassRuntime):
         for name in ('init_Real', 'init_TDPetRules', 'init_TDCombatVisualRuntime', 'init_TDPetEffectScheduler', 'init_TDPetHeroState', 'init_TDPetHeroEffects',
                      'init_TDPetCastContext', 'init_TDPetEffectTargetState', 'init_TDPetActiveVisuals',
                      'init_TDEnemyControlRuntime', 'init_TDPetRuntime',
-                     'init_TDBossDarkTideRuntime', 'init_TDTowerEvolutionRuntime', 'init_TDPetWild', 'init_TDDamageState', 'init_TDDamageRuntime', 'init_TDEquipmentCombat',
+                     'init_TDBossDarkTideRuntime', 'init_TDTowerEvolutionRuntime', 'init_TDPetWild', 'init_TDDamageState', 'init_TDDamageRuntime', 'init_TDItemData', 'init_TDEquipmentCombat',
                      'init_TDPetAttackQueue', 'init_TDPetState', 'init_TDPetAttackState', 'init_TDPetCombat', 'init_TDTrialIdentity',
                      'init_TDTrialRuntime', 'init_TDTrialHook', 'init_TDTrialHud',
                      'init_TDAuraObjectIds', 'init_TDEquipmentSpecialObjectIds',

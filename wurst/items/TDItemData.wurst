@@ -2,6 +2,7 @@ package TDItemData
 import public TDItemCatalogSchema
 import public TDItemCatalogIds
 import TDItemCatalogConfig
+import Table
 
 public constant int TD_FARMER_INVENTORY_ABILITY_ID = 'A117'
 public constant int TD_TOWER_INVENTORY_ABILITY_ID = 'A118'
@@ -19,6 +20,8 @@ constant int TD_ITEM_POOL_STRIDE = 32
 boolean tdItemCatalogInitialized = false
 int tdItemDefinitionTotal = 0
 int array tdItemCatalog
+// Full rawcode keys belong in a Table, never in a native JASS array.
+constant Table tdItemDefinitionIndices = new Table()
 int array tdItemQualitySizes
 int array tdItemQualityPools
 string array tdItemNames
@@ -41,6 +44,7 @@ function tdRegisterEquipment(tdEquipmentDefinition definition)
 	tdItemDefinitionTotal += 1
 	let index = tdItemDefinitionTotal
 	tdItemCatalog[index] = definition.rawcode
+	tdItemDefinitionIndices.saveInt(definition.rawcode, index)
 	tdItemNames[index] = definition.name
 	tdItemQualities[index] = definition.quality
 	tdItemPrimaryEffectKinds[index] = definition.primaryKind
@@ -64,13 +68,10 @@ function tdEnsureItemCatalog()
 		tdRegisterEquipment(tdConfiguredEquipment(index))
 
 function tdItemDefinitionIndex(int itemId) returns int
-	// Rawcodes collide in Jass arrays, so item metadata must be resolved through the catalog.
+	// Populated once by the existing lazy catalog registration; absent keys load 0.
 	if itemId <= 0
 		return 0
-	for index = 1 to tdItemDefinitionTotal
-		if tdItemCatalog[index] == itemId
-			return index
-	return 0
+	return tdItemDefinitionIndices.loadInt(itemId)
 
 public function tdItemDefinitionCount() returns int
 	tdEnsureItemCatalog()

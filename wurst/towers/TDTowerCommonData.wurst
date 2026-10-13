@@ -136,7 +136,7 @@ public function tdGhoulCorpseExplosionDamage() returns real
 	return 180.0
 
 public function tdGhoulCorpseExplosionRadius() returns real
-	return 180.0
+	return 220.0
 
 public function tdArcherAuraDamageBonus() returns real
 	return 0.18

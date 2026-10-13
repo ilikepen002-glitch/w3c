@@ -1,5 +1,6 @@
 package TDItemsTests
 import TDItems
+import TDItemCatalogConfig
 
 @Test function catalogHasTenLinesAtAllFourQualities()
 	tdItemDefinitionCount().assertEquals(40)
@@ -87,3 +88,34 @@ function assertNoEquipmentAuraSnapshot(int id)
 	tdItemAuraValue(TD_ITEM_PURPLE_ARMOR_ID).assertEquals(4.0)
 	tdItemAuraRadius(TD_ITEM_WHITE_WIND_ID).assertEquals(350.0)
 	tdItemAuraRadius(TD_ITEM_PURPLE_FROST_ID).assertEquals(550.0)
+
+@Test function rawcodeLookupMatchesEveryConfiguredDefinition()
+	for index = 1 to 40
+		let definition = tdConfiguredEquipment(index)
+		let id = definition.rawcode
+		tdItemIdForCatalogIndex(index).assertEquals(id)
+		tdItemIsEquipment(id).assertTrue()
+		tdItemName(id).assertEquals(definition.name)
+		tdItemQuality(id).assertEquals(definition.quality)
+		tdItemLine(id).assertEquals(definition.line)
+		tdItemFixedNextId(id).assertEquals(definition.nextId)
+		tdItemPrimaryEffectKind(id).assertEquals(definition.primaryKind)
+		tdItemPrimaryEffectValue(id).assertEquals(definition.primaryValue)
+		tdItemSecondaryEffectKind(id).assertEquals(definition.secondaryKind)
+		tdItemSecondaryEffectValue(id).assertEquals(definition.secondaryValue)
+		tdItemAuraKind(id).assertEquals(definition.auraKind)
+		tdItemAuraValue(id).assertEquals(definition.auraValue)
+		tdItemAuraRadius(id).assertEquals(definition.auraRadius)
+		tdItemSpecialization(id).assertEquals(definition.specialization)
+	tdItemDefinitionCount().assertEquals(40)
+
+@Test function rawcodeLookupRejectsSimilarPrefixesAndArrayAliases()
+	assertNoEquipmentAuraSnapshot('iP00')
+	assertNoEquipmentAuraSnapshot('iP11')
+	assertNoEquipmentAuraSnapshot('iW00')
+	assertNoEquipmentAuraSnapshot('jP01')
+	assertNoEquipmentAuraSnapshot('IP01')
+	for index = 1 to 40
+		let id = tdItemIdForCatalogIndex(index)
+		assertNoEquipmentAuraSnapshot(id + 8192)
+		assertNoEquipmentAuraSnapshot(id - 8192)

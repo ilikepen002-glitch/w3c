@@ -371,7 +371,7 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
     for uid in ('A116',):
         for level in (1, 2):
             text = value(abilities[uid][1], 'aub1', level)
-            require('不高于25%' in text and '180范围' in text, 'corpse explosion trigger mismatch')
+            require('不高于25%' in text and ('220范围' if current else '180范围') in text, 'corpse explosion trigger mismatch')
     return checked
 
 

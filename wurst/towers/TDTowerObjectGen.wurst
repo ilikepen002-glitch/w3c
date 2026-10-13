@@ -351,9 +351,9 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	..setCheckDependencies(false)
 
 	let corpseExplosion = tdGeneratePassiveDisplay(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID, "尸爆", tdTowerSupportSkillIconPath(TD_TOWER_CHOICE_GHOUL), 1, 2)
-	corpseExplosion.setTooltipNormalExtended(1, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围180范围内其他敌人造成180伤害。")
+	corpseExplosion.setTooltipNormalExtended(1, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围" + tdGhoulCorpseExplosionRadius().toInt().toString() + "范围内其他敌人造成180伤害。")
 	corpseExplosion.setTooltipNormal(2, "进化尸爆")
-	corpseExplosion.setTooltipNormalExtended(2, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围180范围内其他敌人造成216伤害。")
+	corpseExplosion.setTooltipNormalExtended(2, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围" + tdGhoulCorpseExplosionRadius().toInt().toString() + "范围内其他敌人造成216伤害。")
 
 	new AbilityDefinitionMoonPriestessTrueshotAura(TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID)
 	..setName("进化白虎战吼")

@@ -159,58 +159,42 @@ public function tdTowerDisplayNameForBranch(int towerChoice, int level, int bran
 	return "终极塔"
 
 public function tdTowerCost(int towerChoice) returns int
-	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		return 500
-	if towerChoice == TD_TOWER_CHOICE_ORC
-		return 600
-	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
-		return 550
-	if towerChoice == TD_TOWER_CHOICE_DRYAD
-		return 600
-	if towerChoice == TD_TOWER_CHOICE_GHOUL
+	if towerChoice >= 1 and towerChoice <= TD_TOWER_CHOICE_COUNT
 		return 500
 	return 0
 
 public function tdTowerUpgradeCost(int towerChoice, int currentLevel) returns int
 	if currentLevel < 1 or currentLevel >= TD_MAX_TOWER_LEVEL
 		return 0
+	if currentLevel == 1
+		return tdTowerCost(towerChoice)
 	if currentLevel == 5
 		return tdTowerUltimateUpgradeCost(towerChoice, TD_TOWER_BRANCH_A)
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		if currentLevel == 1
-			return 450
 		if currentLevel == 2
 			return 650
 		if currentLevel == 3
 			return 900
 		return 1400
 	if towerChoice == TD_TOWER_CHOICE_ORC
-		if currentLevel == 1
-			return 550
 		if currentLevel == 2
 			return 750
 		if currentLevel == 3
 			return 1000
 		return 1200
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
-		if currentLevel == 1
-			return 500
 		if currentLevel == 2
 			return 650
 		if currentLevel == 3
 			return 900
 		return 1250
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
-		if currentLevel == 1
-			return 550
 		if currentLevel == 2
 			return 750
 		if currentLevel == 3
 			return 900
 		return 1200
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
-		if currentLevel == 1
-			return 450
 		if currentLevel == 2
 			return 600
 		if currentLevel == 3
@@ -587,7 +571,7 @@ public function tdTowerTalentSummary(int towerChoice, int level) returns string
 			return "普攻附毒并减速；缓速藤蔓使225范围内敌人移动速度降低18%。"
 		return "普攻附毒，每秒60伤害并使移动速度降低22%，持续5秒（英雄1秒）。"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
-		return "狂热使攻击速度提高42%；普攻击杀低血量敌人可触发180范围尸爆。"
+		return "狂热使攻击速度提高42%；普攻击杀低血量敌人可触发" + tdTooltipNumber(tdGhoulCorpseExplosionRadius()) + "范围尸爆。"
 	return "天赋: 无"
 
 public function tdTowerTalentSummaryForBranch(int towerChoice, int level, int branch) returns string

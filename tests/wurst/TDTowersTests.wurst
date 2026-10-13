@@ -9,9 +9,9 @@ import ObjEditingCommons
 
 @Test function towerChoiceMapsToExpectedCost()
 	tdTowerCost(TD_TOWER_CHOICE_ARCHER).assertEquals(500)
-	tdTowerCost(TD_TOWER_CHOICE_ORC).assertEquals(600)
-	tdTowerCost(TD_TOWER_CHOICE_FOOTMAN).assertEquals(550)
-	tdTowerCost(TD_TOWER_CHOICE_DRYAD).assertEquals(600)
+	tdTowerCost(TD_TOWER_CHOICE_ORC).assertEquals(500)
+	tdTowerCost(TD_TOWER_CHOICE_FOOTMAN).assertEquals(500)
+	tdTowerCost(TD_TOWER_CHOICE_DRYAD).assertEquals(500)
 	tdTowerCost(TD_TOWER_CHOICE_GHOUL).assertEquals(500)
 
 @Test function playerCanAffordTwoCheapTowersAtStart()
@@ -64,14 +64,14 @@ import ObjEditingCommons
 	(tdTowerUpgradeCost(5, 4) > tdTowerUpgradeCost(5, 1)).assertTrue()
 
 @Test function towerFamiliesStayNearTargetTotalInvestment()
-	tdTowerTotalGoldCost(TD_TOWER_CHOICE_ARCHER).assertEquals(9700)
-	tdTowerTotalGoldCost(TD_TOWER_CHOICE_ORC).assertEquals(10500)
-	tdTowerTotalGoldCost(TD_TOWER_CHOICE_FOOTMAN).assertEquals(9100)
-	tdTowerTotalGoldCost(TD_TOWER_CHOICE_DRYAD).assertEquals(9500)
-	tdTowerTotalGoldCost(TD_TOWER_CHOICE_GHOUL).assertEquals(8900)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_ARCHER).assertEquals(9750)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_ORC).assertEquals(10350)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_FOOTMAN).assertEquals(9050)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_DRYAD).assertEquals(9350)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_GHOUL).assertEquals(8950)
 
 @Test function towerProgressionKeepsEarlyLevelsAffordable()
-	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 1).assertEquals(450)
+	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 1).assertEquals(500)
 	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 2).assertEquals(650)
 	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 3).assertEquals(900)
 	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 4).assertEquals(1400)
@@ -80,7 +80,7 @@ import ObjEditingCommons
 	tdEvolutionSkillMultiplier().assertEquals(1.20)
 	tdGhoulCorpseExplosionLifeThreshold().assertEquals(0.25)
 	tdGhoulCorpseExplosionDamage().assertEquals(180.0)
-	tdGhoulCorpseExplosionRadius().assertEquals(180.0)
+	tdGhoulCorpseExplosionRadius().assertEquals(220.0)
 
 @Test function roleDefiningSkillValuesMatchBalancePlan()
 	tdArcherAuraDamageBonus().assertEquals(0.18)
@@ -138,7 +138,7 @@ import ObjEditingCommons
 @Test function towerTooltipsStayChineseAndDoNotAdvertiseExtraRequirements()
 	tdTowerTooltipExtended(TD_TOWER_CHOICE_ORC, 1).contains("25%概率暴击").assertTrue()
 	tdTowerTooltipExtended(TD_TOWER_CHOICE_ORC, 1).contains("需要").assertFalse()
-	tdTowerTooltipExtended(TD_TOWER_CHOICE_GHOUL, 1).contains("180范围尸爆").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_GHOUL, 1).contains("220范围尸爆").assertTrue()
 
 @Test function archerTooltipsDescribeSplitArrowScaling()
 	tdTowerTooltipExtended(TD_TOWER_CHOICE_ARCHER, 1).contains("分裂箭").assertTrue()
@@ -341,3 +341,23 @@ import ObjEditingCommons
 	let before = tdSplitArrowLiveVolleyCount()
 	tdSplitArrowLifetimeRegressionForTest().assertTrue()
 	tdSplitArrowLiveVolleyCount().assertEquals(before)
+
+@Test function splitArrowVisualBudgetIsIndependentAndBounded()
+	tdArcherVisualBudgetAllows(0, 0).assertTrue()
+	tdArcherVisualBudgetAllows(7, 5).assertTrue()
+	tdArcherVisualBudgetAllows(8, 0).assertFalse()
+	tdArcherVisualBudgetAllows(0, 6).assertFalse()
+	tdArcherVisualBudgetAllows(100000, 0).assertFalse()
+	tdArcherVisualBudgetAllows(0, 100000).assertFalse()
+
+@Test function openingBudgetSupportsEveryPairOrOneLevelTwoTower()
+	TD_STARTING_GOLD.assertEquals(1000)
+	for first = 1 to TD_TOWER_CHOICE_COUNT
+		tdTowerCost(first).assertEquals(500)
+		tdTowerUpgradeCost(first, 1).assertEquals(500)
+		(tdTowerCost(first) + tdTowerUpgradeCost(first, 1)).assertEquals(TD_STARTING_GOLD)
+		tdTowerInvestedGoldForUnitTypeId(tdTowerUnitIdForLevel(first, 2)).assertEquals(1000)
+		tdTowerSellRefund(tdTowerUnitIdForLevel(first, 2)).assertEquals(800)
+		(tdTowerCost(first) * 3 > TD_STARTING_GOLD).assertTrue()
+		for second = 1 to TD_TOWER_CHOICE_COUNT
+			(tdTowerCost(first) + tdTowerCost(second)).assertEquals(TD_STARTING_GOLD)

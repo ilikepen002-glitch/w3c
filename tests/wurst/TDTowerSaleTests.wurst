@@ -14,14 +14,14 @@ import TDConfig
 				tdTowerSellRefund(unitTypeId).assertEquals(invested * 80 div 100)
 
 @Test function ultimateBranchRefundsUseTheirActualCosts()
-	tdTowerSellRefund('uO6A').assertEquals(8400)
-	tdTowerSellRefund('uO6B').assertEquals(8000)
-	tdTowerSellRefund('uH6A').assertEquals(7280)
-	tdTowerSellRefund('uH6B').assertEquals(7400)
+	tdTowerSellRefund('uO6A').assertEquals(8280)
+	tdTowerSellRefund('uO6B').assertEquals(7880)
+	tdTowerSellRefund('uH6A').assertEquals(7240)
+	tdTowerSellRefund('uH6B').assertEquals(7360)
 
 @Test function evolutionDoesNotAddPaidInvestment()
-	tdTowerSellRefund('uA6A').assertEquals(7760)
-	tdTowerSellRefund('uA6A').assertEquals(7760)
+	tdTowerSellRefund('uA6A').assertEquals(7800)
+	tdTowerSellRefund('uA6A').assertEquals(7800)
 
 @Test function saleRefundRoundsDownAndRejectsInvalidInputs()
 	tdTowerSellRefund('uA11').assertEquals(400)
