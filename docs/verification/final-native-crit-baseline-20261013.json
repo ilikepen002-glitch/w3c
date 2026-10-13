@@ -1,0 +1,8 @@
+{
+  "candidate": "611ee1b735c56dc8b2a27cbe1db7e17469d1e536f1000f278a5bf3ea2f65a3e3",
+  "phase_one_baseline": "033d58f4533eb3c843e09b17b75953c5a7eead9382aed5446769bf777e1b16f0",
+  "byte_identical_critical_objects": [
+    "A102",
+    "A112"
+  ]
+}

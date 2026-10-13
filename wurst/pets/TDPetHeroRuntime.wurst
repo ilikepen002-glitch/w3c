@@ -1,0 +1,225 @@
+package TDPetHeroRuntime
+import TDPetHeroRules
+import TDPetHeroState
+import TDPetHeroEffects
+import TDPetState
+import TDPetRuntime
+import TDPetCombatSource
+import TDPetAttackQueue
+import TDTrialIdentity
+import TDEquipmentTrialAoe
+import TDTowerData
+import TDEnemySlowState
+import TDAuraRules
+import TDWaves
+import TDSpawn
+import TDState
+import GameTimer
+import DamageEvent
+import ErrorHandling
+
+int originalSerial = 0
+boolean serialReady = false
+
+public function tdPetHeroCurrentOriginalSerial() returns int
+	return originalSerial
+
+public function tdPetHeroSetup()
+	if serialReady
+		return
+	serialReady = true
+	DamageEvent.addUnreducedListener(0) ->
+		if originalSerial < 0
+			return
+		if tdPetHeroSerialEligible(DamageEvent.isCode(), DamageEvent.isSpell(), DamageEvent.getId(), DamageEvent.getUnreducedOriginalAmount())
+			originalSerial = tdPetHeroNextSerial(originalSerial)
+			if originalSerial < 0
+				error("Pet original-hit serial exhausted; hero charges disabled.")
+
+// This ordinal is not a DamageInstance ID. Synchronous derived damage MUST
+// keep code/independent-ID tags; untagged nested original attacks are unsupported.
+
+// Called by the single original-hit entry, before a no-pet attacker returns.
+// Only original primary hits arrive here; derived/code/spell events never do.
+public function tdPetHeroConsumeRelays(unit host, unit target, real originalAmount, int serial)
+	if host == null or target == null or originalAmount <= 0.0 or serial <= 0
+		return
+	let lane = GetPlayerId(GetOwningPlayer(host))
+	if not tdPetHeroTowerValid(host, lane, tdPetHeroTowerRevision(host)) or not tdPetEnemyIsValid(target, lane)
+		return
+	let now = getElapsedGameTime()
+	let moon = tdPetHeroTargetTicket(target, TD_PET_HERO_MOON)
+	if moon != null and moon.live(now) and tdPetHeroLaterHit(moon.grantSerial, serial)
+		if tdPetHeroRelayEligible(moon.host.getHandleId(), host.getHandleId(), moon.pet.lane == lane, true, true) and tdTrialTargetContextValid(target, lane, moon.context, moon.targetRevisions[0])
+			tdPetHeroQueueTicketDamage(moon, target, moon.amount, host)
+	let seal = tdPetHeroRecipientSeal(host)
+	if seal != null and seal.live(now) and tdPetHeroLaterHit(seal.grantSerial, serial)
+		tdPetHeroQueueTicketDamage(seal, target, seal.amount, host)
+
+public function tdPetHeroOnShieldAccepted(unit host, unit target, real originalAmount, int serial)
+	let pet = tdPetForHost(host)
+	if pet == null or originalAmount <= 0.0 or serial <= 0 or not tdPetBindingValid(pet, host, pet.generation)
+		return
+	let context = tdTrialCaptureContext(target)
+	let judgement = tdPetHeroQuality(pet, TD_PET_HERO_JUDGEMENT)
+	if judgement > 0
+		let judgementTicket = new TDPetHeroTicket(pet, TD_PET_HERO_JUDGEMENT, judgement, tdPetHeroPower(TD_PET_HERO_JUDGEMENT, judgement), context, serial)
+		// Pending expiry/serial are captured NOW, at the accepted shield order.
+		tdPetHeroStorePendingJudgement(judgementTicket)
+		return
+	let quality = tdPetHeroQuality(pet, TD_PET_HERO_RELAY)
+	if quality <= 0
+		return
+	let radius = tdPetHeroRadius(TD_PET_HERO_RELAY)
+	let towers = CreateGroup()
+	towers.enumUnitsInRange(host.getPos(), radius)
+	unit nearest = null
+	var nearestDistance = radius + 1.0
+	for candidate in towers
+		if candidate == host or not tdPetHeroTowerValid(candidate, pet.lane, tdPetHeroTowerRevision(candidate))
+			continue
+		let distance = host.getPos().distanceTo(candidate.getPos())
+		if distance > radius
+			continue
+		var nearer = distance < nearestDistance
+		if distance == nearestDistance
+			if nearest == null
+				nearer = true
+			else if candidate.getHandleId() < nearest.getHandleId()
+				nearer = true
+		if nearer
+			nearest = candidate
+			nearestDistance = distance
+	towers.destr()
+	if nearest == null
+		return
+	let amount = tdPetHeroBaseAttack(host) * tdPetHeroPower(TD_PET_HERO_RELAY, quality)
+	let relayPrevious = tdPetHeroRecipientSeal(nearest)
+	if relayPrevious != null and relayPrevious.live(getElapsedGameTime()) and not tdPetHeroOfferWins(amount, relayPrevious.amount, relayPrevious.expiry, getElapsedGameTime())
+		return
+	if relayPrevious != null
+		relayPrevious.consume()
+	let relayTicket = new TDPetHeroTicket(pet, TD_PET_HERO_RELAY, quality, amount, context, serial)
+	relayTicket.attachRecipient(nearest)
+	tdPetHeroStoreTicket(relayTicket)
+
+// The caller supplies the hero skill/quality from its existing four-slot scan.
+// finalAmount is sampled after Resolve has modified this original primary hit.
+// capturedTargets is the same early3 value snapshot used by generic pet AoE.
+public function tdPetHeroCapturePrimary(TDPet pet, unit host, unit target, int skill, int quality, real originalAmount, real preLife, real finalAmount, int serial, tdTrialCombatContext context, tdEquipmentTrialAoeSnapshot capturedTargets)
+	if quality <= 0 or serial <= 0 or not tdPetHeroFitsRawcode(skill, GetUnitTypeId(host)) or not tdPetBindingValid(pet, host, pet.generation)
+		return
+	let now = getElapsedGameTime()
+	let judgement = tdPetHeroOwnerTicket(pet, TD_PET_HERO_JUDGEMENT)
+	if judgement != null and judgement.live(now) and tdPetHeroLaterHit(judgement.grantSerial, serial)
+		tdPetHeroQueueTicketDamage(judgement, target, originalAmount * judgement.amount, null)
+	// Consume the old active seal first, then commit only THIS original's grant.
+	tdPetHeroCommitPendingJudgement(pet, serial)
+	let hunt = tdPetHeroOwnerTicket(pet, TD_PET_HERO_HUNT)
+	if hunt != null and hunt.live(now) and tdPetHeroLaterHit(hunt.grantSerial, serial)
+		tdPetHeroQueueTicketDamage(hunt, target, hunt.amount, null)
+	let power = tdPetHeroPower(skill, quality)
+	if skill == TD_PET_HERO_BOSS and not tdTrialIsTargetType(target) and tdIsBossUnitTypeId(GetUnitTypeId(target))
+		let bossTicket = new TDPetHeroTicket(pet, skill, quality, originalAmount * power, context, serial)
+		// No persistent charge: this packet is consumed before its tagged spell damage.
+		bossTicket.indexedOwner = false
+		tdPetHeroQueueTicketDamage(bossTicket, target, bossTicket.amount, null)
+		destroy bossTicket
+	else if skill == TD_PET_HERO_MOON and tdPetHeroCountPrimary(pet, skill)
+		let moonAmount = originalAmount * power
+		let previousMoon = tdPetHeroTargetTicket(target, skill)
+		if previousMoon != null and previousMoon.live(now) and not tdPetHeroOfferWins(moonAmount, previousMoon.amount, previousMoon.expiry, now)
+			return
+		if previousMoon != null
+			previousMoon.consume()
+		let moonTicket = new TDPetHeroTicket(pet, skill, quality, moonAmount, context, serial)
+		moonTicket.attachTarget(target)
+		tdPetHeroStoreTicket(moonTicket)
+	else if skill == TD_PET_HERO_POISON and tdPetHeroCountPrimary(pet, skill)
+		let seedTicket = new TDPetHeroTicket(pet, skill, quality, tdPetHeroBaseAttack(host) * power, context, serial)
+		seedTicket.attachTarget(target)
+		tdPetHeroStoreTicket(seedTicket)
+	else if skill == TD_PET_HERO_ROOT and tdPetHeroCountPrimary(pet, skill)
+		let rootGeneration = pet.generation
+		let rootRevision = pet.revision
+		let center = target.getPos()
+		let rootAmount = tdPetHeroBaseAttack(host) * power
+		tdPetQueueAttack(pet castTo int) ->
+			if tdPetBindingValid(pet, host, rootGeneration) and pet.revision == rootRevision and tdTrialContextValid(context)
+				tdPetHeroStartRoot(pet, quality, rootAmount, center, context, capturedTargets, serial)
+	else if skill == TD_PET_HERO_HUNT and not tdTrialIsTargetType(target) and preLife > 0.405 and finalAmount + 0.405 >= preLife
+		// Eligibility uses the original hit's final amount, before any queued extra.
+		// A later equipment/pet kill cannot create this charge on a nonlethal primary.
+		let huntGeneration = pet.generation
+		let huntRevision = pet.revision
+		let huntAmount = tdPetHeroBaseAttack(host) * power
+		tdPetQueueAttack(pet castTo int) ->
+			if not tdPetBindingValid(pet, host, huntGeneration) or pet.revision != huntRevision or not tdTrialContextValid(context)
+				return
+			if GetUnitTypeId(target) == 0 or target.isAlive() or not tdEnemyDeathWasSettled(target) or tdEnemyWasLeaked(target)
+				return
+			let huntTicket = new TDPetHeroTicket(pet, skill, quality, huntAmount, context, serial)
+			tdPetHeroStoreTicket(huntTicket)
+
+public function tdPetHeroOnSplitArrowImpact(unit host, unit target)
+	let pet = tdPetForHost(host)
+	let quality = tdPetHeroQuality(pet, TD_PET_HERO_FROST)
+	if quality <= 0 or not tdPetBindingValid(pet, host, pet.generation) or not tdPetEnemyIsValid(target, pet.lane)
+		return
+	var ticket = tdPetHeroSourceTargetTicket(target, TD_PET_HERO_FROST, pet)
+	if ticket == null
+		ticket = new TDPetHeroTicket(pet, TD_PET_HERO_FROST, quality, 0.0, tdTrialCaptureContext(target), 0)
+		ticket.attachTarget(target)
+		if not tdPetHeroStoreTicket(ticket)
+			return
+	ticket.expiry = getElapsedGameTime() + tdPetHeroLifetime(TD_PET_HERO_FROST)
+	let bossFactor = tdIsBossUnitTypeId(GetUnitTypeId(target)) ? 0.5 : 1.0
+	tdEnemySlowOfferTimed(target, host, TD_AURA_PET_FROST_ARROW, quality, tdPetHeroPower(TD_PET_HERO_FROST, quality) * bossFactor, tdPetHeroLifetime(TD_PET_HERO_FROST))
+
+// This hook runs after the ORIGINAL corpse AoE has actually completed.
+public function tdPetHeroOnCorpseExplosionSettled(unit host, unit originalTarget, vec2 center)
+	let pet = tdPetForHost(host)
+	let quality = tdPetHeroQuality(pet, TD_PET_HERO_EPIDEMIC)
+	if quality <= 0 or not tdPetBindingValid(pet, host, pet.generation)
+		return
+	let context = tdTrialCaptureContext(originalTarget)
+	// Original corpse qualification already excludes trial deaths.
+	if context.fromTrial
+		return
+	let ticket = new TDPetHeroTicket(pet, TD_PET_HERO_EPIDEMIC, quality, tdGhoulCorpseExplosionDamage() * tdPetHeroPower(TD_PET_HERO_EPIDEMIC, quality), context, 0)
+	let targets = CreateGroup()
+	targets.enumUnitsInRange(center, tdPetHeroRadius(TD_PET_HERO_EPIDEMIC))
+	for target in targets
+		if ticket.targetCount >= 3
+			break
+		if tdPetEnemyIsValid(target, pet.lane) and not tdTrialIsTargetType(target) and center.distanceTo(target.getPos()) <= tdPetHeroRadius(TD_PET_HERO_EPIDEMIC)
+			ticket.attachTarget(target)
+	targets.destr()
+	// A new empty group still replaces the old one, without detonating it.
+	if ticket.targetCount == 0
+		let previous = tdPetHeroOwnerTicket(pet, TD_PET_HERO_EPIDEMIC)
+		if previous != null
+			previous.consume()
+		destroy ticket
+		return
+	tdPetHeroStoreTicket(ticket)
+
+public function tdPetHeroForgetEnemy(unit target, boolean realDeath)
+	let bucket = tdPetHeroTargetBucketFor(target, false)
+	if bucket == null
+		return
+	bucket.processing = true
+	let now = getElapsedGameTime()
+	let center = target.getPos()
+	while not bucket.entries.isEmpty()
+		let ticket = bucket.entries.get(0)
+		bucket.entries.remove(ticket)
+		let propagate = not tdPetHeroSecondaryDeathBlocked() and ticket.live(now) and tdPetHeroDeathCanPropagate(realDeath, tdTrialIsTargetType(target), not ticket.secondary, ticket.consumed, ticket.expiry, now)
+		if propagate and ticket.skill == TD_PET_HERO_POISON
+			tdPetHeroPropagatePoison(ticket, center)
+		else if propagate and ticket.skill == TD_PET_HERO_EPIDEMIC
+			tdPetHeroExplodeGroup(ticket, center)
+		else
+			ticket.consume()
+	bucket.processing = false
+	tdPetHeroRetireBucket(bucket)

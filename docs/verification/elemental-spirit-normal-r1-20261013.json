@@ -1,0 +1,146 @@
+{
+  "sha256": "292fd1361ad77675a41d4bafa569fe56150d94ceb81f00c6d222426ad8833acc",
+  "twenty": [
+    {
+      "skill": 19,
+      "hits": 6,
+      "total": 480.0,
+      "visual_emissions": 15,
+      "control_orders": 0
+    },
+    {
+      "skill": 20,
+      "hits": 1,
+      "total": 130.0,
+      "visual_emissions": 1,
+      "control_orders": 0
+    },
+    {
+      "skill": 21,
+      "hits": 4,
+      "total": 240.0,
+      "visual_emissions": 4,
+      "control_orders": 0
+    },
+    {
+      "skill": 22,
+      "hits": 48,
+      "total": 2160.0,
+      "visual_emissions": 20,
+      "control_orders": 0
+    },
+    {
+      "skill": 23,
+      "hits": 1,
+      "total": 65.0,
+      "visual_emissions": 1,
+      "control_orders": 1
+    },
+    {
+      "skill": 24,
+      "hits": 9,
+      "total": 195.0,
+      "visual_emissions": 14,
+      "control_orders": 0
+    },
+    {
+      "skill": 25,
+      "hits": 12,
+      "total": 1200.0,
+      "visual_emissions": 8,
+      "control_orders": 0
+    },
+    {
+      "skill": 26,
+      "hits": 24,
+      "total": 1680.0,
+      "visual_emissions": 3,
+      "control_orders": 6
+    },
+    {
+      "skill": 27,
+      "hits": 1,
+      "total": 95.0,
+      "visual_emissions": 13,
+      "control_orders": 0
+    },
+    {
+      "skill": 28,
+      "hits": 16,
+      "total": 1120.0,
+      "visual_emissions": 36,
+      "control_orders": 0
+    },
+    {
+      "skill": 29,
+      "hits": 12,
+      "total": 1680.0,
+      "visual_emissions": 16,
+      "control_orders": 6
+    },
+    {
+      "skill": 30,
+      "hits": 96,
+      "total": 1920.0,
+      "visual_emissions": 53,
+      "control_orders": 0
+    },
+    {
+      "skill": 31,
+      "hits": 4,
+      "total": 140.0,
+      "visual_emissions": 4,
+      "control_orders": 0
+    },
+    {
+      "skill": 32,
+      "hits": 12,
+      "total": 1680.0,
+      "visual_emissions": 5,
+      "control_orders": 0
+    },
+    {
+      "skill": 33,
+      "hits": 48,
+      "total": 2460.0,
+      "visual_emissions": 25,
+      "control_orders": 0
+    },
+    {
+      "skill": 34,
+      "hits": 28,
+      "total": 1080.0,
+      "visual_emissions": 24,
+      "control_orders": 0
+    },
+    {
+      "skill": 35,
+      "hits": 1,
+      "total": 110.0,
+      "visual_emissions": 1,
+      "control_orders": 1
+    },
+    {
+      "skill": 36,
+      "hits": 8,
+      "total": 1040.0,
+      "visual_emissions": 3,
+      "control_orders": 0
+    },
+    {
+      "skill": 37,
+      "hits": 0,
+      "total": 0.0,
+      "visual_emissions": 5,
+      "control_orders": 0
+    },
+    {
+      "skill": 38,
+      "hits": 24,
+      "total": 2040.0,
+      "visual_emissions": 4,
+      "control_orders": 0
+    }
+  ],
+  "boundary": "Replay final-map elemental spells with explicit clock/handle/region/native-order boundaries.\nPacked original-hit fence, cast creation, CD write, scheduler, geometry, target identity,\ndamage, controls, slow ownership and destruction execute. Native Buff acceptance and\nvisual handles are recorded models; this is not Warcraft timing or visual observation.\n"
+}

@@ -1,6 +1,8 @@
 package TDPetRuntime
 import TDPetData
 import TDPetState
+import TDPetAttackQueue
+import TDPetEffectScheduler
 import TDPetWild
 import TDState
 import TDConfig
@@ -153,6 +155,10 @@ public function tdPetInitializeFarmer(int lane, unit farmer)
 	tdPetCaptureReadyAt[lane] = 0.0
 	tdPetSyncBallAbility(lane)
 
+// Destruction waits for explicit ownership/fence completion, never a delay guess.
+public function tdPetCanDestroyMatchRecords() returns boolean
+	return tdPetEffectTaskCount() == 0 and tdPetPendingOriginal == 0 and not tdPetAttackQueueBusy()
+
 public function tdPetSetupRuntime()
 	if tdPetRuntimeReady
 		return
@@ -173,19 +179,22 @@ public function tdPetSetupRuntime()
 						if pet.visual.getPos().distanceTo(desired) > 1.0
 							pet.visual.setPos(desired)
 		if tdIsGameOver()
+			tdPetClearAttackQueue()
 			for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 				tdPetCancelRelease(lane)
-			// All delayed attacks have zero delay or at most three one-second ticks.
-			// Stop new procs now, then reclaim records only after every callback expires.
-			doAfter(4.0) ->
-				for pet in tdPetMatchRecords
-					pet.recall()
-					destroy pet
-				destroy tdPetMatchRecords
-				tdPetMatchRecords = null
-				for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-					for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
-						tdPets[lane * TD_PET_COLLECTION_LIMIT + slot] = null
+			tdPetShutdownEffects()
+			// No magic delay: executing callbacks are cancelled, then reclaimed at
+			// their same-tick exit. Records can be destroyed only after count is zero.
+			if not tdPetCanDestroyMatchRecords()
+				return
+			for pet in tdPetMatchRecords
+				pet.recall()
+				destroy pet
+			destroy tdPetMatchRecords
+			tdPetMatchRecords = null
+			for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+				for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+					tdPets[lane * TD_PET_COLLECTION_LIMIT + slot] = null
 			destroy cb
 
 

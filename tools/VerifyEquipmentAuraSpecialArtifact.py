@@ -31,9 +31,14 @@ def verify(objects, buffs):
     identities = {
         '白虎战吼': (1, 2), '统帅光环': (1, 2), '统御攻击光环': (1, 2, 3, 4),
         '疾风攻速光环': (1, 2, 3, 4), '灵感冷却光环': (4,), '裂甲普攻光环': (4,),
-        '寒霜领域': (1, 2, 3, 4), '精灵统御': (1, 2, 3, 4), '精灵迟滞': (1, 2, 3, 4),
+        '寒霜领域': (1, 2, 3, 4),
         '缓速藤蔓': (1, 2), '毒镖移动缓速': (1, 2), '精灵霜箭': (1, 2, 3, 4), '精灵风缚': (1, 2, 3, 4),
     }
+    if any(field(obj, 'fnam') == '精灵减击 1' for obj in buffs.values()):
+        identities['精灵减击'] = (1,)
+        require(not any(field(obj, 'fnam') in {f'{name} {rank}' for name in ('精灵统御', '精灵迟滞') for rank in range(1, 5)} for obj in buffs.values()), 'Retired spirit aura Buffs remain')
+    else:
+        identities.update({'精灵统御': (1, 2, 3, 4), '精灵迟滞': (1, 2, 3, 4)})
     expected = {f'{name} {rank}' for name, ranks in identities.items() for rank in ranks}
     expected |= {'剑圣战意 1/4', '剑圣战意 2/4', '剑圣战意 3/4', '剑圣战意 爆发', '森蚀 1/3', '森蚀 2/3'}
     known_names = set()

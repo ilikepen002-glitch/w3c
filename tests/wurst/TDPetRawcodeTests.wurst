@@ -10,31 +10,31 @@ function referenceListId(int index) returns int
 	let digits = "0123456789ABCDEF"
 	return ("L" + SubString(digits, index div 256, index div 256 + 1) + SubString(digits, (index mod 256) div 16, (index mod 256) div 16 + 1) + SubString(digits, index mod 16, index mod 16 + 1)).fromRawCode()
 
-@Test function petStartupIdsCoverExact490ListAnd23ManagerObjects()
+@Test function petStartupIdsCoverExact2410ListAnd23ManagerObjects()
 	for cell = 0 to 9
-		tdPetListAbilityId(cell, 0, 0, 0).assertEquals(referenceListId(cell * 49))
-		for species = 1 to 3
+		tdPetListAbilityId(cell, 0, 0, 0).assertEquals(referenceListId(cell * TD_PET_LIST_VARIANTS))
+		for species = 1 to 15
 			for quality = 1 to 4
 				for count = 1 to 4
-					tdPetListAbilityId(cell, species, quality, count).assertEquals(referenceListId(cell * 49 + (species - 1) * 16 + (quality - 1) * 4 + count))
+					tdPetListAbilityId(cell, species, quality, count).assertEquals(referenceListId(cell * TD_PET_LIST_VARIANTS + (species - 1) * 16 + (quality - 1) * 4 + count))
 	for action = 0 to 22
 		let expected = action < 8 ? referenceHexId("Pc", action) : referenceHexId("Pm", action - 8)
 		tdPetManagerCommandId(action).assertEquals(expected)
 	tdPetListAbilityId(0, 0, 0, 0).assertEquals('L000')
-	tdPetListAbilityId(9, 3, 4, 4).assertEquals('L1E9')
+	tdPetListAbilityId(9, 15, 4, 4).assertEquals('L969')
 	tdPetListAbilityId(0, 1, 1, 0).assertEquals(0)
 	tdPetListAbilityId(0, 0, 0, 1).assertEquals(0)
-	tdPetListAbilityId(0, 4, 1, 1).assertEquals(0)
+	tdPetListAbilityId(0, 16, 1, 1).assertEquals(0)
 	tdPetListAbilityId(10, 1, 1, 1).assertEquals(0)
 	tdPetManagerCommandId(23).assertEquals(0)
 
 @Test function petHexIdsKeepDisplayPreviewAndArithmeticStartupPartitions()
-	for species = 1 to 3
+	for species = 1 to 15
 		for quality = 1 to 4
 			tdPetDisplayUnitId(species, quality).assertEquals(referenceHexId("pd", (species - 1) * 4 + quality))
 	for position = 0 to 1
-		for skill = 0 to 15
-			tdPetPreviewAbilityId(position, skill).assertEquals(referenceHexId("Ps", position * 16 + skill))
+		for skill = 0 to TD_PET_SKILL_COUNT - 1
+			tdPetPreviewAbilityId(position, skill).assertEquals(referenceHexId("Ps", position * TD_PET_SKILL_COUNT + skill))
 		tdPetPreviewArrowAbilityId(position).assertEquals(referenceHexId("Pa", position))
 	tdPetPreviewArrowAbilityId(2).assertEquals(0)
 	for index = 0 to 255

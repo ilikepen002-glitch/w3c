@@ -58,7 +58,7 @@ class PetUIArtifactTests(unittest.TestCase):
     def test_actual_thirteen_displays_have_species_quality_identity(self):
         verifier.verify_manager_units(self.units)
 
-    def test_actual_all_516_slots_distinguish_bright_locked_and_empty(self):
+    def test_actual_exact_legal_slots_distinguish_bright_locked_empty_and_quality_levels(self):
         verifier.verify_slot_icons(self.abilities, current_manager=True)
 
     def test_actual_imports_decode_and_match_source_hashes(self):
@@ -79,7 +79,8 @@ class PetUIArtifactTests(unittest.TestCase):
         from VerifyPetStartupArtifact import measure, verify_routing
         script = self.artifact.extract('war3map.j').decode('utf-8')
         self.assertEqual(measure(script)['registrations'], 2)
-        self.assertIn('513 button IDs', verify_routing(script))
+        count = 2433 if len(verifier.manager_species(self.abilities, self.units)) == 15 else 513
+        self.assertIn(f'{count} button IDs', verify_routing(script))
 
 
 class HistoricalPetUINegativeTests(unittest.TestCase):

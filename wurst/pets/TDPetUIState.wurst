@@ -182,10 +182,10 @@ public class TDPetUISession
 				mount(cell, abilityId, page + 1, 100 + cell)
 		else if mode == TD_PET_UI_DETAIL or mode == TD_PET_UI_CULTIVATE
 			for skillSlot = 0 to 3
-				var variant = 128
+				var variant = TD_PET_SLOT_EMPTY
 				if skillSlot < pet.skillCount
-					variant = pet.skillAt(skillSlot) * 4 + pet.qualityAt(skillSlot) - 1 + (skillSlot >= tdPetUnlockedSlots(pet.level) ? 64 : 0)
-				mount(skillSlot + 4, tdPetSlotAbilityId(skillSlot, variant), 1, -1)
+					variant = pet.skillAt(skillSlot) + (skillSlot >= tdPetUnlockedSlots(pet.level) ? TD_PET_SKILL_COUNT : 0)
+				mount(skillSlot + 4, tdPetSlotAbilityId(skillSlot, variant), variant == TD_PET_SLOT_EMPTY ? 1 : pet.qualityAt(skillSlot), -1)
 		else if mode == TD_PET_UI_PREVIEW
 			if pet.proposalSlot < 0 or pet.proposalOldSkill < 0 or pet.proposalSkill < 0
 				close()

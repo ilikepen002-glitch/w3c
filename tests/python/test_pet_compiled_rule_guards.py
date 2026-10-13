@@ -25,6 +25,8 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
         if len(signature) != 4 or not signature[1].strip().startswith('integer '):
             raise AssertionError('Actual skill-slot signature changed')
         cls.actual_slot = signature[1].strip().split()[1]
+        cls.phase_one = 'tdPetSkillDefined' in functions(cls.script)
+        cls.actual_duplicate = signature[2].strip().split()[1]
 
     def test_actual_all_2176_skill_admission_combinations(self):
         verifier.verify_skill_allowed(self.script)
@@ -55,8 +57,9 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
 
     def test_rejects_each_missing_skill_admission_guard(self):
         original = verifier.jass_function(self.script, 'tdPetSkillAllowed').group(1)
+        duplicate = ' or ' + self.actual_duplicate if self.phase_one else ' or bitset_get(usedMask, skill_1)'
         cases = [
-            ('duplicate', original.replace(' or bitset_get(usedMask, skill_1)', '')),
+            ('duplicate', original.replace(duplicate, '')),
             ('first numeric', original.replace(f'if {self.actual_slot} == 0 then', f'if {self.actual_slot} != 0 then')),
             ('later numeric', original.replace('\tif tdPetSkillIsNumeric(skill_1) then\n\t\treturn false\n\tendif\n', '')),
             ('second universal', original.replace(f'if {self.actual_slot} == 1 and', f'if {self.actual_slot} == 2 and')),
@@ -69,6 +72,14 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
                     verifier.verify_skill_allowed(replace_body(self.script, 'tdPetSkillAllowed', body))
 
     def test_rejects_wrong_real_numeric_universal_and_active_helpers(self):
+        if self.phase_one:
+            cases = [('tdPetSkillIsNumeric', '<= 3', '<= 4'), ('tdPetSkillIsUniversal', '!= 9', '!= 8'), ('tdPetSkillDefined', '!= 4', '!= 5')]
+            for name, old, new in cases:
+                body = verifier.jass_function(self.script, name).group(1)
+                self.assertIn(old, body)
+                with self.assertRaises(ValueError):
+                    verifier.verify_skill_allowed(replace_body(self.script, name, body.replace(old, new)))
+            return
         for name, old, new, reason in [
             ('tdPetSkillIsNumeric', '<= 3', '<= 4', 'numeric skill classification'),
             ('tdPetSkillIsUniversal', '!= 9', '!= 8', 'universal skill classification'),
@@ -81,6 +92,14 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
                     verifier.verify_skill_allowed(replace_body(self.script, name, body.replace(old, new)))
 
     def test_rejects_wrong_real_bitset_get_and_contains_pow(self):
+        if self.phase_one:
+            body = verifier.jass_function(self.script, 'tdPetSkillOwned').group(1)
+            for index in range(body.count('==')):
+                pairs = list(re.finditer('==', body)); pair = pairs[index]
+                changed = body[:pair.start()] + '!=' + body[pair.end():]
+                with self.assertRaises(ValueError):
+                    verifier.verify_skill_allowed(replace_body(self.script, 'tdPetSkillOwned', changed))
+            return
         for name, old, new in [('bitset_get', 'int_pow(2, index)', 'int_pow(2, index + 1)'),
                                ('bitset_containsPow', '>= pow', '> pow')]:
             with self.subTest(helper=name):
@@ -90,6 +109,13 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
                     verifier.verify_skill_allowed(replace_body(self.script, name, body.replace(old, new)))
 
     def test_rejects_unverified_int_pow_implementation(self):
+        if self.phase_one:
+            body = verifier.jass_function(self.script, 'tdPetSkillOwned').group(1)
+            identity = re.findall(r'integer (\w+)', verifier.jass_function(self.script, 'tdPetSkillOwned').group(0).splitlines()[0])[0]
+            changed = re.sub(r'\b' + re.escape(identity) + r'\b', f'ModuloInteger({identity}, 32)', body)
+            with self.assertRaises(ValueError):
+                verifier.verify_skill_allowed(replace_body(self.script, 'tdPetSkillOwned', changed))
+            return
         body = verifier.jass_function(self.script, 'int_pow').group(1)
         self.assertIn('exitwhen i > temp', body)
         with self.assertRaisesRegex(ValueError, 'int_pow no longer implements'):

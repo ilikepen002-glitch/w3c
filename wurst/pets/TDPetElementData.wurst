@@ -1,0 +1,108 @@
+package TDPetElementData
+import TDPetData
+import TDActiveSkillData
+import TDTooltipText
+
+public function tdPetElementSkill(int element, int quality) returns int
+	if element < 1 or element > 5 or quality < 1 or quality > 4
+		return -1
+	return TD_PET_ELEMENT_SKILL_FIRST + (element - 1) * 4 + quality - 1
+
+public function tdPetSkillElement(int skill) returns int
+	return skill >= TD_PET_ELEMENT_SKILL_FIRST and skill <= TD_PET_ELEMENT_SKILL_LAST ? (skill - TD_PET_ELEMENT_SKILL_FIRST) div 4 + 1 : 0
+
+public function tdPetSkillFixedQuality(int skill) returns int
+	return tdPetSkillElement(skill) != 0 ? (skill - TD_PET_ELEMENT_SKILL_FIRST) mod 4 + 1 : 0
+
+public function tdPetSkillQualityValid(int skill, int quality) returns boolean
+	if quality < 1 or quality > 4
+		return false
+	let fixed = tdPetSkillFixedQuality(skill)
+	return fixed == 0 or fixed == quality
+
+public function tdPetElementSkillName(int skill) returns string
+	if skill == 19
+		return "流光穿刺"
+	if skill == 20
+		return "裂甲天锋"
+	if skill == 21
+		return "万刃归宗"
+	if skill == 22
+		return "天诛剑阵"
+	if skill == 23
+		return "青藤缚足"
+	if skill == 24
+		return "噬生寄种"
+	if skill == 25
+		return "繁花蚀骨"
+	if skill == 26
+		return "万象森罗"
+	if skill == 27
+		return "寒星破"
+	if skill == 28
+		return "回澜引"
+	if skill == 29
+		return "霜华镜狱"
+	if skill == 30
+		return "沧海归墟"
+	if skill == 31
+		return "烬火印"
+	if skill == 32
+		return "赤莲绽"
+	if skill == 33
+		return "焚星坠"
+	if skill == 34
+		return "业火连城"
+	if skill == 35
+		return "裂岩重击"
+	if skill == 36
+		return "崩山震"
+	if skill == 37
+		return "镇岳印"
+	if skill == 38
+		return "地脉天崩"
+	return "未知技能"
+
+public function tdPetElementSkillDescription(int skill) returns string
+	var text = ""
+	if skill == 19
+		text = "朝目标方向发出650长、90半宽飞刃，沿线最多6名敌人各受80%本次普攻伤害，每名只命中一次。"
+	if skill == 20
+		text = "原目标受到130%本次普攻伤害，并降低4护甲4秒；与精灵破击合计最多降低10护甲。"
+	if skill == 21
+		text = "锁定原目标，立即及每隔0.2秒落剑，共4剑，每剑60%本次普攻伤害；目标死亡后停止。"
+	if skill == 22
+		text = "在目标落点260范围布下4秒剑阵，每秒落剑，最多12名敌人各受45%本次普攻伤害。"
+	if skill == 23
+		text = "原目标受到65%本次普攻伤害并束缚0.75秒；首领控制最多0.25秒。"
+	if skill == 24
+		text = "原目标3秒每秒受到35%本次普攻伤害；结束后从其最后位置向240内最多3名其他敌人传播弱种，1秒一次共2次，每次15%。弱种不再传播。"
+	if skill == 25
+		text = "沿目标道路方向布下3朵毒花，间距150、各100范围，持续4秒；整次最多12名穿花敌人各受一次100%本次普攻伤害。"
+	if skill == 26
+		text = "沿道路方向每隔0.4秒推进一段根刺，共3段，各150范围、70%本次普攻伤害；每名最多受2段、束缚一次0.35秒，整次最多控制6名。"
+	if skill == 27
+		text = "原目标受到95%本次普攻伤害，减速25%持续2秒；首领减速减半。"
+	if skill == 28
+		text = "朝目标方向发出600长、110半宽去回水流，0.6秒后返程；最多8名敌人每程各受一次70%本次普攻伤害。"
+	if skill == 29
+		text = "目标落点240范围预警0.6秒后冻结最多6名0.6秒；再过0.35秒原地碎裂，最多12名敌人各受140%本次普攻伤害。可走出预警。"
+	if skill == 30
+		text = "目标落点280范围漩涡持续4秒，每0.5秒对最多12名敌人造成20%本次普攻伤害，区域内减速25%；离开后最多余留0.3秒，首领减速减半。"
+	if skill == 31
+		text = "原目标4秒每秒受到35%本次普攻伤害；同一精灵同一目标刷新火印。"
+	if skill == 32
+		text = "目标落点230范围立即绽爆，最多12名敌人各受140%本次普攻伤害。"
+	if skill == 33
+		text = "目标落点240范围预警0.75秒后陨落，最多12名各受130%本次普攻伤害；原地烧地3秒，每秒再造成25%。"
+	if skill == 34
+		text = "标记目标350内最多4名敌人，0.6秒后每隔0.2秒连爆180范围。每个原标记存活目标必受自身120%本次普攻伤害；其它连爆最多额外两次，每次25%，每爆最多12名。死亡标记仍在最后位置爆炸。"
+	if skill == 35
+		text = "原目标受到110%本次普攻伤害，并硬直0.25秒；与盾击共用控制保护。"
+	if skill == 36
+		text = "朝目标方向500长、90度扇形震击，最多8名敌人各受130%本次普攻伤害。"
+	if skill == 37
+		text = "目标落点260范围镇印持续4秒，区域内减速15%，首领减速减半；阶段法术抗性削弱20%，多个镇印不叠加。此技能不造成伤害。"
+	if skill == 38
+		text = "沿道路方向布下4段石脊，间距150、各160范围，每隔0.2秒崩裂；每段85%本次普攻伤害，每名最多受2段，整次最多12名。"
+	return text + "|n普攻自动触发。基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒；个人装备、灵感和有效冷却光环合计缩短上限40%。"

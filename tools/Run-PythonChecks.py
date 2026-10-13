@@ -52,6 +52,11 @@ CLASS_GROUPS = {
         test_verify_pet_ui_artifact.PetUISourceTests
     '''.split(),
     'regression': '''
+        test_boss_pair_artifact.BossPairDeltaTests
+        test_boss_pair_artifact.BossPairFrozenFormatTests
+        test_eclipse_boss_artifact.EclipseVisualDeltaTests
+        test_eclipse_boss_artifact.EclipseFrozenFormatTests
+        test_pet_attack_phase_one.PetAttackPhaseOneSourceTests
         test_king_leoric_assets.AssetTests
         test_active_cooldown_contract.SyntheticPackagedObjectMutationTests
         test_active_cooldown_contract.SyntheticCompiledMutationTests
@@ -105,6 +110,7 @@ CLASS_GROUPS = {
         test_wurst_linux.JavaProbeTests
     '''.split(),
     'map': '''
+        test_pet_attack_phase_one.FinalPetAttackArtifactTests
         test_aura_target_artifact.AuraTargetArtifactTests
         test_combined_visual_text_artifact.ActualCombinedFieldTests
         test_equipment_combat_replay.EquipmentPackedReplayTests

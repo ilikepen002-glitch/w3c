@@ -1,0 +1,51 @@
+package TDPetEffectTargetState
+import Table
+
+// A retained native identity has one last valid position shared by its casts.
+// Enemy exit updates only its handle index; no per-death scan of all casts.
+public class TDPetEffectTargetPosition
+	unit target
+	int revision
+	vec2 position
+	boolean retired = false
+	int references = 0
+	construct(unit target, int revision)
+		this.target = target
+		this.revision = revision
+		position = target.getPos()
+
+	function lastPosition() returns vec2
+		if not retired and target != null and GetUnitTypeId(target) != 0 and target.isAlive()
+			position = target.getPos()
+		return position
+
+constant Table positions = new Table()
+
+public function tdPetCaptureEffectTarget(unit target, int revision) returns TDPetEffectTargetPosition
+	if target == null
+		return null
+	let key = target.getHandleId()
+	var record = positions.loadInt(key) castTo TDPetEffectTargetPosition
+	if record == null or record.retired or record.revision != revision or record.target != target
+		record = new TDPetEffectTargetPosition(target, revision)
+		positions.saveInt(key, record castTo int)
+	record.references += 1
+	return record
+
+public function tdPetRetireEffectTarget(unit target)
+	if target == null
+		return
+	let record = positions.loadInt(target.getHandleId()) castTo TDPetEffectTargetPosition
+	if record != null and not record.retired
+		record.position = target.getPos()
+		record.retired = true
+
+public function tdPetReleaseEffectTarget(TDPetEffectTargetPosition record)
+	if record == null
+		return
+	record.references -= 1
+	if record.references <= 0
+		if positions.loadInt(record.target.getHandleId()) == record castTo int
+			positions.removeInt(record.target.getHandleId())
+		record.target = null
+		destroy record

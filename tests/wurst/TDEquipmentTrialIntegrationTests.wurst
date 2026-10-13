@@ -27,7 +27,7 @@ import TDAuraRules
 @Test function currentFortyConditionalSingleSegmentEnvelopeStaysUnderFifteenPercent()
 	let nativeBound = tdEquipmentTrialNativeEnvelope()
 	nativeBound.assertEquals(108928.0)
-	tdEquipmentTrialMaxSegment().assertEquals(740710.4, 0.1)
+	tdEquipmentTrialMaxSegment().assertEquals(522854.4, 0.1)
 	(tdEquipmentTrialMaxSegment() < 750000.0).assertTrue()
 	(tdEquipmentTrialMaxSegment() < TD_TRIAL_TARGET_HP * 0.15).assertTrue()
 	(nativeBound * (tdItemSecondaryEffectValue(TD_ITEM_BLUE_WAR_AXE_ID) + tdItemSecondaryEffectValue(TD_ITEM_PURPLE_WAR_AXE_ID)) * 4.0).assertEquals(196070.4, 0.05)

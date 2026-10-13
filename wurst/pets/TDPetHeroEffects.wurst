@@ -1,0 +1,181 @@
+package TDPetHeroEffects
+import TDPetHeroRules
+import TDPetHeroState
+import TDPetState
+import TDPetRuntime
+import TDPetCombatSource
+import TDPetEffectScheduler
+import TDPetAttackQueue
+import TDTowerData
+import TDTrialIdentity
+import TDEquipmentTrialAoe
+import GameTimer
+import Table
+
+constant Table stormSerials = new Table()
+
+public function tdPetHeroBaseAttack(unit host) returns real
+	let typeId = GetUnitTypeId(host)
+	return tdTowerBaseDamageForBranch(tdTowerChoiceForUnitTypeId(typeId), tdTowerLevelForUnitTypeId(typeId), tdTowerBranchForUnitTypeId(typeId)).toReal()
+
+public function tdPetHeroAreaDamage(TDPet pet, unit host, int generation, int revision, vec2 center, real radius, int cap, real amount, tdTrialCombatContext context, tdEquipmentTrialAoeSnapshot snapshot, boolean secondary)
+	if not tdPetBindingValid(pet, host, generation) or pet.revision != revision or not tdTrialContextValid(context)
+		return
+	var hits = 0
+	if context.fromTrial
+		for slot = 0 to 4
+			if hits >= cap or not tdPetBindingValid(pet, host, generation) or pet.revision != revision or not tdTrialContextValid(context)
+				break
+			let target = snapshot.targetAt(slot)
+			if tdPetAoeVictimValid(target, pet.lane, context, snapshot) and center.distanceTo(target.getPos()) <= radius
+				if secondary
+					tdPetHeroWeakSpellDamage(pet, host, generation, target, amount)
+				else
+					tdPetSpellDamage(pet, host, generation, target, amount)
+				hits += 1
+	else
+		let targets = CreateGroup()
+		targets.enumUnitsInRange(center, radius)
+		for target in targets
+			if hits >= cap or not tdPetBindingValid(pet, host, generation) or pet.revision != revision or not tdTrialContextValid(context)
+				break
+			if tdPetAoeVictimValid(target, pet.lane, context, snapshot) and center.distanceTo(target.getPos()) <= radius
+				if secondary
+					tdPetHeroWeakSpellDamage(pet, host, generation, target, amount)
+				else
+					tdPetSpellDamage(pet, host, generation, target, amount)
+				hits += 1
+		targets.destr()
+
+// Copy values before consumption: queued work never retains a scheduler-owned ticket.
+public function tdPetHeroQueueTicketDamage(TDPetHeroTicket ticket, unit target, real amount, unit receiver)
+	let pet = ticket.pet
+	let host = ticket.host
+	let generation = ticket.generation
+	let revision = ticket.revision
+	let context = tdTrialCaptureContext(target)
+	let binding = tdTrialBindingFor(target)
+	let targetRevision = binding == null ? 0 : binding.revision
+	let receiverRevision = tdPetHeroTowerRevision(receiver)
+	let spell = tdPetHeroIsSpellDamage(ticket.skill)
+	ticket.consume()
+	tdPetQueueAttack(pet castTo int) ->
+		if not tdPetBindingValid(pet, host, generation) or pet.revision != revision or not tdTrialTargetContextValid(target, pet.lane, context, targetRevision)
+			return
+		if receiver != null and not tdPetHeroTowerValid(receiver, pet.lane, receiverRevision)
+			return
+		if spell
+			tdPetSpellDamage(pet, host, generation, target, amount)
+		else
+			tdPetDamage(pet, host, generation, target, amount)
+
+class TDPetHeroRootPulse extends TDPetHeroTicket
+	vec2 center
+	real due
+	construct(TDPet pet, int quality, real amount, vec2 center, tdTrialCombatContext context, tdEquipmentTrialAoeSnapshot capturedTargets, int serial)
+		super(pet, TD_PET_HERO_ROOT, quality, amount, context, serial)
+		this.center = center
+		snapshot = capturedTargets
+		indexedOwner = false
+		due = getElapsedGameTime() + 0.5
+	override function runEffect(real now) returns boolean
+		if not sourceValid() or consumed
+			return false
+		if now < due
+			return true
+		consumed = true
+		tdPetHeroAreaDamage(pet, host, generation, revision, center, tdPetHeroRadius(skill), tdPetHeroTargetCap(skill), amount, context, snapshot, false)
+		return false
+
+public function tdPetHeroStartRoot(TDPet pet, int quality, real amount, vec2 center, tdTrialCombatContext context, tdEquipmentTrialAoeSnapshot capturedTargets, int serial)
+	let rootVisual = AddSpecialEffect("Abilities\\Spells\\NightElf\\EntanglingRoots\\EntanglingRootsTarget.mdl", center.x, center.y)
+	DestroyEffect(rootVisual)
+	tdPetHeroStoreTicket(new TDPetHeroRootPulse(pet, quality, amount, center, context, capturedTargets, serial))
+
+class TDPetHeroWeakPoison extends TDPetHeroTicket
+	real nextAt
+	int ticks = 0
+	construct(TDPet pet, int quality, real amount, unit target, tdTrialCombatContext context, int serial)
+		super(pet, TD_PET_HERO_POISON, quality, amount, context, serial)
+		secondary = true
+		indexedOwner = false
+		attachTarget(target)
+		nextAt = getElapsedGameTime() + 1.0
+	override function runEffect(real now) returns boolean
+		if not live(now) or not tdTrialTargetContextValid(targets[0], pet.lane, context, targetRevisions[0]) or not tdPetEnemyIsValid(targets[0], pet.lane)
+			return false
+		if now < nextAt
+			return true
+		// Each task carries exactly one secondary target and at most two ticks.
+		ticks += 1
+		nextAt += 1.0
+		tdPetHeroWeakSpellDamage(pet, host, generation, targets[0], amount)
+		return ticks < 2 and not cancelled and not consumed
+
+public function tdPetHeroPropagatePoison(TDPetHeroTicket ticket, vec2 center)
+	let pet = ticket.pet
+	let host = ticket.host
+	let generation = ticket.generation
+	let revision = ticket.revision
+	let original = ticket.targets[0]
+	let amount = ticket.amount
+	let quality = ticket.quality
+	let serial = ticket.grantSerial
+	let context = ticket.context
+	let snapshot = ticket.snapshot
+	ticket.consume()
+	tdPetQueueAttack(pet castTo int) ->
+		if not tdPetBindingValid(pet, host, generation) or pet.revision != revision or not tdTrialContextValid(context)
+			return
+		let targets = CreateGroup()
+		targets.enumUnitsInRange(center, tdPetHeroRadius(TD_PET_HERO_POISON))
+		var hits = 0
+		for target in targets
+			if hits >= tdPetHeroTargetCap(TD_PET_HERO_POISON) or not tdPetBindingValid(pet, host, generation) or pet.revision != revision
+				break
+			if target != original and tdPetAoeVictimValid(target, pet.lane, context, snapshot) and not tdPetHeroTargetInfected(target) and center.distanceTo(target.getPos()) <= tdPetHeroRadius(TD_PET_HERO_POISON)
+				if tdPetHeroStoreTicket(new TDPetHeroWeakPoison(pet, quality, amount, target, context, serial))
+					hits += 1
+		targets.destr()
+
+public function tdPetHeroExplodeGroup(TDPetHeroTicket ticket, vec2 center)
+	let pet = ticket.pet
+	let host = ticket.host
+	let generation = ticket.generation
+	let revision = ticket.revision
+	let amount = ticket.amount
+	let context = ticket.context
+	let snapshot = ticket.snapshot
+	ticket.consume()
+	tdPetQueueAttack(pet castTo int) ->
+		tdPetHeroAreaDamage(pet, host, generation, revision, center, tdPetHeroRadius(TD_PET_HERO_EPIDEMIC), tdPetHeroTargetCap(TD_PET_HERO_EPIDEMIC), amount, context, snapshot, true)
+
+// Only scalar pet identity is retained by the tower's existing storm timer.
+// Its current binding is resolved again on completion, before any closure captures it.
+public tuple tdPetHeroStormSnapshot(int serial, int ownerKey, int generation, int revision, int quality, tdTrialCombatContext context, tdEquipmentTrialAoeSnapshot targets)
+
+public function tdPetHeroCaptureStorm(unit host, tdTrialCombatContext context) returns tdPetHeroStormSnapshot
+	let key = host.getHandleId()
+	let serial = stormSerials.loadInt(key) + 1
+	stormSerials.saveInt(key, serial)
+	let pet = tdPetForHost(host)
+	let quality = tdPetHeroQuality(pet, TD_PET_HERO_STORM)
+	return tdPetHeroStormSnapshot(serial, pet castTo int, pet == null ? -1 : pet.generation, pet == null ? -1 : pet.revision, quality, context, tdCaptureEquipmentTrialAoe(GetPlayerId(GetOwningPlayer(host)), context))
+
+public function tdPetHeroCancelStorm(unit host)
+	if host != null
+		let key = host.getHandleId()
+		stormSerials.saveInt(key, stormSerials.loadInt(key) + 1)
+
+public function tdPetHeroCompleteStorm(unit host, tdPetHeroStormSnapshot cast)
+	if cast.quality <= 0 or stormSerials.loadInt(host.getHandleId()) != cast.serial
+		return
+	let pet = tdPetForHost(host)
+	if pet == null or pet castTo int != cast.ownerKey or not tdPetBindingValid(pet, host, cast.generation) or pet.revision != cast.revision
+		return
+	let generation = cast.generation
+	let revision = cast.revision
+	let center = host.getPos()
+	let amount = tdOrcBladestormDamagePerSecond() * tdOrcBladestormTickInterval() * tdPetHeroPower(TD_PET_HERO_STORM, cast.quality)
+	tdPetQueueAttack(pet castTo int) ->
+		tdPetHeroAreaDamage(pet, host, generation, revision, center, tdOrcBladestormRadius(), tdPetHeroTargetCap(TD_PET_HERO_STORM), amount, cast.context, cast.targets, false)

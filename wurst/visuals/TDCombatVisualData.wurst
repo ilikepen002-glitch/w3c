@@ -1,0 +1,57 @@
+package TDCombatVisualData
+
+public constant int TD_VISUAL_SHORT_LIMIT = 128
+public constant int TD_VISUAL_HIT_LIMIT = 32
+public constant int TD_VISUAL_NEW_PER_SECOND = 120
+public constant int TD_VISUAL_LANE_GROUPS_PER_SECOND = 10
+public constant int TD_VISUAL_MOVING_LIMIT = 8
+
+// Exact classic paths from the locked pre1.29 Abilities catalogue.
+public function tdCombatVisualHitModel(int element) returns string
+	if element == 1
+		return "Abilities\\Spells\\Other\\Cleave\\CleaveDamageTarget.mdx"
+	if element == 2
+		return "Abilities\\Weapons\\PoisonSting\\PoisonStingTarget.mdx"
+	if element == 3
+		return "Abilities\\Spells\\Undead\\FrostArmor\\FrostArmorDamage.mdx"
+	if element == 4
+		return "Abilities\\Spells\\Other\\ImmolationRed\\ImmolationRedDamage.mdx"
+	return element == 5 ? "Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdx" : ""
+
+public function tdCombatVisualHitDuration(int element) returns real
+	if element == 1
+		return 0.10
+	if element == 3
+		return 0.18
+	return element == 4 ? 0.15 : 0.20
+
+public function tdCombatVisualGearProfile(int choice, int item1, int item2, int item3) returns int
+	var required = 0
+	if choice == 1
+		required = 'iP01'
+	else if choice == 2
+		required = 'iP02'
+	else if choice == 3
+		required = 'iP03'
+	else if choice == 4
+		required = 'iP05'
+	else if choice == 5
+		required = 'iP04'
+	if required != 0
+		if item1 == required or item2 == required or item3 == required
+			return choice
+	return 0
+
+public function tdCombatVisualGearModel(int profile) returns string
+	if profile == 1
+		return "Abilities\\Spells\\NightElf\\TrueshotAura\\TrueshotAura.mdx"
+	if profile == 2
+		return "Abilities\\Spells\\Orc\\Bloodlust\\BloodLustTarget.mdx"
+	if profile == 3
+		return "Abilities\\Spells\\Human\\DevotionAura\\DevotionAura.mdx"
+	if profile == 4
+		return "Abilities\\Spells\\NightElf\\ThornsAura\\ThornsAura.mdx"
+	return profile == 5 ? "Abilities\\Spells\\Undead\\VampiricAura\\VampiricAuraTarget.mdx" : ""
+
+public function tdCombatVisualHitBudget(real now, real readyAt, int sourceCount, int laneGroups, int hits, int total, int created) returns boolean
+	return now >= readyAt and sourceCount < 2 and laneGroups < TD_VISUAL_LANE_GROUPS_PER_SECOND and hits < TD_VISUAL_HIT_LIMIT and total < TD_VISUAL_SHORT_LIMIT and created < TD_VISUAL_NEW_PER_SECOND

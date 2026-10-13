@@ -911,6 +911,8 @@ function tdWaveObjectParentId(int wave) returns int
 	..tdApplyEscaperStats(tdWaveBossName(8), tdWaveBossHitPoints(8), tdWaveBossArmor(8), tdWaveBossSpeed(8))
 	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(8, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(8)))
 	..setIconGameInterface(tdBossIconPath(8))
+	..setModelFile("war3mapImported\\RiftwindHunter.mdx")
+	..setScalingValue(7.75)
 	new UnitDefinition(TD_WAVE_16_BOSS_UNIT_ID, 'Ocbh')
 	..tdApplyEscaperStats(tdWaveBossName(16), tdWaveBossHitPoints(16), tdWaveBossArmor(16), tdWaveBossSpeed(16))
 	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(16, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(16)))
@@ -923,10 +925,14 @@ function tdWaveObjectParentId(int wave) returns int
 	..tdApplyEscaperStats(tdWaveBossName(24), tdWaveBossHitPoints(24), tdWaveBossArmor(24), tdWaveBossSpeed(24))
 	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(24, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(24)))
 	..setIconGameInterface(tdBossIconPath(24))
+	..setModelFile("war3mapImported\\EclipseSpellweaver.mdx")
+	..setScalingValue(8.00)
 	new UnitDefinition(TD_WAVE_32_BOSS_UNIT_ID, 'Ulic')
 	..tdApplyEscaperStats(tdWaveBossName(32), tdWaveBossHitPoints(32), tdWaveBossArmor(32), tdWaveBossSpeed(32))
 	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(32, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(32)))
 	..setIconGameInterface(tdBossIconPath(32))
+	..setModelFile("war3mapImported\\UncrownedAbyssKing.mdx")
+	..setScalingValue(7.00)
 
 
 public function tdWaveStrategyHint(int wave) returns string

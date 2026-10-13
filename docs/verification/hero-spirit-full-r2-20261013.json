@@ -1,0 +1,122 @@
+{
+  "catalog": {
+    "actual_final_catalog": 43,
+    "hero_passives": 10,
+    "quality_values": 40,
+    "compiled_serial_boundaries": 8
+  },
+  "root_trial_snapshot": [
+    {
+      "same_token_single_slot_replacement": true,
+      "native_handle_reused": false,
+      "replacement_hits": 0,
+      "captured_old_hits": 3,
+      "cancelled_task_count": 0
+    },
+    {
+      "same_token_single_slot_replacement": true,
+      "native_handle_reused": true,
+      "replacement_hits": 0,
+      "captured_old_hits": 3,
+      "cancelled_task_count": 0
+    }
+  ],
+  "judgement": {
+    "grant_origin_hits": 0,
+    "consecutive_pre_post_consumptions": 2,
+    "nested_derived_consumptions": 0,
+    "stale_grant_replacements": 0,
+    "cancelled_tasks": 0,
+    "accepted_order_native_boundary": true
+  },
+  "damage_school_and_no_pet_moon": {
+    "40": {
+      "boss_wave24_damage": 68.0,
+      "grant_host": 101,
+      "code_and_Pdam": true
+    },
+    "41": {
+      "boss_wave24_damage": 15.0,
+      "grant_host": 101,
+      "code_and_Pdam": true
+    }
+  },
+  "one_generation_secondary_deaths": {
+    "weak_poison_kills_other_source_bud_and_group": "cleanup only",
+    "weak_epidemic_kills_another_group": "cleanup only",
+    "later_independent_death_propagates": true,
+    "cancelled_tasks": 0
+  },
+  "hunt_primary_lethal": [
+    {
+      "case": "lethal",
+      "grant": true
+    },
+    {
+      "case": "nonlethal_then_extra_kill",
+      "grant": false
+    },
+    {
+      "case": "zero",
+      "grant": false
+    },
+    {
+      "case": "removed",
+      "grant": false
+    },
+    {
+      "case": "leak",
+      "grant": false
+    }
+  ],
+  "frost_and_friendly_seal": {
+    "frost_normal_factor": 0.8,
+    "boss_factor": 0.9,
+    "other_source_survives": 0.92,
+    "frost_expiry_seconds": 2,
+    "relay_no_pet_recipient": true,
+    "relay_weak_renewals": 0,
+    "invalidated_recipient_hits": 0
+  },
+  "idle_storm_and_original_native_death": {
+    "storm": [
+      {
+        "case": "full_completion",
+        "idle_tail_hits": 6
+      },
+      {
+        "case": "native_cancel",
+        "idle_tail_hits": 0
+      },
+      {
+        "case": "source_generation",
+        "idle_tail_hits": 0
+      }
+    ],
+    "original_native_poison_death_idle_targets": 2,
+    "weak_poison_total_ticks": 4,
+    "next_original_required": false
+  },
+  "status": "PASS",
+  "map_sha256": "611ee1b735c56dc8b2a27cbe1db7e17469d1e536f1000f278a5bf3ea2f65a3e3",
+  "jass_sha256": "5962f4c192c4f417b1992cf57e6d7af8b53299b190ceb033c53a3aa96e428d93",
+  "tool_sha256": "a6d1edfc5b09287fead2adae7424fcf2bc8ae4dd67ab5ddbcbd5e547fe4f6c92",
+  "scope": "Actual final-map packed JASS with explicit bounded native boundaries",
+  "native_boundaries": [
+    "post-armor original D and life deduction",
+    "clock and callback delivery",
+    "handles and collections",
+    "native tower impact/full-storm/corpse-completion notifications",
+    "accepted primary-shield notification",
+    "synchronous UnitDamageTarget death delivery"
+  ],
+  "replay_dependencies": {
+    "VerifyPetAttackArtifact.py": "e9547e5af2891266b534d0248a7ece302bc10ae41668a0eb49c02d4b05e1761e",
+    "VerifyTrialReplay.py": "e0d48d82d2bd741a0a9103da92fc7088b564139dc4ee52e15996acbece04d779",
+    "VerifyBossSpellResistanceArtifact.py": "ef1203484662cef3f3af0ec27415ab40f7f24dca1f62de3fda50e3c33746d231",
+    "VerifyEquipmentCombatReplay.py": "71760f2c563a9cc6f846f0d9df03ffcf2b71c451f638c66e8e132bd46bbe0e13",
+    "VerifyPureBossArtifact.py": "8b53f636e31f791e27e82d0852f2827937d349954806f23da0c93dd77551e177",
+    "VerifyPetHeroSource.py": "c1aa10ae3094cefeb64725b13cb435cf65e047890f8313499ea86ec4afbfddee"
+  },
+  "warcraft_engine": "not run"
+}

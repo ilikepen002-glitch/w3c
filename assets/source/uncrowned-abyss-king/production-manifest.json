@@ -1,0 +1,268 @@
+{
+  "model": "UncrownedAbyssKing Original Accepted Visual",
+  "unitRawcode": "uB32",
+  "wave": 32,
+  "visualApproved": true,
+  "approvalMessageId": "Sentinel_8338d08426d48191b777c962da0545a2",
+  "resourceStatus": "final-frozen",
+  "game127aTested": false,
+  "assets": [
+    {
+      "role": "model",
+      "sourceRelative": "original/UncrownedAbyssKing.mdx",
+      "importPath": "war3mapImported\\UncrownedAbyssKing.mdx",
+      "sha256": "f736e64c9d238e60dfc7fb0fb5040fae5563aaa51df592f9cf9d4bc972ac974e",
+      "bytes": 824674,
+      "repositoryImportPath": "imports/war3mapImported/UncrownedAbyssKing.mdx"
+    },
+    {
+      "role": "texture",
+      "sourceRelative": "original/UncrownedAbyssKingAtlas.blp",
+      "importPath": "Textures\\UncrownedAbyssKingAtlas.blp",
+      "sha256": "5a2f899e3760bcf20b60333433705e38cd18ef3dfe6da784d6464207adfc9fa1",
+      "bytes": 350705,
+      "repositoryImportPath": "imports/Textures/UncrownedAbyssKingAtlas.blp"
+    }
+  ],
+  "rawAssetBytes": 1175379,
+  "format": 800,
+  "triangles": 6106,
+  "bones": 27,
+  "blp": {
+    "version": 1,
+    "width": 512,
+    "height": 512,
+    "mipmaps": 10,
+    "alphaBits": 0
+  },
+  "sequences": [
+    {
+      "sequence": "Stand",
+      "samples": 25,
+      "loop": true
+    },
+    {
+      "sequence": "Walk",
+      "samples": 25,
+      "loop": true
+    },
+    {
+      "sequence": "Attack",
+      "samples": 25,
+      "loop": false
+    },
+    {
+      "sequence": "Stand Hit",
+      "samples": 25,
+      "loop": false
+    },
+    {
+      "sequence": "Death",
+      "samples": 25,
+      "loop": false
+    },
+    {
+      "sequence": "Portrait",
+      "samples": 25,
+      "loop": true
+    }
+  ],
+  "portrait": {
+    "embeddedCamera": "Portrait",
+    "clientFallbackMustBeTested": true,
+    "separatePortraitMdxProvided": false,
+    "pngBytes": 372859,
+    "pngSha256": "85177dd58f6c8615d692c8ff346b10e85052872d06f46365507fd680c3a7195b",
+    "actualEmbeddedCameraRendered": true,
+    "pngShippedInRepository": false
+  },
+  "bounds": {
+    "StandInitial": {
+      "min": [
+        -52.46228790283203,
+        -66.9915771484375,
+        3.299999952316284
+      ],
+      "max": [
+        25.519163131713867,
+        66.9915771484375,
+        159.01234436035156
+      ],
+      "size": [
+        77.9814510345459,
+        133.983154296875,
+        155.71234440803528
+      ]
+    },
+    "StandAll25Samples": {
+      "min": [
+        -53.992530822753906,
+        -68.95658111572266,
+        3.299999952316284
+      ],
+      "max": [
+        25.519163131713867,
+        68.95658111572266,
+        160.47235107421875
+      ],
+      "size": [
+        79.51169395446777,
+        137.9131622314453,
+        157.17235112190247
+      ]
+    },
+    "All150Samples": {
+      "min": [
+        -58.180782318115234,
+        -68.95658111572266,
+        2.681523084640503
+      ],
+      "max": [
+        94.07363891601562,
+        71.7190933227539,
+        161.85179138183594
+      ],
+      "size": [
+        152.25442123413086,
+        140.67567443847656,
+        159.17026829719543
+      ]
+    },
+    "scaleComparison": {
+      "eclipseCurrentVisualScale": 8,
+      "eclipseReferencedStandTopWorld": 1119.84,
+      "abyssTopMatchedScale": 7.0424721080913955,
+      "recommendedVisualScale": 7.0,
+      "atScale7": {
+        "standTopWorld": 1113.086410522461,
+        "standBodyHeight": 1089.986410856247,
+        "standWidthWorld": 937.882080078125,
+        "allAnimationsMinWorld": [
+          -407.26547622680664,
+          -482.6960678100586,
+          18.77066159248352
+        ],
+        "allAnimationsMaxWorld": [
+          658.5154724121094,
+          502.03365325927734,
+          1132.9625396728516
+        ]
+      },
+      "basis": "Match approved Eclipse*8 top silhouette approximately; final scale is integration decision and needs game-camera validation."
+    }
+  },
+  "visualScaleSuggestion": 7.0,
+  "visualScaleBasis": "Current Eclipse scale8 Stand top ≈1119.84. Abyss Stand initial top159.0123 ×7≈1113.09. Same top silhouette scale, not a blanket multiplier; actual broad cape/shoulders are wider. Final integration decision and game-camera validation needed.",
+  "allowedObjectChanges": [
+    "modelFile",
+    "visualScalingValue"
+  ],
+  "doNotChange": [
+    "collisionSize",
+    "selectionScale",
+    "speed",
+    "movementType",
+    "movementHeight",
+    "pathing",
+    "health",
+    "armor",
+    "skills"
+  ],
+  "minimumRebuildSource": [
+    "build_abyss.py",
+    "geometry.py",
+    "seal_geometry.py",
+    "primitives.py",
+    "export_validate.cjs",
+    "check_roundtrip.cjs",
+    "check_surfaces.cjs",
+    "original/abyss-source.json",
+    "original/UncrownedAbyssKingAtlas_source.png",
+    "README.md",
+    "PROVENANCE.md",
+    "production-manifest.json",
+    "bounds-and-scale-report.json"
+  ],
+  "previewRebuildSource": [
+    "render_sampled.py",
+    "package_delivery.py"
+  ],
+  "sourceRuntimeVariable": "MDX_PARSER_RUNTIME",
+  "baseUnitRawcode": "Ulic",
+  "integration": {
+    "baseCommit": "29c534a77a07b52ebd35dea57b629bdba12e6e16",
+    "modelPath": "war3mapImported\\UncrownedAbyssKing.mdx",
+    "scale": 7.0,
+    "scope": "Only uB32 modelFile and visualScalingValue; all other fields and JASS inherited"
+  },
+  "sourceHashes": {
+    "build_abyss.py": {
+      "sha256": "c5583933eec84e5e3cfc214629a5214e62ab992d4229303377351545b478afdd",
+      "bytes": 19624
+    },
+    "geometry.py": {
+      "sha256": "bceeaee80042ab22330344e62bab200feb688beb7025aa7f80e090872990d6b6",
+      "bytes": 2310
+    },
+    "seal_geometry.py": {
+      "sha256": "603eea10a2eb9fe26eb90d5de136795aaf7d441c89651dac3bdc43f96ad2faaa",
+      "bytes": 1255
+    },
+    "primitives.py": {
+      "sha256": "9c0f2d6452a9f08bf230c1aaeedfaa4cfa8455f5d1ae598d93472aa16299cf1e",
+      "bytes": 3145
+    },
+    "export_validate.cjs": {
+      "sha256": "64215f22a4157b4ac7e14f9f036d7a3608dc4b8e4f1666791ce55bea96e60d1c",
+      "bytes": 8580
+    },
+    "check_roundtrip.cjs": {
+      "sha256": "58aa1814e545d85f3b43ac333b02304d98be7556a6fe4adf10301b67749e052a",
+      "bytes": 2872
+    },
+    "check_surfaces.cjs": {
+      "sha256": "cbf78e20366e5d84ef7770edbd3a60434264b6a236bf6fe7dff26f8e2e20c27a",
+      "bytes": 3040
+    },
+    "original/abyss-source.json": {
+      "sha256": "07f88d7c47ec76cde0fd3522112bfbec5306d87f29fda5f0406eb6a5b4e055f7",
+      "bytes": 592287
+    },
+    "original/UncrownedAbyssKingAtlas_source.png": {
+      "sha256": "dacdb72973be59437c0624da8f4c3ef6580cf5cd28fee186370ed5f36d41d86b",
+      "bytes": 75508
+    },
+    "README.md": {
+      "sha256": "07dbf958532d752647a28f79cfc4268268eccae5ef94bca00c0ae0a2990b8284",
+      "bytes": 2476
+    },
+    "PROVENANCE.md": {
+      "sha256": "94d7a05eb39edc2002dfeee78d347f02f2134171e23b32b68f9c0b1fa7ce25a3",
+      "bytes": 705
+    },
+    "bounds-and-scale-report.json": {
+      "sha256": "bfdce644d75b5c075000ed834afdbe3d474f64aee150cd30024b6e0017d653dd",
+      "bytes": 1678
+    }
+  },
+  "previewQa": {
+    "allSixSequencesRendered": true,
+    "actualFramesPerSequence": 13,
+    "animationSource": "fresh parse of final frozen on-disk MDX; decoded BLP1",
+    "video": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 480,
+          "height": 556,
+          "duration": "11.750000",
+          "nb_frames": "282"
+        }
+      ]
+    },
+    "acceptedStaticMdxShaUnchanged": true,
+    "deathStyle": "compressed descending collapse; no particle dissolve"
+  }
+}

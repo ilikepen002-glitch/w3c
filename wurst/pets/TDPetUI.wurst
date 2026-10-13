@@ -11,9 +11,9 @@ import RegisterEvents
 import ClosureTimers
 import Table
 
+trigger managerCommandTrigger = CreateTrigger()
 trigger selectionTrigger = CreateTrigger()
 trigger deselectionTrigger = CreateTrigger()
-trigger commandTrigger = CreateTrigger()
 boolean ready = false
 
 function showPage(int lane, int mode, int page, int slot, int nonce)
@@ -167,6 +167,9 @@ function onCommand() returns boolean
 		showDetailOrList(lane, page, slot, pet)
 	return false
 
+function onManagerSpell()
+	onCommand()
+
 function onCollection() returns boolean
 	let farmer = GetTriggerUnit()
 	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
@@ -206,11 +209,9 @@ public function tdPetSetupUI()
 		tdPetSelectedSlot[lane] = -1
 	registerSpellEffectEvent(TD_PET_COLLECTION_ABILITY_ID, function onCollection)
 	registerSpellEffectEvent(TD_PET_DEPLOY_ABILITY_ID, function onDeploy)
-	// Every manager button shares the same admission path. Register it once:
-	// hundreds of per-rawcode triggers exhaust the legacy JASS startup budget.
-	// onCommand checks display identity and the exact mounted session ability.
-	commandTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
-	commandTrigger.addCondition(Filter(function onCommand))
+	// One native bridge, independent of manager/portrait/skill catalog size.
+	managerCommandTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+	managerCommandTrigger.addAction(function onManagerSpell)
 	selectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SELECTED)
 	deselectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DESELECTED)
 	selectionTrigger.addAction(function onSelected)

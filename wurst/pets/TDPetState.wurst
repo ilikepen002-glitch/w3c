@@ -1,12 +1,14 @@
 package TDPetState
+import TDCombatVisualRuntime
 import TDPetData
 import TDAuraState
 import TDPetRules
+import TDPetAttackQueue
+import TDPetEffectScheduler
 import TDConfig
 import TDState
 import TDEnemyMechanicData
 import Table
-import BitSet
 import LinkedList
 
 public class TDPet
@@ -14,11 +16,11 @@ public class TDPet
 	int species
 	int captureWave
 	int level = 1
-	int usedSkills = 0
 	int skillCount = 0
 	int array[4] skills
 	int array[4] qualities
 	int rotation = 0
+	int resolveRotation = 0
 	real readyAt = 0.0
 	real buffUntil = 0.0
 	int buffSkill = -1
@@ -52,47 +54,77 @@ public class TDPet
 				return true
 		return false
 
-	function rollSkill(int slot) returns int
-		var mask = 0
-		for index = 0 to skillCount - 1
-			if index != slot
-				mask = bitset(mask).set(skills[index]).val
+	function ownsSkillExcept(int skill, int except) returns boolean
+		return tdPetSkillOwned(skill, except == 0 ? -1 : skills[0], except == 1 ? -1 : skills[1], except == 2 ? -1 : skills[2], except == 3 ? -1 : skills[3])
+
+	function skillAllowed(int skill, int slot) returns boolean
+		return tdPetSkillAllowedForSpecies(skill, slot, species, ownsSkillExcept(skill, slot))
+
+	function skillCandidateCount(int slot, int quality, boolean universal) returns int
 		var count = 0
-		for skill = 0 to 15
-			if tdPetSkillAllowed(skill, slot, mask, hasActiveExcept(slot))
-				count += 1
+		for skill = 0 to TD_PET_SKILL_COUNT - 1
+			if skillAllowed(skill, slot) and tdPetSkillQualityValid(skill, quality)
+				if slot == 0 or tdPetSkillIsUniversal(skill) == universal
+					count += 1
+		return count
+
+	function canRollSkill(int slot) returns boolean
+		return skillCandidateCount(slot, 1, true) + skillCandidateCount(slot, 1, false) > 0
+
+	function rollSkill(int slot, int quality) returns int
+		if not canRollSkill(slot) or quality < 1 or quality > 4
+			return -1
+		if slot == 0
+			if not canRollSkill(slot)
+				return -1
+			let choice = GetRandomInt(1, 100)
+			return choice <= 50 ? tdPetElementSkill(tdPetSpeciesElement(species), quality) : (choice <= 75 ? 11 : 12)
+		var universal = GetRandomInt(1, 100) <= 80
+		var count = skillCandidateCount(slot, quality, universal)
+		if count <= 0
+			universal = not universal
+			count = skillCandidateCount(slot, quality, universal)
 		if count <= 0
 			return -1
-		let rank = GetRandomInt(0, count - 1)
-		var remaining = rank
-		for skill = 0 to 15
-			if tdPetSkillAllowed(skill, slot, mask, hasActiveExcept(slot))
+		var remaining = GetRandomInt(0, count - 1)
+		for skill = 0 to TD_PET_SKILL_COUNT - 1
+			if skillAllowed(skill, slot) and tdPetSkillQualityValid(skill, quality) and tdPetSkillIsUniversal(skill) == universal
 				if remaining == 0
 					return skill
 				remaining -= 1
 		return -1
 
+	function rollSkill(int slot) returns int
+		return rollSkill(slot, 1)
+
 	function setSkill(int slot, int skill, int quality)
-		if slot < 0 or slot > 3 or slot > skillCount or skill < 0 or skill > 15 or quality < 1 or quality > 4
+		if slot < 0 or slot > 3 or slot > skillCount or quality < 1 or quality > 4
 			return
-		var mask = 0
-		for index = 0 to skillCount - 1
-			if index != slot
-				mask = bitset(mask).set(skills[index]).val
-		if not tdPetSkillAllowed(skill, slot, mask, hasActiveExcept(slot))
+		if not skillAllowed(skill, slot) or not tdPetSkillQualityValid(skill, quality)
 			return
 		skills[slot] = skill
 		qualities[slot] = quality
 		skillCount = IMaxBJ(skillCount, slot + 1)
-		usedSkills = 0
-		for index = 0 to skillCount - 1
-			usedSkills = bitset(usedSkills).set(skills[index]).val
 		revision += 1
+
+	function invalidateCombat()
+		tdCombatVisualClearPet(host)
+		generation += 1
+		pendingSkill = false
+		pendingSerial += 1
+		tdPetCancelQueuedAttacks(this castTo int)
+		tdPetCancelEffectTasks(this castTo int)
+		rotation = 0
+		resolveRotation = 0
+		buffUntil = 0.0
+		buffSkill = -1
+		buffPower = 0.0
 
 	function rollCaptureSkills()
 		let count = tdPetSkillCountForRoll(GetRandomInt(1, 100))
 		for slot = 0 to count - 1
-			setSkill(slot, rollSkill(slot), tdPetQualityForRoll(GetRandomInt(1, 100)))
+			let quality = tdPetQualityForRoll(GetRandomInt(1, 100))
+			setSkill(slot, rollSkill(slot, quality), quality)
 
 	function skillAt(int slot) returns int
 		return slot >= 0 and slot < skillCount ? skills[slot] : -1
@@ -109,11 +141,7 @@ public class TDPet
 		return 0.0
 
 	function recall()
-		generation += 1
-		pendingSkill = false
-		pendingSerial += 1
-		buffUntil = 0.0
-		buffSkill = -1
+		invalidateCombat()
 		if host != null
 			host.removeAbility(TD_PET_ATTACK_BONUS_ID)
 			host.removeAbility(TD_PET_SPEED_BONUS_ID)
@@ -127,7 +155,11 @@ public class TDPet
 		return tdPetOwnedQuality(skillCount, qualities[0], qualities[1], qualities[2], qualities[3])
 
 	function summary() returns string
-		return tdPetQualityName(quality()) + " " + tdPetSpeciesName(species) + " · " + skillCount.toString() + "技能 · 共鸣Lv" + level.toString() + (host == null ? " [收藏]" : " [上阵]")
+		return tdPetQualityName(quality()) + " " + tdPetElementName(tdPetSpeciesElement(species)) + " · " + tdPetSpeciesName(species) + " · " + skillCount.toString() + "技能 · 共鸣Lv" + level.toString() + (host == null ? " [收藏]" : " [上阵]")
+
+	ondestroy
+		tdPetCancelQueuedAttacks(this castTo int)
+		tdPetCancelEffectTasks(this castTo int)
 public TDPet array tdPets
 public LinkedList<TDPet> tdPetMatchRecords = new LinkedList<TDPet>()
 int array tdPetBalls
@@ -298,10 +330,12 @@ public function tdPetBeginReroll(int lane, int slot, int skillSlot) returns bool
 	if not tdPetLaneCanManage(lane) or pet == null or pet.released or skillSlot < 0 or skillSlot >= pet.skillCount or pet.proposalSlot >= 0 or tdPetRerollStones[lane] <= 0 or pet.proposalVersion >= 2147483647
 		return false
 	// rollSkill refuses an empty candidate set before invoking random natives.
-	let candidate = pet.rollSkill(skillSlot)
-	if candidate < 0
+	if not pet.canRollSkill(skillSlot)
 		return false
 	let quality = tdPetQualityForRoll(GetRandomInt(1, 100))
+	let candidate = pet.rollSkill(skillSlot, quality)
+	if candidate < 0
+		return false
 	pet.proposalVersion += 1
 	pet.proposalRevision = pet.revision
 	pet.proposalOldSkill = pet.skillAt(skillSlot)
@@ -321,10 +355,12 @@ public function tdPetContinueReroll(int lane, int slot, TDPet expected, int cand
 		return false
 	if pet.proposalRevision != sourceRevision or pet.revision != sourceRevision or tdPetRerollStones[lane] < 1 or tdPetRerollStones[lane] > TD_PET_MATERIAL_LIMIT
 		return false
-	let candidate = pet.rollSkill(pet.proposalSlot)
-	if candidate < 0
+	if not pet.canRollSkill(pet.proposalSlot)
 		return false
 	let quality = tdPetQualityForRoll(GetRandomInt(1, 100))
+	let candidate = pet.rollSkill(pet.proposalSlot, quality)
+	if candidate < 0
+		return false
 	pet.proposalVersion += 1
 	pet.proposalRevision = pet.revision
 	pet.proposalOldSkill = pet.skillAt(pet.proposalSlot)
@@ -346,11 +382,7 @@ public function tdPetResolveRerollVersion(int lane, int slot, int candidateVersi
 		pet.setSkill(pet.proposalSlot, pet.proposalSkill, pet.proposalQuality)
 		if pet.revision == revision
 			return false
-		pet.buffUntil = 0.0
-		pet.buffSkill = -1
-		pet.buffPower = 0.0
-		pet.generation += 1
-		pet.pendingSkill = false
+		pet.invalidateCombat()
 	pet.proposalSlot = -1
 	pet.proposalSkill = -1
 	pet.proposalQuality = 0
@@ -366,13 +398,17 @@ public function tdPetOpenSlot(int lane, int slot) returns boolean
 	let pet = tdPetAt(lane, slot)
 	if not tdPetLaneCanManage(lane) or pet == null or pet.released or pet.skillCount >= 4 or pet.proposalSlot >= 0 or tdPetSlotStones[lane] <= 0
 		return false
-	let skill = pet.rollSkill(pet.skillCount)
+	if not pet.canRollSkill(pet.skillCount)
+		return false
+	let quality = tdPetQualityForRoll(GetRandomInt(1, 100))
+	let skill = pet.rollSkill(pet.skillCount, quality)
 	if skill < 0
 		return false
 	let revision = pet.revision
-	pet.setSkill(pet.skillCount, skill, tdPetQualityForRoll(GetRandomInt(1, 100)))
+	pet.setSkill(pet.skillCount, skill, quality)
 	if pet.revision == revision
 		return false
+	pet.invalidateCombat()
 	tdPetSlotStones[lane] -= 1
 	return true
 
@@ -433,8 +469,7 @@ public function tdPetTowerWorkStarted(unit tower)
 	let pet = tdPetForHost(tower)
 	if pet != null
 		pet.paused = true
-		pet.generation += 1
-		pet.pendingSkill = false
+		pet.invalidateCombat()
 
 public function tdPetTowerWorkFinished(unit tower)
 	if tower == null

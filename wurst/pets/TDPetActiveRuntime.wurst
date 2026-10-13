@@ -1,0 +1,79 @@
+package TDPetActiveRuntime
+import TDPetCastContext
+import TDPetActiveRules
+import TDPetRouteSnapshot
+import TDPetActiveDirect
+import TDPetActivePeriodic
+import TDPetActiveVisuals
+import TDPetCombatSource
+import TDPetState
+import TDPetData
+import TDPetRuntime
+import TDPetRules
+import TDPetEffectScheduler
+import TDPetEffectTargetState
+import TDTrialIdentity
+import TDEquipmentTrialAoe
+import TDTowerData
+import GameTimer
+
+class TDPetActiveCast extends TDPetCastContext
+	construct(TDPet pet, unit host, int generation, int skill, int quality, real damageBase, unit primary, int primaryRevision, vec2 center, tdTrialCombatContext trial, tdEquipmentTrialAoeSnapshot trialTargets, vec2 roadSecond, vec2 roadThird, vec2 roadFourth)
+		super(pet, host, generation, skill, quality, damageBase, primary, primaryRevision, center, trial, trialTargets, roadSecond, roadThird, roadFourth)
+
+	override function runEffect(real now) returns boolean
+		if not valid()
+			return false
+		// One scheduler quantum permits an endpoint tick without accumulating drift.
+		if now > expiresAt + 0.05
+			return false
+		this.visualTick(now)
+		if skill == 19 or skill == 20 or skill == 23 or skill == 27 or skill == 28 or skill == 29 or skill == 32 or skill == 35 or skill == 36
+			return this.stepDirect(now)
+		return this.stepPeriodic(now)
+
+function prepare(TDPetActiveCast cast)
+	if cast.skill == 22 or cast.skill == 24 or cast.skill == 31
+		cast.nextAt = cast.createdAt + 1.0
+	if cast.skill == 33
+		cast.nextAt = cast.createdAt + 0.75
+	if cast.skill == 34
+		cast.nextAt = cast.createdAt + 0.60
+		let index = cast.remember(cast.primary)
+		if index >= 0
+			cast.setLastPosition(index, cast.center)
+			if not cast.primaryValid()
+				let position = cast.targetPositions[index]
+				position.position = cast.center
+				position.retired = true
+		cast.candidates.enumUnitsInRange(cast.center, 350.0)
+		for target in cast.candidates
+			if cast.victimCount >= 4
+				break
+			if cast.aoeValid(target) and target != cast.primary
+				cast.remember(target)
+		cast.markCount = cast.victimCount
+	if cast.skill == 24
+		cast.remember(cast.primary)
+		cast.setLastPosition(0, cast.center)
+		if not cast.primaryValid()
+			let position = cast.targetPositions[0]
+			position.position = cast.center
+			position.retired = true
+	cast.visualPrepare()
+
+// The original-hit phase-fenced packet is the only caller for elemental starts.
+// Successful ground creation keeps its fixed center even after the primary dies.
+public function tdPetStartElementActive(TDPet pet, unit host, int generation, unit target, int targetRevision, vec2 center, int skill, int quality, real damageBase, tdTrialCombatContext trial, tdEquipmentTrialAoeSnapshot trialTargets, vec2 roadSecond, vec2 roadThird, vec2 roadFourth) returns boolean
+	if not tdPetBindingValid(pet, host, generation) or not tdTrialContextValid(trial) or not tdPetSkillQualityValid(skill, quality) or tdPetSkillElement(skill) != tdPetSpeciesElement(pet.species)
+		return false
+	if tdPetActiveCastIndex.hasInt(pet castTo int)
+		return false
+	if tdPetElementSingleTarget(skill) and not tdTrialTargetContextValid(target, pet.lane, trial, targetRevision)
+		return false
+	if tdPetElementSingleTarget(skill) and not tdPetEnemyIsValid(target, pet.lane)
+		return false
+	let cast = new TDPetActiveCast(pet, host, generation, skill, quality, damageBase, target, targetRevision, center, trial, trialTargets, roadSecond, roadThird, roadFourth)
+	tdPetActiveCastIndex.saveInt(pet castTo int, cast castTo int)
+	prepare(cast)
+	return tdPetRegisterEffectTask(cast)

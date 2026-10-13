@@ -1,0 +1,57 @@
+package TDPetActiveRules
+import TDPetData
+
+public function tdPetDirection(vec2 origin, vec2 point) returns vec2
+	let delta = point - origin
+	let length = SquareRoot(delta.x * delta.x + delta.y * delta.y)
+	return length > 0.001 ? delta / length : vec2(1.0, 0.0)
+
+public function tdPetLineContains(vec2 origin, vec2 direction, vec2 point, real length, real halfWidth) returns boolean
+	let delta = point - origin
+	let forward = delta.x * direction.x + delta.y * direction.y
+	let side = delta.x * direction.y - delta.y * direction.x
+	return forward >= 0.0 and forward <= length and RAbsBJ(side) <= halfWidth
+
+public function tdPetFanContains(vec2 origin, vec2 direction, vec2 point, real length) returns boolean
+	let delta = point - origin
+	let square = delta.x * delta.x + delta.y * delta.y
+	let forward = delta.x * direction.x + delta.y * direction.y
+	// 90 degree fan: cos(45)^2 = 1/2, including both boundaries.
+	return square <= length * length and forward >= 0.0 and forward * forward * 2.0 >= square
+
+public function tdPetElementSingleTarget(int skill) returns boolean
+	return skill == 20 or skill == 21 or skill == 23 or skill == 27 or skill == 31 or skill == 35
+
+public function tdPetElementDuration(int skill) returns real
+	if skill == 24
+		return 5.0
+	if skill == 20 or skill == 22 or skill == 25 or skill == 30 or skill == 31 or skill == 37
+		return 4.0
+	if skill == 33
+		return 3.75
+	if skill == 23
+		return 0.75
+	if skill == 27
+		return 2.0
+	if skill == 34
+		return 1.20
+	if skill == 29
+		return 1.20
+	if skill == 26
+		return 1.15
+	if skill == 28
+		return 0.90
+	if skill == 21 or skill == 38
+		return 0.6
+	return 0.25
+
+public function tdPetElementTargetLimit(int skill) returns int
+	if skill == 19
+		return 6
+	if skill == 28 or skill == 36
+		return 8
+	return 12
+
+// Floating deadlines such as 3*.20 must not skip the final bounded tick.
+public function tdPetEffectDue(real now, real deadline) returns boolean
+	return now + 0.0001 >= deadline

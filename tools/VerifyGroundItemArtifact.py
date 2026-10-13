@@ -57,17 +57,18 @@ def verify_no_removed_raw_objects(data, extended, label):
 
 
 def verify_list_channel_families(abilities):
-    """The only shared-order exception: 49 exclusive variants in each cell."""
+    """The only shared-order exception: complete 49/241 exclusive states per cell."""
     actual = {raw for raw in abilities if re.fullmatch(r'L[0-9A-F]{3}', raw)}
     if not actual:
         return {}
-    expected = {f'L{i:03X}' for i in range(490)}
-    require(actual == expected, 'List shared-order whitelist must contain exactly L000..L1E9')
+    variants = 241 if any(int(raw[1:], 16) >= 490 for raw in actual) else 49
+    expected = {f'L{i:03X}' for i in range(10 * variants)}
+    require(actual == expected, 'List shared-order whitelist must contain exactly its reviewed complete family')
     groups, cell_orders = {}, {}
     for cell in range(10):
         order = None
-        for variant in range(49):
-            raw = f'L{cell * 49 + variant:03X}'
+        for variant in range(variants):
+            raw = f'L{cell * variants + variant:03X}'
             parent, fields = abilities[raw]
             require(parent == 'ANcl' and value(fields, 'alev', 0) == 2,
                     f'{raw}: shared list family must be two-level Channel')

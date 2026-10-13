@@ -34,9 +34,13 @@ public class TDEnemyMechanicState
 		return active
 
 	function scaledSpellAmount(real amount) returns real
+		return scaledSpellAmount(amount, 0.0)
+
+	function scaledSpellAmount(real amount, real weakening) returns real
 		if amount <= 0.0 or not active or role != TD_ENEMY_ROLE_BOSS or not tdEnemyBossSpellResistanceEnabled(wave)
 			return amount
-		return amount * tdWaveBossSpellDamageTakenFactor(wave)
+		let factor = tdWaveBossSpellDamageTakenFactor(wave)
+		return amount * (1.0 - (1.0 - factor) * (1.0 - RMinBJ(0.20, RMaxBJ(0.0, weakening))))
 
 	function isSprinting() returns boolean
 		return sprintRunning or bossBurstRunning

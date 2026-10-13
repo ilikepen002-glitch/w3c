@@ -18,7 +18,7 @@ public function tdTrialNativeModelPath() returns string
 @compiletime function tdGenerateTrialObject()
 	new UnitDefinition(TD_TRIAL_TARGET_UNIT_ID, UnitIds.battlegolem)
 	..setName("金币试炼魔像")
-	..setDescription("120秒伤害试炼目标；按本路造成的伤害排名发放奖励。")
+	..setDescription("每路仅一批5只，走完或死亡不再出现；最长120秒，按有效伤害排名发放金币。")
 	..setModelFile(tdTrialNativeModelPath())
 	..setTintingColorRed(255)
 	..setTintingColorGreen(220)

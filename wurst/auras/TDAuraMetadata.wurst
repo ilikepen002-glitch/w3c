@@ -22,9 +22,9 @@ public function tdAuraName(int identity) returns string
 	if identity == 7
 		return "寒霜领域"
 	if identity == 8
-		return "精灵统御"
+		return "已退役精灵光环"
 	if identity == 9
-		return "精灵迟滞"
+		return "已退役精灵领域"
 	if identity == 10
 		return "缓速藤蔓"
 	if identity == 11
@@ -33,6 +33,10 @@ public function tdAuraName(int identity) returns string
 		return "精灵霜箭"
 	if identity == 13
 		return "精灵风缚"
+	if identity == TD_AURA_PET_REDUCE
+		return "精灵减击"
+	if identity >= TD_AURA_PET_COLD and identity <= TD_AURA_PET_SEAL
+		return identity == TD_AURA_PET_COLD ? "寒星减速" : (identity == TD_AURA_PET_VORTEX ? "归墟减速" : "镇岳减速")
 	return "未知光环"
 
 public function tdAuraNominalPower(int identity, int rank) returns real
@@ -66,9 +70,13 @@ public function tdAuraNominalPower(int identity, int rank) returns real
 			if definition.quality == rank and definition.auraKind == TD_ITEM_AURA_ENEMY_SLOW
 				return definition.auraValue
 	if identity == TD_AURA_PET_COMMAND
-		return tdPetSkillPower(4, rank)
+		return 0.0
 	if identity == TD_AURA_PET_STASIS
-		return tdPetSkillPower(5, rank)
+		return 0.0
+	if identity >= TD_AURA_PET_COLD and identity <= TD_AURA_PET_SEAL
+		return identity == TD_AURA_PET_SEAL ? 0.15 : 0.25
+	if identity == TD_AURA_PET_REDUCE
+		return 0.30
 	if identity == TD_AURA_PET_FROST_ARROW
 		return tdPetSkillPower(9, rank)
 	if identity == TD_AURA_PET_WIND
@@ -89,7 +97,7 @@ public function tdAuraNominalRadius(int identity, int rank) returns real
 				return definition.auraRadius
 		return 0.0
 	if identity == TD_AURA_PET_STASIS
-		return 600.0
+		return 0.0
 	if identity == TD_AURA_VINES
 		return rank == 2 ? tdDryadWideAuraSlowRadius() : tdDryadAuraSlowRadius()
 	return 0.0
@@ -113,6 +121,8 @@ public function tdAuraStateTooltip(int identity, int rank) returns string
 	let radius = tdAuraNominalRadius(identity, rank)
 	if radius > 0.0 and identity != TD_AURA_VINES
 		description += "范围" + R2I(radius) + "。"
+	if identity == TD_AURA_PET_REDUCE
+		description = "每次普攻命中叠加6%移动减速，最多5层30%；不同精灵各自叠层，同类取最强，Boss减半。"
 	if identity == TD_AURA_VINES
 		description += "范围：普通" + R2I(tdDryadAuraSlowRadius()) + "，宽域" + R2I(tdDryadWideAuraSlowRadius()) + "；减速受装备控制强化影响。"
 	if identity == TD_AURA_POISON_DART

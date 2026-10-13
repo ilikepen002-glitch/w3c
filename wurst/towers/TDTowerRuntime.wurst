@@ -1,4 +1,5 @@
 package TDTowerRuntime
+import TDCombatVisualRuntime
 import TDBossDarkTideRuntime
 import TDConfig
 import TDState
@@ -16,6 +17,9 @@ import LinkedList
 import TDTowerSaleState
 import TDPetState
 import TDPetCombat
+import TDPetHeroRuntime
+import TDPetHeroState
+import TDPetHeroEffects
 import TDEquipmentSpecialState
 import TDEquipmentSpecialRuntime
 import TDEquipmentCombat
@@ -89,6 +93,7 @@ function tdHandleTowerSellCast() returns boolean
 	tdClearTowerSaleState(tower)
 	tdEvolutionForgetTower(tower)
 	tdDamageRetireTower(tower)
+	tdPetHeroTowerInvalidated(tower)
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
@@ -107,7 +112,9 @@ function tdHandleTowerUpgradeStarted()
 		tdDarkTideForgetTower(tower)
 		tdForgetEquipmentSpecial(tower)
 		tdGetTowerSaleState(tower).startWork()
+		tdCombatVisualSuspendGear(tower)
 		tdEvolutionWorkStarted(tower)
+		tdPetHeroTowerInvalidated(tower)
 		tdPetTowerWorkStarted(tower)
 
 class TDArcherSplitArrowShot
@@ -243,6 +250,7 @@ function tdRejectTowerConstruction(unit tower, int playerId, int towerChoice, st
 	tdClearTowerSaleState(tower)
 	tdEvolutionForgetTower(tower)
 	tdDamageRetireTower(tower)
+	tdPetHeroTowerInvalidated(tower)
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
@@ -343,7 +351,9 @@ function tdHandleTowerConstructionStarted()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	tdGetTowerSaleState(tower).startWork()
+	tdCombatVisualSuspendGear(tower)
 	tdEvolutionWorkStarted(tower)
+	tdPetHeroTowerInvalidated(tower)
 	tdPetTowerWorkStarted(tower)
 	tdValidateTowerConstruction(tower)
 
@@ -352,6 +362,7 @@ function tdHandleTowerConstructionFinished()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	tdGetTowerSaleState(tower).finishWork()
+	tdCombatVisualResumeGear(tower)
 	tdPetTowerWorkFinished(tower)
 	tdEvolutionWorkFinished(tower)
 	tdDamageTrackTower(tower)
@@ -372,6 +383,7 @@ function tdHandleTowerConstructionCancelled()
 	tdClearTowerSaleState(tower)
 	tdEvolutionForgetTower(tower)
 	tdDamageRetireTower(tower)
+	tdPetHeroTowerInvalidated(tower)
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
@@ -397,6 +409,7 @@ function tdHandleTowerUpgradeCancelled()
 		let state = tdTowerSaleStates.loadInt(key) castTo TDTowerSaleState
 		if not state.finishWorkForGeneration(cancelledGeneration)
 			return
+		tdCombatVisualResumeGear(tower)
 		tdPetTowerWorkFinished(tower)
 		tdEvolutionWorkFinished(tower)
 		tdRefreshTowerEquipmentBonuses(tower)
@@ -413,6 +426,7 @@ function tdHandleTowerUpgradeFinished()
 		return
 	tdForgetEquipmentSpecial(tower)
 	tdGetTowerSaleState(tower).finishWork()
+	tdCombatVisualResumeGear(tower)
 	tdPetTowerWorkFinished(tower)
 	tdEvolutionWorkFinished(tower)
 	tdDamageTrackTower(tower)
@@ -432,6 +446,7 @@ function tdHandleTowerDeath()
 	tdClearTowerSaleState(tower)
 	tdEvolutionForgetTower(tower)
 	tdDamageRetireTower(tower)
+	tdPetHeroTowerInvalidated(tower)
 	tdPetTowerRemoved(tower)
 	tdForgetEquipmentTower(tower)
 	tdForgetEquipmentAbilities(tower)
@@ -449,6 +464,7 @@ function tdClearOrcBladestormState(unit tower)
 	if not tdOrcBladestormIsActive(tower)
 		return
 	tdOrcBladestormStates.removeBoolean(tdOrcBladestormStateKey(tower))
+	tdPetHeroCancelStorm(tower)
 	tower.removeAnimationProperties("spin")
 	if tower.isAlive()
 		tower.setAnimation("stand")
@@ -478,6 +494,7 @@ function tdHandleOrcBladestormCast() returns boolean
 	tower.addAnimationProperties("spin")
 	tower.setAnimation("stand spin")
 	let context = tdTrialCurrentContext()
+	let heroStorm = tdPetHeroCaptureStorm(tower, context)
 	doPeriodicallyCounted(tdOrcBladestormTickInterval(), pulseCount) cb ->
 		if not tdTrialContextValid(context) or not tdOrcBladestormIsActive(tower) or not tower.isAlive()
 			tdClearOrcBladestormState(tower)
@@ -485,6 +502,7 @@ function tdHandleOrcBladestormCast() returns boolean
 		else
 			tdPulseOrcBladestorm(tower, context)
 			if cb.isLast()
+				tdPetHeroCompleteStorm(tower, heroStorm)
 				tdClearOrcBladestormState(tower)
 				destroy cb
 	return false
@@ -507,7 +525,6 @@ function tdHandleGhoulCorpseExplosionDamage()
 	if target.getLife() > DamageEvent.getAmount() + 0.405
 		return
 	let center = target.getPos()
-	tdPetOnCorpseExplosion(source, center)
 	let laneId = tdEnemyLaneId(target)
 	let g = CreateGroup()
 	g.enumUnitsInRange(center, tdGhoulCorpseExplosionRadius())
@@ -516,6 +533,7 @@ function tdHandleGhoulCorpseExplosionDamage()
 			DamageEvent.setNextDamageFromCode()
 			source.damageTarget(victim, tdEnemyMechanicScaleSpellDamage(victim, tdGhoulCorpseExplosionDamageForBranch(tdTowerLevelForUnitTypeId(GetUnitTypeId(source)), tdTowerBranchForUnitTypeId(GetUnitTypeId(source)), tdTowerIsEvolved(source))))
 	g.destr()
+	tdPetHeroOnCorpseExplosionSettled(source, target, center)
 	let corpseExplosionEffect = AddSpecialEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayDamage.mdl", center.x, center.y)
 	DestroyEffect(corpseExplosionEffect)
 
@@ -697,7 +715,7 @@ function tdDealArcherSplitArrowAttackDamage(unit source, unit target, real amoun
 		return
 	if not tdTrialTargetContextValid(target, GetPlayerId(GetOwningPlayer(source)), context, revision)
 		return
-	tdPetOnSplitArrowImpact(source, target)
+	tdPetHeroOnSplitArrowImpact(source, target)
 	DamageEvent.setNextDamageId(TD_ARCHER_SPLIT_ARROW_DAMAGE_EVENT_ID)
 	source.damageTarget(target, amount, true, true, tdArcherSplitArrowNativeAttackType(), DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
 
@@ -713,7 +731,7 @@ function tdHandleArcherSplitArrowDamage()
 	let volley = tdConsumeArcherSplitArrowVolley(source, target)
 	if volley == null
 		return
-	let attackDamage = DamageEvent.getUnreducedAmount() * tdArcherSplitArrowDamageMultiplier(tdTowerLevelForUnitTypeId(GetUnitTypeId(source)), tdTowerBranchForUnitTypeId(GetUnitTypeId(source)), tdTowerIsEvolved(source))
+	let attackDamage = DamageEvent.getUnreducedOriginalAmount() * tdArcherSplitArrowDamageMultiplier(tdTowerLevelForUnitTypeId(GetUnitTypeId(source)), tdTowerBranchForUnitTypeId(GetUnitTypeId(source)), tdTowerIsEvolved(source))
 	for shot in volley.extraShots
 		if shot != null and shot.target != null and shot.target.isAlive()
 			let victim = shot.target

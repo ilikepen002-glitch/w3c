@@ -1,4 +1,5 @@
 package TDInventoryRuntime
+import TDCombatVisualRuntime
 import TDItemData
 import TDAuraState
 import TDEquipmentSpecialState
@@ -173,6 +174,7 @@ function tdRefreshTowerEquipmentBonuses(unit tower, item excludedItem)
 	let item1 = tdTowerEquipmentItemId(tower, 0, excludedItem)
 	let item2 = tdTowerEquipmentItemId(tower, 1, excludedItem)
 	let item3 = tdTowerEquipmentItemId(tower, 2, excludedItem)
+	tdCombatVisualRefreshGear(tower, tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), item1, item2, item3)
 	tdEquipmentSpecialLoadoutChanged(tower, tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_WAR_INTENT), tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_POISON_BURST), tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_CORPSE_BURST), getElapsedGameTime())
 	tdAuraRegisterTarget(tower, true)
 	let base = tdTowerBaseDamageForBranch(tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)), tdTowerBranchForUnitTypeId(GetUnitTypeId(tower)))

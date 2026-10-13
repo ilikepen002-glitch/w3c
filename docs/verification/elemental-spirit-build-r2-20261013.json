@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "mode": "build",
+  "parentCommit": "95a79a62e36002b8e5e885420895cb4df430058a",
+  "compilerSha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+  "grillSha256": "c5afe67aa5eeabfb98f0ec2f3f0831d8ffc2f4199c26b89eb7418f14319f9f87",
+  "stdlibTree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+  "jdkRuntime": "27+35-2325",
+  "activeCooldownSourceGate": "PASS",
+  "nativeMapScript": {
+    "sourceTemplateSha256": "3fd31a78aaa5d017565fca6c6f3758d40ed6131999c701bdf1f99557ba39e408",
+    "scriptSha256": "95cb24509ca5210908221ac0edf0614529fb8d1fb681578fbcc0b4e8689ab75e",
+    "origin": "read-only war3map.j from exact source template, not a stub or inherited built map"
+  },
+  "activeCooldownArtifactGate": "real MPQ/JASS PASS",
+  "startupArtifactGate": "pet registration/routing and gameplay bootstrap PASS",
+  "artifact": {
+    "sha256": "611ee1b735c56dc8b2a27cbe1db7e17469d1e536f1000f278a5bf3ea2f65a3e3",
+    "importsChecked": 927,
+    "displayName": "契灵守卫战 20261013-1323-UTC+8",
+    "gate": "real read-only Python MPQ/JASS/object tables/import bytes",
+    "candidate": "/workspace/scratch/2106c0ab1fac/elemental-spirit-phase-20261013/worktree/_build/linux-syu3k9yv/project/_build/MyFirstWurstMap.w3x.w3x",
+    "output": "/workspace/scratch/2106c0ab1fac/elemental-spirit-phase-20261013/worktree/ExampleMap.w3x"
+  },
+  "checksStatus": "PASS",
+  "mapSize": 6662209,
+  "checksManifestSha256": "77d719870d4ad6c4be5bc30f2608b0b10b63f5adde1300d01f4eb547c434b2c2",
+  "buildManifestSha256": "d5b2404564dd0c0230410e915debe23340ebbf7fe3a95d48b4cf151c66a5763d",
+  "checksManifestPath": "_build/linux-v2i5mvd_/manifest.json",
+  "buildManifestPath": "_build/linux-syu3k9yv/manifest.json",
+  "legacyAllocators": 147,
+  "startupAdmissions": 2433,
+  "startupRegistrations": 2
+}

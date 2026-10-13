@@ -1,0 +1,51 @@
+package TDPetHeroData
+import TDPetHeroRules
+import TDTooltipText
+
+// Existing native command-button resources already used by the pet UI.
+public function tdPetHeroIconName(int skill) returns string
+	if skill == TD_PET_HERO_FROST
+		return "BTNColdArrows"
+	if skill == TD_PET_HERO_MOON
+		return "BTNBrilliance"
+	if skill == TD_PET_HERO_BOSS
+		return "BTNCriticalStrike"
+	if skill == TD_PET_HERO_STORM
+		return "BTNCyclone"
+	if skill == TD_PET_HERO_JUDGEMENT or skill == TD_PET_HERO_RELAY
+		return "BTNInnerFire"
+	if skill == TD_PET_HERO_POISON or skill == TD_PET_HERO_EPIDEMIC
+		return "BTNDeathAndDecay"
+	if skill == TD_PET_HERO_ROOT
+		return "BTNFaerieFire"
+	if skill == TD_PET_HERO_HUNT
+		return "BTNGlove"
+	return ""
+
+public function tdPetHeroDescription(int skill, int quality) returns string
+	let power = tdPetHeroPower(skill, quality)
+	if power <= 0.0
+		return ""
+	let percent = tdTooltipNumber(power * 100.0) + "%"
+	let host = "|n仅对" + tdPetHeroHostName(skill) + "生效。"
+	if skill == TD_PET_HERO_FROST
+		return "分裂副箭命中使目标移动速度降低" + percent + "，持续2秒；首领效果减半。" + host
+	if skill == TD_PET_HERO_MOON
+		return "每第5次普攻给主目标留下3秒月标。另一座本路友塔普攻命中时消耗月标，追加布标当次普攻伤害的" + percent + "法术伤害。每塔最多1标，同名取最强。" + host
+	if skill == TD_PET_HERO_BOSS
+		return "普攻真正首领时，追加本次普攻伤害的" + percent + "伤害。" + host
+	if skill == TD_PET_HERO_STORM
+		return "完整剑刃风暴结束时追加一次尾脉冲，范围沿用风暴，最多6名敌人，各受风暴单次伤害的" + tdTooltipNumber(power) + "倍法术伤害。" + host
+	if skill == TD_PET_HERO_JUDGEMENT
+		return "成功盾击后获得一枚2秒圣印。下一次普攻消耗圣印，追加该次普攻伤害的" + percent + "伤害；最多1枚。" + host
+	if skill == TD_PET_HERO_RELAY
+		return "成功盾击后给450范围内最近的另一座本路完工友塔一枚3秒圣印。其下一次普攻消耗圣印，追加授印塔基础攻击的" + percent + "法术伤害。每塔最多1枚，同名取最强。" + host
+	if skill == TD_PET_HERO_POISON
+		return "每第4次普攻植入一颗3秒毒芽，最多1颗。目标在3秒内死亡时，向240范围内最多2名其他未感染敌人播弱毒，每秒造成附身塔基础攻击的" + percent + "法术伤害，共2次。弱毒不再传播。" + host
+	if skill == TD_PET_HERO_ROOT
+		return "每第5次普攻在主目标位置预警0.5秒，随后120范围内最多3名敌人各受附身塔基础攻击的" + percent + "法术伤害；走出范围可躲避。" + host
+	if skill == TD_PET_HERO_HUNT
+		return "普攻直接击杀敌人后获得一次3秒余势。下一次普攻消耗余势，追加附身塔基础攻击的" + percent + "伤害；最多1次。" + host
+	if skill == TD_PET_HERO_EPIDEMIC
+		return "尸爆结算后给180范围内最多3名存活敌人种2秒疫种，最多1组。首个组员死亡时整组消耗，在其位置180范围内引发一次弱疫爆，最多6名敌人，各受" + tdTooltipNumber(36.0 * power) + "法术伤害。弱疫爆不种新疫。" + host
+	return ""

@@ -14,6 +14,7 @@ absorption, Warcraft spell classification or live gameplay.
 """
 import argparse
 import ast
+from functools import lru_cache
 from collections import Counter, defaultdict
 import hashlib
 import itertools
@@ -54,6 +55,11 @@ def source_function(text, name):
     match = re.search(r'^(?:public )?function ' + re.escape(name) + r'\([^\n]*\n((?:[\t ]+[^\n]*\n|\n)*)', text, re.M)
     require(match is not None, f'Missing source function {name}')
     return match[1]
+
+
+@lru_cache(maxsize=4096)
+def packaged_expression_ast(text):
+    return ast.parse(text, mode='eval').body
 
 
 class BossJassRuntime(GroundJassRuntime):
@@ -131,18 +137,32 @@ class BossJassRuntime(GroundJassRuntime):
         if 'TDPet_lane' in self.globals:
             self.globals['TDPet_lane'][500] = 0
 
+    def assign(self, target, value, scope):
+        indexed = re.fullmatch(r'(\w+)\[(.*)\]', target)
+        if indexed and indexed[1] in scope:
+            index = self.expression(indexed[2], scope)
+            require(type(index) is int and 0 <= index < 8192, 'Local JASS array index outside native capacity')
+            scope[indexed[1]][index] = value
+            return
+        return super().assign(target, value, scope)
+
     def expression(self, text, scope):
         text = re.sub(r'\btrue\b', 'True', text)
         text = re.sub(r'\bfalse\b', 'False', text)
         text = re.sub(r'\bnull\b', 'None', text)
         try:
-            node = ast.parse(text.strip(), mode='eval').body
+            node = packaged_expression_ast(text.strip())
         except SyntaxError as exc:
             raise ValueError('Unsupported packaged expression ' + text) from exc
         ops = {type(part.op) for part in ast.walk(node) if isinstance(part, ast.BoolOp)}
         require(len(ops) <= 1, 'Mixed Jass and/or requires a Jass-specific precedence parser')
         variables = {**self.globals, **scope}
         def read(part):
+            if isinstance(part, ast.Constant):
+                return part.value
+            if isinstance(part, ast.Name):
+                require(part.id in variables, 'Unknown packaged scalar ' + part.id)
+                return variables[part.id]
             if isinstance(part, ast.BoolOp):
                 if isinstance(part.op, ast.And):
                     return all(bool(read(value)) for value in part.values)
@@ -250,6 +270,12 @@ class BossJassRuntime(GroundJassRuntime):
                         active = loop_active
                 elif active and line.startswith('return'):
                     raise _Return(self.expression(line[7:], scope) if line != 'return' else None)
+                elif active and line.startswith('local ') and ' array ' in line:
+                    declaration = re.fullmatch(r'local (real|integer|boolean|unit|effect|group|timer|string) array (\w+)', line)
+                    require(declaration is not None, 'Unsupported packaged local array')
+                    kind, key = declaration.groups()
+                    default = 0.0 if kind == 'real' else 0 if kind == 'integer' else False if kind == 'boolean' else None
+                    scope[key] = defaultdict(lambda value=default: value)
                 elif active and line.startswith('local '):
                     declaration = re.fullmatch(r'local (\w+) (\w+)(?: = (.*))?', line)
                     require(declaration is not None, 'Unsupported packaged local')
@@ -370,7 +396,12 @@ class BossJassRuntime(GroundJassRuntime):
         instance = self.globals['DamageInstance_maxIndex']
         require(instance > before, 'Engine did not construct a damage instance')
         result = {field: self.globals['DamageInstance_' + field][instance]
-                  for field in ('amount', 'unreducedAmount', 'isCode', 'isSpell', 'id', 'lastDamageHP')}
+                  for field in ('amount', 'isCode', 'isSpell', 'id', 'lastDamageHP')}
+        if 'DamageInstance_unreducedAmount' in self.globals:
+            result['unreducedAmount'] = self.globals['DamageInstance_unreducedAmount'][instance]
+        else:
+            require('DamageEvent_getUnreducedAmount' not in self.functions,
+                    'Live unreduced getter lacks its packed backing field')
         if signed_amount != 0.0:
             if not result['isSpell']:
                 self.units[target]['life'] = max(0.0, self.units[target]['life'] - signed_amount)
@@ -468,7 +499,8 @@ def verify_engine_and_accounting(script, runtime_type=BossJassRuntime, boss_resu
         result = runtime.emit(-100.0 if spell else 100.0)
         expected = results[wave] if spell and not code else 100.0
         close(result['amount'], expected, 'Actual dependency classification/early amount')
-        close(result['unreducedAmount'], expected, 'Actual early setAmount unreduced amount')
+        if 'unreducedAmount' in result:
+            close(result['unreducedAmount'], expected, 'Actual early setAmount unreduced amount')
         require(result['isCode'] is code and result['isSpell'] is spell,
                 'Code flag not preserved through dependency negative reclassification')
         require(runtime.calls[SCALE] == int(spell and not code), 'Dependency resistance invoked more than once')
@@ -614,8 +646,16 @@ def verify_source_contract(root, baseline_root=None):
     require(wrapper.strip() == 'damage(pet, host, generation, target, tdEnemyMechanicScaleSpellDamage(target, amount))',
             'Pet spell wrapper changes original damage or scales more than once')
     require('tdEnemyMechanicScaleSpellDamage' not in source_function(pet, 'damage'), 'Original pet damage was scaled')
-    require('damage(pet, host, generation, target, base * extra)' in source_function(pet, 'onAttack'),
-            'Pet combo/execute derived attack changed')
+    attack = source_function(pet, 'onAttack')
+    if 'tdPetSkillDefined' in (root / 'pets/TDPetRules.wurst').read_text(encoding='utf-8'):
+        for addition in ('comboSnapshot', 'chargeSnapshot', 'pursuitSnapshot', 'heavySnapshot'):
+            require(attack.count('damage(pet, host, generation, target, base * ' + addition + ')') == 1,
+                    'Pet independent original-D additional changed: ' + addition)
+        require('DamageEvent.getUnreducedOriginalAmount()' in attack and 'DamageEvent.addUnreducedListener(3)' in pet,
+                'Pet main attack lost immutable early sample')
+    else:
+        require('damage(pet, host, generation, target, base * extra)' in attack,
+                'Pet combo/execute derived attack changed')
     require('spellDamage(pet, source, generation, target, amount)' in source_function(pet, 'tdPetOnCorpseExplosion'),
             'Pet corpse poison bypasses resistance wrapper')
     active = source_function(pet, 'resolveActive')

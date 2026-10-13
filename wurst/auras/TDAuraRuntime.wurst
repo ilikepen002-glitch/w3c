@@ -58,14 +58,6 @@ function tdAuraForget(TDAuraTarget record)
 	tdAuraDetachRecord(record)
 	destroy record
 
-function tdPetSkillRank(TDPet pet, int skill) returns int
-	if pet == null
-		return 0
-	for slot = 0 to IMinBJ(pet.skillCount, tdPetUnlockedSlots(pet.level)) - 1
-		if pet.skillAt(slot) == skill
-			return pet.qualityAt(slot)
-	return 0
-
 function tdAuraCooldownTargetEligible(unit target) returns boolean
 	let pet = tdPetForHost(target)
 	var activeUnlocked = false
@@ -124,15 +116,6 @@ function tdAuraOfferSource(TDAuraTarget record, unit source, TDAuraAggregate agg
 		if kind == TD_ITEM_AURA_COOLDOWN and not cooldownEligible
 			continue
 		aggregate.offer(tdEquipmentAuraIdentity(kind), tdItemQuality(itemId), tdItemAuraValue(itemId), distance <= tdItemAuraRadius(itemId))
-	let pet = tdPetForHost(source)
-	if pet == null or not tdPetBindingValid(pet, source, pet.generation)
-		return
-	if record.tower
-		// Friendly pet aura is strictly host-only; no global/team transmission.
-		aggregate.offer(TD_AURA_PET_COMMAND, tdPetSkillRank(pet, 4), pet.skillPower(4), source == target)
-	else
-		// Enemy-facing pet domain remains an actual 600-unit circle.
-		aggregate.offer(TD_AURA_PET_STASIS, tdPetSkillRank(pet, 5), pet.skillPower(5), distance <= 600.0)
 
 function tdAuraRefresh(TDAuraTarget record)
 	let prepared = new TDAuraAggregate()

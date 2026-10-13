@@ -1,0 +1,20 @@
+package TDPetAttackRules
+import TDPetData
+
+public function tdPetNextAttackCount(int count, int period) returns int
+	return period > 0 ? (count + 1) mod period : 0
+
+public function tdPetPursuitEligible(real life, real maxLife) returns boolean
+	return maxLife > 0.0 and life <= maxLife * 0.30
+
+public function tdPetHeavyEligible(real life, real maxLife) returns boolean
+	return maxLife > 0.0 and life > maxLife * 0.65
+
+public function tdPetReduceStacks(int previous, real expiry, real now) returns int
+	return now >= expiry ? 1 : IMinBJ(5, previous + 1)
+
+public function tdPetReduceDuration(int quality) returns real
+	return 1.0 + 0.5 * quality
+
+public function tdPetResolveFitsAbilities(boolean normalCritical, boolean perfectCritical) returns boolean
+	return not normalCritical and not perfectCritical

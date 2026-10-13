@@ -2,6 +2,7 @@
 """Check packaged pet UI registration and rawcode cost, without engine op claims."""
 import argparse
 import json
+import re
 from pathlib import Path
 
 from GenerateTowerTerrainMask import Mpq
@@ -13,6 +14,7 @@ class PetStartupRuntime(TrialJassRuntime):
     def __init__(self, script):
         self.trigger_serial = 80000
         self.conditions = {}
+        self.actions = {}
         self.integer_saves = {}
         super().__init__(script)
         self.registered = []
@@ -32,9 +34,12 @@ class PetStartupRuntime(TrialJassRuntime):
             self.registered.append(args[0])
             # Execute the packaged registration and HashMap implementation.
             return False, None
+        if name == 'trigger_addAction':
+            return False, None  # Execute the packaged wrapper into TriggerAddAction.
         if name == 'CreateTrigger':
             self.trigger_serial += 1
             self.conditions[self.trigger_serial] = []
+            self.actions[self.trigger_serial] = []
             return True, self.trigger_serial
         if name in ('GetHandleId', 'ConvertFogState', 'Filter'):
             return True, args[0]
@@ -47,6 +52,10 @@ class PetStartupRuntime(TrialJassRuntime):
             return True, True
         if name == 'TriggerAddCondition':
             self.conditions[args[0]].append(args[1])
+            return True, None
+        if name == 'TriggerAddAction':
+            self.actions[args[0]].append(args[1])
+            self.trigger_events.append((name, *args))
             return True, None
         return super().native(name, args)
 
@@ -67,13 +76,37 @@ class ManagerRoutingRuntime(PetStartupRuntime):
         return super().native(name, args)
 
 
+def manager_listener(runtime):
+    """Both frozen spell bridges invoke the same exact admission owner once."""
+    names = [name for name in ('TDPetUI_commandTrigger', 'TDPetUI_managerCommandTrigger')
+             if name in runtime.globals]
+    require(len(names) == 1, 'Missing/duplicate manager trigger identity')
+    command = runtime.globals[names[0]]
+    handlers = runtime.conditions[command] + runtime.actions[command]
+    require(len(handlers) == 1, 'Missing/duplicate shared manager callback')
+    callback = handlers[0]
+    if names[0] == 'TDPetUI_commandTrigger':
+        require(runtime.conditions[command] == ['bridge_onCommand'] and not runtime.actions[command],
+                'User manager bridge must bind the exact onCommand condition')
+    else:
+        require(runtime.actions[command] == ['bridge_onManagerSpell'] and not runtime.conditions[command],
+                'Phase-one manager bridge must bind the exact forwarding action')
+        wrapper = runtime.functions['onManagerSpell'][1]
+        require(len(wrapper) == 4 and
+                wrapper[:2] == ['set wurst_stack[wurst_stack_depth] = w__wurst_stackPos',
+                                'set wurst_stack_depth = wurst_stack_depth + 1'] and
+                re.fullmatch(r'call onCommand\("when calling onCommand in TDPetUI, line \d+"\)', wrapper[2]) and
+                wrapper[3] == 'set wurst_stack_depth = wurst_stack_depth - 1',
+                'Manager action wrapper must only call onCommand once')
+    return command, callback
+
+
 def verify_routing(script):
     runtime = ManagerRoutingRuntime(script)
     runtime.invoke('tdResetState')
     runtime.invoke('tdSetLaneActive', 0, True)
     runtime.invoke('tdPetSetupUI')
-    command = runtime.globals['TDPetUI_commandTrigger']
-    callback, = runtime.conditions[command]
+    command, callback = manager_listener(runtime)
     display = 90001
     runtime.units[display] = {'owner': 0, 'abilities': {}}
     runtime.globals['TDPetUIView_tdPetDisplays'][0] = display
@@ -82,14 +115,22 @@ def verify_routing(script):
     runtime.tables[owners][display] = 0
     runtime.event_target = display
     codes = [f'Pc{a:02X}' if a < 8 else f'Pm{a-8:02X}' for a in range(23)]
-    codes += [f'L{index:03X}' for index in range(490)]
+    last = runtime.invoke('tdPetListAbilityId', 9, 15, 4, 4)
+    if last == int.from_bytes(b'L969', 'big'):
+        variants = 2410
+    else:
+        require(runtime.invoke('tdPetListAbilityId', 9, 3, 4, 4) == int.from_bytes(b'L1E9', 'big'),
+                'Unrecognized or incomplete collection rawcode family')
+        variants = 490
+    codes += [f'L{index:03X}' for index in range(variants)]
+    expected_admissions = 23 + variants
     for code in codes:
         runtime.spell = int.from_bytes(code.encode('ascii'), 'big')
         runtime.units[display]['abilities'][runtime.spell] = 1
         runtime.invoke(callback)
         require(runtime.admitted[-1] == (runtime.globals['TDPetUIView_tdPetUISessions'][0],
                                         0, display, runtime.spell, 1), 'Shared callback lost the exact command identity')
-    require(len(runtime.admitted) == 513, 'Shared callback must reach admission exactly once per command')
+    require(len(runtime.admitted) == expected_admissions, 'Shared callback must reach admission exactly once per command')
     for caster, owner in ((90002, 0), (90003, 1), (90004, 4)):
         runtime.units[caster] = {'owner': owner}
         runtime.event_target = caster
@@ -99,8 +140,8 @@ def verify_routing(script):
     runtime.event_target = display
     runtime.tables[owners].clear()
     runtime.invoke(callback)
-    require(len(runtime.admitted) == 513, 'Foreign/null/revoked caster reached manager admission')
-    return '513 button IDs reach exact session admission; foreign/null/revoked casters are ignored'
+    require(len(runtime.admitted) == expected_admissions, 'Foreign/null/revoked caster reached manager admission')
+    return f'{expected_admissions} button IDs reach exact session admission; foreign/null/revoked casters are ignored'
 
 
 def measure(script, legacy=False):
@@ -118,17 +159,18 @@ def measure(script, legacy=False):
     require(len(runtime.periodics) == 1, 'UI setup did not finish registering its watcher')
     steps = runtime.executed_steps
     conditions = {key: list(value) for key, value in runtime.conditions.items()}
+    actions = {key: list(value) for key, value in runtime.actions.items()}
     events = list(runtime.trigger_events)
     if not legacy:
-        command = runtime.globals['TDPetUI_commandTrigger']
-        require(len(runtime.conditions[command]) == 1, 'Missing/duplicate shared manager callback')
+        command, _ = manager_listener(runtime)
         registrations = [event for event in events if event[0] == 'TriggerRegisterPlayerUnitEvent' and event[1] == command]
         require(len(registrations) == 16 and {event[2] for event in registrations} == set(range(16))
                 and all(event[3] == 274 for event in registrations), 'Shared listener must cover each player once')
         require(steps < 2000, 'Pet UI startup work grew beyond the bounded shared-listener fixture')
     runtime.invoke('tdPetSetupUI')
     require(len(runtime.registered) == len(expected) and len(runtime.periodics) == 1, 'Repeated setup duplicated registrations')
-    require(runtime.conditions == conditions and runtime.trigger_events == events, 'Repeated setup duplicated shared handlers')
+    require(runtime.conditions == conditions and runtime.actions == actions and runtime.trigger_events == events,
+            'Repeated setup duplicated shared handlers')
     return {'registrations': len(expected), 'interpreted_statements': steps,
             'string_search_calls': runtime.calls['string_indexOf'], 'substring_calls': runtime.calls['SubString']}
 

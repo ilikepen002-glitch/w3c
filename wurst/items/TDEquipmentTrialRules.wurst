@@ -1,6 +1,9 @@
 package TDEquipmentTrialRules
 import TDItemData
 import TDPetRules
+import TDPetData
+import TDTowerData
+import TDConfig
 
 // Conditional current-system SINGLE damage segment bound, not total hit chain
 // or a guarantee for arbitrary future equipment/native attack-type tables.
@@ -8,7 +11,21 @@ public function tdEquipmentTrialNativeEnvelope() returns real
 	return ((1300.0 + 12.0 + TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL * 5.0 + 2560.0) * 2.0 * 3.0 + 160.0) * 2.0 * 2.0
 
 public function tdEquipmentTrialMaxSegment() returns real
-	return tdEquipmentTrialNativeEnvelope() * (tdPetSkillPower(7, 4) + tdPetSkillPower(8, 4)) * 4.0
+	let nativeEnvelope = tdEquipmentTrialNativeEnvelope()
+	// Individual additions are separate segments; resolve changes only the main hit.
+	var factor = 4.0 // 100%-D combo, including the legacy conservative code-channel x4.
+	for level = 1 to TD_MAX_TOWER_LEVEL
+		for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+			factor = RMaxBJ(factor, tdArcherSplitArrowDamageMultiplier(level, branch, true) * 4.0)
+	for quality = 1 to 4
+		factor = RMaxBJ(factor, tdPetSkillPower(TD_PET_SKILL_RESOLVE, quality))
+		factor = RMaxBJ(factor, tdPetSkillPower(7, quality) * 4.0)
+		factor = RMaxBJ(factor, tdPetSkillPower(8, quality) * 4.0)
+		factor = RMaxBJ(factor, tdPetSkillPower(TD_PET_SKILL_HEAVY, quality) * 4.0)
+		factor = RMaxBJ(factor, tdPetSkillPower(13, quality) * 4.0)
+		factor = RMaxBJ(factor, tdPetSkillPower(14, quality) * 4.0)
+	// Current equipment <=45%-D conditional / 50%-D corpse/poison procs are smaller.
+	return nativeEnvelope * factor
 
 public function tdEquipmentTrialSnapshotMatches(int capturedHandle, int capturedRevision, int currentHandle, int currentRevision) returns boolean
 	return capturedHandle != 0 and capturedHandle == currentHandle and capturedRevision == currentRevision

@@ -1,5 +1,4 @@
 package TDPetData
-import ObjectIds
 
 public constant int TD_PET_CAPTURE_ABILITY_ID = 'Pcap'
 public constant int TD_PET_COLLECTION_ABILITY_ID = 'Pcol'
@@ -8,13 +7,19 @@ public constant int TD_PET_BALL_ITEM_ID = 'Ibal'
 public constant int TD_PET_DAMAGE_ID = 'Pdam'
 public constant int TD_PET_COLLECTION_LIMIT = 20
 public constant int TD_PET_BALL_LIMIT = 60
+public constant int TD_PET_SPECIES_COUNT = 15
 
 public function tdPetWildUnitId(int wave, int species) returns int
-	let hex = "0123456789ABCDEF"
-	return ("p" + SubString(hex, wave div 16, wave div 16 + 1) + SubString(hex, wave mod 16, wave mod 16 + 1) + species.toString()).fromRawCode()
+	if wave < 1 or wave > 32 or species < 1 or species > 15
+		return 0
+	let high = wave div 16
+	let low = wave mod 16
+	return 'p000' + (high >= 10 ? high + 7 : high) * 65536 + (low >= 10 ? low + 7 : low) * 256 + species + (species >= 10 ? 7 : 0)
 
 public function tdPetVisualUnitId(int species) returns int
-	return 'pv01' + species - 1
+	if species < 1 or species > TD_PET_SPECIES_COUNT
+		return 0
+	return tdPetHexRawcode('pv00', species, 16)
 
 function tdPetHexDigit(int ascii) returns int
 	if ascii >= 48 and ascii <= 57
@@ -25,24 +30,94 @@ function tdPetHexDigit(int ascii) returns int
 
 // Stable type identity in O(1), including after death settlement.
 public function tdPetSpeciesForWildType(int typeId) returns int
-	let species = typeId mod 256 - 48
-	if species < 1 or species > 3 or typeId div 16777216 != 112
+	let species = tdPetHexDigit(typeId mod 256)
+	if species < 1 or species > 15 or typeId div 16777216 != 112
 		return 0
-	let wave = tdPetHexDigit((typeId div 65536) mod 256) * 16 + tdPetHexDigit((typeId div 256) mod 256)
+	let high = tdPetHexDigit((typeId div 65536) mod 256)
+	let low = tdPetHexDigit((typeId div 256) mod 256)
+	if high < 0 or high > 15 or low < 0 or low > 15
+		return 0
+	let wave = high * 16 + low
 	return wave >= 1 and wave <= 32 ? species : 0
+public function tdPetSpeciesElement(int species) returns int
+	return species >= 1 and species <= 15 ? (species - 1) div 3 + 1 : 0
+
+public function tdPetElementName(int element) returns string
+	if element == 1
+		return "金"
+	if element == 2
+		return "木"
+	if element == 3
+		return "水"
+	if element == 4
+		return "火"
+	return element == 5 ? "土" : "未知"
+
 public function tdPetSpeciesName(int species) returns string
 	if species == 1
-		return "炎灵"
+		return "银鬃灵兽"
 	if species == 2
-		return "雷灵"
-	return "幽灵"
+		return "锋翼隼"
+	if species == 3
+		return "铜甲穿山灵"
+	if species == 4
+		return "叶翼仙灵"
+	if species == 5
+		return "树芽鹿"
+	if species == 6
+		return "菌伞灵"
+	if species == 7
+		return "潮尾灵蛟"
+	if species == 8
+		return "霜鳍灵鲼"
+	if species == 9
+		return "雪鬃水獭"
+	if species == 10
+		return "赤翎火鸟"
+	if species == 11
+		return "熔角火蜥"
+	if species == 12
+		return "烬尾火狐"
+	if species == 13
+		return "岩壳龟"
+	if species == 14
+		return "磐臂山魈"
+	if species == 15
+		return "砂环灵螺"
+	return "未知精灵"
 
 public function tdPetModel(int species) returns string
 	if species == 1
-		return "Units\\Human\\Phoenix\\Phoenix.mdl"
+		return "war3mapImported\\SilverManeBeast.mdx"
 	if species == 2
-		return "Units\\NightElf\\FaerieDragon\\FaerieDragon.mdl"
-	return "Units\\NightElf\\Wisp\\Wisp.mdl"
+		return "war3mapImported\\SteelwingFalcon.mdx"
+	if species == 3
+		return "war3mapImported\\BrassPangolin.mdx"
+	if species == 4
+		return "war3mapImported\\LeafwingSpirit.mdx"
+	if species == 5
+		return "war3mapImported\\RootbudStag.mdx"
+	if species == 6
+		return "war3mapImported\\MosscapSprite.mdx"
+	if species == 7
+		return "war3mapImported\\TideWyrm.mdx"
+	if species == 8
+		return "war3mapImported\\FrostFinManta.mdx"
+	if species == 9
+		return "war3mapImported\\SnowManeOtter.mdx"
+	if species == 10
+		return "war3mapImported\\EmberBird.mdx"
+	if species == 11
+		return "war3mapImported\\MoltenHornSalamander.mdx"
+	if species == 12
+		return "war3mapImported\\CinderTailFox.mdx"
+	if species == 13
+		return "war3mapImported\\RockShellTurtle.mdx"
+	if species == 14
+		return "war3mapImported\\BoulderArmGibbon.mdx"
+	if species == 15
+		return "war3mapImported\\SandSpiralSnail.mdx"
+	return ""
 
 public function tdPetCaptureChance(real _currentLife, real _maxLife) returns real
 	return 0.60
@@ -53,12 +128,21 @@ public function tdPetCaptureTooltip(int balls) returns string
 public constant int TD_PET_ATTACK_BONUS_ID = 'Pbat'
 public constant int TD_PET_SPEED_BONUS_ID = 'Pbsp'
 public constant int TD_PET_ARMOR_ID = 'Pbar'
-public constant int TD_PET_SKILL_COUNT = 16
+// Stable ID upper bound, not definition count. 4, 9/10 and 13..15 are retired.
+// 43 implemented identities: 22 actives and 21 passives (10 final heroes).
+public constant int TD_PET_SKILL_COUNT = 49
+public constant int TD_PET_SKILL_COMBO = 16
+public constant int TD_PET_SKILL_RESOLVE = 17
+public constant int TD_PET_SKILL_HEAVY = 18
+public constant int TD_PET_ELEMENT_SKILL_FIRST = 19
+public constant int TD_PET_ELEMENT_SKILL_LAST = 38
+public constant int TD_PET_LIST_VARIANTS = 241
+public constant int TD_PET_SLOT_EMPTY = TD_PET_SKILL_COUNT * 2
 
 // baseCode ends in '00'. Encode each hex digit separately, preserving every ID.
 // Runtime string.fromRawCode scans CHARMAP four times per ID during UI startup.
 public function tdPetHexRawcode(int baseCode, int index, int limit) returns int
-	if index < 0 or index >= limit
+	if index < 0 or index >= limit or limit > 256
 		return 0
 	var high = index div 16
 	var low = index mod 16
@@ -68,10 +152,17 @@ public function tdPetHexRawcode(int baseCode, int index, int limit) returns int
 		low += 7
 	return baseCode + high * 256 + low
 
-public function tdPetDisplayUnitId(int species, int quality) returns int
-	if species < 1 or species > 3 or quality < 1 or quality > 4
+// Three hex digits, exact 000..FFF; high bytes remain valid ASCII.
+public function tdPetHex3Rawcode(int baseCode, int index, int limit) returns int
+	if index < 0 or index >= limit or limit > 4096
 		return 0
-	return tdPetHexRawcode('pd00', 1 + (species - 1) * 4 + quality - 1, 13)
+	let high = index div 256
+	return tdPetHexRawcode(baseCode, index mod 256, 256) + (high >= 10 ? high + 7 : high) * 65536
+
+public function tdPetDisplayUnitId(int species, int quality) returns int
+	if species < 1 or species > 15 or quality < 1 or quality > 4
+		return 0
+	return tdPetHexRawcode('pd00', 1 + (species - 1) * 4 + quality - 1, 61)
 
 public function tdPetDisplayUnitId(int species) returns int
 	return tdPetDisplayUnitId(species, 1)
@@ -80,22 +171,22 @@ public function tdPetListUnitId() returns int
 	return 'pd00'
 
 public function tdPetIsDisplayType(int typeId) returns boolean
-	for index = 0 to 12
-		if typeId == tdPetHexRawcode('pd00', index, 13)
+	for index = 0 to 60
+		if typeId == tdPetHexRawcode('pd00', index, 61)
 			return true
 	return false
 
-// Ten cells, forty-nine mutually exclusive portrait/count states per cell.
+// Ten cells, 241 mutually exclusive portrait/count states per cell.
 public function tdPetListAbilityId(int cell, int species, int quality, int ownedCount) returns int
 	if cell < 0 or cell >= 10
 		return 0
 	var variant = 0
-	if species >= 1 and species <= 3 and quality >= 1 and quality <= 4 and ownedCount >= 1 and ownedCount <= 4
+	if species >= 1 and species <= 15 and quality >= 1 and quality <= 4 and ownedCount >= 1 and ownedCount <= 4
 		variant = (species - 1) * 16 + (quality - 1) * 4 + ownedCount
 	else if species != 0 or quality != 0 or ownedCount != 0
 		return 0
-	let index = cell * 49 + variant
-	return tdPetHexRawcode('L000', index mod 256, 256) + (index div 256) * 65536
+	let index = cell * TD_PET_LIST_VARIANTS + variant
+	return tdPetHex3Rawcode('L000', index, 2410)
 
 public function tdPetPreviewArrowAbilityId(int position) returns int
 	return tdPetHexRawcode('Pa00', position, 2)
@@ -103,13 +194,14 @@ public function tdPetPreviewArrowAbilityId(int position) returns int
 public function tdPetPreviewAbilityId(int position, int skill) returns int
 	if position < 0 or position > 1 or skill < 0 or skill >= TD_PET_SKILL_COUNT
 		return 0
-	return tdPetHexRawcode('Ps00', position * 16 + skill, 32)
+	return tdPetHexRawcode('Ps00', position * TD_PET_SKILL_COUNT + skill, TD_PET_SKILL_COUNT * 2)
 
+// Quality lives in ability levels; identity only encodes skill and lock state.
 public function tdPetSlotAbilityId(int slot, int variant) returns int
-	if slot < 0 or slot > 3 or variant < 0 or variant > 128
+	if slot < 0 or slot > 3 or variant < 0 or variant > TD_PET_SLOT_EMPTY
 		return 0
-	let hex = "0123456789ABCDEF"
-	return ("s" + slot.toString() + SubString(hex, variant div 16, variant div 16 + 1) + SubString(hex, variant mod 16, variant mod 16 + 1)).fromRawCode()
+	return tdPetHexRawcode('s000' + slot * 65536, variant, TD_PET_SLOT_EMPTY + 1)
+
 
 public function tdPetUICommandId(int command) returns int
 	return tdPetHexRawcode('Pc00', command, 8)

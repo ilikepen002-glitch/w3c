@@ -1,0 +1,95 @@
+package TDPetEffectScheduler
+import TDPetAttackQueue
+import ClosureTimers
+import LinkedList
+import GameTimer
+import TDState
+
+// One shared short-effect scheduler. A task owns its snapshots and cleanup;
+// cancellation never destroys the task whose step is currently on the stack.
+public abstract class TDPetEffectTask
+	int ownerKey
+	boolean cancelled = false
+	int schedulerTick = 0
+	construct(int ownerKey)
+		this.ownerKey = ownerKey
+	// Return true while work remains; false consumes and destroys this task.
+	abstract function runEffect(real now) returns boolean
+
+constant LinkedList<TDPetEffectTask> tasks = new LinkedList<TDPetEffectTask>()
+TDPetEffectTask executing = null
+boolean ready = false
+boolean stopped = false
+int tickSerial = 0
+
+public function tdPetEffectTaskCount() returns int
+	return tasks.size() + (executing == null ? 0 : 1)
+
+public function tdPetCancelEffectTasks(int ownerKey)
+	if executing != null and executing.ownerKey == ownerKey
+		executing.cancelled = true
+	let iter = tasks.iterator()
+	while iter.hasNext()
+		let task = iter.next()
+		if task.ownerKey == ownerKey
+			iter.remove()
+			task.cancelled = true
+			destroy task
+	iter.close()
+
+public function tdPetShutdownEffects()
+	stopped = true
+	if executing != null
+		executing.cancelled = true
+	while not tasks.isEmpty()
+		let task = tasks.get(0)
+		tasks.remove(task)
+		task.cancelled = true
+		destroy task
+
+public function tdPetRegisterEffectTask(TDPetEffectTask task) returns boolean
+	if task == null
+		return false
+	if stopped or tdIsGameOver()
+		task.cancelled = true
+		destroy task
+		return false
+	tasks.add(task)
+	return true
+
+function tick()
+	if stopped or tdIsGameOver()
+		tdPetShutdownEffects()
+		return
+	// Native original hits may have incomplete tower posts. Never interleave a
+	// later spell tick ahead of their phase fence, regardless of timer ordering.
+	if tdPetPendingOriginal != 0
+		return
+	tickSerial += 1
+	let count = tasks.size()
+	for _index = 1 to count
+		if tasks.isEmpty() or stopped or tdIsGameOver() or tdPetPendingOriginal != 0
+			break
+		let task = tasks.get(0)
+		if task.schedulerTick == tickSerial
+			break
+		tasks.remove(task)
+		task.schedulerTick = tickSerial
+		executing = task
+		let keep = not task.cancelled and task.runEffect(getElapsedGameTime())
+		executing = null
+		if keep and not task.cancelled and not stopped and not tdIsGameOver()
+			tasks.add(task)
+		else
+			destroy task
+	if stopped or tdIsGameOver()
+		tdPetShutdownEffects()
+
+public function tdPetSetupEffectScheduler()
+	if ready
+		return
+	ready = true
+	doPeriodically(0.05) cb ->
+		tick()
+		if stopped and tdPetEffectTaskCount() == 0
+			destroy cb

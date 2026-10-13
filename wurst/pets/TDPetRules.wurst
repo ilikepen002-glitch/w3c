@@ -1,6 +1,9 @@
 package TDPetRules
 import TDActiveSkillData
-import BitSet
+import TDPetData
+import public TDPetElementData
+import public TDPetHeroRules
+import TDPetHeroData
 import TDTooltipText
 
 public function tdPetSkillCountForRoll(int roll) returns int
@@ -34,23 +37,46 @@ public function tdPetSkillIsActive(int skill) returns boolean
 	return tdActiveSkillDefinitionForPetSkill(skill).driver == TD_ACTIVE_DRIVER_PET_PROC
 
 public function tdPetSkillIsUniversal(int skill) returns boolean
-	return skill >= 4 and skill != 9 and skill != 10
+	return tdPetSkillDefined(skill) and not tdPetSkillIsActive(skill) and not tdPetHeroDefined(skill)
 
-public function tdPetSkillAllowed(int skill, int slot, int usedMask, boolean hasActive) returns boolean
-	if skill < 0 or skill >= 16 or bitset(usedMask).get(skill)
+public function tdPetSkillDefined(int skill) returns boolean
+	if skill == 9 or skill == 10
 		return false
-	if slot == 0
-		return tdPetSkillIsNumeric(skill)
-	// Use explicit short-circuit branches: the fixed JASS printer misgroups mixed and/or.
-	if tdPetSkillIsNumeric(skill)
+	if skill >= 13 and skill <= 15
 		return false
-	if slot == 1 and not tdPetSkillIsUniversal(skill)
+	return skill >= 0 and skill < TD_PET_SKILL_COUNT and skill != 4
+
+// Values, not bits: all stable IDs (including >=32) compare without truncation.
+public function tdPetSkillOwned(int skill, int first, int second, int third, int fourth) returns boolean
+	return skill == first or skill == second or skill == third or skill == fourth
+
+// One active slot; every later owned slot is passive, including locked slots.
+public function tdPetSkillAllowed(int skill, int slot, boolean duplicate, boolean _hasActive) returns boolean
+	if not tdPetSkillDefined(skill) or slot < 0 or slot > 3 or duplicate
 		return false
-	if hasActive and tdPetSkillIsActive(skill)
+	return slot == 0 ? tdPetSkillIsActive(skill) : not tdPetSkillIsActive(skill)
+
+public function tdPetSkillAllowedForSpecies(int skill, int slot, int species, boolean duplicate) returns boolean
+	if not tdPetSkillAllowed(skill, slot, duplicate, false)
 		return false
-	return true
+	let element = tdPetSkillElement(skill)
+	return element == 0 or element == tdPetSpeciesElement(species)
+
+public function tdPetSkillDefinitionCount() returns int
+	var count = 0
+	for skill = 0 to TD_PET_SKILL_COUNT - 1
+		if tdPetSkillDefined(skill)
+			count += 1
+	return count
+
+public function tdPetSlotName(int slot) returns string
+	return slot == 0 ? "主动栏" : "被动栏" + slot.toString()
 
 public function tdPetSkillNameById(int skill) returns string
+	if tdPetHeroDefined(skill)
+		return tdPetHeroName(skill)
+	if tdPetSkillElement(skill) != 0
+		return tdPetElementSkillName(skill)
 	if skill == 0
 		return "坚韧之力"
 	if skill == 1
@@ -60,15 +86,15 @@ public function tdPetSkillNameById(int skill) returns string
 	if skill == 3
 		return "灵感"
 	if skill == 4
-		return "统御光环"
+		return "已退役技能"
 	if skill == 5
-		return "迟滞领域"
+		return "减击"
 	if skill == 6
-		return "破甲印记"
+		return "破击"
 	if skill == 7
-		return "连击蓄能"
+		return "蓄击"
 	if skill == 8
-		return "处决追击"
+		return "追击"
 	if skill == 9
 		return "分裂霜箭"
 	if skill == 10
@@ -81,23 +107,47 @@ public function tdPetSkillNameById(int skill) returns string
 		return "雷链"
 	if skill == 14
 		return "火焰冲击"
-	return "风缚"
+	if skill == 15
+		return "风缚"
+	if skill == TD_PET_SKILL_COMBO
+		return "连击"
+	if skill == TD_PET_SKILL_RESOLVE
+		return "决意一击"
+	if skill == TD_PET_SKILL_HEAVY
+		return "猛击"
+	return "未知技能"
 
 public function tdPetQualityName(int quality) returns string
 	return quality == 1 ? "|cffffffff白|r" : (quality == 2 ? "|cff40dd40绿|r" : (quality == 3 ? "|cff4090ff蓝|r" : "|cffc060ff紫|r"))
 
 public function tdPetSkillPower(int skill, int quality) returns real
+	if tdPetHeroDefined(skill)
+		return tdPetHeroPower(skill, quality)
 	if skill == 0
 		return 40.0 * quality
-	if skill == 1 or skill == 2 or skill == 3 or skill == 4
+	if skill == 1 or skill == 2 or skill == 3
 		return 0.06 * quality
-	if skill == 5 or skill == 9
+	if skill == 5
+		return 0.06
+	if skill == 9
 		return 0.08 + 0.04 * quality
 	if skill == 6
 		return quality * 2.0
+	if skill == 8
+		return 0.10 + quality * 0.10
+	if skill == TD_PET_SKILL_COMBO
+		return 0.05 + quality * 0.05
+	if skill == TD_PET_SKILL_RESOLVE
+		return 1.30 + quality * 0.20
+	if skill == TD_PET_SKILL_HEAVY
+		return 0.06 + quality * 0.06
 	return 0.25 + quality * 0.15
 
 public function tdPetSkillDescriptionById(int skill, int quality) returns string
+	if tdPetHeroDefined(skill)
+		return tdPetHeroDescription(skill, quality)
+	if tdPetSkillElement(skill) != 0
+		return tdPetElementSkillDescription(skill)
 	let power = tdPetSkillPower(skill, quality)
 	if skill == 0
 		return "附身塔攻击力+" + power.toInt().toString() + "。"
@@ -108,15 +158,15 @@ public function tdPetSkillDescriptionById(int skill, int quality) returns string
 	if skill == 3
 		return "附身塔全部主动技能冷却缩短" + (power * 100.0 + 0.5).toInt().toString() + "%（包括精灵主动技能）。|n与装备、光环合计上限40%；不重置进行中的冷却。"
 	if skill == 4
-		return "仅附身塔攻击速度 +" + (power * 100.0 + 0.5).toInt().toString() + "%；同名取最高等级，可叠加其他攻速光环。"
+		return "此技能已并入疾攻，新捕获和洗练不会获得。"
 	if skill == 5
-		return "附身塔600范围内本路敌人移动速度降低 " + (power * 100.0 + 0.5).toInt().toString() + "%；同名取最高等级，其他减速可叠加，总上限75%。"
+		return "普攻命中使主目标增加1层减速，每层6%，最多5层30%，持续" + tdTooltipNumber(1.0 + 0.5 * quality) + "秒。不同精灵各自叠层，同类取最强；Boss减速减半。异名移动慢相加，总上限75%。"
 	if skill == 6
 		return "普攻使目标护甲降低" + power.toInt().toString() + "，持续3秒。同类精灵破甲取最强效果。"
 	if skill == 7
 		return "附身塔每第4次普攻命中，追加本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%。"
 	if skill == 8
-		return "普攻命中生命值不高于30%的敌人时，追加本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%。"
+		return "普攻命中前生命值不高于30%的敌人时，追加本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%。"
 	if skill == 9
 		return "分裂箭命中后，敌人移动速度降低" + (power * 100.0 + 0.5).toInt().toString() + "%，持续3秒；同名取最高等级，其他减速可叠加，总上限75%。|n仅对拥有分裂箭的附身塔生效。"
 	if skill == 10
@@ -129,6 +179,12 @@ public function tdPetSkillDescriptionById(int skill, int quality) returns string
 		return "普攻自动触发雷链：攻击目标周围450范围内最多3名本路敌人，各受本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%。|n基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，可被装备、灵感及光环缩短，合计上限40%。"
 	if skill == 14
 		return "普攻自动触发火焰冲击：攻击目标周围220范围内最多12名本路敌人，各受本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%。|n基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，可被装备、灵感及光环缩短，合计上限40%。"
+	if skill == TD_PET_SKILL_COMBO
+		return "普攻命中有" + (power * 100.0 + 0.5).toInt().toString() + "%概率追加一次100%本次普攻伤害；追加伤害不触发装备或精灵技能。"
+	if skill == TD_PET_SKILL_RESOLVE
+		return "每第5次有效普攻命中，当次普攻造成" + tdTooltipNumber(power) + "倍伤害。|n仅适配没有原生暴击能力的塔；剑圣不适配。"
+	if skill == TD_PET_SKILL_HEAVY
+		return "普攻命中前生命值高于65%时，追加本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%；65%时不触发。"
 	return "普攻自动触发风缚：攻击目标周围220范围内最多12名本路敌人移动速度降低" + (power * 100.0 + 0.5).toInt().toString() + "%，持续3秒；同名取最高等级，其他减速可叠加，总上限75%。|n基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，可被装备、灵感及光环缩短，合计上限40%。"
 
 

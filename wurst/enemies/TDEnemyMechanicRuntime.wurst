@@ -15,11 +15,21 @@ import TDBossDarkTideRuntime
 import TDWaveFlowState
 import TDTrialIdentity
 
+class TDEnemyStageWeakening
+	unit source
+	int token
+	real expiresAt
+	construct(unit source, int token, real expiresAt)
+		this.source = source
+		this.token = token
+		this.expiresAt = expiresAt
+
 class TDEnemyMechanicRecord
 	unit enemy
 	TDEnemyMechanicState state
 	int matchEpoch
 	real bornAt
+	LinkedList<TDEnemyStageWeakening> weakening = new LinkedList<TDEnemyStageWeakening>()
 
 	construct(unit enemy, TDEnemyMechanicState state)
 		this.enemy = enemy
@@ -28,6 +38,11 @@ class TDEnemyMechanicRecord
 		bornAt = getElapsedGameTime()
 
 	ondestroy
+		while not weakening.isEmpty()
+			let entry = weakening.get(0)
+			weakening.remove(entry)
+			destroy entry
+		destroy weakening
 		destroy state
 		enemy = null
 
@@ -53,7 +68,39 @@ public function tdEnemyMechanicScaleSpellDamage(unit target, real amount) return
 	let record = tdEnemyMechanicRecordFor(target)
 	if record == null or not tdEnemyMechanicRecordValid(record)
 		return amount
-	return record.state.scaledSpellAmount(amount)
+	var power = 0.0
+	let iter = record.weakening.iterator()
+	while iter.hasNext()
+		let entry = iter.next()
+		if getElapsedGameTime() >= entry.expiresAt or entry.source == null or not entry.source.isAlive()
+			iter.remove()
+			destroy entry
+		else
+			power = 0.20
+	iter.close()
+	return record.state.scaledSpellAmount(amount, power)
+
+public function tdEnemyMechanicOfferStageWeakening(unit target, unit source, int token, real duration)
+	let record = tdEnemyMechanicRecordFor(target)
+	if record == null or not tdEnemyMechanicRecordValid(record) or duration <= 0.0
+		return
+	for entry in record.weakening
+		if entry.source == source and entry.token == token
+			entry.expiresAt = getElapsedGameTime() + duration
+			return
+	record.weakening.add(new TDEnemyStageWeakening(source, token, getElapsedGameTime() + duration))
+
+public function tdEnemyMechanicRemoveStageWeakening(unit target, unit source, int token)
+	let record = tdEnemyMechanicRecordFor(target)
+	if record == null
+		return
+	let iter = record.weakening.iterator()
+	while iter.hasNext()
+		let entry = iter.next()
+		if entry.source == source and entry.token == token
+			iter.remove()
+			destroy entry
+	iter.close()
 
 function tdEnemyMechanicScaleNativeSpellDamage()
 	if not tdEnemyMechanicsReady or not tdEnemyMechanicNativeSpellEligible(DamageEvent.isSpell(), DamageEvent.isCode())

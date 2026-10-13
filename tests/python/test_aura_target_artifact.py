@@ -54,6 +54,12 @@ class AuraTargetArtifactTests(unittest.TestCase):
             gate.verify_equipment_targets(script)
 
     def test_rejects_pet_host_only_rule_removed(self):
+        if 'function tdPetApplyAttackDebuffs ' in self.script:
+            script = replace_body(self.script, 'tdAuraOfferSource', 'set slot_1 = 0',
+                                  'call dispatch_TDAuraAggregate_TDAuraAggregate_offer(aggregate, 8, 2, 0.12, true, "retired-aura negative fixture")\nset slot_1 = 0')
+            with self.assertRaisesRegex(ValueError, 'Retired pet aura target 101'):
+                gate.verify_pet_targets(script)
+            return
         script = replace_body(self.script, 'tdAuraOfferSource',
                               'source_6 == target_3', 'true')
         with self.assertRaisesRegex(ValueError, 'Pet aura target 103'):

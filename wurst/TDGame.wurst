@@ -1,4 +1,6 @@
 package TDGame
+import TDCombatVisualRuntime
+import TDPetCombatSource
 import TDConfig
 import TDState
 import TDWaves
@@ -8,8 +10,10 @@ import ClosureTimers
 import TDHud
 import TDInventory
 import TDPetRuntime
+import TDPetAttackState
 import TDPetState
 import TDPetWild
+import TDPetHeroRuntime
 import TDEquipmentCombat
 import TDEnemyMechanicRuntime
 import Dialog
@@ -110,6 +114,7 @@ function tdHandleGameResolved()
 		return
 	tdClearQueuedWave()
 	tdSetGameOver(true)
+	tdCombatVisualShutdown()
 	let held = tdFlowHeldTransitionToken()
 	if held != 0
 		tdFlowReleaseTransition(held, TD_TRANSITION_ABORTED)
@@ -128,6 +133,7 @@ function tdClearLaneEnemiesEnum()
 	if enemy != null and tdEnemyBelongsToCurrentMatch(enemy) and not tdPetIsWild(enemy) and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == tdClearLanePlayer
 		// 敌人表现不再挂自定义血条，清线时只需要移除单位本体。
 		tdForgetEquipmentEnemy(enemy)
+		tdPetForgetEnemy(enemy)
 		tdEnemyMechanicUnregister(enemy)
 		tdForgetEnemyMatch(enemy)
 		enemy.remove()
@@ -142,6 +148,7 @@ function tdClearLaneEnemies(int playerId)
 // Close a lane once before any synchronous death or external callback can run.
 function tdCloseDefeatedLane(int playerId)
 	tdSetLaneDefeated(playerId, true)
+	tdCombatVisualClearLane(playerId)
 	tdFlowCancelLane(playerId)
 	tdPetLaneDefeated(playerId)
 	tdEvolutionClearLaneEffects(playerId)
@@ -177,6 +184,7 @@ function tdSettleBossFailure(unit enemy, int playerId, int wave, int result)
 	if defeated
 		tdSetLaneDefeated(playerId, true)
 		tdFlowCancelLane(playerId)
+	tdPetForgetEnemy(enemy)
 	tdEnemyMechanicUnregister(enemy)
 	tdForgetEquipmentEnemy(enemy)
 	if enemy != null and GetUnitTypeId(enemy) != 0 and enemy.isAlive()
@@ -215,6 +223,7 @@ public function tdHandleEnemyLeak(unit enemy)
 		tdFlowCancelLane(playerId)
 	DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, tdLeakLifeText(lifeCost, tdGetLives(playerId)))
 	tdForgetEquipmentEnemy(enemy)
+	tdPetForgetEnemy(enemy)
 	tdEnemyMechanicUnregister(enemy)
 	enemy.kill()
 	tdForgetEnemyMatch(enemy)
@@ -273,15 +282,23 @@ function tdHandleEnemyDeath()
 	if enemy == null
 		return
 	if tdPetIsWild(enemy) or tdIsGameOver() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID)
+		tdPetForgetEnemy(enemy)
 		tdEnemyMechanicUnregister(enemy)
 		tdForgetEnemyMatch(enemy)
 		return
 	let playerId = tdEnemyLaneId(enemy)
 	if not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId) or not tdClaimEnemyKill(enemy)
+		tdPetForgetEnemy(enemy)
 		tdEnemyMechanicUnregister(enemy)
 		tdForgetEnemyMatch(enemy)
 		return
+	let killer = GetKillingUnit()
+	let bound = tdPetForHost(killer)
+	if bound != null and tdPetBindingValid(bound, killer, bound.generation)
+		tdCombatVisualFinisher(killer, enemy.getPos())
 	// The Boss result and enemy marker were atomically claimed before cleanup/rewards.
+	tdPetHeroForgetEnemy(enemy, true)
+	tdPetForgetEnemy(enemy)
 	tdEnemyMechanicUnregister(enemy)
 	let wave = tdEnemyWave(enemy)
 	let isBoss = tdIsBossUnitTypeId(GetUnitTypeId(enemy))
@@ -517,6 +534,7 @@ public function tdHandleWaveFinished(int playerId, int wave)
 	tdTryUnlockPopulationAfterWave(wave)
 	if tdGetResolvedWave(playerId) >= tdWaveCount()
 		tdSetLaneFinished(playerId, true)
+		tdCombatVisualClearLane(playerId)
 		tdRefreshHud()
 		DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, "你的路线已经守住了。")
 		tdHandleGameResolved()
@@ -528,6 +546,7 @@ public function tdHandleWaveFinished(int playerId, int wave)
 
 public function tdShutdownGameFlow()
 	tdCloseDifficultyDialog()
+	tdCombatVisualShutdown()
 	let held = tdFlowHeldTransitionToken()
 	if held != 0
 		tdFlowReleaseTransition(held, TD_TRANSITION_ABORTED)

@@ -2,6 +2,7 @@ package TDPlayerTooltipTests
 import TDTowerData
 import TDItemData
 import TDPetRules
+import TDPetData
 import Wurstunit
 import TDTooltipText
 import TDInit
@@ -47,9 +48,9 @@ import TDInit
 		tdPetSkillDescriptionById(10, quality).contains("180范围").assertTrue()
 		tdPetSkillDescriptionById(10, quality).contains("最多12名").assertTrue()
 		tdPetSkillDescriptionById(10, quality).contains("不随尸爆进化增伤").assertTrue()
-		for skill = 0 to 15
+		for skill = 0 to TD_PET_SKILL_COUNT - 1
 			let text = tdPetSkillDescriptionById(skill, quality)
-			text.contains("原生").assertFalse()
+			text.contains("原生").assertEquals(skill == TD_PET_SKILL_RESOLVE)
 			text.contains("受控").assertFalse()
 
 @Test function playerSaleTooltipKeepsIrreversibleEvolutionCost()
@@ -64,7 +65,7 @@ import TDInit
 	tdTooltipNumber(1.45).assertEquals("1.45")
 
 @Test function playerPetPercentTextRoundsFloatingPointProducts()
-	tdPetSkillDescriptionById(5, 3).contains("20%").assertTrue()
+	tdPetSkillDescriptionById(TD_PET_SKILL_COMBO, 3).contains("20%").assertTrue()
 	tdPetSkillDescriptionById(9, 3).contains("20%").assertTrue()
 	tdPetSkillDescriptionById(7, 4).contains("85%").assertTrue()
 	tdPetSkillDescriptionById(15, 4).contains("75%").assertTrue()

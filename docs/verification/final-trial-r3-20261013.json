@@ -1,0 +1,23 @@
+{
+  "refilled_HP": 999790.0,
+  "trial_final_credit": 210.0,
+  "old_snapshot_neighbour_hits": 4,
+  "replacement_hits": 0,
+  "replacement_cases": [
+    {
+      "same_handle": false,
+      "new_revision": 3,
+      "old_snapshot_neighbour_hits": 4,
+      "replacement_hits": 0
+    },
+    {
+      "same_handle": true,
+      "new_revision": 3,
+      "old_snapshot_neighbour_hits": 4,
+      "replacement_hits": 0
+    }
+  ],
+  "identity_guard_removal_rejected": true,
+  "spell_fixture": "Final skill38 first85%D stage; later stages explicitly cancelled"
+}
+SECONDS 10.339758021000307

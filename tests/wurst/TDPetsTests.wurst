@@ -36,40 +36,43 @@ import TDState
 	counts[3].assertEquals(20)
 	counts[4].assertEquals(5)
 
-@Test function petSkillsEnforceCategoryUniqueIdsAndAtMostOneActive()
+@Test function petSkillsEnforceOneActiveAndThreeDistinctPassives()
 	let pet = new TDPet(0, 1, 0)
-	pet.setSkill(0, 0, 1)
-	pet.setSkill(1, 13, 4)
-	pet.setSkill(2, 14, 1)
+	pet.setSkill(0, 11, 1)
+	pet.setSkill(1, 5, 4)
+	pet.setSkill(2, 12, 1)
 	pet.skillCount.assertEquals(2)
-	pet.setSkill(2, 13, 2)
+	pet.setSkill(2, 5, 2)
 	pet.skillCount.assertEquals(2)
-	pet.setSkill(2, 9, 3)
-	pet.setSkill(3, 10, 2)
+	pet.setSkill(2, 39, 3)
+	pet.setSkill(3, 48, 2)
 	pet.skillCount.assertEquals(4)
 	pet.setSkill(0, 5, 2)
-	pet.skillAt(0).assertEquals(0)
-	pet.setSkill(1, 9, 1)
-	pet.skillAt(1).assertEquals(13)
-	pet.setSkill(3, 9, 4)
-	pet.skillAt(3).assertEquals(10)
-	pet.setSkill(0, 1, 4)
-	pet.skillAt(0).assertEquals(1)
+	pet.skillAt(0).assertEquals(11)
+	pet.setSkill(1, 39, 1)
+	pet.skillAt(1).assertEquals(5)
+	pet.setSkill(3, 39, 4)
+	pet.skillAt(3).assertEquals(48)
+	pet.setSkill(0, 19, 4)
+	pet.skillAt(0).assertEquals(11)
+	pet.setSkill(0, 22, 4)
+	pet.skillAt(0).assertEquals(22)
+	pet.setSkill(0, 23, 1)
+	pet.skillAt(0).assertEquals(22)
 	destroy pet
 
-@Test function petInitialTwoSlotsAreUnlockedAndUniversal()
-	for numeric = 0 to 3
-		for mechanism = 4 to 15
-			if tdPetSkillIsUniversal(mechanism)
-				let pet = new TDPet(0, 1, 1)
-				pet.setSkill(0, numeric, 1)
-				pet.setSkill(1, mechanism, 1)
-				pet.skillCount.assertEquals(2)
-				pet.level.assertEquals(1)
-				tdPetUnlockedSlots(pet.level).assertEquals(2)
-				for tower = 1 to 6
-					tdPetSkillFitsAbilities(mechanism, tower == TD_TOWER_CHOICE_ARCHER, tower == TD_TOWER_CHOICE_GHOUL).assertTrue()
-				destroy pet
+@Test function petInitialTwoSlotsHaveOneActiveAndOneUnlockedPassive()
+	for mechanism = 0 to TD_PET_SKILL_COUNT - 1
+		if tdPetSkillIsUniversal(mechanism)
+			let pet = new TDPet(0, 1, 1)
+			pet.setSkill(0, 11, 1)
+			pet.setSkill(1, mechanism, 1)
+			pet.skillCount.assertEquals(2)
+			pet.level.assertEquals(1)
+			tdPetUnlockedSlots(pet.level).assertEquals(2)
+			for tower = 1 to 6
+				tdPetSkillFitsAbilities(mechanism, tower == TD_TOWER_CHOICE_ARCHER, tower == TD_TOWER_CHOICE_GHOUL).assertTrue()
+			destroy pet
 
 @Test function petStageEncounterBudgetIsBoundedAndBossSafe()
 	tdPetInitializeLane(0)
@@ -93,15 +96,15 @@ import TDState
 @Test function petResonanceUsesPersonalMilestonesWithoutRerollingSkills()
 	tdPetInitializeLane(1)
 	let pet = new TDPet(1, 2, 5)
-	pet.setSkill(0, 0, 1)
+	pet.setSkill(0, 11, 1)
 	pet.setSkill(1, 5, 2)
-	pet.setSkill(2, 9, 3)
-	pet.setSkill(3, 13, 4)
+	pet.setSkill(2, 39, 3)
+	pet.setSkill(3, 16, 4)
 	tdPetStore(1, pet).assertTrue()
 	tdPetCreditWave(1, 8)
 	pet.level.assertEquals(3)
 	pet.skillCount.assertEquals(4)
-	pet.skillAt(2).assertEquals(9)
+	pet.skillAt(2).assertEquals(39)
 	let balls = tdPetBallsForLane(1)
 	tdPetCreditWave(1, 8)
 	tdPetBallsForLane(1).assertEquals(balls)
@@ -163,8 +166,8 @@ import TDState
 	tdSetLaneActive(3, true)
 	tdPetInitializeLane(3)
 	let pet = new TDPet(3, 1, 1)
-	pet.setSkill(0, 0, 1)
-	pet.setSkill(1, 13, 1)
+	pet.setSkill(0, 11, 1)
+	pet.setSkill(1, 6, 1)
 	tdPetStore(3, pet).assertTrue()
 	tdPetRerollStones[3] = 2
 	tdPetSlotStones[3] = 1
@@ -177,7 +180,7 @@ import TDState
 	tdPetOpenSlot(3, 0).assertFalse()
 	tdPetSlotStones[3].assertEquals(1)
 	tdPetResolveReroll(3, 0, false).assertTrue()
-	pet.skillAt(1).assertEquals(13)
+	pet.skillAt(1).assertEquals(6)
 	tdPetBeginReroll(3, 0, 1).assertTrue()
 	tdPetResolveReroll(3, 0, true).assertTrue()
 	pet.readyAt.assertEquals(99.0)
@@ -192,7 +195,7 @@ import TDState
 
 @Test function petStableWildIdentityDoesNotOverlapNormalOrDisplayTypes()
 	for wave = 1 to 32
-		for species = 1 to 3
+		for species = 1 to 15
 			tdPetSpeciesForWildType(tdPetWildUnitId(wave, species)).assertEquals(species)
 			tdPetSpeciesForWildType(tdPetDisplayUnitId(species)).assertEquals(0)
 			tdPetSpeciesForWildType(tdPetVisualUnitId(species)).assertEquals(0)
@@ -207,15 +210,15 @@ import TDState
 
 @Test function recallPreservesActiveCooldownAndInvalidatesPendingWork()
 	let pet = new TDPet(0, 1, 1)
-	pet.setSkill(0, 0, 1)
-	pet.setSkill(1, 13, 1)
+	pet.setSkill(0, 11, 1)
+	pet.setSkill(1, 6, 1)
 	pet.readyAt = 25.0
 	pet.pendingSkill = true
 	pet.recall()
 	pet.readyAt.assertEquals(25.0)
 	pet.pendingSkill.assertFalse()
 	pet.generation.assertEquals(1)
-	pet.skillAt(1).assertEquals(13)
+	pet.skillAt(1).assertEquals(6)
 	destroy pet
 @Test function independentPetSlowExpiryPreservesWeakLongAndSameStrengthLongEffects()
 	let slow = new TDPetSlowState()

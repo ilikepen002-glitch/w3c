@@ -37,11 +37,11 @@ def replace_once(sources, path, old, new):
 def extended_sources():
     sources = v.read_sources()
     marker = '\treturn tdActiveSkillDefinition(0, 0, 0, -1, 0.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)'
-    extra = ('\tif index == 7\n'
+    extra = ('\tif index == 24\n'
              '\t\treturn tdActiveSkillDefinition(101, TD_ACTIVE_DRIVER_NATIVE_ABILITY, \'Cn03\', -1, 23.0, Orders.innerfireon, Orders.innerfireoff, TD_ACTIVE_AUTOCAST_UNKNOWN)\n'
-             '\tif index == 8\n'
+             '\tif index == 25\n'
              '\t\treturn tdActiveSkillDefinition(102, TD_ACTIVE_DRIVER_PET_PROC, 0, 77, 31.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)\n')
-    replace_once(sources, v.DATA, '\treturn 7\n', '\treturn 9\n')
+    replace_once(sources, v.DATA, '\treturn 24\n', '\treturn 26\n')
     replace_once(sources, v.DATA, marker, extra + marker)
     evaluator = v.SourceScalarEvaluator(sources)
     body = evaluator.body('tdConfigureEquipmentBloodlust')
@@ -201,12 +201,12 @@ class ActiveSourceContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'outside its exact UI role'):
             v.verify_source(sources=sources)
         self.reject('pets/TDPetData.wurst',
-                    "return tdPetHexRawcode('L000', index mod 256, 256) + (index div 256) * 65536",
+                    "return tdPetHex3Rawcode('L000', index, 2410)",
                     'return TD_ORC_BLOODLUST_ABILITY_ID', 'rawcode escaped')
 
     def test_manager_list_family_cannot_escape_cell_states_or_mount_on_combat_tower(self):
-        self.reject('pets/TDPetObjectGen.wurst', 'for variant = 0 to 48',
-                    'for variant = 0 to 49', 'family changed')
+        self.reject('pets/TDPetObjectGen.wurst', 'for variant = 0 to TD_PET_LIST_VARIANTS - 1',
+                    'for variant = 0 to TD_PET_LIST_VARIANTS', 'family changed')
         self.reject('towers/TDTowerCatalogData.wurst', 'return TD_ARCHER_SPLIT_ARROW_ABILITY_ID.toRawCode()',
                     'return TD_ARCHER_SPLIT_ARROW_ABILITY_ID.toRawCode() + ",L000"', 'mounted')
 
@@ -238,9 +238,9 @@ class ActiveSourceContractTests(unittest.TestCase):
 
     def test_missing_definition_and_wrong_count_are_rejected(self):
         self.reject(v.DATA, 'if index == 6', 'if index == 66', 'count/enumeration')
-        self.reject(v.DATA, '\treturn 7\n', '\treturn 8\n', 'count/enumeration')
+        self.reject(v.DATA, '\treturn 24\n', '\treturn 25\n', 'count/enumeration')
         sources = extended_sources()
-        replace_once(sources, v.DATA, '\treturn 9\n', '\treturn 7\n')
+        replace_once(sources, v.DATA, '\treturn 26\n', '\treturn 24\n')
         with self.assertRaisesRegex(ValueError, 'count/enumeration'): v.verify_source(sources=sources)
 
     def test_duplicate_key_rawcode_pet_identity_and_nonpositive_cd_are_rejected(self):
@@ -387,7 +387,7 @@ class ActiveSourceContractTests(unittest.TestCase):
         self.reject('pets/TDPetRules.wurst', 'tdActiveSkillDefinitionForPetSkill(skill).driver == TD_ACTIVE_DRIVER_PET_PROC', 'skill >= 11 and skill <= 15')
 
     def test_pet_readyat_bypass_duplicate_aura_and_missing_binding_slot_fit_fail(self):
-        self.reject('pets/TDPetCombat.wurst', 'pet.readyAt = tdStartScriptActiveCooldown(host, tdActiveSkillDefinitionForPetSkill(skill).key, getElapsedGameTime())',
+        self.reject('pets/TDPetCombat.wurst', 'pet.readyAt = tdStartScriptActiveCooldown(host, tdActiveSkillDefinitionForPetSkill(activeSkill).key, getElapsedGameTime())',
                     'pet.readyAt = getElapsedGameTime() + 10.0', 'bypasses shared')
         self.reject(v.RUNTIME, 'tdAuraPower(tower, TD_AURA_EQUIPMENT_COOLDOWN))',
                     'tdAuraPower(tower, TD_AURA_EQUIPMENT_COOLDOWN) + tdAuraPower(tower, TD_AURA_EQUIPMENT_COOLDOWN))', 'once|Duplicate')
@@ -561,7 +561,7 @@ class SyntheticCompiledMutationTests(unittest.TestCase):
             v.verify_compiled_core(self.contract, script.replace(initializer, ''))
 
     def test_compiled_metadata_and_scalar_mutations_fail(self):
-        for old, new, reason in [('return 9\n', 'return 7\n', 'active count'),
+        for old, new, reason in [('return 26\n', 'return 24\n', 'active count'),
                                  ('tdActiveSkillDefinitionAt_return_baseCooldown = 23.0', 'tdActiveSkillDefinitionAt_return_baseCooldown = 24.0', 'tuple differs'),
                                  ('RMinBJ(0.40, RMaxBJ(0.0, reduction))', 'RMinBJ(0.60, RMaxBJ(0.0, reduction))', 'scalar duration')]:
             self.assertIn(old, self.script)

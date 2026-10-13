@@ -1,0 +1,107 @@
+package TDEnemyControlRuntime
+import TDShieldRules
+import TDItemCatalogConfig
+import TDWaves
+import TDState
+import TDConfig
+import TDSpawn
+import TDTrialIdentity
+import DummyCaster
+import GameTimer
+import ClosureTimers
+import LinkedList
+import Table
+
+class TDEnemyControlWindow
+	unit enemy
+	unit source = null
+	int sourceToken = 0
+	int buffId = 0
+	TDShieldWindow window = new TDShieldWindow()
+	construct(unit enemy)
+		this.enemy = enemy
+	ondestroy
+		destroy window
+
+constant Table byHandle = new Table()
+LinkedList<TDEnemyControlWindow> windows = new LinkedList<TDEnemyControlWindow>()
+boolean ready = false
+
+function windowFor(unit enemy) returns TDEnemyControlWindow
+	if byHandle.hasInt(enemy.getHandleId())
+		return byHandle.loadInt(enemy.getHandleId()) castTo TDEnemyControlWindow
+	let record = new TDEnemyControlWindow(enemy)
+	byHandle.saveInt(enemy.getHandleId(), record castTo int)
+	windows.add(record)
+	return record
+
+public function tdTryEnemyControl(unit source, unit enemy, int lane, real duration, int abilityId, int level, int orderId) returns boolean
+	return tdTryEnemyControlToken(source, enemy, lane, duration, abilityId, level, orderId, 0, 0)
+
+public function tdTryEnemyControlToken(unit source, unit enemy, int lane, real duration, int abilityId, int level, int orderId, int token, int buffId) returns boolean
+	if source == null or enemy == null or not source.isAlive() or not enemy.isAlive() or GetUnitTypeId(enemy) == 0 or GetPlayerId(GetOwningPlayer(source)) != lane or tdIsGameOver()
+		return false
+	if tdTrialIsTargetType(enemy)
+		if not tdTrialTargetValid(enemy, lane)
+			return false
+	else if GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdEnemyLaneId(enemy) != lane or tdEnemyWasLeaked(enemy)
+		return false
+	let boss = tdIsBossUnitTypeId(GetUnitTypeId(enemy))
+	let record = windowFor(enemy)
+	let previous = record.window.reserveDuration(getElapsedGameTime(), boss, duration)
+	if previous < 0.0
+		return false
+	let caster = new DummyCaster()
+	caster.origin(enemy.getPos())
+	caster.owner(GetOwningPlayer(source))
+	caster.delay((boss ? RMinBJ(0.25, duration) : duration) + tdConfiguredShieldCastMargin() + 0.25)
+	record.source = source
+	record.sourceToken = token
+	record.buffId = buffId
+	let dummy = caster.castTarget(abilityId, level, orderId, enemy)
+	if dummy == null
+		if byHandle.loadInt(enemy.getHandleId()) == record castTo int
+			record.window.rollback(previous)
+			record.source = null
+			record.sourceToken = 0
+			record.buffId = 0
+		return false
+	return true
+
+public function tdCancelEnemyControl(unit target, unit source, int token)
+	if target == null or not byHandle.hasInt(target.getHandleId())
+		return
+	let record = byHandle.loadInt(target.getHandleId()) castTo TDEnemyControlWindow
+	if record.source != source or record.sourceToken != token or token == 0
+		return
+	if record.buffId != 0
+		target.removeAbility(record.buffId)
+	record.source = null
+	record.sourceToken = 0
+	record.buffId = 0
+	// The shared protection deadline remains in force after cancellation.
+
+public function tdForgetEnemyControl(unit enemy)
+	if enemy == null or not byHandle.hasInt(enemy.getHandleId())
+		return
+	let record = byHandle.loadInt(enemy.getHandleId()) castTo TDEnemyControlWindow
+	byHandle.removeInt(enemy.getHandleId())
+	windows.remove(record)
+	destroy record
+
+public function tdSetupEnemyControl()
+	if ready
+		return
+	ready = true
+	doPeriodically(0.10) cb ->
+		let now = getElapsedGameTime()
+		let iter = windows.iterator()
+		while iter.hasNext()
+			let record = iter.next()
+			if GetUnitTypeId(record.enemy) == 0 or not record.enemy.isAlive() or now >= record.window.readyAt or tdIsGameOver()
+				byHandle.removeInt(record.enemy.getHandleId())
+				iter.remove()
+				destroy record
+		iter.close()
+		if tdIsGameOver() and windows.isEmpty()
+			destroy cb

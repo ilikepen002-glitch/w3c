@@ -131,6 +131,14 @@ def require_dynamic_role_binding(expression, params, body, owner):
     if expression == 'abilityId':
         require_unmodified_parameter(params, body, 'abilityId', owner)
         return
+    if expression == 'record . buffId':
+        require(owner == 'enemies/TDEnemyControlRuntime.wurst:tdCancelEnemyControl' and
+                'let record = byHandle.loadInt(target.getHandleId()) castTo TDEnemyControlWindow' in body and
+                'if record.source != source or record.sourceToken != token or token == 0' in body,
+                'Control cancellation lost exact source/token identity')
+        require(body.count('record.buffId =') == 1 and 'record.buffId = 0' in body,
+                'Control cancellation rebounded buff identity')
+        return
     if expression == 'record . abilityId':
         require_unmodified_parameter(params, body, 'record', owner)
         require(not re.search(r'\brecord\s*\.\s*abilityId\s*(?:[+*/-]?=(?!=)|\+\+|--)', body),
@@ -648,7 +656,8 @@ def source_mount_roles(evaluator, towers, active):
                      ('items/TDEquipmentSpecialState.wurst', 'tdSpecialSyncBuff'): {'obsolete . abilId', 'obsolete . buffId'},
                      ('items/TDEquipmentSpecialState.wurst', 'tdEquipmentSpecialSyncStages'): {'TD_WAR_INTENT_SPEED_CARRIER'},
                      ('auras/TDAuraState.wurst', 'tdAuraSyncDisplayedRank'): {'previousCarrier', 'previous . buffId'},
-                     ('pets/TDPetCombat.wurst', 'setBonus'): {'abilityId'}}
+                     ('pets/TDPetCombat.wurst', 'setBonus'): {'abilityId'},
+                     ('enemies/TDEnemyControlRuntime.wurst', 'tdCancelEnemyControl'): {'record . buffId'}}
     setter_roles = {('items/TDInventoryRuntime.wurst', 'tdSetTowerEquipmentAbilityLevel'): {'abilityId'},
                     ('items/TDEquipmentAbilities.wurst', 'tdEquipmentSyncControl'): {'abilityId'},
                     ('pets/TDPetCombat.wurst', 'setBonus'): {'abilityId'},
@@ -725,11 +734,22 @@ def verify_runtime_sources(evaluator):
                   'pet.skillCount', 'tdPetSkillFitsHost(skill, target)', 'tdPetSkillIsActive(skill)', 'tdHasNativeActiveCooldown(target)'):
         require(token in aura, 'Aura active eligibility missing binding/slot/metadata guard: ' + token)
     require('tdActiveSkillDefinitionForPetSkill(skill)' in evaluator.body('tdPetSkillIsActive'), 'Pet classifier must consume shared metadata, not old eligibility whitelist')
-    require('tdPetUnlockedSlots(pet.level)' in evaluator.body('tdPetSkillRank'), 'Pet aura rank missing slot unlock guard')
+    require('aggregate.offer(TD_AURA_PET_COMMAND' not in evaluator.body('tdAuraOfferSource') and 'aggregate.offer(TD_AURA_PET_STASIS' not in evaluator.body('tdAuraOfferSource'), 'Retired pet aura source scan remains')
     pet_attack = evaluator.body('onAttack')
     for token in ('tdPetBindingValid(pet, host, pet.generation)', 'tdPetUnlockedSlots(pet.level)',
-                  'tdPetSkillIsActive(candidateSkill)', 'tdPetBindingValid(pet, host, generation)', 'pet.pendingSerial == pendingSerial', 'if not found'):
+                  'tdPetSkillIsActive(skill)', 'tdPetBindingValid(pet, host, generation)', 'pet.pendingSerial == pendingSerial'):
         require(token in pet_attack, 'Pet successful active missing binding/slot/generation/target guard: ' + token)
+    if 'tdPetStartElementActive(' in pet_attack:
+        require('started = tdPetStartElementActive(' in pet_attack and
+                'if started and tdTrialContextValid(context) and tdPetBindingValid(pet, host, generation)' in pet_attack,
+                'Pet cooldown write requires successful start and renewed binding/context')
+        start_element = evaluator.body('tdPetStartElementActive')
+        for token in ('tdPetBindingValid(pet, host, generation)', 'tdTrialContextValid(trial)',
+                      'tdPetSkillQualityValid(skill, quality)', 'tdPetSkillElement(skill) != tdPetSpeciesElement(pet.species)',
+                      'tdTrialTargetContextValid(target, pet.lane, trial, targetRevision)', 'tdPetEnemyIsValid(target, pet.lane)'):
+            require(token in start_element, 'Elemental start target/quality/binding guard missing: ' + token)
+    else:
+        require('if not found' in pet_attack, 'Pet successful active missing target guard')
     helper = evaluator.body('tdConfigureActiveNativeCooldown')
     for token in ('tdActiveSkillDefinitionForKey(activeKey)', 'active.driver', 'definition.getNewId()',
                   'definition.getLevels() != 1', 'TD_ACTIVE_NATIVE_LEVEL_COUNT', 'tdActiveCooldownDuration(', 'tdActiveCooldownReductionAtNativeLevel(level)'):
@@ -775,7 +795,7 @@ def verify_runtime_sources(evaluator):
 
 
 def verify_manager_list_zero_cooldown(evaluator):
-    """Only the reviewed 10x49 mutually exclusive, zero-CD UI list family."""
+    """Only the reviewed mutually exclusive, zero-CD UI list family."""
     path = 'pets/TDPetObjectGen.wurst'
     source = evaluator.sources[path]
     owners = source_functions(source)
@@ -800,7 +820,7 @@ def verify_manager_list_zero_cooldown(evaluator):
         values = re.findall(r'(?<![\w.])' + variable + r'\s*(?:=|\+=|-=)\s*([^\n]+)', generator)
         require(len(values) == 1 and canonical(values[0]) == canonical(expression),
                 'Manager list rawcode/receiver/order binding changed: ' + variable)
-    require('for cell = 0 to 9' in generator and 'for variant = 0 to 48' in generator,
+    require('for cell = 0 to 9' in generator and 'for variant = 0 to TD_PET_LIST_VARIANTS - 1' in generator,
             'Manager list physical-cell/state family changed')
     require(calls(generator, 'listCommand') == [['listAbility', 'cell', 'order', 'label', 'icon']],
             'Manager list helper has unknown caller/arguments')
@@ -810,11 +830,14 @@ def verify_manager_list_zero_cooldown(evaluator):
     for owner_path, text in evaluator.sources.items():
         require(calls(text, 'listCommand') == (expected_calls if owner_path == path else []),
                 'Manager list helper used outside its exact UI role: ' + owner_path)
+    variants = evaluator.constant('TD_PET_LIST_VARIANTS')
+    species_count = evaluator.constant('TD_PET_SPECIES_COUNT')
+    require(variants == 241 and species_count == 15, 'Manager list physical-cell/state family changed')
     for cell in range(10):
-        states = [(0, 0, 0)] + [(species, quality, count) for species in range(1, 4)
+        states = [(0, 0, 0)] + [(species, quality, count) for species in range(1, species_count + 1)
                                 for quality in range(1, 5) for count in range(1, 5)]
         for variant, args in enumerate(states):
-            require(evaluator.call('tdPetListAbilityId', [cell, *args]) == rawcode(f'L{cell * 49 + variant:03X}'),
+            require(evaluator.call('tdPetListAbilityId', [cell, *args]) == rawcode(f'L{cell * variants + variant:03X}'),
                     'Manager list helper rawcode escaped its mutually exclusive UI family')
 
 
@@ -841,7 +864,7 @@ def verify_inventory(evaluator):
         ('items/TDInventoryRuntime.wurst', 'tdSetTowerEquipmentAbilityLevel'): {'abilityId , level'},
         ('pets/TDPetCombat.wurst', 'setBonus'): {'abilityId , clamped'},
     }
-    simple_dynamic_paths = {'items/TDEquipmentSpecialState.wurst', 'auras/TDAuraState.wurst', 'pets/TDPetUIView.wurst', 'enemies/TDBossDarkTideRuntime.wurst'}
+    simple_dynamic_paths = {'items/TDEquipmentSpecialState.wurst', 'auras/TDAuraState.wurst', 'pets/TDPetUIView.wurst', 'pets/TDPetAttackState.wurst', 'enemies/TDBossDarkTideRuntime.wurst'}
     support_owners = {('items/TDEquipmentSpecialState.wurst', 'tdSpecialSyncBuff'),
                       ('items/TDEquipmentSpecialState.wurst', 'tdEquipmentSpecialSyncStages'),
                       ('auras/TDAuraState.wurst', 'tdAuraSyncDisplayedRank'), ('pets/TDPetUIView.wurst', 'tdPetRenderPage')}
@@ -849,7 +872,7 @@ def verify_inventory(evaluator):
     cooldowns = 0
     bare_deadline_roles = {DATA: ['0.0', 'tdActiveCooldownReadyAt(now, baseCooldown, tdActiveCooldownReductionAtNativeLevel(actualLevel))'],
                            'pets/TDPetState.wurst': ['0.0'],
-                           'items/TDShieldRules.wurst': ['0.0', 'tdShieldWindowUntil(now, boss, control)', 'previous']}
+                           'items/TDShieldRules.wurst': ['0.0', 'tdShieldWindowUntil(now, boss, control)', 'previous', 'now + (boss ? RMinBJ(0.25, duration) : duration) + (boss ? tdConfiguredShieldBossProtection() : tdConfiguredShieldNormalProtection()) + tdConfiguredShieldCastMargin()']}
     for path, source in evaluator.sources.items():
         require(not re.search(r'\b(?:Blz\w*Cooldown\w*|EX\w*Ability\w*|ResetCooldown)\s*\(', uncomment(source)),
                 'Unsupported native cooldown reset/late-engine API: ' + path)
@@ -864,7 +887,8 @@ def verify_inventory(evaluator):
         for (name, _), (_, body) in owners.items():
             for arguments in calls(body, 'setCooldown'):
                 permitted = (path == OBJECT and name == 'tdConfigureActiveNativeCooldown') or (
-                    path == 'items/TDEquipmentSpecialObjectGen.wurst' and name == 'tdConfigureShieldStun' and canonical(','.join(arguments)) == 'level , 0.0')
+                    path == 'items/TDEquipmentSpecialObjectGen.wurst' and name == 'tdConfigureShieldStun' and canonical(','.join(arguments)) == 'level , 0.0') or (
+                    path == 'pets/TDPetControlObjectGen.wurst' and name in ('controlCarrier', 'tdGeneratePetControlObjects') and canonical(','.join(arguments)) == 'level , 0.0')
                 require(permitted, 'Unclassified/bypassed cooldown write: ' + path + ':' + name)
                 cooldowns += 1
             require(not calls(body, 'presetCooldown') or (path, name) == ('pets/TDPetObjectGen.wurst', 'listCommand'),
@@ -908,14 +932,15 @@ def verify_inventory(evaluator):
                 require(not calls(body, method), 'Unknown spell registration mechanism: ' + path + ':' + method)
         for arguments in calls(source, 'registerAnyUnitEvent'):
             if any('EVENT_PLAYER_UNIT_SPELL_' in arg for arg in arguments):
-                manager = path == 'pets/TDPetUI.wurst'
-                if manager:
-                    setup = owners['tdPetSetupUI', 0][1]
-                    require(canonical('commandTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)') in canonical(setup)
-                            and canonical('commandTrigger.addCondition(Filter(function onCommand))') in canonical(setup)
-                            and sum('EVENT_PLAYER_UNIT_SPELL_' in arg for args in calls(source, 'registerAnyUnitEvent') for arg in args) == 1,
-                            'Manager shared listener must remain bound only to session admission')
-                require((path == RUNTIME or manager) and arguments == ['EVENT_PLAYER_UNIT_SPELL_EFFECT'], 'Unknown generic combat spell registration: ' + path)
+                require(path in {RUNTIME, 'pets/TDPetUI.wurst'} and arguments == ['EVENT_PLAYER_UNIT_SPELL_EFFECT'], 'Unknown generic combat spell registration: ' + path)
+                if path == 'pets/TDPetUI.wurst':
+                    setup = evaluator.body('tdPetSetupUI')
+                    require(setup.count('managerCommandTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)') == 1
+                            and setup.count('managerCommandTrigger.addAction(function onManagerSpell)') == 1
+                            and canonical(evaluator.body('onManagerSpell')) == canonical('onCommand()')
+                            and sum('EVENT_PLAYER_UNIT_SPELL_' in arg for args in calls(source, 'registerAnyUnitEvent') for arg in args) == 1
+                            and 'session.admitCommand' in evaluator.body('onCommand'),
+                            'Manager bridge bypasses caster/session authority')
         # Methods in classes are outside source_functions. Inspect those exact
         # support owners separately; adding a new call elsewhere fails closed.
         total = sum(len(calls(body, method)) for _, body in owners.values() for method in ('addAbility', 'addPermanentAbility', 'UnitAddAbility'))
@@ -924,11 +949,16 @@ def verify_inventory(evaluator):
             require(path in simple_dynamic_paths, 'Unclassified class dynamic ability mount: ' + path)
             allowed = {'items/TDEquipmentSpecialState.wurst': ['desired.abilId', 'TD_WAR_INTENT_SPEED_CARRIER'],
                        'auras/TDAuraState.wurst': ['carrier'], 'pets/TDPetUIView.wurst': ['session.abilities[cell]'],
+                       'pets/TDPetAttackState.wurst': ['TD_PET_ARMOR_ID'],
                        'enemies/TDBossDarkTideRuntime.wurst': ['TD_BOSS_DARK_TIDE_ABILITY_ID']}[path]
             for method in ('addAbility', 'addPermanentAbility', 'UnitAddAbility'):
                 for arguments in calls(source, method):
                     require(canonical(arguments[0]) in {canonical(x) for x in allowed}, 'Unknown support dynamic ability source')
-    require(cooldowns == 2, 'Cooldown write ownership inventory changed')
+    require(cooldowns == 4, 'Cooldown write ownership inventory changed')
+    control = evaluator.sources['pets/TDPetControlObjectGen.wurst']
+    require('definition.setDamage(level, 0.0)' in control and 'roots.setDamageperSecond(level, 0.0)' in control and
+            'setDurationHero(level, duration)' in control and 'roots.setDurationHero(level, level / 100.0)' in control,
+            'Zero-CD control carriers must be zero damage and explicit native durations')
     item = evaluator.body('tdGenerateEquipmentItem')
     require(calls(item, 'setActivelyUsed') == [['false']] and calls(item, 'setAbilities') == [['tdItemPassiveAbilityRawcodes ( itemId )']],
             'Equipment native item active driver unsupported')
