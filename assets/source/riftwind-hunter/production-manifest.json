@@ -1,0 +1,281 @@
+{
+  "model": "RiftwindHunter accepted visual v2 / final six-animation model",
+  "unitRawcode": "uB08",
+  "wave": 8,
+  "visualApproved": true,
+  "game127aTested": false,
+  "assets": [
+    {
+      "role": "model",
+      "sourceRelative": "original/RiftwindHunter.mdx",
+      "importPath": "war3mapImported\\RiftwindHunter.mdx",
+      "sha256": "7b08e9af5aed6acfa78d74aa2fdcba95fcb29c4fb6e764ad729eb5332c1baae9",
+      "bytes": 606872,
+      "repositoryImportPath": "imports/war3mapImported/RiftwindHunter.mdx"
+    },
+    {
+      "role": "texture",
+      "sourceRelative": "original/RiftwindHunterAtlas.blp",
+      "importPath": "Textures\\RiftwindHunterAtlas.blp",
+      "sha256": "36e061c23806efc6b140934693166cd9d3171273fde53c1b4b3b6deddaa07e01",
+      "bytes": 350705,
+      "repositoryImportPath": "imports/Textures/RiftwindHunterAtlas.blp"
+    }
+  ],
+  "rawAssetBytes": 957577,
+  "format": 800,
+  "triangles": 4352,
+  "vertices": 13056,
+  "bones": 22,
+  "pivots": 22,
+  "closedComponents": 88,
+  "blp": {
+    "version": 1,
+    "width": 512,
+    "height": 512,
+    "mipmaps": 10,
+    "alphaBits": 0
+  },
+  "sequences": [
+    {
+      "sequence": "Stand",
+      "samples": 25,
+      "maxVertexCoordinateChange": 2.7848968505859375,
+      "bounds": {
+        "min": [
+          -36.957035064697266,
+          -51.58323287963867,
+          0.699999988079071
+        ],
+        "max": [
+          55.33531951904297,
+          32.03771209716797,
+          144.41168212890625
+        ]
+      },
+      "loop": true
+    },
+    {
+      "sequence": "Walk",
+      "samples": 25,
+      "maxVertexCoordinateChange": 13.784130096435547,
+      "bounds": {
+        "min": [
+          -39.617088317871094,
+          -51.58323287963867,
+          0.699999988079071
+        ],
+        "max": [
+          58.957176208496094,
+          32.03771209716797,
+          150.97769165039062
+        ]
+      },
+      "loop": true
+    },
+    {
+      "sequence": "Spell",
+      "samples": 25,
+      "maxVertexCoordinateChange": 15.985435485839844,
+      "bounds": {
+        "min": [
+          -35.898292541503906,
+          -51.58323287963867,
+          0.699999988079071
+        ],
+        "max": [
+          62.54860305786133,
+          32.03771209716797,
+          143.3871612548828
+        ]
+      },
+      "loop": false
+    },
+    {
+      "sequence": "Stand Hit",
+      "samples": 25,
+      "maxVertexCoordinateChange": 8.864036560058594,
+      "bounds": {
+        "min": [
+          -38.921321868896484,
+          -51.58323287963867,
+          0.699999988079071
+        ],
+        "max": [
+          53.98932647705078,
+          32.03771209716797,
+          143.98313903808594
+        ]
+      },
+      "loop": false
+    },
+    {
+      "sequence": "Death",
+      "samples": 25,
+      "maxVertexCoordinateChange": 150.54715633392334,
+      "bounds": {
+        "min": [
+          -37.60850143432617,
+          -51.58323287963867,
+          0.699999988079071
+        ],
+        "max": [
+          53.98932647705078,
+          140.72149658203125,
+          143.8148651123047
+        ]
+      },
+      "loop": false
+    },
+    {
+      "sequence": "Portrait",
+      "samples": 25,
+      "maxVertexCoordinateChange": 2.7848968505859375,
+      "bounds": {
+        "min": [
+          -36.957035064697266,
+          -51.58323287963867,
+          0.699999988079071
+        ],
+        "max": [
+          55.33531951904297,
+          32.03771209716797,
+          144.41168212890625
+        ]
+      },
+      "loop": true
+    }
+  ],
+  "standBounds": {
+    "min": [
+      -36.957035064697266,
+      -51.58323287963867,
+      0.699999988079071
+    ],
+    "max": [
+      55.33531951904297,
+      32.03771209716797,
+      144.41168212890625
+    ]
+  },
+  "allAnimationBounds": {
+    "min": [
+      -39.617088317871094,
+      -51.58323287963867,
+      0.699999988079071
+    ],
+    "max": [
+      62.54860305786133,
+      140.72149658203125,
+      150.97769165039062
+    ]
+  },
+  "visualScaleFinalByRoot": 7.75,
+  "visualScaleBasis": {
+    "metric": "Stand maximum world Z, not mechanical asset multiplier",
+    "riftwindTopAt7_75": 1119.1905364990234,
+    "eclipseTopAt8": 1119.852294921875,
+    "riftwindStandBoundsAt7_75": {
+      "min": [
+        -286.4170217514038,
+        -399.7700548171997,
+        5.424999907612801
+      ],
+      "max": [
+        428.848726272583,
+        248.29226875305176,
+        1119.1905364990234
+      ]
+    }
+  },
+  "portrait": {
+    "embeddedCamera": "Portrait",
+    "separatePortraitMdxProvided": false,
+    "clientFallbackVerified": false,
+    "pngShippedInRepository": false
+  },
+  "appearanceInvariant": {
+    "partsSha256": "bdb8a9ecf2947cdcefb967e394095a780c0068a833d7d2de0b64c1e9eb235c12",
+    "textureSha256": "36e061c23806efc6b140934693166cd9d3171273fde53c1b4b3b6deddaa07e01",
+    "geometryUVAndBonePivotsMatchUserAcceptedStatic": true,
+    "changedOnly": "Death animation and model/sequence extents adjusted for side-fall"
+  },
+  "minimumRebuildSource": [
+    "build_riftwind.py",
+    "primitives.py",
+    "export_validate.cjs",
+    "check_roundtrip.cjs",
+    "check_surfaces.cjs",
+    "original/riftwind-source.json",
+    "original/RiftwindHunterAtlas_source.png",
+    "README.md",
+    "PROVENANCE.md",
+    "production-manifest.json"
+  ],
+  "previewRebuildSource": [
+    "render_sampled.py",
+    "package_delivery.py"
+  ],
+  "sourceRuntimeVariable": "MDX_PARSER_RUNTIME",
+  "allowedObjectChanges": [
+    "modelFile",
+    "visualScalingValue"
+  ],
+  "doNotChange": [
+    "collisionSize",
+    "selectionScale",
+    "speed",
+    "movementType",
+    "movementHeight",
+    "pathing",
+    "health",
+    "armor",
+    "skills"
+  ],
+  "originalAssetProvenance": "All asset data authored for this project; no third-party model or texture pixels.",
+  "baseUnitRawcode": "Ocbh",
+  "integration": {
+    "baseCommit": "29c534a77a07b52ebd35dea57b629bdba12e6e16",
+    "modelPath": "war3mapImported\\RiftwindHunter.mdx",
+    "scale": 7.75,
+    "scope": "Only uB08 modelFile and visualScalingValue; all other fields and JASS inherited"
+  },
+  "sourceHashes": {
+    "build_riftwind.py": {
+      "sha256": "6c890765680ad6dd186b72733847f7e264924fddf9ea9aa7f06713b5e2d28af0",
+      "bytes": 20344
+    },
+    "primitives.py": {
+      "sha256": "9c0f2d6452a9f08bf230c1aaeedfaa4cfa8455f5d1ae598d93472aa16299cf1e",
+      "bytes": 3145
+    },
+    "export_validate.cjs": {
+      "sha256": "61602b0f41e2e7651fda21aa3282cd92dd5e661dda0b5a3b607980020a73c9c9",
+      "bytes": 8766
+    },
+    "check_roundtrip.cjs": {
+      "sha256": "417cc9382fcc2b7bb614e6558c05a62999d611017899acc19a6ff2d5d58d9b3f",
+      "bytes": 3085
+    },
+    "check_surfaces.cjs": {
+      "sha256": "652c8234c47807e4b3ca6b2a31e1aa6bf470ce903cfff453d25dd5e6356d38bf",
+      "bytes": 3039
+    },
+    "original/riftwind-source.json": {
+      "sha256": "8dd19b3d3ac7e00500c364eeaff3a3f4e38b6321ba32222cce1ed1bd5266839e",
+      "bytes": 446774
+    },
+    "original/RiftwindHunterAtlas_source.png": {
+      "sha256": "a40ece6370eeaf5f3cce3611e06f031969cfd759d4cec4db2b92bbebc929a815",
+      "bytes": 85412
+    },
+    "README.md": {
+      "sha256": "7ff0ae44d6e55a346f6497ece16b9ea879ede3fbb137c1d2f803fbe5d6037df2",
+      "bytes": 3407
+    },
+    "PROVENANCE.md": {
+      "sha256": "a884635ab94ff659f3db2c29139cc236ae59eaf4e49480f0d5b9eb574c7a0829",
+      "bytes": 735
+    }
+  }
+}
