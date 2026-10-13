@@ -49,8 +49,13 @@ class ElementalPetSourceTests(unittest.TestCase):
             self.assertEqual(r.call('tdPetSpeciesElement',[species]),element)
             for slot in range(4):
                 actual=[s for s in range(50) if r.call('tdPetSkillAllowedForSpecies',[s,slot,species,False])]
-                self.assertEqual(actual,[11,12,*range(19+(element-1)*4,23+(element-1)*4)] if slot==0 else [*range(4),*range(5,9),16,17,18,*range(39,49)])
+                expected=([*range(4)], [*range(5,9),16,17,18], [*range(5,9),16,17,18,*range(39,49)], [11,12,*range(19+(element-1)*4,23+(element-1)*4)])[slot]
+                self.assertEqual(actual,expected)
                 for skill in actual:self.assertFalse(r.call('tdPetSkillAllowedForSpecies',[skill,slot,species,True]))
+        for species in (-1,0,16,99):
+            for slot in range(4):
+                for skill in range(49):
+                    self.assertFalse(r.call('tdPetSkillAllowedForSpecies',[skill,slot,species,False]))
         for q in range(1,5):
             for skill in (11,12):self.assertTrue(r.call('tdPetSkillQualityValid',[skill,q]))
     def test_full_four_byte_rawcodes_and_all_2410_collection_states(self):

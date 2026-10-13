@@ -4,6 +4,7 @@ import TDState
 import TDWaves
 import ClosureTimers
 import TDPetState
+import TDPetUIState
 import TDEnemyMechanicData
 import TDDamageHud
 import TDDamageRuntime
@@ -111,7 +112,8 @@ public function tdRefreshStatusBoard()
 	row += 1
 	// Compute every lane on all clients before selecting only display text locally.
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		tdPetHudSummaries[playerId] = "球" + tdPetBallsForLane(playerId) + " · 收藏" + tdPetCollectionCount(playerId) + "/20 · 洗" + tdPetRerollStones[playerId] + " · 开" + tdPetSlotStones[playerId]
+		let detail = tdPetDetailHudTextForLane(playerId)
+		tdPetHudSummaries[playerId] = detail != "" ? detail : "球" + tdPetBallsForLane(playerId) + " · 收藏" + tdPetCollectionCount(playerId) + "/20 · 洗" + tdPetRerollStones[playerId] + " · 开" + tdPetSlotStones[playerId]
 	let lane = GetPlayerId(GetLocalPlayer())
 	tdStatusBoard.setItemValue(row, 0, "宝宝")
 	tdStatusBoard.setItemValue(row, 1, "")

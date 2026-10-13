@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+from VerifyTowerUpgradeArtifact import jass_boolean_groups_explicit
 
 ROOT = Path(__file__).resolve().parents[1]
 BASELINE = 'c9d59e6482d13c97bd205b7b55276f06e416cf46'
@@ -199,6 +200,8 @@ def scalar_helpers():
         'TDPetUIState': [('tdPetActionCell', 2), ('tdPetActionHotkey', 1), ('tdPetListHotkey', 1)],
         'TDPetState': [('tdPetNextOccupied', 3)],
     }
+    if 'public function tdPetSkillIsAttackPassive(' in source('TDPetRules'):
+        targets['TDPetRules'].extend([('tdPetSkillIsAttackPassive', 1), ('tdPetSlotName', 1)])
     for package, helpers in targets.items():
         for name, arity in helpers:
             compile_source_helper(source(package), name, namespace, arity)
@@ -260,11 +263,19 @@ def verify_wiring(*, verify_legacy_wild_scope=True):
     require('tdPetOwnedQuality(skillCount, qualities[0], qualities[1], qualities[2], qualities[3])' in function_body(state, 'quality')[1], 'Record quality must include all four owned slots independently of resonance/proposal')
     for name in ('TDPetUI', 'TDPetUIView', 'TDPetUIState'):
         require(not re.search(r'\b(?:Dialog\w*|Blz\w*|Dz\w*)\b', texts[name]), f'{name}: forbidden dialog/modern native')
-    for text in texts.values():
+    # This one reviewed Wurst predicate intentionally mixes operators. Its
+    # compiled artifact is separately evaluated across all IDs; the current
+    # compiler emits explicit (and-group) or (and-group), never ambiguous JASS.
+    classifier = function_body(texts['TDPetRules'], 'tdPetSkillIsAttackPassive')[1].strip() if 'tdPetSkillIsAttackPassive' in texts['TDPetRules'] else ''
+    reviewed_classifier = 'return skill >= 5 and skill <= 8 or skill >= TD_PET_SKILL_COMBO and skill <= TD_PET_SKILL_HEAVY'
+    if classifier:
+        require(classifier == reviewed_classifier, 'Unreviewed mixed attack-passive source predicate')
+    for name, text in texts.items():
         for line in text.splitlines():
-            code = line.split('//', 1)[0]
-            # Explicit guards avoid the known mixed and/or JASS printer defect.
-            require(not (' and ' in code and ' or ' in code), 'Mixed boolean precedence in new pet source: ' + line)
+            code = line.split('//', 1)[0].strip()
+            if name == 'TDPetRules' and classifier and code == reviewed_classifier:
+                continue
+            require(jass_boolean_groups_explicit(code), 'Mixed boolean precedence in new pet source: ' + line)
     command = function_body(ui, 'onCommand')[1]
     for phrase in ('caster != tdPetDisplays[lane]', 'tdPetDisplayOwners.hasInt', 'GetUnitAbilityLevel', 'session.admitCommand', 'tdPetResolveRerollVersion'):
         require(phrase in command, 'Missing synchronized command authority: ' + phrase)

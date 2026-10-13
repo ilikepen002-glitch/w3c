@@ -214,6 +214,8 @@ function onAttack()
 				started = tdPetStartElementActive(pet, host, generation, target, targetRevision, center, activeSkill, qualitySnapshot, base, context, snapshot, route.second, route.third, route.fourth)
 			if started and tdTrialContextValid(context) and tdPetBindingValid(pet, host, generation)
 				pet.readyAt = tdStartScriptActiveCooldown(host, tdActiveSkillDefinitionForPetSkill(activeSkill).key, getElapsedGameTime())
+				if activeSkill == 11 or activeSkill == 12
+					tdCombatVisualStartPetBuff(host, pet.lane, activeSkill, pet.buffUntil)
 
 public function tdPetSetupCombat()
 	if tdPetCombatReady

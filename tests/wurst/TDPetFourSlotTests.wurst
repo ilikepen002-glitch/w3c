@@ -1,0 +1,88 @@
+package TDPetFourSlotTests
+import TDPetData
+import TDPetRules
+import TDPetState
+import TDPetUIState
+import TDPetUIView
+import TDCombatVisualData
+import TDState
+
+@Test function fourSlotContractRejectsCrossRoleSkillsAndInvalidSpecies()
+	for skill = -1 to TD_PET_SKILL_COUNT
+		let numeric = skill >= 0 and skill <= 3
+		let attack = skill >= 5 and skill <= 8 or skill >= 16 and skill <= 18
+		let hero = skill >= 39 and skill <= 48
+		let active = skill == 11 or skill == 12 or skill >= 19 and skill <= 38
+		for slot = -1 to 4
+			let expected = slot == 0 ? numeric : (slot == 1 ? attack : (slot == 2 ? attack or hero : (slot == 3 and active)))
+			tdPetSkillAllowed(skill, slot, false, false).assertEquals(expected)
+			tdPetSkillAllowed(skill, slot, true, false).assertFalse()
+			tdPetSkillAllowedForSpecies(skill, slot, 0, false).assertFalse()
+			tdPetSkillAllowedForSpecies(skill, slot, 16, false).assertFalse()
+		for species = 1 to 15
+			for quality = 1 to 4
+				for slot = 0 to 3
+					let role = slot == 0 ? numeric : (slot == 1 ? attack : (slot == 2 ? attack or hero : active))
+					let compatible = tdPetSkillElement(skill) == 0 or tdPetSkillElement(skill) == tdPetSpeciesElement(species)
+					(tdPetSkillAllowedForSpecies(skill, slot, species, false) and tdPetSkillQualityValid(skill, quality)).assertEquals(role and compatible and (tdPetSkillFixedQuality(skill) == 0 or tdPetSkillFixedQuality(skill) == quality))
+
+@Test function fourSlotOwnedCountAndResonanceKeepActiveRareAndLocked()
+	let pet = new TDPet(0, 13, 1)
+	pet.setSkill(0, 3, 1)
+	pet.setSkill(1, 5, 2)
+	pet.setSkill(2, 39, 4)
+	pet.setSkill(3, 35, 1)
+	pet.skillCount.assertEquals(4)
+	pet.level.assertEquals(1)
+	tdPetDetailActiveStatus(pet, 0, 0.0).contains("共鸣锁定").assertTrue()
+	pet.level = 3
+	tdPetDetailActiveStatus(pet, 0, 0.0).contains("未绑定").assertTrue()
+	pet.paused = true
+	tdPetDetailActiveStatus(pet, 0, 0.0).contains("施工/升级暂停").assertTrue()
+	let revision = pet.revision
+	pet.setSkill(3, 6, 1)
+	pet.setSkill(2, 35, 1)
+	pet.setSkill(1, 39, 1)
+	pet.setSkill(0, 11, 1)
+	pet.revision.assertEquals(revision)
+	pet.skillAt(3).assertEquals(35)
+	pet.quality().assertEquals(4)
+	destroy pet
+
+@Test function invalidCaptureAndRollInputsDoNotMutateTheRecord()
+	let pet = new TDPet(0, 0, 1)
+	pet.rollCaptureSkills().assertFalse()
+	pet.skillCount.assertEquals(0)
+	pet.revision.assertEquals(0)
+	for slot = -1 to 4
+		pet.rollSkill(slot, 1).assertEquals(-1)
+	destroy pet
+	let valid = new TDPet(0, 1, 1)
+	valid.rollSkill(-1, 1).assertEquals(-1)
+	valid.rollSkill(4, 1).assertEquals(-1)
+	valid.rollSkill(0, 0).assertEquals(-1)
+	valid.rollSkill(3, 5).assertEquals(-1)
+	valid.setSkill(0, 0, 1)
+	valid.rollCaptureSkills().assertFalse()
+	valid.skillCount.assertEquals(1)
+	valid.skillAt(0).assertEquals(0)
+	destroy valid
+
+@Test function detailCooldownDisplayCeilsTheActualDeadline()
+	tdPetRemainingSeconds(10.0, 0.0).assertEquals(10)
+	tdPetRemainingSeconds(10.0, 9.0).assertEquals(1)
+	tdPetRemainingSeconds(10.0, 9.999).assertEquals(1)
+	tdPetRemainingSeconds(10.0, 10.0).assertEquals(0)
+	tdPetRemainingSeconds(10.0, 11.0).assertEquals(0)
+	let session = new TDPetUISession(0)
+	session.detailHudText = "old"
+	session.close()
+	session.detailHudText.assertEquals("")
+	destroy session
+
+@Test function buffVisualModelsAreDistinctAndUseClassicAssets()
+	tdCombatVisualPetBuffModel(11).contains("BloodLustTarget").assertTrue()
+	tdCombatVisualPetBuffModel(12).contains("InnerFireTarget").assertTrue()
+	tdCombatVisualPetBuffStartModel(11).contains("BloodLustSpecial").assertTrue()
+	tdCombatVisualPetBuffStartModel(12).contains("RoarCaster").assertTrue()
+	tdCombatVisualPetBuffModel(35).assertEquals("")

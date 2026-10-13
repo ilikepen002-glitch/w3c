@@ -26,9 +26,10 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
             raise AssertionError('Actual skill-slot signature changed')
         cls.actual_slot = signature[1].strip().split()[1]
         cls.phase_one = 'tdPetSkillDefined' in functions(cls.script)
+        cls.four_slots = 'tdPetSkillIsAttackPassive' in functions(cls.script)
         cls.actual_duplicate = signature[2].strip().split()[1]
 
-    def test_actual_all_2176_skill_admission_combinations(self):
+    def test_actual_full_skill_admission_matrix(self):
         verifier.verify_skill_allowed(self.script)
 
     def test_actual_all_256_lane_enemy_guard_combinations(self):
@@ -52,19 +53,38 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
     return ( not tdPetSkillIsNumeric(skill_1)) and slot != 1 or tdPetSkillIsUniversal(skill_1) and ( not hasActive) or ( not tdPetSkillIsActive(skill_1))
 '''
         body = re.sub(r'\bslot\b', self.actual_slot, body)
-        with self.assertRaisesRegex(ValueError, 'Ambiguous packaged scalar boolean precedence'):
+        if self.phase_one:
+            # Keep the mutation executable under the current four-scalar signature.
+            # Undefined legacy usedMask/hasActive must not mask its precedence bug.
+            body = body.replace('bitset_get(usedMask, skill_1)', self.actual_duplicate)
+            signature = verifier.jass_function(self.script, 'tdPetSkillAllowed').group(0).splitlines()[0]
+            active_arg = signature.split('takes ', 1)[1].split(' returns ', 1)[0].split(',')[3].strip().split()[-1]
+            body = body.replace('hasActive', active_arg)
+        with self.assertRaisesRegex(ValueError, 'Ambiguous packaged scalar boolean precedence|Mixed Jass and/or'):
             verifier.verify_skill_allowed(replace_body(self.script, 'tdPetSkillAllowed', body))
 
     def test_rejects_each_missing_skill_admission_guard(self):
         original = verifier.jass_function(self.script, 'tdPetSkillAllowed').group(1)
         duplicate = ' or ' + self.actual_duplicate if self.phase_one else ' or bitset_get(usedMask, skill_1)'
-        cases = [
-            ('duplicate', original.replace(duplicate, '')),
-            ('first numeric', original.replace(f'if {self.actual_slot} == 0 then', f'if {self.actual_slot} != 0 then')),
-            ('later numeric', original.replace('\tif tdPetSkillIsNumeric(skill_1) then\n\t\treturn false\n\tendif\n', '')),
-            ('second universal', original.replace(f'if {self.actual_slot} == 1 and', f'if {self.actual_slot} == 2 and')),
-            ('one active', original.replace('\tif hasActive and tdPetSkillIsActive(skill_1) then\n\t\treturn false\n\tendif\n', '')),
-        ]
+        if self.four_slots:
+            cases = [
+                ('duplicate', original.replace(duplicate, '')),
+                ('attribute role', original.replace(f'if {self.actual_slot} == 0 then', f'if {self.actual_slot} == 3 then')),
+                ('attack role', original.replace(f'if {self.actual_slot} == 1 then', f'if {self.actual_slot} == 2 then')),
+                ('enhancement role', original.replace(f'if {self.actual_slot} == 2 then', f'if {self.actual_slot} == 3 then')),
+                ('active role', original.replace('return tdPetSkillIsActive(skill_1)', 'return tdPetSkillIsNumeric(skill_1)')),
+            ]
+        else:
+            cases = [
+                ('duplicate', original.replace(duplicate, '')),
+                ('active0 role', original.replace(f'{self.actual_slot} == 0', f'{self.actual_slot} == 3')),
+            ] if self.phase_one else [
+                ('duplicate', original.replace(duplicate, '')),
+                ('first numeric', original.replace(f'if {self.actual_slot} == 0 then', f'if {self.actual_slot} != 0 then')),
+                ('later numeric', original.replace('\tif tdPetSkillIsNumeric(skill_1) then\n\t\treturn false\n\tendif\n', '')),
+                ('second universal', original.replace(f'if {self.actual_slot} == 1 and', f'if {self.actual_slot} == 2 and')),
+                ('one active', original.replace('\tif hasActive and tdPetSkillIsActive(skill_1) then\n\t\treturn false\n\tendif\n', '')),
+            ]
         for name, body in cases:
             with self.subTest(guard=name):
                 self.assertNotEqual(body, original, 'Mutation must change the real compiled body')
@@ -73,7 +93,9 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
 
     def test_rejects_wrong_real_numeric_universal_and_active_helpers(self):
         if self.phase_one:
-            cases = [('tdPetSkillIsNumeric', '<= 3', '<= 4'), ('tdPetSkillIsUniversal', '!= 9', '!= 8'), ('tdPetSkillDefined', '!= 4', '!= 5')]
+            cases = [('tdPetSkillIsNumeric', '<= 3', '<= 4'), ('tdPetSkillIsUniversal', 'tdPetHeroDefined', 'tdPetSkillIsNumeric'), ('tdPetSkillDefined', '!= 4', '!= 5')]
+            if self.four_slots:
+                cases.append(('tdPetSkillIsAttackPassive', '<= 8', '<= 7'))
             for name, old, new in cases:
                 body = verifier.jass_function(self.script, name).group(1)
                 self.assertIn(old, body)

@@ -55,3 +55,15 @@ public function tdCombatVisualGearModel(int profile) returns string
 
 public function tdCombatVisualHitBudget(real now, real readyAt, int sourceCount, int laneGroups, int hits, int total, int created) returns boolean
 	return now >= readyAt and sourceCount < 2 and laneGroups < TD_VISUAL_LANE_GROUPS_PER_SECOND and hits < TD_VISUAL_HIT_LIMIT and total < TD_VISUAL_SHORT_LIMIT and created < TD_VISUAL_NEW_PER_SECOND
+
+// Optional automatic buff feedback; the locked classic Abilities catalogue
+// contains both paths. These are separate from the equipment attachment.
+public function tdCombatVisualPetBuffModel(int skill) returns string
+	if skill == 11
+		return "Abilities\\Spells\\Orc\\Bloodlust\\BloodLustTarget.mdx"
+	return skill == 12 ? "Abilities\\Spells\\Human\\InnerFire\\InnerFireTarget.mdx" : ""
+
+public function tdCombatVisualPetBuffStartModel(int skill) returns string
+	if skill == 11
+		return "Abilities\\Spells\\Orc\\Bloodlust\\BloodLustSpecial.mdx"
+	return skill == 12 ? "Abilities\\Spells\\NightElf\\BattleRoar\\RoarCaster.mdx" : ""

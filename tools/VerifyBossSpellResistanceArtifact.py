@@ -22,6 +22,7 @@ import json
 import math
 from pathlib import Path
 import re
+from VerifyTowerUpgradeArtifact import jass_boolean_groups_explicit
 
 from GenerateTowerTerrainMask import Mpq
 from VerifyEquipmentAbilityArtifact import require
@@ -154,8 +155,7 @@ class BossJassRuntime(GroundJassRuntime):
             node = packaged_expression_ast(text.strip())
         except SyntaxError as exc:
             raise ValueError('Unsupported packaged expression ' + text) from exc
-        ops = {type(part.op) for part in ast.walk(node) if isinstance(part, ast.BoolOp)}
-        require(len(ops) <= 1, 'Mixed Jass and/or requires a Jass-specific precedence parser')
+        require(jass_boolean_groups_explicit(text), 'Mixed Jass and/or requires a Jass-specific precedence parser')
         def variable(name):
             # Earlier calls in this same expression may change a global.
             # Locals still shadow globals, but neither namespace is snapshotted.

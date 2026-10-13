@@ -92,17 +92,24 @@ class HeroRuntime(PetAttackRuntime):
         return result
 
     def pet(self, skills, host=101, slot=0, level=3):
-        pet = self.invoke('new_TDPet', 0, 1, 1)
-        require(self.invoke('tdPetStore', 0, pet), 'Actual collection rejected hero fixture')
-        # Real phase-two slot contract: one active in slot0; heroes passive only.
-        self.invoke('TDPet_setSkill', pet, 0, 11, 1)
-        for index, (skill, quality) in enumerate(skills, 1):
-            self.invoke('TDPet_setSkill', pet, index, skill, quality)
-            require(self.invoke('TDPet_skillAt', pet, index) == skill,
-                    'Production slot contract rejected hero passive fixture')
-        self.globals['TDPet_level'][pet] = level
-        self.globals['TDPet_host'][pet] = host
-        self.globals['TDPet_generation'][pet] = 1
+        if self.four_slot_contract:
+            require(len(skills) == 1 and 39 <= skills[0][0] <= 48,
+                    'Four-role hero fixture requires exactly one hero in slot2')
+            pet = super().pet(skills, host=host, slot=slot, level=level)
+            require(self.invoke('TDPet_skillAt', pet, 2) == skills[0][0],
+                    'Production slot2 rejected hero passive fixture')
+        else:
+            pet = self.invoke('new_TDPet', 0, 1, 1)
+            require(self.invoke('tdPetStore', 0, pet), 'Actual collection rejected hero fixture')
+            # Historical phase-two maps retain their published active0 contract.
+            self.invoke('TDPet_setSkill', pet, 0, 11, 1)
+            for index, (skill, quality) in enumerate(skills, 1):
+                self.invoke('TDPet_setSkill', pet, index, skill, quality)
+                require(self.invoke('TDPet_skillAt', pet, index) == skill,
+                        'Production slot contract rejected hero passive fixture')
+            self.globals['TDPet_level'][pet] = level
+            self.globals['TDPet_host'][pet] = host
+            self.globals['TDPet_generation'][pet] = 1
         # Isolate hero behavior without replacing the actual active eligibility.
         self.globals['TDPet_readyAt'][pet] = self.now + 1000.
         require(self.invoke('tdPetBindingValid', pet, host, 1), 'Actual binding rejected hero fixture')

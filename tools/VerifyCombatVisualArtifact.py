@@ -4,12 +4,13 @@ from pathlib import Path
 import argparse, hashlib, json, math, re, sys, time
 from GenerateTowerTerrainMask import Mpq
 from VerifyPetAttackArtifact import PetAttackRuntime
+from VerifyElementalPetArtifact import ElementRuntime
 from VerifyEquipmentAbilityArtifact import require
 from VerifyTowerUpgradeArtifact import rawcode
 from VerifyBuilderControlDelta import allocations
 from VerifyTowerPlacementArtifact import unit_objects
 
-class VisualRuntime(PetAttackRuntime):
+class VisualRuntime(ElementRuntime):
     def __init__(self,script):
         self.visual_history=[];self.reject_visual=False;self.native_trigger=None;self.native_killer=None
         self.random_real_draws=[];self.control_orders=[];self.damage_timeline=[];self.native_hashtables={}
@@ -53,11 +54,19 @@ class VisualRuntime(PetAttackRuntime):
         if name in ('AddSpecialEffect','AddSpecialEffectTarget','AddLightningEx'):
             self.visual_history.append((self.now,name,tuple(args)))
             if self.reject_visual:return True,None
+            # Keep this gate's event-shaped visual trace while reusing the
+            # elemental gate's real Fx initialization/setter/recycler boundary.
+            handled,value=PetAttackRuntime.native(self,name,args)
+            if name=='AddSpecialEffectTarget':
+                self.effect_dummies[args[1]]=value
+            return handled,value
         if name=='GetTriggerUnit' and self.native_trigger is not None:return True,self.native_trigger
         if name=='GetKillingUnit' and self.native_killer is not None:return True,self.native_killer
         if name in ('LinkedList_iterator','dispatch_LinkedList_LinkedList_iterator') and args[0] not in self.lists:
             raise ValueError('Uninitialized actual visual replay dependency list '+repr(args))
         return super().native(name,args)
+    def pet(self,skills,host=101,slot=0,level=3):
+        return PetAttackRuntime.pet(self,skills,host,slot,level)
     def tick_visuals(self,elapsed=.05):
         self.now+=elapsed;self.executed_steps=0
         callback=self.globals.get('TDCombatVisualRuntime_cleanup',0)
@@ -231,7 +240,12 @@ def verify_budget_cleanup(script):
 
 def verify_gameplay(script,baseline):
     traces=[]
-    for skills in ([],[(16,1)],[(16,1),(17,2)],[(5,1),(6,2),(8,2)],[(38,4)]):
+    # Explicit complete loadouts own identical IDs/qualities in both maps.
+    # Only their approved physical order differs. Three attack passives no
+    # longer coexist, so preserve their damage/FX comparisons in legal pairs.
+    for skills in ([(0,1),(7,1),(8,1),(11,1)],[(0,1),(16,1),(7,1),(11,1)],
+                   [(0,1),(16,1),(17,2),(11,1)],[(0,1),(5,1),(6,2),(11,1)],
+                   [(0,1),(5,1),(8,2),(11,1)],[(0,1),(5,1),(6,1),(38,4)]):
         for mode in ('normal','null','exhausted'):
             runs=[]
             for source in (baseline,script):
@@ -239,7 +253,7 @@ def verify_gameplay(script,baseline):
                 if mode=='exhausted' and 'TDCombatVisualRuntime_castVisualCount' in r.globals:
                     r.globals['TDCombatVisualRuntime_castVisualCount']=128
                 amounts=[]
-                if skills==[(38,4)]:
+                if (38,4) in skills:
                     r.visible_units=[102,103]
                     r.units[103]={**r.units[102],'x':100.,'abilities':{}}
                     r.units[102].update(life=100000.,maxLife=100000.)
@@ -252,7 +266,9 @@ def verify_gameplay(script,baseline):
                         amounts.append(r.emit(100.)['amount']);r.flush();r.tick_visuals(0.)
                 runs.append({'amounts':amounts,'damage':r.native_damage,'damage_time':r.damage_timeline,'score':r.score(),'gold':r.player_resources,
                              'draws':r.random_draws,'real_draws':r.random_real_draws,'controls':r.control_orders,
-                             'pet_rotation':r.globals['TDPet_resolveRotation'][p],'cd':r.globals['TDPet_readyAt'][p]})
+                             'pet_rotation':r.globals['TDPet_resolveRotation'][p],'cd':r.globals['TDPet_readyAt'][p],
+                             'host_bonus':{key:r.units[101]['abilities'].get(key,0) for key in (rawcode('Pbat'),rawcode('Pbsp'))},
+                             'target_speed':r.units[102]['speed']})
             require(runs[0]==runs[1],'Visual success/failure changed actual combat trajectory '+repr(skills)+' '+mode)
             traces.append({'skills':skills,'visual_mode':mode,'identical':True,'native_segments':len(runs[1]['damage'])})
     return traces

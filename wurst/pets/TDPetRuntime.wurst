@@ -94,8 +94,8 @@ function tdPetHandleCapture() returns boolean
 		tdPetNotice(lane, "|cffff8080捕获失败|r，宝宝继续行进；剩余球 " + tdPetBallsForLane(lane).toString())
 		return false
 	let pet = new TDPet(lane, species, tdGetGlobalWave())
-	pet.rollCaptureSkills()
-	if not tdPetStore(lane, pet)
+	let generated = pet.rollCaptureSkills()
+	if not generated or not tdPetStore(lane, pet)
 		// No yielding between capacity check and insertion; retain an explicit failure path.
 		destroy pet
 		tdPetAddBall(lane)

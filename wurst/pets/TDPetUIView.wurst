@@ -9,10 +9,10 @@ import TDPetCombat
 import TDConfig
 import ClosureTimers
 import Table
+import GameTimer
 
 public int array tdPetSelectedSlot
 public unit array tdPetDisplays
-public TDPetUISession array tdPetUISessions
 public constant Table tdPetDisplayOwners = new Table()
 
 function retire(unit old)
@@ -82,6 +82,7 @@ public function tdPetRenderPage(int lane, int mode, int page, int slot, int nonc
 	if GetLocalPlayer() == Player(lane)
 		ClearSelection()
 		SelectUnit(fresh, true)
+	tdPetRefreshDisplay(lane)
 	return true
 
 // Polling and external callers invalidate; they never rebuild or force selection.
@@ -91,8 +92,15 @@ public function tdPetRefreshDisplay(int lane)
 	let session = tdPetUISessions[lane]
 	if session.active and not session.snapshotCurrent()
 		session.dirty = true
+		session.detailHudText = ""
 		if session.mode == TD_PET_UI_RELEASE
 			tdPetCancelRelease(lane)
+	if session.active and not session.dirty and session.mode == TD_PET_UI_DETAIL
+		let text = tdPetDetailActiveStatus(session.pet, session.selectedSlot, getElapsedGameTime())
+		if session.detailHudText != text
+			session.detailHudText = text
+	else
+		session.detailHudText = ""
 
 public function tdPetSkillRestriction(TDPet pet, int slot, int skill) returns string
 	if slot >= tdPetUnlockedSlots(pet.level)
@@ -107,9 +115,39 @@ public function tdPetSkillRestriction(TDPet pet, int slot, int skill) returns st
 		return skill == TD_PET_SKILL_RESOLVE ? " [不适配：宿主已有原生暴击]" : " [不适配：宿主需要" + (skill == 9 ? "分裂箭能力" : "尸爆能力") + "]"
 	return ""
 
+// Ceil avoids showing ready before the combat deadline, including its last
+// fractional second. Both remaining values come directly from the pet record.
+public function tdPetRemainingSeconds(real deadline, real now) returns int
+	let remaining = deadline - now
+	if remaining <= 0.0
+		return 0
+	let seconds = remaining.toInt()
+	return seconds.toReal() < remaining ? seconds + 1 : seconds
+
+public function tdPetDetailActiveStatus(TDPet pet, int collectionSlot, real now) returns string
+	if pet == null or pet.released
+		return ""
+	let prefix = "编号" + tdPetCollectionNumber(collectionSlot) + " · "
+	let skill = pet.skillAt(3)
+	if skill < 0
+		return prefix + "自动主动栏未开"
+	let name = tdPetSkillNameById(skill)
+	let restriction = tdPetSkillRestriction(pet, 3, skill)
+	if restriction != ""
+		return prefix + name + restriction
+	if pet.pendingSkill
+		return prefix + name + " · 施放处理中"
+	let cooldown = tdPetRemainingSeconds(pet.readyAt, now)
+	let status = cooldown > 0 ? "冷却" + cooldown.toString() + "秒" : "就绪（待普攻）"
+	if pet.buffSkill == skill
+		if skill == 11 or skill == 12
+			if now < pet.buffUntil
+				return prefix + name + " · 强化剩余" + tdPetRemainingSeconds(pet.buffUntil, now).toString() + "秒 / " + status
+	return prefix + name + " · " + status
+
 public function tdPetPageSummary(int lane) returns string
 	let session = tdPetUISessions[lane]
-	if session == null or not session.active or session.mode != TD_PET_UI_DETAIL
+	if session == null or not session.active or session.dirty or session.mode != TD_PET_UI_DETAIL or not session.snapshotCurrent()
 		return ""
 	let pet = tdPetAt(lane, session.selectedSlot)
 	if pet == null

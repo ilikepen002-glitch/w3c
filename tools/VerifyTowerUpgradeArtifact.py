@@ -227,12 +227,55 @@ def validate_upgrade_artifact(units, abilities, artifact=None):
     return edges
 
 
+def jass_boolean_groups_explicit(text):
+    """Accept mixed operators only when parentheses delimit each precedence.
+
+    JASS OR binds above AND. Python's AST is safe here only when no single
+    expression group contains both operators; nested explicit groups and
+    separate function arguments may each use their own homogeneous operator.
+    Quoted literals and identifier substrings never count as operators.
+    """
+    groups = [set()]
+    quote = None
+    i = 0
+    while i < len(text):
+        char = text[i]
+        if quote:
+            if char == '\\':
+                i += 2
+                continue
+            if char == quote:
+                quote = None
+        elif char in ('"', "'"):
+            quote = char
+        elif char == '(':
+            groups.append(set())
+        elif char == ')':
+            if len(groups) == 1 or len(groups.pop()) > 1:
+                return False
+        elif char == ',':
+            if len(groups[-1]) > 1:
+                return False
+            groups[-1] = set()
+        elif char.isalpha() or char == '_':
+            end = i + 1
+            while end < len(text) and (text[end].isalnum() or text[end] == '_'):
+                end += 1
+            word = text[i:end]
+            if word in ('and', 'or'):
+                groups[-1].add(word)
+            i = end
+            continue
+        i += 1
+    return quote is None and len(groups) == 1 and len(groups[0]) <= 1
+
+
 class JassScalarEvaluator:
     """Fail-closed evaluator for the compiler's scalar if/set/return subset.
 
     This is static evaluation, not execution of the map or arbitrary Python.
     Only whitelisted AST operations and declared Jass scalar functions work.
-    Mixed and/or expressions are rejected: Jass gives OR higher precedence
+    Ungrouped mixed and/or expressions are rejected: Jass gives OR higher precedence
     than AND, unlike Python. This subset never guesses their interpretation.
     """
     def __init__(self, script):
@@ -253,8 +296,7 @@ class JassScalarEvaluator:
             node = ast.parse(text, mode='eval').body
         except SyntaxError as exc:
             raise ValueError(f'Unsupported scalar Jass expression {text}') from exc
-        bool_ops = {type(part.op) for part in ast.walk(node) if isinstance(part, ast.BoolOp)}
-        require(len(bool_ops) <= 1, 'Mixed Jass and/or requires a Jass-specific precedence parser')
+        require(jass_boolean_groups_explicit(text), 'Mixed Jass and/or requires a Jass-specific precedence parser')
         def read(node):
             if isinstance(node, ast.Constant):
                 return node.value

@@ -36,6 +36,7 @@ class PetAttackRuntime(EquipmentTrialRuntime):
         self.pumping_zero = False
         self.auto_post = True
         self.final_catalog = self.globals.get('TDPetData_TD_PET_SKILL_COUNT') == 49
+        self.four_slot_contract = 'tdPetSkillIsAttackPassive' in self.functions
         self.visual_handles = {}
         self.lightning_handles = {}
         self.visual_serial = 100000
@@ -185,7 +186,25 @@ class PetAttackRuntime(EquipmentTrialRuntime):
         return result
 
     def pet(self, skills, host=101, slot=0, level=3):
-        if self.final_catalog:
+        if self.four_slot_contract:
+            active = [(skill, quality) for skill, quality in skills if self.invoke('tdPetSkillIsActive', skill)]
+            attributes = [(skill, quality) for skill, quality in skills if 0 <= skill <= 3]
+            attacks = [(skill, quality) for skill, quality in skills if skill in (5, 6, 7, 8, 16, 17, 18)]
+            heroes = [(skill, quality) for skill, quality in skills if 39 <= skill <= 48]
+            require(len(active) <= 1 and len(attributes) <= 1 and len(heroes) <= 1 and
+                    len(attacks) <= (1 if heroes else 2) and
+                    len(active) + len(attributes) + len(attacks) + len(heroes) == len(skills),
+                    'Fixture exceeds four fixed slot roles')
+            require(len({skill for skill, _ in skills}) == len(skills), 'Fixture duplicates an owned skill')
+            chosen = active[0] if active else None
+            element = self.invoke('tdPetSkillElement', chosen[0]) if chosen else 0
+            species = (element - 1) * 3 + 1 if element else 1
+            ordered = [attributes[0] if attributes else (0, 1), attacks[0] if attacks else (5, 1)]
+            if len(attacks) == 2 or heroes or chosen:
+                ordered.append(heroes[0] if heroes else attacks[1] if len(attacks) == 2 else (39, 1))
+            if chosen:
+                ordered.append(chosen)
+        elif self.final_catalog:
             active = [(skill, quality) for skill, quality in skills if self.invoke('tdPetSkillIsActive', skill)]
             passive = [(skill, quality) for skill, quality in skills if not self.invoke('tdPetSkillIsActive', skill)]
             require(len(active) <= 1 and len(passive) <= 3, 'Fixture exceeds one active/three passive contract')
@@ -326,18 +345,27 @@ def verify_resolve(script):
 
 
 def verify_passives_and_sampling(script):
-    r = PetAttackRuntime(script); pet = r.pet([(16, 4), (7, 4), (17, 4)])
-    r.roll = 0.0
-    for _ in range(20):
-        r.emit(100.); r.flush()
-    amounts = [hit[2] for hit in r.native_damage]
-    require(amounts.count(100.) == 20 and sum(math.isclose(x, 85., abs_tol=1e-5) for x in amounts) == 5,
-            'Combo/charge did not remain one original-D segment each')
-    require(r.globals['TDPet_rotation'][pet] == 0 and r.globals['TDPet_resolveRotation'][pet] == 0,
-            'Tagged additions recursively advanced pet counters')
-    for _, _, event in r.emitted:
-        if event['id'] == rawcode('Pdam'):
-            require(event['isCode'] and not event['isSpell'], 'Physical additional lost Pdam/code classification')
+    # Three attack passives cannot coexist under the four-role contract.
+    # Cover combo/charge together and combo/resolve together using legal pairs;
+    # keep both bounded counters and Pdam/code non-recursion assertions.
+    four_slots = 'tdPetSkillIsAttackPassive' in functions(script)
+    fixtures = [[(16, 4), (7, 4)], [(16, 4), (17, 4)]] if four_slots else [[(16, 4), (7, 4), (17, 4)]]
+    for skills in fixtures:
+        r = PetAttackRuntime(script); pet = r.pet(skills)
+        r.roll = 0.0
+        for _ in range(20):
+            r.emit(100.); r.flush()
+        amounts = [hit[2] for hit in r.native_damage]
+        require(amounts.count(100.) == 20 and sum(math.isclose(x, 85., abs_tol=1e-5) for x in amounts) == (5 if any(skill == 7 for skill, _ in skills) else 0),
+                'Combo/charge did not remain one original-D segment each')
+        require(r.globals['TDPet_rotation'][pet] == 0 and r.globals['TDPet_resolveRotation'][pet] == 0,
+                'Tagged additions recursively advanced pet counters')
+        if any(skill == 17 for skill, _ in skills):
+            require(sum(math.isclose(event['amount'], 210., abs_tol=1e-5) for _, _, event in r.emitted if event['id'] == 0) == 4,
+                    'Resolve did not use exactly four primary snapshots')
+        for _, _, event in r.emitted:
+            if event['id'] == rawcode('Pdam'):
+                require(event['isCode'] and not event['isSpell'], 'Physical additional lost Pdam/code classification')
     # Exact pre-hit boundaries and a primary hit crossing each boundary.
     cases = []
     for skill, life, expected in ((8,30.,50.), (8,30.01,0.), (8,35.,0.),

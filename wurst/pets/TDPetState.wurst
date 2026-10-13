@@ -61,37 +61,46 @@ public class TDPet
 		return tdPetSkillAllowedForSpecies(skill, slot, species, ownsSkillExcept(skill, slot))
 
 	function skillCandidateCount(int slot, int quality, boolean universal) returns int
+		if slot < 0 or slot > 3 or quality < 1 or quality > 4 or species < 1 or species > TD_PET_SPECIES_COUNT
+			return 0
 		var count = 0
 		for skill = 0 to TD_PET_SKILL_COUNT - 1
 			if skillAllowed(skill, slot) and tdPetSkillQualityValid(skill, quality)
-				if slot == 0 or tdPetSkillIsUniversal(skill) == universal
+				if slot != 2 or tdPetSkillIsUniversal(skill) == universal
 					count += 1
 		return count
 
 	function canRollSkill(int slot) returns boolean
-		return skillCandidateCount(slot, 1, true) + skillCandidateCount(slot, 1, false) > 0
+		return skillCandidateCount(slot, 1, true) + (slot == 2 ? skillCandidateCount(slot, 1, false) : 0) > 0
 
 	function rollSkill(int slot, int quality) returns int
-		if not canRollSkill(slot) or quality < 1 or quality > 4
+		if slot < 0 or slot > 3 or quality < 1 or quality > 4 or species < 1 or species > TD_PET_SPECIES_COUNT
 			return -1
-		if slot == 0
-			if not canRollSkill(slot)
+		if slot == 3
+			// All three weighted choices are admitted before the single branch roll.
+			let elemental = tdPetElementSkill(tdPetSpeciesElement(species), quality)
+			if not skillAllowed(elemental, slot) or not skillAllowed(11, slot) or not skillAllowed(12, slot)
 				return -1
 			let choice = GetRandomInt(1, 100)
-			return choice <= 50 ? tdPetElementSkill(tdPetSpeciesElement(species), quality) : (choice <= 75 ? 11 : 12)
-		var universal = GetRandomInt(1, 100) <= 80
+			return choice <= 50 ? elemental : (choice <= 75 ? 11 : 12)
+		var universal = true
 		var count = skillCandidateCount(slot, quality, universal)
-		if count <= 0
-			universal = not universal
-			count = skillCandidateCount(slot, quality, universal)
-		if count <= 0
+		var heroCount = slot == 2 ? skillCandidateCount(slot, quality, false) : 0
+		if count + heroCount <= 0
 			return -1
+		if slot == 2
+			universal = GetRandomInt(1, 100) <= 80
+			count = universal ? count : heroCount
+			if count <= 0
+				universal = not universal
+				count = skillCandidateCount(slot, quality, universal)
 		var remaining = GetRandomInt(0, count - 1)
 		for skill = 0 to TD_PET_SKILL_COUNT - 1
-			if skillAllowed(skill, slot) and tdPetSkillQualityValid(skill, quality) and tdPetSkillIsUniversal(skill) == universal
-				if remaining == 0
-					return skill
-				remaining -= 1
+			if skillAllowed(skill, slot) and tdPetSkillQualityValid(skill, quality)
+				if slot != 2 or tdPetSkillIsUniversal(skill) == universal
+					if remaining == 0
+						return skill
+					remaining -= 1
 		return -1
 
 	function rollSkill(int slot) returns int
@@ -120,11 +129,19 @@ public class TDPet
 		buffSkill = -1
 		buffPower = 0.0
 
-	function rollCaptureSkills()
+	function rollCaptureSkills() returns boolean
+		if skillCount != 0 or species < 1 or species > TD_PET_SPECIES_COUNT
+			return false
 		let count = tdPetSkillCountForRoll(GetRandomInt(1, 100))
 		for slot = 0 to count - 1
 			let quality = tdPetQualityForRoll(GetRandomInt(1, 100))
-			setSkill(slot, rollSkill(slot, quality), quality)
+			let candidate = rollSkill(slot, quality)
+			if candidate < 0
+				return false
+			setSkill(slot, candidate, quality)
+			if skillCount != slot + 1
+				return false
+		return skillCount == count
 
 	function skillAt(int slot) returns int
 		return slot >= 0 and slot < skillCount ? skills[slot] : -1
@@ -158,6 +175,7 @@ public class TDPet
 		return tdPetQualityName(quality()) + " " + tdPetElementName(tdPetSpeciesElement(species)) + " · " + tdPetSpeciesName(species) + " · " + skillCount.toString() + "技能 · 共鸣Lv" + level.toString() + (host == null ? " [收藏]" : " [上阵]")
 
 	ondestroy
+		tdCombatVisualClearPet(host)
 		tdPetCancelQueuedAttacks(this castTo int)
 		tdPetCancelEffectTasks(this castTo int)
 public TDPet array tdPets

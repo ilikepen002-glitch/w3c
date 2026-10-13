@@ -447,7 +447,8 @@ class BossResistanceVerifierUnitTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Missing packaged'):
             runtime.call('unrecognized_external_mutation', [])
         with self.assertRaisesRegex(ValueError, 'precedence parser'):
-            runtime.expression('(true or false) and true', {})
+            runtime.expression('true or false and true', {})
+        self.assertTrue(runtime.expression('(true or false) and true', {}))
         self.assertTrue(runtime.expression('true or unrecognized_external_mutation()', {}))
 
     def test_cached_expression_rechecks_current_scope_and_actual_calls(self):

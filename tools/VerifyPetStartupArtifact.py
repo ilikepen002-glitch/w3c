@@ -128,7 +128,7 @@ def verify_routing(script):
         runtime.spell = int.from_bytes(code.encode('ascii'), 'big')
         runtime.units[display]['abilities'][runtime.spell] = 1
         runtime.invoke(callback)
-        require(runtime.admitted[-1] == (runtime.globals['TDPetUIView_tdPetUISessions'][0],
+        require(runtime.admitted[-1] == (runtime.globals['TDPetUIState_tdPetUISessions' if 'TDPetUIState_tdPetUISessions' in runtime.globals else 'TDPetUIView_tdPetUISessions'][0],
                                         0, display, runtime.spell, 1), 'Shared callback lost the exact command identity')
     require(len(runtime.admitted) == expected_admissions, 'Shared callback must reach admission exactly once per command')
     for caster, owner in ((90002, 0), (90003, 1), (90004, 4)):

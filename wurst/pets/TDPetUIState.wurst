@@ -2,6 +2,7 @@ package TDPetUIState
 import TDPetData
 import TDPetRules
 import TDPetState
+import TDConfig
 
 public constant int TD_PET_UI_CLOSED = -1
 public constant int TD_PET_UI_LIST = 0
@@ -98,6 +99,7 @@ public class TDPetUISession
 	int epoch = 0
 	boolean active = false
 	boolean dirty = false
+	string detailHudText = ""
 	int currentKey = 0
 	int selectedSlot = -1
 	TDPet pet = null
@@ -123,6 +125,7 @@ public class TDPetUISession
 		this.lane = lane
 
 	function close()
+		detailHudText = ""
 		active = false
 		dirty = false
 		currentKey = 0
@@ -229,6 +232,7 @@ public class TDPetUISession
 	function consumeCommand(int owner, int casterKey, int abilityId, int actualLevel) returns int
 		let action = commandAction(owner, casterKey, abilityId, actualLevel)
 		if action >= 0
+			detailHudText = ""
 			active = false
 			currentKey = 0
 		return action
@@ -260,3 +264,17 @@ public class TDPetUISession
 		if tdPetIsDisplayType(typeId) and unitOwner == lane
 			return false
 		return true
+
+public TDPetUISession array tdPetUISessions
+
+// A derived display cache, never cooldown authority. Validate synchronously
+// before the HUD's final local-player branch; stale sessions expose no text.
+public function tdPetDetailHudTextForLane(int lane) returns string
+	if not tdIsLanePlayer(lane)
+		return ""
+	let session = tdPetUISessions[lane]
+	if session == null
+		return ""
+	if not session.active or session.dirty or session.mode != TD_PET_UI_DETAIL or not tdPetLaneCanManage(lane) or not session.snapshotCurrent()
+		session.detailHudText = ""
+	return session.detailHudText

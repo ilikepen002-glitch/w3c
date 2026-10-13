@@ -2,6 +2,7 @@ package TDPetReleaseTests
 import TDPetData
 import TDPetState
 import TDPetRules
+import TDPetHeroRules
 import TDPetWild
 import TDState
 
@@ -10,7 +11,7 @@ function ownedPet(int lane) returns TDPet
 	tdSetLaneActive(lane, true)
 	tdPetInitializeLane(lane)
 	let pet = new TDPet(lane, 1, 1)
-	pet.setSkill(0, 11, 1)
+	pet.setSkill(0, 0, 1)
 	pet.setSkill(1, 5, 2)
 	tdPetStore(lane, pet).assertTrue()
 	return pet
@@ -77,7 +78,7 @@ function wildCount() returns int
 @Test function releaseRevalidatesRevisionGenerationAndSameSlotIdentity()
 	let pet = ownedPet(0)
 	let revisionNonce = tdPetBeginRelease(0, 0)
-	pet.setSkill(0, 12, 2)
+	pet.setSkill(0, 1, 2)
 	tdPetConfirmRelease(0, revisionNonce).assertFalse()
 	tdPetReleaseNonce(0).assertEquals(0)
 	let generationNonce = tdPetBeginRelease(0, 0)
@@ -186,7 +187,7 @@ function wildCount() returns int
 			for quality = 1 to 4
 				let pet = new TDPet(0, quality mod 3 + 1, 1)
 				pet.level = level
-				pet.setSkill(0, 11, quality)
+				pet.setSkill(0, 0, quality)
 				// This helper remains the non-purple random bucket; purple releases bypass it.
 				tdPetReleaseGetsSlotStone(roll).assertEquals(roll <= 2)
 				destroy pet
@@ -194,17 +195,17 @@ function wildCount() returns int
 	tdPetReleaseGetsSlotStone(0).assertFalse()
 	tdPetReleaseGetsSlotStone(101).assertFalse()
 
-@Test function capturedAndRerolledSkillEligibilityKeepsOneActiveAndPassiveSlots()
+@Test function capturedAndRerolledSkillEligibilityKeepsFourSlotRoles()
 	for skill = 0 to TD_PET_SKILL_COUNT - 1
 		for slot = 0 to 3
 			for active = 0 to 1
-				let expected = tdPetSkillDefined(skill) and (slot == 0 ? tdPetSkillIsActive(skill) : not tdPetSkillIsActive(skill))
+				let expected = tdPetSkillDefined(skill) and (slot == 0 ? tdPetSkillIsNumeric(skill) : (slot == 1 ? tdPetSkillIsAttackPassive(skill) : (slot == 2 ? (tdPetSkillIsAttackPassive(skill) or tdPetHeroDefined(skill)) : tdPetSkillIsActive(skill))))
 				tdPetSkillAllowed(skill, slot, false, active == 1).assertEquals(expected)
 				tdPetSkillAllowed(skill, slot, true, active == 1).assertFalse()
 
 @Test function purpleReleaseCreditsExactlyOneSlotStoneAndKeepsRerollReward()
 	let pet = ownedPet(0)
-	pet.setSkill(0, 11, 4)
+	pet.setSkill(0, 0, 4)
 	pet.quality().assertEquals(4)
 	let nonce = tdPetBeginRelease(0, 0)
 	tdPetConfirmRelease(0, nonce).assertTrue()
@@ -229,9 +230,9 @@ function wildCount() returns int
 
 @Test function adoptedLowerQualityRecomputesReleaseColorAndInvalidatesOldTicket()
 	let pet = ownedPet(0)
-	pet.setSkill(0, 11, 4)
+	pet.setSkill(0, 0, 4)
 	let stale = tdPetBeginRelease(0, 0)
-	pet.setSkill(0, 11, 2)
+	pet.setSkill(0, 0, 2)
 	pet.quality().assertEquals(2)
 	tdPetConfirmRelease(0, stale).assertFalse()
 	tdPetRerollStones[0].assertEquals(0)
@@ -243,7 +244,7 @@ function wildCount() returns int
 
 @Test function purpleReleaseMaterialOverflowAwardsNothingAndKeepsRecord()
 	let pet = ownedPet(0)
-	pet.setSkill(0, 11, 4)
+	pet.setSkill(0, 0, 4)
 	tdPetSlotStones[0] = TD_PET_MATERIAL_LIMIT
 	let nonce = tdPetBeginRelease(0, 0)
 	tdPetConfirmRelease(0, nonce).assertFalse()

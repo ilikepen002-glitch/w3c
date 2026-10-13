@@ -105,7 +105,16 @@ class FlowerFullRosterSourceTests(unittest.TestCase):
         # Lifecycle, visual dispatch, CD/fence/source and scheduler remain verbatim.
         for name in ('TDPetCastContext', 'TDPetActiveRuntime', 'TDPetActiveVisuals',
                      'TDPetCombat', 'TDPetEffectScheduler', 'TDPetAttackQueue'):
-            self.assertEqual(source(name), historical('wurst/pets/' + name + '.wurst'))
+            current = source(name)
+            if name == 'TDPetCombat':
+                # The four-slot feature adds one cosmetic successful-buff hook.
+                # Normalize only those exact two lines, retaining every combat byte.
+                hook = ('\t\t\t\tif activeSkill == 11 or activeSkill == 12\n'
+                        '\t\t\t\t\ttdCombatVisualStartPetBuff(host, pet.lane, activeSkill, pet.buffUntil)\n')
+                if hook in current:
+                    self.assertEqual(current.count(hook), 1)
+                    current = current.replace(hook, '', 1)
+            self.assertEqual(current, historical('wurst/pets/' + name + '.wurst'))
         self.assertNotIn('random', AFTER.lower())
 
     def test_never_full_preserves_all_48_enumerations(self):

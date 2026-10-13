@@ -152,7 +152,7 @@ def verify_pet_targets(script):
     require(r.invoke('tdPetStore', 0, pet), 'Fixture pet registration failed')
     r.globals['TDPet_host'][pet] = 101
     r.globals['TDPet_level'][pet] = 10
-    r.invoke('TDPet_setSkill', pet, 0, 19 if final_catalog else 0, 1)
+    r.invoke('TDPet_setSkill', pet, 0, 0 if 'tdPetSkillIsAttackPassive' in r.functions else 19 if final_catalog else 0, 1)
     if 'tdPetApplyAttackDebuffs' in r.functions:
         require(not r.invoke('tdPetSkillDefined', 4), 'Retired command-aura skill is selectable')
         r.invoke('TDPet_setSkill', pet, 1, 4, 2)

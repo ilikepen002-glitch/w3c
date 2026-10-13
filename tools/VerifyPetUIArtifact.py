@@ -436,12 +436,24 @@ def _pet_rule_functions(script):
     return functions
 
 
+def four_slot_allowed(skill, slot, duplicate=False, has_active=False):
+    """Independent fixed-role oracle; has_active cannot change a physical role."""
+    if skill not in {*range(4), *range(5, 9), 11, 12, *range(16, 49)} or duplicate:
+        return False
+    return (0 <= skill <= 3 if slot == 0 else
+            skill in (5, 6, 7, 8, 16, 17, 18) if slot == 1 else
+            skill in (5, 6, 7, 8, 16, 17, 18) or 39 <= skill <= 48 if slot == 2 else
+            skill in (11, 12) or 19 <= skill <= 38 if slot == 3 else False)
+
+
 def verify_skill_allowed(script):
-    """Enumerate 2,176 compiled skill/slot/active/used-mask combinations."""
+    """Enumerate current compiled roles and retain the legacy 2,176-mask oracle."""
     if re.search(r'^function tdPetSkillDefined takes', script, re.M):
         from VerifyActiveCooldownContract import ActiveJassRuntime
         r = ActiveJassRuntime(script)
         n = phase_one_catalog(); count = n['TD_PET_SKILL_COUNT']
+        four_slots = 'tdPetSkillIsAttackPassive' in r.functions
+        require(four_slots == ('tdPetSkillIsAttackPassive' in n), 'Compiled/source fixed-slot generation mismatch')
         numeric_live = 'tdPetSkillIsNumeric' in r.functions
         if not numeric_live:
             require(count == 49 and r.globals.get('TDPetData_TD_PET_SKILL_COUNT') == 49
@@ -457,12 +469,20 @@ def verify_skill_allowed(script):
             require(r.invoke('tdPetSkillIsActive', skill) is n['tdPetSkillIsActive'](skill), 'Compiled/source active classification mismatch')
             require(r.invoke('tdPetSkillIsUniversal', skill) is n['tdPetSkillIsUniversal'](skill), 'Compiled/source universal classification mismatch')
             expected = n['tdPetSkillAllowed'](skill, slot, duplicate, has_active)
+            if four_slots:
+                require(n['tdPetSkillIsAttackPassive'](skill) is (skill in (5, 6, 7, 8, 16, 17, 18)), 'Source attack-passive classification mismatch')
+                require(r.invoke('tdPetSkillIsAttackPassive', skill) is (skill in (5, 6, 7, 8, 16, 17, 18)), 'Compiled attack-passive classification mismatch')
+                require(expected is four_slot_allowed(skill, slot, duplicate, has_active), 'Source fixed-slot admission differs from independent oracle')
             require(r.invoke('tdPetSkillAllowed', skill, slot, duplicate, has_active) is expected, f'Pet skill allowed skill={skill} slot={slot} duplicate={duplicate} active={has_active}')
         if count == 49:
             for species, skill, slot, duplicate in itertools.product(range(0, 17), range(-1, 51), range(4), (False, True)):
                 if skill == -1 and slot == 0 and not duplicate:
                     r = ActiveJassRuntime(script)
                 expected = n['tdPetSkillAllowedForSpecies'](skill, slot, species, duplicate)
+                if four_slots:
+                    element = (skill - 19) // 4 + 1 if 19 <= skill <= 38 else 0
+                    independent = 1 <= species <= 15 and four_slot_allowed(skill, slot, duplicate) and (element == 0 or element == (species - 1) // 3 + 1)
+                    require(expected is independent, 'Source species/fixed-slot admission differs from independent oracle')
                 require(r.invoke('tdPetSkillAllowedForSpecies', skill, slot, species, duplicate) is expected,
                         'Compiled own-element slot admission changed')
         for skill in (0, 16, 31, 32, 40, 127, 255):
@@ -596,7 +616,7 @@ def verify_phase_one_slots(abilities):
                 require(field_value(fields, 'Ocr1', quality) == 0.0 and field_value(fields, 'Ocr2', quality) == 1.0, rawcode + ': accidental combat effect')
                 label = '空栏' if is_empty else QUALITY_NAMES[quality - 1] + ' ' + n['tdPetSkillNameById'](skill) + (' [共鸣锁定]' if locked else '')
                 if count == 49:
-                    slot_name = '主动栏' if slot == 0 else '被动栏' + str(slot)
+                    slot_name = ('属性栏', '攻击被动栏', '强化栏', '自动主动栏')[slot] if 'tdPetSkillIsAttackPassive' in n else '主动栏' if slot == 0 else '被动栏' + str(slot)
                     label = '空' + slot_name if is_empty else slot_name + ' · ' + label
                 require(field_value(fields, 'atp1', quality) == label, rawcode + ': quality/identity tooltip')
                 description = field_value(fields, 'aub1', quality)
@@ -608,6 +628,8 @@ def verify_phase_one_slots(abilities):
                     require(description == prefix + field_value(bright, 'aub1', quality), rawcode + ': locked strength/description')
                 else:
                     require('共鸣锁定' not in description + label, rawcode + ': bright mislabeled locked')
+                    if 'tdPetSkillIsAttackPassive' in n and slot == 3:
+                        require('冷却就绪后，下一次有效普攻自动释放' in description, rawcode + ': missing automatic active trigger rule')
     actual = {raw for raw in abilities if re.fullmatch(r's[0-3][0-9A-F]{2}', raw)}
     require(actual == expected, 'Illegal, retired or missing slot objects: ' + repr(actual ^ expected))
     return len(expected)

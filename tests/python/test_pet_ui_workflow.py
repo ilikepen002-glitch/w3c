@@ -41,6 +41,12 @@ class CurrentSourceWorkflowTests(unittest.TestCase):
             actual = source.function_body(current, name)[1]
             if name == 'tdPetPageSummary':
                 actual = actual.replace('\"\\n\" + tdPetSlotName(slot)', '\"\\n栏\" + (slot + 1)')
+            if name == 'tdPetPageSummary':
+                # Normalize only the exact authorized dirty/stale guard. Every
+                # other historical summary byte remains protected below.
+                guarded = 'if session == null or not session.active or session.dirty or session.mode != TD_PET_UI_DETAIL or not session.snapshotCurrent()'
+                self.assertEqual(actual.count(guarded), 1)
+                actual = actual.replace(guarded, 'if session == null or not session.active or session.mode != TD_PET_UI_DETAIL', 1)
             self.assertEqual(actual, source.function_body(before.decode(), name)[1])
         self.assertIn('宿主已有原生暴击', source.function_body(current, 'tdPetSkillRestriction')[1])
         self.assertNotIn('tdPetShowPageSummary', source.function_body(source.source('TDPetUI'), 'showPage')[1])

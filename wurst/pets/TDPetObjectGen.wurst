@@ -134,7 +134,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 		else if action == TD_PET_ACTION_OPEN
 			cell = 8
 			label = "开栏"
-			description = "消耗1开栏石，随机新增1个不重复被动技能，最多4栏。请先完成当前洗练选择。"
+			description = "消耗1开栏石，按属性、攻击被动、强化、自动主动的顺序新增1栏技能，最多4栏。请先完成当前洗练选择。"
 		else if action == TD_PET_ACTION_RELEASE
 			cell = 11
 			label = "释放精灵…"
@@ -196,7 +196,9 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			displaySkill..setName(empty ? "空栏" : tdPetSkillNameById(skill))..setLevels(empty ? 1 : 4)..setIconNormal(tdPetSlotIconPath(variant))..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setRequirements("")..setButtonPositionNormalX(slot)..setButtonPositionNormalY(1)
 			for quality = 1 to (empty ? 1 : 4)
 				let label = empty ? "空" + tdPetSlotName(slot) : tdPetSlotName(slot) + " · " + tdPetQualityName(quality) + " " + tdPetSkillNameById(skill) + (locked ? " [共鸣锁定]" : "")
-				let description = empty ? "消耗1开栏石，随机新增1个不重复被动技能，最多4栏。新增第3/4栏仍需完成本路第4/8波才能生效。" : (locked ? "技能已获得；共鸣锁定，完成本路第" + (slot == 2 ? "4" : "8") + "波解锁。|n" + tdPetSkillDescriptionById(skill, quality) : tdPetSkillDescriptionById(skill, quality))
+				var description = empty ? "消耗1开栏石，按属性、攻击被动、强化、自动主动的顺序新增1栏技能，最多4栏。新增第3/4栏仍需完成本路第4/8波才能生效。" : (locked ? "技能已获得；共鸣锁定，完成本路第" + (slot == 2 ? "4" : "8") + "波解锁。|n" + tdPetSkillDescriptionById(skill, quality) : tdPetSkillDescriptionById(skill, quality))
+				if slot == 3 and not empty
+					description += "|n冷却就绪后，下一次有效普攻自动释放。当前状态见精灵信息行。"
 				displaySkill.setTooltipNormal(quality, label)
 				displaySkill.setTooltipNormalExtended(quality, description)
 				displaySkill.setChancetoCriticalStrike(quality, 0.0)

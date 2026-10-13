@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'tools'))
 from VerifyActiveCooldownContract import SourceScalarEvaluator, read_sources
 from VerifyPetManagerSource import scalar_helpers, compile_source_helper, source
-from VerifyPetUIArtifact import phase_one_catalog
+from VerifyPetUIArtifact import phase_one_catalog, four_slot_allowed
 from VerifyPetAttackArtifact import verify_native_critical_catalog
 from GenerateTowerTerrainMask import Mpq
 from VerifyEquipmentAbilityArtifact import ability_objects
@@ -39,7 +39,7 @@ class PetAttackPhaseOneSourceTests(unittest.TestCase):
         for skill in range(-1,45):
             for slot in range(-1,5):
                 self.assertFalse(n['tdPetSkillAllowed'](skill,slot,True,False))
-                if slot==0:self.assertEqual(n['tdPetSkillAllowed'](skill,slot,False,False),n['tdPetSkillDefined'](skill) and n['tdPetSkillIsActive'](skill))
+                self.assertEqual(n['tdPetSkillAllowed'](skill,slot,False,False),four_slot_allowed(skill,slot))
         state=source('TDPetState')
         self.assertNotIn('BitSet',state)
         self.assertNotIn('usedSkills',state)
@@ -49,7 +49,7 @@ class PetAttackPhaseOneSourceTests(unittest.TestCase):
     def test_compact_legal_ui_count_derived_from_production_definitions(self):
         n=phase_one_catalog();count=n['TD_PET_SKILL_COUNT'];empty=n['TD_PET_SLOT_EMPTY']
         slots=[(slot,variant) for slot in range(4) for variant in range(empty+1) if variant==empty or (n['tdPetSkillAllowed'](variant%count,slot,False,False) and (variant<count or slot>=2))]
-        self.assertEqual(len(slots),131)
+        self.assertEqual(len(slots),93)
         self.assertEqual(len([i for i in range(count) if n['tdPetSkillDefined'](i)])*2,86)
         objects=source('TDPetObjectGen')
         self.assertIn('setLevels(empty ? 1 : 4)',objects)
@@ -160,17 +160,18 @@ class FinalPetAttackArtifactTests(unittest.TestCase):
         cls.script=cls.artifact.extract('war3map.j').decode()
         cls.abilities=ability_objects(cls.artifact.extract('war3map.w3a'))
 
-    def test_actual_one_active_three_passives_and_exact_element_quality(self):
+    def test_actual_four_fixed_roles_and_exact_element_quality(self):
         from VerifyPetAttackArtifact import PetAttackRuntime
         r=PetAttackRuntime(self.script)
         self.assertTrue(r.final_catalog,'Supply the final 49-bound/43-defined candidate')
-        pet=r.pet([(16,4),(7,4),(17,4)])
-        self.assertEqual([r.invoke('TDPet_skillAt',pet,i) for i in range(4)],[11,16,7,17])
-        self.assertEqual([r.invoke('TDPet_qualityAt',pet,i) for i in range(4)],[1,4,4,4])
+        pet=r.pet([(16,4),(7,4)])
+        self.assertEqual([r.invoke('TDPet_skillAt',pet,i) for i in range(4)],[0,16,7,-1])
+        self.assertEqual([r.invoke('TDPet_qualityAt',pet,i) for i in range(4)],[1,4,4,0])
         elemental=r.pet([(38,4)],host=101)
         self.assertEqual(r.globals['TDPet_species'][elemental],13)
-        self.assertEqual(r.invoke('TDPet_skillAt',elemental,0),38)
-        for invalid in ([(14,4)],[(4,1)],[(38,1)],[(16,1),(7,1),(17,1),(8,1)]):
+        self.assertTrue(r.four_slot_contract,'Supply a candidate with the four-role slot contract')
+        self.assertEqual(r.invoke('TDPet_skillAt',elemental,3),38)
+        for invalid in ([(14,4)],[(4,1)],[(38,1)],[(16,1),(7,1),(17,1)],[(39,1),(48,1)]):
             with self.subTest(invalid=invalid),self.assertRaisesRegex(ValueError,'fixture|Fixture'):
                 PetAttackRuntime(self.script).pet(invalid)
 

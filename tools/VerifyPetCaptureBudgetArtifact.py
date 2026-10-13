@@ -62,16 +62,62 @@ def replay(script, case, roll=1, species=1):
     assert len(r.notices) == 1 and notice in r.notices[0], (case, r.notices)
     return result, metrics
 
+def verify_four_slot_capture(result, roll, species, case):
+    """New RNG is intentional; assert its own exact trajectory and legal roles."""
+    from VerifyPetUIArtifact import four_slot_allowed
+    if case not in ('success', 'refund'):
+        expected_trace = [(1, 100, 100)] if case == 'failure' else []
+        assert result[3] == expected_trace, (case, result[3])
+        return
+    count = 2 if roll <= 55 else 3 if roll <= 90 else 4
+    quality = 1 if roll <= 45 else 2 if roll <= 75 else 3 if roll <= 95 else 4
+    trace = [(1, 100, roll)]
+    attribute = min(3, max(0, roll))
+    attack_pool = [5, 6, 7, 8, 16, 17, 18]
+    attack = attack_pool[min(6, max(0, roll))]
+    expected_skills = [(attribute, quality), (attack, quality)]
+    trace += [(1, 100, roll), (0, 3, attribute), (1, 100, roll), (0, 6, min(6, max(0, roll)))]
+    if count >= 3:
+        pool = [skill for skill in attack_pool if skill != attack] if roll <= 80 else list(range(39, 49))
+        index = min(len(pool) - 1, max(0, roll))
+        expected_skills.append((pool[index], quality))
+        trace += [(1, 100, roll), (1, 100, roll), (0, len(pool) - 1, index)]
+    if count == 4:
+        elemental = 19 + ((species - 1) // 3) * 4 + quality - 1
+        expected_skills.append((elemental if roll <= 50 else 11 if roll <= 75 else 12, quality))
+        trace += [(1, 100, roll), (1, 100, roll)]
+    assert len(trace) == {2: 5, 3: 8, 4: 10}[count]
+    assert result[3] == trace, (case, roll, 'new RNG trace', result[3], trace)
+    if case == 'success':
+        assert result[2] == expected_skills, (case, roll, 'new skills/quality', result[2], expected_skills)
+        assert all(four_slot_allowed(skill, slot) for slot, (skill, _) in enumerate(result[2])), result[2]
+        assert len({skill for skill, _ in result[2]}) == count, 'Captured duplicate identity'
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('map', type=Path); p.add_argument('--baseline', type=Path, required=True)
     args = p.parse_args()
     scripts = [Mpq(path.read_bytes()).extract('war3map.j').decode() for path in [args.baseline, args.map]]
+    from VerifyDamageRankingJass import functions
+    four_slots = 'tdPetSkillIsAttackPassive' in functions(scripts[1])
     for case, roll, species in [('success',1,1), ('success',60,7), ('success',95,13), ('failure',100,1), ('no_ball',1,4), ('full',1,10), ('crosslane',1,1), ('refund',1,1)]:
         old, a = replay(scripts[0],case,roll,species)
         new, b = replay(scripts[1],case,roll,species)
-        assert old == new, (case, roll, old, new)
-        if case in ('success','refund'): assert b[0] < a[0] / 5, ('Capture budget reduction insufficient', a, b)
+        if four_slots:
+            # Capture shape and summary intentionally changed. Preserve atomic
+            # inventory/tutorial/wild outcomes and verify the new exact draws.
+            assert old[:2] == new[:2] and old[5:] == new[5:], (case, roll, old, new)
+            verify_four_slot_capture(new, roll, species, case)
+            if case not in ('success', 'refund'):
+                assert old == new, (case, roll, old, new)
+            if case in ('success', 'refund'):
+                assert b[0] < 100000 and b[1] < 10000, ('Four-slot bounded interpreter work exceeded', case, b)
+        else:
+            assert old == new, (case, roll, old, new)
+            if case in ('success','refund'): assert b[0] < a[0] / 5, ('Capture budget reduction insufficient', a, b)
         print('PASS',case,'roll',roll,'species',species,'expressions/calls',a,'->',b,flush=True)
-    print('PASS: actual capture outcome, exact RNG trace, skills/quality, spend/refund and messages preserved. NOT a Warcraft engine reproduction.')
+    print('PASS: actual capture spend/refund/terminal states preserved; exact new5/8/10-draw role contract verified.' if four_slots else
+          'PASS: actual capture outcome, exact RNG trace, skills/quality, spend/refund and messages preserved.')
+    print('NOT a Warcraft engine reproduction; interpreter work counts are not native opcodes.')
 if __name__ == '__main__': main()

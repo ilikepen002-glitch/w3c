@@ -146,6 +146,14 @@ class ElementRuntime(PetAttackRuntime):
         return super().native(name,args)
     def pet(self,skill):
         species=(skill-19)//4*3+1;quality=(skill-19)%4+1
+        if self.four_slot_contract:
+            # Complete legal loadout: Resolve stays quiescent before the fifth
+            # primary; this suite emits at most one primary per fixture host.
+            # Hero39 is incompatible with the ordinary fixture tower. Avoid
+            # skill5's real slow, which contaminates Boss/control negatives.
+            pet=super().pet([(0,1),(17,1),(39,1),(skill,quality)])
+            require(self.invoke('TDPet_skillAt',pet,3)==skill,'Actual slot3 fixed-quality/element admission failed')
+            return pet
         pet=self.invoke('new_TDPet',0,species,1)
         require(self.invoke('tdPetStore',0,pet),'Actual collection rejected elemental fixture')
         self.invoke('TDPet_setSkill',pet,0,skill,quality)
@@ -363,9 +371,9 @@ def verify_negatives(script):
     r.invoke('tdPetSetupRuntime')
     r.cleanup_cb=next(cb for interval,cb in r.periodics if interval==.5)
     r.cleanup_pet=r.pet(19)
-    r.invoke('TDPet_setSkill',r.cleanup_pet,0,11,1)
+    r.invoke('TDPet_setSkill',r.cleanup_pet,3 if r.four_slot_contract else 0,11,1)
     r.invoke('TDPet_setSkill',r.cleanup_pet,1,16,1)
-    require(r.invoke('TDPet_skillAt',r.cleanup_pet,0)==11 and r.invoke('TDPet_skillAt',r.cleanup_pet,1)==16,
+    require(r.invoke('TDPet_skillAt',r.cleanup_pet,3 if r.four_slot_contract else 0)==11 and r.invoke('TDPet_skillAt',r.cleanup_pet,1)==16,
                                     'Terminal fixture did not have a legal active-plus-passive layout')
     r.globals['TDPet_readyAt'][r.cleanup_pet]=1000.;r.roll=0.;r.terminal_in_hit=True
     r.emit(100.)

@@ -10,6 +10,7 @@ import Fx
 
 constant Table sourceIndex = new Table()
 int hitVisualCount = 0
+int petBuffVisualCount = 0
 
 // Visual ownership is independent of pet/inventory/combat rules. Callers pass
 // admitted snapshots; no damage, random, orders or target enumeration lives here.
@@ -26,6 +27,8 @@ class TDVisualSource
 	int gearProfile = 0
 	int gearType = 0
 	effect gear = null
+	effect petBuff = null
+	real petBuffUntil = 0.0
 	construct(unit source, int lane, int serial)
 		this.source = source
 		key = source.getHandleId()
@@ -33,6 +36,7 @@ class TDVisualSource
 		epoch = tdFlowEpoch()
 		this.serial = serial
 	ondestroy
+		clearPetBuff(this)
 		if gear != null
 			DestroyEffect(gear)
 		if sourceIndex.loadInt(key) == this castTo int
@@ -179,6 +183,19 @@ function clearHits(int key, int serial)
 			destroy entry
 	iter.close()
 
+// Buff attachments borrow the same short-effect/creation admission as casts.
+// Each source owns one, and clearing them never touches its equipment handle.
+function clearPetBuff(TDVisualSource owner)
+	if owner.petBuff != null
+		DestroyEffect(owner.petBuff)
+		owner.petBuff = null
+		owner.petBuffUntil = 0.0
+		petBuffVisualCount -= 1
+		tdCombatVisualReleaseCast()
+
+public function tdCombatVisualPetBuffCount() returns int
+	return petBuffVisualCount
+
 public function tdCombatVisualClearPet(unit source)
 	if source == null
 		return
@@ -186,6 +203,7 @@ public function tdCombatVisualClearPet(unit source)
 	if owner != null
 		owner.petSerial += 1
 		clearHits(owner.key, owner.serial)
+		clearPetBuff(owner)
 
 public function tdCombatVisualClearGear(unit source)
 	if source == null
@@ -257,7 +275,10 @@ function tick()
 			clearHits(owner.key, owner.serial)
 			si.remove()
 			destroy owner
-		else if not owner.gearSuspended and owner.gear == null and owner.hitCount == 0 and now >= owner.nextHitVisualAt
+			continue
+		if owner.petBuff != null and now >= owner.petBuffUntil
+			clearPetBuff(owner)
+		if not owner.gearSuspended and owner.gear == null and owner.petBuff == null and owner.hitCount == 0 and now >= owner.nextHitVisualAt
 			si.remove()
 			destroy owner
 	si.close()
@@ -302,6 +323,26 @@ function addHitArt(TDVisualSource owner, string model, vec2 point, real duration
 	hitVisualCount += 1
 	hits.add(entry)
 	return true
+
+public function tdCombatVisualStartPetBuff(unit source, int lane, int skill, real expiresAt)
+	let model = tdCombatVisualPetBuffModel(skill)
+	if source == null or not laneValid(lane) or model == "" or expiresAt <= getElapsedGameTime()
+		return
+	let owner = sourceFor(source, lane)
+	if owner == null or not sourceValid(owner)
+		return
+	clearPetBuff(owner)
+	addHitArt(owner, tdCombatVisualPetBuffStartModel(skill), source.getPos(), 0.30)
+	if petBuffVisualCount >= 40 or not tdCombatVisualAcquireCast()
+		return
+	let art = AddSpecialEffectTarget(model, source, "origin")
+	if art == null
+		tdCombatVisualReleaseCast()
+		return
+	owner.petBuff = art
+	owner.petBuffUntil = expiresAt
+	petBuffVisualCount += 1
+	wake()
 
 public function tdCombatVisualHit(unit source, vec2 origin, vec2 point, int element, int lane, boolean decisive)
 	if source == null or not laneValid(lane) or tdCombatVisualHitModel(element) == ""

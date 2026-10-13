@@ -66,14 +66,23 @@ public function tdPetSkillDefined(int skill) returns boolean
 public function tdPetSkillOwned(int skill, int first, int second, int third, int fourth) returns boolean
 	return skill == first or skill == second or skill == third or skill == fourth
 
-// One active slot; every later owned slot is passive, including locked slots.
+// The four physical slots share this contract across capture, cultivation and UI.
+public function tdPetSkillIsAttackPassive(int skill) returns boolean
+	return skill >= 5 and skill <= 8 or skill >= TD_PET_SKILL_COMBO and skill <= TD_PET_SKILL_HEAVY
+
 public function tdPetSkillAllowed(int skill, int slot, boolean duplicate, boolean _hasActive) returns boolean
 	if not tdPetSkillDefined(skill) or slot < 0 or slot > 3 or duplicate
 		return false
-	return slot == 0 ? tdPetSkillIsActive(skill) : not tdPetSkillIsActive(skill)
+	if slot == 0
+		return tdPetSkillIsNumeric(skill)
+	if slot == 1
+		return tdPetSkillIsAttackPassive(skill)
+	if slot == 2
+		return tdPetSkillIsAttackPassive(skill) or tdPetHeroDefined(skill)
+	return tdPetSkillIsActive(skill)
 
 public function tdPetSkillAllowedForSpecies(int skill, int slot, int species, boolean duplicate) returns boolean
-	if not tdPetSkillAllowed(skill, slot, duplicate, false)
+	if species < 1 or species > TD_PET_SPECIES_COUNT or not tdPetSkillAllowed(skill, slot, duplicate, false)
 		return false
 	let element = tdPetSkillElement(skill)
 	return element == 0 or element == tdPetSpeciesElement(species)
@@ -86,7 +95,11 @@ public function tdPetSkillDefinitionCount() returns int
 	return count
 
 public function tdPetSlotName(int slot) returns string
-	return slot == 0 ? "主动栏" : "被动栏" + slot.toString()
+	if slot == 0
+		return "属性栏"
+	if slot == 1
+		return "攻击被动栏"
+	return slot == 2 ? "强化栏" : "自动主动栏"
 
 public function tdPetSkillNameById(int skill) returns string
 	if tdPetHeroDefined(skill)
