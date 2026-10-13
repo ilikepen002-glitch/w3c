@@ -179,11 +179,11 @@ function creditTrial(TDTrialState state, int lane, int slot, real amount, real n
 	state.shouldResume(51, generation, 30.0).assertTrue()
 	state.seal(51, generation, TD_TRIAL_RELEASE_COMPLETED, 30.0).assertTrue()
 	state.wasCompleted(2).assertTrue()
-	state.reward(0).assertEquals(60)
+	state.reward(0).assertEquals(600)
 	state.averageDps(0, 999.0).assertEquals(5.0)
 	state.takeReward(0, 51, generation).assertEquals(0)
 	state.markTargetsCleared(51, generation).assertTrue()
-	state.takeReward(0, 51, generation).assertEquals(60)
+	state.takeReward(0, 51, generation).assertEquals(600)
 	state.takeReward(0, 51, generation).assertEquals(0)
 	state.seal(51, generation, TD_TRIAL_RELEASE_TIME_LIMIT, 130.0).assertFalse()
 	destroy state

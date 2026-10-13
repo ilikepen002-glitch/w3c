@@ -194,7 +194,7 @@ class TrialStaticContracts(unittest.TestCase):
         self.assertIn("TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL = 128", inventory)
         self.assertIn("abilityId == TD_PET_ATTACK_BONUS_ID ? 512 : 150", pets)
         damage_block = balance.split("function tdTowerBaseDamageCore", 1)[1].split("public function tdTowerBaseDamage(int", 1)[0]
-        self.assertEqual(max(map(int, re.findall(r"return (\d+)\n", damage_block))), 260)
+        self.assertEqual(max(map(int, re.findall(r"return (\d+)\n", damage_block))), 1300)
         self.assertIn("setAttack1DamageSidesperDie(6 + level)", text("wurst/towers/TDTowerObjectGen.wurst"))
         for function, value in [("tdEvolutionSkillMultiplier", "1.20"),
                                 ("tdOrcCriticalStrikeMultiplier", "2.20"),
@@ -206,7 +206,7 @@ class TrialStaticContracts(unittest.TestCase):
         # No target installation table is present: this is not an engine guarantee.
         self.assertLessEqual((0.18 + 0.16) * (1 + 1.2), 1.0)
         self.assertLessEqual(2.2 * 1.2, 3.0)
-        native_bound = ((260 + 12 + 128 + 512) * 2 * 3 + 32) * 2 * 2
+        native_bound = ((1300 + 12 + 128 * 5 + 512 * 5) * 2 * 3 + 160) * 2 * 2
         split_bound = native_bound * 1.2 * 2 * 2
         # Current sealed catalog/mechanisms, no retired 45% Boss or native Bash bonus.
         catalog = text("wurst/items/TDItemCatalogConfig.wurst")
@@ -225,11 +225,11 @@ class TrialStaticContracts(unittest.TestCase):
         pet_rules = SourceScalarEvaluator(read_sources())
         pet_bound = max(native_bound * pet_rules.call('tdPetSkillPower', [17, 4]), native_bound * 4.)
         actual_bound = pet_rules.call('tdEquipmentTrialMaxSegment', [])
-        self.assertAlmostEqual(native_bound, 22016.0)
-        self.assertAlmostEqual(pet_bound, 88064.0)
-        self.assertAlmostEqual(actual_bound, 105676.8)
-        self.assertLess(max(native_bound, split_bound, equipment_bound, corpse_poison_bound, pet_bound), 150000)
-        self.assertEqual(150000, 1000000 * .15)
+        self.assertAlmostEqual(native_bound, 108928.0)
+        self.assertAlmostEqual(pet_bound, 435712.0)
+        self.assertAlmostEqual(actual_bound, 522854.4)
+        self.assertLess(max(native_bound, split_bound, equipment_bound, corpse_poison_bound, pet_bound), 750000)
+        self.assertEqual(750000, 5000000 * .15)
         self.assertIn("tdEquipmentTrialNativeEnvelope()", text("wurst/items/TDEquipmentTrialRules.wurst"))
 
     def test_wurst_sources_include_required_cases_without_generated_staging(self):
