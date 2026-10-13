@@ -42,7 +42,7 @@ class TrialJassRuntime(PureBossJassRuntime):
         self.invoke('CreateRegions')
         # Only relevant production package initialization, not main/UI/game boot.
         for name in ('init_TDBossDarkTideRuntime', 'init_TDTowerEvolutionRuntime', 'init_TDPetWild', 'init_TDDamageState', 'init_TDDamageRuntime', 'init_TDEquipmentCombat',
-                     'init_TDPetState', 'init_TDPetCombat', 'init_TDTrialIdentity',
+                     'init_TDPetAttackQueue', 'init_TDPetState', 'init_TDPetAttackState', 'init_TDPetCombat', 'init_TDTrialIdentity',
                      'init_TDTrialRuntime', 'init_TDTrialHook', 'init_TDTrialHud',
                      'init_TDAuraObjectIds', 'init_TDEquipmentSpecialObjectIds',
                      'init_TDAuraState', 'init_TDShieldRuntime', 'init_TDEquipmentSpecialState'):
@@ -359,9 +359,16 @@ def verify_debuff_and_late_proc(script):
     r=TrialJassRuntime(script);r.initialize_match();r.enter(8);target=r.target(0)
     r.invoke('tdPetSetupCombat')
     current40 = 'tdEnemySlowOfferTimed' in r.functions
+    phase_one = 'tdPetApplyAttackDebuffs' in r.functions
+    pet_debuff_key = 'TDPetAttackState_targets' if phase_one else 'TDPetCombat_debuffs'
+    if phase_one:
+        pet=r.invoke('new_TDPet',0,1,8)
+        r.globals['TDPet_host'][pet]=101;r.globals['TDPet_generation'][pet]=1
+        r.globals['TDPetState_tdPets'][0]=pet
     if current40:
         r.invoke('tdEnemySlowOfferTimed', target, 101, 12, 1, .5, 3.0)
-        r.invoke('applyArmor', target, 2.0)
+        if phase_one: r.invoke('tdPetApplyAttackDebuffs',pet,101,target,2.0,0)
+        else: r.invoke('applyArmor', target, 2.0)
         record = r.invoke('tdAuraTargetFor', target)
         require(r.units[target]['speed']==130.0 and record != 0, 'Unified actual slow did not compose base260 slow0.5')
     else:
@@ -369,11 +376,11 @@ def verify_debuff_and_late_proc(script):
         periodic=r.periodics[-1][1];r.invoke('call_doPeriodically_TDPetCombat',periodic,periodic)
         require(r.units[target]['speed']==130.0 and r.tables[r.globals['TDPetState_tdPetEnemySlowFactors']][target]==0.5,'Real pet debuff tick did not compose base260 slow0.5')
     r.invoke('tdEquipmentDebuffFor',target,0)
-    require(len(r.lists[r.globals['TDPetCombat_debuffs']])==1 and len(r.lists[r.globals['TDEquipmentCombat_tdEquipmentDebuffs']])==1,'Real debuff record creation missing')
+    require(len(r.lists[r.globals[pet_debuff_key]])==1 and len(r.lists[r.globals['TDEquipmentCombat_tdEquipmentDebuffs']])==1,'Real debuff record creation missing')
     if current40:
         r.invoke('tdForgetAuraTarget', target)
     r.invoke('tdPetForgetEnemy',target)
-    require(r.units[target]['speed']==260.0 and not r.lists[r.globals['TDPetCombat_debuffs']], 'Explicit single-target cleanup did not restore260 and remove pet state')
+    require(r.units[target]['speed']==260.0 and not r.lists[r.globals[pet_debuff_key]], 'Explicit single-target cleanup did not restore260 and remove pet state')
     if current40:
         require(r.invoke('tdAuraTargetFor', target)==0, 'Explicit cleanup retained unified slow record')
     else:
@@ -381,10 +388,11 @@ def verify_debuff_and_late_proc(script):
     # Keep another real debuff on target through normal release to prove adapter cleanup.
     if current40:
         r.invoke('tdEnemySlowOfferTimed', target, 101, 13, 1, .25, 3.0)
-        r.invoke('applyArmor', target, 2.0)
+        if phase_one: r.invoke('tdPetApplyAttackDebuffs',pet,101,target,2.0,0)
+        else: r.invoke('applyArmor', target, 2.0)
     else:
         r.invoke('applySlow',target,0.25,3.0,1)
-    pet=r.invoke('new_TDPet',0,1,8)
+    if not phase_one: pet=r.invoke('new_TDPet',0,1,8)
     r.globals['TDPet_host'][pet]=101;r.globals['TDPet_generation'][pet]=1
     r.globals['TDPetState_tdPets'][0]=pet
     r.globals['TDPet_level'][pet]=3
@@ -392,12 +400,12 @@ def verify_debuff_and_late_proc(script):
     r.invoke('TDPet_setSkill',pet,1,6,1)
     r.invoke('TDPet_setSkill',pet,2,13,1)
     require(r.globals['TDPet_skillCount'][pet]==3 and r.invoke('TDPet_skillAt',pet,2)==13,'Real active AoE pet skill fixture invalid')
-    # The real final-damage listener invokes onAttack and creates all captures.
+    # The real early/final listener (according to the artifact) creates all captures.
     r.emit(100.0,source=101,target=target)
     callback=r.scheduled[-1][1]
     require(r.globals['TDPet_pendingSkill'][pet] and r.calls['onAttack']==1,'Real attack did not schedule pending production AoE')
     r.now=r.state_call('getDeadline');r.fire_native_timer(r.globals['TDTrialHook_tdTrialResumeTimer'])
-    require(not r.lists[r.globals['TDPetCombat_debuffs']] and not r.lists[r.globals['TDEquipmentCombat_tdEquipmentDebuffs']], 'Real release left native debuff records populated')
+    require(not r.lists[r.globals[pet_debuff_key]] and not r.lists[r.globals['TDEquipmentCombat_tdEquipmentDebuffs']], 'Real release left native debuff records populated')
     if current40:
         require(r.invoke('tdAuraTargetFor', target)==0, 'Real release left unified timed-slow target')
     else:

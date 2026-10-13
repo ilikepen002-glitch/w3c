@@ -33,8 +33,8 @@ function referenceListId(int index) returns int
 		for quality = 1 to 4
 			tdPetDisplayUnitId(species, quality).assertEquals(referenceHexId("pd", (species - 1) * 4 + quality))
 	for position = 0 to 1
-		for skill = 0 to 15
-			tdPetPreviewAbilityId(position, skill).assertEquals(referenceHexId("Ps", position * 16 + skill))
+		for skill = 0 to TD_PET_SKILL_COUNT - 1
+			tdPetPreviewAbilityId(position, skill).assertEquals(referenceHexId("Ps", position * TD_PET_SKILL_COUNT + skill))
 		tdPetPreviewArrowAbilityId(position).assertEquals(referenceHexId("Pa", position))
 	tdPetPreviewArrowAbilityId(2).assertEquals(0)
 	for index = 0 to 255

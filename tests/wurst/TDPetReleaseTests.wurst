@@ -1,9 +1,9 @@
 package TDPetReleaseTests
 import TDPetState
+import TDPetData
 import TDPetRules
 import TDPetWild
 import TDState
-import BitSet
 
 function ownedPet(int lane) returns TDPet
 	tdResetState()
@@ -195,19 +195,19 @@ function wildCount() returns int
 	tdPetReleaseGetsSlotStone(101).assertFalse()
 
 @Test function capturedAndRerolledSkillEligibilityKeepsExactCategoryActiveAndMaskRules()
-	for skill = 0 to 15
+	for skill = 0 to TD_PET_SKILL_COUNT - 1
 		for slot = 0 to 3
 			for active = 0 to 1
-				var expected = skill >= 4
+				var expected = tdPetSkillDefined(skill) and skill >= 5
 				if slot == 0
 					expected = skill <= 3
 				else
 					if slot == 1 and (skill == 9 or skill == 10)
 						expected = false
-					if active == 1 and skill >= 11
+					if active == 1 and tdPetSkillIsActive(skill)
 						expected = false
-				tdPetSkillAllowed(skill, slot, 0, active == 1).assertEquals(expected)
-				tdPetSkillAllowed(skill, slot, bitset(0).set(skill).val, active == 1).assertFalse()
+				tdPetSkillAllowed(skill, slot, false, active == 1).assertEquals(expected)
+				tdPetSkillAllowed(skill, slot, true, active == 1).assertFalse()
 
 @Test function purpleReleaseCreditsExactlyOneSlotStoneAndKeepsRerollReward()
 	let pet = ownedPet(0)
@@ -223,7 +223,7 @@ function wildCount() returns int
 
 @Test function purpleOwnedResonanceLockedSkillStillGuaranteesSlotStone()
 	let pet = ownedPet(0)
-	pet.setSkill(2, 4, 4)
+	pet.setSkill(2, TD_PET_SKILL_HEAVY, 4)
 	tdPetUnlockedSlots(pet.level).assertEquals(2)
 	pet.qualityAt(0).assertEquals(1)
 	pet.qualityAt(1).assertEquals(2)

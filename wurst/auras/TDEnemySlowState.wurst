@@ -22,6 +22,20 @@ public function tdEnemySlowOfferTimed(unit target, unit source, int identity, in
 	record.timed.add(new TDAuraTimedContribution(source, identity, rank, power, now + duration))
 	tdEnemySlowRefreshTimed(target)
 
+// Remove only this source/identity; other stronger or weaker sources survive.
+public function tdEnemySlowRemoveTimed(unit target, unit source, int identity)
+	let record = tdAuraTargetFor(target)
+	if record == null
+		return
+	let iter = record.timed.iterator()
+	while iter.hasNext()
+		let entry = iter.next()
+		if entry.source == source and entry.identity == identity
+			iter.remove()
+			destroy entry
+	iter.close()
+	tdEnemySlowRefreshTimed(target)
+
 public function tdEnemySlowCollectTimed(unit target, TDAuraAggregate aggregate)
 	let record = tdAuraTargetFor(target)
 	if record == null
@@ -55,7 +69,7 @@ public function tdEnemySlowRefreshTimed(unit target)
 		return
 	tdEnemySlowExpire(record)
 	// Continuous domains keep sampled coverage. Only timed kinds are reselected.
-	for identity = TD_AURA_POISON_DART to TD_AURA_PET_WIND
+	for identity = TD_AURA_POISON_DART to TD_AURA_PET_REDUCE
 		record.effective.clearIdentity(identity)
 	tdEnemySlowCollectTimed(target, record.effective)
 	tdAuraSyncBuffs(record)

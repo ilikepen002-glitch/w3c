@@ -1,0 +1,80 @@
+package TDPetAttackQueue
+import ClosureTimers
+import LinkedList
+import TDState
+import ErrorHandling
+
+// No pet, target or DamageInstance is retained here. Captured work belongs to
+// its owner until consumed; in-flight original hits keep their own phase fence.
+class TDPetQueuedAttack
+	int owner
+	Callback callback
+	construct(int owner, Callback callback)
+		this.owner = owner
+		this.callback = callback
+	ondestroy
+		destroy callback
+
+public int tdPetPendingOriginal = 0
+constant LinkedList<TDPetQueuedAttack> queuedAttacks = new LinkedList<TDPetQueuedAttack>()
+CallbackSingle dispatchTimer = null
+
+public function tdPetCancelQueuedAttacks(int owner)
+	let iter = queuedAttacks.iterator()
+	while iter.hasNext()
+		let packet = iter.next()
+		if packet.owner == owner
+			iter.remove()
+			destroy packet
+	iter.close()
+
+public function tdPetClearAttackQueue()
+	// Never reset tdPetPendingOriginal: an already captured native post may still arrive.
+	if dispatchTimer != null
+		destroy dispatchTimer
+		dispatchTimer = null
+	while not queuedAttacks.isEmpty()
+		let packet = queuedAttacks.get(0)
+		queuedAttacks.remove(packet)
+		destroy packet
+
+function dispatchQueuedAttacks()
+	// The firing timer is owned by ClosureTimers from this point onward.
+	dispatchTimer = null
+	if tdIsGameOver()
+		tdPetClearAttackQueue()
+		return
+	// A new native hit can enter after post scheduled us but before we execute.
+	// Its post will wake us again; no deadline or equal-timer ordering is assumed.
+	while tdPetPendingOriginal == 0 and not queuedAttacks.isEmpty() and not tdIsGameOver()
+		let packet = queuedAttacks.get(0)
+		queuedAttacks.remove(packet)
+		// Consume before damage/re-entrant lifecycle operations touch the queue.
+		packet.callback.call()
+		destroy packet
+	if tdIsGameOver()
+		tdPetClearAttackQueue()
+
+public function tdPetQueueAttack(int owner, Callback callback)
+	if tdIsGameOver()
+		destroy callback
+		return
+	queuedAttacks.add(new TDPetQueuedAttack(owner, callback))
+
+public function tdPetBeginOriginalPhase()
+	if tdPetPendingOriginal >= 2147483647
+		error("Pet original-hit phase overflow.")
+		return
+	tdPetPendingOriginal += 1
+
+public function tdPetEndOriginalPhase()
+	if tdPetPendingOriginal <= 0
+		error("Pet original-hit phase underflow.")
+		return
+	tdPetPendingOriginal -= 1
+	if tdIsGameOver()
+		tdPetClearAttackQueue()
+	else if tdPetPendingOriginal == 0 and not queuedAttacks.isEmpty() and dispatchTimer == null
+		// This is a post-completion handoff, never an early damage timer.
+		dispatchTimer = doAfter(0.0) ->
+			dispatchQueuedAttacks()

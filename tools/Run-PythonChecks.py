@@ -52,6 +52,7 @@ CLASS_GROUPS = {
         test_verify_pet_ui_artifact.PetUISourceTests
     '''.split(),
     'regression': '''
+        test_pet_attack_phase_one.PetAttackPhaseOneSourceTests
         test_king_leoric_assets.AssetTests
         test_active_cooldown_contract.SyntheticPackagedObjectMutationTests
         test_active_cooldown_contract.SyntheticCompiledMutationTests

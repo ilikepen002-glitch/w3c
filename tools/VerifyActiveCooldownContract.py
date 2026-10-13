@@ -725,10 +725,10 @@ def verify_runtime_sources(evaluator):
                   'pet.skillCount', 'tdPetSkillFitsHost(skill, target)', 'tdPetSkillIsActive(skill)', 'tdHasNativeActiveCooldown(target)'):
         require(token in aura, 'Aura active eligibility missing binding/slot/metadata guard: ' + token)
     require('tdActiveSkillDefinitionForPetSkill(skill)' in evaluator.body('tdPetSkillIsActive'), 'Pet classifier must consume shared metadata, not old eligibility whitelist')
-    require('tdPetUnlockedSlots(pet.level)' in evaluator.body('tdPetSkillRank'), 'Pet aura rank missing slot unlock guard')
+    require('aggregate.offer(TD_AURA_PET_COMMAND' not in evaluator.body('tdAuraOfferSource') and 'aggregate.offer(TD_AURA_PET_STASIS' not in evaluator.body('tdAuraOfferSource'), 'Retired pet aura source scan remains')
     pet_attack = evaluator.body('onAttack')
     for token in ('tdPetBindingValid(pet, host, pet.generation)', 'tdPetUnlockedSlots(pet.level)',
-                  'tdPetSkillIsActive(candidateSkill)', 'tdPetBindingValid(pet, host, generation)', 'pet.pendingSerial == pendingSerial', 'if not found'):
+                  'tdPetSkillIsActive(skill)', 'tdPetBindingValid(pet, host, generation)', 'pet.pendingSerial == pendingSerial', 'if not found'):
         require(token in pet_attack, 'Pet successful active missing binding/slot/generation/target guard: ' + token)
     helper = evaluator.body('tdConfigureActiveNativeCooldown')
     for token in ('tdActiveSkillDefinitionForKey(activeKey)', 'active.driver', 'definition.getNewId()',
@@ -840,7 +840,7 @@ def verify_inventory(evaluator):
         ('items/TDInventoryRuntime.wurst', 'tdSetTowerEquipmentAbilityLevel'): {'abilityId , level'},
         ('pets/TDPetCombat.wurst', 'setBonus'): {'abilityId , clamped'},
     }
-    simple_dynamic_paths = {'items/TDEquipmentSpecialState.wurst', 'auras/TDAuraState.wurst', 'pets/TDPetUIView.wurst', 'enemies/TDBossDarkTideRuntime.wurst'}
+    simple_dynamic_paths = {'items/TDEquipmentSpecialState.wurst', 'auras/TDAuraState.wurst', 'pets/TDPetUIView.wurst', 'pets/TDPetAttackState.wurst', 'enemies/TDBossDarkTideRuntime.wurst'}
     support_owners = {('items/TDEquipmentSpecialState.wurst', 'tdSpecialSyncBuff'),
                       ('items/TDEquipmentSpecialState.wurst', 'tdEquipmentSpecialSyncStages'),
                       ('auras/TDAuraState.wurst', 'tdAuraSyncDisplayedRank'), ('pets/TDPetUIView.wurst', 'tdPetRenderPage')}
@@ -907,14 +907,15 @@ def verify_inventory(evaluator):
                 require(not calls(body, method), 'Unknown spell registration mechanism: ' + path + ':' + method)
         for arguments in calls(source, 'registerAnyUnitEvent'):
             if any('EVENT_PLAYER_UNIT_SPELL_' in arg for arg in arguments):
-                manager = path == 'pets/TDPetUI.wurst'
-                if manager:
-                    setup = owners['tdPetSetupUI', 0][1]
-                    require(canonical('commandTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)') in canonical(setup)
-                            and canonical('commandTrigger.addCondition(Filter(function onCommand))') in canonical(setup)
-                            and sum('EVENT_PLAYER_UNIT_SPELL_' in arg for args in calls(source, 'registerAnyUnitEvent') for arg in args) == 1,
-                            'Manager shared listener must remain bound only to session admission')
-                require((path == RUNTIME or manager) and arguments == ['EVENT_PLAYER_UNIT_SPELL_EFFECT'], 'Unknown generic combat spell registration: ' + path)
+                require(path in {RUNTIME, 'pets/TDPetUI.wurst'} and arguments == ['EVENT_PLAYER_UNIT_SPELL_EFFECT'], 'Unknown generic combat spell registration: ' + path)
+                if path == 'pets/TDPetUI.wurst':
+                    setup = evaluator.body('tdPetSetupUI')
+                    require(setup.count('managerCommandTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)') == 1
+                            and setup.count('managerCommandTrigger.addAction(function onManagerSpell)') == 1
+                            and canonical(evaluator.body('onManagerSpell')) == canonical('onCommand()')
+                            and sum('EVENT_PLAYER_UNIT_SPELL_' in arg for args in calls(source, 'registerAnyUnitEvent') for arg in args) == 1
+                            and 'session.admitCommand' in evaluator.body('onCommand'),
+                            'Manager bridge bypasses caster/session authority')
         # Methods in classes are outside source_functions. Inspect those exact
         # support owners separately; adding a new call elsewhere fails closed.
         total = sum(len(calls(body, method)) for _, body in owners.values() for method in ('addAbility', 'addPermanentAbility', 'UnitAddAbility'))
@@ -923,6 +924,7 @@ def verify_inventory(evaluator):
             require(path in simple_dynamic_paths, 'Unclassified class dynamic ability mount: ' + path)
             allowed = {'items/TDEquipmentSpecialState.wurst': ['desired.abilId', 'TD_WAR_INTENT_SPEED_CARRIER'],
                        'auras/TDAuraState.wurst': ['carrier'], 'pets/TDPetUIView.wurst': ['session.abilities[cell]'],
+                       'pets/TDPetAttackState.wurst': ['TD_PET_ARMOR_ID'],
                        'enemies/TDBossDarkTideRuntime.wurst': ['TD_BOSS_DARK_TIDE_ABILITY_ID']}[path]
             for method in ('addAbility', 'addPermanentAbility', 'UnitAddAbility'):
                 for arguments in calls(source, method):

@@ -713,7 +713,7 @@ function tdHandleArcherSplitArrowDamage()
 	let volley = tdConsumeArcherSplitArrowVolley(source, target)
 	if volley == null
 		return
-	let attackDamage = DamageEvent.getUnreducedAmount() * tdArcherSplitArrowDamageMultiplier(tdTowerLevelForUnitTypeId(GetUnitTypeId(source)), tdTowerBranchForUnitTypeId(GetUnitTypeId(source)), tdTowerIsEvolved(source))
+	let attackDamage = DamageEvent.getUnreducedOriginalAmount() * tdArcherSplitArrowDamageMultiplier(tdTowerLevelForUnitTypeId(GetUnitTypeId(source)), tdTowerBranchForUnitTypeId(GetUnitTypeId(source)), tdTowerIsEvolved(source))
 	for shot in volley.extraShots
 		if shot != null and shot.target != null and shot.target.isAlive()
 			let victim = shot.target

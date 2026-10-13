@@ -1,0 +1,138 @@
+package TDPetAttackState
+import TDPetAttackRules
+import TDPetData
+import TDPetState
+import TDPetRuntime
+import TDAuraRules
+import TDEnemySlowState
+import TDWaves
+import TDEnemyMechanicData
+import TDEnemyMechanicRuntime
+import GameTimer
+import LinkedList
+import Table
+import TDTrialIdentity
+
+// Each source owns its own expiry. Replacing a pet never inherits its stacks.
+class TDPetAttackContribution
+	TDPet pet
+	unit source
+	int generation
+	real armor = 0.0
+	real armorUntil = 0.0
+	int stacks = 0
+	real slowUntil = 0.0
+	construct(TDPet pet, unit source)
+		this.pet = pet
+		this.source = source
+		generation = pet.generation
+
+	function valid() returns boolean
+		return pet != null and not pet.released and not pet.paused and pet.host == source and pet.generation == generation and source != null and source.isAlive() and tdPetLaneCanAct(pet.lane)
+
+class TDPetAttackTarget
+	unit target
+	int lane
+	tdTrialCombatContext context
+	int targetRevision
+	LinkedList<TDPetAttackContribution> sources = new LinkedList<TDPetAttackContribution>()
+	construct(unit target, int lane)
+		this.target = target
+		this.lane = lane
+		context = tdTrialCaptureContext(target)
+		let binding = tdTrialBindingFor(target)
+		targetRevision = binding == null ? 0 : binding.revision
+
+	function valid() returns boolean
+		return tdTrialTargetContextValid(target, lane, context, targetRevision) and tdPetEnemyIsValid(target, lane)
+
+	function refresh(real now)
+		var armor = 0.0
+		let iter = sources.iterator()
+		while iter.hasNext()
+			let entry = iter.next()
+			let expired = now >= entry.armorUntil and now >= entry.slowUntil
+			if not entry.valid() or expired
+				tdEnemySlowRemoveTimed(target, entry.source, TD_AURA_PET_REDUCE)
+				iter.remove()
+				destroy entry
+			else if now < entry.armorUntil
+				armor = RMaxBJ(armor, entry.armor)
+		iter.close()
+		if armor <= 0.0
+			target.removeAbility(TD_PET_ARMOR_ID)
+		else
+			if target.getAbilityLevel(TD_PET_ARMOR_ID) == 0
+				target.addAbility(TD_PET_ARMOR_ID)
+			target.setAbilityLevel(TD_PET_ARMOR_ID, armor.toInt())
+
+	ondestroy
+		while not sources.isEmpty()
+			let entry = sources.get(0)
+			sources.remove(entry)
+			tdEnemySlowRemoveTimed(target, entry.source, TD_AURA_PET_REDUCE)
+			destroy entry
+		destroy sources
+		target.removeAbility(TD_PET_ARMOR_ID)
+
+LinkedList<TDPetAttackTarget> targets = new LinkedList<TDPetAttackTarget>()
+constant Table targetIndex = new Table()
+
+function forget(TDPetAttackTarget entry)
+	targetIndex.removeInt(entry.target.getHandleId())
+	targets.remove(entry)
+	destroy entry
+
+public function tdPetForgetEnemy(unit target)
+	if target == null or not targetIndex.hasInt(target.getHandleId())
+		return
+	forget(targetIndex.loadInt(target.getHandleId()) castTo TDPetAttackTarget)
+
+public function tdPetEnemyDebuffCount() returns int
+	return targets.size()
+
+public function tdPetApplyAttackDebuffs(TDPet pet, unit source, unit target, real armor, int slowQuality)
+	if armor <= 0.0 and slowQuality <= 0
+		return
+	var record = targetIndex.loadInt(target.getHandleId()) castTo TDPetAttackTarget
+	if record != null and not record.valid()
+		forget(record)
+		record = null
+	if record == null
+		record = new TDPetAttackTarget(target, pet.lane)
+		targets.add(record)
+		targetIndex.saveInt(target.getHandleId(), record castTo int)
+	let now = getElapsedGameTime()
+	record.refresh(now)
+	TDPetAttackContribution entry = null
+	for candidate in record.sources
+		if candidate.source == source
+			entry = candidate
+	if entry == null
+		entry = new TDPetAttackContribution(pet, source)
+		record.sources.add(entry)
+	if armor > 0.0
+		entry.armor = armor
+		entry.armorUntil = now + 3.0
+	if slowQuality > 0
+		entry.stacks = tdPetReduceStacks(entry.stacks, entry.slowUntil, now)
+		entry.slowUntil = now + tdPetReduceDuration(slowQuality)
+		// One current stack value per source, never additive 1+2+3 stacks.
+		tdEnemySlowRemoveTimed(target, source, TD_AURA_PET_REDUCE)
+		let bossFactor = tdIsBossUnitTypeId(GetUnitTypeId(target)) ? 0.5 : 1.0
+		// Equal rank makes same-name selection strongest power, not longest quality.
+		tdEnemySlowOfferTimed(target, source, TD_AURA_PET_REDUCE, 1, entry.stacks * 0.06 * bossFactor, tdPetReduceDuration(slowQuality))
+	record.refresh(now)
+
+public function tdPetExpireAttackDebuffs()
+	let now = getElapsedGameTime()
+	let iter = targets.iterator()
+	while iter.hasNext()
+		let record = iter.next()
+		if record.valid()
+			record.refresh(now)
+		if not record.valid() or record.sources.isEmpty()
+			targetIndex.removeInt(record.target.getHandleId())
+			iter.remove()
+			destroy record
+	iter.close()

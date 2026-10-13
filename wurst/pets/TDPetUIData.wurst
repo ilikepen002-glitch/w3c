@@ -1,4 +1,5 @@
 package TDPetUIData
+import TDPetData
 
 // Full imported paths must use explicit object setters, never presetIcon.
 function importedIcon(string name) returns string
@@ -102,11 +103,17 @@ public function tdPetSkillIconName(int skill) returns string
 		return "BTNChainLightning"
 	if skill == 14
 		return "BTNImmolationOn"
+	if skill == TD_PET_SKILL_COMBO
+		return "BTNGlove"
+	if skill == TD_PET_SKILL_RESOLVE
+		return "BTNCriticalStrike"
+	if skill == TD_PET_SKILL_HEAVY
+		return "BTNSteelMelee"
 	return "BTNCyclone"
 
 public function tdPetSlotIconPath(int variant) returns string
-	if variant == 128
+	if variant == TD_PET_SLOT_EMPTY
 		return importedIcon("TDPetEmptySlot")
-	let skill = (variant mod 64) div 4
+	let skill = variant mod TD_PET_SKILL_COUNT
 	let name = tdPetSkillIconName(skill)
-	return variant >= 64 ? "ReplaceableTextures\\CommandButtonsDisabled\\DIS" + name + ".blp" : "ReplaceableTextures\\CommandButtons\\" + name + ".blp"
+	return variant >= TD_PET_SKILL_COUNT ? "ReplaceableTextures\\CommandButtonsDisabled\\DIS" + name + ".blp" : "ReplaceableTextures\\CommandButtons\\" + name + ".blp"

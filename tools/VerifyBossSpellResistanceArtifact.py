@@ -370,7 +370,12 @@ class BossJassRuntime(GroundJassRuntime):
         instance = self.globals['DamageInstance_maxIndex']
         require(instance > before, 'Engine did not construct a damage instance')
         result = {field: self.globals['DamageInstance_' + field][instance]
-                  for field in ('amount', 'unreducedAmount', 'isCode', 'isSpell', 'id', 'lastDamageHP')}
+                  for field in ('amount', 'isCode', 'isSpell', 'id', 'lastDamageHP')}
+        if 'DamageInstance_unreducedAmount' in self.globals:
+            result['unreducedAmount'] = self.globals['DamageInstance_unreducedAmount'][instance]
+        else:
+            require('DamageEvent_getUnreducedAmount' not in self.functions,
+                    'Live unreduced getter lacks its packed backing field')
         if signed_amount != 0.0:
             if not result['isSpell']:
                 self.units[target]['life'] = max(0.0, self.units[target]['life'] - signed_amount)
@@ -468,7 +473,8 @@ def verify_engine_and_accounting(script, runtime_type=BossJassRuntime, boss_resu
         result = runtime.emit(-100.0 if spell else 100.0)
         expected = results[wave] if spell and not code else 100.0
         close(result['amount'], expected, 'Actual dependency classification/early amount')
-        close(result['unreducedAmount'], expected, 'Actual early setAmount unreduced amount')
+        if 'unreducedAmount' in result:
+            close(result['unreducedAmount'], expected, 'Actual early setAmount unreduced amount')
         require(result['isCode'] is code and result['isSpell'] is spell,
                 'Code flag not preserved through dependency negative reclassification')
         require(runtime.calls[SCALE] == int(spell and not code), 'Dependency resistance invoked more than once')
@@ -614,8 +620,16 @@ def verify_source_contract(root, baseline_root=None):
     require(wrapper.strip() == 'damage(pet, host, generation, target, tdEnemyMechanicScaleSpellDamage(target, amount))',
             'Pet spell wrapper changes original damage or scales more than once')
     require('tdEnemyMechanicScaleSpellDamage' not in source_function(pet, 'damage'), 'Original pet damage was scaled')
-    require('damage(pet, host, generation, target, base * extra)' in source_function(pet, 'onAttack'),
-            'Pet combo/execute derived attack changed')
+    attack = source_function(pet, 'onAttack')
+    if 'tdPetSkillDefined' in (root / 'pets/TDPetRules.wurst').read_text(encoding='utf-8'):
+        for addition in ('comboSnapshot', 'chargeSnapshot', 'pursuitSnapshot', 'heavySnapshot'):
+            require(attack.count('damage(pet, host, generation, target, base * ' + addition + ')') == 1,
+                    'Pet independent original-D additional changed: ' + addition)
+        require('DamageEvent.getUnreducedOriginalAmount()' in attack and 'DamageEvent.addUnreducedListener(3)' in pet,
+                'Pet main attack lost immutable early sample')
+    else:
+        require('damage(pet, host, generation, target, base * extra)' in attack,
+                'Pet combo/execute derived attack changed')
     require('spellDamage(pet, source, generation, target, amount)' in source_function(pet, 'tdPetOnCorpseExplosion'),
             'Pet corpse poison bypasses resistance wrapper')
     active = source_function(pet, 'resolveActive')

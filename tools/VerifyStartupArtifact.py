@@ -44,7 +44,7 @@ class StartupRuntime(PetStartupRuntime):
         if name in {'RemoveAllGuardPositions', 'SetPlayerAlliance', 'tdCreatePads', 'tdPetInitializeFarmer',
                     'tdSetupLanePlayerLeaveWatcher', 'tdSetupDamageStatistics',
                     'tdSetupEnemyMechanics', 'tdSetupBuildDialog', 'tdSetupPadSelection',
-                    'tdSetupDialogTrigger', 'tdSetupInventoryRuntime', 'tdSetupGroundItemRuntime',
+                    'tdSetupDialogTrigger', 'tdSetupInventoryRuntime', 'tdSetupAuraRuntime', 'tdSetupGroundItemRuntime',
                     'tdSetupLaneRects', 'tdStartLaneWaypointWatcher', 'tdStartEnemyDeathWatcher',
                     'tdStartLeakWatcher', 'tdSetupChatCommands'}:
             return True, None

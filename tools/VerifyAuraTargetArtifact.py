@@ -152,6 +152,22 @@ def verify_pet_targets(script):
     r.globals['TDPet_host'][pet] = 101
     r.globals['TDPet_level'][pet] = 10
     r.invoke('TDPet_setSkill', pet, 0, 0, 1)
+    if 'tdPetApplyAttackDebuffs' in r.functions:
+        require(not r.invoke('tdPetSkillDefined', 4), 'Retired command-aura skill is selectable')
+        r.invoke('TDPet_setSkill', pet, 1, 4, 2)
+        require(r.invoke('TDPet_skillAt', pet, 1) != 4, 'Retired command-aura slot was accepted')
+        r.invoke('TDPet_setSkill', pet, 1, 5, 2)
+        require(r.invoke('TDPet_skillAt', pet, 1) == 5, 'Combined attack-speed fixture was rejected')
+        # The replacement attack passive has no spatial emitter. Replay the
+        # same former aura routes and require every aggregate identity zero.
+        for target in (101, 103, 104, 105, 106):
+            aggregate = offer(r, target, distance=0.0 if target == 101 else 600.0)
+            expect_only(r, aggregate, 0, 0, 0.0, 'Retired pet aura target ' + str(target))
+        aggregate = offer(r, 105, distance=600.1)
+        expect_only(r, aggregate, 0, 0, 0.0, 'Retired pet aura outside boundary')
+        require('tdPet' not in '\n'.join(r.functions['tdAuraOfferSource'][1]),
+                'Spatial aura dispatcher still depends on pets')
+        return 6
     r.invoke('TDPet_setSkill', pet, 1, 4, 2)
     r.invoke('TDPet_setSkill', pet, 2, 5, 2)
     require(r.invoke('tdPetBindingValid', pet, 101, 0), 'Fixture host is not valid')

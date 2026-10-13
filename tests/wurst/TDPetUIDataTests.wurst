@@ -1,5 +1,6 @@
 package TDPetUIDataTests
 import TDPetUIData
+import TDPetData
 
 @Test function petFarmerCommandsUseStableSemanticIconPaths()
 	tdPetMenuToolsIconPath().assertEquals("war3mapImported\\BTNTDPetMenuTools.blp")
@@ -27,13 +28,13 @@ import TDPetUIData
 	(tdPetSpeciesIconPath(2) != tdPetSpeciesIconPath(3)).assertTrue()
 
 @Test function petEmptySlotIsIndependentFromBrightAndLockedSkillStates()
-	tdPetSlotIconPath(128).assertEquals("war3mapImported\\BTNTDPetEmptySlot.blp")
-	for variant = 0 to 63
-		let skill = variant div 4
+	tdPetSlotIconPath(TD_PET_SLOT_EMPTY).assertEquals("war3mapImported\\BTNTDPetEmptySlot.blp")
+	for variant = 0 to TD_PET_SKILL_COUNT - 1
+		let skill = variant
 		tdPetSlotIconPath(variant).assertEquals("ReplaceableTextures\\CommandButtons\\" + tdPetSkillIconName(skill) + ".blp")
-		tdPetSlotIconPath(variant + 64).assertEquals("ReplaceableTextures\\CommandButtonsDisabled\\DIS" + tdPetSkillIconName(skill) + ".blp")
-		(tdPetSlotIconPath(variant) != tdPetSlotIconPath(128)).assertTrue()
-		(tdPetSlotIconPath(variant + 64) != tdPetSlotIconPath(128)).assertTrue()
+		tdPetSlotIconPath(variant + TD_PET_SKILL_COUNT).assertEquals("ReplaceableTextures\\CommandButtonsDisabled\\DIS" + tdPetSkillIconName(skill) + ".blp")
+		(tdPetSlotIconPath(variant) != tdPetSlotIconPath(TD_PET_SLOT_EMPTY)).assertTrue()
+		(tdPetSlotIconPath(variant + TD_PET_SKILL_COUNT) != tdPetSlotIconPath(TD_PET_SLOT_EMPTY)).assertTrue()
 
 @Test function petSpeciesQualityBordersAreTwelveDistinctOwnedQualityStates()
 	for species = 1 to 3

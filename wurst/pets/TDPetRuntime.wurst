@@ -1,6 +1,7 @@
 package TDPetRuntime
 import TDPetData
 import TDPetState
+import TDPetAttackQueue
 import TDPetWild
 import TDState
 import TDConfig
@@ -173,11 +174,13 @@ public function tdPetSetupRuntime()
 						if pet.visual.getPos().distanceTo(desired) > 1.0
 							pet.visual.setPos(desired)
 		if tdIsGameOver()
+			tdPetClearAttackQueue()
 			for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 				tdPetCancelRelease(lane)
-			// All delayed attacks have zero delay or at most three one-second ticks.
-			// Stop new procs now, then reclaim records only after every callback expires.
+			// Captured attack packets are already cancelled, regardless of in-flight posts.
+			// Existing three one-second poison ticks finish before record reclamation.
 			doAfter(4.0) ->
+				tdPetClearAttackQueue()
 				for pet in tdPetMatchRecords
 					pet.recall()
 					destroy pet

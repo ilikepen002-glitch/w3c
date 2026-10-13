@@ -36,7 +36,10 @@ class CurrentSourceWorkflowTests(unittest.TestCase):
 
     def test_user_integer_rawcode_and_quiet_detail_summary_bytes_preserved(self):
         before = subprocess.check_output(['git', 'show', '28f16681bc07b58066f10d51e8aed7ba626fb768:wurst/pets/TDPetUIView.wurst'], cwd=ROOT)
-        self.assertEqual((ROOT / 'wurst/pets/TDPetUIView.wurst').read_bytes(), before)
+        current = source.source('TDPetUIView')
+        for name in ('tdPetPageSummary', 'tdPetShowPageSummary', 'tdPetSelectFarmer', 'retire'):
+            self.assertEqual(source.function_body(current, name)[1], source.function_body(before.decode(), name)[1])
+        self.assertIn('宿主已有原生暴击', source.function_body(current, 'tdPetSkillRestriction')[1])
         self.assertNotIn('tdPetShowPageSummary', source.function_body(source.source('TDPetUI'), 'showPage')[1])
 
     def test_all_28_existing_icons_remain_exact_and_78_complete(self):

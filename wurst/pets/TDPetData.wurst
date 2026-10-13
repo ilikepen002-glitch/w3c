@@ -1,5 +1,4 @@
 package TDPetData
-import ObjectIds
 
 public constant int TD_PET_CAPTURE_ABILITY_ID = 'Pcap'
 public constant int TD_PET_COLLECTION_ABILITY_ID = 'Pcol'
@@ -10,8 +9,11 @@ public constant int TD_PET_COLLECTION_LIMIT = 20
 public constant int TD_PET_BALL_LIMIT = 60
 
 public function tdPetWildUnitId(int wave, int species) returns int
-	let hex = "0123456789ABCDEF"
-	return ("p" + SubString(hex, wave div 16, wave div 16 + 1) + SubString(hex, wave mod 16, wave mod 16 + 1) + species.toString()).fromRawCode()
+	if wave < 1 or wave > 32 or species < 1 or species > 3
+		return 0
+	let high = wave div 16
+	let low = wave mod 16
+	return 'p001' + (high >= 10 ? high + 7 : high) * 65536 + (low >= 10 ? low + 7 : low) * 256 + species - 1
 
 public function tdPetVisualUnitId(int species) returns int
 	return 'pv01' + species - 1
@@ -53,12 +55,17 @@ public function tdPetCaptureTooltip(int balls) returns string
 public constant int TD_PET_ATTACK_BONUS_ID = 'Pbat'
 public constant int TD_PET_SPEED_BONUS_ID = 'Pbsp'
 public constant int TD_PET_ARMOR_ID = 'Pbar'
-public constant int TD_PET_SKILL_COUNT = 16
+// Stable IDs: 4 (former command aura) is retired. No future skill placeholders.
+public constant int TD_PET_SKILL_COUNT = 19
+public constant int TD_PET_SKILL_COMBO = 16
+public constant int TD_PET_SKILL_RESOLVE = 17
+public constant int TD_PET_SKILL_HEAVY = 18
+public constant int TD_PET_SLOT_EMPTY = TD_PET_SKILL_COUNT * 2
 
 // baseCode ends in '00'. Encode each hex digit separately, preserving every ID.
 // Runtime string.fromRawCode scans CHARMAP four times per ID during UI startup.
 public function tdPetHexRawcode(int baseCode, int index, int limit) returns int
-	if index < 0 or index >= limit
+	if index < 0 or index >= limit or limit > 256
 		return 0
 	var high = index div 16
 	var low = index mod 16
@@ -67,6 +74,13 @@ public function tdPetHexRawcode(int baseCode, int index, int limit) returns int
 	if low >= 10
 		low += 7
 	return baseCode + high * 256 + low
+
+// Three hex digits, exact 000..FFF; high bytes remain valid ASCII.
+public function tdPetHex3Rawcode(int baseCode, int index, int limit) returns int
+	if index < 0 or index >= limit or limit > 4096
+		return 0
+	let high = index div 256
+	return tdPetHexRawcode(baseCode, index mod 256, 256) + (high >= 10 ? high + 7 : high) * 65536
 
 public function tdPetDisplayUnitId(int species, int quality) returns int
 	if species < 1 or species > 3 or quality < 1 or quality > 4
@@ -95,7 +109,7 @@ public function tdPetListAbilityId(int cell, int species, int quality, int owned
 	else if species != 0 or quality != 0 or ownedCount != 0
 		return 0
 	let index = cell * 49 + variant
-	return tdPetHexRawcode('L000', index mod 256, 256) + (index div 256) * 65536
+	return tdPetHex3Rawcode('L000', index, 490)
 
 public function tdPetPreviewArrowAbilityId(int position) returns int
 	return tdPetHexRawcode('Pa00', position, 2)
@@ -103,13 +117,14 @@ public function tdPetPreviewArrowAbilityId(int position) returns int
 public function tdPetPreviewAbilityId(int position, int skill) returns int
 	if position < 0 or position > 1 or skill < 0 or skill >= TD_PET_SKILL_COUNT
 		return 0
-	return tdPetHexRawcode('Ps00', position * 16 + skill, 32)
+	return tdPetHexRawcode('Ps00', position * TD_PET_SKILL_COUNT + skill, TD_PET_SKILL_COUNT * 2)
 
+// Quality lives in ability levels; identity only encodes skill and lock state.
 public function tdPetSlotAbilityId(int slot, int variant) returns int
-	if slot < 0 or slot > 3 or variant < 0 or variant > 128
+	if slot < 0 or slot > 3 or variant < 0 or variant > TD_PET_SLOT_EMPTY
 		return 0
-	let hex = "0123456789ABCDEF"
-	return ("s" + slot.toString() + SubString(hex, variant div 16, variant div 16 + 1) + SubString(hex, variant mod 16, variant mod 16 + 1)).fromRawCode()
+	return tdPetHexRawcode('s000' + slot * 65536, variant, TD_PET_SLOT_EMPTY + 1)
+
 
 public function tdPetUICommandId(int command) returns int
 	return tdPetHexRawcode('Pc00', command, 8)

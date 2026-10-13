@@ -12,7 +12,7 @@ class EquipmentPhaseB(unittest.TestCase):
         ids = [int(x) for x in re.findall(r'TD_AURA_\w+ = (\d+)\n', rules) if int(x) <= 13]
         self.assertEqual(set(ids), set(range(1,14)))
         objects = source('wurst/auras/TDAuraObjectIds.wurst')
-        self.assertEqual(objects.count('compiletime(createDummyBuffObject('), 38)
+        self.assertEqual(objects.count('compiletime(createDummyBuffObject('), 31)
         self.assertEqual(objects.count('compiletime(ABIL_ID_GEN.next())'), 4)
     def test_rank_follows_coverage_and_never_identity_cross_max(self):
         rules = source('wurst/auras/TDAuraRules.wurst')
@@ -21,8 +21,8 @@ class EquipmentPhaseB(unittest.TestCase):
         runtime = source('wurst/auras/TDAuraRuntime.wurst')
         self.assertIn('normal > 0 and distance <= tdDryadAuraSlowRadius()', runtime)
         self.assertIn('wide > 0 and distance <= tdDryadWideAuraSlowRadius()', runtime)
-        self.assertIn('source == target', runtime)
-        self.assertIn('distance <= 600.0', runtime)
+        self.assertNotIn('aggregate.offer(TD_AURA_PET_COMMAND', runtime)
+        self.assertNotIn('aggregate.offer(TD_AURA_PET_STASIS', runtime)
     def test_registered_round_robin_rotates_before_execute_and_timed_scan_is_local(self):
         runtime = source('wurst/auras/TDAuraRuntime.wurst')
         self.assertNotIn('enumUnitsInRect', runtime)
@@ -82,8 +82,10 @@ class EquipmentPhaseB(unittest.TestCase):
     def test_on_hit_armor_scope_keeps_pet_independent(self):
         combat = source('wurst/items/TDEquipmentCombat.wurst')
         self.assertIn('RMaxBJ(tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_ARMOR_SHRED), tdAuraPower(source, TD_AURA_EQUIPMENT_ARMOR))', combat)
-        pet = source('wurst/pets/TDPetCombat.wurst')
-        self.assertIn('target.setAbilityLevel(TD_PET_ARMOR_ID, power.toInt())',pet)
+        pet = source('wurst/pets/TDPetAttackState.wurst')
+        self.assertIn('target.setAbilityLevel(TD_PET_ARMOR_ID, armor.toInt())',pet)
+        self.assertIn('armor = RMaxBJ(armor, entry.armor)', pet)
+        self.assertIn('entry.armorUntil = now + 3.0', pet)
     def test_cooldown_coverage_has_actual_supported_target_guard(self):
         runtime = source('wurst/auras/TDAuraRuntime.wurst')
         refresh = runtime[runtime.index('function tdAuraRefresh('):runtime.index('public function tdForgetAuraTarget(')]

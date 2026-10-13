@@ -215,7 +215,7 @@ function managerPet(int lane) returns TDPet
 	tdPetListAbilityId(9, 3, 4, 4).assertEquals('L1E9')
 	tdPetListAbilityId(10, 1, 1, 1).assertEquals(0)
 	tdPetManagerCommandId(20).assertEquals('Pm0C')
-	tdPetPreviewAbilityId(1, 15).assertEquals('Ps1F')
+	tdPetPreviewAbilityId(1, 15).assertEquals('Ps22')
 	tdPetManagerCommandId(23).assertEquals(0)
 	tdPetIsDisplayType(tdPetDisplayUnitId(3, 4)).assertTrue()
 	tdPetIsDisplayType(tdPetWildUnitId(1, 3)).assertFalse()

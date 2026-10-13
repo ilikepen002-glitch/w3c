@@ -918,7 +918,8 @@ class PureBossJassRuntime(BossJassRuntime):
                 'Leave event code reference has no exact generated bridge binding')
             self.globals['ref_function_bridge_tdHandleLanePlayerLeaveEvent'] = 'bridge_tdHandleLanePlayerLeaveEvent'
         for name, fn in self.functions.items():
-            if name.startswith('init_') and fn[0] == [] and name in ('init_TDWaveFlowState', 'init_TDBossTransitionHook', 'init_TDBossRewardRules', 'init_TDEnemyMechanicData'):
+            # Optimized stdlib min/max need their actual initialized extrema.
+            if name.startswith('init_') and fn[0] == [] and name in ('init_Real', 'init_TDWaveFlowState', 'init_TDBossTransitionHook', 'init_TDBossRewardRules', 'init_TDEnemyMechanicData'):
                 self.invoke(name)
 
     def native(self, name, args):

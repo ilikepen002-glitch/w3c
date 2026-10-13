@@ -59,7 +59,7 @@ import TDState
 
 @Test function petInitialTwoSlotsAreUnlockedAndUniversal()
 	for numeric = 0 to 3
-		for mechanism = 4 to 15
+		for mechanism = 5 to TD_PET_SKILL_COUNT - 1
 			if tdPetSkillIsUniversal(mechanism)
 				let pet = new TDPet(0, 1, 1)
 				pet.setSkill(0, numeric, 1)

@@ -21,14 +21,6 @@ constant buffTuple tdAuraBuff7_1 = compiletime(createDummyBuffObject(tdAuraName(
 constant buffTuple tdAuraBuff7_2 = compiletime(createDummyBuffObject(tdAuraName(7) + " 2", tdAuraStateTooltip(7, 2), tdAuraIcon(7)))
 constant buffTuple tdAuraBuff7_3 = compiletime(createDummyBuffObject(tdAuraName(7) + " 3", tdAuraStateTooltip(7, 3), tdAuraIcon(7)))
 constant buffTuple tdAuraBuff7_4 = compiletime(createDummyBuffObject(tdAuraName(7) + " 4", tdAuraStateTooltip(7, 4), tdAuraIcon(7)))
-constant buffTuple tdAuraBuff8_1 = compiletime(createDummyBuffObject(tdAuraName(8) + " 1", tdAuraStateTooltip(8, 1), tdAuraIcon(8)))
-constant buffTuple tdAuraBuff8_2 = compiletime(createDummyBuffObject(tdAuraName(8) + " 2", tdAuraStateTooltip(8, 2), tdAuraIcon(8)))
-constant buffTuple tdAuraBuff8_3 = compiletime(createDummyBuffObject(tdAuraName(8) + " 3", tdAuraStateTooltip(8, 3), tdAuraIcon(8)))
-constant buffTuple tdAuraBuff8_4 = compiletime(createDummyBuffObject(tdAuraName(8) + " 4", tdAuraStateTooltip(8, 4), tdAuraIcon(8)))
-constant buffTuple tdAuraBuff9_1 = compiletime(createDummyBuffObject(tdAuraName(9) + " 1", tdAuraStateTooltip(9, 1), tdAuraIcon(9)))
-constant buffTuple tdAuraBuff9_2 = compiletime(createDummyBuffObject(tdAuraName(9) + " 2", tdAuraStateTooltip(9, 2), tdAuraIcon(9)))
-constant buffTuple tdAuraBuff9_3 = compiletime(createDummyBuffObject(tdAuraName(9) + " 3", tdAuraStateTooltip(9, 3), tdAuraIcon(9)))
-constant buffTuple tdAuraBuff9_4 = compiletime(createDummyBuffObject(tdAuraName(9) + " 4", tdAuraStateTooltip(9, 4), tdAuraIcon(9)))
 constant buffTuple tdAuraBuff10_1 = compiletime(createDummyBuffObject(tdAuraName(10) + " 1", tdAuraStateTooltip(10, 1), tdAuraIcon(10)))
 constant buffTuple tdAuraBuff10_2 = compiletime(createDummyBuffObject(tdAuraName(10) + " 2", tdAuraStateTooltip(10, 2), tdAuraIcon(10)))
 constant buffTuple tdAuraBuff11_1 = compiletime(createDummyBuffObject(tdAuraName(11) + " 1", tdAuraStateTooltip(11, 1), tdAuraIcon(11)))
@@ -41,6 +33,8 @@ constant buffTuple tdAuraBuff13_1 = compiletime(createDummyBuffObject(tdAuraName
 constant buffTuple tdAuraBuff13_2 = compiletime(createDummyBuffObject(tdAuraName(13) + " 2", tdAuraStateTooltip(13, 2), tdAuraIcon(13)))
 constant buffTuple tdAuraBuff13_3 = compiletime(createDummyBuffObject(tdAuraName(13) + " 3", tdAuraStateTooltip(13, 3), tdAuraIcon(13)))
 constant buffTuple tdAuraBuff13_4 = compiletime(createDummyBuffObject(tdAuraName(13) + " 4", tdAuraStateTooltip(13, 4), tdAuraIcon(13)))
+
+constant buffTuple tdAuraBuff14_1 = compiletime(createDummyBuffObject(tdAuraName(14) + " 1", tdAuraStateTooltip(14, 1), tdAuraIcon(14)))
 
 public function tdAuraBuff(int identity, int rank) returns buffTuple
 	if identity == 1 and rank == 1
@@ -79,22 +73,6 @@ public function tdAuraBuff(int identity, int rank) returns buffTuple
 		return tdAuraBuff7_3
 	if identity == 7 and rank == 4
 		return tdAuraBuff7_4
-	if identity == 8 and rank == 1
-		return tdAuraBuff8_1
-	if identity == 8 and rank == 2
-		return tdAuraBuff8_2
-	if identity == 8 and rank == 3
-		return tdAuraBuff8_3
-	if identity == 8 and rank == 4
-		return tdAuraBuff8_4
-	if identity == 9 and rank == 1
-		return tdAuraBuff9_1
-	if identity == 9 and rank == 2
-		return tdAuraBuff9_2
-	if identity == 9 and rank == 3
-		return tdAuraBuff9_3
-	if identity == 9 and rank == 4
-		return tdAuraBuff9_4
 	if identity == 10 and rank == 1
 		return tdAuraBuff10_1
 	if identity == 10 and rank == 2
@@ -119,6 +97,8 @@ public function tdAuraBuff(int identity, int rank) returns buffTuple
 		return tdAuraBuff13_3
 	if identity == 13 and rank == 4
 		return tdAuraBuff13_4
+	if identity == 14 and rank == 1
+		return tdAuraBuff14_1
 	return buffTuple(0, 0)
 
 public constant int TD_AURA_WHITE_TIGER_NORMAL_CARRIER = compiletime(ABIL_ID_GEN.next())

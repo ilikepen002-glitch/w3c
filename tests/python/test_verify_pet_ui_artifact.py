@@ -58,7 +58,7 @@ class PetUIArtifactTests(unittest.TestCase):
     def test_actual_thirteen_displays_have_species_quality_identity(self):
         verifier.verify_manager_units(self.units)
 
-    def test_actual_all_516_slots_distinguish_bright_locked_and_empty(self):
+    def test_actual_exact_legal_slots_distinguish_bright_locked_empty_and_quality_levels(self):
         verifier.verify_slot_icons(self.abilities, current_manager=True)
 
     def test_actual_imports_decode_and_match_source_hashes(self):

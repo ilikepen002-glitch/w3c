@@ -425,6 +425,24 @@ def _pet_rule_functions(script):
 
 def verify_skill_allowed(script):
     """Enumerate 2,176 compiled skill/slot/active/used-mask combinations."""
+    if re.search(r'^function tdPetSkillDefined takes', script, re.M):
+        from VerifyActiveCooldownContract import ActiveJassRuntime
+        r = ActiveJassRuntime(script)
+        n = phase_one_catalog(); count = n['TD_PET_SKILL_COUNT']
+        for skill, slot, duplicate, has_active in itertools.product(range(-1, count + 2), range(-1, 5), (False, True), (False, True)):
+            require(r.invoke('tdPetSkillDefined', skill) is n['tdPetSkillDefined'](skill), 'Compiled/source defined skill identity mismatch')
+            require(r.invoke('tdPetSkillIsNumeric', skill) is n['tdPetSkillIsNumeric'](skill), 'Compiled/source numeric classification mismatch')
+            require(r.invoke('tdPetSkillIsActive', skill) is n['tdPetSkillIsActive'](skill), 'Compiled/source active classification mismatch')
+            require(r.invoke('tdPetSkillIsUniversal', skill) is n['tdPetSkillIsUniversal'](skill), 'Compiled/source universal classification mismatch')
+            expected = n['tdPetSkillAllowed'](skill, slot, duplicate, has_active)
+            require(r.invoke('tdPetSkillAllowed', skill, slot, duplicate, has_active) is expected, f'Pet skill allowed skill={skill} slot={slot} duplicate={duplicate} active={has_active}')
+        for skill in (0, 16, 31, 32, 40, 127, 255):
+            for position in range(4):
+                values = [skill + 1, skill + 2, skill + 3, skill + 4]
+                require(r.invoke('tdPetSkillOwned', skill, *values) is False, 'Full-integer nonduplicate identity truncation')
+                values[position] = skill
+                require(r.invoke('tdPetSkillOwned', skill, *values) is True, 'Full-integer duplicate identity/owned-slot truncation')
+        return
     helper, functions = jass_function(script, 'tdPetSkillAllowed'), _pet_rule_functions(script)
     for skill, slot, has_active, mask in itertools.product(
             range(16), range(4), (False, True), [0] + [1 << index for index in range(16)]):
@@ -499,7 +517,70 @@ def verify_species_identity(units):
                 f'{uid}: collection command attachment/order changed')
 
 
+def is_phase_one_ui(abilities):
+    fields = abilities.get('s000', (None, {}))[1]
+    levels = [value for (key, level, _), (_, value) in fields.items() if key == 'alev' and level == 0]
+    require(len(levels) <= 1, 'Ambiguous skill display level count')
+    return levels == [4]
+
+
+def phase_one_catalog():
+    """Current production IDs/names/icons; never expose future unimplemented skills."""
+    from VerifyPetManagerSource import scalar_helpers, compile_source_helper, source
+    n = scalar_helpers()
+    compile_source_helper(source('TDPetUIData'), 'tdPetSkillIconName', n, 1)
+    from VerifyActiveCooldownContract import SourceScalarEvaluator, read_sources, definitions
+    active_ids = {d.petSkillId for d in definitions(SourceScalarEvaluator(read_sources())) if d.petSkillId >= 0}
+    n['tdPetSkillIsActive'] = lambda skill: skill in active_ids
+    compile_source_helper(source('TDPetRules'), 'tdPetSkillIsUniversal', n, 1)
+    compile_source_helper(source('TDPetRules'), 'tdPetSkillAllowed', n, 4)
+    return n
+
+
+def verify_phase_one_slots(abilities):
+    n = phase_one_catalog()
+    count, empty = n['TD_PET_SKILL_COUNT'], n['TD_PET_SLOT_EMPTY']
+    expected = set()
+    for slot in range(4):
+        for variant in range(empty + 1):
+            is_empty = variant == empty
+            skill, locked = variant % count, variant >= count and not is_empty
+            if not is_empty and (not n['tdPetSkillAllowed'](skill, slot, False, False) or (locked and slot < 2)):
+                continue
+            rawcode = f's{slot}{variant:02X}'; expected.add(rawcode)
+            require(rawcode in abilities, 'Missing legal skill display ' + rawcode)
+            parent, fields = abilities[rawcode]
+            require(parent == 'AOcr', rawcode + ': passive display parent')
+            require(field_value(fields, 'alev') == (1 if is_empty else 4), rawcode + ': quality must live in levels')
+            require(not any(key == 'Ncl6' for key, _, _ in fields), rawcode + ': display consumed Channel order')
+            require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (slot, 1), rawcode + ': fixed slot position')
+            for field in ('aher', 'aite', 'achd'):
+                require(field_value(fields, field) == 0, rawcode + ': unsafe display flag ' + field)
+            require(field_value(fields, 'areq') == '', rawcode + ': unexpected requirements')
+            icon = icon_path('TDPetEmptySlot') if is_empty else (DISABLED_PREFIX if locked else NORMAL_PREFIX) + n['tdPetSkillIconName'](skill) + '.blp'
+            require(field_value(fields, 'aart') == icon, rawcode + ': bright/locked/empty icon mismatch')
+            require(field_value(fields, 'anam') == ('空栏' if is_empty else n['tdPetSkillNameById'](skill)), rawcode + ': skill identity name')
+            for quality in range(1, 2 if is_empty else 5):
+                require(field_value(fields, 'Ocr1', quality) == 0.0 and field_value(fields, 'Ocr2', quality) == 1.0, rawcode + ': accidental combat effect')
+                label = '空栏' if is_empty else QUALITY_NAMES[quality - 1] + ' ' + n['tdPetSkillNameById'](skill) + (' [共鸣锁定]' if locked else '')
+                require(field_value(fields, 'atp1', quality) == label, rawcode + ': quality/identity tooltip')
+                description = field_value(fields, 'aub1', quality)
+                if is_empty:
+                    require('新增' in description and '1开栏石' in description and '最多4栏' in description and '共鸣锁定' not in description, rawcode + ': empty slot rules')
+                elif locked:
+                    bright = abilities[f's{slot}{skill:02X}'][1]
+                    prefix = f'技能已获得；共鸣锁定，完成本路第{4 if slot == 2 else 8}波解锁。|n'
+                    require(description == prefix + field_value(bright, 'aub1', quality), rawcode + ': locked strength/description')
+                else:
+                    require('共鸣锁定' not in description + label, rawcode + ': bright mislabeled locked')
+    actual = {raw for raw in abilities if re.fullmatch(r's[0-3][0-9A-F]{2}', raw)}
+    require(actual == expected, 'Illegal, retired or missing slot objects: ' + repr(actual ^ expected))
+    return len(expected)
+
+
 def verify_slot_icons(abilities, current_manager=False):
+    if is_phase_one_ui(abilities):
+        return verify_phase_one_slots(abilities)
     for slot in range(4):
         for variant in range(129):
             rawcode = f's{slot}{variant:02X}'
@@ -770,8 +851,35 @@ def verify_manager_list(abilities):
     require(not any(re.fullmatch(r'Pl[0-9A-F]{2}', raw) for raw in abilities), 'Retired Pl list objects remain')
 
 
+def verify_phase_one_preview(abilities):
+    n = phase_one_catalog(); count = n['TD_PET_SKILL_COUNT']; expected = set()
+    for position, skill in itertools.product(range(2), range(count)):
+        if not n['tdPetSkillDefined'](skill):
+            continue
+        rawcode = f'Ps{position * count + skill:02X}'; expected.add(rawcode)
+        require(rawcode in abilities, 'Missing implemented preview ' + rawcode)
+        parent, fields = abilities[rawcode]
+        require(parent == 'AOcr' and field_value(fields, 'alev') == 4, rawcode + ': comparison quality levels')
+        require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (0 if position == 0 else 3, 0), rawcode + ': comparison position')
+        require(field_value(fields, 'aart') == NORMAL_PREFIX + n['tdPetSkillIconName'](skill) + '.blp', rawcode + ': comparison icon')
+        require(not any(key == 'Ncl6' for key, _, _ in fields), rawcode + ': comparison Channel order')
+        for field in ('aher', 'aite', 'achd'):
+            require(field_value(fields, field) == 0, rawcode + ': unsafe comparison flag')
+        require(field_value(fields, 'areq') == '', rawcode + ': comparison requirements')
+        for quality in range(1, 5):
+            label = ('旧：' if position == 0 else '新：') + QUALITY_NAMES[quality - 1] + ' ' + n['tdPetSkillNameById'](skill)
+            require(field_value(fields, 'atp1', quality) == label, rawcode + ': preview identity')
+            require(field_value(fields, 'Ocr1', quality) == 0.0 and field_value(fields, 'Ocr2', quality) == 1.0, rawcode + ': preview combat effect')
+    require({raw for raw in abilities if re.fullmatch(r'Ps[0-9A-F]{2}', raw)} == expected, 'Preview must expose exactly implemented definitions')
+
+
 def verify_manager_preview(abilities):
+    phase_one = is_phase_one_ui(abilities)
+    if phase_one:
+        verify_phase_one_preview(abilities)
     for position, skill in itertools.product(range(2), range(16)):
+        if phase_one:
+            continue
         rawcode = f'Ps{position * 16 + skill:02X}'
         require(rawcode in abilities, f'Missing comparison passive {rawcode}')
         parent, fields = abilities[rawcode]
@@ -792,7 +900,7 @@ def verify_manager_preview(abilities):
                     f'{rawcode}: comparison must have zero combat effect')
             description = field_value(fields, 'aub1', quality)
             require('摘要' not in description, f'{rawcode}: comparison must not depend on screen notes')
-    require(len([raw for raw in abilities if re.fullmatch(r'Ps[0-9A-F]{2}', raw)]) == 32,
+    require(phase_one or len([raw for raw in abilities if re.fullmatch(r'Ps[0-9A-F]{2}', raw)]) == 32,
             'Expected exactly 32 comparison passives')
     for position in range(2):
         rawcode = f'Pa{position:02X}'
@@ -914,7 +1022,7 @@ def verify_manager_objects(abilities, units):
     verify_manager_list(abilities)
     verify_manager_preview(abilities)
     verify_manager_units(units)
-    # Reuse the 516-slot combat-neutrality contract with the current lock wording.
+    # Require exact legal slots and all qualities; preserve frozen predecessor support.
     verify_slot_icons(abilities, current_manager=True)
     require(not set(abilities) & {raw for raw in units if raw.startswith('pd')},
             'Manager ability and unit rawcodes collide')
@@ -962,7 +1070,8 @@ def main():
     verify_lane_enemy_guards(script)
     verify_imported_icons(artifact)
     require(not artifact.has(r'Units\CommandFunc.txt'), 'Global CommandFunc override is forbidden')
-    print(f'PASS PET MANAGER: {farmer}; 20 fixed slots/two pages; 513 Channels + 550 passives; '
+    passives = 114 if is_phase_one_ui(abilities) else 550
+    print(f'PASS PET MANAGER: {farmer}; 20 fixed slots/two pages; 513 Channels + {passives} passives; '
           '13 runtime-mounted display prototypes; all page cells/hotkeys/targets; '
           'native synchronized session bridge; 156 packaged BTN/DIS assets match source.')
     print('NOT TESTED: live rendering/selection/queued network events, actual placement, performance or skill effects.')

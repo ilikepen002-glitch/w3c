@@ -11,8 +11,8 @@ public class TDAuraTarget
 	boolean tower
 	TDAuraAggregate effective = new TDAuraAggregate()
 	LinkedList<TDAuraTimedContribution> timed = new LinkedList<TDAuraTimedContribution>()
-	boolean array[14] pendingApplications
-	int array[14] shownRanks
+	boolean array[15] pendingApplications
+	int array[15] shownRanks
 	construct(unit target, boolean tower)
 		this.target = target
 		this.tower = tower

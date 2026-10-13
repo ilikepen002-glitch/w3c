@@ -1,0 +1,93 @@
+package TDPetAttackTests
+import TDPetData
+import TDPetRules
+import TDPetState
+import TDPetAttackRules
+import TDPetAttackQueue
+
+@Test function phaseOneRetainsLegacySlotsAndOnlyImplementedDefinitions()
+	tdPetSkillDefined(4).assertFalse()
+	tdPetSkillAllowed(0, 0, false, false).assertTrue()
+	tdPetSkillAllowed(TD_PET_SKILL_RESOLVE, 0, false, false).assertFalse()
+	for skill = 5 to TD_PET_SKILL_COUNT - 1
+		tdPetSkillAllowed(skill, 2, false, false).assertTrue()
+		tdPetSkillAllowed(skill, 3, true, false).assertFalse()
+	tdPetSkillAllowed(13, 1, false, false).assertTrue()
+	tdPetSkillAllowed(14, 2, false, true).assertFalse()
+	tdPetSkillAllowed(9, 1, false, false).assertFalse()
+	tdPetSkillAllowed(10, 2, false, false).assertTrue()
+
+@Test function ownedIdentityUsesFullIntegersAndIncludesLockedSlots()
+	tdPetSkillOwned(32, 1, 16, 32, 40).assertTrue()
+	tdPetSkillOwned(40, 1, 16, 32, 40).assertTrue()
+	tdPetSkillOwned(0, 32, 33, 34, 35).assertFalse()
+	let pet = new TDPet(0, 1, 1)
+	pet.setSkill(0, 0, 1)
+	pet.setSkill(1, TD_PET_SKILL_COMBO, 1)
+	pet.setSkill(2, TD_PET_SKILL_RESOLVE, 2)
+	pet.setSkill(3, TD_PET_SKILL_HEAVY, 4)
+	pet.level = 1
+	pet.ownsSkillExcept(TD_PET_SKILL_HEAVY, 1).assertTrue()
+	pet.skillAllowed(TD_PET_SKILL_HEAVY, 1).assertFalse()
+	let revision = pet.revision
+	pet.setSkill(1, 32, 1)
+	pet.setSkill(4, 6, 1)
+	pet.setSkill(1, 6, 0)
+	pet.revision.assertEquals(revision)
+	pet.quality().assertEquals(4)
+	destroy pet
+
+@Test function attackPassiveBoundariesUsePreHitLifeAndBoundedCounters()
+	tdPetPursuitEligible(30.0, 100.0).assertTrue()
+	tdPetPursuitEligible(30.001, 100.0).assertFalse()
+	tdPetHeavyEligible(65.0, 100.0).assertFalse()
+	tdPetHeavyEligible(65.001, 100.0).assertTrue()
+	tdPetPursuitEligible(0.0, 0.0).assertFalse()
+	var charge = 0
+	var resolve = 0
+	for hit = 1 to 10
+		charge = tdPetNextAttackCount(charge, 4)
+		resolve = tdPetNextAttackCount(resolve, 5)
+		(charge == 0).assertEquals(hit == 4 or hit == 8)
+		(resolve == 0).assertEquals(hit == 5 or hit == 10)
+
+@Test function reduceStacksExpireAtExactDeadlineAndCapFifthHit()
+	var stacks = 0
+	for hit = 1 to 6
+		stacks = tdPetReduceStacks(stacks, 3.0, 0.0)
+		stacks.assertEquals(IMinBJ(5, hit))
+	tdPetReduceStacks(5, 3.0, 3.0).assertEquals(1)
+	for quality = 1 to 4
+		tdPetReduceDuration(quality).assertEquals(1.0 + 0.5 * quality)
+
+@Test function resolveExcludesBothActualNativeCriticalAbilities()
+	tdPetResolveFitsAbilities(false, false).assertTrue()
+	tdPetResolveFitsAbilities(true, false).assertFalse()
+	tdPetResolveFitsAbilities(false, true).assertFalse()
+	tdPetResolveFitsAbilities(true, true).assertFalse()
+	((tdPetSkillPower(TD_PET_SKILL_RESOLVE, 4) - 2.1).abs() < 0.000001).assertTrue()
+
+@Test function invalidationResetsBothCountersPreservesReadyAtAndRevokesOldSerial()
+	let pet = new TDPet(0, 1, 1)
+	pet.readyAt = 91.0
+	pet.rotation = 3
+	pet.resolveRotation = 4
+	pet.pendingSkill = true
+	pet.pendingSerial = 12
+	pet.invalidateCombat()
+	pet.rotation.assertEquals(0)
+	pet.resolveRotation.assertEquals(0)
+	pet.pendingSerial.assertEquals(13)
+	pet.pendingSkill.assertFalse()
+	pet.readyAt.assertEquals(91.0)
+	destroy pet
+
+@Test function originalPhaseFencePairsEveryCapturedHitWithoutPetOrTargetLookup()
+	let before = tdPetPendingOriginal
+	tdPetBeginOriginalPhase()
+	tdPetBeginOriginalPhase()
+	tdPetPendingOriginal.assertEquals(before + 2)
+	tdPetEndOriginalPhase()
+	tdPetPendingOriginal.assertEquals(before + 1)
+	tdPetEndOriginalPhase()
+	tdPetPendingOriginal.assertEquals(before)

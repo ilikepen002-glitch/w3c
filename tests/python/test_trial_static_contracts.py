@@ -221,9 +221,13 @@ class TrialStaticContracts(unittest.TestCase):
         self.assertEqual(items['iP02'].secondary_value, .25)
         equipment_bound = native_bound * (items['iB02'].secondary_value + items['iP02'].secondary_value) * 4
         corpse_poison_bound = native_bound * .5 * 4
-        pet_bound = native_bound * 1.7 * 4
+        from VerifyActiveCooldownContract import SourceScalarEvaluator, read_sources
+        pet_rules = SourceScalarEvaluator(read_sources())
+        pet_bound = max(native_bound * pet_rules.call('tdPetSkillPower', [17, 4]), native_bound * 4.)
+        actual_bound = pet_rules.call('tdEquipmentTrialMaxSegment', [])
         self.assertAlmostEqual(native_bound, 22016.0)
-        self.assertAlmostEqual(pet_bound, 149708.8)
+        self.assertAlmostEqual(pet_bound, 88064.0)
+        self.assertAlmostEqual(actual_bound, 105676.8)
         self.assertLess(max(native_bound, split_bound, equipment_bound, corpse_poison_bound, pet_bound), 150000)
         self.assertEqual(150000, 1000000 * .15)
         self.assertIn("tdEquipmentTrialNativeEnvelope()", text("wurst/items/TDEquipmentTrialRules.wurst"))
