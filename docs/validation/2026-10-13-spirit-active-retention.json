@@ -1,0 +1,239 @@
+{
+  "status": "PASS",
+  "scope": "Bounded all-22 spirit visual retention with separately approved wild Walk/reference-size fields; not a native playtest.",
+  "mapSHA256": "ac7ead49c2ae4e73b8d093cda777e5dceebaa76e732561acf94736a968d875d5",
+  "baselineSHA256": "840e724240f00ca22f43a29fd03ce8ef954bb26be59138918647e645451bc1d6",
+  "baselineFormalCommit": "c597eaa8a5089d9eed8fd7d186ac07d3e89f8d2e",
+  "productionSourceCommit": "7aecf3be5e6be13c9608d941c7a03ad426020528",
+  "productionSourceTree": "1cc5853b86fb4a00b13e64409d5ac2897fabca84",
+  "splitSuitesAggregated": true,
+  "completeRetentionContract": true,
+  "suiteReports": [
+    {
+      "report": "spirit-active-retention-lifecycle-20261013.json",
+      "reportSHA256": "c8ef7e7770d24ef03f1991eb99664b2901845b818c098403c606eb7f95a857fd",
+      "mapSHA256": "ac7ead49c2ae4e73b8d093cda777e5dceebaa76e732561acf94736a968d875d5",
+      "packedJassSHA256": "4621cd4d955afcf9885c0d58b641bc4ceb82ebf199f9337878803d3a0a0adff7",
+      "gateSHA256RecordedAtRun": null,
+      "groups": [
+        "lifetimes"
+      ],
+      "provenanceNote": "Original PASS report predates gate-hash emission. Its measured gate hash was not recorded and is not retroactively invented."
+    },
+    {
+      "report": "spirit-active-retention-admission-20261013.json",
+      "reportSHA256": "df495b43f51a51934c87ebd849c9dee7d77b10bf043ee0a3b2544014c3d454d2",
+      "mapSHA256": "ac7ead49c2ae4e73b8d093cda777e5dceebaa76e732561acf94736a968d875d5",
+      "packedJassSHA256": "4621cd4d955afcf9885c0d58b641bc4ceb82ebf199f9337878803d3a0a0adff7",
+      "gateSHA256RecordedAtRun": null,
+      "groups": [
+        "coreAdmission",
+        "buffAdmission",
+        "caps"
+      ],
+      "provenanceNote": "Original PASS report predates gate-hash emission. Its measured gate hash was not recorded and is not retroactively invented."
+    },
+    {
+      "report": "spirit-active-retention-aborts-20261013.json",
+      "reportSHA256": "ee1e16d5e201b15b71877184799aee4ce539b38c125f5d1f0d0ac594a64d265f",
+      "mapSHA256": "ac7ead49c2ae4e73b8d093cda777e5dceebaa76e732561acf94736a968d875d5",
+      "packedJassSHA256": "4621cd4d955afcf9885c0d58b641bc4ceb82ebf199f9337878803d3a0a0adff7",
+      "gateSHA256RecordedAtRun": "f4b74129ca8a7a510f83a86644c5578eeef9e0157eb2dc3bf5dd704aeef2caf4",
+      "groups": [
+        "aborts",
+        "deliveredTargetDeath"
+      ]
+    },
+    {
+      "report": "spirit-active-retention-lifecycle-only-20261013.json",
+      "reportSHA256": "05e5f0d40e224b8bdf96e71ae70179d8e59c71559c37698a1b7110420c9b451f",
+      "mapSHA256": "ac7ead49c2ae4e73b8d093cda777e5dceebaa76e732561acf94736a968d875d5",
+      "packedJassSHA256": "4621cd4d955afcf9885c0d58b641bc4ceb82ebf199f9337878803d3a0a0adff7",
+      "gateSHA256RecordedAtRun": "f4b74129ca8a7a510f83a86644c5578eeef9e0157eb2dc3bf5dd704aeef2caf4",
+      "groups": [
+        "explicitCleanup",
+        "passiveCleanup",
+        "ownerReuse",
+        "serialExhaustion",
+        "partialTransfer",
+        "onStackCleanup",
+        "overlapStress"
+      ]
+    },
+    {
+      "report": "spirit-active-retention-mutations-20261013.json",
+      "reportSHA256": "13a1653fe014a0fecd59ffa63136fa10007d5c98eff8521a949e19c6130999ee",
+      "mapSHA256": "ac7ead49c2ae4e73b8d093cda777e5dceebaa76e732561acf94736a968d875d5",
+      "packedJassSHA256": "4621cd4d955afcf9885c0d58b641bc4ceb82ebf199f9337878803d3a0a0adff7",
+      "gateSHA256RecordedAtRun": "f4b74129ca8a7a510f83a86644c5578eeef9e0157eb2dc3bf5dd704aeef2caf4",
+      "groups": [
+        "compiledMutations"
+      ]
+    }
+  ],
+  "coverage": {
+    "all22TraceEquivalence": {
+      "skills": [
+        11,
+        12,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "quotaModes": [
+        "normal",
+        "null",
+        "global-full",
+        "moving-live",
+        "moving-rate",
+        "one-live",
+        "one-rate"
+      ],
+      "cases": 154,
+      "baselineFullTraces": 22,
+      "orderedDamageControlRNGAndGameplayStateCompared": true
+    },
+    "terminalLifetimes": 16,
+    "aborts": 52,
+    "deliveredTargetDeath": 2,
+    "explicitCleanup": 10,
+    "passiveCleanup": 20,
+    "ownerReuse": 2,
+    "serialExhaustion": 4,
+    "partialTransfer": {
+      "accepted": 1,
+      "failedImmediate": 2,
+      "oneOwnerPerHandle": true
+    },
+    "onStackCleanup": 1,
+    "overlapStress": {
+      "callbackOrders": 2,
+      "legalSourcesPerOrder": 40,
+      "newAttacksDuringDwellPerOrder": 4,
+      "singleVisualTimerMax": 1,
+      "FxPoolAfter": 48
+    },
+    "coreAdmission": 22,
+    "directBuffAdmission": 12,
+    "buffGlobalCap": 40,
+    "buffOnePerSource": true,
+    "packedMutationsRejected": 15,
+    "sourceTerminalCases": 2304,
+    "sourceMutationsRejected": 5,
+    "elementalSkills": 20,
+    "wildObjectFieldComparisons": 480,
+    "wildAllowedFields": [
+      "usca",
+      "uwal",
+      "urun"
+    ],
+    "wildScale": 2.55,
+    "wildWalkRunReference": 50.0,
+    "BossObjectsAndOtherFieldsIdentical": true,
+    "modelTexturePairsIdentical": 15,
+    "lockedVfxImportsIdentical": 4,
+    "lockedVfxRawBytes": 157068
+  },
+  "reusedEarlyGateCodeProof": {
+    "archivedCommit": "7aecf3be5e6be13c9608d941c7a03ad426020528",
+    "archivedGateSHA256ComputedNow": "a0b64eb6a5e82e5e780c274c448cc6b18cb4853b68d04778e319ca1d01cfb29e",
+    "currentGateSHA256": "f4b74129ca8a7a510f83a86644c5578eeef9e0157eb2dc3bf5dd704aeef2caf4",
+    "unchangedOracleFunctions": [
+      "verify_lifetimes",
+      "verify_core_admission",
+      "verify_buff_admission",
+      "verify_caps",
+      "verify_partial_transfer",
+      "packed_contract"
+    ],
+    "note": "Computed archived source hash documents immutable source identity; it is not asserted as a hash measured by the early execution."
+  },
+  "authorizedChecksBuild": [
+    {
+      "manifest": "_build/linux-j3a8f8ev/manifest.json",
+      "manifestSHA256": "7db54c6954a88cdc67e8e822fd1138d957f0d2982c9c6136c14810197f9110ca",
+      "mode": "checks",
+      "status": "PASS",
+      "snapshotParentCommit": "d45c623479c145befaba4ad57e48daecfec7b0bd",
+      "currentProductionAndTestsByteEqualToSnapshot": true,
+      "artifactSHA256": null
+    },
+    {
+      "manifest": "_build/linux-l0f9wc2_/manifest.json",
+      "manifestSHA256": "18750cdac7a7c3794f52f39c590aefb7d448fc6d1d5af109ddcfa61a2927b59f",
+      "mode": "build",
+      "status": "PASS",
+      "snapshotParentCommit": "d45c623479c145befaba4ad57e48daecfec7b0bd",
+      "currentProductionAndTestsByteEqualToSnapshot": true,
+      "artifactSHA256": "ac7ead49c2ae4e73b8d093cda777e5dceebaa76e732561acf94736a968d875d5"
+    }
+  ],
+  "additionalEvidence": {
+    "all22": {
+      "report": "spirit-active-retention-all22-20261013.json",
+      "reportSHA256": "4341f2bbafcb3a19583c5dbf72599efcc66262ac0cd667b24e2ff991e035516d"
+    },
+    "elemental-vfx": {
+      "report": "spirit-active-retention-elemental-vfx-20261013.json",
+      "reportSHA256": "c74125a2c699b9121e1f9e36d1e7696803ae4c46ecdd0cabfc4ff6ad3ad25ab0"
+    },
+    "walk": {
+      "report": "spirit-active-retention-walk-20261013.json",
+      "reportSHA256": "f8c0525c2034832423a4315e185cc3643e08c968b36238c459aaa326e947e599"
+    },
+    "assets": {
+      "report": "spirit-active-retention-assets-20261013.json",
+      "reportSHA256": "2a54f241d59dbbde519808054c17a1c281cb8093df97d2bd76db5db4a92f89e6"
+    },
+    "final-source": {
+      "report": "spirit-active-retention-final-source-20261013.json",
+      "reportSHA256": "f3f93a2f375d14a3f67b0fe02817fdce479dbcfb9048e79af7af2cdc93918d0a"
+    },
+    "final-elemental-source": {
+      "report": "spirit-active-retention-final-elemental-source-20261013.json",
+      "reportSHA256": "f7540f35eced5aca3dcc47ecd6360c14be214be93d44264f77931bfe107089a3"
+    },
+    "target-loss-diagnostic": {
+      "report": "spirit-active-retention-target-loss-diagnostic-20261013.json",
+      "reportSHA256": "1218d750772f0bfaf63309c4175ba2807a1959eaddd7a318ee6c8a5a253682aa"
+    }
+  },
+  "limits": {
+    "sharedLive": 128,
+    "creationsPerIntegerSecond": 120,
+    "movingLive": 8,
+    "movingCreationsPerIntegerSecond": 8,
+    "movingPerCast": 2,
+    "localVisualsPerCast": 8,
+    "terminalPointDwell": 0.25,
+    "expiryQuantum": 0.05,
+    "maximumDeliveredPointDestructionDelay": 0.3,
+    "newTimers": 0,
+    "gameplayTimingChanged": false
+  },
+  "boundariesAndResidualNotes": [
+    "Native Warcraft rendering, attachment placement, particle Death tails, Walk cadence and FPS were not tested.",
+    "Retained admitted art keeps existing quota occupancy during its bounded tail, so later optional visuals may be denied under saturation.",
+    "Skill 11 keeps its existing BloodLustTarget model; unverified Berserker art was not introduced.",
+    "Combined build changes wild unit scale and animation reference fields; VFX JASS differs as separately source-fenced and checked by all-22 traces.",
+    "Five split retention reports cover one exact map; completeGate false in individual --only reports is intentional and aggregation does not mean any omitted group passed.",
+    "This package does not contain the successor 65% capture or high-platform repair. Root will integrate both before publication as instructed."
+  ]
+}

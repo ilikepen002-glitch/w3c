@@ -45,3 +45,22 @@ import TDPetActiveVisualData
 @Test function roadMeshFacingUsesCapturedSegmentOrImmutableCastDirection()
 	tdPetVisualRoadFacing(vec2(0.0, 0.0), vec2(100.0, 0.0), vec2(0.0, 1.0)).radians.assertEquals(0.0)
 	tdPetVisualRoadFacing(vec2(100.0, 0.0), vec2(100.0, 0.0), vec2(1.0, 0.0)).radians.assertEquals(0.0)
+
+@Test function terminalVisualDwellIsExactlyOneQuarterSecond()
+	TD_PET_VISUAL_TERMINAL_DWELL.assertEquals(0.25)
+
+@Test function terminalVisualRetentionRequiresDeliveredWhitelistedStage()
+	for skill = 19 to 38
+		for stage = 0 to 6
+			let expected = ((skill == 21 or skill == 22 or skill == 31 or skill == 33 or skill == 38) and stage == 4) or (skill == 24 and stage == 6) or (skill == 34 and stage == 3) or (skill == 30 and stage > 0)
+			tdPetVisualTerminal(skill, stage, 3, 4.0, 4.0, 4.0).assertEquals(expected)
+	for skill = 21 to 33
+		if skill == 21 or skill == 22 or skill == 31 or skill == 33
+			tdPetVisualTerminal(skill, 3, 0, 4.0, 4.0, 4.0).assertFalse()
+	tdPetVisualTerminal(34, 0, 0, 4.0, 4.0, 4.0).assertFalse()
+	tdPetVisualTerminal(34, 2, 3, 4.0, 4.0, 4.0).assertFalse()
+	tdPetVisualTerminal(30, 17, 0, 4.0, 4.0, 3.5).assertFalse()
+	tdPetVisualTerminal(30, 17, 0, 3.9, 4.0, 3.9).assertFalse()
+	tdPetVisualTerminal(38, 4, 0, 0.59, 0.60, 0.60).assertFalse()
+	tdPetVisualTerminal(11, 4, 0, 6.0, 6.0, 6.0).assertFalse()
+	tdPetVisualTerminal(12, 4, 0, 6.0, 6.0, 6.0).assertFalse()

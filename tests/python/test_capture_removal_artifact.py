@@ -194,6 +194,22 @@ class CaptureRemovalConditionTests(unittest.TestCase):
     def test_scalar_gate_checks_complete_rule_matrices(self):
         removal.verify_spend_and_attempt(SCALAR_SCRIPT)
 
+    def test_current_generation_or_storage_refund_shape_is_exact(self):
+        current = SCALAR_SCRIPT.replace('if not tdPetStore(lane_2, pet) then',
+                                       'if ( not generated) or ( not tdPetStore(lane_2, pet)) then')
+        removal.verify_spend_and_attempt(current)
+        for old, new in [('or ( not tdPetStore', 'and ( not tdPetStore'),
+                         ('call tdPetAddBall(lane_2)', '// no refund')]:
+            with self.assertRaisesRegex(ValueError, 'refund and synchronize'):
+                removal.verify_spend_and_attempt(current.replace(old, new))
+
+    def test_current_sixty_five_profile_and_adjacent_threshold_rejection(self):
+        current = SCALAR_SCRIPT.replace('GetRandomInt(1, 100) > 60', 'GetRandomInt(1, 100) > 65')
+        removal.verify_spend_and_attempt(current, capacity=20, capture_percent=65)
+        for threshold in (60, 64, 66):
+            with self.subTest(threshold=threshold), self.assertRaisesRegex(ValueError, '65-percent roll'):
+                removal.verify_spend_and_attempt(current.replace('> 65', f'> {threshold}'), capacity=20, capture_percent=65)
+
     def test_rejects_spend_tutorial_roll_and_refund_regressions(self):
         for old, new, reason in [
                 ('>= TDPetData_TD_PET_COLLECTION_LIMIT', '> TDPetData_TD_PET_COLLECTION_LIMIT', 'spend precondition/charge'),
@@ -223,7 +239,7 @@ class CaptureRemovalSourceTests(unittest.TestCase):
     def test_capture_and_inherited_deploy_protections_remain(self):
         runtime = (ROOT / 'wurst/pets/TDPetRuntime.wurst').read_text()
         self.assertIn('let guaranteed = wild.tutorial and not tdPetTutorialUsed[lane]', runtime)
-        self.assertIn('if not guaranteed and GetRandomInt(1, 100) > 60', runtime)
+        self.assertIn('if not guaranteed and GetRandomInt(1, 100) > 65', runtime)
         self.assertIn('tdPetAddBall(lane)', runtime)
         self.assertNotIn('TD_PET_DEPLOY_LIMIT', runtime)
         objects = (ROOT / 'wurst/pets/TDPetObjectGen.wurst').read_text()

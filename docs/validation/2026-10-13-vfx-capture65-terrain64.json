@@ -1,0 +1,96 @@
+{
+  "status": "PASS",
+  "frozen_source_commit": "61dd228288ad455de24dd6bced734dfd4e75233c",
+  "map_sha256": "335fe6774fd9bff432b8c7e412f0cbbb91953ba9cc2aec1047dd1afb01f8041f",
+  "map_bytes": 5863657,
+  "checks_manifest": "_build/linux-ff3y9rt0/manifest.json",
+  "build_manifest": "_build/linux-5girpv_d/manifest.json",
+  "frozen_inputs_identical": true,
+  "terrain64": {
+    "map_sha256": "335fe6774fd9bff432b8c7e412f0cbbb91953ba9cc2aec1047dd1afb01f8041f",
+    "base_tower_prices_actual_object_and_jass": 500,
+    "actual_jass_terrain64_boundaries": "PASS",
+    "approved_ten_centers": "PASS",
+    "natural_relief_54_75": "PASS",
+    "excessive_relief_70_75_rejected": "PASS",
+    "road_cliff_exit_other_quadrants_overlap_rejected": "PASS",
+    "cleared_only_derived_unbuildable_cells": 2340,
+    "vs_65_baseline_objects_identical": true,
+    "capture_body_identical_to_65": true,
+    "preserved_vfx_model_texture_audio_members": 456
+  },
+  "capture65": {
+    "base": "/workspace/scratch/2106c0ab1fac/spirit-active-retention-20261013/ExampleMap.w3x",
+    "map_sha256": "335fe6774fd9bff432b8c7e412f0cbbb91953ba9cc2aec1047dd1afb01f8041f",
+    "map_bytes": 5863657,
+    "capture": {
+      "status": "PASS",
+      "actual_lane_identifier": "lane_3",
+      "typed_lane_view": "lane_2",
+      "actual_compiled_cases": "120 spend eligibility/charge cases; tutorial guarantee/used flags; 200 ordinary65% roll cases; explicit one refund + sync after failed store",
+      "scope": "Actual current capture bodies, no gameplay values/control-flow normalization"
+    },
+    "actual_rng_cases": 200,
+    "boundaries": {
+      "1": "success",
+      "65": "success",
+      "66": "failure",
+      "100": "failure"
+    },
+    "changed_capture_tooltip_levels": 61,
+    "all_unit_item_other_ability_numeric_fields_identical": true,
+    "preserved_asset_members": 456,
+    "compiled_capture_only_threshold_changed": true
+  },
+  "walk": {
+    "status": "PASS",
+    "wildObjects": 480,
+    "allowedWildFields": [
+      "usca",
+      "uwal",
+      "urun"
+    ],
+    "scale": 2.55,
+    "walkReference": 50.0,
+    "runReference": 50.0,
+    "scaleReferenceProduct": 127.5,
+    "otherObjectsAndFieldsIdentical": true,
+    "bossObjectsIdentical": true,
+    "modelTexturePairsIdentical": 15,
+    "runtimeByteIdentical": false,
+    "combinedRuntimeExplicitlyPermitted": true,
+    "mapSHA256": "335fe6774fd9bff432b8c7e412f0cbbb91953ba9cc2aec1047dd1afb01f8041f",
+    "baselineSHA256": "840e724240f00ca22f43a29fd03ce8ef954bb26be59138918647e645451bc1d6",
+    "boundary": "Packed objects/import bytes only; VFX runtime difference needs its separate source/22-active gates. No native Walk cadence/rendering assertion."
+  },
+  "vfx_inheritance": {
+    "status": "PASS",
+    "reviewed_vfx_map_sha256": "ac7ead49c2ae4e73b8d093cda777e5dceebaa76e732561acf94736a968d875d5",
+    "candidate_sha256": "335fe6774fd9bff432b8c7e412f0cbbb91953ba9cc2aec1047dd1afb01f8041f",
+    "canonicalization": "Debug source line numbers and declared compiler temp names only",
+    "changed_functions": [
+      "init_TDTowerTerrainMask",
+      "tdBuildPlotIsFlat",
+      "tdPetHandleCapture",
+      "tdTerrainCellMaxHeight",
+      "tdTerrainCellMinHeight",
+      "tdTerrainMaskRow",
+      "tdValidateTowerConstruction"
+    ],
+    "unchanged_function_count": 2971,
+    "exact_reviewed_vfx_source_sha256": {
+      "wurst/visuals/TDCombatVisualRuntime.wurst": "3e477629fd75ac76545c45566149db4c2fd2e1dce7e760a7e75a8ea3e168045e",
+      "wurst/pets/TDPetCastContext.wurst": "55feb86a005e10c9fa622337175985844ed15a5515bda558d02ae80e05eb9f78",
+      "wurst/pets/TDPetActiveVisualData.wurst": "5df7daa2180d40c97a9a38a8668d20ed645e02eca92d949e16a3dc8451f6e8a5",
+      "wurst/pets/TDPetActiveVisuals.wurst": "7b618727e10035beb2b790a87a33508b1b6efa2f88473031f63befdd365099d7",
+      "wurst/pets/TDPetActivePeriodic.wurst": "505031379e9b218aff3e335e1a135c969748b128e04c4c220d104b78f37039c1",
+      "wurst/pets/TDPetActiveRuntime.wurst": "f1cc684cabef90a13c43391ceabd24cfaa1b9f09a4afe9dd2912ba79e2ac16d1",
+      "wurst/pets/TDPetObjectGen.wurst": "cf0737247ab1c35d3cf36913971c6a5426b9483877ebb5480a262eb6aad4d88a"
+    },
+    "inherited_evidence": "Astra PASS 22 actives x 7 quota modes and 14 retention lifecycle groups; all production VFX functions preserved",
+    "all_unchanged_function_hashes_digest": "52bf97267550ec63eb3acb959b3bf36d9aac322b6fdae903eb71926a5f2cfc32"
+  },
+  "tooltip": "PASS current40: 1775 packaged player tooltip instances checked against numeric fields/rules; length and developer-language checks passed.",
+  "source_terrain_tests": "16/16 PASS",
+  "not_verified": "Native Warcraft rendering, Walk cadence, placement preview and gameplay; no game launch."
+}

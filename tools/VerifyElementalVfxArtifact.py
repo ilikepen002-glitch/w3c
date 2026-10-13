@@ -11,12 +11,14 @@ from VerifyEquipmentAbilityArtifact import require
 
 class VfxRuntime(ElementRuntime):
     def __init__(self,script):
-        self.phase_stack=[];self.visual_events=[]
+        self.phase_stack=[];self.visual_events=[];self.visual_calls=[]
         super().__init__(script)
-        self.visual_events.clear()
+        self.visual_events.clear();self.visual_calls.clear()
     def execute_call(self,name,args):
         phase=name.startswith('TDPetCastContext_visual')
-        if phase:self.phase_stack.append(name)
+        if phase:
+            self.phase_stack.append(name)
+            self.visual_calls.append({'time':round(self.now,6),'method':name,'args':list(args)})
         try:return super().execute_call(name,args)
         finally:
             if phase:self.phase_stack.pop()
@@ -58,7 +60,9 @@ def run(script,skill,mode='normal'):
 def actual_stages(r,skill):
     events=r.visual_events
     marked=lambda event,key:any(key in phase for phase in event['phases'])
-    finish=[e for e in events if 'visualFinish' in e['phase']]
+    finish=[e for e in r.visual_calls if 'visualFinish' in e['method']]
+    require(not any('visualFinish' in e['phase'] and e['native'].startswith('Add') for e in events),
+            'Completion still created immediately-destroyed replacement art')
     require(finish,'Skill lacks actual normal finish invocation '+str(skill))
     tick_adds=[e for e in events if marked(e,'visualTick') and e['native'].startswith('Add')]
     if skill==37:

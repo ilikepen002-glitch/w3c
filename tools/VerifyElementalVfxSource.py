@@ -6,7 +6,7 @@ from VerifyActiveCooldownContract import SourceScalarEvaluator, read_sources, un
 from VerifyEquipmentAbilityArtifact import require
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE = '254c53418697445451ebbca98a048d1bcdd19c56'
+BASE = '4567e0dd7a1decb80ea78269b57eec5c95bbab7a'
 FILES = ('pets/TDPetActiveDirect.wurst', 'pets/TDPetActivePeriodic.wurst', 'pets/TDPetActiveRuntime.wurst')
 VISUAL = 'pets/TDPetActiveVisuals.wurst'
 DATA = 'pets/TDPetActiveVisualData.wurst'
@@ -115,10 +115,10 @@ def assets():
     return {'imports':4,'rawBytes':total,'models':3,'compressedLimit':180*1024,'nativeClientVerified':False}
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path);args=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path);p.add_argument('--baseline-commit',default=BASE);args=p.parse_args()
     sources=read_sources(ROOT)
-    baseline={path:subprocess.check_output(['git','show',BASE+':wurst/'+path],cwd=ROOT,text=True) for path in FILES}
-    result=verify(sources,baseline);result['mutationRejections']=mutations(sources,baseline);result['assets']=assets()
+    baseline={path:subprocess.check_output(['git','show',args.baseline_commit+':wurst/'+path],cwd=ROOT,text=True) for path in FILES}
+    result=verify(sources,baseline);result['baselineCommit']=args.baseline_commit;result['mutationRejections']=mutations(sources,baseline);result['assets']=assets()
     result['sourceSHA256']={path:hashlib.sha256(sources[path].encode()).hexdigest() for path in (*FILES,VISUAL,DATA)}
     if args.output:args.output.parent.mkdir(parents=True,exist_ok=True);args.output.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps(result,ensure_ascii=False,indent=2))

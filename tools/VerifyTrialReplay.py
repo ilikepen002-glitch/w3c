@@ -44,7 +44,7 @@ class TrialJassRuntime(PureBossJassRuntime):
         # The packaged min/max helpers use Real_REAL_MAX/MIN initialized here.
         # Replaying match startup alone omits the engine's earlier package init.
         for name in ('init_Real', 'init_TDPetRules', 'init_TDCombatVisualRuntime', 'init_TDPetEffectScheduler', 'init_TDPetHeroState', 'init_TDPetHeroEffects',
-                     'init_TDPetCastContext', 'init_TDPetEffectTargetState', 'init_TDPetActiveVisuals',
+                     'init_TDPetCastContext', 'init_TDPetEffectTargetState', 'init_TDPetActiveVisualData', 'init_TDPetActiveVisuals',
                      'init_TDEnemyControlRuntime', 'init_TDPetRuntime',
                      'init_TDBossDarkTideRuntime', 'init_TDTowerEvolutionRuntime', 'init_TDPetWild', 'init_TDDamageState', 'init_TDDamageRuntime', 'init_TDItemData', 'init_TDEquipmentCombat',
                      'init_TDPetAttackQueue', 'init_TDPetState', 'init_TDPetAttackState', 'init_TDPetCombat', 'init_TDTrialIdentity',
@@ -658,9 +658,9 @@ def verify_current_capture(script):
     view = re.sub(r'"(?:\\.|[^"\\])*"|[A-Za-z_]\w*', lambda m: 'lane_2' if m[0] == lane else m[0], body)
     import contextlib, io
     with contextlib.redirect_stdout(io.StringIO()):
-        verify_spend_and_attempt(script.replace(body, view, 1), capacity=20)
+        verify_spend_and_attempt(script.replace(body, view, 1), capacity=20, capture_percent=65)
     return {'status': 'PASS', 'actual_lane_identifier': lane, 'typed_lane_view': 'lane_2',
-            'actual_compiled_cases': '120 spend eligibility/charge cases; tutorial guarantee/used flags; 200 ordinary60% roll cases; explicit one refund + sync after failed store',
+            'actual_compiled_cases': '120 spend eligibility/charge cases; tutorial guarantee/used flags; 200 ordinary65% roll cases; explicit one refund + sync after failed store',
             'scope': 'Actual current capture bodies, no gameplay values/control-flow normalization'}
 
 

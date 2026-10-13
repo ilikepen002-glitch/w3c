@@ -81,8 +81,7 @@ function TDPetCastContext.seed()
 		// Propagation is a single, bounded generation at the planned end, even
 		// if the original died. Dead trial replacements never become this origin.
 		let point = this.lastPosition(0)
-		this.clearVisuals()
-		this.addVisual(TD_PET_VFX_SEED, point)
+		this.visualSeedSpread(point)
 		this.candidates.enumUnitsInRange(point, 240.0)
 		for target in this.candidates
 			if not this.valid()

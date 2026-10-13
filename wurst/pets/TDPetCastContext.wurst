@@ -69,6 +69,8 @@ public abstract class TDPetCastContext extends TDPetEffectTask
 	int visualSerial
 	int visualFrame = -1
 	int visualSize = 0
+	boolean visualLinesDetached = false
+	real visualPulseAt = -1.0
 	effect array[8] visuals
 
 	construct(TDPet pet, unit host, int generation, int skill, int quality, real damageBase, unit primary, int primaryRevision, vec2 center, tdTrialCombatContext trial, tdEquipmentTrialAoeSnapshot trialTargets, vec2 roadSecond, vec2 roadThird, vec2 roadFourth)
@@ -175,14 +177,22 @@ public abstract class TDPetCastContext extends TDPetEffectTask
 
 	function clearVisuals()
 		for index = 0 to visualSize - 1
-			DestroyEffect(visuals[index])
-			tdCombatVisualReleaseCast()
-			visuals[index] = null
-			visualCount -= 1
+			if visuals[index] != null
+				DestroyEffect(visuals[index])
+				tdCombatVisualReleaseCast()
+				visuals[index] = null
+				visualCount -= 1
 		visualSize = 0
 
+	function retainVisuals(real deadline)
+		for index = 0 to visualSize - 1
+			if tdCombatVisualAdoptPetPoint(visualSerial, host, pet.lane, visuals[index], deadline, trial)
+				visuals[index] = null
+				visualCount -= 1
+		visualLinesDetached = tdCombatVisualRetainPetLines(visualSerial, host, pet.lane, trial)
+
 	function addVisual(string model, vec2 point)
-		if not valid() or visualSlots() >= 8 or visualCount >= TD_PET_EFFECT_VISUAL_LIMIT or not tdCombatVisualAcquireCast()
+		if not valid() or visualSlots() >= 8 or tdPetLiveEffectVisualCount() >= TD_PET_EFFECT_VISUAL_LIMIT or not tdCombatVisualAcquireCast()
 			return
 		let visual = AddSpecialEffect(model, point.x, point.y)
 		if visual != null
@@ -211,7 +221,8 @@ public abstract class TDPetCastContext extends TDPetEffectTask
 
 	ondestroy
 		tdCombatVisualClearMoving(visualSerial)
-		tdCombatVisualClearLines(visualSerial)
+		if not visualLinesDetached
+			tdCombatVisualClearLines(visualSerial)
 		if tdPetActiveCastIndex.loadInt(ownerKey) == this castTo int
 			tdPetActiveCastIndex.removeInt(ownerKey)
 		for index = 0 to victimCount - 1
@@ -231,4 +242,4 @@ public abstract class TDPetCastContext extends TDPetEffectTask
 		pet = null
 
 public function tdPetLiveEffectVisualCount() returns int
-	return visualCount
+	return visualCount + tdCombatVisualRetainedPetPointCount()

@@ -226,7 +226,11 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			..setIconScoreScreen(tdPetSpeciesIconPath(species))
 			..setDescription("本路中立无敌停留60秒，仅可捕获。")
 			..setModelFile(tdPetModel(species))
-			..setScalingValue(4.25)
+			..setScalingValue(2.55)
+			// Calibrate the one-second Walk cycle for the large model at 120–150 move speed.
+			// Animation reference speeds are scale-1 values, not gameplay movement speeds.
+			..setAnimationWalkSpeed(50.0)
+			..setAnimationRunSpeed(50.0)
 			..setHitPointsMaximumBase(tdWaveBaseHitPoints(wave))
 			..setDefenseBase(tdWaveBaseArmor(wave))
 			..setSpeedBase(120)

@@ -35,3 +35,18 @@ public function tdPetVisualFlowerBit(int flower) returns int
 public function tdPetVisualRoadFacing(vec2 previous, vec2 point, vec2 fallback) returns angle
 	let delta = point - previous
 	return delta.lengthSq() > 0.001 ? delta.getAngle() : fallback.getAngle()
+
+// Terminal art never authorizes completion. The caller rechecks its live combat
+// identity after synchronous damage/control, and transfers only on false return.
+public constant real TD_PET_VISUAL_TERMINAL_DWELL = 0.25
+
+public function tdPetVisualTerminal(int skill, int stage, int markCount, real now, real expiresAt, real pulseAt) returns boolean
+	if skill == 21 or skill == 22 or skill == 31 or skill == 33
+		return stage == 4
+	if skill == 24
+		return stage == 6
+	if skill == 34
+		return markCount > 0 and stage == markCount
+	if skill == 30
+		return stage > 0 and now >= expiresAt and pulseAt == now
+	return skill == 38 and stage == 4 and now >= expiresAt

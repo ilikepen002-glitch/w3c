@@ -90,7 +90,7 @@ function tdPetHandleCapture() returns boolean
 	let guaranteed = wild.tutorial and not tdPetTutorialUsed[lane]
 	if wild.tutorial
 		tdPetTutorialUsed[lane] = true
-	if not guaranteed and GetRandomInt(1, 100) > 60
+	if not guaranteed and GetRandomInt(1, 100) > 65
 		tdPetNotice(lane, "|cffff8080捕获失败|r，宝宝继续行进；剩余球 " + tdPetBallsForLane(lane).toString())
 		return false
 	let pet = new TDPet(lane, species, tdGetGlobalWave())

@@ -59,8 +59,8 @@ class TowerTerrainMaskTests(unittest.TestCase):
             self.assertEqual(before & after, before)
             self.assertEqual(after, before if self.mask[i // 256][i % 256] else before | 8)
             changes += before != after
-        self.assertEqual(changes, 9764)
-        self.assertEqual(sum(map(sum, self.mask)), 21984)
+        self.assertEqual(changes, 7424)
+        self.assertEqual(sum(map(sum, self.mask)), 24324)
 
     def test_append_writer_preserves_unknown_payloads_and_other_block_records(self):
         # This also covers MPQ members that a future listfile might not name.
@@ -85,11 +85,11 @@ class TowerTerrainMaskTests(unittest.TestCase):
                     self.assertTrue(flags & 0x40)  # NO_WATER must be SET.
                     plateau, low, high = self.quads[y // 4][x // 4]
                     self.assertTrue(plateau)
-                    self.assertLessEqual(high - low, 8)
+                    self.assertLessEqual(high - low, g.HEIGHT_DELTA)
 
     def test_road_perimeter_steep_slope_and_exit_rejected(self):
         for x, y in [(-2320, 2672), (-2368, -3136), (-3600, 3600),
-                     (-4032, -4032), (-832, -1216), (-704, -1216), (0, -192), (0, 0)]:
+                     (-4032, -4032), (0, -192), (0, 0)]:
             with self.subTest(x=x, y=y):
                 self.assertFalse(self.at(self.mask, x, y))
                 self.assertFalse(g.footprint_allowed(self.mask, x, y))
@@ -160,6 +160,39 @@ class TowerTerrainMaskTests(unittest.TestCase):
             for x in range(256):
                 if self.mask[y][x]:
                     self.assertEqual((low(x, y), high(x, y)), self.quads[y // 4][x // 4][1:])
+
+    def test_natural_relief_uses_same_limit_for_full_footprint(self):
+        def permitted(limit, x=-2048, y=896):
+            mask, _, quads = g.make_mask(self.w3e, self.wpm, limit)
+            cx, cy = (x + 4096) // 32, (y + 4096) // 32
+            cells = [quads[yy // 4][xx // 4]
+                     for yy in range(cy - 3, cy + 3) for xx in range(cx - 3, cx + 3)]
+            delta = max(q[2] for q in cells) - min(q[1] for q in cells)
+            self.assertEqual(delta, 54.75)
+            return g.footprint_allowed(mask, x, y) and delta <= limit
+        for limit in (8, 16, 32, 48):
+            self.assertFalse(permitted(limit))
+        self.assertTrue(permitted(64))
+        source = (g.ROOT / g.WURST_PATH).read_text()
+        self.assertIn(f"TD_TERRAIN_MAX_HEIGHT_DELTA = {g.HEIGHT_DELTA}", source)
+        runtime = (g.ROOT / "wurst/towers/TDTowerPlacementRules.wurst").read_text()
+        self.assertIn("highest - lowest > TD_TERRAIN_MAX_HEIGHT_DELTA", runtime)
+
+    def test_new_open_cells_clear_old_generated_bit_only(self):
+        previous = g.Mpq(g.generate(8.0)[g.MAP_PATH]).extract("war3map.wpm")
+        actual = self.source.extract("war3map.wpm")
+        cleared = 0
+        for i, (old, new, original) in enumerate(zip(previous[16:], actual[16:], self.wpm[16:])):
+            self.assertEqual(old & ~8, new & ~8)
+            if old != new:
+                self.assertEqual(old, new | 8)
+                self.assertEqual(new, original)
+                self.assertFalse(original & (g.UNWALKABLE | g.UNBUILDABLE))
+                self.assertTrue(original & g.NO_WATER)
+                self.assertTrue(self.quads[(i // 256) // 4][(i % 256) // 4][0])
+                cleared += 1
+        self.assertEqual(cleared, 2340)
+        g.assert_reviewed_source(g.generate(8.0)[g.MAP_PATH], self.outputs[g.MAP_PATH])
 
     def test_reproducible_and_idempotent_outputs(self):
         for name, expected in self.outputs.items():

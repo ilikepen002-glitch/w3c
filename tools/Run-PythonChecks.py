@@ -33,6 +33,7 @@ CLASS_GROUPS = {
         test_active_cooldown_contract.ProductionNativeStateTests
         test_build_semantic_icons.SemanticSourceTests
         test_build_trial_assets.TrialAssetTests
+        test_capture_chance_65_source.CaptureChance65SourceTests
         test_capture_removal_artifact.CaptureRemovalSourceTests
         test_capture_removal_artifact.CaptureRemovalCurrentManagerTests
         test_equipment_inheritance_source.CurrentEquipmentInheritanceTests

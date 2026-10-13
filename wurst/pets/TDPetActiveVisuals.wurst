@@ -2,10 +2,12 @@ package TDPetActiveVisuals
 import TDPetCastContext
 import TDPetRouteSnapshot
 import TDPetActiveVisualData
+import GameTimer
 
 // Native 1.27 resources from the locked stdlib Abilities catalogue. Each stage
 // owns <=8 handles and the shared context cap is 128; omitted art never gates
-// selection, damage, control or cooldown. All handles die with their context.
+// selection, damage, control or cooldown. Only delivered terminal point/line
+// handles may transfer to the existing short-visual expiry owner.
 public constant string TD_PET_VFX_BLADE = "Abilities\\Weapons\\GlaiveMissile\\GlaiveMissile.mdx"
 public constant string TD_PET_VFX_ARMOR = "Abilities\\Spells\\NightElf\\FaerieFire\\FaerieFireTarget.mdx"
 public constant string TD_PET_VFX_SWORD = "Abilities\\Spells\\Other\\Cleave\\CleaveDamageTarget.mdx"
@@ -87,10 +89,13 @@ public function TDPetCastContext.visualStrike(vec2 point)
 		this.addVisual(TD_PET_VFX_WARNING, point)
 		this.visualTrace(this.origin, point, 3)
 	else if this.skill == 35
-		this.addMoving(0, TD_PET_VFX_FAULT_RIDGE, point.withTerrainZ(), this.direction.getAngle(), 0.60)
+		let movingCore = this.addMoving(0, TD_PET_VFX_FAULT_RIDGE, point.withTerrainZ(), this.direction.getAngle(), 0.60)
+		if not movingCore
+			this.addVisual(TD_PET_VFX_FAULT_RIDGE, point)
 		this.addVisual(TD_PET_VFX_ROCK, point)
 		this.addVisual(TD_PET_VFX_METAL_SPARK, point + vec2(55.0, 0.0))
-		this.addVisual(TD_PET_VFX_METAL_SPARK, point + vec2(-55.0, 0.0))
+		if movingCore
+			this.addVisual(TD_PET_VFX_METAL_SPARK, point + vec2(-55.0, 0.0))
 
 public function TDPetCastContext.visualSwordCut(vec2 point)
 	this.clearVisuals()
@@ -108,11 +113,19 @@ public function TDPetCastContext.visualSwordDrop()
 		this.addVisual(TD_PET_VFX_SWORD, this.center + tdPetVisualSwordOffset(index))
 
 public function TDPetCastContext.visualSeedPulse(vec2 point)
+	// The third primary pulse shares its callback with one-generation spread.
+	// Its combined core is emitted there once, rather than replaced immediately.
+	if this.stage == 2
+		return
 	this.clearVisuals()
 	this.addVisual(TD_PET_VFX_SEED, point)
 	this.addVisual(TD_PET_VFX_SEED_CORE, point)
 	this.addVisual(TD_PET_VFX_POISON, point + vec2(35.0, 0.0))
 	this.addVisual(TD_PET_VFX_POISON, point + vec2(-35.0, 0.0))
+
+public function TDPetCastContext.visualSeedSpread(vec2 point)
+	this.clearVisuals()
+	this.addVisual(TD_PET_VFX_SEED_CORE, point)
 
 public function TDPetCastContext.visualSeedBranch(vec2 startPoint, vec2 endPoint)
 	// The caller has already selected and remembered this exact weak seed.
@@ -148,6 +161,8 @@ public function TDPetCastContext.visualRoadSegment(int current)
 
 public function TDPetCastContext.visualFreeze()
 	this.clearVisuals()
+	if this.visualFrame < 2
+		this.addVisual(TD_PET_VFX_FREEZE, this.center)
 	this.moveMoving(0, (this.center + vec2(90.0, 0.0)).withTerrainZ(), this.direction.getAngle(), 0.55)
 	this.moveMoving(1, (this.center - vec2(90.0, 0.0)).withTerrainZ(), this.direction.getAngle(), 0.55)
 
@@ -156,6 +171,7 @@ public function TDPetCastContext.visualIceBreak()
 	this.visualRing(TD_PET_VFX_SHATTER, this.center, 180.0)
 
 public function TDPetCastContext.visualVortexPulse()
+	this.visualPulseAt = getElapsedGameTime()
 	this.clearVisuals()
 	if this.visualFrame == 0
 		this.addVisual(TD_PET_VFX_VORTEX, this.center)
@@ -226,10 +242,15 @@ public function TDPetCastContext.visualPrepare()
 		for flower = 0 to 2
 			this.addVisual(TD_PET_VFX_FLOWER, this.road.pointAt(flower))
 	else if this.skill == 29
-		for index = 0 to 3
+		this.visualFrame = 0
+		if this.addMoving(0, TD_PET_VFX_FREEZE, (this.center + vec2(180.0, 0.0)).withTerrainZ(100.0), this.direction.getAngle(), 0.55)
+			this.visualFrame += 1
+		if this.addMoving(1, TD_PET_VFX_FREEZE, (this.center - vec2(180.0, 0.0)).withTerrainZ(100.0), this.direction.getAngle(), 0.55)
+			this.visualFrame += 1
+		if this.visualFrame < 2
+			this.addVisual(TD_PET_VFX_FREEZE, this.center)
+		for index = 0 to (this.visualFrame < 2 ? 2 : 3)
 			this.addVisual(TD_PET_VFX_WARNING, this.center + tdPetVisualSwordOffset(index) * 1.5)
-		this.addMoving(0, TD_PET_VFX_FREEZE, (this.center + vec2(180.0, 0.0)).withTerrainZ(100.0), this.direction.getAngle(), 0.55)
-		this.addMoving(1, TD_PET_VFX_FREEZE, (this.center - vec2(180.0, 0.0)).withTerrainZ(100.0), this.direction.getAngle(), 0.55)
 		this.visualTrace(this.center + vec2(180.0, 0.0), this.center + vec2(0.0, 180.0), 3)
 		this.visualTrace(this.center - vec2(180.0, 0.0), this.center - vec2(0.0, 180.0), 3)
 	else if this.skill == 30
@@ -240,8 +261,10 @@ public function TDPetCastContext.visualPrepare()
 	else if this.skill == 31
 		this.addVisual(TD_PET_VFX_BRAND, this.center)
 	else if this.skill == 33
-		this.addMoving(0, TD_PET_VFX_METEOR_BODY, this.center.withTerrainZ(520.0), this.direction.getAngle(), 1.10)
-		for index = 0 to 3
+		let movingCore = this.addMoving(0, TD_PET_VFX_METEOR_BODY, this.center.withTerrainZ(520.0), this.direction.getAngle(), 1.10)
+		if not movingCore
+			this.addVisual(TD_PET_VFX_METEOR_BODY, this.center)
+		for index = 0 to (movingCore ? 3 : 2)
 			this.addVisual(TD_PET_VFX_MARK, this.center + tdPetVisualSwordOffset(index) * 1.25)
 	else if this.skill == 34
 		for index = 0 to this.markCount - 1
@@ -269,19 +292,8 @@ public function TDPetCastContext.visualTick(real now)
 			this.visualFrame = frame
 			this.visualSealPulse()
 
-// Normal completion may emit one native Death tail. Cancellation adds nothing;
-// the shared cast owner still destroys every native/Fx/line before releasing it.
-public function TDPetCastContext.visualFinish()
-	if not this.valid()
-		return
-	this.clearVisuals()
-	if this.skill <= 22
-		this.addVisual(TD_PET_VFX_SWORD, this.center)
-	else if this.skill <= 26
-		this.addVisual(TD_PET_VFX_SEED, this.center)
-	else if this.skill <= 30
-		this.addVisual(TD_PET_VFX_SHATTER, this.center)
-	else if this.skill <= 34
-		this.addVisual(TD_PET_VFX_GROUND_FIRE, this.center)
-	else
-		this.addVisual(TD_PET_VFX_ROCK, this.skill == 38 ? this.road.pointAt(3) : this.center)
+// No replacement native effect is created on completion. The scheduler still
+// destroys combat ownership immediately; the expiry owner borrows only handles.
+public function TDPetCastContext.visualFinish(real now)
+	if this.valid() and tdPetVisualTerminal(this.skill, this.stage, this.markCount, now, this.expiresAt, this.visualPulseAt)
+		this.retainVisuals(now + TD_PET_VISUAL_TERMINAL_DWELL)

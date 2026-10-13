@@ -4,14 +4,14 @@
   "baseline_map_sha256": "627a64c012dcc46e1b5acc48dcbb20eeca0b465093718800799a2df37ded0b5e",
   "terrain_sha256": "997468b2761ae013507a2696cdb1deb1644b8fd1c1e4cecb4d5da26ffee1f087",
   "original_pathing_sha256": "b11e1a689c2ef493d77698e5c0e632a778f5332a558d439b9d8bf431e8ba2f41",
-  "generated_pathing_sha256": "f03db9fe3a24936718f3e9e4de1b3dc878527ad7d598d78ced7239a431d98d49",
-  "generated_map_sha256": "3fd31a78aaa5d017565fca6c6f3758d40ed6131999c701bdf1f99557ba39e408",
+  "generated_pathing_sha256": "ccf038827375e48340242356958f897440191ccb5dbb684160e83c759e8c48cd",
+  "generated_map_sha256": "ad702b6b5faa154f9416a9a3650303abfbbad4f7ff64794cecbeb51082f42304",
   "attributes_metadata_exception": {
     "purpose": "Update only the changed WPM member's CRC32",
     "crc_offset": 44,
     "changed_bytes_maximum": 4,
     "original_sha256": "537caccf4fe33dd57fc10f9894368f7b3c599a0ba84ddc1d08fb57f1c50bbfd4",
-    "generated_sha256": "395127c0bc047b7d6d0570b360bd5fb6be420ec046c06c402674fda63f685579"
+    "generated_sha256": "bfa72f3b5e3eaa1806b91884a90f9edfb6197cefc23d37095d6febb1e96f8d4d"
   },
   "origin": [
     -4096,
@@ -23,7 +23,7 @@
     256
   ],
   "raw_plateau_layer": 1,
-  "max_quad_height_delta": 8.0,
+  "max_quad_height_delta": 64.0,
   "edge_margin": 32,
   "shared_exit_rect": [
     -384,
@@ -31,8 +31,8 @@
     352,
     64
   ],
-  "eligible_cells": 21984,
-  "added_unbuildable_cells": 9764,
+  "eligible_cells": 24324,
+  "added_unbuildable_cells": 7424,
   "unchanged_member_sha256": {
     "(listfile)": "f084ff35c5a8e17566c773bddde1d17bee78093b928a0e6c193c8feba389ef98",
     "war3map.doo": "3cad755ed7f21214130ec5d7ed553e6c740309a1b053c22fd230f8996fad9382",

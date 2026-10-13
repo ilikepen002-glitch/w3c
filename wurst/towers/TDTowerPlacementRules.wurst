@@ -61,6 +61,6 @@ public function tdBuildPlotIsFlat(vec2 position) returns boolean
 				return false
 			lowest = min(lowest, tdTerrainCellMinHeight(cellX, cellY))
 			highest = max(highest, tdTerrainCellMaxHeight(cellX, cellY))
-			if highest - lowest > 8.0
+			if highest - lowest > TD_TERRAIN_MAX_HEIGHT_DELTA
 				return false
 	return true

@@ -33,3 +33,9 @@ import TDTowerData
 	tdCombatVisualHitBudget(1.0, 1.0, 1, 9, 32, 127, 119).assertFalse()
 	tdCombatVisualHitBudget(1.0, 1.0, 1, 9, 31, 128, 119).assertFalse()
 	tdCombatVisualHitBudget(1.0, 1.0, 1, 9, 31, 127, 120).assertFalse()
+
+@Test function retainedVisualsKeepExistingSharedAndMovingCaps()
+	TD_VISUAL_SHORT_LIMIT.assertEquals(128)
+	TD_VISUAL_NEW_PER_SECOND.assertEquals(120)
+	TD_VISUAL_MOVING_LIMIT.assertEquals(8)
+	TD_VISUAL_HIT_LIMIT.assertEquals(32)

@@ -16,10 +16,10 @@ import TDActiveSkillData
 		let expected = tdActiveSkillDefinitionForPetSkill(skill).driver == TD_ACTIVE_DRIVER_PET_PROC
 		tdPetSkillIsActive(skill).assertEquals(expected)
 
-@Test function ordinaryPetCaptureIsFixedSixtyPercent()
-	tdPetCaptureChance(100.0, 100.0).assertEquals(0.60)
-	tdPetCaptureChance(0.0, 100.0).assertEquals(0.60)
-	tdPetCaptureChance(-5.0, 0.0).assertEquals(0.60)
+@Test function ordinaryPetCaptureIsFixedSixtyFivePercent()
+	tdPetCaptureChance(100.0, 100.0).assertEquals(0.65)
+	tdPetCaptureChance(0.0, 100.0).assertEquals(0.65)
+	tdPetCaptureChance(-5.0, 0.0).assertEquals(0.65)
 
 @Test function capturedSkillAndQualityDistributionsHaveExactBuckets()
 	var two = 0
@@ -154,8 +154,8 @@ import TDActiveSkillData
 	tdPetSpendCaptureBall(1, true).assertTrue()
 	tdPetAddBall(1).assertTrue()
 	tdPetBallsForLane(1).assertEquals(TD_PET_BALL_LIMIT)
-	tdPetCaptureChance(1.0, 100.0).assertEquals(0.60)
-	tdPetCaptureChance(100.0, 100.0).assertEquals(0.60)
+	tdPetCaptureChance(1.0, 100.0).assertEquals(0.65)
+	tdPetCaptureChance(100.0, 100.0).assertEquals(0.65)
 
 @Test function petCollectionOwnershipAndCapacityRemainAtomic()
 	tdPetInitializeLane(0)

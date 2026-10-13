@@ -2,6 +2,7 @@ package TDCombatVisualRuntime
 import public TDCombatVisualData
 import TDState
 import TDWaveFlowState
+import TDTrialIdentity
 import GameTimer
 import ClosureTimers
 import LinkedList
@@ -11,6 +12,7 @@ import Fx
 constant Table sourceIndex = new Table()
 int hitVisualCount = 0
 int petBuffVisualCount = 0
+int retainedPetPointCount = 0
 
 // Visual ownership is independent of pet/inventory/combat rules. Callers pass
 // admitted snapshots; no damage, random, orders or target enumeration lives here.
@@ -22,6 +24,7 @@ class TDVisualSource
 	int serial
 	int petSerial = 0
 	int hitCount = 0
+	int detachedCount = 0
 	real nextHitVisualAt = 0.0
 	boolean gearSuspended = false
 	int gearProfile = 0
@@ -98,6 +101,12 @@ class TDVisualCastLine
 	int epoch
 	real expiresAt
 	lightning line
+	effect art = null
+	boolean detached = false
+	int sourceKey = 0
+	int ownerSerial = 0
+	int petSerial = 0
+	tdTrialCombatContext trial
 	construct(int serial, unit source, int lane, lightning line, real expiresAt)
 		this.serial = serial
 		this.source = source
@@ -105,8 +114,32 @@ class TDVisualCastLine
 		this.line = line
 		epoch = tdFlowEpoch()
 		this.expiresAt = expiresAt
+	function detach(TDVisualSource owner, tdTrialCombatContext trial)
+		detached = true
+		sourceKey = owner.key
+		ownerSerial = owner.serial
+		petSerial = owner.petSerial
+		this.trial = trial
+		owner.detachedCount += 1
+	function valid() returns boolean
+		if epoch != tdFlowEpoch() or not laneValid(lane) or source == null or GetUnitTypeId(source) == 0 or not source.isAlive() or GetPlayerId(GetOwningPlayer(source)) != lane
+			return false
+		if not detached
+			return true
+		let owner = sourceForKey(sourceKey)
+		return owner != null and owner.serial == ownerSerial and owner.petSerial == petSerial and owner.source == source and tdTrialContextValid(trial)
 	ondestroy
-		DestroyLightning(line)
+		if art != null
+			DestroyEffect(art)
+			art = null
+			retainedPetPointCount -= 1
+		if line != null
+			DestroyLightning(line)
+			line = null
+		if detached
+			let owner = sourceForKey(sourceKey)
+			if owner != null and owner.serial == ownerSerial
+				owner.detachedCount -= 1
 		tdCombatVisualReleaseCast()
 		source = null
 
@@ -183,6 +216,15 @@ function clearHits(int key, int serial)
 			destroy entry
 	iter.close()
 
+function clearDetached(int key, int serial)
+	let li = castLines.iterator()
+	while li.hasNext()
+		let entry = li.next()
+		if entry.detached and entry.sourceKey == key and entry.ownerSerial == serial
+			li.remove()
+			destroy entry
+	li.close()
+
 // Buff attachments borrow the same short-effect/creation admission as casts.
 // Each source owns one, and clearing them never touches its equipment handle.
 function clearPetBuff(TDVisualSource owner)
@@ -203,6 +245,7 @@ public function tdCombatVisualClearPet(unit source)
 	if owner != null
 		owner.petSerial += 1
 		clearHits(owner.key, owner.serial)
+		clearDetached(owner.key, owner.serial)
 		clearPetBuff(owner)
 
 public function tdCombatVisualClearGear(unit source)
@@ -241,6 +284,7 @@ public function tdCombatVisualForgetSource(unit source)
 	if owner != null
 		owner.petSerial += 1
 		clearHits(owner.key, owner.serial)
+		clearDetached(owner.key, owner.serial)
 		sources.remove(owner)
 		destroy owner
 
@@ -249,7 +293,7 @@ function tick()
 	let li = castLines.iterator()
 	while li.hasNext()
 		let entry = li.next()
-		if now >= entry.expiresAt or entry.epoch != tdFlowEpoch() or not laneValid(entry.lane) or entry.source == null or GetUnitTypeId(entry.source) == 0 or not entry.source.isAlive()
+		if now >= entry.expiresAt or not entry.valid()
 			li.remove()
 			destroy entry
 	li.close()
@@ -273,12 +317,13 @@ function tick()
 		if not sourceValid(owner)
 			owner.petSerial += 1
 			clearHits(owner.key, owner.serial)
+			clearDetached(owner.key, owner.serial)
 			si.remove()
 			destroy owner
 			continue
 		if owner.petBuff != null and now >= owner.petBuffUntil
 			clearPetBuff(owner)
-		if not owner.gearSuspended and owner.gear == null and owner.petBuff == null and owner.hitCount == 0 and now >= owner.nextHitVisualAt
+		if not owner.gearSuspended and owner.gear == null and owner.petBuff == null and owner.hitCount == 0 and owner.detachedCount == 0 and now >= owner.nextHitVisualAt
 			si.remove()
 			destroy owner
 	si.close()
@@ -332,7 +377,6 @@ public function tdCombatVisualStartPetBuff(unit source, int lane, int skill, rea
 	if owner == null or not sourceValid(owner)
 		return
 	clearPetBuff(owner)
-	addHitArt(owner, tdCombatVisualPetBuffStartModel(skill), source.getPos(), 0.30)
 	if petBuffVisualCount >= 40 or not tdCombatVisualAcquireCast()
 		return
 	let art = AddSpecialEffectTarget(model, source, "origin")
@@ -342,6 +386,7 @@ public function tdCombatVisualStartPetBuff(unit source, int lane, int skill, rea
 	owner.petBuff = art
 	owner.petBuffUntil = expiresAt
 	petBuffVisualCount += 1
+	addHitArt(owner, tdCombatVisualPetBuffStartModel(skill), source.getPos(), 0.30)
 	wake()
 
 public function tdCombatVisualHit(unit source, vec2 origin, vec2 point, int element, int lane, boolean decisive)
@@ -439,6 +484,7 @@ public function tdCombatVisualClearLane(int lane)
 		if owner.lane == lane
 			owner.petSerial += 1
 			clearHits(owner.key, owner.serial)
+			clearDetached(owner.key, owner.serial)
 			si.remove()
 			destroy owner
 	si.close()
@@ -453,7 +499,7 @@ public function tdCombatVisualClearLane(int lane)
 public function tdCombatVisualShutdown()
 	for lane = 0 to 3
 		tdCombatVisualClearLane(lane)
-	// Cast effects remain owned by their original contexts until those are destroyed.
+	// Active cast effects remain owned by their contexts; detached tails were cleared above.
 	if cleanup != null and not executing
 		destroy cleanup
 		cleanup = null
@@ -470,7 +516,7 @@ public function tdCombatVisualClearLines(int serial)
 public function tdCombatVisualLineCount(int serial) returns int
 	var count = 0
 	for entry in castLines
-		if entry.serial == serial
+		if entry.serial == serial and entry.line != null
 			count += 1
 	return count
 
@@ -480,6 +526,37 @@ public function tdCombatVisualMovingOwnerCount(int serial) returns int
 		if entry.serial == serial
 			count += 1
 	return count
+
+// Transfers reuse an already-admitted handle. Neither operation creates native
+// art, acquires another token, or retains a pet/context/target reference.
+public function tdCombatVisualRetainedPetPointCount() returns int
+	return retainedPetPointCount
+
+public function tdCombatVisualAdoptPetPoint(int serial, unit source, int lane, effect art, real expiresAt, tdTrialCombatContext trial) returns boolean
+	if serial <= 0 or source == null or art == null or not laneValid(lane) or expiresAt <= getElapsedGameTime() or not tdTrialContextValid(trial)
+		return false
+	let owner = sourceFor(source, lane)
+	if owner == null or not sourceValid(owner)
+		return false
+	let entry = new TDVisualCastLine(serial, source, lane, null, expiresAt)
+	entry.art = art
+	entry.detach(owner, trial)
+	retainedPetPointCount += 1
+	castLines.add(entry)
+	wake()
+	return true
+
+public function tdCombatVisualRetainPetLines(int serial, unit source, int lane, tdTrialCombatContext trial) returns boolean
+	if serial <= 0 or source == null or not laneValid(lane) or not tdTrialContextValid(trial)
+		return false
+	let owner = sourceFor(source, lane)
+	if owner == null or not sourceValid(owner)
+		return false
+	for entry in castLines
+		if entry.serial == serial and entry.line != null and not entry.detached and entry.source == source and entry.lane == lane
+			entry.detach(owner, trial)
+	// Original line deadlines are deliberately unchanged.
+	return true
 
 public function tdCombatVisualCreateLine(int serial, unit source, int lane, string lightningCode, vec3 start, vec3 endPoint, real red, real green, real blue, real alpha, real duration) returns boolean
 	if serial <= 0 or source == null or not laneValid(lane) or not tdCombatVisualAcquireCast()

@@ -34,7 +34,7 @@ class TDPetActiveCast extends TDPetCastContext
 		else
 			continuing = this.stepPeriodic(now)
 		if not continuing
-			this.visualFinish()
+			this.visualFinish(now)
 		return continuing
 
 function prepare(TDPetActiveCast cast)

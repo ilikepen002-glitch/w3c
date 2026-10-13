@@ -288,7 +288,7 @@ function tdValidateTowerConstruction(unit tower) returns boolean
 		tdRejectTowerConstruction(tower, playerId, towerChoice, "请在自己的高台上建造，并与悬崖保持 32 距离。")
 		return false
 	if not tdBuildPlotIsFlat(buildCenter)
-		tdRejectTowerConstruction(tower, playerId, towerChoice, "整个建筑占地必须平整，请避开斜坡。")
+		tdRejectTowerConstruction(tower, playerId, towerChoice, "这里坡度过大，请换一处较平缓的高台。")
 		return false
 	if tdTowerOverlapsAnotherTower(tower)
 		tdRejectTowerConstruction(tower, playerId, towerChoice, "这里已被另一座塔占用，请勿重叠建造。")

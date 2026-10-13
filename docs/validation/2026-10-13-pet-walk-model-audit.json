@@ -1,0 +1,402 @@
+{
+  "status": "PASS",
+  "scope": "actual imported models; local limb deformation, skin binding, looping and global sequence checks; not game verification",
+  "models": [
+    {
+      "species": 1,
+      "name": "银鬃灵兽",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "FrontLeft",
+          "boundVertices": 552,
+          "maxLocalDisplacement": 6.944,
+          "loopSeam": 0
+        },
+        {
+          "bone": "FrontRight",
+          "boundVertices": 552,
+          "maxLocalDisplacement": 6.032,
+          "loopSeam": 0
+        },
+        {
+          "bone": "HindLeft",
+          "boundVertices": 552,
+          "maxLocalDisplacement": 6.032,
+          "loopSeam": 0
+        },
+        {
+          "bone": "HindRight",
+          "boundVertices": 552,
+          "maxLocalDisplacement": 6.944,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 2,
+      "name": "锋翼隼",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "LeftWing",
+          "boundVertices": 372,
+          "maxLocalDisplacement": 12.937,
+          "loopSeam": 0
+        },
+        {
+          "bone": "RightWing",
+          "boundVertices": 372,
+          "maxLocalDisplacement": 12.937,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 3,
+      "name": "铜甲穿山灵",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "DiggingArmLeft",
+          "boundVertices": 540,
+          "maxLocalDisplacement": 4.673,
+          "loopSeam": 0
+        },
+        {
+          "bone": "DiggingArmRight",
+          "boundVertices": 540,
+          "maxLocalDisplacement": 3.902,
+          "loopSeam": 0
+        },
+        {
+          "bone": "HindLeft",
+          "boundVertices": 540,
+          "maxLocalDisplacement": 3.902,
+          "loopSeam": 0
+        },
+        {
+          "bone": "HindRight",
+          "boundVertices": 540,
+          "maxLocalDisplacement": 4.673,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 4,
+      "name": "叶翼仙灵",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "LeafUpperLeft",
+          "boundVertices": 240,
+          "maxLocalDisplacement": 26.518,
+          "loopSeam": 0
+        },
+        {
+          "bone": "LeafUpperRight",
+          "boundVertices": 240,
+          "maxLocalDisplacement": 26.518,
+          "loopSeam": 0
+        },
+        {
+          "bone": "RootLeft",
+          "boundVertices": 156,
+          "maxLocalDisplacement": 1.446,
+          "loopSeam": 0
+        },
+        {
+          "bone": "RootRight",
+          "boundVertices": 156,
+          "maxLocalDisplacement": 1.446,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 5,
+      "name": "树芽鹿",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "FrontLeft",
+          "boundVertices": 246,
+          "maxLocalDisplacement": 7.052,
+          "loopSeam": 0
+        },
+        {
+          "bone": "FrontRight",
+          "boundVertices": 246,
+          "maxLocalDisplacement": 6.334,
+          "loopSeam": 0
+        },
+        {
+          "bone": "RearLeft",
+          "boundVertices": 246,
+          "maxLocalDisplacement": 6.379,
+          "loopSeam": 0
+        },
+        {
+          "bone": "RearRight",
+          "boundVertices": 246,
+          "maxLocalDisplacement": 7.092,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 6,
+      "name": "菌伞灵",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "RootFootLeft",
+          "boundVertices": 462,
+          "maxLocalDisplacement": 4.482,
+          "loopSeam": 0
+        },
+        {
+          "bone": "RootFootRight",
+          "boundVertices": 462,
+          "maxLocalDisplacement": 3.5,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 7,
+      "name": "潮尾灵蛟",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "SwimSpine0",
+          "boundVertices": 366,
+          "maxLocalDisplacement": 2.352,
+          "loopSeam": 0
+        },
+        {
+          "bone": "SwimSpine2",
+          "boundVertices": 372,
+          "maxLocalDisplacement": 5.038,
+          "loopSeam": 0
+        },
+        {
+          "bone": "SwimSpine5",
+          "boundVertices": 534,
+          "maxLocalDisplacement": 3.41,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 8,
+      "name": "霜鳍灵鲼",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "FinLeft",
+          "boundVertices": 156,
+          "maxLocalDisplacement": 4.992,
+          "loopSeam": 0
+        },
+        {
+          "bone": "FinRight",
+          "boundVertices": 156,
+          "maxLocalDisplacement": 4.992,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 9,
+      "name": "雪鬃水獭",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "FrontLeftPaw",
+          "boundVertices": 474,
+          "maxLocalDisplacement": 5.878,
+          "loopSeam": 0
+        },
+        {
+          "bone": "FrontRightPaw",
+          "boundVertices": 474,
+          "maxLocalDisplacement": 4.624,
+          "loopSeam": 0
+        },
+        {
+          "bone": "RearLeftPaw",
+          "boundVertices": 474,
+          "maxLocalDisplacement": 4.584,
+          "loopSeam": 0
+        },
+        {
+          "bone": "RearRightPaw",
+          "boundVertices": 474,
+          "maxLocalDisplacement": 5.848,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 10,
+      "name": "赤翎火鸟",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "WingLeft",
+          "boundVertices": 2340,
+          "maxLocalDisplacement": 20.951,
+          "loopSeam": 0
+        },
+        {
+          "bone": "WingRight",
+          "boundVertices": 2340,
+          "maxLocalDisplacement": 20.951,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 11,
+      "name": "熔角火蜥",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "FrontLeft",
+          "boundVertices": 462,
+          "maxLocalDisplacement": 4.944,
+          "loopSeam": 0
+        },
+        {
+          "bone": "FrontRight",
+          "boundVertices": 462,
+          "maxLocalDisplacement": 4.141,
+          "loopSeam": 0
+        },
+        {
+          "bone": "HindLeft",
+          "boundVertices": 462,
+          "maxLocalDisplacement": 4.156,
+          "loopSeam": 0
+        },
+        {
+          "bone": "HindRight",
+          "boundVertices": 462,
+          "maxLocalDisplacement": 4.956,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 12,
+      "name": "烬尾火狐",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "FrontLeft",
+          "boundVertices": 258,
+          "maxLocalDisplacement": 5.994,
+          "loopSeam": 0
+        },
+        {
+          "bone": "FrontRight",
+          "boundVertices": 258,
+          "maxLocalDisplacement": 5.071,
+          "loopSeam": 0
+        },
+        {
+          "bone": "HindLeft",
+          "boundVertices": 258,
+          "maxLocalDisplacement": 5.071,
+          "loopSeam": 0
+        },
+        {
+          "bone": "HindRight",
+          "boundVertices": 258,
+          "maxLocalDisplacement": 5.994,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 13,
+      "name": "岩壳龟",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "FrontLeft",
+          "boundVertices": 588,
+          "maxLocalDisplacement": 7.834,
+          "loopSeam": 0
+        },
+        {
+          "bone": "FrontRight",
+          "boundVertices": 588,
+          "maxLocalDisplacement": 6.53,
+          "loopSeam": 0
+        },
+        {
+          "bone": "BackLeft",
+          "boundVertices": 588,
+          "maxLocalDisplacement": 6.53,
+          "loopSeam": 0
+        },
+        {
+          "bone": "BackRight",
+          "boundVertices": 588,
+          "maxLocalDisplacement": 7.834,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 14,
+      "name": "磐臂山魈",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "LeftLeg",
+          "boundVertices": 456,
+          "maxLocalDisplacement": 6.428,
+          "loopSeam": 0
+        },
+        {
+          "bone": "RightLeg",
+          "boundVertices": 456,
+          "maxLocalDisplacement": 4.916,
+          "loopSeam": 0
+        }
+      ]
+    },
+    {
+      "species": 15,
+      "name": "砂环灵螺",
+      "walkMs": 1000,
+      "modelMoveSpeed": 85,
+      "motion": [
+        {
+          "bone": "SoftFoot",
+          "boundVertices": 1092,
+          "maxLocalDisplacement": 1.573,
+          "loopSeam": 0
+        }
+      ]
+    }
+  ]
+}

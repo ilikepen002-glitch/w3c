@@ -72,7 +72,7 @@ function petProbeCommand()
 		if probeTower == null or GetUnitTypeId(probeTower) == 0
 			probeTower = createUnit(Player(0), tdTowerUnitIdForLevelBranch(TD_TOWER_CHOICE_ORC, 1, TD_TOWER_BRANCH_A), farmer.getPos() + vec2(300.0, 150.0), 0 .fromDeg())
 		PauseUnit(probeTower, true)
-		petProbeReport("fixture ready: Q protected wild (fixed60%, tutorial first ordinary attempt guaranteed); W select; E empty tower. This is an added debug fixture, not normal wave count evidence.")
+		petProbeReport("fixture ready: Q protected wild (fixed65%, tutorial first ordinary attempt guaranteed); W select; E empty tower. This is an added debug fixture, not normal wave count evidence.")
 	else if command == "-pets combat"
 		if probeTower == null or tdPetForHost(probeTower) == null or not tdPetLaneCanAct(0)
 			petProbeReport("first capture with Q, select with W and deploy with E onto fixture tower")

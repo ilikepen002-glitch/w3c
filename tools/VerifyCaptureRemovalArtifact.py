@@ -136,8 +136,12 @@ def canonical_packaged_function(body):
     return re.sub(r'\btemp\d+\b', lambda match: mapping.get(match[0], match[0]), body)
 
 
-def verify_spend_and_attempt(script, capacity=12):
-    """Execute real scalar helper/conditions with explicit controlled dependencies."""
+def verify_spend_and_attempt(script, capacity=12, capture_percent=60):
+    """Execute real scalar helper/conditions with explicit controlled dependencies.
+
+    Default 60 preserves the immutable historical removal oracle. Current-map
+    callers explicitly select the approved 65-percent profile.
+    """
     from VerifyPetUIArtifact import _integer_expression, _run_scalar_helper, jass_function
     spend = jass_function(script, 'tdPetSpendCaptureBall')
     for lane in (-1, 0, 1, 3, 4):
@@ -171,8 +175,11 @@ def verify_spend_and_attempt(script, capacity=12):
         for value in range(1, 101):
             actual = _integer_expression(roll[1].strip(), {'guaranteed': guaranteed},
                                         {'GetRandomInt': lambda _low, _high: value})
-            require(actual is (not guaranteed and value > 60), 'Ordinary sixty-percent roll changed')
-    refund = re.search(r'if\s+not tdPetStore\(.*?^\s*endif', capture, re.MULTILINE | re.DOTALL)
+            require(actual is (not guaranteed and value > capture_percent), 'Ordinary sixty-percent roll changed' if capture_percent == 60 else f'Ordinary {capture_percent}-percent roll changed')
+    # Current four-slot capture refunds either failed generation or failed storage.
+    # Keep the historical direct-store branch and accept only this exact new shape.
+    refund = re.search(r'if\s+(?:not tdPetStore\(|\( not generated\) or \( not tdPetStore\().*?^\s*endif',
+                       capture, re.MULTILINE | re.DOTALL)
     require(refund is not None and refund[0].count('call tdPetAddBall(lane_2)') == 1 and
             refund[0].count('call tdPetSyncBallAbility(lane_2)') == 1,
             'Ordinary storage failure must refund and synchronize exactly once')
