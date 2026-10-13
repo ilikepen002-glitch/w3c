@@ -26,16 +26,6 @@ def near(actual, expected, label):
 
 
 class PetAttackRuntime(EquipmentTrialRuntime):
-    def initialize_match(self):
-        # Final elemental/hero owners must initialize their real collections
-        # before TDInit clears them. Earlier phase-one maps have no such owners.
-        for name in ('init_TDPetEffectScheduler', 'init_TDPetHeroState', 'init_TDPetHeroEffects',
-                     'init_TDPetCastContext', 'init_TDPetEffectTargetState', 'init_TDEnemyControlRuntime',
-                     'init_TDPetRuntime'):
-            if name in self.functions:
-                self.invoke(name)
-        super().initialize_match()
-
     def __init__(self, script):
         super().__init__(script)
         self.roll = .99
@@ -676,8 +666,8 @@ def verify_trial(script):
     near(r.units[target]['life'],1000000.-210.,'Priority0 refill before priority3 resolve')
     near(r.state_call('total',0),210.,'Priority4 trial final amount')
     near(r.score(),0.,'Trial never enters ordinary ledger')
-    # The native allocator can replace a dead trial target with a new handle OR
-    # reuse its exact handle. Both must reject the newly issued binding revision.
+    # Actual single-batch death does not replenish. A separate low-level registry
+    # adversary covers both new and reused handles against actual snapshot guards.
     def ground(candidate, reused):
         r=PetAttackRuntime(candidate);r.auto_post=False;r.enter(8);target=r.target(0);pet=r.pet([(38 if r.final_catalog else 14,4)])
         original=[r.target(i) for i in range(5)]
@@ -688,9 +678,8 @@ def verify_trial(script):
         original_post=r.scheduled[-1][1];r.run_timer(original_post)
         require(not r.native_damage,'Ground proc ran inline before target replacement fixture')
         r.units[target]['alive']=False;r.event_target=target;r.invoke('tdTrialOnTargetDeath')
-        if reused:r.unit_serial=target-1
-        death=r.scheduled[-1][1];r.run_timer(death)
-        replacement=r.target(0)
+        require(r.slots[0]==0 and r.state_call('targetCount')==19 and len(r.creations)==20,'Single-batch death replenished the ground target')
+        replacement=r.adversarial_rebind(0,reused)
         new_revision=r.globals['TDTrialBinding_revision'][r.binding(0)]
         require((replacement==target) is reused and new_revision>old_revision,'Trial replacement fixture did not issue expected handle/revision')
         r.units[replacement].update(x=0.,y=0.);r.visible_units=[replacement,*original[1:]]
@@ -701,7 +690,7 @@ def verify_trial(script):
         if r.final_catalog:
             r.invoke('TDPet_invalidateCombat',pet)
             require(r.invoke('tdPetEffectTaskCount')==0 and not r.visual_handles,'Trial first-stage fixture leaked later stages/visuals')
-        return {'same_handle':reused,'new_revision':new_revision,'old_snapshot_neighbour_hits':4,'replacement_hits':0}
+        return {'registry_adversary':True,'same_handle':reused,'new_revision':new_revision,'old_snapshot_neighbour_hits':4,'replacement_hits':0}
     replacements=[ground(script,False),ground(script,True)]
     guard=functions(script)['tdEquipmentTrialAoeVictimValid'][4]
     broken=script.replace(guard,'\treturn true\n',1)

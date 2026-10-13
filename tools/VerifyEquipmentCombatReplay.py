@@ -140,28 +140,28 @@ def verify_new_aoe(script):
         for hit in r.native_damage:close(hit[2],50.,'One 50% event segment, no trial Boss scaling')
         require(len(r.scheduled)==2,'Code damage recursively queued another special proc')
         cases.append({'item':item,'native_main_hits':6 if item=='iP04' else 3,'live_victims':4,'primary_first':True})
-        # Kill the primary through the actual trial lifecycle, refill its slot,
-        # then run the ORIGINAL timer. Old neighbours remain valid, new slot does not.
+        # Real single-batch death leaves its slot empty. A separately labeled
+        # low-level registry adversary preserves the captured-identity negative.
         r,primary,original,callback=prepare_proc(script,item)
         r.units[primary]['alive']=False;r.event_target=primary;r.invoke('tdTrialOnTargetDeath')
-        death=r.scheduled[-1][1];r.run_timer(death)
-        replacement=r.target(0);r.units[replacement].update(x=0.,y=0.)
+        require(r.slots[0]==0 and r.state_call('targetCount')==19 and len(r.creations)==20,'Single-batch death replenished the primary')
+        replacement=r.adversarial_rebind(0);r.units[replacement].update(x=0.,y=0.)
         require(replacement not in original,'Death fixture did not replace the handle')
         r.run_timer(callback)
         victims=[hit[1] for hit in r.native_damage]
         require(len(victims)==4 and set(victims)==set(original[1:]),'Lethal primary swallowed old neighbours or damaged replacement')
-        cases.append({'item':item,'dead_primary_neighbours':4,'new_same_slot_damage':0})
+        cases.append({'item':item,'dead_primary_neighbours':4,'registry_adversary_new_same_slot_damage':0})
         r,primary,original,callback=prepare_proc(script,item)
         old_neighbour=original[1]
         r.units[old_neighbour]['alive']=False;r.event_target=old_neighbour;r.invoke('tdTrialOnTargetDeath')
         # The native allocator may reuse a retired handle. Production revision
         # guards must reject it even when pointer equality alone would match.
-        r.unit_serial=old_neighbour-1;r.run_timer(r.scheduled[-1][1])
+        r.adversarial_rebind(1,True)
         require(r.target(1)==old_neighbour,'Native handle-reuse fixture did not reuse the exact value')
         r.units[old_neighbour].update(x=0.,y=0.);r.run_timer(callback)
         victims=[hit[1] for hit in r.native_damage]
         require(old_neighbour not in victims and len(victims)==4,'Captured old revision damaged reused native handle')
-        cases.append({'item':item,'reused_handle_new_revision_damage':0,'original_other_victims':4})
+        cases.append({'item':item,'registry_adversary_reused_handle_new_revision_damage':0,'original_other_victims':4})
         r,primary,original,callback=prepare_proc(script,item)
         r.now=r.state_call('getDeadline');r.fire_native_timer(r.globals['TDTrialHook_tdTrialResumeTimer'])
         r.enter(24);r.run_timer(callback)

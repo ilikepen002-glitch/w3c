@@ -19,8 +19,8 @@ public function tdTrialPrepareHud(TDTrialState state, real now)
 		tdTrialHudCells[cell] = ""
 	if state.getRound() == 0 or state.getPhase() == TD_TRIAL_IDLE
 		tdTrialSetHudCell(0, 0, "金币试炼")
-		tdTrialSetHudCell(0, 2, "8/24波后各120秒")
-		tdTrialSetHudCell(5, 2, "每路5目标 · 屠王有效")
+		tdTrialSetHudCell(0, 2, "8/24波后 · 最长120秒")
+		tdTrialSetHudCell(5, 2, "每路一批5只 · 屠王有效")
 		return
 	let active = state.getPhase() == TD_TRIAL_ACTIVE
 	let remaining = active ? IMaxBJ(0, R2I(state.getDeadline() - now + 0.999)) : 0
@@ -39,6 +39,8 @@ public function tdTrialPrepareHud(TDTrialState state, real now)
 				status = "退出 · 0金"
 			else if state.isFaulted(lane)
 				status = "异常 · 0金"
+			else if active and state.laneCompleted(lane)
+				status = "已完成 · 等待其他路"
 			tdTrialSetHudCell(row, 3, status)
 	tdTrialSetHudCell(5, 0, "名次奖励")
 	tdTrialSetHudCell(5, 2, state.getRound() == 1 ? "30/24/18/12 · 同分均分" : "60/48/36/24 · 同分均分")

@@ -63,7 +63,7 @@ public function tdTrialClearTargets()
 
 public function tdTrialCreateTarget(int lane, int slot, int token, int generation, real now) returns boolean
 	let index = tdTrialSlotIndex(lane, slot)
-	if index < 0 or tdTrialNativeSlots[index] != null or not tdTrialLaneContinues(lane)
+	if tdTrialState.getPhase() != TD_TRIAL_PREPARING or index < 0 or tdTrialNativeSlots[index] != null or not tdTrialLaneContinues(lane)
 		return false
 	let spawn = tdLaneSpawnPosition(lane)
 	let first = tdLaneWaypointCount(lane) > 0 ? tdLaneWaypointPosition(lane, 0) : tdLaneExitPosition(lane)
@@ -106,7 +106,12 @@ public function tdTrialTickTargets()
 			tdTrialClearLaneTargets(lane)
 	for index = 0 to TD_TRIAL_MAX_TARGETS - 1
 		let binding = tdTrialNativeSlots[index]
-		if binding != null and tdTrialTargetValid(binding.target, binding.lane)
+		if binding == null
+			continue
+		if binding.target == null or GetUnitTypeId(binding.target) == 0 or not binding.target.isAlive()
+			tdTrialRemoveTarget(binding)
+			continue
+		if tdTrialTargetValid(binding.target, binding.lane)
 			var advanced = false
 			let position = binding.target.getPos()
 			if binding.waypoint < tdLaneWaypointCount(binding.lane)
@@ -114,9 +119,8 @@ public function tdTrialTickTargets()
 					binding.waypoint += 1
 					advanced = true
 			else if position.distanceTo(tdLaneExitPosition(binding.lane)) <= tdEnemyWaypointArrivalRadiusForTest()
-				binding.target.setPos(binding.origin)
-				binding.waypoint = tdTrialResetWaypoint()
-				advanced = true
+				tdTrialRemoveTarget(binding)
+				continue
 			tdTrialOrderTarget(binding, advanced)
 
 function tdTrialRouteTimerTick()
@@ -135,21 +139,7 @@ function tdTrialOnTargetDeath()
 	let binding = tdTrialBindingFor(GetTriggerUnit())
 	if binding == null
 		return
-	let lane = binding.lane
-	let slot = binding.slot
-	let token = binding.token
-	let generation = binding.generation
 	tdTrialRemoveTarget(binding)
-	let revision = tdTrialState.targetRevision(lane, slot)
-	// Let every synchronous death listener finish before replacing the empty slot.
-	doAfter(0.0) ->
-		let now = getElapsedGameTime()
-		if tdTrialState.getPhase() != TD_TRIAL_ACTIVE or not tdTrialState.current(token, generation) or now >= tdTrialState.getDeadline() or not tdTrialLaneContinues(lane)
-			return
-		if tdTrialState.isWithdrawn(lane) or tdTrialState.targetRevision(lane, slot) != revision or tdTrialState.targetIdentity(lane, slot) != 0
-			return
-		if tdTrialCreateTarget(lane, slot, token, generation, now)
-			tdTrialOrderTarget(tdTrialNativeSlots[tdTrialSlotIndex(lane, slot)], true)
 
 function tdTrialRefillBeforeDamage()
 	let target = DamageEvent.getTarget()

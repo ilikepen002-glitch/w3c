@@ -2,7 +2,9 @@
 """Replay final-map elemental spells with explicit clock/handle/region/native-order boundaries.
 Packed original-hit fence, cast creation, CD write, scheduler, geometry, target identity,
 damage, controls, slow ownership and destruction execute. Native Buff acceptance and
-visual handles are recorded models; this is not Warcraft timing or visual observation.
+visual handles are recorded models. Trial handle/revision adversaries use explicit
+low-level registry setup after actual no-refill death, never production ACTIVE refill.
+This is not Warcraft timing or visual observation.
 """
 from pathlib import Path
 import argparse, hashlib, json, math
@@ -12,11 +14,6 @@ from VerifyEquipmentAbilityArtifact import require
 from VerifyTowerUpgradeArtifact import rawcode
 
 class ElementRuntime(PetAttackRuntime):
-    def initialize_match(self):
-        for name in ('init_TDPetEffectScheduler','init_TDPetHeroState','init_TDPetHeroEffects',
-                                                            'init_TDPetCastContext','init_TDPetEffectTargetState','init_TDEnemyControlRuntime','init_TDPetRuntime'):
-            if name in self.functions:self.invoke(name)
-        super().initialize_match()
     def __init__(self,script):
         self.visual_handles={};self.visual_history=[];self.visual_serial=100000
         self.control_orders=[];self.reject_visual=False;self.reject_control=False
@@ -164,24 +161,50 @@ def verify_negatives(script):
                                     'Rejected control incorrectly retained its protection deadline')
     r.invoke('tdCancelEnemyControl',102,101,111)
     result['native_control_rejection']={'rolled_back':True,'next_control_accepted':True}
-    # Same-token refill plus allocator handle reuse must never become a meteor victim.
+    # Death leaves its slot empty. An explicit low-level identity-registry adversary
+    # then changes a handle/revision without granting production ACTIVE refill.
     for reused in (False,True):
         r=ElementRuntime(script);r.auto_post=False;r.enter(8);pet=r.pet(33)
         original=[r.target(index) for index in range(5)]
         for target in original:r.units[target].update(x=100.,y=0.)
         r.visible_units=original[:];r.emit(100.,target=original[0]);r.drain_zero()
         old=original[0];old_revision=r.globals['TDTrialBinding_revision'][r.binding(0)]
+        before_creations=len(r.creations);before_scheduled=list(r.scheduled)
+        before_count=r.state_call('targetCount')
         r.units[old]['alive']=False;r.event_target=old;r.invoke('tdTrialOnTargetDeath')
-        callback=r.scheduled[-1][1]
-        if reused:r.unit_serial=old-1
-        r.run_timer(callback);replacement=r.target(0)
+        require(r.slots[0]==0 and r.state_call('targetCount')==before_count-1
+                and len(r.creations)==before_creations and r.scheduled==before_scheduled,
+                'Actual death refilled/scheduled replenishment instead of leaving one vacant slot')
+        replacement=r.adversarial_rebind(0,reused=reused)
         r.units[replacement].update(x=100.,y=0.)
         require((replacement==old)==reused and r.globals['TDTrialBinding_revision'][r.binding(0)]!=old_revision,
-                                        'Replacement fixture did not change the captured identity')
+                                        'Controlled registry fixture did not change the captured identity')
         r.visible_units=[replacement,*original[1:]];r.auto_post=True;r.finish(4.)
         require(len(r.native_damage)==16 and all(hit[1]!=replacement for hit in r.native_damage),
                                         'Delayed meteor admitted a trial replacement or lost old neighbours')
-        result['trial_replacement_reused' if reused else 'trial_replacement_new_handle']={'old_hits':16,'replacement_hits':0}
+        result['trial_registry_reused_handle' if reused else 'trial_registry_new_handle']={'old_hits':16,'adversary_hits':0,'production_death_refilled':False,'setup':'controlled low-level registry adversary'}
+    for reset in (False,True):
+        r=ElementRuntime(script);r.enter(8);pet=r.pet(33)
+        original=[r.target(index) for index in range(5)]
+        for target in original:r.units[target].update(x=100.,y=0.)
+        r.visible_units=original[:];r.emit(100.,target=original[0])
+        generation=r.state_call('getGeneration')
+        if reset:
+            r.invoke('tdStartGame')
+            for lane in range(4):r.invoke('tdSetLaneActive',lane,True)
+            r.enter(24)
+            require(r.state_call('getGeneration')>generation and r.state_call('getRound')==2,
+                    'Actual reset did not create a new trial generation/round')
+            r.visible_units=[r.target(index) for index in range(5)]
+            for target in r.visible_units:r.units[target].update(x=100.,y=0.)
+        else:
+            r.invoke('tdTrialClearTargets')
+            require(r.state_call('targetCount')==0,'Actual clear retained trial identities')
+        r.finish(4.)
+        require(not r.native_damage and r.invoke('tdPetEffectTaskCount')==0 and not r.visual_handles,
+                'Cleared/reset trial warning damaged a new identity or retained its context/visuals')
+        result['trial_real_reset_new_round' if reset else 'trial_real_clear']={
+            'damage':0,'owned_tasks':0,'visuals':0,'package_globals_reinitialized':False}
     # Optional visuals cannot authorize or suppress an actual effect.
     r=ElementRuntime(script);r.reject_visual=True;pet=r.pet(32);r.visible_units=[102]
     r.emit(100.);r.finish(.4)

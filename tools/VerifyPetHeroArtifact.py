@@ -31,16 +31,6 @@ SNAPSHOT_FIELDS = ('firstRevision', 'second', 'secondRevision', 'third',
 
 
 class HeroRuntime(PetAttackRuntime):
-    def initialize_match(self):
-        # These are real package initializers, omitted by the older replay parent.
-        for name in ('init_TDEnemyControlRuntime', 'init_TDPetEffectTargetState',
-                     'init_TDPetCastContext', 'init_TDPetActiveVisuals',
-                     'init_TDPetEffectScheduler', 'init_TDPetHeroState',
-                     'init_TDPetHeroEffects'):
-            if name in self.functions:
-                self.invoke(name)
-        super().initialize_match()
-
     def __init__(self, script):
         super().__init__(script)
         self.invoke('tdPetHeroSetup')
@@ -196,24 +186,27 @@ def verify_root_snapshot(script):
             r.drain_zero()
         r.emit(1., target=original[0])
         require(not r.native_damage, 'Root pulse ran inline at original early3')
-        # SAME token/generation: replace only slot1 before the original native post.
+        # Death leaves slot1 empty. An explicit identity-registry adversary changes
+        # only that captured identity before post, without allowing ACTIVE refill.
         old = original[1]
         token = r.state_call('getToken')
         generation = r.state_call('getGeneration')
         old_revision = r.globals['TDTrialBinding_revision'][r.binding(1)]
+        before_creations = len(r.creations)
+        before_scheduled = list(r.scheduled)
+        before_count = r.state_call('targetCount')
         r.units[old]['alive'] = False
         r.event_target = old
         r.invoke('tdTrialOnTargetDeath')
-        replacement_callback = r.scheduled[-1][1]
-        if reused_handle:
-            r.unit_serial = old - 1
-        r.run_timer(replacement_callback)
-        replacement = r.target(1)
+        require(r.slots[1] == 0 and r.state_call('targetCount') == before_count - 1
+                and len(r.creations) == before_creations and r.scheduled == before_scheduled,
+                'Actual death refilled/scheduled replenishment instead of leaving one vacant slot')
+        replacement = r.adversarial_rebind(1, reused=reused_handle)
         r.units[replacement].update(x=0., y=0.)
         require(r.state_call('getToken') == token and r.state_call('getGeneration') == generation,
-                'Fixture replaced a round rather than a single slot')
+                'Controlled identity adversary changed the round instead of one identity')
         require(r.globals['TDTrialBinding_revision'][r.binding(1)] != old_revision,
-                'Fixture did not advance the replacement identity revision')
+                'Controlled registry fixture did not advance the identity revision')
         require((replacement == old) == reused_handle, 'Native allocator reuse fixture differs')
         r.drain_zero()
         require(not r.native_damage, 'Root ignored its .5-second warning')
@@ -226,9 +219,42 @@ def verify_root_snapshot(script):
             near(hit[2], r.invoke('tdPetHeroBaseAttack', 101) * .5, 'Trial root no Boss scale')
         r.invoke('TDPet_invalidateCombat', pet)
         require(r.invoke('tdPetEffectTaskCount') == 0, 'Source cancel leaked root/counter tasks')
-        cases.append({'same_token_single_slot_replacement': True,
-                      'native_handle_reused': reused_handle, 'replacement_hits': 0,
+        cases.append({'same_token_identity_registry_adversary': True,
+                      'production_death_refilled': False,
+                      'native_handle_reused': reused_handle, 'adversary_hits': 0,
                       'captured_old_hits': 3, 'cancelled_task_count': 0})
+    for reset in (False, True):
+        r = HeroRuntime(script)
+        r.enter(8)
+        pet = r.setup_pet(46)
+        original = [r.target(slot) for slot in range(5)]
+        for target in original:
+            r.units[target].update(x=0., y=0.)
+        for _ in range(5):
+            r.emit(1., target=original[0])
+        generation = r.state_call('getGeneration')
+        if reset:
+            # Actual TDInit reset/re-registration; do not rebuild package tables,
+            # clear scheduled callbacks or replace the shared scheduler.
+            r.invoke('tdStartGame')
+            for lane in range(4):
+                r.invoke('tdSetLaneActive', lane, True)
+            r.enter(24)
+            require(r.state_call('getGeneration') > generation and r.state_call('getRound') == 2,
+                    'Actual reset did not create a new trial generation/round')
+            r.visible_units = [r.target(slot) for slot in range(5)]
+            for target in r.visible_units:
+                r.units[target].update(x=0., y=0.)
+        else:
+            r.invoke('tdTrialClearTargets')
+            require(r.state_call('targetCount') == 0, 'Actual clear retained trial identities')
+        r.tick(.5)
+        r.invoke('TDPet_invalidateCombat', pet)
+        require(not r.native_damage and r.invoke('tdPetEffectTaskCount') == 0,
+                'Cleared/reset root hit a new identity or source cancel leaked a task')
+        cases.append({'actual_reset_new_round' if reset else 'actual_clear': True,
+                      'damage': 0, 'cancelled_task_count': 0,
+                      'package_globals_reinitialized': False})
     return cases
 
 
@@ -519,7 +545,8 @@ def main():
                                      'clock and callback delivery', 'handles and collections',
                                      'native tower impact/full-storm/corpse-completion notifications',
                                      'accepted primary-shield notification',
-                                     'synchronous UnitDamageTarget death delivery'],
+                                     'synchronous UnitDamageTarget death delivery',
+                                     'controlled low-level trial identity-registry adversary; no ACTIVE refill'],
                   replay_dependencies={name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
                                        for name in ('VerifyPetAttackArtifact.py', 'VerifyTrialReplay.py',
                                                     'VerifyBossSpellResistanceArtifact.py',

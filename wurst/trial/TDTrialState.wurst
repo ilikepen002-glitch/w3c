@@ -143,7 +143,7 @@ public class TDTrialState
 	function bindTarget(int lane, int slot, int identity, int expectedToken, int expectedGeneration, real now) returns boolean
 		if not current(expectedToken, expectedGeneration) or not tdTrialLaneValid(lane) or not participants[lane] or withdrawn[lane]
 			return false
-		if phase != TD_TRIAL_PREPARING and phase != TD_TRIAL_ACTIVE
+		if phase != TD_TRIAL_PREPARING
 			return false
 		if not tdTrialClockValid(now) or now < startedAt or now >= deadline
 			return false
@@ -218,8 +218,20 @@ public class TDTrialState
 			return false
 		return withdraw(lane)
 
+	function laneCompleted(int lane) returns boolean
+		if not tdTrialLaneValid(lane) or not participants[lane] or withdrawn[lane]
+			return false
+		for slot = 0 to TD_TRIAL_TARGETS_PER_LANE - 1
+			if targets.identity(lane, slot) != 0
+				return false
+		return true
+
 	function shouldResume(int expectedToken, int expectedGeneration, real now) returns boolean
-		return phase == TD_TRIAL_ACTIVE and current(expectedToken, expectedGeneration) and not resumeAccepted and tdTrialClockValid(now) and now >= deadline
+		if phase != TD_TRIAL_ACTIVE or not current(expectedToken, expectedGeneration) or resumeAccepted or not tdTrialClockValid(now) or now < startedAt
+			return false
+		if targets.count() == 0
+			return true
+		return now >= deadline
 
 	function noteResumeAccepted(int expectedToken, int expectedGeneration) returns boolean
 		if phase != TD_TRIAL_ACTIVE or not current(expectedToken, expectedGeneration) or resumeAccepted
@@ -249,17 +261,21 @@ public class TDTrialState
 	function seal(int expectedToken, int expectedGeneration, int reason, real now) returns boolean
 		if phase != TD_TRIAL_ACTIVE or not current(expectedToken, expectedGeneration)
 			return false
+		let exhausted = targets.count() == 0
 		// Close first: callbacks and old projectiles can no longer score or refill.
 		phase = TD_TRIAL_SEALED
 		sealedElapsed = tdTrialElapsed(startedAt, now)
 		let normal = reason == TD_TRIAL_RELEASE_COMPLETED or reason == TD_TRIAL_RELEASE_TIME_LIMIT
 		// Unexpected early/invalid releases fail closed, but always allow cleanup.
-		if normal and tdTrialClockValid(now) and now >= deadline
-			completed[round - 1] = true
-			sealedElapsed = TD_TRIAL_DURATION
-			for lane = 0 to TD_TRIAL_LANE_COUNT - 1
-				if participants[lane] and not withdrawn[lane] and scores[lane].hasDamage() and not scores[lane].isFaulted()
-					rewards[lane] = tdTrialTiePrize(round, rank(lane), tiedCount(lane))
+		if normal and tdTrialClockValid(now) and now >= startedAt
+			var finished = now >= deadline
+			if reason == TD_TRIAL_RELEASE_COMPLETED and exhausted
+				finished = true
+			if finished
+				completed[round - 1] = true
+				for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+					if participants[lane] and not withdrawn[lane] and scores[lane].hasDamage() and not scores[lane].isFaulted()
+						rewards[lane] = tdTrialTiePrize(round, rank(lane), tiedCount(lane))
 		// Identity is invalidated before native cleanup; no KillUnit or rewards here.
 		targets.clear()
 		return true

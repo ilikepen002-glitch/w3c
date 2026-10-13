@@ -139,13 +139,65 @@ function creditTrial(TDTrialState state, int lane, int slot, real amount, real n
 	let revision = state.targetRevision(0, 0)
 	let stale = state.hitTicket(0, 0, 1, 5, generation, 1.0, 1000000.0)
 	state.unbindTarget(0, 0, 1, revision, 5, generation).assertTrue()
-	state.bindTarget(0, 0, 21, 5, generation, 1.0).assertTrue()
+	state.bindTarget(0, 0, 21, 5, generation, 1.0).assertFalse()
 	state.credit(stale, 0, 10.0, 1.0).assertEquals(0.0)
 	state.unbindTarget(0, 0, 21, revision, 5, generation).assertFalse()
 	state.reset()
 	state.prepare(8, 5, generation, 2.0).assertFalse()
 	state.credit(stale, 0, 10.0, 2.0).assertEquals(0.0)
 	destroy stale
+	destroy state
+
+@Test function trialSpentLaneWaitsForOthersAndActiveCannotRefill()
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 51, 10.0, true, true, false, false)
+	let generation = state.getGeneration()
+	state.laneCompleted(0).assertFalse()
+	state.laneCompleted(2).assertFalse()
+	for slot = 0 to 4
+		state.unbindTarget(0, slot, slot + 1, state.targetRevision(0, slot), 51, generation).assertTrue()
+	state.laneCompleted(0).assertTrue()
+	state.targetCount().assertEquals(5)
+	state.bindTarget(0, 0, 99, 51, generation, 20.0).assertFalse()
+	state.shouldResume(51, generation, 20.0).assertFalse()
+	state.withdraw(1).assertTrue()
+	state.laneCompleted(1).assertFalse()
+	state.targetCount().assertEquals(0)
+	state.shouldResume(51, generation, 20.0).assertTrue()
+	state.shouldResume(50, generation, 20.0).assertFalse()
+	state.shouldResume(51, generation - 1, 20.0).assertFalse()
+	state.shouldResume(51, generation, 9.0).assertFalse()
+	destroy state
+
+@Test function trialExhaustedEarlyCompletedPaysOnceWithRealElapsed()
+	let state = new TDTrialState()
+	prepareTrial(state, 24, 51, 10.0, true, false, false, false)
+	creditTrial(state, 0, 0, 100.0, 11.0)
+	let generation = state.getGeneration()
+	for slot = 0 to 4
+		state.unbindTarget(0, slot, slot + 1, state.targetRevision(0, slot), 51, generation).assertTrue()
+	state.shouldResume(51, generation, 30.0).assertTrue()
+	state.seal(51, generation, TD_TRIAL_RELEASE_COMPLETED, 30.0).assertTrue()
+	state.wasCompleted(2).assertTrue()
+	state.reward(0).assertEquals(60)
+	state.averageDps(0, 999.0).assertEquals(5.0)
+	state.takeReward(0, 51, generation).assertEquals(0)
+	state.markTargetsCleared(51, generation).assertTrue()
+	state.takeReward(0, 51, generation).assertEquals(60)
+	state.takeReward(0, 51, generation).assertEquals(0)
+	state.seal(51, generation, TD_TRIAL_RELEASE_TIME_LIMIT, 130.0).assertFalse()
+	destroy state
+
+@Test function trialEmptyEarlyTimeLimitStillFailsClosed()
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 51, 10.0, true, false, false, false)
+	creditTrial(state, 0, 0, 100.0, 11.0)
+	let generation = state.getGeneration()
+	for slot = 0 to 4
+		state.unbindTarget(0, slot, slot + 1, state.targetRevision(0, slot), 51, generation)
+	state.seal(51, generation, TD_TRIAL_RELEASE_TIME_LIMIT, 30.0).assertTrue()
+	state.reward(0).assertEquals(0)
+	state.wasCompleted(1).assertFalse()
 	destroy state
 
 @Test function trialFailedPartialPreparationCompletedReleaseCannotAward()
