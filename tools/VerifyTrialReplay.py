@@ -410,8 +410,8 @@ def verify_single_batch(script):
      else:r.run_timer(watchdog);r.fire_native_timer(timer)
     require(r.state_call('getPhase')==3 and len(r.removals)==20 and len(set(r.removals))==20,'Settlement cleanup/reentry changed')
     require(r.globals['TDState_tdGlobalWave']==wave+1 and r.spawn_requests==[(lane,wave+1) for lane in range(4)],'Next wave not once')
-    prizes=[r.invoke('tdGetGold',lane)-100 for lane in range(4)]
-    require(prizes==[x*(1 if wave==8 else 2) for x in (30,24,18,12)],'Original ranking prizes changed')
+    prizes=[r.invoke('tdGetGold',lane)-1000 for lane in range(4)]
+    require(prizes==[x*(1 if wave==8 else 2) for x in (300,240,180,120)],'Current ranking prizes changed')
     require(r.state_call('averageDps',0,999.)==400./(20. if order=='early' else 120.),'Sealed elapsed is not actual/capped')
     starts=len(r.timer_starts);r.now=r.state_call('getDeadline')
     r.fire_native_timer(timer);r.fire_native_timer(route);r.run_timer(watchdog)
@@ -432,7 +432,7 @@ def verify_single_batch(script):
   for lane in range(4):credit_lane(r,lane,10.)
   for lane in range(4):r.invoke('tdHandleLanePlayerLeft',lane)
   require(r.invoke('tdIsGameOver') and r.state_call('getPhase')==3 and r.state_call('targetCount')==0 and len(r.removals)==20,'All-leave abort failed')
-  require(all(r.invoke('tdGetGold',lane)==100 for lane in range(4)) and not r.spawn_requests,'All-leave awarded or advanced')
+  require(all(r.invoke('tdGetGold',lane)==1000 for lane in range(4)) and not r.spawn_requests,'All-leave awarded or advanced')
   report['cases'].append({'wave':wave,'all_players_left_abort':True,'prizes':0,'next_wave':0})
  # Two independent compiled-phase-guard mutations must expose the empty-slot check.
  mutations=[]
@@ -451,7 +451,7 @@ def verify_single_batch(script):
   r.invoke('tdHandleLanePlayerLeft',3);r.invoke('tdTrialTickTargets')
   require(r.state_call('targetCount')==0 and r.state_call('getPhase')==2,'Last leave did not vacate exactly its five slots')
   r.fire_native_timer(r.globals['TDTrialHook_tdTrialResumeTimer'])
-  require(r.state_call('getPhase')==3 and r.invoke('tdGetGold',3)==100 and r.globals['TDState_tdGlobalWave']==wave+1 and len(r.spawn_requests)==3,'Early last-leave release/reward failed')
+  require(r.state_call('getPhase')==3 and r.invoke('tdGetGold',3)==1000 and r.globals['TDState_tdGlobalWave']==wave+1 and len(r.spawn_requests)==3,'Early last-leave release/reward failed')
   report['cases'].append({'wave':wave,'last_unexhausted_lane_left':True,'withdrawn_gold':0,'next_wave_once':wave+1})
   r=TrialJassRuntime(script);r.initialize_match();r.enter(wave)
   handles=[r.target(i) for i in range(20)]
