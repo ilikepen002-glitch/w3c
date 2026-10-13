@@ -1,0 +1,3535 @@
+{
+  "map_sha256": "5d6701cf84d4910fdcae6c2eaf299ae76e640577640e416564ba8ab38fac69d5",
+  "map_bytes": 5745005,
+  "listed_members": 411,
+  "conservative_root_count": 51,
+  "retired_icon_members": 0,
+  "retired_icon_packed_bytes": 0,
+  "retired_icon_raw_bytes": 0,
+  "retired_preview_objects": 0,
+  "new_object_savings": 0,
+  "retained_with_reference_or_dynamic_evidence": [
+    {
+      "path": "Credits-KingLeoric.txt",
+      "packed_bytes": 366,
+      "raw_bytes": 457,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "KingLeoric-original-readme.html",
+      "packed_bytes": 770,
+      "raw_bytes": 1862,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "Leoric.blp",
+      "packed_bytes": 49308,
+      "raw_bytes": 175942,
+      "evidence": [
+        "KingLeoric-original-readme.html",
+        "war3mapImported\\Leoric.mdx",
+        "war3mapImported\\Leoric_Portrait.mdx"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDActionCaptureOrb.blp",
+      "packed_bytes": 3074,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDActionGroundUpgrade.blp",
+      "packed_bytes": 3438,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDActionInventoryCraft.blp",
+      "packed_bytes": 3194,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDBossAbyss.blp",
+      "packed_bytes": 3678,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDBossEclipse.blp",
+      "packed_bytes": 3322,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDBossObsidian.blp",
+      "packed_bytes": 3256,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDBossRiftwind.blp",
+      "packed_bytes": 3775,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemArmorDrum.blp",
+      "packed_bytes": 3288,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemArmorSpike.blp",
+      "packed_bytes": 3275,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemBerserkerBadge.blp",
+      "packed_bytes": 3217,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemBlademasterSigil.blp",
+      "packed_bytes": 2909,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemBountyContract.blp",
+      "packed_bytes": 3302,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemCommandHorn.blp",
+      "packed_bytes": 3422,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemCommandSeal.blp",
+      "packed_bytes": 3025,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemCoolingRune.blp",
+      "packed_bytes": 3069,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemCorruptedHeart.blp",
+      "packed_bytes": 3049,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemEagleScope.blp",
+      "packed_bytes": 2478,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemExecutionMark.blp",
+      "packed_bytes": 2740,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemFocusStone.blp",
+      "packed_bytes": 2855,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemForestSeed.blp",
+      "packed_bytes": 3620,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemFrostTome.blp",
+      "packed_bytes": 3005,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemGoldRing.blp",
+      "packed_bytes": 3040,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemHunterScope.blp",
+      "packed_bytes": 2506,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemLaceratingSpike.blp",
+      "packed_bytes": 2714,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemMercenaryPurse.blp",
+      "packed_bytes": 2987,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemPoisonSac.blp",
+      "packed_bytes": 2981,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemRhythmTotem.blp",
+      "packed_bytes": 3033,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemScavengerBag.blp",
+      "packed_bytes": 3257,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemShortBow.blp",
+      "packed_bytes": 2231,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemStableTotem.blp",
+      "packed_bytes": 2545,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemSteelLongbow.blp",
+      "packed_bytes": 2381,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemSunderingSeal.blp",
+      "packed_bytes": 3384,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemToxicVine.blp",
+      "packed_bytes": 3000,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemWarAxe.blp",
+      "packed_bytes": 3072,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemWhiteTigerBanner.blp",
+      "packed_bytes": 3097,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemWindDrum.blp",
+      "packed_bytes": 3807,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemWindrunnerBanner.blp",
+      "packed_bytes": 3713,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemWindrunnerBow.blp",
+      "packed_bytes": 2997,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetAdopt.blp",
+      "packed_bytes": 2018,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetCollection.blp",
+      "packed_bytes": 2066,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetCultivate.blp",
+      "packed_bytes": 2311,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetDeploy.blp",
+      "packed_bytes": 2257,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetEmptySlot.blp",
+      "packed_bytes": 1085,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetInfo.blp",
+      "packed_bytes": 1995,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetKeep.blp",
+      "packed_bytes": 2091,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetKeepOld.blp",
+      "packed_bytes": 2006,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetMenuTools.blp",
+      "packed_bytes": 2286,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetNext.blp",
+      "packed_bytes": 1732,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetPrevious.blp",
+      "packed_bytes": 1717,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetRecall.blp",
+      "packed_bytes": 2186,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetRelease.blp",
+      "packed_bytes": 2203,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetReturnBuilder.blp",
+      "packed_bytes": 1953,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillAdvancingRoots.blp",
+      "packed_bytes": 3496,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillBladeRain.blp",
+      "packed_bytes": 3570,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillChainConflagration.blp",
+      "packed_bytes": 3144,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillChargedHit.blp",
+      "packed_bytes": 3464,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillComboAttack.blp",
+      "packed_bytes": 3449,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillCorrosiveBlossom.blp",
+      "packed_bytes": 3606,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillCrimsonLotus.blp",
+      "packed_bytes": 3734,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillDelayedJudgement.blp",
+      "packed_bytes": 3637,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillEarthFracture.blp",
+      "packed_bytes": 3769,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillEpidemicRelay.blp",
+      "packed_bytes": 3681,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillHeavyBlow.blp",
+      "packed_bytes": 3583,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillHolySealRelay.blp",
+      "packed_bytes": 3566,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillHuntMomentum.blp",
+      "packed_bytes": 3055,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillKingslayerPact.blp",
+      "packed_bytes": 2898,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillMoonBeacon.blp",
+      "packed_bytes": 3137,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillMountainShockwave.blp",
+      "packed_bytes": 4046,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillParasiticSeed.blp",
+      "packed_bytes": 3641,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillPoisonSprout.blp",
+      "packed_bytes": 3455,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillResoluteStrike.blp",
+      "packed_bytes": 3345,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillRootAmbush.blp",
+      "packed_bytes": 3730,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillStarFrostArrows.blp",
+      "packed_bytes": 3372,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillSunderingBlade.blp",
+      "packed_bytes": 3723,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillSwiftAssault.blp",
+      "packed_bytes": 3157,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillSwordFormation.blp",
+      "packed_bytes": 3730,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSkillVineBind.blp",
+      "packed_bytes": 3475,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies01.blp",
+      "packed_bytes": 1914,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies01Q1.blp",
+      "packed_bytes": 2086,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies01Q2.blp",
+      "packed_bytes": 1986,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies01Q3.blp",
+      "packed_bytes": 1960,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies01Q4.blp",
+      "packed_bytes": 1971,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies02.blp",
+      "packed_bytes": 1600,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies02Q1.blp",
+      "packed_bytes": 1747,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies02Q2.blp",
+      "packed_bytes": 1675,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies02Q3.blp",
+      "packed_bytes": 1642,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies02Q4.blp",
+      "packed_bytes": 1647,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies03.blp",
+      "packed_bytes": 1555,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies03Q1.blp",
+      "packed_bytes": 1737,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies03Q2.blp",
+      "packed_bytes": 1605,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies03Q3.blp",
+      "packed_bytes": 1562,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies03Q4.blp",
+      "packed_bytes": 1570,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies04.blp",
+      "packed_bytes": 2088,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies04Q1.blp",
+      "packed_bytes": 2278,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies04Q2.blp",
+      "packed_bytes": 2160,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies04Q3.blp",
+      "packed_bytes": 2112,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies04Q4.blp",
+      "packed_bytes": 2115,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies05.blp",
+      "packed_bytes": 1679,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies05Q1.blp",
+      "packed_bytes": 1857,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies05Q2.blp",
+      "packed_bytes": 1734,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies05Q3.blp",
+      "packed_bytes": 1679,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies05Q4.blp",
+      "packed_bytes": 1689,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies06.blp",
+      "packed_bytes": 1752,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies06Q1.blp",
+      "packed_bytes": 1935,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies06Q2.blp",
+      "packed_bytes": 1793,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies06Q3.blp",
+      "packed_bytes": 1739,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies06Q4.blp",
+      "packed_bytes": 1740,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies07.blp",
+      "packed_bytes": 1773,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies07Q1.blp",
+      "packed_bytes": 1940,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies07Q2.blp",
+      "packed_bytes": 1838,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies07Q3.blp",
+      "packed_bytes": 1808,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies07Q4.blp",
+      "packed_bytes": 1811,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies08.blp",
+      "packed_bytes": 1691,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies08Q1.blp",
+      "packed_bytes": 1846,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies08Q2.blp",
+      "packed_bytes": 1770,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies08Q3.blp",
+      "packed_bytes": 1733,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies08Q4.blp",
+      "packed_bytes": 1742,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies09.blp",
+      "packed_bytes": 1639,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies09Q1.blp",
+      "packed_bytes": 1776,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies09Q2.blp",
+      "packed_bytes": 1709,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies09Q3.blp",
+      "packed_bytes": 1686,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies09Q4.blp",
+      "packed_bytes": 1683,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies10.blp",
+      "packed_bytes": 1701,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies10Q1.blp",
+      "packed_bytes": 1886,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies10Q2.blp",
+      "packed_bytes": 1772,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies10Q3.blp",
+      "packed_bytes": 1717,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies10Q4.blp",
+      "packed_bytes": 1724,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies11.blp",
+      "packed_bytes": 1508,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies11Q1.blp",
+      "packed_bytes": 1678,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies11Q2.blp",
+      "packed_bytes": 1587,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies11Q3.blp",
+      "packed_bytes": 1557,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies11Q4.blp",
+      "packed_bytes": 1547,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies12.blp",
+      "packed_bytes": 1792,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies12Q1.blp",
+      "packed_bytes": 1982,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies12Q2.blp",
+      "packed_bytes": 1848,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies12Q3.blp",
+      "packed_bytes": 1811,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies12Q4.blp",
+      "packed_bytes": 1822,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies13.blp",
+      "packed_bytes": 1944,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies13Q1.blp",
+      "packed_bytes": 2118,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies13Q2.blp",
+      "packed_bytes": 1992,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies13Q3.blp",
+      "packed_bytes": 1938,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies13Q4.blp",
+      "packed_bytes": 1942,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies14.blp",
+      "packed_bytes": 1775,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies14Q1.blp",
+      "packed_bytes": 1955,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies14Q2.blp",
+      "packed_bytes": 1829,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies14Q3.blp",
+      "packed_bytes": 1769,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies14Q4.blp",
+      "packed_bytes": 1779,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies15.blp",
+      "packed_bytes": 1738,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies15Q1.blp",
+      "packed_bytes": 1941,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies15Q2.blp",
+      "packed_bytes": 1804,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies15Q3.blp",
+      "packed_bytes": 1769,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetSpecies15Q4.blp",
+      "packed_bytes": 1790,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetUseNew.blp",
+      "packed_bytes": 2235,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerBladestorm.blp",
+      "packed_bytes": 3847,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerBloodlust.blp",
+      "packed_bytes": 3328,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerCommandAura.blp",
+      "packed_bytes": 3773,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerCorpseExplosion.blp",
+      "packed_bytes": 3778,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerCriticalStrike.blp",
+      "packed_bytes": 3104,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerFrenzy.blp",
+      "packed_bytes": 3518,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerPoisonDart.blp",
+      "packed_bytes": 3162,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerShieldBash.blp",
+      "packed_bytes": 3830,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerSplitShot.blp",
+      "packed_bytes": 3769,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerSwordDance.blp",
+      "packed_bytes": 3701,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerTrueshotAura.blp",
+      "packed_bytes": 3479,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTowerVinesAura.blp",
+      "packed_bytes": 3550,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTrialGoldGolem.blp",
+      "packed_bytes": 3764,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "Textures\\BoulderArmAtlas.blp",
+      "packed_bytes": 28639,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\BoulderArmGibbon.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\BrassPangolinAtlas.blp",
+      "packed_bytes": 23809,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\BrassPangolin.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\CinderFoxAtlas.blp",
+      "packed_bytes": 23462,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\CinderTailFox.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\EclipseSpellweaverAtlas.blp",
+      "packed_bytes": 48865,
+      "raw_bytes": 350705,
+      "evidence": [
+        "war3mapImported\\EclipseSpellweaver.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\EmberBirdAtlas.blp",
+      "packed_bytes": 22801,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\EmberBird.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\FrostMantaAtlas.blp",
+      "packed_bytes": 24116,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\FrostFinManta.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\LeafwingAtlas.blp",
+      "packed_bytes": 23027,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\LeafwingSpirit.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\MoltenHornAtlas.blp",
+      "packed_bytes": 23833,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\MoltenHornSalamander.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\MosscapAtlas.blp",
+      "packed_bytes": 20475,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\MosscapSprite.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\RiftwindHunterAtlas.blp",
+      "packed_bytes": 54789,
+      "raw_bytes": 350705,
+      "evidence": [
+        "war3mapImported\\RiftwindHunter.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\RockTurtlePalette.blp",
+      "packed_bytes": 26794,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\RockShellTurtle.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\RootbudAtlas.blp",
+      "packed_bytes": 19672,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\RootbudStag.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\SandSpiralAtlas.blp",
+      "packed_bytes": 25873,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\SandSpiralSnail.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\SilverManeAtlas.blp",
+      "packed_bytes": 25819,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\SilverManeBeast.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\SnowOtterAtlas.blp",
+      "packed_bytes": 25570,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\SnowManeOtter.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\SteelwingAtlas.blp",
+      "packed_bytes": 22246,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\SteelwingFalcon.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\TDPetVfxAtlas.blp",
+      "packed_bytes": 4631,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3mapImported\\TDPetVfxFaultRidge.mdx",
+        "war3mapImported\\TDPetVfxSwordArray.mdx",
+        "war3mapImported\\TDPetVfxVerdantRoot.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\TideWyrmAtlas.blp",
+      "packed_bytes": 27317,
+      "raw_bytes": 88561,
+      "evidence": [
+        "war3mapImported\\TideWyrm.mdx"
+      ]
+    },
+    {
+      "path": "Textures\\UncrownedAbyssKingAtlas.blp",
+      "packed_bytes": 59460,
+      "raw_bytes": 350705,
+      "evidence": [
+        "war3mapImported\\UncrownedAbyssKing.mdx"
+      ]
+    },
+    {
+      "path": "dummy.mdx",
+      "packed_bytes": 5700,
+      "raw_bytes": 35040,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "ui\\Glues\\Loading\\Load-Generic\\Generic-Loading-BotLeft.blp",
+      "packed_bytes": 107059,
+      "raw_bytes": 175943,
+      "evidence": [
+        "ui\\Glues\\Loading\\Load-Generic\\Load-Generic.mdx"
+      ]
+    },
+    {
+      "path": "ui\\Glues\\Loading\\Load-Generic\\Generic-Loading-BotRight.blp",
+      "packed_bytes": 93062,
+      "raw_bytes": 175943,
+      "evidence": [
+        "ui\\Glues\\Loading\\Load-Generic\\Load-Generic.mdx"
+      ]
+    },
+    {
+      "path": "ui\\Glues\\Loading\\Load-Generic\\Generic-Loading-TopLeft.blp",
+      "packed_bytes": 244827,
+      "raw_bytes": 350705,
+      "evidence": [
+        "ui\\Glues\\Loading\\Load-Generic\\Load-Generic.mdx"
+      ]
+    },
+    {
+      "path": "ui\\Glues\\Loading\\Load-Generic\\Generic-Loading-TopRight.blp",
+      "packed_bytes": 195774,
+      "raw_bytes": 350705,
+      "evidence": [
+        "ui\\Glues\\Loading\\Load-Generic\\Load-Generic.mdx"
+      ]
+    },
+    {
+      "path": "ui\\Glues\\Loading\\Load-Generic\\Load-Generic.mdx",
+      "packed_bytes": 443,
+      "raw_bytes": 3108,
+      "evidence": [
+        "war3map.w3i"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDActionCaptureOrb.blp",
+      "packed_bytes": 5570,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDActionGroundUpgrade.blp",
+      "packed_bytes": 6145,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDActionInventoryCraft.blp",
+      "packed_bytes": 5901,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDBossAbyss.blp",
+      "packed_bytes": 6372,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDBossEclipse.blp",
+      "packed_bytes": 6298,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDBossObsidian.blp",
+      "packed_bytes": 6329,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDBossRiftwind.blp",
+      "packed_bytes": 6302,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemArmorDrum.blp",
+      "packed_bytes": 6080,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemArmorSpike.blp",
+      "packed_bytes": 6061,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemBerserkerBadge.blp",
+      "packed_bytes": 5923,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemBlademasterSigil.blp",
+      "packed_bytes": 5410,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemBountyContract.blp",
+      "packed_bytes": 5896,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemCommandHorn.blp",
+      "packed_bytes": 6255,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemCommandSeal.blp",
+      "packed_bytes": 5278,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemCoolingRune.blp",
+      "packed_bytes": 5343,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemCorruptedHeart.blp",
+      "packed_bytes": 5798,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemEagleScope.blp",
+      "packed_bytes": 4819,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemExecutionMark.blp",
+      "packed_bytes": 5381,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemFocusStone.blp",
+      "packed_bytes": 5115,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemForestSeed.blp",
+      "packed_bytes": 6471,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemFrostTome.blp",
+      "packed_bytes": 5471,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemGoldRing.blp",
+      "packed_bytes": 5571,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemHunterScope.blp",
+      "packed_bytes": 4849,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemLaceratingSpike.blp",
+      "packed_bytes": 5154,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemMercenaryPurse.blp",
+      "packed_bytes": 5702,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemPoisonSac.blp",
+      "packed_bytes": 5361,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemRhythmTotem.blp",
+      "packed_bytes": 5572,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemScavengerBag.blp",
+      "packed_bytes": 6188,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemShortBow.blp",
+      "packed_bytes": 4569,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemStableTotem.blp",
+      "packed_bytes": 4991,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemSteelLongbow.blp",
+      "packed_bytes": 4783,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemSunderingSeal.blp",
+      "packed_bytes": 6318,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemToxicVine.blp",
+      "packed_bytes": 5506,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemWarAxe.blp",
+      "packed_bytes": 5718,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp",
+      "packed_bytes": 5510,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemWindDrum.blp",
+      "packed_bytes": 6395,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemWindrunnerBanner.blp",
+      "packed_bytes": 6273,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3t"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDItemWindrunnerBow.blp",
+      "packed_bytes": 5402,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetAdopt.blp",
+      "packed_bytes": 3447,
+      "raw_bytes": 12102,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetCollection.blp",
+      "packed_bytes": 3561,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetCultivate.blp",
+      "packed_bytes": 3946,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetDeploy.blp",
+      "packed_bytes": 3909,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetEmptySlot.blp",
+      "packed_bytes": 2358,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetInfo.blp",
+      "packed_bytes": 3656,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetKeep.blp",
+      "packed_bytes": 3572,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetKeepOld.blp",
+      "packed_bytes": 3501,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetMenuTools.blp",
+      "packed_bytes": 4009,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetNext.blp",
+      "packed_bytes": 3259,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetPrevious.blp",
+      "packed_bytes": 3210,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetRecall.blp",
+      "packed_bytes": 3665,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetRelease.blp",
+      "packed_bytes": 3726,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetReturnBuilder.blp",
+      "packed_bytes": 3443,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillAdvancingRoots.blp",
+      "packed_bytes": 6045,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillBladeRain.blp",
+      "packed_bytes": 6296,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillChainConflagration.blp",
+      "packed_bytes": 5463,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillChargedHit.blp",
+      "packed_bytes": 5790,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillComboAttack.blp",
+      "packed_bytes": 5826,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillCorrosiveBlossom.blp",
+      "packed_bytes": 6476,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillCrimsonLotus.blp",
+      "packed_bytes": 6331,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillDelayedJudgement.blp",
+      "packed_bytes": 6255,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillEarthFracture.blp",
+      "packed_bytes": 6436,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillEpidemicRelay.blp",
+      "packed_bytes": 6424,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillHeavyBlow.blp",
+      "packed_bytes": 6315,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillHolySealRelay.blp",
+      "packed_bytes": 6219,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillHuntMomentum.blp",
+      "packed_bytes": 5564,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillKingslayerPact.blp",
+      "packed_bytes": 5136,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillMoonBeacon.blp",
+      "packed_bytes": 5797,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillMountainShockwave.blp",
+      "packed_bytes": 6638,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillParasiticSeed.blp",
+      "packed_bytes": 6159,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillPoisonSprout.blp",
+      "packed_bytes": 6199,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillResoluteStrike.blp",
+      "packed_bytes": 5801,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillRootAmbush.blp",
+      "packed_bytes": 6387,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillStarFrostArrows.blp",
+      "packed_bytes": 6237,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillSunderingBlade.blp",
+      "packed_bytes": 6106,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillSwiftAssault.blp",
+      "packed_bytes": 5766,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillSwordFormation.blp",
+      "packed_bytes": 6338,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSkillVineBind.blp",
+      "packed_bytes": 6243,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies01.blp",
+      "packed_bytes": 3426,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies01Q1.blp",
+      "packed_bytes": 3531,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies01Q2.blp",
+      "packed_bytes": 3488,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies01Q3.blp",
+      "packed_bytes": 3505,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies01Q4.blp",
+      "packed_bytes": 3496,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies02.blp",
+      "packed_bytes": 3097,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies02Q1.blp",
+      "packed_bytes": 3161,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies02Q2.blp",
+      "packed_bytes": 3110,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies02Q3.blp",
+      "packed_bytes": 3125,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies02Q4.blp",
+      "packed_bytes": 3102,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies03.blp",
+      "packed_bytes": 2979,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies03Q1.blp",
+      "packed_bytes": 3107,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies03Q2.blp",
+      "packed_bytes": 3060,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies03Q3.blp",
+      "packed_bytes": 3133,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies03Q4.blp",
+      "packed_bytes": 3072,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies04.blp",
+      "packed_bytes": 3871,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies04Q1.blp",
+      "packed_bytes": 3973,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies04Q2.blp",
+      "packed_bytes": 3924,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies04Q3.blp",
+      "packed_bytes": 3919,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies04Q4.blp",
+      "packed_bytes": 3938,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies05.blp",
+      "packed_bytes": 3352,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies05Q1.blp",
+      "packed_bytes": 3436,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies05Q2.blp",
+      "packed_bytes": 3433,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies05Q3.blp",
+      "packed_bytes": 3422,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies05Q4.blp",
+      "packed_bytes": 3408,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies06.blp",
+      "packed_bytes": 3420,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies06Q1.blp",
+      "packed_bytes": 3501,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies06Q2.blp",
+      "packed_bytes": 3517,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies06Q3.blp",
+      "packed_bytes": 3502,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies06Q4.blp",
+      "packed_bytes": 3484,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies07.blp",
+      "packed_bytes": 3285,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies07Q1.blp",
+      "packed_bytes": 3357,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies07Q2.blp",
+      "packed_bytes": 3350,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies07Q3.blp",
+      "packed_bytes": 3358,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies07Q4.blp",
+      "packed_bytes": 3350,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies08.blp",
+      "packed_bytes": 3194,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies08Q1.blp",
+      "packed_bytes": 3273,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies08Q2.blp",
+      "packed_bytes": 3237,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies08Q3.blp",
+      "packed_bytes": 3268,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies08Q4.blp",
+      "packed_bytes": 3251,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies09.blp",
+      "packed_bytes": 3030,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies09Q1.blp",
+      "packed_bytes": 3121,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies09Q2.blp",
+      "packed_bytes": 3100,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies09Q3.blp",
+      "packed_bytes": 3076,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies09Q4.blp",
+      "packed_bytes": 3077,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies10.blp",
+      "packed_bytes": 3251,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies10Q1.blp",
+      "packed_bytes": 3391,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies10Q2.blp",
+      "packed_bytes": 3364,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies10Q3.blp",
+      "packed_bytes": 3376,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies10Q4.blp",
+      "packed_bytes": 3361,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies11.blp",
+      "packed_bytes": 3242,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies11Q1.blp",
+      "packed_bytes": 3343,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies11Q2.blp",
+      "packed_bytes": 3301,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies11Q3.blp",
+      "packed_bytes": 3276,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies11Q4.blp",
+      "packed_bytes": 3329,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies12.blp",
+      "packed_bytes": 3405,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies12Q1.blp",
+      "packed_bytes": 3489,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies12Q2.blp",
+      "packed_bytes": 3457,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies12Q3.blp",
+      "packed_bytes": 3469,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies12Q4.blp",
+      "packed_bytes": 3473,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies13.blp",
+      "packed_bytes": 3743,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies13Q1.blp",
+      "packed_bytes": 3785,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies13Q2.blp",
+      "packed_bytes": 3756,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies13Q3.blp",
+      "packed_bytes": 3791,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies13Q4.blp",
+      "packed_bytes": 3771,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies14.blp",
+      "packed_bytes": 3601,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies14Q1.blp",
+      "packed_bytes": 3663,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies14Q2.blp",
+      "packed_bytes": 3705,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies14Q3.blp",
+      "packed_bytes": 3650,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies14Q4.blp",
+      "packed_bytes": 3608,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies15.blp",
+      "packed_bytes": 3341,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies15Q1.blp",
+      "packed_bytes": 3435,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies15Q2.blp",
+      "packed_bytes": 3454,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies15Q3.blp",
+      "packed_bytes": 3439,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetSpecies15Q4.blp",
+      "packed_bytes": 3407,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDPetUseNew.blp",
+      "packed_bytes": 3806,
+      "raw_bytes": 12102,
+      "evidence": [
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerBladestorm.blp",
+      "packed_bytes": 6541,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerBloodlust.blp",
+      "packed_bytes": 6325,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerCommandAura.blp",
+      "packed_bytes": 6393,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerCorpseExplosion.blp",
+      "packed_bytes": 6314,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerCriticalStrike.blp",
+      "packed_bytes": 5734,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerFrenzy.blp",
+      "packed_bytes": 6342,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerPoisonDart.blp",
+      "packed_bytes": 5586,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerShieldBash.blp",
+      "packed_bytes": 6465,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerSplitShot.blp",
+      "packed_bytes": 6366,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerSwordDance.blp",
+      "packed_bytes": 6367,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerTrueshotAura.blp",
+      "packed_bytes": 6107,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTowerVinesAura.blp",
+      "packed_bytes": 6320,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3a"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BTNTDTrialGoldGolem.blp",
+      "packed_bytes": 6564,
+      "raw_bytes": 12102,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BoulderArmGibbon.mdx",
+      "packed_bytes": 73180,
+      "raw_bytes": 275622,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\BrassPangolin.mdx",
+      "packed_bytes": 68894,
+      "raw_bytes": 246012,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\CinderTailFox.mdx",
+      "packed_bytes": 95330,
+      "raw_bytes": 339980,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\EclipseSpellweaver.mdx",
+      "packed_bytes": 221858,
+      "raw_bytes": 763754,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\EmberBird.mdx",
+      "packed_bytes": 101100,
+      "raw_bytes": 373244,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\FrostFinManta.mdx",
+      "packed_bytes": 57300,
+      "raw_bytes": 205110,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\LeafwingSpirit.mdx",
+      "packed_bytes": 72461,
+      "raw_bytes": 266956,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\Leoric.mdx",
+      "packed_bytes": 147239,
+      "raw_bytes": 249337,
+      "evidence": [
+        "KingLeoric-original-readme.html",
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\Leoric_Portrait.mdx",
+      "packed_bytes": 18509,
+      "raw_bytes": 37130,
+      "evidence": [
+        "KingLeoric-original-readme.html"
+      ]
+    },
+    {
+      "path": "war3mapImported\\MoltenHornSalamander.mdx",
+      "packed_bytes": 92237,
+      "raw_bytes": 327072,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\MosscapSprite.mdx",
+      "packed_bytes": 63520,
+      "raw_bytes": 215380,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\RiftwindHunter.mdx",
+      "packed_bytes": 177636,
+      "raw_bytes": 606872,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\RockShellTurtle.mdx",
+      "packed_bytes": 70704,
+      "raw_bytes": 268364,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\RootbudStag.mdx",
+      "packed_bytes": 51424,
+      "raw_bytes": 188654,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\SandSpiralSnail.mdx",
+      "packed_bytes": 75272,
+      "raw_bytes": 258248,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\SilverManeBeast.mdx",
+      "packed_bytes": 96552,
+      "raw_bytes": 371326,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\SnowManeOtter.mdx",
+      "packed_bytes": 75171,
+      "raw_bytes": 268482,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\SteelwingFalcon.mdx",
+      "packed_bytes": 54435,
+      "raw_bytes": 191384,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\TDEvolutionWings.blp",
+      "packed_bytes": 204071,
+      "raw_bytes": 700230,
+      "evidence": [
+        "war3mapImported\\TDEvolutionWings1.mdx",
+        "war3mapImported\\TDEvolutionWings2.mdx",
+        "war3mapImported\\TDEvolutionWings3.mdx",
+        "war3mapImported\\TDEvolutionWings4.mdx",
+        "war3mapImported\\TDEvolutionWings5.mdx"
+      ]
+    },
+    {
+      "path": "war3mapImported\\TDEvolutionWings1.mdx",
+      "packed_bytes": 409,
+      "raw_bytes": 1908,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\TDEvolutionWings2.mdx",
+      "packed_bytes": 406,
+      "raw_bytes": 1908,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\TDEvolutionWings3.mdx",
+      "packed_bytes": 406,
+      "raw_bytes": 1908,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\TDEvolutionWings4.mdx",
+      "packed_bytes": 406,
+      "raw_bytes": 1908,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\TDEvolutionWings5.mdx",
+      "packed_bytes": 409,
+      "raw_bytes": 1908,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapImported\\TDPetVfxFaultRidge.mdx",
+      "packed_bytes": 10554,
+      "raw_bytes": 46852,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j"
+      ]
+    },
+    {
+      "path": "war3mapImported\\TDPetVfxSwordArray.mdx",
+      "packed_bytes": 13607,
+      "raw_bytes": 56932,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j"
+      ]
+    },
+    {
+      "path": "war3mapImported\\TDPetVfxVerdantRoot.mdx",
+      "packed_bytes": 12288,
+      "raw_bytes": 41182,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.j"
+      ]
+    },
+    {
+      "path": "war3mapImported\\TDTower192.tga",
+      "packed_bytes": 32,
+      "raw_bytes": 126,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\TideWyrm.mdx",
+      "packed_bytes": 70825,
+      "raw_bytes": 249558,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapImported\\UncrownedAbyssKing.mdx",
+      "packed_bytes": 235069,
+      "raw_bytes": 824674,
+      "evidence": [
+        "Wurst source including dynamic string fragments",
+        "war3map.w3u"
+      ]
+    },
+    {
+      "path": "war3mapMap.blp",
+      "packed_bytes": 11422,
+      "raw_bytes": 12154,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapMisc.txt",
+      "packed_bytes": 58,
+      "raw_bytes": 72,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    },
+    {
+      "path": "war3mapPreview.tga",
+      "packed_bytes": 218114,
+      "raw_bytes": 262162,
+      "evidence": [
+        "conservative dynamic literal prefix"
+      ]
+    }
+  ],
+  "unresolved_retained_except_explicit_retired_allowlist": [],
+  "authorized_retired_paths": [
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenix.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ1N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ1N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ1N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ1N4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ2N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ2N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ2N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ2N4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ3N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ3N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ3N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ3N4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ4N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ4N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ4N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ4N4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWisp.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ1N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ1N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ1N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ1N4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ2N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ2N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ2N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ2N4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ3N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ3N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ3N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ3N4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ4N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ4N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ4N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ4N4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragon.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ1N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ1N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ1N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ1N4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ2N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ2N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ2N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ2N4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ3N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ3N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ3N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ3N4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ4.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ4N1.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ4N2.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ4N3.blp",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ4N4.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenix.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ1.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ1N1.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ1N2.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ1N3.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ1N4.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ2.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ2N1.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ2N2.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ2N3.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ2N4.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ3.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ3N1.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ3N2.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ3N3.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ3N4.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ4.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ4N1.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ4N2.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ4N3.blp",
+    "war3mapImported\\BTNTDPetFlamePhoenixQ4N4.blp",
+    "war3mapImported\\BTNTDPetGhostWisp.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ1.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ1N1.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ1N2.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ1N3.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ1N4.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ2.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ2N1.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ2N2.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ2N3.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ2N4.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ3.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ3N1.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ3N2.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ3N3.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ3N4.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ4.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ4N1.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ4N2.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ4N3.blp",
+    "war3mapImported\\BTNTDPetGhostWispQ4N4.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragon.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ1.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ1N1.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ1N2.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ1N3.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ1N4.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ2.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ2N1.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ2N2.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ2N3.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ2N4.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ3.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ3N1.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ3N2.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ3N3.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ3N4.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ4.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ4N1.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ4N2.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ4N3.blp",
+    "war3mapImported\\BTNTDPetStormFaerieDragonQ4N4.blp"
+  ],
+  "scope": "Conservative roots include every model and unknown non-media payload; unresolved resources remain. Native game dependencies are not bundled-resource deletions."
+}

@@ -6,7 +6,6 @@ import TDInventoryRuntime
 import TDConfig
 import TDState
 import TDSpawn
-import TDEnemyControlRuntime
 import TDTrialIdentity
 import TDWaveFlowState
 import TDPetState
@@ -19,98 +18,6 @@ boolean tdTargetPriorityEventsReady = false
 boolean tdTargetPriorityRecoveryRunning = false
 trigger tdTargetPriorityOrderTrigger = CreateTrigger()
 trigger tdTargetPriorityOwnerTrigger = CreateTrigger()
-
-// Fixed 4 x 6 geometry slots, with no per-enemy state. Real regions only;
-// missing regions are retried on the next selection, not cached as fallbacks.
-int tdTargetPriorityGeometryEpoch = -1
-int array tdTargetPriorityWaypointCounts
-real array tdTargetPriorityWaypointX
-real array tdTargetPriorityWaypointY
-real array tdTargetPrioritySuffix
-real tdTargetPriorityExitMinX = 0.0
-real tdTargetPriorityExitMinY = 0.0
-real tdTargetPriorityExitMaxX = 0.0
-real tdTargetPriorityExitMaxY = 0.0
-
-function tdTargetPriorityPrepareGeometry() returns boolean
-	if tdTargetPriorityGeometryEpoch == tdFlowEpoch()
-		return true
-	if TD_ACTIVE_PLAYER_COUNT > TD_TARGET_PRIORITY_ROUTE_LANE_CAPACITY
-		return false
-	let exitRect = tdLaneExitRect()
-	if exitRect == null
-		return false
-	let minX = GetRectMinX(exitRect)
-	let minY = GetRectMinY(exitRect)
-	let maxX = GetRectMaxX(exitRect)
-	let maxY = GetRectMaxY(exitRect)
-	if not tdTargetPriorityExitBoundsValid(minX, minY, maxX, maxY)
-		return false
-	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		let count = tdLaneWaypointCount(lane)
-		if count < 0 or count >= TD_TARGET_PRIORITY_ROUTE_STAGE_CAPACITY
-			return false
-		tdTargetPriorityWaypointCounts[lane] = count
-		let base = lane * TD_TARGET_PRIORITY_ROUTE_STAGE_CAPACITY
-		for index = 0 to count - 1
-			let waypointRect = tdLaneWaypointRect(lane, index)
-			if waypointRect == null
-				return false
-			if not tdTargetPriorityExitBoundsValid(GetRectMinX(waypointRect), GetRectMinY(waypointRect), GetRectMaxX(waypointRect), GetRectMaxY(waypointRect))
-				return false
-			let point = tdLaneWaypointPosition(lane, index)
-			tdTargetPriorityWaypointX[base + index] = point.x
-			tdTargetPriorityWaypointY[base + index] = point.y
-		tdTargetPriorityWaypointX[base + count] = (minX + maxX) / 2.0
-		tdTargetPriorityWaypointY[base + count] = (minY + maxY) / 2.0
-		tdTargetPrioritySuffix[base + count] = 0.0
-		var tailIndex = count - 1
-		while tailIndex >= 0
-			let slot = base + tailIndex
-			let point = vec2(tdTargetPriorityWaypointX[slot], tdTargetPriorityWaypointY[slot])
-			if tailIndex == count - 1
-				tdTargetPrioritySuffix[slot] = tdTargetPriorityExitEntryDistance(point.x, point.y, minX, minY, maxX, maxY)
-			else
-				let next = vec2(tdTargetPriorityWaypointX[slot + 1], tdTargetPriorityWaypointY[slot + 1])
-				tdTargetPrioritySuffix[slot] = point.distanceTo(next) + tdTargetPrioritySuffix[slot + 1]
-			tailIndex -= 1
-	tdTargetPriorityExitMinX = minX
-	tdTargetPriorityExitMinY = minY
-	tdTargetPriorityExitMaxX = maxX
-	tdTargetPriorityExitMaxY = maxY
-	tdTargetPriorityGeometryEpoch = tdFlowEpoch()
-	return true
-
-function tdTargetPriorityEnemyEta(unit enemy, int lane, boolean geometryReady) returns real
-	if not geometryReady or tdTrialIsTargetType(enemy) or not tdIsLanePlayer(lane)
-		return -1.0
-	let position = enemy.getPos()
-	if not tdTargetPriorityCoordinateValid(position.x) or not tdTargetPriorityCoordinateValid(position.y)
-		return -1.0
-	// Leak settlement checks the rect even if the enemy is frozen or stopped.
-	if tdTargetPriorityInsideExit(position.x, position.y, tdTargetPriorityExitMinX, tdTargetPriorityExitMinY, tdTargetPriorityExitMaxX, tdTargetPriorityExitMaxY)
-		return 0.0
-	if IsUnitPaused(enemy) or IsUnitType(enemy, UNIT_TYPE_STUNNED) or IsUnitType(enemy, UNIT_TYPE_SNARED) or tdEnemyHasActiveMovementControl(enemy)
-		return -1.0
-	if enemy.getCurrentOrder() != tdEnemyLaneOrderIdForTest()
-		return -1.0
-	// This native already includes the project's sprint and slow composition.
-	let speed = GetUnitMoveSpeed(enemy)
-	if not tdTargetPrioritySpeedValid(speed)
-		return -1.0
-	let index = tdEnemyWaypointIndex(enemy)
-	let count = tdTargetPriorityWaypointCounts[lane]
-	if index < 0 or index > count
-		return -1.0
-	if index == count
-		return tdTargetPriorityDistanceEta(tdTargetPriorityExitEntryDistance(position.x, position.y, tdTargetPriorityExitMinX, tdTargetPriorityExitMinY, tdTargetPriorityExitMaxX, tdTargetPriorityExitMaxY), speed)
-	let slot = lane * TD_TARGET_PRIORITY_ROUTE_STAGE_CAPACITY + index
-	let suffix = tdTargetPrioritySuffix[slot]
-	// Lower bound of this polyline estimate only, not native pathfinding.
-	if suffix > speed * TD_TARGET_PRIORITY_EMERGENCY_SECONDS
-		return -1.0
-	let next = vec2(tdTargetPriorityWaypointX[slot], tdTargetPriorityWaypointY[slot])
-	return tdTargetPriorityDistanceEta(position.distanceTo(next) + suffix, speed)
 
 function tdTargetPrioritySourceValid(TDTowerTargetPriorityState record) returns boolean
 	let source = record.source
@@ -172,9 +79,6 @@ function tdTargetPriorityBest(TDTowerTargetPriorityState record, unit currentTar
 	var bestHp = best == null ? 0.0 : best.getLife()
 	var bestRank = best == null ? 0 : tdTargetPriorityRank(GetUnitTypeId(best))
 	var bestKey = best == null ? 0 : best.getHandleId()
-	let geometryReady = tdTargetPriorityPrepareGeometry()
-	let currentEta = best == null ? -1.0 : tdTargetPriorityEnemyEta(best, record.owner, geometryReady)
-	var bestEta = currentEta
 	let nearby = CreateGroup()
 	nearby.enumUnitsInRange(record.source.getPos(), range + 0.405)
 	for candidate in nearby
@@ -183,13 +87,11 @@ function tdTargetPriorityBest(TDTowerTargetPriorityState record, unit currentTar
 		let hp = candidate.getLife()
 		let rank = tdTargetPriorityRank(GetUnitTypeId(candidate))
 		let key = candidate.getHandleId()
-		let eta = candidate == currentTarget and keepCurrent ? currentEta : tdTargetPriorityEnemyEta(candidate, record.owner, geometryReady)
-		if best == null or tdTargetPriorityEmergencyReplace(policy, hp, rank, key, eta, bestHp, bestRank, bestKey, bestEta, keepCurrent and best == currentTarget)
+		if best == null or tdTargetPriorityReplace(policy, hp, rank, key, bestHp, bestRank, bestKey, keepCurrent and best == currentTarget)
 			best = candidate
 			bestHp = hp
 			bestRank = rank
 			bestKey = key
-			bestEta = eta
 	nearby.destr()
 	return best
 

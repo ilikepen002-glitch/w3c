@@ -26,16 +26,18 @@ class TowerTargetPrioritySourceTests(unittest.TestCase):
         self.assertEqual(report['comparator_cases'], 2304)
         self.assertEqual(report['family_policies'], [1, 2, 2, 1, 2])
 
-    def test_emergency_actual_source_rules_and_entry_geometry(self):
-        namespace = gate.source_scalar_namespace(self.sources)
-        report = gate.verify_emergency_rules(lambda name,*args: namespace[name](*args))
-        self.assertGreater(report['emergency_comparator_cases'], 1000)
-        self.assertEqual(report['threshold_cases'], [2.999,3.,3.001])
-        self.assertTrue(report['nonurgent_base_policy_unchanged'])
+
+    def test_retired_route_priority_has_no_active_source_symbols(self):
+        report=gate.verify_source_contract(self.sources)
+        self.assertFalse(report['route_progress_or_speed_priority'])
+        with self.assertRaisesRegex(ValueError,'Retired route interception'):
+            changed=dict(self.sources)
+            changed[gate.RULES] += '\npublic constant real TD_TARGET_PRIORITY_EMERGENCY_SECONDS = 3.0\n'
+            gate.verify_source_contract(changed)
 
     def test_source_mutations_fail_closed(self):
         rejected = gate.verify_source_mutations(self.sources)
-        self.assertGreaterEqual(len(rejected), 22)
+        self.assertGreaterEqual(len(rejected), 16)
         self.assertIn('queue before verdict', rejected)
         self.assertIn('recovery floor lost', rejected)
 
@@ -56,12 +58,6 @@ class TowerTargetPrioritySourceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'explicitly verified formal'):
             gate.verify_baseline_no_selection('', '', '0' * 64)
 
-    def test_rect_expected_value_oracle_parallel_corner_and_inside(self):
-        bounds=(-10.,-20.,10.,20.)
-        self.assertAlmostEqual(gate.entry_distance_oracle(50.,0.,bounds),40.)
-        self.assertAlmostEqual(gate.entry_distance_oracle(0.,60.,bounds),40.)
-        self.assertAlmostEqual(gate.entry_distance_oracle(20.,40.,bounds),500.**.5)
-        self.assertEqual(gate.entry_distance_oracle(-10.,20.,bounds),0.)
 
     def test_jass_or_binds_above_and_per_group_and_argument(self):
         parse = gate.jass_boolean_expression
@@ -81,13 +77,9 @@ class TowerTargetPriorityPackedTests(unittest.TestCase):
         self.assertEqual(report['status'], 'PASS')
         self.assertTrue(report['actual_mpq_executed'])
         self.assertEqual(len(report['packed_catalog_rawcodes']), 35)
-        self.assertEqual(report['emergency_dense_cost']['actual_eta_calls'], 1600)
-        self.assertTrue(report['emergency_selection']['late_current_immutable_eta'])
-        self.assertLess(report['emergency_geometry']['tail_at_speed300_entry_eta'], 3.)
-        self.assertGreater(report['emergency_geometry']['tail_center_eta'], 3.)
-        self.assertEqual(len(report['emergency_packed_mutations_rejected']), 12)
-        self.assertTrue(all(item['expected_oracle_assertion'] in item['reason']
-                            for item in report['emergency_packed_mutations_rejected']))
+        self.assertFalse(report['base_policy_without_route_override']['route_progress_or_speed_priority'])
+        self.assertTrue(all(case['route_or_speed_reads']==0 for case in report['base_policy_without_route_override']['cases']))
+        self.assertEqual(len(report['packed_mutations_rejected']),9)
         self.assertEqual(report['sparse_recovery']['parked_sources'], 40)
         self.assertEqual(report['sparse_recovery']['max_queries_per_tick'], 4)
 

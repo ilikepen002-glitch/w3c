@@ -279,7 +279,7 @@ def verify_wiring(*, verify_legacy_wild_scope=True):
     command = function_body(ui, 'onCommand')[1]
     for phrase in ('caster != tdPetDisplays[lane]', 'tdPetDisplayOwners.hasInt', 'GetUnitAbilityLevel', 'session.admitCommand', 'tdPetResolveRerollVersion'):
         require(phrase in command, 'Missing synchronized command authority: ' + phrase)
-    require(command.index('session.admitCommand') < command.index('tdPetDeploy('), 'Consume authority before transaction')
+    require(command.index('session.admitCommand') < command.index('tdPetDeployAndRefresh('), 'Consume authority before transaction')
     admission = function_body(session, 'admitCommand')[1]
     for phrase in ('commandAction(', 'dirty or not snapshotCurrent()', 'releaseNonce != tdPetReleaseNonce(lane)', 'consumeCommand(', 'TD_PET_COMMAND_STALE', 'TD_PET_COMMAND_REFRESH', 'TD_PET_COMMAND_EMPTY'):
         require(phrase in admission, 'Missing production admission: ' + phrase)

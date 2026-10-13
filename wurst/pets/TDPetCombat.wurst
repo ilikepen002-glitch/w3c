@@ -91,6 +91,17 @@ public function tdPetRefreshHost(unit tower, real _aura)
 	// Existing inventory entry owns native equipment + pet cooldown aggregation.
 	tdRefreshTowerEquipmentBonuses(tower)
 
+// Combat aggregation stays above Runtime; never introduce the reverse import.
+public function tdPetDeployAndRefresh(TDPet pet, unit tower) returns boolean
+	let source = pet == null ? null : pet.host
+	if not tdPetDeploy(pet, tower)
+		return false
+	if source != tower
+		if source != null
+			tdPetRefreshHost(source, 0.0)
+		tdPetRefreshHost(tower, 0.0)
+	return true
+
 function onAttack()
 	if not tdPetDamageSourceEligible(DamageEvent.isCode(), DamageEvent.isSpell(), DamageEvent.getId())
 		return

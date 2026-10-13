@@ -1,5 +1,7 @@
 package TDPetWildState
 
+public constant real TD_PET_WILD_LIFETIME = 180.0
+
 public constant int TD_PET_WILD_ALIVE = 0
 public constant int TD_PET_WILD_CAPTURED = 1
 public constant int TD_PET_WILD_EXPIRED = 2
@@ -10,7 +12,7 @@ public class TDPetWildState
 	real deadline
 	construct(int lane, real appearedAt)
 		this.lane = lane
-		deadline = appearedAt + 60.0
+		deadline = appearedAt + TD_PET_WILD_LIFETIME
 
 	function canCapture(boolean alive, real now) returns boolean
 		return state == TD_PET_WILD_ALIVE and alive and now < deadline

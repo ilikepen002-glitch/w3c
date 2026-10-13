@@ -83,6 +83,7 @@ def verify_source_contract(files):
     require(runtime.count('doPeriodically(') == 1, 'Recovery must have one shared periodic owner')
     require(runtime.count('enumUnitsInRange(') == 1 and 'enumUnitsInRect(' not in runtime,
             'Priority must have one local selector, no full-map scan')
+    require(not re.search(r'TD_TARGET_PRIORITY_(?:EMERGENCY|MAX_SPEED|MAX_COORDINATE|ROUTE_)|tdTargetPriority(?:EnemyEta|Emergency|Urgent|DistanceEta|PrepareGeometry|Geometry|Suffix|Waypoint)|tdEnemyHasActiveMovementControl', region), 'Retired route interception code remains')
     imports = re.findall(r'^import (\w+)', state, re.M)
     require(set(imports) <= {'Table', 'LinkedList'}, 'Low state layer introduced a high-level dependency')
     require('return hp < bestHp' in body(rules, 'tdTargetPriorityStrictlyBetter') and
@@ -94,7 +95,6 @@ def verify_source_contract(files):
                     'TD_TARGET_PRIORITY_RECOVERY_INTERVAL = 0.50',
                     'TD_TARGET_PRIORITY_RECOVERY_BUDGET = 4'):
         require(re.search(r'\b' + re.escape(literal) + r'\s*$', rules, re.M), 'Recovery budget constant changed: ' + literal)
-    emergency_contract = verify_emergency_source_contract(files)
     all_code = '\n'.join(code(v) for v in files.values())
     require(all_code.count('registerAnyUnitEvent(EVENT_PLAYER_UNIT_ATTACKED)') == 1,
             'Expected exactly one ATTACKED registration')
@@ -127,7 +127,7 @@ def verify_source_contract(files):
     select = body(runtime, 'tdTargetPriorityBest')
     require(select.count('enumUnitsInRange(') == 1 and select.count('nearby.destr()') == 1,
             'Selector duplicated local scan or leaked group')
-    require('tdTargetPriorityEmergencyReplace(' in select and '.getLife()' in select and
+    require('tdTargetPriorityReplace(' in select and '.getLife()' in select and
             'getMaxHP' not in select and 'getMaxLife' not in select, 'Selection is not absolute live HP')
     accept = body(runtime, 'tdTargetPriorityAcceptAttack')
     ordered(accept, ('if record.consumePending()', 'if record.manualTarget != null',
@@ -200,92 +200,8 @@ def verify_source_contract(files):
             'Consume/expiry destruction ownership changed')
     return {'unique_attacked_wrapper': True, 'local_selector_count': 1,
             'shared_recovery_timer_count': 1, 'damage_selection_bridge_count': 0,
-            'emergency': emergency_contract,
+            'route_progress_or_speed_priority': False,
             'source_files_sha256': {p: sha(files[p].encode()) for p in (RULES, STATE, RUNTIME, TOWER, INVENTORY,'enemies/TDEnemyControlRuntime.wurst','TDConfig.wurst')}}
-
-
-def verify_emergency_source_contract(files):
-    rules, runtime = code(files[RULES]), code(files[RUNTIME])
-    for literal in ('TD_TARGET_PRIORITY_EMERGENCY_SECONDS = 3.0',
-                    'TD_TARGET_PRIORITY_MAX_SPEED = 10000.0',
-                    'TD_TARGET_PRIORITY_ROUTE_STAGE_CAPACITY = 6',
-                    'TD_TARGET_PRIORITY_ROUTE_LANE_CAPACITY = 4'):
-        require(re.search(r'\b' + re.escape(literal) + r'\s*$', rules, re.M), 'Emergency constant changed: ' + literal)
-    prepare = body(runtime, 'tdTargetPriorityPrepareGeometry')
-    for token in ('tdTargetPriorityGeometryEpoch == tdFlowEpoch()', 'tdLaneExitRect()',
-                  'exitRect == null', 'GetRectMinX(exitRect)', 'GetRectMinY(exitRect)',
-                  'GetRectMaxX(exitRect)', 'GetRectMaxY(exitRect)', 'tdLaneWaypointCount(lane)',
-                  'count >= TD_TARGET_PRIORITY_ROUTE_STAGE_CAPACITY', 'tdLaneWaypointRect(lane, index)',
-                  'waypointRect == null', 'tdLaneWaypointPosition(lane, index)',
-                  'tdTargetPrioritySuffix[slot + 1]', 'tdTargetPriorityGeometryEpoch = tdFlowEpoch()'):
-        require(token in prepare, 'Real fixed-path geometry cache missing: ' + token)
-    require('Fallback' not in prepare and 'tdLaneExitPosition' not in prepare,
-            'Emergency path cached no-handle fallback geometry')
-    entry = body(rules, 'tdTargetPriorityExitEntryDistance')
-    require('SquareRoot(dx * dx + dy * dy) * fraction' in entry, 'Emergency forgot exit first-entry boundary')
-    emergency = body(rules, 'tdTargetPriorityEmergencyReplace')
-    ordered(emergency, ('if urgent != bestUrgent', 'return urgent', 'if urgent', 'if eta != bestEta',
-                         'return eta < bestEta', 'if keepCurrent', 'return false',
-                         'return tdTargetPriorityReplace('), 'Urgent-only override comparator')
-    eta = body(runtime, 'tdTargetPriorityEnemyEta')
-    ordered(eta, ('tdTrialIsTargetType(enemy)', 'tdTargetPriorityInsideExit(', 'return 0.0',
-                  'IsUnitPaused(enemy)', 'tdEnemyHasActiveMovementControl(enemy)',
-                  'enemy.getCurrentOrder() != tdEnemyLaneOrderIdForTest()', 'GetUnitMoveSpeed(enemy)',
-                  'tdTargetPrioritySpeedValid(speed)', 'tdEnemyWaypointIndex(enemy)',
-                  'index < 0 or index > count', 'tdTargetPriorityExitEntryDistance(',
-                  'tdTargetPrioritySuffix[slot]', 'position.distanceTo(next) + suffix'),
-            'Inside-exit-before-freeze, real-speed and P1-polyline ETA')
-    require('readyAt' not in eta and 'SetUnitMoveSpeed' not in runtime,
-            'Emergency uses post-control protection or writes/recomposes speed')
-    select = body(runtime, 'tdTargetPriorityBest')
-    require(select.count('tdTargetPriorityPrepareGeometry()') == 1 and
-            select.count('tdTargetPriorityEnemyEta(') == 2 and
-            'candidate == currentTarget and keepCurrent ? currentEta :' in select,
-            'ETA repeated geometry/current reads or failed to reuse immutable current ETA')
-    require(select.count('enumUnitsInRange(') == 1 and select.count('tdTargetPriorityEmergencyReplace(') == 1,
-            'Emergency policy adds an extra scan or sorting pass')
-    control = code(files['enemies/TDEnemyControlRuntime.wurst'])
-    query = body(control, 'tdEnemyHasActiveMovementControl')
-    for token in ("enemy.getAbilityLevel('BPSE') > 0", 'record.enemy == enemy',
-                  'record.buffId != 0', 'enemy.getAbilityLevel(record.buffId) > 0'):
-        require(token in query, 'Movement-control read lost actual source/buff identity: ' + token)
-    require(not re.search(r'readyAt|reserve|cancel|destroy|SetUnit|saveInt|saveBoolean', query),
-            'Read-only movement query became a control tracker/protection check')
-    return {'emergency_seconds': 3., 'real_rect_cached_per_epoch': True,
-            'fixed_route_slots': [4,6], 'per_legal_candidate_eta_reads': 1,
-            'inside_exit_precedes_control_speed': True, 'trial_urgent': False}
-
-
-def verify_emergency_rules(invoke):
-    checked = 0
-    for policy, eta, best_eta, hp, best_hp, rank, best_rank, keep in itertools.product(
-            (1,2), (-1.,0.,2.999,3.,3.001,10.), (-1.,0.,3.,3.001),
-            (1.,100.), (1.,100.), (0,2), (0,2), (False,True)):
-        urgent, best_urgent = 0. <= eta <= 3., 0. <= best_eta <= 3.
-        base = hp < best_hp if policy == 1 else rank > best_rank
-        equal = hp == best_hp if policy == 1 else rank == best_rank
-        expected = urgent if urgent != best_urgent else eta < best_eta if urgent and eta != best_eta else                   False if urgent and keep else base or (not keep and equal)
-        actual = invoke('tdTargetPriorityEmergencyReplace', policy,hp,rank,10,eta,
-                        best_hp,best_rank,20,best_eta,keep)
-        require(actual == expected, 'Emergency/base/current-tie precedence mismatch')
-        checked += 1
-    for eta, urgent in ((2.999,True),(3.,True),(3.001,False),(-1.,False),(math.nan,False)):
-        require(invoke('tdTargetPriorityUrgent', eta) == urgent, 'Emergency 3s threshold/NaN mismatch')
-    for speed in (0., -1., math.nan, math.inf,10000.001):
-        require(not invoke('tdTargetPrioritySpeedValid', speed), 'Invalid actual speed accepted')
-        require(invoke('tdTargetPriorityDistanceEta',900.,speed) == -1., 'Invalid speed divided/clamped')
-    near(invoke('tdTargetPriorityDistanceEta',900.,300.),3., 'Current speed ETA')
-    near(invoke('tdTargetPriorityDistanceEta',900.,150.),6., 'Current slowed speed ETA')
-    bounds = (-10.,-20.,10.,20.)
-    points = [(0.,0.,0.),(10.,20.,0.),(50.,0.,40.),(0.,60.,40.),
-              (30.,60.,math.sqrt(2000.)),(20.,40.,math.sqrt(500.))]
-    for x,y,expected in points:
-        near(invoke('tdTargetPriorityExitEntryDistance', x,y,*bounds),expected,'Rect first-entry geometry')
-    require(invoke('tdTargetPriorityExitEntryDistance',0.,0.,0.,0.,0.,20.) == -1., 'Invalid exit rect admitted')
-    require(invoke('tdTargetPriorityExitEntryDistance',math.nan,0.,*bounds) == -1., 'NaN position admitted')
-    return {'emergency_comparator_cases': checked, 'threshold_cases': [2.999,3.,3.001],
-            'rect_first_entry_cases': len(points), 'invalid_speed_fail_closed': True,
-            'nonurgent_base_policy_unchanged': True}
 
 
 def source_scalar_namespace(files):
@@ -301,11 +217,7 @@ def source_scalar_namespace(files):
     for name in ('tdIsBossUnitTypeId', 'tdIsBossGuardUnitTypeId'):
         compile_source_helper(files['TDWaves.wurst'], name, namespace)
     for name in ('tdTargetPriorityPolicy', 'tdTargetPriorityRank', 'tdTargetPriorityStrictlyBetter',
-                 'tdTargetPriorityEqual', 'tdTargetPriorityReplace', 'tdTargetPriorityRecoveryDue',
-                 'tdTargetPrioritySpeedValid', 'tdTargetPriorityCoordinateValid',
-                 'tdTargetPriorityExitBoundsValid', 'tdTargetPriorityInsideExit',
-                 'tdTargetPriorityExitEntryDistance', 'tdTargetPriorityDistanceEta',
-                 'tdTargetPriorityUrgent', 'tdTargetPriorityEmergencyReplace'):
+                 'tdTargetPriorityEqual', 'tdTargetPriorityReplace', 'tdTargetPriorityRecoveryDue'):
         compile_source_helper(files[RULES], name, namespace)
     return namespace
 
@@ -336,6 +248,8 @@ def verify_rules(invoke):
 
 def verify_source_mutations(files):
     cases = [
+        (RULES, 'package TDTowerTargetPriorityRules', 'package TDTowerTargetPriorityRules\npublic constant real TD_TARGET_PRIORITY_EMERGENCY_SECONDS = 3.0', 'retired threshold reintroduced'),
+        (RUNTIME, 'tdTargetPriorityReplace(policy,', 'tdTargetPriorityEmergencyReplace(policy,', 'retired comparator reintroduced'),
         (RULES, 'return hp < bestHp', 'return hp <= bestHp', 'HP tie redirect'),
         (RULES, 'rank > bestRank', 'rank >= bestRank', 'rank tie redirect'),
         (RULES, 'not keepCurrent and', 'keepCurrent and', 'current tie lost'),
@@ -351,14 +265,6 @@ def verify_source_mutations(files):
          '\ttdQueueArcherSplitArrowVolley(source, target)\n\tif not tdTargetPriorityAcceptAttack(source, target)', 'queue before verdict'),
         (TOWER, '\ttdTargetPriorityTrackTower(tower)\n\ttdTargetPriorityWorkStarted(tower)\n\tlet refund',
          '\ttdTargetPriorityWorkStarted(tower)\n\tlet refund', 'sale first-event exclusion'),
-        (RULES, 'TD_TARGET_PRIORITY_EMERGENCY_SECONDS = 3.0', 'TD_TARGET_PRIORITY_EMERGENCY_SECONDS = 30.0', 'emergency threshold expanded'),
-        (RULES, 'SquareRoot(dx * dx + dy * dy) * fraction', 'SquareRoot(dx * dx + dy * dy)', 'exit center replaces boundary'),
-        (RULES, '\tif urgent\n', '\tif true\n', 'permanent ETA sorting'),
-        (RUNTIME, 'tdTrialIsTargetType(enemy) or', 'false or', 'trial becomes urgent'),
-        (RUNTIME, 'let suffix = tdTargetPrioritySuffix[slot]', 'let suffix = 0.0', 'P1 polyline removed'),
-        (RUNTIME, '? currentEta :', '? bestEta :', 'immutable current ETA lost'),
-        (RUNTIME, 'enemy.getCurrentOrder() != tdEnemyLaneOrderIdForTest()', 'false', 'stopped enemy marked moving'),
-        ('enemies/TDEnemyControlRuntime.wurst', 'enemy.getAbilityLevel(record.buffId) > 0', 'record.window.readyAt > 0.0', 'protection deadline treated as freeze'),
         (TOWER, 'function tdHandleArcherSplitArrowDamage()\n',
          'function tdHandleArcherSplitArrowDamage()\n\ttdTargetPriorityAcceptAttack(null, null)\n', 'damage selection bridge'),
     ]
@@ -606,14 +512,13 @@ class TowerTargetRuntime(PetAttackRuntime):
 
 def verify_packed_structure(script):
     packed = functions(script)
+    require(not re.search(r'tdTargetPriority(?:EnemyEta|Emergency|Urgent|DistanceEta|PrepareGeometry|Geometry|Suffix|Waypoint)|tdEnemyHasActiveMovementControl', script), 'Retired route interception packed symbols remain')
     function_code = '\n'.join(function[4] for function in packed.values())
     require(function_code.count('GetAttacker()') == 1 and function_code.count('EVENT_PLAYER_UNIT_ATTACKED') == 1,
             'Packed artifact introduced another attacker/ATTACKED registration')
     for name in ('tdHandleTowerAttackStarted', 'tdTargetPriorityAcceptAttack',
                  'tdTargetPriorityTargetValid', 'tdTargetPriorityBest',
-                 'tdTargetPriorityHandleOrder', 'tdTargetPriorityRecoveryTick',
-                 'tdTargetPriorityPrepareGeometry','tdTargetPriorityEnemyEta','tdTargetPriorityEmergencyReplace',
-                 'tdTargetPriorityExitEntryDistance','tdEnemyHasActiveMovementControl'):
+                 'tdTargetPriorityHandleOrder', 'tdTargetPriorityRecoveryTick'):
         require(name in packed, 'Missing actual packed priority function: ' + name)
     wrapper = packed['tdHandleTowerAttackStarted'][4]
     ordered(wrapper, ('GetAttacker()', 'GetTriggerUnit()', 'tdTargetPriorityAcceptAttack(',
@@ -969,29 +874,7 @@ def verify_recovery_failures_and_range(script):
             'new_player_commands_cancel_recovery': 5}
 
 
-PACKED_MUTATION_ASSERTIONS = {'missing verdict': 'Packed ATTACKED wrapper: missing/out-of-order tdTargetPriorityAcceptAttack(',
- 'HP tie change': 'Actual comparator violates strict/current/tie rule',
- 'rank tie change': 'Actual comparator violates strict/current/tie rule',
- 'range inflation': 'Invalid better candidate selected: range',
- 'synchronous native-false old duplicate': 'Cancelled old start registered ghost split volley',
- 'unbounded recovery': 'Recovery exceeded four-query tick budget',
- 'old trial snapshot revision': 'Fresh manual trial identity rejected',
- 'stale restoration range': 'Recovery used stale pre-equipment range',
- 'duplicate accepted registration': 'Packed wrapper queues before verdict/twice',
- 'exit center instead of first entry': 'P1 remaining polyline/entry mismatch at next index 0',
- 'P1 remaining polyline omitted': 'P1 remaining polyline/entry mismatch at next index 0',
- 'trial urgency admitted': 'Trial inside exit became urgent',
- 'stationary current speed predicted moving': 'Outside-exit movement exclusion failed: stopped',
- 'nonurgent permanent ETA sorting': 'No-urgent selection did not restore complete base family policy',
- 'late current reused mutable best ETA': 'Late current incorrectly reused changed best ETA',
- 'repeated geometry prepare per selector': 'Selection rebuilt/prepared geometry more than once per '
-                                           'local scan',
- 'protection deadline mistaken for current freeze': 'Post-control protection was mistaken for current '
-                                                    'frozen state',
- '3s boundary excluded': 'Emergency/base/current-tie precedence mismatch',
- 'zero speed admitted': 'Invalid actual speed accepted',
- 'freeze tested before actual exit inclusion': 'Inside-exit exclusion hid a pending leak: paused',
- 'duplicate local enumeration': 'Dense steady 40-source ATTACKED changed selector/order budget'}
+PACKED_MUTATION_ASSERTIONS = {'missing verdict': 'Packed ATTACKED wrapper: missing/out-of-order tdTargetPriorityAcceptAttack(', 'HP tie change': 'Actual comparator violates strict/current/tie rule', 'rank tie change': 'Actual comparator violates strict/current/tie rule', 'range inflation': 'Invalid better candidate selected: range', 'synchronous native-false old duplicate': 'Cancelled old start registered ghost split volley', 'unbounded recovery': 'Recovery exceeded four-query tick budget', 'old trial snapshot revision': 'Fresh manual trial identity rejected', 'stale restoration range': 'Recovery used stale pre-equipment range', 'duplicate accepted registration': 'Packed wrapper queues before verdict/twice'}
 
 
 def mutation_failure_evidence(label, error, expected_assertions):
@@ -1038,297 +921,6 @@ def verify_packed_mutations(script):
             rejected.append(mutation_failure_evidence(label,error,[PACKED_MUTATION_ASSERTIONS[label]]))
         else:
             raise ValueError('Unsafe packed mutation accepted: ' + label)
-    return rejected
-
-
-def entry_distance_oracle(x, y, bounds):
-    """Independent rectangle segment-intersection expected value, never gameplay."""
-    minx,miny,maxx,maxy = bounds
-    cx,cy = (minx+maxx)/2.,(miny+maxy)/2.
-    delta = (cx-x,cy-y)
-    lower,upper = 0.,1.
-    for start,direction,lo,hi in ((x,delta[0],minx,maxx),(y,delta[1],miny,maxy)):
-        if direction == 0.:
-            require(lo <= start <= hi, 'Oracle parallel segment cannot enter exit')
-        else:
-            a,b=(lo-start)/direction,(hi-start)/direction
-            lower=max(lower,min(a,b));upper=min(upper,max(a,b))
-    require(lower <= upper, 'Oracle segment-to-center misses exit')
-    return math.hypot(*delta)*lower
-
-
-def actual_geometry(runtime):
-    exit_rect = runtime.invoke('tdLaneExitRect')
-    bounds = tuple(runtime.rects[exit_rect])
-    points = []
-    for index in range(runtime.invoke('tdLaneWaypointCount',0)):
-        rect = runtime.rects[runtime.invoke('tdLaneWaypointRect',0,index)]
-        points.append(((rect[0]+rect[2])/2.,(rect[1]+rect[3])/2.))
-    return bounds,points
-
-
-def moving_enemy(runtime, target=102, lane=0, index=5, x=-1136., y=304., speed=300.):
-    runtime.enemy(target,lane=lane,x=x,y=y)
-    runtime.units[target].update(userdata=lane*10000+100+index,
-                                order=runtime.invoke('tdEnemyLaneOrderIdForTest'),speed=speed)
-    return target
-
-
-def verify_emergency_geometry(script):
-    r=TowerTargetRuntime(script)
-    bounds,points=actual_geometry(r)
-    require(bounds == (-384.,-448.,352.,64.) and points ==
-            [(-1152.,2640.),(-1184.,1424.),(-2800.,1376.),(-2800.,400.),(-1136.,304.)],
-            'Actual packed leak/waypoint geometry drifted; explicitly review route oracle')
-    require(r.invoke('tdTargetPriorityPrepareGeometry'), 'Actual geometry cache did not initialize')
-    read_names=('GetRectMinX','GetRectMinY','GetRectMaxX','GetRectMaxY')
-    reads=sum(r.calls[n] for n in read_names)
-    require(r.invoke('tdTargetPriorityPrepareGeometry') and sum(r.calls[n] for n in read_names)==reads,
-            'Same-epoch geometry cache reread native rectangles')
-    actual=[]
-    suffix=[0.]*6
-    suffix[4]=entry_distance_oracle(*points[4],bounds)
-    for index in range(3,-1,-1):
-        suffix[index]=math.dist(points[index],points[index+1])+suffix[index+1]
-    for index in range(6):
-        moving_enemy(r,index=index,x=-16.,y=100.)
-        expected=(entry_distance_oracle(-16.,100.,bounds) if index==5 else
-                  math.dist((-16.,100.),points[index])+suffix[index])/10000.
-        r.units[102]['speed']=10000.
-        value=r.invoke('tdTargetPriorityEnemyEta',102,0,True)
-        require(math.isclose(value,expected,rel_tol=1e-6,abs_tol=1e-5),
-                'P1 remaining polyline/entry mismatch at next index '+str(index))
-        actual.append(value)
-    moving_enemy(r,index=4)
-    entry=r.invoke('tdTargetPriorityEnemyEta',102,0,True)
-    center=math.dist(points[4],((bounds[0]+bounds[2])/2.,(bounds[1]+bounds[3])/2.))/300.
-    require(0 < entry <= 3. < center, 'Packed P1 final segment must cross 3s only after exit-boundary deduction')
-    for lane in range(1,4):
-        moving_enemy(r,lane=lane,index=0,x=1000.,y=-192.)
-        require(math.isclose(r.invoke('tdTargetPriorityEnemyEta',102,lane,True),648./300.),
-                'Zero-waypoint lane failed direct real-rectangle entry')
-    for position in ((-1000.,-192.),(-16.,1000.),(352.,100.),(-384.,64.),(-16.,-192.)):
-        moving_enemy(r,index=5,x=position[0],y=position[1])
-        require(math.isclose(r.invoke('tdTargetPriorityEnemyEta',102,0,True),
-                             entry_distance_oracle(*position,bounds)/300.), 'Packed rect edge/parallel/diagonal failed')
-    invalid_indices=[]
-    for index in (-1,6,99):
-        moving_enemy(r,index=index)
-        require(r.invoke('tdTargetPriorityEnemyEta',102,0,True)==-1.,'Illegal waypoint index became urgent')
-        invalid_indices.append(index)
-    moving_enemy(r,index=0,x=-16.,y=100.)
-    require(r.invoke('tdTargetPriorityEnemyEta',102,0,True)==-1.,
-            'P1 early remaining route was replaced with near-exit Euclidean distance')
-    # Missing regions are retried, never replaced by TDConfig's fallback positions.
-    r=TowerTargetRuntime(script);original=r.globals['gg_rct_td_exit_center']
-    r.globals['gg_rct_td_exit_center']=None
-    require(not r.invoke('tdTargetPriorityPrepareGeometry'),'Missing actual exit cached a fallback')
-    r.globals['gg_rct_td_exit_center']=original
-    require(r.invoke('tdTargetPriorityPrepareGeometry'),'Actual exit appearing later could not initialize')
-    epoch_global=next(line.split('return ',1)[1].strip() for line in functions(script)['tdFlowEpoch'][4].splitlines() if 'return ' in line)
-    reads=sum(r.calls[n] for n in read_names)
-    r.globals[epoch_global]+=1
-    require(r.invoke('tdTargetPriorityPrepareGeometry') and sum(r.calls[n] for n in read_names)>reads,
-            'New flow epoch did not rebuild actual geometry')
-    r.globals['TDTowerTargetPriorityRuntime_tdTargetPriorityGeometryEpoch']=-1
-    r.globals['TDConfig_TD_PLAYER_ONE_WAYPOINT_COUNT']=6
-    require(not r.invoke('tdTargetPriorityPrepareGeometry'),'Over-capacity route stages did not fail closed')
-    r.globals['TDConfig_TD_PLAYER_ONE_WAYPOINT_COUNT']=5
-    waypoint_handle=r.globals['gg_rct_td_spawn_p1_3'];r.globals['gg_rct_td_spawn_p1_3']=None
-    require(not r.invoke('tdTargetPriorityPrepareGeometry'),'Missing waypoint used fallback geometry')
-    r.globals['gg_rct_td_spawn_p1_3']=waypoint_handle
-    require(r.invoke('tdTargetPriorityPrepareGeometry'),'Missing waypoint could not retry real handle')
-    r.globals['TDTowerTargetPriorityRuntime_tdTargetPriorityGeometryEpoch']=-1
-    r.globals['TDConfig_TD_ACTIVE_PLAYER_COUNT']=5
-    require(not r.invoke('tdTargetPriorityPrepareGeometry'),'Over-capacity lane cache did not fail closed')
-    return {'actual_exit_bounds':bounds,'actual_p1_waypoint_centers':points,
-            'p1_next_indices_0_to_5_eta_at_10000':actual,
-            'tail_at_speed300_entry_eta':entry,'tail_center_eta':center,
-            'invalid_next_indices':invalid_indices,'direct_other_lanes':3,
-            'same_epoch_zero_rect_reads':True,'missing_rect_retry':True,'epoch_rebuild':True,
-            'over_capacity_lane_fail_closed':True,'over_capacity_route_fail_closed':True,'missing_waypoint_retry':True}
-
-
-def verify_emergency_control(script):
-    r=TowerTargetRuntime(script);require(r.invoke('tdTargetPriorityPrepareGeometry'),'No actual geometry')
-    def eta(): return r.invoke('tdTargetPriorityEnemyEta',102,0,True)
-    exclusions=[]
-    for label,changes in [('paused',{'paused':True}),('stunned',{'kinds':{'ground','stunned'}}),
-                          ('snared',{'kinds':{'ground','snared'}}),('stopped',{'order':851972}),
-                          ('hold',{'order':851993}),('BPSE',{'abilities':{rawcode('BPSE'):1}})]:
-        moving_enemy(r);r.units[102].update(changes)
-        require(eta()==-1.,'Outside-exit movement exclusion failed: '+label)
-        r.units[102].update(x=-16.,y=-192.,speed=0.)
-        require(eta()==0.,'Inside-exit exclusion hid a pending leak: '+label)
-        exclusions.append(label)
-    # All actual control identities share the existing recorded buff, no fabricated deadline tracker.
-    moving_enemy(r)
-    record=r.invoke('windowFor',102)
-    window=r.globals['TDEnemyControlWindow_window'][record]
-    r.globals['TDShieldWindow_readyAt'][window]=1000.
-    buffs=[r.globals['TDPetCastContext_TD_PET_' + kind + '_BUFF_ID'] for kind in ('ROOT','FREEZE','STAGGER','BOSS')]
-    for buff in buffs:
-        r.globals['TDEnemyControlWindow_buffId'][record]=buff
-        r.units[102]['abilities']={buff:1}
-        require(r.invoke('tdEnemyHasActiveMovementControl',102) and eta()==-1.,
-                'Actual recorded movement buff did not exclude urgency')
-        r.units[102].update(x=-16.,y=-192.,speed=0.)
-        require(eta()==0.,'Actual freeze/root inside exit hid pending leak')
-        r.units[102].update(x=-1136.,y=304.,speed=300.)
-        r.units[102]['abilities']={}
-        require(not r.invoke('tdEnemyHasActiveMovementControl',102) and eta()>0.,
-                'Post-control protection was mistaken for current frozen state')
-    r.globals['TDEnemyControlWindow_enemy'][record]=103
-    r.units[102]['abilities']={buffs[0]:1}
-    require(not r.invoke('tdEnemyHasActiveMovementControl',102),'Reused handle control record ignored enemy identity')
-    r.globals['TDEnemyControlWindow_enemy'][record]=102;r.units[102]['abilities']={}
-    values=[]
-    for speed in (150.,300.,600.):
-        moving_enemy(r,speed=speed);values.append(eta())
-    require(math.isclose(values[0],values[1]*2.) and math.isclose(values[2],values[1]/2.),
-            'Effective sprint/slow speed was multiplied twice')
-    for speed in (0.,-1.,float('nan'),float('inf'),10000.001):
-        moving_enemy(r,speed=speed);require(eta()==-1.,'Invalid configured speed became urgent')
-    moving_enemy(r);r.units[102]['order']=851972;require(eta()==-1.,'Stopped was predicted moving')
-    r.units[102]['order']=r.invoke('tdEnemyLaneOrderIdForTest');require(eta()>0.,'Move resumption not reevaluated')
-    r.units[102]['type']=rawcode('uTrG');r.units[102].update(x=-16.,y=-192.)
-    require(eta()==-1.,'Trial inside exit became urgent')
-    return {'outside_and_inside_exclusions':exclusions,'actual_recorded_buff_identity_cases':len(buffs),
-            'protection_without_buff_moves':True,'current_speed_150_300_600_eta':values,
-            'invalid_speed_cases':5,'trial_never_urgent':True,'stop_then_move_reevaluated':True}
-
-
-def urgent_fixture(script,type_='uO6B'):
-    r=TowerTargetRuntime(script);r.units[101].update(type=rawcode(type_),x=-1136.,y=304.)
-    moving_enemy(r,102,index=4);r.units[102].update(type=rawcode('uB08'),life=100.)
-    moving_enemy(r,103,index=4);r.units[103]['life']=200.
-    r.units[102]['order']=851972
-    r.visible_units=[102,103]
-    return r
-
-
-def verify_emergency_selection(script):
-    r=urgent_fixture(script);r.attack(102)
-    require(not r.accepted and r.script_orders[-1][2]==103,'Urgent ordinary failed to override nonurgent Boss')
-    r.attack(103);require(r.accepted==[(101,103)] and len(r.group_queries)==1,'Pending urgency confirmation reselected')
-    # Strict smaller ETA dominates HP/rank; exactly equal urgent current is kept.
-    for current in (102,103):
-        r=urgent_fixture(script);r.units[102].update(order=r.invoke('tdEnemyLaneOrderIdForTest'),speed=300.)
-        r.attack(current)
-        require(r.accepted==[(101,current)] and not r.script_orders,'Equal urgent ETA failed to retain legal current')
-    r=urgent_fixture(script);r.units[102].update(order=r.invoke('tdEnemyLaneOrderIdForTest'),speed=300.)
-    r.units[103]['speed']=600.;r.attack(102)
-    require(r.script_orders and r.script_orders[-1][2]==103,'Smaller urgent ETA did not outrank Boss')
-    for type_,expected in (('uA6B',103),('uO6B',102)):
-        r=urgent_fixture(script,type_);r.units[102].update(life=200.,order=851972)
-        r.units[103].update(life=10.,order=851972)
-        r.attack(102)
-        require((r.script_orders[-1][2] if r.script_orders else r.accepted[-1][1])==expected,
-                'No-urgent selection did not restore complete base family policy')
-    r=urgent_fixture(script);r.command(851983,102);r.clear_trace();r.attack(102)
-    require(r.accepted==[(101,102)] and not r.script_orders and not r.group_queries,'Emergency overrode valid manual lock')
-    for synchronous in (False,True):
-        for success in (False,True):
-            r=urgent_fixture(script);r.order_result=success
-            if synchronous:r.order_callback=lambda rt,source,target:rt.attack(target,source)
-            r.attack(102)
-            if synchronous or success:
-                if not synchronous:
-                    r.units[102].update(x=-16.,y=-192.,order=r.invoke('tdEnemyLaneOrderIdForTest'))
-                    r.attack(103)
-                require(r.accepted==[(101,103)] and len(r.group_queries)==1,
-                        'Urgent pending was rescanned or registered twice across native delivery')
-            else:
-                require(r.accepted==[(101,102)],'Urgent native-false did not preserve legal old attack once')
-    # Current is enumerated AFTER best changed: mutable bestEta must never replace frozen currentEta.
-    r=urgent_fixture(script,'uA6B');r.units[102].update(type=rawcode('uW01'),life=1.,order=r.invoke('tdEnemyLaneOrderIdForTest'))
-    r.units[103]['speed']=600.;r.visible_units=[103,102];r.attack(102)
-    require(r.script_orders and r.script_orders[-1][2]==103,'Late current incorrectly reused changed best ETA')
-    # Actual trial target remains normal legal identity but never urgent inside the exit.
-    r=TowerTargetRuntime(script);r.enter();target=r.target(0)
-    r.units[101].update(x=-16.,y=-192.);r.units[target].update(x=-16.,y=-192.,life=1.)
-    r.enemy(102,life=20.,x=-16.,y=-192.);r.visible_units=[target,102]
-    r.attack(target)
-    require(r.script_orders and r.script_orders[-1][2]==102,'Inside-exit trial competed as urgent')
-    return {'urgent_ordinary_over_boss':True,'strict_eta_before_rank_hp':True,
-            'exact_eta_keeps_current':2,'nonurgent_base_policies':2,'manual_lock_wins':True,
-            'urgent_sync_async_native_result_cases':4,'pending_eta_change_zero_reselection':True,
-            'trial_legal_but_nonurgent':True,'late_current_immutable_eta':True}
-
-
-def verify_emergency_dense_cost(script):
-    r=TowerTargetRuntime(script);r.units[101].update(x=-1136.,y=304.)
-    for target in range(102,142):
-        moving_enemy(r,target,index=4);r.units[target]['life']=100.
-    r.visible_units=list(range(102,142))
-    for source in range(200,240):
-        r.tower(source,type_='uA11');r.units[source].update(x=-1136.,y=304.)
-    reads=sum(r.calls[n] for n in ('GetRectMinX','GetRectMinY','GetRectMaxX','GetRectMaxY'))
-    eta_count=r.calls['tdTargetPriorityEnemyEta'];prepare_count=r.calls['tdTargetPriorityPrepareGeometry']
-    timer_count=len(r.periodics)
-    for source in range(200,240):r.attack(102,source)
-    require(len(r.group_queries)==40 and not r.script_orders and len(r.accepted)==40,
-            'Dense steady 40-source ATTACKED changed selector/order budget')
-    require(r.calls['tdTargetPriorityEnemyEta']-eta_count==40*40,
-            'ETA current/candidates were reread or skipped; current ETA must remain immutable')
-    require(r.calls['tdTargetPriorityPrepareGeometry']-prepare_count==40,
-            'Selection rebuilt/prepared geometry more than once per local scan')
-    geometry_reads=sum(r.calls[n] for n in ('GetRectMinX','GetRectMinY','GetRectMaxX','GetRectMaxY'))-reads
-    require(0 < geometry_reads <= 44 and len(r.periodics)==timer_count and not r.live_groups and not r.priority_rng,
-            'Dense ETA created timers/RNG/group leak or repeated native geometry reads')
-    return {'sources':40,'local_candidates_per_source':40,'actual_eta_calls':1600,
-            'local_group_enumerations':40,'geometry_native_reads_first_epoch_only':geometry_reads,
-            'new_periodic_timers':0,'script_orders':0,'RNG_calls':0}
-
-
-def verify_emergency_packed_mutations(script):
-    packed=functions(script)
-    geometry=lambda changed:verify_emergency_geometry(changed)
-    selection=lambda changed:verify_emergency_selection(changed)
-    control=lambda changed:verify_emergency_control(changed)
-    rules=lambda changed:verify_emergency_rules(TowerTargetRuntime(changed).invoke)
-    cases=[
-        ('tdTargetPriorityExitEntryDistance',' * fraction','', 'exit center instead of first entry',geometry),
-        ('tdTargetPriorityEnemyEta',' + suffix, speed)',', speed)','P1 remaining polyline omitted',geometry),
-        ('tdTargetPriorityEnemyEta','tdTrialIsTargetType(enemy_1)','false','trial urgency admitted',control),
-        ('tdTargetPriorityEnemyEta','unit_getCurrentOrder(enemy_1) != tdEnemyLaneOrderIdForTest()',
-         'false','stationary current speed predicted moving',control),
-        ('tdTargetPriorityEmergencyReplace',
-         'return tdTargetPriorityReplace(policy, hp, rank, key_1, bestHp, bestRank, bestKey, keepCurrent)',
-         'return eta < bestEta','nonurgent permanent ETA sorting',selection),
-        ('tdTargetPriorityBest','set cond_result_4 = currentEta','set cond_result_4 = bestEta',
-         'late current reused mutable best ETA',selection),
-        ('tdTargetPriorityBest','set geometryReady = tdTargetPriorityPrepareGeometry()',
-         'set geometryReady = tdTargetPriorityPrepareGeometry()\n\tcall tdTargetPriorityPrepareGeometry()',
-         'repeated geometry prepare per selector',verify_emergency_dense_cost),
-        ('tdEnemyHasActiveMovementControl',
-         'unit_getAbilityLevel(enemy_1, TDEnemyControlWindow_buffId[record_1]) > 0',
-         'TDShieldWindow_readyAt[TDEnemyControlWindow_window[record_1]] > getElapsedGameTime()',
-         'protection deadline mistaken for current freeze',control),
-        ('tdTargetPriorityUrgent','eta <= TDTowerTargetPriorityRules_TD_TARGET_PRIORITY_EMERGENCY_SECONDS',
-         'eta < TDTowerTargetPriorityRules_TD_TARGET_PRIORITY_EMERGENCY_SECONDS','3s boundary excluded',rules),
-        ('tdTargetPrioritySpeedValid','speed > 0.0','speed >= 0.0','zero speed admitted',rules),
-    ]
-    eta=packed['tdTargetPriorityEnemyEta'][0]
-    inside=re.search(r'\tif tdTargetPriorityInsideExit\([^\n]*\n(?:\t\t[^\n]*\n)*?\t\treturn 0\.0\n\tendif\n',eta)
-    frozen=re.search(r'\tif IsUnitPaused\([^\n]*\n(?:\t\t[^\n]*\n)*?\t\treturn  - 1\.0\n\tendif\n',eta)
-    require(inside is not None and frozen is not None and inside.end()==frozen.start(),
-            'Cannot locate actual inside-exit then freeze branches for mutation')
-    cases.append(('tdTargetPriorityEnemyEta',inside[0]+frozen[0],frozen[0]+inside[0],
-                  'freeze tested before actual exit inclusion',control))
-    # O(N) real iterator remains one local enumeration, with no replacement selector stub.
-    best=packed['tdTargetPriorityBest'][0]
-    enumeration=next(line for line in best.splitlines() if 'call group_enumUnitsInRange(' in line)
-    cases.append(('tdTargetPriorityBest',enumeration,enumeration+'\n'+enumeration,
-                  'duplicate local enumeration',verify_emergency_dense_cost))
-    rejected=[]
-    for name,old,new,label,oracle in cases:
-        require(old in packed[name][0],'Emergency packed mutation anchor missing: '+label)
-        changed=script[:packed[name].start()]+packed[name][0].replace(old,new,1)+script[packed[name].end():]
-        try:oracle(changed)
-        except Exception as error:
-            rejected.append(mutation_failure_evidence(label,error,[PACKED_MUTATION_ASSERTIONS[label]]))
-        else:raise ValueError('Unsafe emergency packed mutation accepted: '+label)
     return rejected
 
 
@@ -1452,6 +1044,34 @@ def verify_baseline_no_selection(script, baseline_script, baseline_sha):
             'boundary':'Finite deterministic scenarios and native post-armor input/clock/delivery stubs; no all-input claim, engine armor/stun/DPS simulation or unrelated mode coverage.'}
 
 
+def verify_base_policy_independent_of_route(script):
+    # Legal current/candidates stay inside real tower range. Position/velocity
+    # are native fixture inputs; the selector must not read route or speed.
+    rows=[]
+    for type_,expected in (('uO6B',102),('uA6B',103)):
+        r=TowerTargetRuntime(script)
+        r.units[101].update(type=rawcode(type_),x=-500.,y=0.)
+        r.units[102].update(type=rawcode('uB08'),life=1000.,x=-380.,y=0.,speed=10000.,order=851986,userdata=105)
+        r.units[103].update(type=rawcode('uW01'),life=1.,x=-1000.,y=0.,speed=0.,order=851972,userdata=100)
+        r.visible_units=[102,103]
+        native_reads=('GetUnitMoveSpeed','GetRectMinX','GetRectMinY','GetRectMaxX','GetRectMaxY')
+        before={name:r.calls[name] for name in native_reads}
+        r.attack(102)
+        if expected==102:
+            require(r.accepted==[(101,102)] and not r.script_orders,'Base Boss priority lost to route position or HP')
+        else:
+            require(r.script_orders and r.script_orders[-1][2]==103 and not r.accepted,'Base minimum live HP lost to near-exit Boss')
+            scans=r.calls['tdTargetPriorityBest']
+            r.units[103]['life']=10000.;r.units[102]['life']=.41
+            r.attack(103)
+            require(r.accepted==[(101,103)] and r.calls['tdTargetPriorityBest']==scans,'Base pending confirmation rescanned after HP changed')
+        require(all(r.calls[name]==before[name] for name in native_reads),'Base selector still reads movement speed or exit rectangle')
+        r.command(851983,102);r.clear_trace();scans=r.calls['tdTargetPriorityBest'];r.attack(102)
+        require(r.accepted==[(101,102)] and not r.script_orders and r.calls['tdTargetPriorityBest']==scans,'Base manual lock lost to lower HP or route position')
+        rows.append({'tower':type_,'base_target':expected,'route_or_speed_reads':0,'manual_lock_preserved':True})
+    return {'cases':rows,'pending_confirmation_without_rescan':True,'route_progress_or_speed_priority':False}
+
+
 def verify_artifact(map_path, source=ROOT / 'wurst', source_only=False, mutations=True, compiled_script=None, baseline_map=None):
     files = source_files(source)
     report = {'source_contract': verify_source_contract(files), 'boundary': BOUNDARY,
@@ -1463,7 +1083,6 @@ def verify_artifact(map_path, source=ROOT / 'wurst', source_only=False, mutation
 
     scalar = source_scalar_namespace(files)
     report['source_rules'] = verify_rules(lambda name, *args: scalar[name](*args))
-    report['source_emergency_rules'] = verify_emergency_rules(lambda name,*args: scalar[name](*args))
     if mutations: report['source_mutations_rejected'] = verify_source_mutations(files)
     if source_only:
         require(map_path is None and compiled_script is None and baseline_map is None, '--source-only cannot also claim a map verification')
@@ -1479,11 +1098,7 @@ def verify_artifact(map_path, source=ROOT / 'wurst', source_only=False, mutation
     report['packed_structure'] = verify_packed_structure(script)
     r = TowerTargetRuntime(script)
     report['packed_rules'] = verify_rules(r.invoke)
-    report['packed_emergency_rules'] = verify_emergency_rules(r.invoke)
-    report['emergency_geometry'] = verify_emergency_geometry(script)
-    report['emergency_control'] = verify_emergency_control(script)
-    report['emergency_selection'] = verify_emergency_selection(script)
-    report['emergency_dense_cost'] = verify_emergency_dense_cost(script)
+    report['base_policy_without_route_override'] = verify_base_policy_independent_of_route(script)
     if baseline_map is not None:
         baseline_data = Path(baseline_map).read_bytes()
         baseline_script = Mpq(baseline_data).extract('war3map.j').decode('utf-8')
@@ -1502,7 +1117,6 @@ def verify_artifact(map_path, source=ROOT / 'wurst', source_only=False, mutation
     report['existing_split_original_basis'] = verify_split_immutable_basis(script)
     if mutations:
         report['packed_mutations_rejected'] = verify_packed_mutations(script)
-        report['emergency_packed_mutations_rejected'] = verify_emergency_packed_mutations(script)
     report.update(status='PASS_COMPILED_SCRIPT_ONLY' if compiled_script else 'PASS',
                   actual_mpq_executed=compiled_script is None, jass_sha256=sha(script.encode()),
                   native_event_observation='A legal native ATTACKED delivered under stop/hold/nonattack order may still register its original contract. Warcraft 1.28 supplies no per-event order token. The gate proves no automatic order override and no old outer registration after observable synchronous intent changes.')

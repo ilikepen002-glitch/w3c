@@ -1,0 +1,69 @@
+{
+  "wild": {
+    "deadline_cases": [
+      {
+        "appeared": 0.0,
+        "deadline": 180.0,
+        "strict_boundaries": true
+      },
+      {
+        "appeared": 10.0,
+        "deadline": 190.0,
+        "strict_boundaries": true
+      }
+    ],
+    "capture_first_and_expiry_first": true,
+    "native_dead_leave_defeat_inactive_gameover": true
+  },
+  "waves": {
+    "four_live_wild_boss_ready": true,
+    "old_enemy_pending_resolved_guards": true,
+    "absolute_deadline_across_boss": true,
+    "boss_six_balls_usable": true,
+    "normal_delays": [
+      20,
+      60
+    ],
+    "trial_token_preserved": true
+  },
+  "text": {
+    "capture_tooltip_levels": 61,
+    "wild_and_boss_hints": true
+  },
+  "mutations": [
+    {
+      "mutation": "lifetime_60",
+      "exception_type": "ValueError",
+      "reason": "Wild lifetime is not appearedAt + 180"
+    },
+    {
+      "mutation": "inclusive_deadline",
+      "exception_type": "ValueError",
+      "reason": "Wrong strict deadline boundary"
+    },
+    {
+      "mutation": "boss_unconditionally_blocked",
+      "exception_type": "ValueError",
+      "reason": "Live wild still blocks Boss 8 readiness"
+    },
+    {
+      "mutation": "boss_ignores_old_enemies",
+      "exception_type": "ValueError",
+      "reason": "Pending old spawn gate was removed"
+    },
+    {
+      "mutation": "boss_ignores_resolved",
+      "exception_type": "ValueError",
+      "reason": "Unresolved old wave gate was removed"
+    },
+    {
+      "mutation": "boss_ignores_pending",
+      "exception_type": "ValueError",
+      "reason": "Pending old spawn gate was removed"
+    }
+  ],
+  "status": "PASS",
+  "map_sha256": "5d6701cf84d4910fdcae6c2eaf299ae76e640577640e416564ba8ab38fac69d5",
+  "jass_sha256": "bc37aeeac4e76bb9ef0d7d32fc30c382d459d8f579ea1fe9b9ff568db907b000",
+  "boundary": "Recorded native clock/handles/enumeration/tags; real packed owners and gates execute; no Warcraft observation."
+}

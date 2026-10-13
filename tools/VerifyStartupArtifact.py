@@ -87,7 +87,8 @@ class StartupRuntime(PetStartupRuntime):
                     'tdFocusStartingCameraOnFarmers'}:
             self.events.append((name,))
             return True, None
-        if name in {'RemoveAllGuardPositions', 'SetPlayerAlliance', 'tdCreatePads', 'tdPetInitializeFarmer',
+        # Decorative ownership has its own source/native-boundary replay.
+        if name in {'tdSetupAmbientCritterOwnership', 'RemoveAllGuardPositions', 'SetPlayerAlliance', 'tdCreatePads', 'tdPetInitializeFarmer',
                     'tdSetupLanePlayerLeaveWatcher', 'tdSetupDamageStatistics',
                     'tdSetupEnemyMechanics', 'tdSetupBuildDialog', 'tdSetupPadSelection',
                     'tdSetupDialogTrigger', 'tdSetupInventoryRuntime', 'tdSetupAuraRuntime', 'tdSetupGroundItemRuntime',

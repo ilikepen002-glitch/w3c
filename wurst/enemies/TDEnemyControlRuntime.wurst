@@ -35,18 +35,6 @@ function windowFor(unit enemy) returns TDEnemyControlWindow
 	windows.add(record)
 	return record
 
-// Read the actual remaining movement-control buff, never the longer shared
-// post-control protection deadline. No tracker or control lifecycle changes.
-public function tdEnemyHasActiveMovementControl(unit enemy) returns boolean
-	if enemy == null
-		return false
-	if enemy.getAbilityLevel('BPSE') > 0
-		return true
-	if not byHandle.hasInt(enemy.getHandleId())
-		return false
-	let record = byHandle.loadInt(enemy.getHandleId()) castTo TDEnemyControlWindow
-	return record.enemy == enemy and record.buffId != 0 and enemy.getAbilityLevel(record.buffId) > 0
-
 public function tdTryEnemyControl(unit source, unit enemy, int lane, real duration, int abilityId, int level, int orderId) returns boolean
 	return tdTryEnemyControlToken(source, enemy, lane, duration, abilityId, level, orderId, 0, 0)
 

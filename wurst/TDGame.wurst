@@ -466,7 +466,7 @@ function tdStartPreparedBoss(int wave)
 		tdWatchBossRound(wave, epoch)
 
 function tdBossPreparationReady(int wave) returns boolean
-	if not tdHasContinuingLanes() or not tdContinuingLanesEmpty() or tdPetWildHasCaptureWindow()
+	if not tdHasContinuingLanes() or not tdContinuingLanesEmpty()
 		return false
 	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		if tdLaneCanSpawnWave(lane) and tdGetResolvedWave(lane) < wave - 1
@@ -477,7 +477,7 @@ function tdPrepareBossRound(int wave)
 	if not tdFlowPrepareBoss(wave)
 		return
 	tdClearQueuedWave()
-	tdBroadcast("首领即将入场：清除剩余敌人，等待精灵捕获结束。")
+	tdBroadcast("首领即将入场：清除剩余敌人。")
 	tdRefreshHud()
 	let epoch = tdFlowEpoch()
 	doPeriodically(0.20) cb ->

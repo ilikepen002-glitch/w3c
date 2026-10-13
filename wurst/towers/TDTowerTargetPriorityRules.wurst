@@ -8,12 +8,6 @@ public constant int TD_TARGET_PRIORITY_RANK = 2
 public constant real TD_TARGET_PRIORITY_RECOVERY_TICK = 0.10
 public constant real TD_TARGET_PRIORITY_RECOVERY_INTERVAL = 0.50
 public constant int TD_TARGET_PRIORITY_RECOVERY_BUDGET = 4
-public constant real TD_TARGET_PRIORITY_EMERGENCY_SECONDS = 3.0
-// Sanity limits reject invalid native reads; they never clamp or write speed.
-public constant real TD_TARGET_PRIORITY_MAX_SPEED = 10000.0
-public constant real TD_TARGET_PRIORITY_MAX_COORDINATE = 10000000.0
-public constant int TD_TARGET_PRIORITY_ROUTE_STAGE_CAPACITY = 6
-public constant int TD_TARGET_PRIORITY_ROUTE_LANE_CAPACITY = 4
 
 public function tdTargetPriorityPolicy(int towerChoice) returns int
 	if towerChoice == TD_TOWER_CHOICE_ARCHER or towerChoice == TD_TOWER_CHOICE_DRYAD
@@ -46,56 +40,3 @@ public function tdTargetPriorityReplace(int policy, real hp, int rank, int key, 
 
 public function tdTargetPriorityRecoveryDue(real now, real lastQuery) returns boolean
 	return now - lastQuery + 0.00001 >= TD_TARGET_PRIORITY_RECOVERY_INTERVAL
-
-public function tdTargetPrioritySpeedValid(real speed) returns boolean
-	// Comparisons reject NaN as well as nonpositive, infinite and absurd values.
-	return speed > 0.0 and speed <= TD_TARGET_PRIORITY_MAX_SPEED
-
-public function tdTargetPriorityCoordinateValid(real value) returns boolean
-	return value >= -TD_TARGET_PRIORITY_MAX_COORDINATE and value <= TD_TARGET_PRIORITY_MAX_COORDINATE
-
-public function tdTargetPriorityExitBoundsValid(real minX, real minY, real maxX, real maxY) returns boolean
-	return tdTargetPriorityCoordinateValid(minX) and tdTargetPriorityCoordinateValid(minY) and tdTargetPriorityCoordinateValid(maxX) and tdTargetPriorityCoordinateValid(maxY) and minX < maxX and minY < maxY
-
-public function tdTargetPriorityInsideExit(real x, real y, real minX, real minY, real maxX, real maxY) returns boolean
-	return x >= minX and x <= maxX and y >= minY and y <= maxY
-
-// First entry into the closed exit rect, on the segment towards its center.
-// Parallel axes already inside the interval need no division. No fixed radius.
-public function tdTargetPriorityExitEntryDistance(real x, real y, real minX, real minY, real maxX, real maxY) returns real
-	if not tdTargetPriorityExitBoundsValid(minX, minY, maxX, maxY) or not tdTargetPriorityCoordinateValid(x) or not tdTargetPriorityCoordinateValid(y)
-		return -1.0
-	if tdTargetPriorityInsideExit(x, y, minX, minY, maxX, maxY)
-		return 0.0
-	let dx = (minX + maxX) / 2.0 - x
-	let dy = (minY + maxY) / 2.0 - y
-	var fraction = 0.0
-	if x < minX
-		fraction = (minX - x) / dx
-	else if x > maxX
-		fraction = (maxX - x) / dx
-	if y < minY
-		fraction = RMaxBJ(fraction, (minY - y) / dy)
-	else if y > maxY
-		fraction = RMaxBJ(fraction, (maxY - y) / dy)
-	return SquareRoot(dx * dx + dy * dy) * fraction
-
-public function tdTargetPriorityDistanceEta(real distance, real speed) returns real
-	if not tdTargetPrioritySpeedValid(speed) or not (distance >= 0.0 and distance <= 4.0 * TD_TARGET_PRIORITY_MAX_COORDINATE)
-		return -1.0
-	return distance / speed
-
-public function tdTargetPriorityUrgent(real eta) returns boolean
-	return eta >= 0.0 and eta <= TD_TARGET_PRIORITY_EMERGENCY_SECONDS
-
-public function tdTargetPriorityEmergencyReplace(int policy, real hp, int rank, int key, real eta, real bestHp, int bestRank, int bestKey, real bestEta, boolean keepCurrent) returns boolean
-	let urgent = tdTargetPriorityUrgent(eta)
-	let bestUrgent = tdTargetPriorityUrgent(bestEta)
-	if urgent != bestUrgent
-		return urgent
-	if urgent
-		if eta != bestEta
-			return eta < bestEta
-		if keepCurrent
-			return false
-	return tdTargetPriorityReplace(policy, hp, rank, key, bestHp, bestRank, bestKey, keepCurrent)

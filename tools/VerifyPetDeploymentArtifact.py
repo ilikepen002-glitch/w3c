@@ -53,6 +53,13 @@ def run_gate(script, existing, *, lane=0, other_existing=0, capacity=20,
     Deployed count and occupied-host stubs read concrete fixture hosts, rather
     than returning an asserted expected answer. No deploy/recall is simulated.
     """
+    if 'function tdPetOwnedSlot ' in script:
+        from VerifyPetRebindingArtifact import run_current_gate
+        return run_current_gate(script, existing, lane=lane, other_existing=other_existing,
+                                capacity=capacity, pet_present=pet_present, released=released,
+                                tower_present=tower_present, alive=alive, lane_allowed=lane_allowed,
+                                owner=owner, tower_choice=tower_choice, busy=busy,
+                                occupied=occupied, rebind=rebind, repeated=repeated)
     require(lane in (0, 1) and capacity in (12, 20) and 0 <= existing < capacity and 0 <= other_existing < capacity,
             'Gate fixture must fit two independent bounded lane collections')
     other_lane = 1 - lane
@@ -130,10 +137,14 @@ def run_gate(script, existing, *, lane=0, other_existing=0, capacity=20,
 
 
 def verify_gate(script, capped=False, capacity=20):
+    current_rebinding = 'function tdPetOwnedSlot ' in script
     for lane in (0, 1):
         for existing in sorted({0, 1, 2, 3, 4, 9, capacity - 1}):
             actual, calls = run_gate(script, existing, lane=lane, other_existing=capacity - 1 - existing, capacity=capacity)
             expected = existing < 3 if capped else True
+            if not capped:
+                require(not any(name == 'tdPetDeployedCount' for name, _ in calls),
+                        'Uncapped gate still consults a lane-wide count dependency')
             require(actual is expected,
                     f'Real packaged gate: lane={lane} existing={existing}, new candidate got {actual}, '
                     f'expected {expected}')
@@ -155,7 +166,8 @@ def verify_gate(script, capped=False, capacity=20):
             if name == 'foreign owner':
                 options = {'owner': 1 - lane}
             actual, _ = run_gate(script, 3, lane=lane, other_existing=9, capacity=capacity, **options)
-            require(actual is False, f'Real packaged gate failed to reject {name} in lane={lane}')
+            expected = current_rebinding and name in ('occupied tower', 'same-host repeat')
+            require(actual is expected, f'Real packaged gate wrong result for {name} in lane={lane}')
         for existing in sorted({3, 4, 9, capacity - 1}):
             actual, _ = run_gate(script, existing, lane=lane, other_existing=2, rebind=True, capacity=capacity)
             require(actual is True, f'Legal empty-tower rebind failed at lane={lane} existing={existing}')
@@ -267,6 +279,9 @@ def main():
         verify_tooltips(args.map, script, current_manager=False)
     else:
         verify_gate(script, capacity=20)
+        if 'function tdPetOwnedSlot ' in script:
+            from VerifyPetRebindingArtifact import verify_rebinding
+            verify_rebinding(script)
         require(re.search(r'\bset TDPetData_TD_PET_COLLECTION_LIMIT\s*=\s*20\b', script),
                 'Current manager packaged capacity must be twenty')
         require('TDPetData_TD_PET_DEPLOY_LIMIT' not in script, 'Removed deployment cap remains')

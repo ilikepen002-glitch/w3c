@@ -109,7 +109,7 @@ public function tdPetSpawnWild(int lane, int wave, int species) returns TDPetWil
 	record.travelSpeed = tdPetWildTravelSpeed(lane)
 	record.marker = CreateTextTag()
 	SetTextTagPermanent(record.marker, true)
-	SetTextTagText(record.marker, "野生精灵 60s · Q捕获", 0.022)
+	SetTextTagText(record.marker, "野生精灵 180s · Q捕获", 0.022)
 	SetTextTagPosUnit(record.marker, creature, 85.0)
 	SetTextTagVisibility(record.marker, GetLocalPlayer() == Player(lane))
 	tdPetWildRecords.add(record)
@@ -118,7 +118,7 @@ public function tdPetSpawnWild(int lane, int wave, int species) returns TDPetWil
 	if GetLocalPlayer() == Player(lane)
 		PingMinimapEx(creature.getPos().x, creature.getPos().y, 4.0, 255, 220, 50, false)
 		StartSound(bj_questDiscoveredSound)
-	DisplayTimedTextToPlayer(Player(lane), 0, 0, 7.0, "|cffffdd40野生" + tdPetSpeciesName(species) + "出现！|r保护60秒，Q普通球捕获。" + (record.tutorial ? " 教学首只第一次普通球必成。" : ""))
+	DisplayTimedTextToPlayer(Player(lane), 0, 0, 7.0, "|cffffdd40野生" + tdPetSpeciesName(species) + "出现！|r保护180秒，Q普通球捕获。" + (record.tutorial ? " 教学首只第一次普通球必成。" : ""))
 	return record
 
 public function tdPetWildHasCaptureWindow() returns boolean

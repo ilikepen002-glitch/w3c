@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "formal_build_parent": "648362959bacff730c61eeea4d297ea95f1f7322",
+  "current_source_commit": "8a26ec9b015c3af99f888b8496f7fd435435365d",
+  "production_wurst_files_verified_against_build_manifest": 141,
+  "map_sha256": "5d6701cf84d4910fdcae6c2eaf299ae76e640577640e416564ba8ab38fac69d5",
+  "map_bytes": 5745005,
+  "packed_jass_sha256": "bc37aeeac4e76bb9ef0d7d32fc30c382d459d8f579ea1fe9b9ff568db907b000",
+  "verifier_sha256": {
+    "tools/VerifyWildLifetimeArtifact.py": "3bdb96489457b0132f869f4aea72362b6f51deb951d6a72a19937e9d11c5a5b6",
+    "tools/VerifyPetRebindingArtifact.py": "7df62be56af1abb2968806f656b83087aafd5e0d0dfddb741f2ca4b5eb7f9dc5",
+    "tools/VerifyTowerTargetPriorityArtifact.py": "00dc01ce841ce9b12d310167e1493d65ca42c5f816e72eebb9d37723763229cb",
+    "tools/VerifyEquipmentIconRefresh.py": "c5f63ed020cee43ff97668b3cd7a2bdeecb4fe2d8ee85ee10305f6b38a8b12e8",
+    "tools/VerifyInventoryRangeArtifact.py": "bbc5a2e0446f75dc4bd681ccf9b515fdce02630450d9cf3cf45d3d9fe87eea89",
+    "tools/AuditMapResourceReachability.py": "9149f54f6a49725c4cd58ff3e2df91c4d8bd72a133e5acb2d3ae5a0183b15c36"
+  },
+  "checks_manifest_sha256": "0cdc3892ebd5129d9cc56630055c61e9716afc41291ad7138761171921f6df86",
+  "build_manifest_sha256": "f23de0f6ca46448c189dde155f56e6e8563e3abe039fb8c2d5fe550fa530ceb4"
+}

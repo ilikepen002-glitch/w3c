@@ -1,0 +1,686 @@
+{
+  "source_contract": {
+    "unique_attacked_wrapper": true,
+    "local_selector_count": 1,
+    "shared_recovery_timer_count": 1,
+    "damage_selection_bridge_count": 0,
+    "route_progress_or_speed_priority": false,
+    "source_files_sha256": {
+      "towers/TDTowerTargetPriorityRules.wurst": "ad5a5f854ba70f5010d4a338574e870496b6038e3daafcb4e01bd47d93f2f1ac",
+      "towers/TDTowerTargetPriorityState.wurst": "dcffadd999710edbf46304afc8ebedd0c936f63f65b196b8f94d0465a4788166",
+      "towers/TDTowerTargetPriorityRuntime.wurst": "a28c7100706fe90cbe4843a4de82b02c1d3b0a8b417e9111e947e1fb8a3212ed",
+      "towers/TDTowerRuntime.wurst": "b94ddb457c7d64154c94a6e0d8beffebd7537205d0cbc6c2d558f5bbbb1bcf65",
+      "items/TDInventoryRuntime.wurst": "128f342ece729df0713d2b95cdfa6d6ecc9eccb94fac157d814fcc99360bf464",
+      "enemies/TDEnemyControlRuntime.wurst": "07b8e53b76e7948329b637c0bdcf99d1a1a37c05afc6927de63e550b9a733c09",
+      "TDConfig.wurst": "17a42e5b39f963c68d0873388e384cf27606c2415b05445e7c52bca270457307"
+    }
+  },
+  "boundary": "Offline execution of actual source/packed JASS with controlled native order results, callback interleavings, visibility, handles/groups and clock. No Warcraft launch, native attack-point/turning timings, client DPS, FPS or multiplayer synchronization measurement.",
+  "mutation_coverage": "SOURCE_AND_PACKED",
+  "coverage_not_claimed": [
+    "All-input formal-baseline trajectory equivalence",
+    "Native client DPS/turning/attack-point timing",
+    "Rendering, dummy recycling, multiplayer synchronization"
+  ],
+  "source_rules": {
+    "comparator_cases": 2304,
+    "family_policies": [
+      1,
+      2,
+      2,
+      1,
+      2
+    ],
+    "boss_guard_normal_ranks": [
+      2,
+      1,
+      0
+    ],
+    "live_absolute_hp": true
+  },
+  "source_mutations_rejected": [
+    "retired threshold reintroduced",
+    "retired comparator reintroduced",
+    "HP tie redirect",
+    "rank tie redirect",
+    "current tie lost",
+    "unbounded recovery",
+    "wrong effective range",
+    "pending not published",
+    "sync native-false duplicate",
+    "trial revision lost",
+    "selector group leak",
+    "recovery floor lost",
+    "RNG comparison",
+    "queue before verdict",
+    "sale first-event exclusion",
+    "damage selection bridge"
+  ],
+  "packed_structure": {
+    "actual_packed_wrapper": true,
+    "priority_functions": 30
+  },
+  "packed_rules": {
+    "comparator_cases": 2304,
+    "family_policies": [
+      1,
+      2,
+      2,
+      1,
+      2
+    ],
+    "boss_guard_normal_ranks": [
+      2,
+      1,
+      0
+    ],
+    "live_absolute_hp": true
+  },
+  "base_policy_without_route_override": {
+    "cases": [
+      {
+        "tower": "uO6B",
+        "base_target": 102,
+        "route_or_speed_reads": 0,
+        "manual_lock_preserved": true
+      },
+      {
+        "tower": "uA6B",
+        "base_target": 103,
+        "route_or_speed_reads": 0,
+        "manual_lock_preserved": true
+      }
+    ],
+    "pending_confirmation_without_rescan": true,
+    "route_progress_or_speed_priority": false
+  },
+  "baseline_no_selection": {
+    "baseline_map_sha256": "59a519fbb47761840320241f08a3b95e8a717cd38fb603e5da0911abf9a3a8eb",
+    "cases": [
+      {
+        "tower": "uA6B",
+        "scene": "passive",
+        "native_primary_hits": 8,
+        "actual_resolveRotation_max": 0,
+        "actual_active_readyAt_max": 0.0,
+        "actual_movement_calls": 0,
+        "actual_RNG_draws": 8,
+        "actual_damage_event_count": 34,
+        "death_gold": null,
+        "death_lane_score": null,
+        "equal_trajectory_sha256": "9d74f327816cd752f9a960f2528ad31335fbb2edf5b87959cef5f7b71d8e382b"
+      },
+      {
+        "tower": "uO6B",
+        "scene": "passive",
+        "native_primary_hits": 8,
+        "actual_resolveRotation_max": 0,
+        "actual_active_readyAt_max": 0.0,
+        "actual_movement_calls": 0,
+        "actual_RNG_draws": 8,
+        "actual_damage_event_count": 18,
+        "death_gold": null,
+        "death_lane_score": null,
+        "equal_trajectory_sha256": "6d6d46560dcb2a2bcb78d899af20aef4b963a0424d21c88e264f09a8fb17f212"
+      },
+      {
+        "tower": "uH6B",
+        "scene": "passive",
+        "native_primary_hits": 8,
+        "actual_resolveRotation_max": 0,
+        "actual_active_readyAt_max": 0.0,
+        "actual_movement_calls": 0,
+        "actual_RNG_draws": 8,
+        "actual_damage_event_count": 18,
+        "death_gold": null,
+        "death_lane_score": null,
+        "equal_trajectory_sha256": "6d6d46560dcb2a2bcb78d899af20aef4b963a0424d21c88e264f09a8fb17f212"
+      },
+      {
+        "tower": "uD6B",
+        "scene": "passive",
+        "native_primary_hits": 8,
+        "actual_resolveRotation_max": 0,
+        "actual_active_readyAt_max": 0.0,
+        "actual_movement_calls": 0,
+        "actual_RNG_draws": 8,
+        "actual_damage_event_count": 18,
+        "death_gold": null,
+        "death_lane_score": null,
+        "equal_trajectory_sha256": "6d6d46560dcb2a2bcb78d899af20aef4b963a0424d21c88e264f09a8fb17f212"
+      },
+      {
+        "tower": "uG6B",
+        "scene": "passive",
+        "native_primary_hits": 8,
+        "actual_resolveRotation_max": 0,
+        "actual_active_readyAt_max": 0.0,
+        "actual_movement_calls": 0,
+        "actual_RNG_draws": 8,
+        "actual_damage_event_count": 18,
+        "death_gold": null,
+        "death_lane_score": null,
+        "equal_trajectory_sha256": "6d6d46560dcb2a2bcb78d899af20aef4b963a0424d21c88e264f09a8fb17f212"
+      },
+      {
+        "tower": "uA6B",
+        "scene": "control",
+        "native_primary_hits": 8,
+        "actual_resolveRotation_max": 4,
+        "actual_active_readyAt_max": 0.0,
+        "actual_movement_calls": 15,
+        "actual_RNG_draws": 0,
+        "actual_damage_event_count": 25,
+        "death_gold": null,
+        "death_lane_score": null,
+        "equal_trajectory_sha256": "785956a56a8cc08693aa71481661afd73f27b49575dd358cf0a1fe66b5f0e463"
+      },
+      {
+        "tower": "uA6B",
+        "scene": "active_cd",
+        "native_primary_hits": 8,
+        "actual_resolveRotation_max": 0,
+        "actual_active_readyAt_max": 22.0,
+        "actual_movement_calls": 0,
+        "actual_RNG_draws": 0,
+        "actual_damage_event_count": 26,
+        "death_gold": null,
+        "death_lane_score": null,
+        "equal_trajectory_sha256": "9444a9ba12a1a950df6d3d129d03f1d3f4601983bd15948fe951ac691c707795"
+      },
+      {
+        "tower": "uA6B",
+        "scene": "plain_death",
+        "native_primary_hits": 9,
+        "actual_resolveRotation_max": 0,
+        "actual_active_readyAt_max": 0.0,
+        "actual_movement_calls": 0,
+        "actual_RNG_draws": 2,
+        "actual_damage_event_count": 24,
+        "death_gold": [
+          1015,
+          1000,
+          1000,
+          1000
+        ],
+        "death_lane_score": [
+          3,
+          0,
+          0,
+          0
+        ],
+        "equal_trajectory_sha256": "71687df600ff67afa3e3f972936d6b3a38c4fb71ea7a75ad0e87d926ca0400f3"
+      }
+    ],
+    "actual_packed_native_start_and_damage_chain": true,
+    "compared": [
+      "original/derived damage events",
+      "pet hit counters",
+      "actual active cooldown",
+      "slow/armor carrier and speed writes",
+      "RNG sequence",
+      "damage ledger",
+      "gold and score after actual death settlement"
+    ],
+    "boundary": "Finite deterministic scenarios and native post-armor input/clock/delivery stubs; no all-input claim, engine armor/stun/DPS simulation or unrelated mode coverage."
+  },
+  "packed_catalog_rawcodes": [
+    "uA11",
+    "uA12",
+    "uA13",
+    "uA14",
+    "uA15",
+    "uA6A",
+    "uA6B",
+    "uO11",
+    "uO12",
+    "uO13",
+    "uO14",
+    "uO15",
+    "uO6A",
+    "uO6B",
+    "uH11",
+    "uH12",
+    "uH13",
+    "uH14",
+    "uH15",
+    "uH6A",
+    "uH6B",
+    "uD11",
+    "uD12",
+    "uD13",
+    "uD14",
+    "uD15",
+    "uD6A",
+    "uD6B",
+    "uG11",
+    "uG12",
+    "uG13",
+    "uG14",
+    "uG15",
+    "uG6A",
+    "uG6B"
+  ],
+  "transactions": [
+    {
+      "sync_attacked": false,
+      "native_order_result": true,
+      "script_orders": 1,
+      "accepted_starts": 1
+    },
+    {
+      "sync_attacked": true,
+      "native_order_result": true,
+      "script_orders": 1,
+      "accepted_starts": 1
+    },
+    {
+      "sync_attacked": false,
+      "native_order_result": false,
+      "script_orders": 1,
+      "accepted_starts": 1
+    },
+    {
+      "sync_attacked": true,
+      "native_order_result": false,
+      "script_orders": 1,
+      "accepted_starts": 1
+    },
+    {
+      "same_hp_attacks": 50,
+      "script_orders": 0
+    },
+    {
+      "pending_target_dead": true,
+      "accepted_starts": 0,
+      "stop_orders": 1
+    },
+    {
+      "different_legal_confirmation_target": true
+    }
+  ],
+  "commands_and_identity": [
+    {
+      "manual_order": 851983,
+      "lock_and_stop": true
+    },
+    {
+      "manual_order": 851971,
+      "lock_and_stop": true
+    },
+    {
+      "nonattack_order": 851972,
+      "automatic_orders": 0
+    },
+    {
+      "nonattack_order": 851993,
+      "automatic_orders": 0
+    },
+    {
+      "nonattack_order": 852600,
+      "automatic_orders": 0
+    },
+    {
+      "rejected_candidate": "lane"
+    },
+    {
+      "rejected_candidate": "epoch"
+    },
+    {
+      "rejected_candidate": "hidden"
+    },
+    {
+      "rejected_candidate": "visible"
+    },
+    {
+      "rejected_candidate": "dead"
+    },
+    {
+      "rejected_candidate": "leaked"
+    },
+    {
+      "rejected_candidate": "range"
+    },
+    {
+      "rejected_candidate": "mechanical"
+    },
+    {
+      "rejected_candidate": "structure"
+    },
+    {
+      "explicit_exclusion": "working",
+      "accepted_starts": 0
+    },
+    {
+      "explicit_exclusion": "casting",
+      "accepted_starts": 0
+    },
+    {
+      "explicit_exclusion": "pet_busy",
+      "accepted_starts": 0
+    },
+    {
+      "synchronous_change": "work",
+      "ghost_old_starts": 0
+    },
+    {
+      "synchronous_change": "intent",
+      "ghost_old_starts": 0
+    },
+    {
+      "synchronous_change": "command",
+      "ghost_old_starts": 0
+    },
+    {
+      "synchronous_change": "forget_recreate",
+      "ghost_old_starts": 0
+    },
+    {
+      "owner_reset_serial_reuse": true
+    }
+  ],
+  "catalog_selection": {
+    "35_rawcodes_actual_selectors": [
+      {
+        "rawcode": "uA11",
+        "family": 1,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uA12",
+        "family": 1,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uA13",
+        "family": 1,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uA14",
+        "family": 1,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uA15",
+        "family": 1,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uA6A",
+        "family": 1,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uA6B",
+        "family": 1,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uO11",
+        "family": 2,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uO12",
+        "family": 2,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uO13",
+        "family": 2,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uO14",
+        "family": 2,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uO15",
+        "family": 2,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uO6A",
+        "family": 2,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uO6B",
+        "family": 2,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uH11",
+        "family": 3,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uH12",
+        "family": 3,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uH13",
+        "family": 3,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uH14",
+        "family": 3,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uH15",
+        "family": 3,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uH6A",
+        "family": 3,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uH6B",
+        "family": 3,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uD11",
+        "family": 4,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uD12",
+        "family": 4,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uD13",
+        "family": 4,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uD14",
+        "family": 4,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uD15",
+        "family": 4,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uD6A",
+        "family": 4,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uD6B",
+        "family": 4,
+        "best_target": 103
+      },
+      {
+        "rawcode": "uG11",
+        "family": 5,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uG12",
+        "family": 5,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uG13",
+        "family": 5,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uG14",
+        "family": 5,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uG15",
+        "family": 5,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uG6A",
+        "family": 5,
+        "best_target": 104
+      },
+      {
+        "rawcode": "uG6B",
+        "family": 5,
+        "best_target": 104
+      }
+    ],
+    "hp_percent_adversary": true,
+    "same_rank_no_hp_tiebreak": true,
+    "evolution_policy": "Evolution retains these native rawcodes; family policy is independent of evolution state."
+  },
+  "trial_identity": {
+    "same_lane_trial_without_normal_epoch": true,
+    "cross_lane_rejected": true,
+    "reused_native_handle_revision_rejected": true,
+    "old_token_generation_epoch_rejected": true,
+    "registry_reuse_fixture": "Adversarial rebind after actual production trial death; no replenishment claim."
+  },
+  "split_inflight": {
+    "actual_native_primary_sequence": [
+      "A",
+      "B",
+      "A"
+    ],
+    "original_hits": 3,
+    "split_segments": 6,
+    "old_expiry_new_volley_preserved": true,
+    "damage_side_target_queries": 0,
+    "automatic_orders": 0,
+    "render_boundary": "Real visual admission budget saturated (6 new/sec) in the controlled fixture; renderer and dummy recycling are not measured."
+  },
+  "sparse_recovery": {
+    "parked_sources": 40,
+    "ticks_observed": 45,
+    "max_queries_per_tick": 4,
+    "min_query_interval_seconds": 0.5,
+    "fair_no_starvation": true,
+    "empty_candidate_repeated_stop_orders": 0,
+    "recovery_attack_orders": 39
+  },
+  "recovery_failures_range_commands": {
+    "recovery_false_attempt_seconds": [
+      10.5,
+      11.0,
+      11.5
+    ],
+    "extra_stop_orders": 0,
+    "real_periodic_empty_queue_destroyed": true,
+    "equipment_range_sequence": [
+      1020.0,
+      1360.0
+    ],
+    "new_player_commands_cancel_recovery": 5
+  },
+  "existing_split_original_basis": {
+    "primary_final": 210.0,
+    "split_immutable_original_basis": 100.0,
+    "tag": "Tspl",
+    "derived_recursive_pet_advances": 0,
+    "fixture_boundary": "Native post-armor input, constructed shot/volley and production allocator/listener registration/dispatch. No rendering or native armor emulation."
+  },
+  "packed_mutations_rejected": [
+    {
+      "label": "missing verdict",
+      "exception_type": "ValueError",
+      "reason": "Packed ATTACKED wrapper: missing/out-of-order tdTargetPriorityAcceptAttack(",
+      "expected_oracle_assertion": "Packed ATTACKED wrapper: missing/out-of-order tdTargetPriorityAcceptAttack("
+    },
+    {
+      "label": "HP tie change",
+      "exception_type": "ValueError",
+      "reason": "Actual comparator violates strict/current/tie rule",
+      "expected_oracle_assertion": "Actual comparator violates strict/current/tie rule"
+    },
+    {
+      "label": "rank tie change",
+      "exception_type": "ValueError",
+      "reason": "Actual comparator violates strict/current/tie rule",
+      "expected_oracle_assertion": "Actual comparator violates strict/current/tie rule"
+    },
+    {
+      "label": "range inflation",
+      "exception_type": "ValueError",
+      "reason": "Invalid better candidate selected: range",
+      "expected_oracle_assertion": "Invalid better candidate selected: range"
+    },
+    {
+      "label": "synchronous native-false old duplicate",
+      "exception_type": "ValueError",
+      "reason": "Cancelled old start registered ghost split volley",
+      "expected_oracle_assertion": "Cancelled old start registered ghost split volley"
+    },
+    {
+      "label": "unbounded recovery",
+      "exception_type": "ValueError",
+      "reason": "Recovery exceeded four-query tick budget",
+      "expected_oracle_assertion": "Recovery exceeded four-query tick budget"
+    },
+    {
+      "label": "old trial snapshot revision",
+      "exception_type": "ValueError",
+      "reason": "Fresh manual trial identity rejected",
+      "expected_oracle_assertion": "Fresh manual trial identity rejected"
+    },
+    {
+      "label": "stale restoration range",
+      "exception_type": "ValueError",
+      "reason": "Recovery used stale pre-equipment range",
+      "expected_oracle_assertion": "Recovery used stale pre-equipment range"
+    },
+    {
+      "label": "duplicate accepted registration",
+      "exception_type": "ValueError",
+      "reason": "Packed wrapper queues before verdict/twice",
+      "expected_oracle_assertion": "Packed wrapper queues before verdict/twice"
+    }
+  ],
+  "status": "PASS",
+  "actual_mpq_executed": true,
+  "jass_sha256": "bc37aeeac4e76bb9ef0d7d32fc30c382d459d8f579ea1fe9b9ff568db907b000",
+  "native_event_observation": "A legal native ATTACKED delivered under stop/hold/nonattack order may still register its original contract. Warcraft 1.28 supplies no per-event order token. The gate proves no automatic order override and no old outer registration after observable synchronous intent changes.",
+  "map_sha256": "5d6701cf84d4910fdcae6c2eaf299ae76e640577640e416564ba8ab38fac69d5",
+  "tool_sha256": "00dc01ce841ce9b12d310167e1493d65ca42c5f816e72eebb9d37723763229cb",
+  "command": [
+    "tools/VerifyTowerTargetPriorityArtifact.py",
+    "/workspace/scratch/2106c0ab1fac/spirit-lifecycle-fixes-20261013/ExampleMap.w3x",
+    "--source",
+    "/workspace/scratch/2106c0ab1fac/spirit-lifecycle-fixes-20261013/wurst",
+    "--baseline-map",
+    "/tmp/tower-target-priority-baseline-4abc225.w3x",
+    "--output",
+    "/tmp/no-eta-target-priority-actual.json"
+  ]
+}

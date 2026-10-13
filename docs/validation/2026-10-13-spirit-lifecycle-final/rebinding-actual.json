@@ -1,0 +1,129 @@
+{
+  "transactions": {
+    "matrix": [
+      {
+        "source_bound": false,
+        "target_occupied": false,
+        "full_20": false
+      },
+      {
+        "source_bound": false,
+        "target_occupied": false,
+        "full_20": true
+      },
+      {
+        "source_bound": false,
+        "target_occupied": true,
+        "full_20": false
+      },
+      {
+        "source_bound": false,
+        "target_occupied": true,
+        "full_20": true
+      },
+      {
+        "source_bound": true,
+        "target_occupied": false,
+        "full_20": false
+      },
+      {
+        "source_bound": true,
+        "target_occupied": false,
+        "full_20": true
+      },
+      {
+        "source_bound": true,
+        "target_occupied": true,
+        "full_20": false
+      },
+      {
+        "source_bound": true,
+        "target_occupied": true,
+        "full_20": true
+      }
+    ],
+    "strict_same_host_noop": true
+  },
+  "failures": {
+    "preflight_failures": [
+      "null",
+      "dead",
+      "foreign",
+      "not_tower",
+      "busy",
+      "unowned_a",
+      "released_b",
+      "duplicate_target",
+      "foreign_stale_b",
+      "duplicate_source",
+      "duplicate_source_same_lane",
+      "foreign_source",
+      "create_null"
+    ],
+    "post_native_adversaries": [
+      "a_generation",
+      "a_revision",
+      "a_slot",
+      "b_generation",
+      "b_released",
+      "b_slot",
+      "prepared_owner",
+      "target_dead",
+      "target_owner",
+      "target_upgrade",
+      "epoch"
+    ],
+    "paused_source_allowed": true
+  },
+  "lifecycle": {
+    "active_buff_pending_cancelled": true,
+    "old_generations_invalid": true,
+    "ready_at_preserved": [
+      91.0,
+      117.0
+    ],
+    "immediate_inspiration_and_bonus_refresh": true,
+    "player_ui_facade_route": true
+  },
+  "active_lifecycle": [
+    "both_queued_originals_cancelled",
+    "both_running_casts_cancelled_other_source_completes",
+    "on_stack_cancel_then_safe_exit"
+  ],
+  "mutations": [
+    {
+      "mutation": "recall_before_prepare",
+      "exception_type": "ValueError",
+      "reason": "Failed deployment damaged prior state: null"
+    },
+    {
+      "mutation": "prepared_owner_unchecked",
+      "exception_type": "ValueError",
+      "reason": "Post-native stale transaction accepted: prepared_owner"
+    },
+    {
+      "mutation": "source_uniqueness_unchecked",
+      "exception_type": "ValueError",
+      "reason": "Illegal/failing deploy accepted: duplicate_source_same_lane"
+    },
+    {
+      "mutation": "b_recall_omitted",
+      "exception_type": "ValueError",
+      "reason": "B moved instead of becoming unbound"
+    },
+    {
+      "mutation": "cooldown_reset",
+      "exception_type": "ValueError",
+      "reason": "Rebind changed identity/skills/CD: readyAt"
+    },
+    {
+      "mutation": "omit_target_refresh",
+      "exception_type": "ValueError",
+      "reason": "Facade omitted immediate host refresh"
+    }
+  ],
+  "status": "PASS",
+  "map_sha256": "5d6701cf84d4910fdcae6c2eaf299ae76e640577640e416564ba8ab38fac69d5",
+  "jass_sha256": "bc37aeeac4e76bb9ef0d7d32fc30c382d459d8f579ea1fe9b9ff568db907b000",
+  "boundary": "Recorded engine/clock/handle/collections; actual production transaction/recall/facade; no Warcraft observation"
+}
