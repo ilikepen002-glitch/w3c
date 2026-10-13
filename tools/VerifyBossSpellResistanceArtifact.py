@@ -156,20 +156,23 @@ class BossJassRuntime(GroundJassRuntime):
             raise ValueError('Unsupported packaged expression ' + text) from exc
         ops = {type(part.op) for part in ast.walk(node) if isinstance(part, ast.BoolOp)}
         require(len(ops) <= 1, 'Mixed Jass and/or requires a Jass-specific precedence parser')
-        variables = {**self.globals, **scope}
+        def variable(name):
+            # Earlier calls in this same expression may change a global.
+            # Locals still shadow globals, but neither namespace is snapshotted.
+            require(name in scope or name in self.globals, 'Unknown packaged scalar/array ' + name)
+            return scope[name] if name in scope else self.globals[name]
         def read(part):
             if isinstance(part, ast.Constant):
                 return part.value
             if isinstance(part, ast.Name):
-                require(part.id in variables, 'Unknown packaged scalar ' + part.id)
-                return variables[part.id]
+                return variable(part.id)
             if isinstance(part, ast.BoolOp):
                 if isinstance(part.op, ast.And):
                     return all(bool(read(value)) for value in part.values)
                 return any(bool(read(value)) for value in part.values)
             if isinstance(part, ast.Subscript) and isinstance(part.value, ast.Name):
-                require(part.value.id in variables, 'Unknown packaged array ' + part.value.id)
-                return variables[part.value.id][read(part.slice)]
+                index = read(part.slice)
+                return variable(part.value.id)[index]
             if isinstance(part, ast.Call) and isinstance(part.func, ast.Name):
                 require(not part.keywords, 'Packaged call has unsupported keywords')
                 return self.call(part.func.id, [read(arg) for arg in part.args])
@@ -194,7 +197,7 @@ class BossJassRuntime(GroundJassRuntime):
                 if isinstance(op, ast.Gt): return left > right
                 if isinstance(op, ast.GtE): return left >= right
             # Leaf scalars retain the existing evaluator's allow-list.
-            return JassScalarEvaluator.expression(self, ast.unparse(part), variables)
+            return JassScalarEvaluator.expression(self, ast.unparse(part), {**self.globals, **scope})
         return read(node)
 
     def call(self, name, args):

@@ -18,10 +18,72 @@ class ElementRuntime(PetAttackRuntime):
     def __init__(self,script):
         self.visual_handles={};self.visual_history=[];self.visual_serial=100000
         self.control_orders=[];self.reject_visual=False;self.reject_control=False
+        self.effect_dummies={};self.fx_history=[];self.damage_trace=[];self.random_trace=[];self.effect_regions={}
         super().__init__(script)
         self.visual_history.clear()
         self.callback_allocations=allocations(script)
+        self.fx_pool_baseline=None
+        if 'new_TDVisualMoving' in self.functions:
+            # Run real locked-library initialization once. Engine world bounds,
+            # unit setters and native handle reinterpreting remain boundaries.
+            self.globals.update(PLAYER_NEUTRAL_PASSIVE=15,bj_MAX_PLAYER_SLOTS=16,
+                                bj_mapInitialPlayableArea='visualPlayableBounds')
+            self.rects['worldBounds']=(-4096.,-4096.,4096.,4096.)
+            self.rects['visualPlayableBounds']=(-4096.,-4096.,4096.,4096.)
+            for name in ('init_Player','init_Basics','init_Colors','init_TypeCasting','init_MapBounds','init_DummyRecycler'):
+                require(name in self.functions,'Live Fx lacks its actual library initializer '+name)
+                self.invoke(name)
+            self.fx_pool_baseline=self.fx_pool_size()
+            require(self.fx_pool_baseline==48,'Locked DummyRecycler pool is not 8x6')
+        self.damage_trace.clear();self.random_trace.clear()
+    def fx_pool_size(self):
+        return sum(len(self.lists[self.globals['DummyRecycler_angleQueues'][angle]]) for angle in range(8))
     def native(self,name,args):
+        if name=='GetRandomReal':self.random_trace.append((self.now,name,tuple(args),self.roll))
+        if name=='GetRandomInt':self.random_trace.append((self.now,name,tuple(args)))
+        if name=='UnitDamageTarget':self.damage_trace.append((self.now,*args))
+        if name=='GetLocalPlayer':return True,0
+        if name=='ModuloReal':return True,args[0]%args[1]
+        if name=='vec3_getTerrainZ':
+            require(name in self.functions and len(args) in (3,4),'Unknown Fx terrain tuple lowering')
+            return True,0.0
+        if name=='GetPlayableMapRect':return True,'visualPlayableBounds'
+        if name=='CreateRegion':
+            region=80000+len(self.effect_regions);self.effect_regions[region]=[];return True,region
+        if name=='RegionAddRect':
+            require(args[0] in self.effect_regions and args[1] in self.rects,'Unknown Fx map-bounds native region')
+            self.effect_regions[args[0]].append(args[1]);return True,None
+        if name=='StringHash':
+            # Only the real Colors named-color registry uses this engine boundary.
+            # Stable distinct fixture keys preserve its table, not WC3 hash values.
+            return True,int.from_bytes(hashlib.sha256(args[0].encode()).digest()[:4],'little') & 0x7fffffff
+        if name=='ConvertFogState':return True,args[0]  # Native handle-type reinterpretation.
+        if name=='dispatch_LinkedList_LinkedList_enqueue':
+            self.lists[args[0]].append(args[1]);return True,None
+        if name=='dispatch_LinkedList_LinkedList_dequeue':
+            require(self.lists[args[0]],'Actual dummy queue underflow');return True,self.lists[args[0]].pop(0)
+        if name in ('SetUnitX','SetUnitY','SetUnitFlyHeight','SetUnitFacing','SetUnitScale','SetUnitVertexColor','PauseUnit','SetUnitOwner'):
+            unit=self.units[args[0]]
+            require(unit['type']==self.globals['DummyRecycler_DUMMY_UNIT_ID'],'Cosmetic setter touched a non-Fx unit')
+            if name=='SetUnitX':unit['x']=args[1]
+            elif name=='SetUnitY':unit['y']=args[1]
+            elif name=='SetUnitFlyHeight':unit['z']=args[1]
+            elif name=='SetUnitFacing':unit['facing']=args[1]
+            elif name=='SetUnitScale':unit['scale']=args[1]
+            elif name=='SetUnitVertexColor':unit['rgba']=tuple(args[1:5])
+            elif name=='PauseUnit':unit['paused']=args[1]
+            else:unit['owner']=args[1]
+            if args[0] in self.effect_dummies:
+                self.fx_history.append((self.now,name,args[0],unit['x'],unit['y'],unit.get('z',0.),unit.get('facing',0.),unit.get('scale',1.)))
+            return True,None
+        if name=='GetUnitFlyHeight':return True,self.units[args[0]].get('z',0.)
+        if name=='doAfter':
+            allocation=getattr(self,'callback_allocations',{}).get('alloc_CallbackSingle_doAfter_DummyRecycler')
+            if allocation and self.globals[allocation[0]][args[1]]==allocation[1]:
+                require(args[0]==1.0,'Actual Fx recycle delay is not exactly one second')
+            handled,value=super().native(name,args)
+            self.timers[self.globals['CallbackSingle_t'][args[1]]]['created']=self.now
+            return handled,value
         if name=='UnitDamageTarget' and getattr(self,'terminal_in_hit',False):
             self.terminal_in_hit=False
             handled,value=super().native(name,args)
@@ -56,13 +118,24 @@ class ElementRuntime(PetAttackRuntime):
             self.groups[args[0]]=[target for target in self.visible_units if
                             math.hypot(self.units[target]['x']-args[1],self.units[target]['y']-args[2])<=args[3]]
             return True,None
+        if name=='AddSpecialEffectTarget':
+            unit=self.units[args[1]]
+            self.visual_history.append((self.now,args[0],unit['x'],unit['y']))
+            if self.reject_visual:return True,None
+            handled,value=super().native(name,args)
+            self.effect_dummies[args[1]]=value
+            self.fx_history.append((self.now,name,args[1],unit['x'],unit['y'],unit.get('z',0.),unit.get('facing',0.),unit.get('scale',1.)))
+            return handled,value
+        if name=='AddLightningEx' and self.reject_visual:return True,None
         if name=='AddSpecialEffect':
             self.visual_history.append((self.now,*args[:3]))
             if self.reject_visual:return True,None
             self.visual_serial+=1;self.visual_handles[self.visual_serial]=tuple(args[:3]);return True,self.visual_serial
         if name=='DestroyEffect':
             require(args[0] in self.visual_handles,'Visual destroyed twice or without ownership')
-            del self.visual_handles[args[0]];return True,None
+            del self.visual_handles[args[0]]
+            self.effect_dummies={unit:effect for unit,effect in self.effect_dummies.items() if effect!=args[0]}
+            return True,None
         if name=='dispatch_DummyCaster_DummyCaster_castTarget':
             if self.reject_control:return True,None
             self.control_orders.append(tuple(args[1:5]))
@@ -104,6 +177,31 @@ class ElementRuntime(PetAttackRuntime):
         self.drain_zero()
     def finish(self,seconds=5.25):
         for _ in range(round(seconds/.05)):self.tick()
+        self.flush_fx_recycle()
+    def fx_recycle_pending(self):
+        allocation=self.callback_allocations.get('alloc_CallbackSingle_doAfter_DummyRecycler')
+        if allocation is None:return []
+        array,type_id=allocation
+        require(array=='CallbackSingle_typeId','Unknown actual dummy recycle allocator')
+        pending=[]
+        for delay,cb in self.scheduled:
+            if self.globals[array][cb]==type_id:
+                require(delay==1.,'Actual dummy recycle native delay changed')
+                timer=self.timers[self.globals['CallbackSingle_t'][cb]]
+                require(not timer['destroyed'],'Queued recycle has retired native timer')
+                pending.append((timer['created']+1.,cb))
+        return sorted(pending)
+    def deliver_due_fx_recycle(self):
+        due=[cb for deadline,cb in self.fx_recycle_pending() if deadline<=self.now+1e-8]
+        for cb in due:self.executed_steps=0;self.run_timer(cb)
+        return len(due)
+    def flush_fx_recycle(self):
+        if self.fx_pool_baseline is None:return
+        # Deliver ONLY actual locked DummyRecycler single callbacks at created+1.
+        # Unrelated game/trial timers retain their separate controlled deliveries.
+        for deadline,cb in self.fx_recycle_pending():
+            self.now=max(self.now,deadline);self.executed_steps=0;self.run_timer(cb)
+        require(self.fx_pool_size()==self.fx_pool_baseline,'Actual delayed Fx recycle did not restore pool baseline')
 
 EXPECTED={19:(6,480.),20:(1,130.),21:(4,240.),22:(48,2160.),23:(1,65.),
                                         24:(9,195.),25:(12,1200.),26:(24,1680.),27:(1,95.),28:(16,1120.),

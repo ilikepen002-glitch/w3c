@@ -692,7 +692,15 @@ def verify_trial(script):
     # Actual single-batch death does not replenish. A separate low-level registry
     # adversary covers both new and reused handles against actual snapshot guards.
     def ground(candidate, reused):
-        r=PetAttackRuntime(candidate);r.auto_post=False;r.enter(8);target=r.target(0);pet=r.pet([(38 if r.final_catalog else 14,4)])
+        r=PetAttackRuntime(candidate);r.auto_post=False
+        # Fx-enabled maps prewarm native dummy units before trial admission.
+        # Count real entry targets and zero death creations against each baseline.
+        before_enter=len(r.creations);r.enter(8)
+        created=r.creations[before_enter:]
+        require(len(created)==20 and len(set(created))==20 and r.state_call('targetCount')==20 and
+                all(unit is not None and r.units[unit]['type']==rawcode('uTrG') for unit in created),
+                'Single-batch entry did not create exactly twenty real trial targets')
+        target=r.target(0);pet=r.pet([(38 if r.final_catalog else 14,4)])
         original=[r.target(i) for i in range(5)]
         for unit in original:r.units[unit].update(x=0.,y=0.)
         r.visible_units=original[:]
@@ -700,8 +708,9 @@ def verify_trial(script):
         r.emit(100.,target=target)
         original_post=r.scheduled[-1][1];r.run_timer(original_post)
         require(not r.native_damage,'Ground proc ran inline before target replacement fixture')
+        before_death=len(r.creations)
         r.units[target]['alive']=False;r.event_target=target;r.invoke('tdTrialOnTargetDeath')
-        require(r.slots[0]==0 and r.state_call('targetCount')==19 and len(r.creations)==20,'Single-batch death replenished the ground target')
+        require(r.slots[0]==0 and r.state_call('targetCount')==19 and len(r.creations)==before_death,'Single-batch death replenished the ground target')
         replacement=r.adversarial_rebind(0,reused)
         new_revision=r.globals['TDTrialBinding_revision'][r.binding(0)]
         require((replacement==target) is reused and new_revision>old_revision,'Trial replacement fixture did not issue expected handle/revision')

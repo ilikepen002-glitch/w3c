@@ -270,6 +270,6 @@ def main():
         print('RUN '+key, file=sys.stderr,flush=True);start=time.monotonic()
         report[key]=run()
         print('PASS '+key+' %.3fs'%(time.monotonic()-start),file=sys.stderr,flush=True)
-    report['boundary']='Actual packed JASS. Effects/lightning/rendering, native terrain, engine timers/armor are explicit boundaries; no game/FPS claim. Moving API remains DCE in A; its actual8/2/dummy1s gate belongs to B.'
+    report['boundary']='Actual packed JASS. Effects/lightning/rendering, native terrain, engine timers/armor are explicit boundaries; no game/FPS claim. Moving API is DCE only in the A baseline; when live, this gate uses the reviewed elemental Fx native boundary. Global8/per-cast2/dummy1s stress belongs to the elemental VFX gate.'
     print(json.dumps(report,ensure_ascii=False,indent=2))
 if __name__=='__main__':main()

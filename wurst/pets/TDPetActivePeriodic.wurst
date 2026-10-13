@@ -60,8 +60,7 @@ function TDPetCastContext.zone(real now)
 			if this.skill == 37 and this.valid()
 				tdEnemyMechanicOfferStageWeakening(target, this.host, this castTo int, 0.30)
 	if this.skill == 30 and this.stage > 0 and this.stage mod 2 == 0
-		this.visualRing(TD_PET_VFX_VORTEX, this.center, 200.0)
-		this.addVisual(TD_PET_VFX_SHATTER, this.center)
+		this.visualVortexPulse()
 		for index = 0 to this.victimCount - 1
 			if not this.valid()
 				break
@@ -73,7 +72,7 @@ function TDPetCastContext.seed()
 	if this.stage < 3
 		if this.primaryValid()
 			this.setLastPosition(0, this.primary.getPos())
-			this.visualPoint(TD_PET_VFX_SEED, this.primary.getPos())
+			this.visualSeedPulse(this.primary.getPos())
 			this.hitPrimary(0.35)
 		this.stage += 1
 		if this.stage < 3
@@ -92,7 +91,7 @@ function TDPetCastContext.seed()
 				break
 			if target != this.primary and this.aoeValid(target)
 				this.remember(target)
-				this.addVisual(TD_PET_VFX_POISON, target.getPos())
+				this.visualSeedBranch(point, target.getPos())
 		this.stage = 4
 		this.nextAt = this.createdAt + 4.0
 	else if this.stage == 4 or this.stage == 5
@@ -111,7 +110,7 @@ function TDPetCastContext.fireChain()
 		return
 	let marked = this.victims[this.stage]
 	let point = this.lastPosition(this.stage)
-	this.visualRing(TD_PET_VFX_EXPLODE, point, 100.0)
+	this.visualChainBurst(point)
 	// Reserve/consume the mark before damage may synchronously retire it.
 	let ownIndex = this.stage
 	this.stage += 1
@@ -138,14 +137,14 @@ public function TDPetCastContext.stepPeriodic(real now) returns boolean
 		if tdPetEffectDue(now, this.nextAt) and this.stage < 4
 			if not this.primaryValid()
 				return false
-			this.visualPoint(TD_PET_VFX_SWORD, this.primary.getPos() + vec2((this.stage mod 2 == 0 ? 25.0 : -25.0), 0.0))
+			this.visualSwordCut(this.primary.getPos())
 			this.hitPrimary(0.60)
 			this.stage += 1
 			this.nextAt = this.createdAt + this.stage * 0.20
 		return this.stage < 4
 	if this.skill == 22
 		if tdPetEffectDue(now, this.nextAt) and this.stage < 4
-			this.visualRing(TD_PET_VFX_GOLD, this.center, 180.0)
+			this.visualSwordDrop()
 			this.area(this.center, 260.0, 0.45)
 			this.stage += 1
 			this.nextAt = this.createdAt + this.stage + 1.0
@@ -165,7 +164,7 @@ public function TDPetCastContext.stepPeriodic(real now) returns boolean
 						break
 					if this.aoeValid(target) and this.victimIndex(target) < 0 and this.victimCount < 12
 						this.remember(target)
-						this.addVisual(TD_PET_VFX_SEED, target.getPos())
+						this.visualFlowerContact(flower)
 						this.hit(target, 1.0)
 			this.stage += 1
 			this.nextAt = this.createdAt + this.stage * 0.25
@@ -175,7 +174,7 @@ public function TDPetCastContext.stepPeriodic(real now) returns boolean
 		if tdPetEffectDue(now, this.nextAt) and this.stage < cap
 			let current = this.stage
 			this.stage += 1
-			this.addVisual(this.skill == 26 ? TD_PET_VFX_THORN : TD_PET_VFX_RIFT, this.road.pointAt(current))
+			this.visualRoadSegment(current)
 			this.segment(this.road.pointAt(current), this.skill == 26 ? 150.0 : 160.0, this.skill == 26 ? 0.70 : 0.85, this.skill == 26)
 			this.nextAt = this.createdAt + this.stage * (this.skill == 26 ? 0.40 : 0.20)
 		return now < this.expiresAt
@@ -187,14 +186,14 @@ public function TDPetCastContext.stepPeriodic(real now) returns boolean
 		if tdPetEffectDue(now, this.nextAt) and this.stage < 4
 			if not this.primaryValid()
 				return false
-			this.visualPoint(TD_PET_VFX_BRAND, this.primary.getPos())
+			this.visualBrandPulse(this.primary.getPos())
 			this.hitPrimary(0.35)
 			this.stage += 1
 			this.nextAt = this.createdAt + this.stage + 1.0
 		return this.stage < 4
 	if this.skill == 33
 		if tdPetEffectDue(now, this.nextAt) and this.stage < 4
-			this.visualRing(this.stage == 0 ? TD_PET_VFX_METEOR : TD_PET_VFX_GROUND_FIRE, this.center, this.stage == 0 ? 0.0 : 150.0)
+			this.visualMeteorImpact()
 			this.area(this.center, 240.0, this.stage == 0 ? 1.30 : 0.25)
 			this.stage += 1
 			this.nextAt = this.createdAt + 0.75 + this.stage

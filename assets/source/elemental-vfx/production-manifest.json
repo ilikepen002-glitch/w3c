@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "status": "offline-validated",
+  "client127aTested": false,
+  "assets": [
+    {
+      "role": "model",
+      "file": "imports/war3mapImported/TDPetVfxSwordArray.mdx",
+      "importPath": "war3mapImported\\TDPetVfxSwordArray.mdx",
+      "bytes": 56932,
+      "sha256": "d4dcf7088c7c0df34976be7ef135fabb6ab8f8b7ee7fb2e4dfeea3e8bfdb0a0f",
+      "triangles": 524,
+      "bones": 1,
+      "bounds": {
+        "min": [
+          -82.2,
+          -93.97608108286242,
+          0
+        ],
+        "max": [
+          98,
+          93.97608108286241,
+          256
+        ]
+      },
+      "sequences": [
+        {
+          "name": "Stand",
+          "interval": [
+            0,
+            1000
+          ],
+          "loop": true
+        },
+        {
+          "name": "Death",
+          "interval": [
+            1000,
+            1600
+          ],
+          "loop": false
+        }
+      ]
+    },
+    {
+      "role": "model",
+      "file": "imports/war3mapImported/TDPetVfxVerdantRoot.mdx",
+      "importPath": "war3mapImported\\TDPetVfxVerdantRoot.mdx",
+      "bytes": 41182,
+      "sha256": "0d2a485303edb3e5d2707b9ade3660031282c926982280501aa8a74b9b4d74d2",
+      "triangles": 374,
+      "bones": 1,
+      "bounds": {
+        "min": [
+          -138.54491249077964,
+          -59,
+          2.516064454638273
+        ],
+        "max": [
+          138.73855377491063,
+          64,
+          107.332001578836
+        ]
+      },
+      "sequences": [
+        {
+          "name": "Stand",
+          "interval": [
+            0,
+            1000
+          ],
+          "loop": true
+        },
+        {
+          "name": "Death",
+          "interval": [
+            1000,
+            1600
+          ],
+          "loop": false
+        }
+      ]
+    },
+    {
+      "role": "model",
+      "file": "imports/war3mapImported/TDPetVfxFaultRidge.mdx",
+      "importPath": "war3mapImported\\TDPetVfxFaultRidge.mdx",
+      "bytes": 46852,
+      "sha256": "d4be670f889021705aac33d616de8967e732fe4a301c94f03e2b2884d87ebb70",
+      "triangles": 428,
+      "bones": 1,
+      "bounds": {
+        "min": [
+          -158,
+          -75,
+          0
+        ],
+        "max": [
+          157,
+          75,
+          153
+        ]
+      },
+      "sequences": [
+        {
+          "name": "Stand",
+          "interval": [
+            0,
+            1000
+          ],
+          "loop": true
+        },
+        {
+          "name": "Death",
+          "interval": [
+            1000,
+            1600
+          ],
+          "loop": false
+        }
+      ]
+    },
+    {
+      "role": "texture",
+      "file": "imports/Textures/TDPetVfxAtlas.blp",
+      "importPath": "Textures\\TDPetVfxAtlas.blp",
+      "bytes": 12102,
+      "sha256": "d47bf6ab34bdbfc651954cbf460d8ff82c770de66da8d4e4c3259131b810fa1a",
+      "width": 64,
+      "height": 64,
+      "mipmaps": 7,
+      "version": 1
+    }
+  ],
+  "totalRawBytes": 157068,
+  "fourResourceZipBytes": 35882,
+  "compressedBudgetBytes": 184320,
+  "validation": {
+    "format": "MDX800",
+    "totalSequenceSamples": 150,
+    "closedComponents": 67,
+    "twoSided": false,
+    "particles": 0,
+    "bodyStandOpacity": 1,
+    "deathMs": 600,
+    "evidence": "Independent reparsing, source triangle corner comparison, all seven BLP mips and 150 sequence/alpha samples completed by the pinned exporter. Rebuild regenerates detailed validation-report.json."
+  },
+  "sourceFiles": [
+    {
+      "file": "build_vfx.py",
+      "bytes": 7540,
+      "sha256": "20868986aa65a074be021580a3506a46003b79d30b210f97aa8fb701a5084f8a"
+    },
+    {
+      "file": "export_validate.cjs",
+      "bytes": 10366,
+      "sha256": "4210aff6708d830af2382539c4a4e40c9bc4c74df31f773ab001ddea680efe09"
+    },
+    {
+      "file": "TDPetVfxAtlas_source.png",
+      "bytes": 4057,
+      "sha256": "91d188baafbcf80770ea8341e3a03ba175d92f7cfbc2b627439999464de64192"
+    },
+    {
+      "file": "TDPetVfxSwordArray-source.json",
+      "bytes": 20291,
+      "sha256": "c3fb867c828b4801176f130d6f67370705c2b80dc222bd07b868ec94e4438503"
+    },
+    {
+      "file": "TDPetVfxVerdantRoot-source.json",
+      "bytes": 14433,
+      "sha256": "8cef1a85d50594cccc172228a8dae985b94c17d55f50757db59b6e8de46a113d"
+    },
+    {
+      "file": "TDPetVfxFaultRidge-source.json",
+      "bytes": 13452,
+      "sha256": "45a1ff4b1f738a633c1e9e1b91a78675997f8b38b9aab42ab7b88a26d5d1a91f"
+    },
+    {
+      "file": "runtime/package.json",
+      "bytes": 76,
+      "sha256": "4acc112b733ac283be4a6d6baf9c32e85cd77343e40489f81105016f4713740f"
+    },
+    {
+      "file": "runtime/package-lock.json",
+      "bytes": 5864,
+      "sha256": "cb320876225b886db666436a0c8ec1622243456a1a457694a0076d33dc983277"
+    },
+    {
+      "file": "README.md",
+      "bytes": 3446,
+      "sha256": "2706249105158bbdd0aad3569fff9b3b76496e11eb606b43ef81d62510591c4d"
+    },
+    {
+      "file": "PROVENANCE.md",
+      "bytes": 1789,
+      "sha256": "8a3ec29c00b96686524d69878b489b4e4418fa589663cddaaa1cb1de79d80d23"
+    }
+  ]
+}

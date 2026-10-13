@@ -28,9 +28,14 @@ class TDPetActiveCast extends TDPetCastContext
 		if now > expiresAt + 0.05
 			return false
 		this.visualTick(now)
+		boolean continuing
 		if skill == 19 or skill == 20 or skill == 23 or skill == 27 or skill == 28 or skill == 29 or skill == 32 or skill == 35 or skill == 36
-			return this.stepDirect(now)
-		return this.stepPeriodic(now)
+			continuing = this.stepDirect(now)
+		else
+			continuing = this.stepPeriodic(now)
+		if not continuing
+			this.visualFinish()
+		return continuing
 
 function prepare(TDPetActiveCast cast)
 	if cast.skill == 22 or cast.skill == 24 or cast.skill == 31
