@@ -211,7 +211,7 @@ public function tdPetSkillDescriptionById(int skill, int quality) returns string
 	if skill == TD_PET_SKILL_COMBO
 		return "普攻命中有" + (power * 100.0 + 0.5).toInt().toString() + "%概率追加一次100%本次普攻伤害；追加伤害不触发装备或精灵技能。"
 	if skill == TD_PET_SKILL_RESOLVE
-		return "每第5次有效普攻命中，当次普攻造成" + tdTooltipNumber(power) + "倍伤害。|n仅适配没有原生暴击能力的塔；剑圣不适配。"
+		return "每第5次有效普攻命中，当次普攻造成" + tdTooltipNumber(power) + "倍伤害。|n仅适配没有自带暴击能力的塔；剑圣不适配。"
 	if skill == TD_PET_SKILL_HEAVY
 		return "普攻命中前生命值高于65%时，追加本次普攻伤害的" + (power * 100.0 + 0.5).toInt().toString() + "%；65%时不触发。"
 	return "普攻自动触发风缚：攻击目标周围220范围内最多12名本路敌人移动速度降低" + (power * 100.0 + 0.5).toInt().toString() + "%，持续3秒；同名取最高等级，其他减速可叠加，总上限75%。|n基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，可被装备、灵感及光环缩短，合计上限40%。"
@@ -219,9 +219,9 @@ public function tdPetSkillDescriptionById(int skill, int quality) returns string
 
 
 
-// Non-purple releases keep the former fixed 2% extra-material chance.
-public function tdPetReleaseGetsSlotStone(int roll) returns boolean
-	return roll >= 1 and roll <= 2
+// Non-purple three-skill records get 5%; other non-purple records retain 2%.
+public function tdPetReleaseGetsSlotStone(int roll, int count) returns boolean
+	return roll >= 1 and roll <= (count == 3 ? 5 : 2)
 
 public function tdPetReleaseLifecycleAllows(boolean deployed, boolean released, boolean proposal) returns boolean
 	return not deployed and not released and not proposal
@@ -242,9 +242,10 @@ public function tdPetStepSlot(int slot, int direction) returns int
 		return -1
 	return (slot + direction + 20) mod 20
 
-// Include every owned skill, even resonance-locked ones. Candidate qualities are absent.
+// Composite quality includes locked owned skills, never a pending candidate.
+// Three owned skills have a blue floor; four owned skills are always purple.
 public function tdPetOwnedQuality(int count, int first, int second, int third, int fourth) returns int
-	var quality = 1
+	var quality = count >= 4 ? 4 : (count == 3 ? 3 : 1)
 	if count >= 1
 		quality = IMaxBJ(quality, first)
 	if count >= 2

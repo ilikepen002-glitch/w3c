@@ -58,7 +58,7 @@ class ElementalPetSourceTests(unittest.TestCase):
                     self.assertFalse(r.call('tdPetSkillAllowedForSpecies',[skill,slot,species,False]))
         for q in range(1,5):
             for skill in (11,12):self.assertTrue(r.call('tdPetSkillQualityValid',[skill,q]))
-    def test_full_four_byte_rawcodes_and_all_2410_collection_states(self):
+    def test_full_four_byte_rawcodes_and_all_610_collection_states(self):
         r=self.rules
         wild=set()
         for wave in range(1,33):
@@ -76,9 +76,9 @@ class ElementalPetSourceTests(unittest.TestCase):
             for variant in range(241):
                 spec,q,n=(0,0,0) if variant==0 else ((variant-1)//16+1,((variant-1)%16)//4+1,(variant-1)%4+1)
                 code=r.call('tdPetListAbilityId',[cell,spec,q,n]);ids.add(code)
-                self.assertEqual(code,int.from_bytes(f'L{cell*241+variant:03X}'.encode(),'big'))
-        self.assertEqual(len(ids),2410)
-        self.assertEqual(max(ids),int.from_bytes(b'L969','big'))
+                self.assertEqual(code,int.from_bytes(f'L{cell*241+(0 if variant==0 else 1+((variant-1)//4)*4):03X}'.encode(),'big'))
+        self.assertEqual(len(ids),610)
+        self.assertEqual(max(ids),int.from_bytes(b'L966','big'))
         for species in (-1,0,16,99):self.assertEqual(r.call('tdPetVisualUnitId',[species]),0)
         self.assertEqual(len({r.call('tdPetDisplayUnitId',[s,q]) for s in range(1,16) for q in range(1,5)}),60)
     def test_real_line_fan_and_zero_vector_boundaries(self):

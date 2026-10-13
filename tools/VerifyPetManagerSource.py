@@ -217,9 +217,9 @@ def verify_scalar_contracts(namespace=None):
         require(n['tdPetActionHotkey'](action) == MANAGER_COMMANDS[manager_rawcode(action)][2], f'Source hotkey {action}')
     channels = {n['tdPetManagerCommandId'](action) for action in range(23)}
     for cell, variant in itertools.product(range(10), range(n['TD_PET_LIST_VARIANTS'])):
-        species, quality, count = (0, 0, 0) if variant == 0 else ((variant - 1) // 16 + 1, ((variant - 1) % 16) // 4 + 1, (variant - 1) % 4 + 1)
+        species, quality, count = (0, 0, 0) if variant == 0 else ((variant - 1) // 4 + 1, (variant - 1) % 4 + 1, 1)
         identifier = n['tdPetListAbilityId'](cell, species, quality, count)
-        require(identifier == int.from_bytes(f'L{cell * n['TD_PET_LIST_VARIANTS'] + variant:03X}'.encode(), 'big'), 'Source list rawcode mismatch')
+        require(identifier == int.from_bytes(f'L{cell * 241 + (0 if variant == 0 else 1 + (variant - 1) * 4):03X}'.encode(), 'big'), 'Source list rawcode mismatch')
         require(identifier not in channels, 'Source manager Channel collision')
         channels.add(identifier)
     passives = {n['tdPetSlotAbilityId'](slot, variant) for slot, variant in itertools.product(range(4), range(n['TD_PET_SLOT_EMPTY'] + 1))}
@@ -236,7 +236,7 @@ def verify_scalar_contracts(namespace=None):
             require(slot == page * 10 + cell and n['tdPetCollectionNumber'](slot) == f'{slot + 1:02d}', 'Source fixed-page number mismatch')
     for count in range(5):
         for qualities in itertools.product(range(1, 5), repeat=4):
-            require(n['tdPetOwnedQuality'](count, *qualities) == max((1, *qualities[:count])), 'Owned quality must include every owned skill only')
+            require(n['tdPetOwnedQuality'](count, *qualities) == max((4 if count == 4 else 3 if count == 3 else 1, *qualities[:count])), 'Owned quality must include every owned skill only')
     for occupied in (set(), {0}, {19}, {0, 3, 10, 19}, set(range(20))):
         n['tdPetAt'] = lambda lane, slot, occupied=occupied: object() if lane == 0 and slot in occupied else None
         for slot, direction in itertools.product(range(20), (-1, 1)):

@@ -107,3 +107,11 @@ import TDBossRewardRules
 	tdWaveStrategyHint(14).contains("高甲").assertTrue()
 	tdWaveStrategyHint(4).contains("精英").assertTrue()
 	tdWaveStrategyHint(8).contains("首领单体").assertTrue()
+
+@Test function difficultyChoiceTextKeepsGuidanceWithoutHealthTuning()
+	for difficulty = 1 to 4
+		let text = tdDifficultyLabel(difficulty)
+		text.contains(tdDifficultyName(difficulty)).assertTrue()
+		text.contains("生命").assertFalse()
+		text.contains("×").assertFalse()
+		(text.length() > tdDifficultyName(difficulty).length()).assertTrue()

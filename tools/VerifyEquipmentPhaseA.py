@@ -133,7 +133,7 @@ def verify_map(path, root=ROOT):
         require(fields['iabi'] == '', entry.rawcode + ': native item passive double application')
         text = fields['utub']
         require(fields.get('ides') == text, entry.rawcode + ': selected item description missing')
-        for phrase in ('同塔同名限1件', '紫装不能合成' if entry.quality == 4 else '三件同品质可由工人合成'):
+        for phrase in ('同塔同名限1件',):
             require(phrase in text, entry.rawcode + ': stale tooltip ' + phrase)
     abilities = ability_objects(archive.extract('war3map.w3a'))
     verify_current_equipment_abilities(abilities)

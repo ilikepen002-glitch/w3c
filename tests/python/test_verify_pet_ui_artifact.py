@@ -79,7 +79,7 @@ class PetUIArtifactTests(unittest.TestCase):
         from VerifyPetStartupArtifact import measure, verify_routing
         script = self.artifact.extract('war3map.j').decode('utf-8')
         self.assertEqual(measure(script)['registrations'], 2)
-        count = 2433 if len(verifier.manager_species(self.abilities, self.units)) == 15 else 513
+        count = 633 if len(verifier.manager_species(self.abilities, self.units)) == 15 else 513
         self.assertIn(f'{count} button IDs', verify_routing(script))
 
 

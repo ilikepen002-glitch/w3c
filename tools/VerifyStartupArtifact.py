@@ -107,8 +107,8 @@ def verify_difficulty_dialog(script):
     view = r.dialogs[dialog]
     buttons = list(view['buttons'])
     require(len(buttons) == 4 and view['visible'] == {1}, 'Only the current selector should see four buttons')
-    require(list(view['buttons'].values()) == ['普通 · 生命×1', '困难 · 生命×1.3', '噩梦 · 生命×1.7', '传奇 · 生命×2.2'],
-            'Buttons must explain the actual health multipliers')
+    require(list(view['buttons'].values()) == ['普通 · 初次游玩', '困难 · 熟悉玩法后挑战', '噩梦 · 考验阵容搭配', '传奇 · 最高挑战'],
+            'Buttons must guide difficulty choice without internal health tuning')
     callback = r.dialog_actions[r.dialog_events[dialog]]
     def click(player, button, source=dialog):
         r.click_player, r.clicked_button, r.clicked_dialog = player, button, source

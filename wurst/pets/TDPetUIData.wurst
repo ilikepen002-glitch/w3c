@@ -45,9 +45,6 @@ public function tdPetSpeciesIconPath(int species) returns string
 public function tdPetSpeciesQualityIconPath(int species, int quality) returns string
 	return importedIcon(tdPetSpeciesIconStem(species) + "Q" + quality)
 
-public function tdPetSpeciesCountIconPath(int species, int quality, int ownedCount) returns string
-	return importedIcon(tdPetSpeciesIconStem(species) + "Q" + quality + "N" + ownedCount)
-
 public function tdPetManagerCommandIconPath(int action) returns string
 	if action <= 7
 		return tdPetUICommandIconPath(action)

@@ -104,22 +104,22 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			label = "查看状态"
 			key = "W"
 		command(tdPetUICommandId(cmd), label, key, cmd mod 4, cmd < 4 ? 0 : 2, cmd == 4 ? Targettype.UNIT : Targettype.NONE, tdPetUICommandIconPath(cmd), tdPetCommandDescription(cmd))
-	// Two levels alter fixed collection numbers only; count is owned, not unlocked.
+	// Two levels retain fixed collection numbers; skill count is shown in detail.
 	for cell = 0 to 9
 		let anchor = new ChannelAbilityPreset(tdPetListAbilityId(cell, 0, 0, 0), 2, true)
 		let order = anchor.getOrderString()
 		for variant = 0 to TD_PET_LIST_VARIANTS - 1
-			let species = variant == 0 ? 0 : (variant - 1) div 16 + 1
-			let quality = variant == 0 ? 0 : ((variant - 1) mod 16) div 4 + 1
-			let ownedCount = variant == 0 ? 0 : (variant - 1) mod 4 + 1
+			let species = variant == 0 ? 0 : (variant - 1) div 4 + 1
+			let quality = variant == 0 ? 0 : (variant - 1) mod 4 + 1
+			let ownedCount = variant == 0 ? 0 : 1
 			let label = variant == 0 ? "空位" : tdPetQualityName(quality) + " " + tdPetSpeciesName(species)
-			let icon = variant == 0 ? tdPetSlotIconPath(TD_PET_SLOT_EMPTY) : tdPetSpeciesCountIconPath(species, quality, ownedCount)
+			let icon = variant == 0 ? tdPetSlotIconPath(TD_PET_SLOT_EMPTY) : tdPetSpeciesQualityIconPath(species, quality)
 			let listAbility = variant == 0 ? anchor : new AbilityDefinitionIllidanChannel(tdPetListAbilityId(cell, species, quality, ownedCount))
 			listCommand(listAbility, cell, order, label, icon)
 			for level = 1 to 2
 				let number = tdPetCollectionNumber(tdPetPageSlot(level - 1, cell))
 				listAbility.setTooltipNormal(level, number + " · " + label + " (" + tdPetListHotkey(cell) + ")")
-				listAbility.setTooltipNormalExtended(level, variant == 0 ? "捕获精灵后可在此查看。" : ownedCount + "个技能。查看技能、上阵或培养。")
+				listAbility.setTooltipNormalExtended(level, variant == 0 ? "捕获精灵后可在此查看。" : "查看技能数量、技能详情、上阵或培养。")
 	for action = 8 to TD_PET_ACTION_PREVIEW_DETAIL
 		var label = "切换收藏页"
 		var description = "查看另一页精灵。"
@@ -138,7 +138,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 		else if action == TD_PET_ACTION_RELEASE
 			cell = 11
 			label = "释放精灵…"
-			description = "永久失去这只精灵，获得1洗练石。紫色精灵必得1开栏石；其他品质有2%概率获得1开栏石。捕获球和已用材料不返还。|n须先解绑并完成洗练选择，点击后需再次确认。"
+			description = "永久失去这只精灵，获得1洗练石。紫色精灵必得1开栏石；非紫色3技能精灵有5%概率，其他非紫色精灵有2%概率获得1开栏石。捕获球和已用材料不返还。|n须先解绑并完成洗练选择，点击后需再次确认。"
 		else if action == TD_PET_ACTION_DETAIL
 			cell = 10
 			label = "返回详情"
@@ -154,7 +154,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 		else if action == TD_PET_ACTION_CONFIRM
 			cell = 8
 			label = "确认永久释放"
-			description = "永久失去这只精灵，无法撤销。获得1洗练石；紫色精灵必得1开栏石，其他品质有2%概率获得1开栏石。捕获球和已用材料不返还。"
+			description = "永久失去这只精灵，无法撤销。获得1洗练石；紫色精灵必得1开栏石，非紫色3技能精灵有5%概率，其他非紫色精灵有2%概率获得1开栏石。捕获球和已用材料不返还。"
 		else if action == TD_PET_ACTION_CANCEL
 			cell = 9
 			label = "取消释放"

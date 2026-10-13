@@ -357,7 +357,6 @@ function tdScheduleForcedNextWave(int wave)
 	doAfter(tdWaveForceStartDelay(wave)) ->
 		if epoch != tdFlowEpoch() or schedule != tdFlowSchedule() or tdIsGameOver() or tdGetGlobalWave() != wave or not tdHasContinuingLanes() or tdFlowIsPreparing()
 			return
-		tdBroadcast("第 " + nextWave + "/" + tdWaveCount() + " 波时间到。")
 		tdStartGlobalWave(nextWave)
 
 function tdScheduleWaveAfterDelay(int wave, real delay)
@@ -474,7 +473,7 @@ function tdPrepareBossRound(int wave)
 	if not tdFlowPrepareBoss(wave)
 		return
 	tdClearQueuedWave()
-	tdBroadcast("首领待入场：等待旧波自然清场和野生精灵原捕获窗口结束。")
+	tdBroadcast("首领即将入场：清除剩余敌人，等待精灵捕获结束。")
 	tdRefreshHud()
 	let epoch = tdFlowEpoch()
 	doPeriodically(0.20) cb ->

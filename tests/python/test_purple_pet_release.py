@@ -143,7 +143,34 @@ class PurpleReleaseSourceTests(unittest.TestCase):
                 self.assertEqual(self.n['tdPetSlotStones'][0], int(roll in (1, 2)))
                 self.assertEqual(self.random_calls, [(1, 100)])
         for invalid in (-1, 0, 101):
-            self.assertFalse(self.n['tdPetReleaseGetsSlotStone'](invalid))
+            self.assertFalse(self.n['tdPetReleaseGetsSlotStone'](invalid, 2))
+
+    def test_three_nonpurple_skills_have_exact_five_percent_and_one_draw(self):
+        for roll in range(1, 101):
+            with self.subTest(roll=roll):
+                self.setUp()
+                self.pet = self.record([1, 1, 1])
+                self.ticket(self.pet)
+                self.roll = roll
+                self.assertEqual(self.pet.quality(), 3)
+                self.assertTrue(self.confirm(0, 11))
+                self.assertEqual(self.n['tdPetRerollStones'][0], 1)
+                self.assertEqual(self.n['tdPetSlotStones'][0], int(roll <= 5))
+                self.assertEqual(self.random_calls, [(1, 100)])
+                self.assertFalse(self.confirm(0, 11))
+                self.assertEqual(self.n['tdPetRerollStones'][0], 1)
+                self.assertEqual(self.n['tdPetSlotStones'][0], int(roll <= 5))
+                self.assertEqual(self.random_calls, [(1, 100)])
+
+    def test_four_white_skills_including_locked_are_purple_without_random_draw(self):
+        self.pet = self.record([1, 1, 1, 1])
+        self.ticket(self.pet)
+        self.assertEqual(self.pet.quality(), 4)
+        self.assertTrue(self.confirm(0, 11))
+        self.assertEqual(self.n['tdPetRerollStones'][0], 1)
+        self.assertEqual(self.n['tdPetSlotStones'][0], 1)
+        self.assertEqual(self.random_calls, [])
+        self.assertEqual(self.pet.qualities, [1, 1, 1, 1])
 
     def test_failed_discard_awards_nothing_and_reads_quality_before_removal(self):
         self.n['tdPetDiscardOwned'] = lambda lane, slot: False
@@ -213,14 +240,14 @@ class PurpleReleaseSourceTests(unittest.TestCase):
     def test_release_and_confirmation_tooltips_match_current_quality_rule(self):
         objects = source('TDPetObjectGen')
         self.assertEqual(objects.count('紫色精灵必得1开栏石'), 2)
-        self.assertEqual(objects.count('其他品质有2%概率获得1开栏石'), 2)
+        self.assertEqual(objects.count('非紫色3技能精灵有5%概率，其他非紫色精灵有2%概率获得1开栏石'), 2)
         self.assertIn('须先解绑并完成洗练选择，点击后需再次确认', objects)
         self.assertIn('永久失去这只精灵，无法撤销', objects)
         self.assertIn('捕获球和已用材料不返还', objects)
         release = function_body(source('TDPetState'), 'tdPetConfirmRelease')[1]
         self.assertLess(release.index('pet.quality()'), release.index('tdPetDiscardOwned'))
         self.assertLess(release.index('tdPetDiscardOwned'), release.index('tdPetRerollStones[lane] += 1'))
-        self.assertIn('if not extra\n\textra = tdPetReleaseGetsSlotStone(GetRandomInt(1, 100))', release)
+        self.assertIn('if not extra\n\textra = tdPetReleaseGetsSlotStone(GetRandomInt(1, 100), pet.skillCount)', release)
         self.assertEqual(release.count('tdPetSlotStones[lane] += 1'), 1)
 
 

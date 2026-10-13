@@ -60,8 +60,8 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
         'RANGE': (r'射程 \+([\d.]+)', 1),
         'ATTACK_SPEED': (r'攻速 \+([\d.]+)%', 100),
         'COOLDOWN': (r'冷却时间缩短([\d.]+)%', 100),
-        'KILL_GOLD': (r'击杀金币 \+([\d.]+)', 1),
-        'ARMOR_SHRED': (r'护甲降低([\d.]+)', 1),
+        'KILL_GOLD': (r'精英(?:击杀金币)? \+([\d.]+)', 1),
+        'ARMOR_SHRED': (r'(?:护甲降低|普攻破甲)([\d.]+)', 1),
         'EXECUTE': (r'主目标生命不高于50%时，普攻追加([\d.]+)%', 100),
         'POISON': (r'每秒([\d.]+)伤害', 1),
         'CONTROL_POWER': (r'眩晕时间提高([\d.]+)%', 100),
@@ -69,14 +69,14 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
         'BOSS_DAMAGE': (r'首领或金币试炼主目标(?:追加|普攻 \+)([\d.]+)%', 100),
     }
     aura_patterns = {
-        'ATTACK': (r'增加基础攻击的([\d.]+)%', 100),
+        'ATTACK': (r'(?:增加基础攻击的|基础攻击 \+)([\d.]+)%', 100),
         'ATTACK_SPEED': (r'攻速光环：攻击速度 \+([\d.]+)%', 100),
         'COOLDOWN': (r'冷却光环：嗜血、剑刃风暴及精灵主动冷却缩短([\d.]+)%', 100),
         'ARMOR_ON_HIT': (r'普攻主目标破甲([\d.]+)', 1),
         'ENEMY_SLOW': (r'本路敌人移动速度降低([\d.]+)%', 100),
     }
     if shared_active_cooldown:
-        aura_patterns['COOLDOWN'] = (r'冷却光环：主动技能冷却缩短([\d.]+)%（包括附身精灵的主动技能）', 100)
+        aura_patterns['COOLDOWN'] = (r'冷却光环：主动技能冷却缩短([\d.]+)%（(?:包括附身精灵的主动技能|含附身精灵)）', 100)
     for entry in entries:
         fields = items[entry.rawcode]
         text = fields.get('utub', '')
@@ -85,8 +85,7 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
         require(name == entry.name, label + ': config name mismatch')
         text_check(text, label, max_chars=320)
         require(fields.get('ides') == text, label + ': ground selection description must match equipment tooltip')
-        for phrase in ('塔可装备', '同塔同名限1件',
-                       '紫装不能合成' if entry.quality == 4 else '三件同品质可由工人合成'):
+        for phrase in ('塔可装备', '同塔同名限1件'):
             require(phrase in text, label + ': current crafting/admission rule missing: ' + phrase)
         require('同塔第3件同名装备' not in text and '65%' not in text,
                 label + ': retired equipment rule')
@@ -100,10 +99,12 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
                 require('首领无效' in text, label + ': Boss excluded from bonus gold')
             if kind == 'RANGE':
                 require('上限500' in text, label + ': range cap')
+                require('仅远程塔生效' in text, label + ': ranged tower eligibility')
             elif kind == 'CONTROL_POWER':
                 require('上限60%' in text, label + ': control cap')
             elif kind in ('EXECUTE', 'BOSS_DAMAGE'):
-                require((('仅主目标普攻' in text and '半血与首领追加比例相加' in text and
+                require((((('仅主目标普攻' in text and '半血与首领追加比例相加' in text) or
+                           ('主目标生命不高于50%时，普攻追加' in text and '与首领追加相加' in text)) and
                           '法术、副箭、精灵伤害不触发；普攻击杀不追加' in text) or
                          (kind == 'BOSS_DAMAGE' and '同类最高，半血追加相加' in text and
                           '法术、副箭、精灵及击杀不触发' in text)),
@@ -112,8 +113,8 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
             pattern, multiplier = aura_patterns[entry.aura]
             number(text, pattern, int(entry.aura_value * multiplier + .5), label)
             number(text, r'光环范围([\d.]+)', entry.aura_radius, label)
-            require(any(p in text for p in ('同名取最高等级，异名可叠加', '同名取最高等级，异名叠加')), label + ': aura stacking rule')
-            require('不受装备射程影响' in text, label + ': aura radius ownership')
+            require(any(p in text for p in ('同名取最高等级，异名可叠加', '同名取最高等级，异名叠加', '同名取最高，异名叠加')), label + ': aura stacking rule')
+            require('不受装备射程影响' in text or re.search(r'光环范围[\d.]+（固定）', text), label + ': aura radius ownership')
             if entry.aura == 'ENEMY_SLOW':
                 require('合计上限75%' in text, label + ': slow cap')
             else:
@@ -131,7 +132,7 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
                         ('剑圣同目标4次普攻' in text and '不叠层不续时' in text), label + ': war-intent lifecycle')
                 number(text, r'停攻([\d.]+)秒', scalar(root, config, 'tdConfiguredWarInactivity'), label)
             elif entry.specialization == 'ARCHER_ARROW':
-                require('额外增加1支副箭' in text, label + ': arrow count')
+                require('增加1支副箭' in text, label + ': arrow count')
             elif entry.specialization in ('CORPSE_BURST', 'POISON_BURST'):
                 count, radius = (6, 180) if entry.specialization == 'CORPSE_BURST' else (3, 220)
                 number(text, r'每([\d.]+)次普攻命中', count, label)
@@ -149,6 +150,41 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
                 # This duration belongs to the specialization, not the personal control line.
                 number(text, r'首领只受破甲[\d.]+，持续([\d.]+)秒', scalar(root, config, 'tdConfiguredShieldBossArmorDuration'), label)
     return len(entries)
+
+
+def verify_current_pet_descriptions(abilities, root):
+    """Four fixed role slots use quality levels, not the retired 16×4 ID layout."""
+    from VerifyActiveCooldownContract import SourceScalarEvaluator, read_sources
+    from VerifyPetUIArtifact import verify_phase_one_slots
+    verify_phase_one_slots(abilities)
+    class Descriptions(SourceScalarEvaluator):
+        def call(self, name, args, fields=None):
+            if name == 'tdTooltipNumber':
+                # Positive Wurst R2S display precision, followed by its zero trim.
+                return format(args[0], '.3f').rstrip('0').rstrip('.')
+            return super().call(name, args, fields)
+    evaluator = Descriptions(read_sources(root))
+    count = evaluator.constant('TD_PET_SKILL_COUNT')
+    require(count == 49, 'Unreviewed current skill catalogue')
+    checked = 0
+    for code, (_, fields) in abilities.items():
+        if not re.fullmatch(r's[0-3][0-9A-F]{2}', code):
+            continue
+        slot, variant = int(code[1]), int(code[2:], 16)
+        empty = variant == count * 2
+        skill, locked = variant % count, variant >= count and not empty
+        for quality in range(1, 2 if empty else 5):
+            text = value(fields, 'aub1', quality)
+            text_check(text, code + '/' + str(quality))
+            if not empty:
+                expected = evaluator.call('tdPetSkillDescriptionById', [skill, quality])
+                if locked:
+                    expected = f'技能已获得；共鸣锁定，完成本路第{4 if slot == 2 else 8}波解锁。|n' + expected
+                if slot == 3:
+                    expected += '|n冷却就绪后，下一次有效普攻自动释放。当前状态见精灵信息行。'
+                require(text == expected, code + '/' + str(quality) + ': current skill description/numeric mismatch')
+            checked += 1
+    return checked
 
 
 def validate(abilities, units, items, *, profile='current40', source_root=None, shared_active_cooldown=False, current_pet_ui=False):
@@ -220,40 +256,44 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
             if rawcode == 'A132':
                 require(all(x in text for x in ('780范围', '每秒造成350伤害', '不受装备射程影响')), label)
             checked += 1
-    # 16 skills x 4 qualities; also check all four display slots and locked copies.
-    pet_tokens = ('攻击力', '基础攻击', '攻击速度', '冷却缩短', '全队所有塔', '600范围', '护甲降低',
-                  '第4次普攻', '不高于30%', '分裂箭', '180范围毒域', '持续6秒', '基础攻击', '450范围', '220范围', '220范围')
-    if current:
-        pet_tokens = pet_tokens[:4] + ('仅附身塔',) + pet_tokens[5:]
-    for skill in range(16):
-        for quality in range(1, 5):
-            variant = skill * 4 + quality - 1
-            power = (40 * quality if skill == 0 else .06 * quality if skill in (1, 2, 3, 4)
-                     else .08 + .04 * quality if skill in (5, 9) else 2 * quality if skill == 6 else .25 + .15 * quality)
-            for slot in range(4):
-                for locked in (0, 64):
-                    rawcode = f's{slot}{variant + locked:02X}'
-                    text = value(abilities[rawcode][1], 'aub1', 1)
-                    text_check(text, rawcode)
-                    require(pet_tokens[skill] in text, f'{rawcode}: wrong skill text')
-                    if skill == 10:
-                        number(text, r'造成([\d.]+)伤害', 180 * power, rawcode)
-                        require('最多12名' in text and '持续3秒' in text and '不随尸爆进化增伤' in text, rawcode)
-                    elif skill == 0:
-                        number(text, r'攻击力\+([\d.]+)', power, rawcode)
-                    elif skill == 6:
-                        number(text, r'护甲降低([\d.]+)', power, rawcode)
-                    elif skill == 8:
-                        number(text, r'普攻伤害的([\d.]+)%', power * 100, rawcode)
-                    elif skill == 15:
-                        number(text, r'移动速度降低([\d.]+)%', (power if current else min(.75, power)) * 100, rawcode)
-                    else:
-                        number(text, r'([\d.]+)%', power * 100, rawcode)
-                    if current and skill in (5, 9, 15):
-                        require('总上限75%' in text, rawcode + ': pet slow total cap')
-                    if current and skill == 4:
-                        require('全队' not in text, rawcode + ': pet command must affect only host')
-                    checked += 1
+    from VerifyPetUIArtifact import is_phase_one_ui
+    if current and is_phase_one_ui(abilities):
+        checked += verify_current_pet_descriptions(abilities, root)
+    else:
+        # 16 skills x 4 qualities; also check all four display slots and locked copies.
+        pet_tokens = ('攻击力', '基础攻击', '攻击速度', '冷却缩短', '全队所有塔', '600范围', '护甲降低',
+                      '第4次普攻', '不高于30%', '分裂箭', '180范围毒域', '持续6秒', '基础攻击', '450范围', '220范围', '220范围')
+        if current:
+            pet_tokens = pet_tokens[:4] + ('仅附身塔',) + pet_tokens[5:]
+        for skill in range(16):
+            for quality in range(1, 5):
+                variant = skill * 4 + quality - 1
+                power = (40 * quality if skill == 0 else .06 * quality if skill in (1, 2, 3, 4)
+                         else .08 + .04 * quality if skill in (5, 9) else 2 * quality if skill == 6 else .25 + .15 * quality)
+                for slot in range(4):
+                    for locked in (0, 64):
+                        rawcode = f's{slot}{variant + locked:02X}'
+                        text = value(abilities[rawcode][1], 'aub1', 1)
+                        text_check(text, rawcode)
+                        require(pet_tokens[skill] in text, f'{rawcode}: wrong skill text')
+                        if skill == 10:
+                            number(text, r'造成([\d.]+)伤害', 180 * power, rawcode)
+                            require('最多12名' in text and '持续3秒' in text and '不随尸爆进化增伤' in text, rawcode)
+                        elif skill == 0:
+                            number(text, r'攻击力\+([\d.]+)', power, rawcode)
+                        elif skill == 6:
+                            number(text, r'护甲降低([\d.]+)', power, rawcode)
+                        elif skill == 8:
+                            number(text, r'普攻伤害的([\d.]+)%', power * 100, rawcode)
+                        elif skill == 15:
+                            number(text, r'移动速度降低([\d.]+)%', (power if current else min(.75, power)) * 100, rawcode)
+                        else:
+                            number(text, r'([\d.]+)%', power * 100, rawcode)
+                        if current and skill in (5, 9, 15):
+                            require('总上限75%' in text, rawcode + ': pet slow total cap')
+                        if current and skill == 4:
+                            require('全队' not in text, rawcode + ': pet command must affect only host')
+                        checked += 1
     catalog = (root / 'wurst/towers/TDTowerCatalogData.wurst').read_text()
     tower_ids = re.findall(r"public constant int TD_(?:ARCHER|ORC|FOOT|DRYAD|GHOUL)_LEVEL_[A-Z0-9_]+_ID = '(.{4})'", catalog)
     require(len(tower_ids) == 35, 'tower coverage')
@@ -339,10 +379,11 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
         for uid in ('Pm02', 'Pm03', 'Pm04', 'Pm05'):
             text = value(abilities[uid][1], 'aub1', 1)
             require(all(x in text for x in ('1洗练石', '保留旧技能也会消耗洗练石', '未解锁的技能也可洗练', '空栏须先开栏')), uid + ': current cultivation risk/cost missing')
-        require(all(x in value(abilities['Pm06'][1], 'aub1', 1) for x in ('1开栏石', '不重复技能', '最多4栏', '先完成当前洗练选择')), 'Pm06: current slot cost missing')
+        slot_rule = '按属性、攻击被动、强化、自动主动的顺序' if is_phase_one_ui(abilities) else '不重复技能'
+        require(all(x in value(abilities['Pm06'][1], 'aub1', 1) for x in ('1开栏石', slot_rule, '最多4栏', '先完成当前洗练选择')), 'Pm06: current slot cost/order missing')
         for uid in ('Pm07', 'Pm0B'):
             text = value(abilities[uid][1], 'aub1', 1)
-            require(all(x in text for x in ('永久失去', '1洗练石', '紫色精灵必得1开栏石', '其他品质有2%概率获得1开栏石', '捕获球和已用材料不返还')), uid + ': current release risk/reward missing')
+            require(all(x in text for x in ('永久失去', '1洗练石', '紫色精灵必得1开栏石', '非紫色3技能精灵有5%概率', '其他非紫色精灵有2%概率获得1开栏石', '捕获球和已用材料不返还')), uid + ': current release risk/reward missing')
         require('先解绑' in value(abilities['Pm07'][1], 'aub1', 1) and '再次确认' in value(abilities['Pm07'][1], 'aub1', 1), 'Pm07: current release prerequisites missing')
         require('无法撤销' in value(abilities['Pm0B'][1], 'aub1', 1), 'Pm0B: current release irreversibility missing')
         require('洗练石不返还' in value(abilities['Pm09'][1], 'aub1', 1), 'Pm09: current reroll refund risk missing')
@@ -360,7 +401,7 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
     ground = value(abilities['Gupg'][1], 'aub1', 1)
     craft = value(abilities['A119'][1], 'aub1', 1)
     if current:
-        require(all(x in ground for x in ('本路', '144范围', '三件同名升为对应下一阶', '同品质混名三件随机', '每次只升一级', '余1至2件', '紫装', '捕获球不消耗', '材料被移走则取消该组')), 'current ground craft rule missing')
+        require(all(x in ground for x in ('本路地面装备', '144范围', '每3件同品质升一级', '优先同名，升为对应下一阶', '混名随机', '紫装不能合成', '不足3件保留', '本次不再参与合成', '材料被移走或收纳点不可用时，该组不消耗')), 'current ground craft rule missing')
         require(all(x in craft for x in ('前3格', '三件同品质', '三件同名升为对应下一阶', '混名随机获得下一品质', '均必成', '紫装不能合成', '未成功不耗材料')), 'current backpack craft risks missing')
         require(not any(x in craft + ground for x in ('65%', '失败时材料全部消失', '两件必成')), 'current retired craft rule remains')
     else:

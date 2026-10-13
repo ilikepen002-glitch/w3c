@@ -152,9 +152,9 @@ class GroundUpgradeSortSourceTests(unittest.TestCase):
 
     def test_player_tooltip_describes_direct_delivery_and_preserved_leftovers(self):
         objects = (ROOT / 'wurst/items/TDItemObjectGen.wurst').read_text()
-        self.assertIn('新装备直接送到本路对应品质收纳点，无论材料在坑道内外', objects)
-        for rule in ('新产物本次不再参与', '余1至2件、紫装、背包和捕获球不消耗',
-                     '未消耗的装备保留原位', '收纳落点不可用时，该组不消耗材料'):
+        self.assertIn('新装备送到对应品质收纳点', objects)
+        for rule in ('本路地面装备', '每3件同品质升一级', '紫装不能合成',
+                     '不足3件保留', '本次不再参与合成', '材料被移走或收纳点不可用时，该组不消耗'):
             self.assertIn(rule, objects)
 
 

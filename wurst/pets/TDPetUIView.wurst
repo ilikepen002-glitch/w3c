@@ -112,7 +112,7 @@ public function tdPetSkillRestriction(TDPet pet, int slot, int skill) returns st
 	if not tdPetSkillFitsHost(skill, pet.host)
 		if tdPetHeroDefined(skill)
 			return " [不适配：需要" + tdPetHeroHostName(skill) + "]"
-		return skill == TD_PET_SKILL_RESOLVE ? " [不适配：宿主已有原生暴击]" : " [不适配：宿主需要" + (skill == 9 ? "分裂箭能力" : "尸爆能力") + "]"
+		return skill == TD_PET_SKILL_RESOLVE ? " [不适配：宿主已有自带暴击]" : " [不适配：宿主需要" + (skill == 9 ? "分裂箭能力" : "尸爆能力") + "]"
 	return ""
 
 // Ceil avoids showing ready before the combat deadline, including its last

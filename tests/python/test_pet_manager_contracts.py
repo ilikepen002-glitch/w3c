@@ -35,7 +35,7 @@ def current_manager_fixture(elemental=False):
     """Controlled future object shape tests the verifier, never claims packaging."""
     abilities, units = {}, {}
     species_models = artifact.elemental_species() if elemental else artifact.SPECIES
-    variants = 1 + 16 * len(species_models)
+    variants = 1 + (4 if elemental else 16) * len(species_models)
     for rawcode, (x, y, key, target, stem) in artifact.MANAGER_COMMANDS.items():
         fields = {}
         for name, value in [('alev', 1), ('abpx', x), ('abpy', y), ('ahky', key), ('aart', artifact.icon_path(stem)), ('arar', artifact.icon_path(stem))]:
@@ -53,8 +53,11 @@ def current_manager_fixture(elemental=False):
     field(abilities['Pm0A'][1], 'anam', '换成新技能')
     for cell in range(10):
         for variant in range(variants):
-            rawcode, fields = f'L{cell * variants + variant:03X}', {}
+            rawcode = f'L{cell * 241 + (0 if variant == 0 else 1 + (variant - 1) * 4):03X}' if elemental else f'L{cell * variants + variant:03X}'
+            fields = {}
             stem = 'TDPetEmptySlot' if variant == 0 else species_models[(variant - 1) // 16][1] + f'Q{((variant - 1) % 16) // 4 + 1}N{(variant - 1) % 4 + 1}'
+            if elemental and variant:
+                stem = species_models[(variant - 1) // 4][1] + f'Q{(variant - 1) % 4 + 1}'
             for name, value in [('alev', 2), ('abpx', cell % 4), ('abpy', cell // 4), ('ahky', artifact.LIST_KEYS[cell]), ('aart', artifact.icon_path(stem)), ('arar', artifact.icon_path(stem))]:
                 field(fields, name, value)
             for name in ('aher', 'aite'):
@@ -63,9 +66,11 @@ def current_manager_fixture(elemental=False):
                 for key, value, column in [('Ncl1', 0.0, 1), ('Ncl3', 1, 3), ('Ncl4', 0.0, 4), ('Ncl5', 0, 5), ('amcs', 0, 0), ('acdn', 0.0, 0)]:
                     field(fields, key, value, level, column)
                 number = f'{(level - 1) * 10 + cell + 1:02d}'
-                label = '空位' if variant == 0 else artifact.QUALITY_NAMES[((variant - 1) % 16) // 4] + ' 精灵'
+                label = '空位' if variant == 0 else artifact.QUALITY_NAMES[(variant - 1) % 4 if elemental else ((variant - 1) % 16) // 4] + ' 精灵'
                 field(fields, 'atp1', number + ' · ' + label + f' ({artifact.LIST_KEYS[cell]})', level)
                 description = number + ('空位，捕获后查看' if variant == 0 else str((variant - 1) % 4 + 1) + '个技能。查看技能')
+                if elemental and variant:
+                    description = '查看技能数量、技能详情、上阵或培养。'
                 field(fields, 'aub1', description, level)
                 field(fields, 'Ncl2', 0, level, 2)
                 field(fields, 'Ncl6', 'listcell' + str(cell), level, 6)

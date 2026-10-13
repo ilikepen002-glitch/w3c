@@ -116,13 +116,18 @@ def verify_routing(script):
     runtime.event_target = display
     codes = [f'Pc{a:02X}' if a < 8 else f'Pm{a-8:02X}' for a in range(23)]
     last = runtime.invoke('tdPetListAbilityId', 9, 15, 4, 4)
-    if last == int.from_bytes(b'L969', 'big'):
+    if last == int.from_bytes(b'L966', 'big'):
+        indices = [cell * 241 + variant for cell in range(10) for variant in (0, *range(1, 241, 4))]
+        variants = len(indices)
+    elif last == int.from_bytes(b'L969', 'big'):
         variants = 2410
+        indices = range(variants)
     else:
         require(runtime.invoke('tdPetListAbilityId', 9, 3, 4, 4) == int.from_bytes(b'L1E9', 'big'),
                 'Unrecognized or incomplete collection rawcode family')
         variants = 490
-    codes += [f'L{index:03X}' for index in range(variants)]
+        indices = range(variants)
+    codes += [f'L{index:03X}' for index in indices]
     expected_admissions = 23 + variants
     for code in codes:
         runtime.spell = int.from_bytes(code.encode('ascii'), 'big')

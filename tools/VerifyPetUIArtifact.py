@@ -756,9 +756,14 @@ def verify_elemental_resources(artifact, root=ROOT):
     ui = json.loads((root / 'assets/source/elemental-spirits/ui-manifest.json').read_text())
     expected = {f'TDPetSpecies{s:02d}' for s in range(1, 16)}
     expected |= {f'TDPetSpecies{s:02d}Q{q}' for s in range(1, 16) for q in range(1, 5)}
-    expected |= {f'TDPetSpecies{s:02d}Q{q}N{n}' for s in range(1, 16) for q in range(1, 5) for n in range(1, 5)}
-    require(len(ui['assets']) == 315 and {a['name'] for a in ui['assets']} == expected,
-            'Elemental UI must include exact 15+60+240 combinations')
+    require(len(ui['assets']) == 75 and {a['name'] for a in ui['assets']} == expected,
+            'Elemental UI must include exact 15+60 quality-only combinations')
+    for species in range(1, 16):
+        for quality in range(1, 5):
+            for count in range(1, 5):
+                stem = f'TDPetSpecies{species:02d}Q{quality}N{count}'
+                for path in (icon_path(stem), DISABLED_PREFIX + stem + '.blp'):
+                    require(not artifact.has(path), 'Obsolete count UI still packaged: ' + path)
     for entry in ui['assets']:
         pixels = {}
         for state in ('normal', 'disabled'):
@@ -769,7 +774,7 @@ def verify_elemental_resources(artifact, root=ROOT):
                     'Elemental UI icon differs from reviewed SHA: ' + path)
             pixels[state] = decode_icon_blp(data, path)
         require(all(r == g == b for r, g, b, _ in pixels['disabled']), 'Elemental DIS icon is not grayscale')
-    print('PASS ELEMENTAL RESOURCES: 15 final MDX800 + 15 exact BLP atlases + 315 BTN/DIS pairs; source/MPQ SHA match')
+    print('PASS ELEMENTAL RESOURCES: 15 final MDX800 + 15 exact BLP atlases + 75 BTN/DIS pairs; source/MPQ SHA match')
 
 
 def verify_pet_core(abilities, units):
@@ -904,10 +909,11 @@ def verify_manager_commands(abilities):
 
 def verify_manager_list(abilities):
     species = manager_species(abilities=abilities)
-    variants = 1 + 16 * len(species)
+    quality_only = len(species) == 15
+    variants = 1 + (4 if quality_only else 16) * len(species)
     for cell in range(10):
         for variant in range(variants):
-            rawcode = f'L{cell * variants + variant:03X}'
+            rawcode = f'L{cell * 241 + (0 if variant == 0 else 1 + (variant - 1) * 4):03X}' if quality_only else f'L{cell * variants + variant:03X}'
             require(rawcode in abilities, f'Missing fixed collection state {rawcode}')
             parent, fields = abilities[rawcode]
             require(parent == 'ANcl' and field_value(fields, 'alev') == 2,
@@ -917,7 +923,9 @@ def verify_manager_list(abilities):
             require(field_value(fields, 'ahky') == LIST_KEYS[cell], f'{rawcode}: wrong list hotkey')
             for flag in ('aher', 'aite'):
                 require(field_value(fields, flag) == 0, f'{rawcode}: list must be a non-item unit ability')
-            stem = 'TDPetEmptySlot' if variant == 0 else species[(variant - 1) // 16][1] + f'Q{((variant - 1) % 16) // 4 + 1}N{(variant - 1) % 4 + 1}'
+            stem = 'TDPetEmptySlot' if variant == 0 else (species[(variant - 1) // 4][1] + f'Q{(variant - 1) % 4 + 1}' if quality_only else '')
+            if not quality_only and variant:
+                stem = species[(variant - 1) // 16][1] + f'Q{((variant - 1) % 16) // 4 + 1}N{(variant - 1) % 4 + 1}'
             for field in ('aart', 'arar'):
                 require(field_value(fields, field) == icon_path(stem), f'{rawcode}: quality/empty icon mismatch')
             for level in (1, 2):
@@ -932,11 +940,16 @@ def verify_manager_list(abilities):
                     require('空位' in label and '捕获' in description,
                             f'{rawcode}: empty fixed slot must be explained')
                 else:
-                    quality = ((variant - 1) % 16) // 4
+                    quality = (variant - 1) % 4 if quality_only else ((variant - 1) % 16) // 4
                     require(QUALITY_NAMES[quality] in label,
                             f'{rawcode}: owned quality label missing')
-                    require(str((variant - 1) % 4 + 1) + '个技能' in description, f'{rawcode}: owned skill count missing')
-    require({raw for raw in abilities if re.fullmatch(r'L[0-9A-F]{3}', raw)} == {f'L{i:03X}' for i in range(10 * variants)},
+                    if quality_only:
+                        require(description == '查看技能数量、技能详情、上阵或培养。', f'{rawcode}: list detail hint mismatch')
+                    else:
+                        require(str((variant - 1) % 4 + 1) + '个技能' in description, f'{rawcode}: historical owned skill count missing')
+    expected_ids = ({f'L{cell * 241 + offset:03X}' for cell in range(10) for offset in (0, *range(1, 241, 4))}
+                    if quality_only else {f'L{i:03X}' for i in range(10 * variants)})
+    require({raw for raw in abilities if re.fullmatch(r'L[0-9A-F]{3}', raw)} == expected_ids,
             'Expected exact complete collection Channel family')
     require(not any(re.fullmatch(r'Pl[0-9A-F]{2}', raw) for raw in abilities), 'Retired Pl list objects remain')
 
@@ -1117,8 +1130,9 @@ def verify_manager_objects(abilities, units):
     require(not set(abilities) & {raw for raw in units if raw.startswith('pd')},
             'Manager ability and unit rawcodes collide')
     verify_no_hunt_objects(abilities, units)
-    variants = 1 + 16 * len(manager_species(abilities, units))
-    require(len(MANAGER_COMMANDS) + 10 * variants == (2433 if variants == 241 else 513), 'Manager Channel object budget changed')
+    species_count = len(manager_species(abilities, units))
+    variants = 1 + (4 if species_count == 15 else 16) * species_count
+    require(len(MANAGER_COMMANDS) + 10 * variants == (633 if species_count == 15 else 513), 'Manager Channel object budget changed')
 
 
 def verify_global_rawcode_uniqueness(artifact):
@@ -1164,7 +1178,7 @@ def main():
         verify_elemental_resources(artifact)
     require(not artifact.has(r'Units\CommandFunc.txt'), 'Global CommandFunc override is forbidden')
     species_count = len(manager_species(abilities, units))
-    channels = len(MANAGER_COMMANDS) + 10 * (1 + 16 * species_count)
+    channels = len(MANAGER_COMMANDS) + 10 * (1 + (4 if species_count == 15 else 16) * species_count)
     passives = verify_phase_one_slots(abilities) if is_phase_one_ui(abilities) else 550
     prototypes = 1 + species_count * 4
     print(f'PASS PET MANAGER: {farmer}; 20 fixed slots/two pages; {channels} Channels + {passives} slot displays; '

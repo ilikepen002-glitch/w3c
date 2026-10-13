@@ -329,7 +329,7 @@ public function tdPetConfirmRelease(int lane, int nonce) returns boolean
 	// Owned quality includes resonance-locked skills; decide before removing the record.
 	var extra = pet.quality() == 4
 	if not extra
-		extra = tdPetReleaseGetsSlotStone(GetRandomInt(1, 100))
+		extra = tdPetReleaseGetsSlotStone(GetRandomInt(1, 100), pet.skillCount)
 	if not tdPetDiscardOwned(lane, slot)
 		return false
 	tdPetRerollStones[lane] += 1

@@ -70,20 +70,20 @@ function managerPet(int lane) returns TDPet
 	pet.level.assertEquals(1)
 	pet.quality().assertEquals(4)
 	pet.setSkill(2, 39, 1)
-	pet.quality().assertEquals(2)
+	pet.quality().assertEquals(3)
 	tdPetRerollStones[0] = 2
 	tdPetBeginReroll(0, 0, 2).assertTrue()
 	pet.proposalQuality = 4
-	pet.quality().assertEquals(2)
+	pet.quality().assertEquals(3)
 	let candidateVersion = pet.proposalVersion
 	tdPetResolveRerollVersion(0, 0, candidateVersion, false).assertTrue()
-	pet.quality().assertEquals(2)
+	pet.quality().assertEquals(3)
 	tdPetBeginReroll(0, 0, 2).assertTrue()
 	pet.proposalQuality = 4
 	tdPetResolveRerollVersion(0, 0, pet.proposalVersion, true).assertTrue()
 	pet.quality().assertEquals(4)
 	pet.setSkill(2, pet.skillAt(2), 1)
-	pet.quality().assertEquals(2)
+	pet.quality().assertEquals(3)
 
 @Test function managerPreviewPersistsAcrossCloseAndRecallAndPaysOnlyOnce()
 	let pet = managerPet(0)
@@ -212,7 +212,7 @@ function managerPet(int lane) returns TDPet
 	tdPetActionHotkey(20).assertEquals("N")
 	for cell = 0 to 9
 		(tdPetListHotkey(cell) != "").assertTrue()
-	tdPetListAbilityId(9, 15, 4, 4).assertEquals('L969')
+	tdPetListAbilityId(9, 15, 4, 4).assertEquals('L966')
 	tdPetListAbilityId(10, 1, 1, 1).assertEquals(0)
 	tdPetManagerCommandId(20).assertEquals('Pm0C')
 	tdPetPreviewAbilityId(1, 48).assertEquals('Ps61')
@@ -514,3 +514,34 @@ function installManagerSession(int lane, int mode, int key, TDPet pet, int nonce
 	session.active.assertFalse()
 	pet.skillCount = 3
 	tdPetCloseManager(0)
+
+@Test function managerCompositeQualityFloorsDoNotChangeIndividualStrengths()
+	let pet = managerPet(0)
+	pet.setSkill(1, 5, 1)
+	pet.quality().assertEquals(1)
+	pet.setSkill(2, 6, 1)
+	pet.quality().assertEquals(3)
+	pet.setSkill(3, 11, 1)
+	pet.quality().assertEquals(4)
+	pet.level.assertEquals(1)
+	for slot = 0 to 3
+		pet.qualityAt(slot).assertEquals(1)
+	pet.setSkill(0, 0, 2)
+	pet.quality().assertEquals(4)
+	pet.qualityAt(0).assertEquals(2)
+
+@Test function managerOpeningImmediatelyUpdatesCompositeColorAndRetainsCountSnapshot()
+	let pet = managerPet(0)
+	tdPetSlotStones[0] = 2
+	pet.quality().assertEquals(2)
+	tdPetOpenSlot(0, 0).assertTrue()
+	pet.skillCount.assertEquals(3)
+	(pet.quality() >= 3).assertTrue()
+	pet.setSkill(2, pet.skillAt(2), 1)
+	pet.quality().assertEquals(3)
+	tdPetOpenSlot(0, 0).assertTrue()
+	pet.skillCount.assertEquals(4)
+	pet.quality().assertEquals(4)
+	tdPetSlotStones[0].assertEquals(0)
+	tdPetOpenSlot(0, 0).assertFalse()
+	tdPetSlotStones[0].assertEquals(0)

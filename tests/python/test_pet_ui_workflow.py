@@ -23,7 +23,7 @@ def quiet(call, *args):
 
 
 class CurrentSourceWorkflowTests(unittest.TestCase):
-    def test_real_2410_ids_all_invalid_counts_pages_hotkeys_and_current_wiring(self):
+    def test_real_610_ids_all_invalid_counts_pages_hotkeys_and_current_wiring(self):
         quiet(source.verify_scalar_contracts)
         quiet(source.verify_ui_workflow)
         with redirect_stdout(io.StringIO()):
@@ -48,7 +48,7 @@ class CurrentSourceWorkflowTests(unittest.TestCase):
                 self.assertEqual(actual.count(guarded), 1)
                 actual = actual.replace(guarded, 'if session == null or not session.active or session.mode != TD_PET_UI_DETAIL', 1)
             self.assertEqual(actual, source.function_body(before.decode(), name)[1])
-        self.assertIn('宿主已有原生暴击', source.function_body(current, 'tdPetSkillRestriction')[1])
+        self.assertIn('宿主已有自带暴击', source.function_body(current, 'tdPetSkillRestriction')[1])
         self.assertNotIn('tdPetShowPageSummary', source.function_body(source.source('TDPetUI'), 'showPage')[1])
 
     def test_all_28_existing_icons_remain_exact_and_78_complete(self):
@@ -145,18 +145,18 @@ class SharedOrderContractTests(unittest.TestCase):
     def setUp(self):
         self.abilities, _ = current_manager_fixture(elemental=True)
 
-    def test_2433_objects_and_33_unique_orders_are_distinct_budget_measures(self):
-        self.assertEqual(orders.verify_global_channel_orders(self.abilities), 2433)
+    def test_633_objects_and_33_unique_orders_are_distinct_budget_measures(self):
+        self.assertEqual(orders.verify_global_channel_orders(self.abilities), 633)
         self.assertEqual(orders.unique_channel_order_count(self.abilities), 33)
         artifact.verify_manager_commands(self.abilities)
         artifact.verify_manager_list(self.abilities)
         artifact.verify_manager_preview(self.abilities)
 
-    def test_only_complete_exact_241_state_cell_families_can_share_order(self):
+    def test_only_complete_exact_61_state_cell_families_can_share_order(self):
         for change in ('missing', 'extra', 'parent', 'levels', 'cell', 'key', 'target', 'second-level-order', 'within-cell', 'across-cell', 'outside-object'):
             abilities = deepcopy(self.abilities)
-            if change == 'missing': del abilities['L969']
-            elif change == 'extra': abilities['L96A'] = deepcopy(abilities['L969'])
+            if change == 'missing': del abilities['L966']
+            elif change == 'extra': abilities['L96A'] = deepcopy(abilities['L966'])
             elif change == 'parent': abilities['L001'] = ('AOcr', abilities['L001'][1])
             elif change == 'levels': field(abilities['L001'][1], 'alev', 1)
             elif change == 'cell': field(abilities['L001'][1], 'abpx', 1)
@@ -166,7 +166,7 @@ class SharedOrderContractTests(unittest.TestCase):
                 for level in ((2,) if change == 'second-level-order' else (1, 2)):
                     field(abilities['L001'][1], 'Ncl6', 'wrongorder', level, 6)
             elif change == 'across-cell':
-                for index in range(241, 482):
+                for index in (241 + offset for offset in (0, *range(1, 241, 4))):
                     for level in (1, 2): field(abilities[f'L{index:03X}'][1], 'Ncl6', 'listcell0', level, 6)
             else: field(abilities['Pm0B'][1], 'Ncl6', 'listcell0', 1, 6)
             with self.subTest(change=change), self.assertRaises(ValueError):
@@ -177,7 +177,7 @@ class SharedOrderContractTests(unittest.TestCase):
                                          ('Ncl5', 1, 5, 1), ('amcs', 2, 0, 1), ('acdn', 1, 0, 1.0),
                                          ('aher', 0, 0, 1), ('aite', 0, 0, 1)]:
             abilities = deepcopy(self.abilities)
-            field(abilities['L969'][1], key, value, level, column)
+            field(abilities['L966'][1], key, value, level, column)
             with self.subTest(field=key), self.assertRaises(ValueError):
                 artifact.verify_manager_list(abilities)
 

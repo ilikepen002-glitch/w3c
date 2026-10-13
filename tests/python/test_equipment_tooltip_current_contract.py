@@ -20,9 +20,9 @@ from GenerateTowerTerrainMask import Mpq
 
 def controlled_items():
     grammar = {
-        'ATTACK': '攻击 +{}', 'RANGE': '射程 +{}（上限500）',
+        'ATTACK': '攻击 +{}', 'RANGE': '射程 +{}（仅远程塔生效；上限500）',
         'ATTACK_SPEED': '攻速 +{}%', 'COOLDOWN': '冷却时间缩短{}%',
-        'KILL_GOLD': '击杀金币 +{}', 'ARMOR_SHRED': '护甲降低{}',
+        'KILL_GOLD': '精英 +{}；首领无效', 'ARMOR_SHRED': '护甲降低{}',
         'EXECUTE': '主目标生命不高于50%时，普攻追加{}%',
         'POISON': '每秒{}伤害', 'CONTROL_POWER': '眩晕时间提高{}%（上限60%）',
         'DROP_BONUS': '额外抽取{}次',
@@ -45,6 +45,8 @@ def controlled_items():
         for kind, value in ((entry.primary, entry.primary_value), (entry.secondary, entry.secondary_value)):
             if kind != 'NONE':
                 parts.append(grammar[kind].format(int(value * (100 if kind in percent else 1) + .5)))
+                if kind == 'KILL_GOLD':
+                    parts.append(f'普通 +{int(value / 2)}')
                 if kind in ('EXECUTE', 'BOSS_DAMAGE'):
                     parts.append('仅主目标普攻；半血与首领追加比例相加。法术、副箭、精灵伤害不触发；普攻击杀不追加。')
         if entry.aura != 'NONE':
@@ -54,7 +56,7 @@ def controlled_items():
                 parts.append('仅本路己方塔，含自身。')
         if entry.specialization != 'NONE':
             parts.append(specials[entry.specialization])
-        parts.append('塔可装备；同塔同名限1件。' + ('紫装不能合成。' if entry.quality == 4 else '三件同品质可由工人合成。'))
+        parts.append('塔可装备；同塔同名限1件。')
         result[entry.rawcode] = {'unam': entry.name, 'utub': '|n'.join(parts), 'ides': '|n'.join(parts)}
     return result
 
@@ -103,11 +105,11 @@ class ControlledCurrentItemsTests(unittest.TestCase):
             with self.subTest(uid=uid, mutation=new), self.assertRaisesRegex(ValueError, uid):
                 verify_current_items(items)
 
-    def test_wrong_name_and_old_duplicate_or_crafting_phrase_are_checked(self):
+    def test_wrong_name_and_missing_admission_phrase_are_checked(self):
         items = deepcopy(self.items); items['iP02']['unam'] = '旧武器'
         with self.assertRaisesRegex(ValueError, 'iP02: config name mismatch'):
             verify_current_items(items)
-        for phrase in ('同塔同名限1件', '紫装不能合成'):
+        for phrase in ('同塔同名限1件', '塔可装备'):
             items = deepcopy(self.items); items['iP02']['utub'] = items['iP02']['utub'].replace(phrase, '', 1)
             items['iP02']['ides'] = items['iP02']['utub']
             with self.subTest(phrase=phrase), self.assertRaisesRegex(ValueError, 'crafting/admission rule missing'):
@@ -127,9 +129,10 @@ class ControlledCurrentItemsTests(unittest.TestCase):
             verify_current_items(items)
 
     def test_both_fields_reject_developer_copy_and_wrong_poison_value(self):
-        for old, new in (('每秒6伤害', '每秒7伤害'), ('每秒6伤害', '每秒6伤害，原生百分比')):
+        for old, new in (('每秒30伤害', '每秒31伤害'), ('每秒30伤害', '每秒30伤害，原生百分比')):
             items = deepcopy(self.items)
             text = items['iW08']['utub'].replace(old, new)
+            self.assertNotEqual(text, items['iW08']['utub'])
             items['iW08'].update(utub=text, ides=text)
             with self.subTest(new=new), self.assertRaisesRegex(ValueError, 'iW08'):
                 verify_current_items(items)
@@ -162,9 +165,9 @@ class ActualCurrentTooltipTests(unittest.TestCase):
     def test_actual_shared_active_text_rejects_retired_whitelist_and_omitted_pet(self):
         items = deepcopy(self.i)
         original = items['iP08']['utub']
-        self.assertIn('主动技能冷却缩短18%（包括附身精灵的主动技能）', original)
-        for changed in (original.replace('主动技能冷却缩短18%（包括附身精灵的主动技能）', '嗜血、剑刃风暴与精灵主动技能冷却缩短18%', 1),
-                        original.replace('（包括附身精灵的主动技能）', '', 1)):
+        self.assertIn('主动技能冷却缩短18%（含附身精灵）', original)
+        for changed in (original.replace('主动技能冷却缩短18%（含附身精灵）', '嗜血、剑刃风暴与精灵主动技能冷却缩短18%', 1),
+                        original.replace('（含附身精灵）', '', 1)):
             items['iP08']['utub'] = changed
             with self.subTest(text=changed), self.assertRaisesRegex(ValueError, 'iP08'):
                 current_validate(self.a, self.u, items)

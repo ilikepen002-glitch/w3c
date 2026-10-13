@@ -236,23 +236,23 @@ function tdItemEffectText(int effectKind, real value) returns string
 	if effectKind == TD_ITEM_EFFECT_ATTACK
 		return "攻击 +" + R2I(value + 0.5).toString()
 	if effectKind == TD_ITEM_EFFECT_RANGE
-		return "射程 +" + R2I(value + 0.5).toString() + "（装备加成上限500）"
+		return "射程 +" + R2I(value + 0.5).toString() + "（仅远程塔生效；装备加成上限500）"
 	if effectKind == TD_ITEM_EFFECT_ATTACK_SPEED
 		return "攻速 +" + R2I(value * 100.0 + 0.5).toString() + "%"
 	if effectKind == TD_ITEM_EFFECT_COOLDOWN
-		return "主动技能冷却缩短" + R2I(value * 100.0 + 0.5).toString() + "%（包括附身精灵的主动技能；与精灵灵感、有效冷却光环合计上限40%）"
+		return "主动技能冷却缩短" + R2I(value * 100.0 + 0.5).toString() + "%（含附身精灵；与灵感、冷却光环合计上限40%）"
 	if effectKind == TD_ITEM_EFFECT_KILL_GOLD
-		return "击杀金币：普通 +" + R2I(value / 2.0 + 0.5).toString() + "，精英击杀金币 +" + R2I(value + 0.5).toString() + "；取最高，首领无效。每波上限：非首领基础击杀收入。"
+		return "击杀金币：普通 +" + R2I(value / 2.0 + 0.5).toString() + "，精英 +" + R2I(value + 0.5).toString() + "；同类取最高，首领无效。每波额外金币上限：非首领基础击杀收入。"
 	if effectKind == TD_ITEM_EFFECT_ARMOR_SHRED
-		return "普攻使目标护甲降低" + R2I(value + 0.5).toString() + "，持续3秒；装备破甲取最强，最多降低30护甲。"
+		return "普攻破甲" + R2I(value + 0.5).toString() + "，持续3秒；装备破甲取最高，上限30。"
 	if effectKind == TD_ITEM_EFFECT_EXECUTE
 		return "主目标生命不高于50%时，普攻追加" + R2I(value * 100.0 + 0.5).toString() + "%伤害；同类取最高。"
 	if effectKind == TD_ITEM_EFFECT_POISON
-		return "普攻附毒，每秒" + R2I(value + 0.5).toString() + "伤害，持续3秒；装备毒伤取最强。"
+		return "普攻附毒：每秒" + R2I(value + 0.5).toString() + "伤害，持续3秒；装备毒伤取最高。"
 	if effectKind == TD_ITEM_EFFECT_CONTROL_POWER
 		return "毒镖、藤蔓减速及盾击对非首领的眩晕时间提高" + R2I(value * 100.0 + 0.5).toString() + "%；同类取最高，上限60%。"
 	if effectKind == TD_ITEM_EFFECT_DROP_BONUS
-		return "本路非首领掉落额外抽取" + R2I(value + 0.5).toString() + "次品质，取最好结果；同类取最高，不增加件数。"
+		return "本路非首领掉落：额外抽取" + R2I(value + 0.5).toString() + "次品质取最好；同类取最高，件数不变。"
 	if effectKind == TD_ITEM_EFFECT_BOSS_DAMAGE
 		return "首领或金币试炼主目标普攻 +" + R2I(value * 100.0 + 0.5).toString() + "%伤害；同类最高，半血追加相加。法术、副箭、精灵及击杀不触发。"
 	return ""
@@ -271,27 +271,27 @@ public function tdItemTooltip(int itemId) returns string
 	if secondary != ""
 		tooltip += "|n" + secondary
 	if primaryKind == TD_ITEM_EFFECT_EXECUTE or secondaryKind == TD_ITEM_EFFECT_EXECUTE
-		tooltip += "|n仅主目标普攻；半血与首领追加比例相加。法术、副箭、精灵伤害不触发；普攻击杀不追加。"
+		tooltip += "|n与首领追加相加；法术、副箭、精灵伤害不触发；普攻击杀不追加。"
 	let auraKind = tdItemAuraKind(itemId)
 	if auraKind != TD_ITEM_AURA_NONE
 		let value = tdItemAuraValue(itemId)
 		var auraText = ""
 		if auraKind == TD_ITEM_AURA_ATTACK
-			auraText = "攻击光环：增加基础攻击的" + R2I(value * 100.0 + 0.5) + "%攻击力。"
+			auraText = "攻击光环：基础攻击 +" + R2I(value * 100.0 + 0.5) + "%。"
 		else if auraKind == TD_ITEM_AURA_ATTACK_SPEED
 			auraText = "攻速光环：攻击速度 +" + R2I(value * 100.0 + 0.5) + "%（与装备攻速合计上限120%）。"
 		else if auraKind == TD_ITEM_AURA_COOLDOWN
-			auraText = "冷却光环：主动技能冷却缩短" + R2I(value * 100.0 + 0.5) + "%（包括附身精灵的主动技能）；装备、灵感合计上限40%，不重置冷却。"
+			auraText = "冷却光环：主动技能冷却缩短" + R2I(value * 100.0 + 0.5) + "%（含附身精灵）；与装备、灵感合计上限40%，不重置冷却。"
 		else if auraKind == TD_ITEM_AURA_ARMOR_ON_HIT
 			auraText = "破甲光环：普攻主目标破甲" + R2I(value + 0.5) + "，持续3秒；与装备破甲取最高。"
 		else if auraKind == TD_ITEM_AURA_ENEMY_SLOW
 			auraText = "寒霜领域：本路敌人移动速度降低" + R2I(value * 100.0 + 0.5) + "%；减速合计上限75%。"
-		tooltip += "|n" + auraText + "|n光环范围" + R2I(tdItemAuraRadius(itemId)) + "，不受装备射程影响；同名取最高等级，异名叠加。"
+		tooltip += "|n" + auraText + "|n光环范围" + R2I(tdItemAuraRadius(itemId)) + "（固定）；同名取最高，异名叠加。"
 		if auraKind != TD_ITEM_AURA_ENEMY_SLOW
 			tooltip += "本路己方塔，含自身。"
 	let special = tdItemSpecialization(itemId)
 	if special == TD_ITEM_SPECIAL_ARCHER_ARROW
-		tooltip += "|n弓手专精：分裂箭额外增加" + tdItemSpecialCount(itemId) + "支副箭。"
+		tooltip += "|n弓手：分裂箭增加" + tdItemSpecialCount(itemId) + "支副箭。"
 	else if special == TD_ITEM_SPECIAL_WAR_INTENT
 		tooltip += "|n剑圣同目标" + tdItemSpecialCount(itemId) + "次普攻：攻速 +" + R2I(tdItemWarAttackSpeed() * 100.0 + 0.5) + "%持续" + R2I(tdItemWarDuration()) + "秒，不叠层不续时；换目标或停攻" + R2I(tdConfiguredWarInactivity()) + "秒清层。"
 	else if special == TD_ITEM_SPECIAL_CORPSE_BURST or special == TD_ITEM_SPECIAL_POISON_BURST
@@ -300,12 +300,8 @@ public function tdItemTooltip(int itemId) returns string
 		if special == TD_ITEM_SPECIAL_POISON_BURST
 			tooltip += "同目标；换目标或停攻" + R2I(tdConfiguredPoisonBurstInactivity()) + "秒清零。"
 	else if special == TD_ITEM_SPECIAL_SHIELD_SPREAD
-		tooltip += "|n步兵专精：盾击额外眩晕目标周围" + R2I(tdItemSpecialRadius(itemId)) + "范围最多" + tdItemSpecialTargetCap(itemId) + "名非首领。首领只受破甲" + R2I(tdItemShieldBossArmor()) + "，持续" + R2I(tdItemShieldBossArmorDuration()) + "秒，不受额外眩晕。"
+		tooltip += "|n步兵：盾击额外眩晕目标周围" + R2I(tdItemSpecialRadius(itemId)) + "范围最多" + tdItemSpecialTargetCap(itemId) + "名非首领。首领只受破甲" + R2I(tdItemShieldBossArmor()) + "，持续" + R2I(tdItemShieldBossArmorDuration()) + "秒，不受额外眩晕。"
 	tooltip += "|n塔可装备；同塔同名限1件。"
-	if tdItemQuality(itemId) < TD_ITEM_QUALITY_PURPLE
-		tooltip += "三件同品质可由工人合成。"
-	else
-		tooltip += "紫装不能合成。"
 	return tooltip
 
 public function tdItemLevel(int itemId) returns int

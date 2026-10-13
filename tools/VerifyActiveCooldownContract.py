@@ -853,12 +853,12 @@ def verify_manager_list_zero_cooldown(evaluator):
                 'Manager list helper used outside its exact UI role: ' + owner_path)
     variants = evaluator.constant('TD_PET_LIST_VARIANTS')
     species_count = evaluator.constant('TD_PET_SPECIES_COUNT')
-    require(variants == 241 and species_count == 15, 'Manager list physical-cell/state family changed')
+    require(variants == 61 and species_count == 15, 'Manager list physical-cell/state family changed')
     for cell in range(10):
         states = [(0, 0, 0)] + [(species, quality, count) for species in range(1, species_count + 1)
-                                for quality in range(1, 5) for count in range(1, 5)]
+                                for quality in range(1, 5) for count in (1,)]
         for variant, args in enumerate(states):
-            require(evaluator.call('tdPetListAbilityId', [cell, *args]) == rawcode(f'L{cell * variants + variant:03X}'),
+            require(evaluator.call('tdPetListAbilityId', [cell, *args]) == rawcode(f'L{cell * 241 + (0 if variant == 0 else 1 + (variant - 1) * 4):03X}'),
                     'Manager list helper rawcode escaped its mutually exclusive UI family')
 
 

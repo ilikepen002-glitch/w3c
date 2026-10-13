@@ -44,3 +44,26 @@ import TDTowers
 	let baseRange = tdTowerBaseRangeForBranch(TD_TOWER_CHOICE_ARCHER, 5, TD_TOWER_BRANCH_A).toReal()
 	tdTowerEffectiveRangeForLoadout(TD_TOWER_CHOICE_ARCHER, 5, TD_TOWER_BRANCH_A, TD_ITEM_WHITE_SCOPE_ID, TD_ITEM_GREEN_SCOPE_ID, 0).assertEquals(baseRange + 240.0)
 
+
+@Test function equipmentRangeOnlyAppliesToAllArcherAndDryadBranches()
+	var checked = 0
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		for level = 1 to tdTowerMaxLevel(choice)
+			let branches = level == tdTowerMaxLevel(choice) ? tdTowerUltimateBranchCount(choice) : 1
+			for branch = 1 to branches
+				let baseRange = tdTowerBaseRangeForBranch(choice, level, branch).toReal()
+				let ranged = choice == TD_TOWER_CHOICE_ARCHER or choice == TD_TOWER_CHOICE_DRYAD
+				tdTowerEffectiveRangeForLoadout(choice, level, branch, 0, 0, 0).assertEquals(baseRange)
+				tdTowerEffectiveRangeForLoadout(choice, level, branch, TD_ITEM_WHITE_SCOPE_ID, 0, 0).assertEquals(baseRange + (ranged ? 90.0 : 0.0))
+				tdTowerEffectiveRangeForLoadout(choice, level, branch, TD_ITEM_GREEN_SCOPE_ID, 0, 0).assertEquals(baseRange + (ranged ? 150.0 : 0.0))
+				tdTowerEffectiveRangeForLoadout(choice, level, branch, TD_ITEM_BLUE_SCOPE_ID, 0, 0).assertEquals(baseRange + (ranged ? 230.0 : 0.0))
+				tdTowerEffectiveRangeForLoadout(choice, level, branch, TD_ITEM_PURPLE_SCOPE_ID, 0, 0).assertEquals(baseRange + (ranged ? 340.0 : 0.0))
+				tdTowerEffectiveRangeForLoadout(choice, level, branch, TD_ITEM_WHITE_SCOPE_ID, TD_ITEM_GREEN_SCOPE_ID, TD_ITEM_PURPLE_SCOPE_ID).assertEquals(baseRange + (ranged ? 500.0 : 0.0))
+				// Removing equipment recomputes from the current tower/branch, with no cached bonus.
+				tdTowerEffectiveRangeForLoadout(choice, level, branch, 0, 0, 0).assertEquals(baseRange)
+				checked += 1
+	checked.assertEquals(35)
+	// Range gear still supplies its other stats on melee towers.
+	tdEquipmentAttackBonusForItems(TD_ITEM_GREEN_SCOPE_ID, 0, 0).assertEquals(40.0)
+	tdEquipmentAttackBonusForItems(TD_ITEM_BLUE_SCOPE_ID, 0, 0).assertEquals(80.0)
+	tdEquipmentAttackSpeedBonusForItems(TD_ITEM_PURPLE_SCOPE_ID, 0, 0).assertEquals(0.24)

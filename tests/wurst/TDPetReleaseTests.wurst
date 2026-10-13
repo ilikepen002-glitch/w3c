@@ -180,20 +180,20 @@ function wildCount() returns int
 @Test function nonPurpleReleaseExtraStoneHasExactlyTwoRollsOutOfOneHundred()
 	var success = 0
 	for roll = 1 to 100
-		if tdPetReleaseGetsSlotStone(roll)
+		if tdPetReleaseGetsSlotStone(roll, 2)
 			success += 1
-		tdPetReleaseGetsSlotStone(roll).assertEquals(roll == 1 or roll == 2)
+		tdPetReleaseGetsSlotStone(roll, 2).assertEquals(roll == 1 or roll == 2)
 		for level = 1 to 3
 			for quality = 1 to 4
 				let pet = new TDPet(0, quality mod 3 + 1, 1)
 				pet.level = level
 				pet.setSkill(0, 0, quality)
 				// This helper remains the non-purple random bucket; purple releases bypass it.
-				tdPetReleaseGetsSlotStone(roll).assertEquals(roll <= 2)
+				tdPetReleaseGetsSlotStone(roll, 2).assertEquals(roll <= 2)
 				destroy pet
 	success.assertEquals(2)
-	tdPetReleaseGetsSlotStone(0).assertFalse()
-	tdPetReleaseGetsSlotStone(101).assertFalse()
+	tdPetReleaseGetsSlotStone(0, 2).assertFalse()
+	tdPetReleaseGetsSlotStone(101, 2).assertFalse()
 
 @Test function capturedAndRerolledSkillEligibilityKeepsFourSlotRoles()
 	for skill = 0 to TD_PET_SKILL_COUNT - 1
@@ -252,3 +252,32 @@ function wildCount() returns int
 	pet.released.assertFalse()
 	tdPetRerollStones[0].assertEquals(0)
 	tdPetSlotStones[0].assertEquals(TD_PET_MATERIAL_LIMIT)
+
+@Test function threeSkillNonPurpleReleaseHasExactlyFiveWinningRolls()
+	var success = 0
+	for roll = 1 to 100
+		if tdPetReleaseGetsSlotStone(roll, 3)
+			success += 1
+		tdPetReleaseGetsSlotStone(roll, 3).assertEquals(roll <= 5)
+	success.assertEquals(5)
+	tdPetReleaseGetsSlotStone(0, 3).assertFalse()
+	tdPetReleaseGetsSlotStone(101, 3).assertFalse()
+
+@Test function fourLowQualitySkillsIncludingLockedAlwaysReleaseOneSlotStone()
+	let pet = ownedPet(0)
+	pet.setSkill(1, 5, 1)
+	pet.setSkill(2, 6, 1)
+	pet.quality().assertEquals(3)
+	pet.setSkill(3, 11, 1)
+	pet.skillCount.assertEquals(4)
+	pet.level.assertEquals(1)
+	pet.quality().assertEquals(4)
+	for slot = 0 to 3
+		pet.qualityAt(slot).assertEquals(1)
+	let nonce = tdPetBeginRelease(0, 0)
+	tdPetConfirmRelease(0, nonce).assertTrue()
+	tdPetRerollStones[0].assertEquals(1)
+	tdPetSlotStones[0].assertEquals(1)
+	tdPetConfirmRelease(0, nonce).assertFalse()
+	tdPetRerollStones[0].assertEquals(1)
+	tdPetSlotStones[0].assertEquals(1)

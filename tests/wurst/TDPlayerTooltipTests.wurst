@@ -18,11 +18,11 @@ import TDInit
 				text.contains("射程：").assertTrue()
 				text.contains("建在草地").assertEquals(level == 1)
 
-@Test function playerEquipmentTooltipsExplainTowerUniquenessAndCraftEligibility()
+@Test function playerEquipmentTooltipsExplainEffectsWithoutRepeatingCraftHelp()
 	for index = 1 to tdItemDefinitionCount()
 		let itemId = tdItemIdForCatalogIndex(index)
 		let text = tdItemTooltip(itemId)
-		if not text.contains("同塔同名限1件") or not text.contains("塔可装备") or text.contains("第3件") or text.contains("白装装备") or text.contains("原生") or text.contains("事件") or text.length() > 320 or text.contains("紫装不能合成") != (tdItemQuality(itemId) == TD_ITEM_QUALITY_PURPLE) or text.contains("三件同品质可由工人合成") != (tdItemQuality(itemId) < TD_ITEM_QUALITY_PURPLE)
+		if not text.contains("同塔同名限1件") or not text.contains("塔可装备") or text.contains("第3件") or text.contains("白装装备") or text.contains("原生") or text.contains("事件") or text.length() > 320
 			("item=" + itemId.toString() + " len=" + text.length().toString() + " text=" + text).assertEquals("equipment tooltip contract passed")
 		text.contains("同塔同名限1件").assertTrue()
 		text.contains("塔可装备").assertTrue()
@@ -31,11 +31,12 @@ import TDInit
 		text.contains("原生").assertFalse()
 		text.contains("事件").assertFalse()
 		(text.length() <= 320).assertTrue()
-		text.contains("紫装不能合成").assertEquals(tdItemQuality(itemId) == TD_ITEM_QUALITY_PURPLE)
-		text.contains("三件同品质可由工人合成").assertEquals(tdItemQuality(itemId) < TD_ITEM_QUALITY_PURPLE)
+		text.contains("紫装不能合成").assertFalse()
+		text.contains("三件同品质可由工人合成").assertFalse()
 	if not tdItemTooltip(TD_ITEM_GREEN_SCOPE_ID).contains("上限500")
 		("scope: " + tdItemTooltip(TD_ITEM_GREEN_SCOPE_ID)).assertEquals("scope cap present")
 	tdItemTooltip(TD_ITEM_GREEN_SCOPE_ID).contains("上限500").assertTrue()
+	tdItemTooltip(TD_ITEM_GREEN_SCOPE_ID).contains("仅远程塔生效").assertTrue()
 	if not tdItemTooltip(TD_ITEM_WHITE_POISON_ID).contains("每秒30伤害，持续3秒")
 		("poison: " + tdItemTooltip(TD_ITEM_WHITE_POISON_ID)).assertEquals("poison numeric text present")
 	tdItemTooltip(TD_ITEM_WHITE_POISON_ID).contains("每秒30伤害，持续3秒").assertTrue()
@@ -50,7 +51,7 @@ import TDInit
 		tdPetSkillDescriptionById(10, quality).contains("不随尸爆进化增伤").assertTrue()
 		for skill = 0 to TD_PET_SKILL_COUNT - 1
 			let text = tdPetSkillDescriptionById(skill, quality)
-			text.contains("原生").assertEquals(skill == TD_PET_SKILL_RESOLVE)
+			text.contains("原生").assertFalse()
 			text.contains("受控").assertFalse()
 
 @Test function playerSaleTooltipKeepsIrreversibleEvolutionCost()
@@ -70,6 +71,8 @@ import TDInit
 	tdPetSkillDescriptionById(7, 4).contains("85%").assertTrue()
 	tdPetSkillDescriptionById(15, 4).contains("75%").assertTrue()
 
-@Test function playerStartupGuideExplainsActualLeakClasses()
+@Test function playerStartupGuideStaysActionableAndBrief()
 	let text = tdStartupGuideMessage()
-	text.contains("普通1、精英和近卫队长2、首领3").assertTrue()
+	text.contains("B 在高台建塔").assertTrue()
+	text.contains("生命×").assertFalse()
+	(text.length() <= 200).assertTrue()

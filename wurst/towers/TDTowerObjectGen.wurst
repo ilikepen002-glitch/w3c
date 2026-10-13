@@ -256,7 +256,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	equipmentBash
 	..setName("盾击")
 	..setTooltipNormal(1, "盾击")
-	..setTooltipNormalExtended(1, "被动：有" + tdBonusPercentString(tdFootmanBashChance()) + "概率触发脚本短晕盾击，不附加伤害。")
+	..setTooltipNormalExtended(1, "被动：有" + tdBonusPercentString(tdFootmanBashChance()) + "概率触发盾击，短暂眩晕目标，不附加伤害。")
 	..setIconNormal(tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_FOOTMAN))
 	..setIconResearch(tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_FOOTMAN))
 	..presetButtonPosNormal(0, 1)

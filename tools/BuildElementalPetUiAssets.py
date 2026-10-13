@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Build 15 actual model portraits, 60 quality and 240 owned-count BLP1 icons.
-Uses final MDX Portrait renders and unchanged v5 SVG frame/count outlines.
+"""Build 15 actual model portraits and 60 quality-only BLP1 icons.
+Uses final MDX Portrait renders and unchanged v5 SVG frame/quality outlines; count templates remain archived.
 Only renders asset files; never invokes Wurst, staging, map build or the game.
 """
 from __future__ import annotations
@@ -43,7 +43,7 @@ def build(inkscape):
         for species in range(1,16):
             source=SOURCE/f'portraits/species-{species:02d}.png'
             assert source.is_file()
-            for quality,count in [(0,0),*((q,0) for q in range(1,5)),*((q,n) for q in range(1,5) for n in range(1,5))]:
+            for quality,count in [(0,0),*((q,0) for q in range(1,5))]:
                 stem=f'TDPetSpecies{species:02d}'+(f'Q{quality}' if quality else '')+(f'N{count}' if count else '')
                 svg=temp/'icon.svg';png=temp/'icon.png'
                 svg.write_bytes(render_svg(source,quality,count))
@@ -57,13 +57,15 @@ def build(inkscape):
                 disabled=ImageEnhance.Brightness(ImageOps.grayscale(normal).convert('RGBA')).enhance(.45)
                 blp(disabled,disabled_path)
                 assets.append({'species':species,'quality':quality,'ownedCount':count,'name':stem,'normal':str(normal_path.relative_to(ROOT)),'disabled':str(disabled_path.relative_to(ROOT)),'normalSha256':sha(normal_path),'disabledSha256':sha(disabled_path),'portraitSha256':sha(source)})
-    manifest={'version':1,'basis':'Final MDX800 embedded Portrait-camera pose, true BLP texture; v5 original frame/quality/count outlines','gameTested':False,'species':15,'qualityPortraits':60,'ownedCountPortraits':240,'toolVersions':{'inkscape':subprocess.run([inkscape,'--version'],capture_output=True,text=True,check=True).stdout.strip(),'pillow':PILLOW_VERSION},'assets':assets}
+    manifest={'version':1,'basis':'Final MDX800 embedded Portrait-camera pose, true BLP texture; v5 original frame/quality outlines; archived count templates are not packaged','gameTested':False,'species':15,'qualityPortraits':60,'ownedCountPortraits':0,'toolVersions':{'inkscape':subprocess.run([inkscape,'--version'],capture_output=True,text=True,check=True).stdout.strip(),'pillow':PILLOW_VERSION},'assets':assets}
     MANIFEST.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
     verify()
 
 def verify():
     manifest=json.loads(MANIFEST.read_text())
-    assert len(manifest['assets'])==315
+    assert len(manifest['assets'])==75
+    assert manifest['ownedCountPortraits']==0
+    assert not list((ROOT/'imports').rglob('*TDPetSpecies*Q*N*.blp')), 'Obsolete count icons still packaged'
     seen=set()
     for a in manifest['assets']:
         key=(a['species'],a['quality'],a['ownedCount'])
@@ -72,8 +74,8 @@ def verify():
             path=ROOT/a[field];assert sha(path)==a[hashfield];decode_blp(path)
         assert sha(SOURCE/f"portraits/species-{a['species']:02d}.png")==a['portraitSha256']
     for species in range(1,16):
-        assert {(s,q,n) for s,q,n in seen if s==species}=={(species,0,0),*((species,q,0) for q in range(1,5)),*((species,q,n) for q in range(1,5) for n in range(1,5))}
-    print('PASS: 315 distinct BTN/DIS pairs; 15 portraits, 60 quality, 240 count variants; SHA/BLP1 alpha8/7mips checked')
+        assert {(s,q,n) for s,q,n in seen if s==species}=={(species,0,0),*((species,q,0) for q in range(1,5))}
+    print('PASS: 75 distinct BTN/DIS pairs; 15 portraits, 60 quality, no count variants; SHA/BLP1 alpha8/7mips checked')
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--verify-only',action='store_true');p.add_argument('--inkscape',default=shutil.which('inkscape'));a=p.parse_args()
