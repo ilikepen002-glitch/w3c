@@ -11,6 +11,7 @@
 
 ## 30 秒速查
 
+- 默认开发、提交和推送分支为 `codex/archer-split-arrow-shots`，远端跟踪 `origin/codex/archer-split-arrow-shots`。除非用户另行明确要求，不向 `master` 提交、推送或合并；操作前先确认当前分支和推送目标。
 - 改源码，不改 `_build/`、`_build/dependencies/`、`war3map.j`
 - 测试源码只放 `tests/wurst/`，不要手工维护 `wurst/_tests/`
 - 常规检查跑 `tools\Run-WurstChecks.bat`
