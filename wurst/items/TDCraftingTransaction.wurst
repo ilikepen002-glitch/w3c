@@ -1,0 +1,58 @@
+package TDCraftingTransaction
+import TDCraftingCatalog
+import TDCraftingPlan
+
+public constant int TD_CRAFT_COMMIT_CANCELLED = 0
+public constant int TD_CRAFT_COMMIT_SUCCESS = 1
+public constant int TD_CRAFT_COMMIT_RESULT_FAILED = 2
+public constant int TD_CRAFT_COMMIT_ALREADY_ATTEMPTED = 3
+
+// Adapter contract for the later catalog/runtime integration:
+// - available checks the exact captured handle/rawcode, holder or original cast
+//   circle, visibility/liveness, and no intervening pickup/movement out of scope.
+// - prepareResult creates a fully valid hidden output at a legal final drop point
+//   near the operation. Return 0 without an output on failure. Never consume.
+// - consumeThree either removes all three, or returns false without any mutation.
+// - publishResult is a no-fail visibility handoff of that prepared output.
+// Every method is synchronous. No timer/yield, spell callbacks or user input.
+// The backend is borrowed; it must live longer than this commit call.
+public interface TDCraftCommitBackend
+	function available(int key, int rawcode) returns boolean
+	function prepareResult(int rawcode) returns int
+	function consumeThree(int first, int second, int third) returns boolean
+	function publishResult(int resultKey)
+	function discardResult(int resultKey)
+
+function tdCraftBatchAvailable(TDCraftBatch batch, TDCraftCommitBackend backend) returns boolean
+	for slot = 0 to 2
+		let ingredient = batch.ingredient(slot)
+		if not backend.available(ingredient.getKey(), ingredient.getRawcode())
+			return false
+	return true
+
+public function tdCommitCraftBatch(TDCraftPlan plan, int index, TDCraftCatalog catalog, TDCraftCommitBackend backend, int roll) returns int
+	if plan == null or catalog == null or backend == null or not plan.isFrozen() or not plan.usesCatalog(catalog)
+		return TD_CRAFT_COMMIT_CANCELLED
+	let batch = plan.batch(index)
+	if batch == null
+		return TD_CRAFT_COMMIT_CANCELLED
+	// Invalid or failed groups are terminal for this snapshot, never re-filled.
+	if not batch.beginAttempt()
+		return TD_CRAFT_COMMIT_ALREADY_ATTEMPTED
+	if not tdCraftBatchAvailable(batch, backend)
+		return TD_CRAFT_COMMIT_CANCELLED
+	let resultId = batch.result(catalog, roll)
+	if resultId == 0 or catalog.quality(resultId) != batch.sourceQuality() + 1
+		return TD_CRAFT_COMMIT_RESULT_FAILED
+	let resultKey = backend.prepareResult(resultId)
+	if resultKey == 0
+		return TD_CRAFT_COMMIT_RESULT_FAILED
+	// Revalidate after output preparation before the all-or-nothing consumption.
+	if not tdCraftBatchAvailable(batch, backend)
+		backend.discardResult(resultKey)
+		return TD_CRAFT_COMMIT_CANCELLED
+	if not backend.consumeThree(batch.ingredient(0).getKey(), batch.ingredient(1).getKey(), batch.ingredient(2).getKey())
+		backend.discardResult(resultKey)
+		return TD_CRAFT_COMMIT_CANCELLED
+	backend.publishResult(resultKey)
+	return TD_CRAFT_COMMIT_SUCCESS

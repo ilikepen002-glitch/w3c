@@ -1,0 +1,2 @@
+PASS: enemy speed bounds; all 61 poison/aura/Bash control levels and unchanged native poison damage.
+NOT TESTED: native displacement, buff application, stacking, or pathing.

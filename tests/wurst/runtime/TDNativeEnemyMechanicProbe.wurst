@@ -1,0 +1,205 @@
+package TDNativeEnemyMechanicProbe
+import TDConfig
+import TDState
+import TDWaves
+import TDEnemyMechanicData
+import TDEnemyMechanicRuntime
+import TDEquipmentRules
+import TDTowers
+import ClosureTimers
+import Orders
+import DamageEvent
+
+// Historical guard probe rawcode; production no longer generates or attaches it.
+constant int TD_ENEMY_GUARD_ARMOR_ABILITY_ID = 'Emar'
+unit probeBoss = null
+unit probeGuard = null
+unit probeSource = null
+unit probeRunner = null
+unit probeAura = null
+int probeEpoch = 0
+boolean probeBusy = false
+boolean probeSlow = true
+real array probeDamage
+real array probeSpeed
+real probeStartX = 0.0
+real probeStartY = 0.0
+real probeRegen = 0.0
+int probeStage = 0
+int probeTicks = 0
+trigger probeChat = null
+
+function report(string message)
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "ENEMY " + message)
+
+function removeFixture(unit fixture)
+	if fixture != null
+		tdEnemyMechanicUnregister(fixture)
+		RemoveUnit(fixture)
+
+function cleanup()
+	probeEpoch += 1
+	probeBusy = false
+	removeFixture(probeBoss)
+	removeFixture(probeGuard)
+	removeFixture(probeSource)
+	removeFixture(probeRunner)
+	removeFixture(probeAura)
+	probeBoss = null
+	probeGuard = null
+	probeSource = null
+	probeRunner = null
+	probeAura = null
+	report("fixture handles removed; production lane/game state retained")
+
+function fixture(int wave, int role, int unitId) returns unit
+	let result = CreateUnit(Player(TD_ENEMY_PLAYER_ID), unitId, -2200, 2672, 0)
+	// Index 98 keeps the normal watcher from advancing this isolated fixture.
+	SetUnitUserData(result, wave * 100 + 98)
+	SetUnitPathing(result, false)
+	SetUnitCreepGuard(result, false)
+	RemoveGuardPosition(result)
+	PauseUnit(result, true)
+	tdEnemyMechanicRegister(result, 0, wave, role)
+	return result
+
+function settledArmorSample(int index)
+	let epoch = probeEpoch
+	doAfter(0.30) ->
+		if epoch == probeEpoch and probeBoss != null
+			armorSample(index)
+
+function armorSample(int index)
+	let epoch = probeEpoch
+	let before = GetWidgetLife(probeBoss)
+	DamageEvent.setNextDamageFromCode()
+	UnitDamageTarget(probeSource, probeBoss, 100.0, true, false, ATTACK_TYPE_CHAOS, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+	doAfter(0.10) ->
+		if epoch != probeEpoch or probeBoss == null
+			return
+		probeDamage[index] = before - GetWidgetLife(probeBoss) + probeRegen
+		report("armor sample=" + index.toString() + " physical100 correctedHP=" + probeDamage[index].toString() + " guard=" + GetUnitAbilityLevel(probeBoss, TD_ENEMY_GUARD_ARMOR_ABILITY_ID).toString() + " shred=" + GetUnitAbilityLevel(probeBoss, TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID).toString())
+		if index == 0
+			probeGuard = fixture(8, TD_ENEMY_ROLE_GUARD, tdWaveBossGuardUnitId(8))
+			settledArmorSample(1)
+		else if index == 1
+			UnitAddAbility(probeBoss, TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID)
+			SetUnitAbilityLevel(probeBoss, TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID, 4)
+			settledArmorSample(2)
+		else if index == 2
+			tdEnemyMechanicUnregister(probeGuard)
+			tdEnemyMechanicUnregister(probeGuard)
+			removeFixture(probeGuard)
+			probeGuard = null
+			// Idempotent unregister must retain equipment's independent ability.
+			settledArmorSample(3)
+		else
+			let valid = probeDamage[1] < probeDamage[0] and probeDamage[2] > probeDamage[1] and probeDamage[3] > probeDamage[2] and GetUnitAbilityLevel(probeBoss, TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID) == 4 and GetUnitAbilityLevel(probeBoss, TD_ENEMY_GUARD_ARMOR_ABILITY_ID) == 0
+			report("armor native comparisons=" + valid.toString() + " (false requires investigation; no result before observations)")
+			probeBusy = false
+
+function startArmor()
+	cleanup()
+	probeBusy = true
+	probeBoss = fixture(8, TD_ENEMY_ROLE_BOSS, tdWaveSpecialUnitId(8))
+	SetWidgetLife(probeBoss, GetWidgetLife(probeBoss) - 200.0)
+	probeSource = CreateUnit(Player(0), TD_FARMER_UNIT_ID, -2500, 2672, 0)
+	PauseUnit(probeSource, true)
+	report("PRECONDITION fresh single-lane0 diagnostic game, no other player towers/attacks near fixture. Source/Boss paused; contamination invalidates HP comparisons.")
+	report("Boss registered before guard; initial guardAbility=" + GetUnitAbilityLevel(probeBoss, TD_ENEMY_GUARD_ARMOR_ABILITY_ID).toString())
+	let epoch = probeEpoch
+	let before = GetWidgetLife(probeBoss)
+	doAfter(0.10) ->
+		if epoch == probeEpoch and probeBoss != null
+			probeRegen = GetWidgetLife(probeBoss) - before
+			armorSample(0)
+
+function beginMovementWindow()
+	SetUnitPosition(probeRunner, -2200, 2672)
+	probeStartX = GetUnitX(probeRunner)
+	probeStartY = GetUnitY(probeRunner)
+	probeTicks = 0
+	PauseUnit(probeRunner, false)
+	IssuePointOrderById(probeRunner, Orders.move, -1600, 2672)
+
+function startSprint(boolean slow)
+	cleanup()
+	probeBusy = true
+	probeSlow = slow
+	probeRunner = fixture(12, TD_ENEMY_ROLE_ELITE, tdWaveSpecialUnitId(12))
+	probeAura = CreateUnit(Player(0), tdTowerUnitIdForLevel(TD_TOWER_CHOICE_DRYAD, 1), -2200, 2752, 0)
+	UnitRemoveAbility(probeAura, TD_DRYAD_POISON_ABILITY_ID)
+	SetUnitAcquireRange(probeAura, 0.0)
+	UnitAddAbility(probeAura, TD_DRYAD_SLOW_AURA_ABILITY_ID)
+	if not slow
+		UnitRemoveAbility(probeAura, TD_DRYAD_SLOW_AURA_ABILITY_ID)
+	probeStage = 0
+	probeTicks = 0
+	report("sprint fixture slow=" + slow.toString() + "; pathing off only on fixture; waypoint2 hook injected, not route-arrival evidence")
+	report("Applying/removing slow during an already active sprint is not covered by this fixture.")
+	let epoch = probeEpoch
+	doPeriodically(0.1) cb ->
+		if epoch != probeEpoch or not probeBusy or tdIsGameOver()
+			destroy cb
+		else
+			advanceSprint()
+
+function advanceSprint()
+	if not probeBusy or probeRunner == null
+		return
+	probeTicks += 1
+	if probeStage == 0
+		if probeTicks > 60
+			report("FAIL aura precondition timed out")
+			probeBusy = false
+		else if probeTicks >= 10 and (not probeSlow or GetUnitAbilityLevel(probeRunner, 'Basl') > 0)
+			probeStage = 1
+			beginMovementWindow()
+	else if probeStage == 4
+		if probeTicks >= 23
+			probeStage = 5
+			beginMovementWindow()
+	else if probeTicks == 4
+		PauseUnit(probeRunner, true)
+		let dx = GetUnitX(probeRunner) - probeStartX
+		let dy = GetUnitY(probeRunner) - probeStartY
+		let index = (probeStage - 1) div 2
+		probeSpeed[index] = SquareRoot(dx * dx + dy * dy) / 0.4
+		report("movement stage=" + index.toString() + " measured=" + probeSpeed[index].toString() + " assignedBase=" + GetUnitMoveSpeed(probeRunner).toString() + " nativeSlow=" + GetUnitAbilityLevel(probeRunner, 'Basl').toString())
+		if (GetUnitAbilityLevel(probeRunner, 'Basl') > 0) != probeSlow
+			report("FAIL slow presence differs from selected case; speed sample invalid")
+			probeBusy = false
+		else if probeStage == 1
+			tdEnemyMechanicOnWaypoint(probeRunner, 2)
+			probeStage = 3
+			beginMovementWindow()
+		else if probeStage == 3
+			probeStage = 4
+			probeTicks = 0
+		else
+			let valid = probeSpeed[0] > 0 and (not probeSlow or probeSpeed[0] < 270.0) and probeSpeed[1] > probeSpeed[0] * 1.2 and probeSpeed[2] > probeSpeed[0] * 0.9 and probeSpeed[2] < probeSpeed[0] * 1.1
+			report("sprint/slow/restore native comparisons=" + valid.toString())
+			probeBusy = false
+
+function command()
+	let text = GetEventPlayerChatString()
+	if text == "-enemy cleanup"
+		cleanup()
+	else if text == "-enemy snapshot"
+		report("busy=" + probeBusy.toString() + " armor0/1/2/3=" + probeDamage[0].toString() + "/" + probeDamage[1].toString() + "/" + probeDamage[2].toString() + "/" + probeDamage[3].toString() + " speeds=" + probeSpeed[0].toString() + "/" + probeSpeed[1].toString() + "/" + probeSpeed[2].toString())
+	else if not probeBusy and (text == "-enemy armor" or text == "-enemy sprint" or text == "-enemy sprint-plain")
+		if not tdIsLaneActive(0) or tdIsLaneDefeated(0) or tdIsLaneFinished(0) or tdIsGameOver()
+			report("FAIL fixture requires active living lane0")
+			return
+		tdLoseLife(0, -10000)
+		report("TEST fixture grants 10000 lives; not economy or normal progression evidence")
+		if text == "-enemy armor"
+			startArmor()
+		else
+			startSprint(text == "-enemy sprint")
+
+init
+	if not compiletime
+		probeChat = CreateTrigger()
+		TriggerRegisterPlayerChatEvent(probeChat, Player(0), "-enemy ", false)
+		probeChat.addAction(function command)

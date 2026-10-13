@@ -1,0 +1,152 @@
+package TDWaveFlowTests
+import TDWaveFlowState
+import TDState
+import TDWaves
+import TDBossTransitionHook
+
+class TDTestTransitionHook implements TDBossTransitionHook
+	int readyCalls = 0
+	int releaseCalls = 0
+	int reason = 0
+	int token = 0
+	override function onReady(int wave, int token) returns boolean
+		readyCalls += 1
+		this.token = token
+		return true
+	override function onRelease(int token, int reason)
+		releaseCalls += 1
+		this.reason = reason
+		// Reentrant release is rejected before this callback is entered.
+		tdFlowReleaseTransition(token, TD_TRANSITION_COMPLETED).assertFalse()
+
+@Test function preparationKeepsLegitimateOldProductionAndMatchEpoch()
+	tdResetState()
+	let epoch = tdFlowEpoch()
+	let spawn = tdFlowBeginSpawn(0)
+	let schedule = tdFlowSchedule()
+	tdFlowPrepareBoss(8).assertTrue()
+	tdFlowPrepareBoss(8).assertFalse()
+	tdFlowEpoch().assertEquals(epoch)
+	(tdFlowSchedule() != schedule).assertTrue()
+	tdFlowSpawnCallbackValid(0, epoch, spawn).assertTrue()
+	tdFlowLaneHasPendingSpawn(0).assertTrue()
+	tdFlowEndSpawn(0, spawn)
+	tdFlowLaneHasPendingSpawn(0).assertFalse()
+	tdResetState()
+
+@Test function bossClaimsAreLaneIndependentAndCannotChangeTerminalResults()
+	tdResetState()
+	tdFlowPrepareBoss(16).assertTrue()
+	tdFlowStartBoss(16).assertTrue()
+	tdFlowStartBoss(16).assertFalse()
+	for lane = 0 to 3
+		tdFlowActivateBoss(lane, 16, 100.0).assertTrue()
+		tdFlowActivateBoss(lane, 16, 100.0).assertFalse()
+	tdFlowClaimBossResult(0, 16, TD_BOSS_RESULT_KILLED).assertTrue()
+	tdFlowClaimBossResult(1, 16, TD_BOSS_RESULT_LEAKED).assertTrue()
+	tdFlowClaimBossResult(2, 16, TD_BOSS_RESULT_TIMED_OUT).assertTrue()
+	tdFlowCancelLane(3)
+	tdFlowBossResult(3, 16).assertEquals(TD_BOSS_RESULT_ABORTED)
+	for lane = 0 to 3
+		tdFlowClaimBossResult(lane, 16, TD_BOSS_RESULT_KILLED).assertFalse()
+		tdFlowClaimBossResult(lane, 8, TD_BOSS_RESULT_KILLED).assertFalse()
+	tdResetState()
+
+@Test function bossDeadlineStartsAtActivationAndResetInvalidatesCallbacks()
+	tdResetState()
+	let epoch = tdFlowEpoch()
+	let spawn = tdFlowBeginSpawn(0)
+	tdFlowEndSpawn(0, spawn)
+	tdFlowPrepareBoss(32).assertTrue()
+	tdFlowBossExpired(0, 32, 500.0).assertFalse()
+	tdFlowStartBoss(32).assertTrue()
+	tdFlowActivateBoss(0, 32, 500.0).assertTrue()
+	tdFlowBossSecondsRemaining(0, 500.0).assertEquals(90)
+	tdFlowBossExpired(0, 32, 589.999).assertFalse()
+	tdFlowBossExpired(0, 32, 590.0).assertTrue()
+	tdResetState()
+	(tdFlowEpoch() > epoch).assertTrue()
+	tdFlowSpawnCallbackValid(0, epoch, spawn).assertFalse()
+	tdFlowClaimBossResult(0, 32, TD_BOSS_RESULT_KILLED).assertFalse()
+
+@Test function normalProductionCompletesBeforeEveryForcedBoundary()
+	for wave = 1 to 32
+		if wave mod 8 != 0
+			(tdWaveSpawnInterval(wave) * tdWaveEnemyCount(wave) + 0.25 < 60.0).assertTrue()
+
+@Test function heldTransitionReleaseIsAtomicAndResetCleansExactlyOnce()
+	tdResetState()
+	let hook = new TDTestTransitionHook()
+	tdFlowRegisterTransitionHook(hook).assertTrue()
+	tdFlowPrepareBoss(8).assertTrue()
+	tdFlowStartBoss(8).assertTrue()
+	tdFlowEnterIntermission().assertTrue()
+	let first = tdFlowHoldTransition(8)
+	(first > 0).assertTrue()
+	tdFlowCallTransitionReady(8, first).assertTrue()
+	tdFlowCallTransitionReady(8, first).assertFalse()
+	hook.readyCalls.assertEquals(1)
+	tdFlowReleaseTransition(first + 1, TD_TRANSITION_COMPLETED).assertFalse()
+	tdFlowReleaseTransition(first, TD_TRANSITION_COMPLETED).assertTrue()
+	tdFlowReleaseTransition(first, TD_TRANSITION_COMPLETED).assertFalse()
+	hook.releaseCalls.assertEquals(1)
+	hook.reason.assertEquals(TD_TRANSITION_COMPLETED)
+	tdFlowHoldTransition(8).assertEquals(0)
+	tdFlowEnterNormal()
+	tdFlowPrepareBoss(24)
+	tdFlowStartBoss(24)
+	tdFlowEnterIntermission()
+	let second = tdFlowHoldTransition(24)
+	(second > first).assertTrue()
+	tdResetState()
+	hook.releaseCalls.assertEquals(2)
+	hook.reason.assertEquals(TD_TRANSITION_ABORTED)
+	tdFlowReleaseTransition(second, TD_TRANSITION_TIME_LIMIT).assertFalse()
+	destroy hook
+	tdResetState()
+
+@Test function finalLaneCannotBeResolvedByAnEmptyArenaOrTimeout()
+	tdResetState()
+	tdSetLaneActive(0, true)
+	tdFlowPrepareBoss(32)
+	tdFlowStartBoss(32)
+	tdFlowActivateBoss(0, 32, 0.0)
+	tdFlowBossResult(0, 32).assertEquals(TD_BOSS_RESULT_ACTIVE)
+	tdIsWaveResolved(0, 32).assertFalse()
+	tdIsLaneFinished(0).assertFalse()
+	tdFlowClaimBossResult(0, 32, TD_BOSS_RESULT_TIMED_OUT).assertTrue()
+	tdFlowClaimBossResult(0, 32, TD_BOSS_RESULT_KILLED).assertFalse()
+	tdIsLaneFinished(0).assertFalse()
+	tdResetState()
+
+@Test function lastClosedLaneNoLongerBlocksPopulationAtAllBossStages()
+	for chapter = 1 to 3
+		let wave = chapter * 8
+		for closedByLeave = 0 to 1
+			tdResetState()
+			tdSetLaneActive(0, true)
+			tdSetLaneActive(1, true)
+			tdSetResolvedWave(0, wave)
+			tdAllContinuingLanesResolved(wave).assertFalse()
+			// Both real defeat and offline close synchronously set this same state.
+			tdSetLaneDefeated(1, true)
+			tdFlowCancelLane(1)
+			tdAllContinuingLanesResolved(wave).assertTrue()
+			tdUnlockPopulationForCompletedWave(wave).assertTrue()
+			tdGetTowerPopulationLimit().assertEquals(chapter == 1 ? 6 : (chapter == 2 ? 8 : 10))
+			tdUnlockPopulationForCompletedWave(wave).assertFalse()
+	tdResetState()
+
+@Test function obsoleteSpawnCallbackCannotReleaseAReplacementTask()
+	tdResetState()
+	let epoch = tdFlowEpoch()
+	let old = tdFlowBeginSpawn(0)
+	tdFlowCancelLane(0)
+	let fresh = tdFlowBeginSpawn(0)
+	tdFlowEndSpawn(0, old)
+	tdFlowLaneHasPendingSpawn(0).assertTrue()
+	tdFlowSpawnCallbackValid(0, epoch, old).assertFalse()
+	tdFlowSpawnCallbackValid(0, epoch, fresh).assertTrue()
+	tdFlowEndSpawn(0, fresh)
+	tdFlowLaneHasPendingSpawn(0).assertFalse()
+	tdResetState()

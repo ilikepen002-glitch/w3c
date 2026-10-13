@@ -1,19 +1,19 @@
 ---
 projectName: MyFirstWurstMap
 dependencies:
-- https://github.com/wurstscript/WurstStdlib2:pre1.29
+- file:///E:/WurstToolchain/WurstStdlib2-source:pre1.29
 buildMapData:
-  name: 深渊守望
+  name: 契灵守卫战
   fileName: MyFirstWurstMap.w3x
   author: 留白散人
   scenarioData:
-    description: 四路黑潮同时压向中央裂隙。选择你的塔系，守住最后的门户，在精英与首领压境前撑到终局。
+    description: 以塔为阵，与灵缔契！捕捉精灵、洗练绝技，让不同的契约与装备碰撞出意想不到的力量。打造属于你的王牌阵容，与契灵并肩，守到最后！
     suggestedPlayers: 1-4
     loadingScreen:
       model: ui\Glues\Loading\Load-Generic\Load-Generic.mdx
-      title: 深渊守望
+      title: 契灵守卫战
       subTitle: 作者：留白散人
-      text: 四路敌潮同时压境，中央门户一旦失守，全线都会崩塌。合理搭配不同塔系，扛过黑潮与首领的最终冲击。
+      text: 以塔为阵，与灵缔契！捕捉精灵、洗练绝技，让不同的契约与装备碰撞出意想不到的力量。打造属于你的王牌阵容，与契灵并肩，守到最后！
   optionsFlags:
     forcesFixed: true
   players:

@@ -1,0 +1,60 @@
+package TDBloodlustAutocastTests
+import TDTowerBloodlustAutocast
+import TDEquipmentAbilities
+import TDTowerSaleState
+import Orders
+
+@Test function firstBloodlustDefaultsOnAndReinitializationKeepsChoice()
+	tdBloodlustChoiceAfterInitialization(0, true).assertEquals(1)
+	tdBloodlustChoiceAfterInitialization(1, true).assertEquals(1)
+	tdBloodlustChoiceAfterInitialization(2, true).assertEquals(2)
+
+@Test function manualBloodlustChoiceRegistersBeforeOrAfterFirstInitialization()
+	let off = tdBloodlustChoiceAfterOrder(0, Orders.bloodlustoff, true, false)
+	off.assertEquals(2)
+	tdBloodlustChoiceAfterInitialization(off, true).assertEquals(2)
+	tdBloodlustChoiceAfterOrder(off, Orders.bloodluston, true, false).assertEquals(1)
+	tdBloodlustChoiceAfterOrder(0, Orders.bloodluston, true, false).assertEquals(1)
+
+@Test function unknownBloodlustRestoreDoesNotIssueAnOrder()
+	tdBloodlustOrderForChoice(0, true).assertEquals(0)
+	tdBloodlustOrderForChoice(1, true).assertEquals(Orders.bloodluston)
+	tdBloodlustOrderForChoice(2, true).assertEquals(Orders.bloodlustoff)
+
+@Test function scriptedOrUnrelatedBloodlustOrdersNeverWriteChoice()
+	for choice = 0 to 2
+		tdBloodlustChoiceAfterOrder(choice, Orders.bloodluston, true, true).assertEquals(choice)
+		tdBloodlustChoiceAfterOrder(choice, Orders.bloodlustoff, true, true).assertEquals(choice)
+		tdBloodlustChoiceAfterOrder(choice, Orders.stop, true, false).assertEquals(choice)
+
+@Test function busyOrMissingBloodlustRetainsChoiceWithoutInitializing()
+	for choice = 0 to 2
+		tdBloodlustChoiceAfterInitialization(choice, false).assertEquals(choice)
+		tdBloodlustChoiceAfterOrder(choice, Orders.bloodluston, false, false).assertEquals(choice)
+		tdBloodlustChoiceAfterOrder(choice, Orders.bloodlustoff, false, false).assertEquals(choice)
+		tdBloodlustOrderForChoice(choice, false).assertEquals(0)
+
+@Test function delayedCooldownRestoresLatestBloodlustSelection()
+	tdEquipmentCooldownCanApply(11.9, 12.0).assertFalse()
+	var choice = tdBloodlustChoiceAfterInitialization(0, true)
+	choice = tdBloodlustChoiceAfterOrder(choice, Orders.bloodlustoff, true, false)
+	tdEquipmentCooldownCanApply(12.0, 12.0).assertTrue()
+	tdBloodlustOrderForChoice(choice, true).assertEquals(Orders.bloodlustoff)
+	choice = tdBloodlustChoiceAfterOrder(choice, Orders.bloodluston, true, false)
+	tdBloodlustOrderForChoice(choice, true).assertEquals(Orders.bloodluston)
+
+@Test function staleUpgradeCancelCannotReinitializeBloodlust()
+	let state = new TDTowerSaleState()
+	state.startWork()
+	let oldGeneration = state.getWorkGeneration()
+	state.startWork()
+	state.finishWorkForGeneration(oldGeneration).assertFalse()
+	state.canSell().assertFalse()
+	state.finishWorkForGeneration(state.getWorkGeneration()).assertTrue()
+	destroy state
+
+@Test function bloodlustRetirementClearsChoiceBeforeHandleReuse()
+	tdBloodlustChoiceLifetimeRegressionForTest().assertTrue()
+
+@Test function twoBloodlustTowersKeepIndependentOffAndOnChoices()
+	tdBloodlustIndependentChoicesRegressionForTest().assertTrue()

@@ -1,0 +1,152 @@
+package TDItemCatalogConfig
+import TDItemCatalogIds
+import TDItemCatalogSchema
+
+// Single reviewed numeric/name/recipe truth consumed by runtime, tooltips and objects.
+public function tdConfiguredEquipment(int index) returns tdEquipmentDefinition
+	if index == 1
+		return tdEquipmentDefinition(TD_ITEM_WHITE_SCOPE_ID, 1, TD_ITEM_LINE_SCOPE, TD_ITEM_GREEN_SCOPE_ID, "远望镜", TD_ITEM_EFFECT_RANGE, 90.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 2
+		return tdEquipmentDefinition(TD_ITEM_WHITE_WAR_AXE_ID, 1, TD_ITEM_LINE_WAR_AXE, TD_ITEM_GREEN_WAR_AXE_ID, "战斧", TD_ITEM_EFFECT_ATTACK, 8.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 3
+		return tdEquipmentDefinition(TD_ITEM_WHITE_SWIFT_ID, 1, TD_ITEM_LINE_SWIFT, TD_ITEM_GREEN_SWIFT_ID, "迅击手套", TD_ITEM_EFFECT_ATTACK_SPEED, 0.12, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 4
+		return tdEquipmentDefinition(TD_ITEM_WHITE_SHIELD_ID, 1, TD_ITEM_LINE_SHIELD, TD_ITEM_GREEN_SHIELD_ID, "盾符", TD_ITEM_EFFECT_CONTROL_POWER, 0.1, TD_ITEM_EFFECT_ATTACK, 4.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 5
+		return tdEquipmentDefinition(TD_ITEM_WHITE_POISON_ID, 1, TD_ITEM_LINE_POISON, TD_ITEM_GREEN_POISON_ID, "毒囊", TD_ITEM_EFFECT_POISON, 6.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 6
+		return tdEquipmentDefinition(TD_ITEM_WHITE_ARMOR_ID, 1, TD_ITEM_LINE_ARMOR, TD_ITEM_GREEN_ARMOR_ID, "破甲尖刺", TD_ITEM_EFFECT_ARMOR_SHRED, 1.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 7
+		return tdEquipmentDefinition(TD_ITEM_WHITE_COMMAND_ID, 1, TD_ITEM_LINE_COMMAND, TD_ITEM_GREEN_COMMAND_ID, "行军旗", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ATTACK, 0.03, 350.0, TD_ITEM_SPECIAL_NONE)
+	if index == 8
+		return tdEquipmentDefinition(TD_ITEM_WHITE_GOLD_ID, 1, TD_ITEM_LINE_GOLD, TD_ITEM_GREEN_GOLD_ID, "猎金指环", TD_ITEM_EFFECT_KILL_GOLD, 1.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 9
+		return tdEquipmentDefinition(TD_ITEM_WHITE_WIND_ID, 1, TD_ITEM_LINE_WIND, TD_ITEM_GREEN_WIND_ID, "疾风鼓", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ATTACK_SPEED, 0.04, 350.0, TD_ITEM_SPECIAL_NONE)
+	if index == 10
+		return tdEquipmentDefinition(TD_ITEM_WHITE_FROST_ID, 1, TD_ITEM_LINE_FROST, TD_ITEM_GREEN_FROST_ID, "寒霜碎晶", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ENEMY_SLOW, 0.06, 350.0, TD_ITEM_SPECIAL_NONE)
+	if index == 11
+		return tdEquipmentDefinition(TD_ITEM_GREEN_SCOPE_ID, 2, TD_ITEM_LINE_SCOPE, TD_ITEM_BLUE_SCOPE_ID, "精制远望镜", TD_ITEM_EFFECT_RANGE, 150.0, TD_ITEM_EFFECT_ATTACK, 8.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 12
+		return tdEquipmentDefinition(TD_ITEM_GREEN_WAR_AXE_ID, 2, TD_ITEM_LINE_WAR_AXE, TD_ITEM_BLUE_WAR_AXE_ID, "精钢战斧", TD_ITEM_EFFECT_ATTACK, 16.0, TD_ITEM_EFFECT_EXECUTE, 0.12, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 13
+		return tdEquipmentDefinition(TD_ITEM_GREEN_SWIFT_ID, 2, TD_ITEM_LINE_SWIFT, TD_ITEM_BLUE_SWIFT_ID, "迅击护手", TD_ITEM_EFFECT_ATTACK_SPEED, 0.2, TD_ITEM_EFFECT_ATTACK, 8.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 14
+		return tdEquipmentDefinition(TD_ITEM_GREEN_SHIELD_ID, 2, TD_ITEM_LINE_SHIELD, TD_ITEM_BLUE_SHIELD_ID, "镇守盾符", TD_ITEM_EFFECT_CONTROL_POWER, 0.18, TD_ITEM_EFFECT_ATTACK, 8.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 15
+		return tdEquipmentDefinition(TD_ITEM_GREEN_POISON_ID, 2, TD_ITEM_LINE_POISON, TD_ITEM_BLUE_POISON_ID, "淬毒藤囊", TD_ITEM_EFFECT_POISON, 12.0, TD_ITEM_EFFECT_ATTACK_SPEED, 0.08, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 16
+		return tdEquipmentDefinition(TD_ITEM_GREEN_ARMOR_ID, 2, TD_ITEM_LINE_ARMOR, TD_ITEM_BLUE_ARMOR_ID, "裂甲骨刺", TD_ITEM_EFFECT_ARMOR_SHRED, 2.0, TD_ITEM_EFFECT_ATTACK, 8.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 17
+		return tdEquipmentDefinition(TD_ITEM_GREEN_COMMAND_ID, 2, TD_ITEM_LINE_COMMAND, TD_ITEM_BLUE_COMMAND_ID, "督军旗", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ATTACK, 0.05, 400.0, TD_ITEM_SPECIAL_NONE)
+	if index == 18
+		return tdEquipmentDefinition(TD_ITEM_GREEN_GOLD_ID, 2, TD_ITEM_LINE_GOLD, TD_ITEM_BLUE_GOLD_ID, "佣兵钱袋", TD_ITEM_EFFECT_KILL_GOLD, 2.0, TD_ITEM_EFFECT_DROP_BONUS, 1.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 19
+		return tdEquipmentDefinition(TD_ITEM_GREEN_WIND_ID, 2, TD_ITEM_LINE_WIND, TD_ITEM_BLUE_WIND_ID, "疾风军鼓", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ATTACK_SPEED, 0.07, 400.0, TD_ITEM_SPECIAL_NONE)
+	if index == 20
+		return tdEquipmentDefinition(TD_ITEM_GREEN_FROST_ID, 2, TD_ITEM_LINE_FROST, TD_ITEM_BLUE_FROST_ID, "寒霜晶石", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ENEMY_SLOW, 0.1, 400.0, TD_ITEM_SPECIAL_NONE)
+	if index == 21
+		return tdEquipmentDefinition(TD_ITEM_BLUE_SCOPE_ID, 3, TD_ITEM_LINE_SCOPE, TD_ITEM_PURPLE_SCOPE_ID, "鹰眼望远镜", TD_ITEM_EFFECT_RANGE, 230.0, TD_ITEM_EFFECT_ATTACK, 16.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 22
+		return tdEquipmentDefinition(TD_ITEM_BLUE_WAR_AXE_ID, 3, TD_ITEM_LINE_WAR_AXE, TD_ITEM_PURPLE_WAR_AXE_ID, "狂战战斧", TD_ITEM_EFFECT_ATTACK, 28.0, TD_ITEM_EFFECT_EXECUTE, 0.2, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 23
+		return tdEquipmentDefinition(TD_ITEM_BLUE_SWIFT_ID, 3, TD_ITEM_LINE_SWIFT, TD_ITEM_PURPLE_SWIFT_ID, "疾袭护腕", TD_ITEM_EFFECT_ATTACK_SPEED, 0.32, TD_ITEM_EFFECT_ATTACK, 16.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 24
+		return tdEquipmentDefinition(TD_ITEM_BLUE_SHIELD_ID, 3, TD_ITEM_LINE_SHIELD, TD_ITEM_PURPLE_SHIELD_ID, "坚壁盾符", TD_ITEM_EFFECT_CONTROL_POWER, 0.28, TD_ITEM_EFFECT_ATTACK, 16.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 25
+		return tdEquipmentDefinition(TD_ITEM_BLUE_POISON_ID, 3, TD_ITEM_LINE_POISON, TD_ITEM_PURPLE_POISON_ID, "腐毒囊", TD_ITEM_EFFECT_POISON, 20.0, TD_ITEM_EFFECT_ATTACK_SPEED, 0.16, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 26
+		return tdEquipmentDefinition(TD_ITEM_BLUE_ARMOR_ID, 3, TD_ITEM_LINE_ARMOR, TD_ITEM_PURPLE_ARMOR_ID, "碎甲战印", TD_ITEM_EFFECT_ARMOR_SHRED, 3.0, TD_ITEM_EFFECT_ATTACK, 16.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 27
+		return tdEquipmentDefinition(TD_ITEM_BLUE_COMMAND_ID, 3, TD_ITEM_LINE_COMMAND, TD_ITEM_PURPLE_COMMAND_ID, "统领旗", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ATTACK, 0.08, 450.0, TD_ITEM_SPECIAL_NONE)
+	if index == 28
+		return tdEquipmentDefinition(TD_ITEM_BLUE_GOLD_ID, 3, TD_ITEM_LINE_GOLD, TD_ITEM_PURPLE_GOLD_ID, "赏金契约", TD_ITEM_EFFECT_KILL_GOLD, 3.0, TD_ITEM_EFFECT_DROP_BONUS, 2.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+	if index == 29
+		return tdEquipmentDefinition(TD_ITEM_BLUE_WIND_ID, 3, TD_ITEM_LINE_WIND, TD_ITEM_PURPLE_WIND_ID, "劲风战鼓", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ATTACK_SPEED, 0.1, 450.0, TD_ITEM_SPECIAL_NONE)
+	if index == 30
+		return tdEquipmentDefinition(TD_ITEM_BLUE_FROST_ID, 3, TD_ITEM_LINE_FROST, TD_ITEM_PURPLE_FROST_ID, "寒霜晶核", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ENEMY_SLOW, 0.14, 450.0, TD_ITEM_SPECIAL_NONE)
+	if index == 31
+		return tdEquipmentDefinition(TD_ITEM_PURPLE_SCOPE_ID, 4, TD_ITEM_LINE_SCOPE, 0, "风行旗", TD_ITEM_EFFECT_RANGE, 340.0, TD_ITEM_EFFECT_ATTACK_SPEED, 0.24, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_ARCHER_ARROW)
+	if index == 32
+		return tdEquipmentDefinition(TD_ITEM_PURPLE_WAR_AXE_ID, 4, TD_ITEM_LINE_WAR_AXE, 0, "剑圣印记", TD_ITEM_EFFECT_ATTACK, 34.0, TD_ITEM_EFFECT_BOSS_DAMAGE, 0.25, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_WAR_INTENT)
+	if index == 33
+		return tdEquipmentDefinition(TD_ITEM_PURPLE_SWIFT_ID, 4, TD_ITEM_LINE_SWIFT, 0, "饥饿心核", TD_ITEM_EFFECT_ATTACK_SPEED, 0.48, TD_ITEM_EFFECT_ATTACK, 20.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_CORPSE_BURST)
+	if index == 34
+		return tdEquipmentDefinition(TD_ITEM_PURPLE_SHIELD_ID, 4, TD_ITEM_LINE_SHIELD, 0, "镇军盾徽", TD_ITEM_EFFECT_CONTROL_POWER, 0.4, TD_ITEM_EFFECT_ATTACK, 24.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_SHIELD_SPREAD)
+	if index == 35
+		return tdEquipmentDefinition(TD_ITEM_PURPLE_POISON_ID, 4, TD_ITEM_LINE_POISON, 0, "森蚀之种", TD_ITEM_EFFECT_POISON, 24.0, TD_ITEM_EFFECT_ATTACK_SPEED, 0.24, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_POISON_BURST)
+	if index == 36
+		return tdEquipmentDefinition(TD_ITEM_PURPLE_ARMOR_ID, 4, TD_ITEM_LINE_ARMOR, 0, "裂甲战鼓", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ARMOR_ON_HIT, 4.0, 550.0, TD_ITEM_SPECIAL_NONE)
+	if index == 37
+		return tdEquipmentDefinition(TD_ITEM_PURPLE_COMMAND_ID, 4, TD_ITEM_LINE_COMMAND, 0, "统御号角", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ATTACK, 0.12, 550.0, TD_ITEM_SPECIAL_NONE)
+	if index == 38
+		return tdEquipmentDefinition(TD_ITEM_PURPLE_GOLD_ID, 4, TD_ITEM_LINE_GOLD, 0, "灵感法典", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_COOLDOWN, 0.18, 550.0, TD_ITEM_SPECIAL_NONE)
+	if index == 39
+		return tdEquipmentDefinition(TD_ITEM_PURPLE_WIND_ID, 4, TD_ITEM_LINE_WIND, 0, "疾风战鼓", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ATTACK_SPEED, 0.16, 550.0, TD_ITEM_SPECIAL_NONE)
+	if index == 40
+		return tdEquipmentDefinition(TD_ITEM_PURPLE_FROST_ID, 4, TD_ITEM_LINE_FROST, 0, "永霜核心", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_ENEMY_SLOW, 0.2, 550.0, TD_ITEM_SPECIAL_NONE)
+	return tdEquipmentDefinition(0, 0, 0, 0, "", TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_EFFECT_NONE, 0.0, TD_ITEM_AURA_NONE, 0.0, 0.0, TD_ITEM_SPECIAL_NONE)
+
+public function tdConfiguredSpecialCount(int specialization) returns int
+	if specialization == TD_ITEM_SPECIAL_ARCHER_ARROW
+		return 1
+	if specialization == TD_ITEM_SPECIAL_WAR_INTENT
+		return 4
+	if specialization == TD_ITEM_SPECIAL_CORPSE_BURST
+		return 6
+	if specialization == TD_ITEM_SPECIAL_POISON_BURST
+		return 3
+	return 0
+
+public function tdConfiguredSpecialDamageFactor(int specialization) returns real
+	if specialization == TD_ITEM_SPECIAL_CORPSE_BURST or specialization == TD_ITEM_SPECIAL_POISON_BURST
+		return 0.50
+	return 0.0
+
+public function tdConfiguredSpecialRadius(int specialization) returns real
+	if specialization == TD_ITEM_SPECIAL_CORPSE_BURST
+		return 180.0
+	if specialization == TD_ITEM_SPECIAL_POISON_BURST
+		return 220.0
+	if specialization == TD_ITEM_SPECIAL_SHIELD_SPREAD
+		return 200.0
+	return 0.0
+
+public function tdConfiguredSpecialTargetCap(int specialization) returns int
+	if specialization == TD_ITEM_SPECIAL_CORPSE_BURST or specialization == TD_ITEM_SPECIAL_POISON_BURST
+		return 4
+	if specialization == TD_ITEM_SPECIAL_SHIELD_SPREAD
+		return 2
+	return 0
+
+public function tdConfiguredWarAttackSpeed() returns real
+	return 0.20
+
+public function tdConfiguredWarDuration() returns real
+	return 3.0
+
+public function tdConfiguredShieldBossArmor() returns real
+	return 4.0
+
+public function tdConfiguredShieldBossArmorDuration() returns real
+	return 3.0
+
+// Script shield values. Normal/Hero durations are deliberately identical per
+// candidate; Boss is a separate .25-second native ability and shared window.
+public function tdConfiguredShieldNormalStunDuration() returns real
+	return 0.60
+public function tdConfiguredShieldNormalStunCap() returns real
+	return 0.90
+public function tdConfiguredShieldNormalProtection() returns real
+	return 0.60
+public function tdConfiguredShieldBossStunDuration() returns real
+	return 0.25
+public function tdConfiguredShieldBossProtection() returns real
+	return 1.75
+public function tdConfiguredShieldCastMargin() returns real
+	return 0.08
+
+public function tdConfiguredWarInactivity() returns real
+	return 3.0
+
+public function tdConfiguredPoisonBurstInactivity() returns real
+	return 3.0

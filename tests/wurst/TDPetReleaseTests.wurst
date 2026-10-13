@@ -1,0 +1,260 @@
+package TDPetReleaseTests
+import TDPetState
+import TDPetRules
+import TDPetWild
+import TDState
+import BitSet
+
+function ownedPet(int lane) returns TDPet
+	tdResetState()
+	tdSetLaneActive(lane, true)
+	tdPetInitializeLane(lane)
+	let pet = new TDPet(lane, 1, 1)
+	pet.setSkill(0, 0, 1)
+	pet.setSkill(1, 5, 2)
+	tdPetStore(lane, pet).assertTrue()
+	return pet
+
+function wildCount() returns int
+	var count = 0
+	for record in tdPetWildRecords
+		if record != null
+			count += 1
+	return count
+
+@Test function releaseHasOneConsumptionOneRewardAndNeverCreatesWild()
+	let pet = ownedPet(0)
+	let wildBefore = wildCount()
+	let balls = tdPetBallsForLane(0)
+	let nonce = tdPetBeginRelease(0, 0)
+	(nonce > 0).assertTrue()
+	tdPetConfirmRelease(0, nonce).assertTrue()
+	pet.released.assertTrue()
+	(tdPetAt(0, 0) == null).assertTrue()
+	tdPetRerollStones[0].assertEquals(1)
+	(tdPetSlotStones[0] == 0 or tdPetSlotStones[0] == 1).assertTrue()
+	let extra = tdPetSlotStones[0]
+	tdPetConfirmRelease(0, nonce).assertFalse()
+	tdPetRerollStones[0].assertEquals(1)
+	tdPetSlotStones[0].assertEquals(extra)
+	tdPetBallsForLane(0).assertEquals(balls)
+	wildCount().assertEquals(wildBefore)
+	tdPetStore(0, pet).assertFalse()
+
+@Test function releaseCancelAndStaleNoncePreserveNewTicket()
+	let pet = ownedPet(0)
+	let oldNonce = tdPetBeginRelease(0, 0)
+	tdPetCancelRelease(0)
+	tdPetConfirmRelease(0, oldNonce).assertFalse()
+	let newNonce = tdPetBeginRelease(0, 0)
+	(newNonce > oldNonce).assertTrue()
+	tdPetConfirmRelease(0, oldNonce).assertFalse()
+	tdPetReleaseNonce(0).assertEquals(newNonce)
+	(tdPetAt(0, 0) == pet).assertTrue()
+	tdPetRerollStones[0].assertEquals(0)
+	tdPetConfirmRelease(0, newNonce).assertTrue()
+
+@Test function releaseTicketsAreBoundToLaneAndCurrentOwner()
+	let pet = ownedPet(0)
+	tdSetLaneActive(1, true)
+	tdPetInitializeLane(1)
+	tdPetStore(1, new TDPet(1, 2, 1)).assertTrue()
+	let nonce0 = tdPetBeginRelease(0, 0)
+	let nonce1 = tdPetBeginRelease(1, 0)
+	(nonce0 != nonce1).assertTrue()
+	tdPetConfirmRelease(1, nonce0).assertFalse()
+	tdPetReleaseNonce(1).assertEquals(nonce1)
+	tdPetConfirmRelease(-1, nonce0).assertFalse()
+	pet.lane = 1
+	tdPetConfirmRelease(0, nonce0).assertFalse()
+	tdPetRerollStones[0].assertEquals(0)
+	pet.lane = 0
+	tdPetBeginRelease(0, 20).assertEquals(0)
+	tdPetBeginRelease(0, -1).assertEquals(0)
+	tdPetConfirmRelease(1, nonce1).assertTrue()
+	tdPetRerollStones[1].assertEquals(1)
+
+@Test function releaseRevalidatesRevisionGenerationAndSameSlotIdentity()
+	let pet = ownedPet(0)
+	let revisionNonce = tdPetBeginRelease(0, 0)
+	pet.setSkill(0, 1, 2)
+	tdPetConfirmRelease(0, revisionNonce).assertFalse()
+	tdPetReleaseNonce(0).assertEquals(0)
+	let generationNonce = tdPetBeginRelease(0, 0)
+	pet.recall()
+	tdPetConfirmRelease(0, generationNonce).assertFalse()
+	let identityNonce = tdPetBeginRelease(0, 0)
+	let replacement = new TDPet(0, 3, 2)
+	tdPets[0] = replacement
+	tdPetConfirmRelease(0, identityNonce).assertFalse()
+	(tdPetAt(0, 0) == replacement).assertTrue()
+	tdPetRerollStones[0].assertEquals(0)
+	tdPets[0] = pet
+	destroy replacement
+
+@Test function releaseRejectsProposalAndRecallKeepsPetWithoutReward()
+	let pet = ownedPet(0)
+	tdPetReleaseLifecycleAllows(true, false, false).assertFalse()
+	tdPetReleaseLifecycleAllows(false, true, false).assertFalse()
+	tdPetReleaseLifecycleAllows(false, false, true).assertFalse()
+	pet.readyAt = 35.0
+	pet.recall()
+	(tdPetAt(0, 0) == pet).assertTrue()
+	pet.readyAt.assertEquals(35.0)
+	tdPetRerollStones[0].assertEquals(0)
+	tdPetSlotStones[0].assertEquals(0)
+	pet.proposalSlot = 0
+	tdPetBeginRelease(0, 0).assertEquals(0)
+	pet.proposalSlot = -1
+	let nonce = tdPetBeginRelease(0, 0)
+	pet.proposalSlot = 1
+	tdPetConfirmRelease(0, nonce).assertFalse()
+	pet.proposalSlot = -1
+	let recalledNonce = tdPetBeginRelease(0, 0)
+	tdPetConfirmRelease(0, recalledNonce).assertTrue()
+
+@Test function releaseRefusesInactiveDefeatedFinishedEndedOrDisconnectedLane()
+	let pet = ownedPet(0)
+	let inactiveNonce = tdPetBeginRelease(0, 0)
+	tdSetLaneActive(0, false)
+	tdPetConfirmRelease(0, inactiveNonce).assertFalse()
+	tdPetBeginRelease(0, 0).assertEquals(0)
+	tdSetLaneActive(0, true)
+	let defeatNonce = tdPetBeginRelease(0, 0)
+	tdSetLaneDefeated(0, true)
+	tdPetLaneDefeated(0)
+	tdPetReleaseNonce(0).assertEquals(0)
+	tdPetConfirmRelease(0, defeatNonce).assertFalse()
+	tdSetLaneDefeated(0, false)
+	let finishedNonce = tdPetBeginRelease(0, 0)
+	tdSetLaneFinished(0, true)
+	tdPetConfirmRelease(0, finishedNonce).assertFalse()
+	tdPetBeginRelease(0, 0).assertEquals(0)
+	tdSetLaneFinished(0, false)
+	let endedNonce = tdPetBeginRelease(0, 0)
+	tdSetGameOver(true)
+	tdPetConfirmRelease(0, endedNonce).assertFalse()
+	tdPetBeginRelease(0, 0).assertEquals(0)
+	tdSetGameOver(false)
+	let leaveNonce = tdPetBeginRelease(0, 0)
+	tdPetMarkPlayerLeft(0)
+	tdPetReleaseNonce(0).assertEquals(0)
+	tdPetConfirmRelease(0, leaveNonce).assertFalse()
+	tdPetBeginRelease(0, 0).assertEquals(0)
+	tdIsGameOver().assertFalse()
+	tdIsLaneActive(0).assertTrue()
+	(tdPetAt(0, 0) == pet).assertTrue()
+	tdPetRerollStones[0].assertEquals(0)
+
+@Test function releaseRefusesMaterialOverflowWithoutSwallowingPet()
+	let pet = ownedPet(0)
+	tdPetRerollStones[0] = TD_PET_MATERIAL_LIMIT
+	let rerollNonce = tdPetBeginRelease(0, 0)
+	tdPetConfirmRelease(0, rerollNonce).assertFalse()
+	(tdPetAt(0, 0) == pet).assertTrue()
+	pet.released.assertFalse()
+	tdPetRerollStones[0].assertEquals(TD_PET_MATERIAL_LIMIT)
+	tdPetRerollStones[0] = 0
+	tdPetSlotStones[0] = TD_PET_MATERIAL_LIMIT
+	let slotNonce = tdPetBeginRelease(0, 0)
+	tdPetConfirmRelease(0, slotNonce).assertFalse()
+	(tdPetAt(0, 0) == pet).assertTrue()
+	tdPetRerollStones[0].assertEquals(0)
+
+@Test function internalDiscardNeverAwardsMaterialsAndRetainsDelayedRecord()
+	let pet = ownedPet(0)
+	let nonce = tdPetBeginRelease(0, 0)
+	tdPetDiscardOwned(0, 0).assertTrue()
+	tdPetConfirmRelease(0, nonce).assertFalse()
+	tdPetDiscardOwned(0, 0).assertFalse()
+	tdPetRerollStones[0].assertEquals(0)
+	tdPetSlotStones[0].assertEquals(0)
+	var retained = false
+	for record in tdPetMatchRecords
+		if record == pet
+			retained = true
+	retained.assertTrue()
+	pet.released.assertTrue()
+
+@Test function nonPurpleReleaseExtraStoneHasExactlyTwoRollsOutOfOneHundred()
+	var success = 0
+	for roll = 1 to 100
+		if tdPetReleaseGetsSlotStone(roll)
+			success += 1
+		tdPetReleaseGetsSlotStone(roll).assertEquals(roll == 1 or roll == 2)
+		for level = 1 to 3
+			for quality = 1 to 4
+				let pet = new TDPet(0, quality mod 3 + 1, 1)
+				pet.level = level
+				pet.setSkill(0, 0, quality)
+				// This helper remains the non-purple random bucket; purple releases bypass it.
+				tdPetReleaseGetsSlotStone(roll).assertEquals(roll <= 2)
+				destroy pet
+	success.assertEquals(2)
+	tdPetReleaseGetsSlotStone(0).assertFalse()
+	tdPetReleaseGetsSlotStone(101).assertFalse()
+
+@Test function capturedAndRerolledSkillEligibilityKeepsExactCategoryActiveAndMaskRules()
+	for skill = 0 to 15
+		for slot = 0 to 3
+			for active = 0 to 1
+				var expected = skill >= 4
+				if slot == 0
+					expected = skill <= 3
+				else
+					if slot == 1 and (skill == 9 or skill == 10)
+						expected = false
+					if active == 1 and skill >= 11
+						expected = false
+				tdPetSkillAllowed(skill, slot, 0, active == 1).assertEquals(expected)
+				tdPetSkillAllowed(skill, slot, bitset(0).set(skill).val, active == 1).assertFalse()
+
+@Test function purpleReleaseCreditsExactlyOneSlotStoneAndKeepsRerollReward()
+	let pet = ownedPet(0)
+	pet.setSkill(0, 0, 4)
+	pet.quality().assertEquals(4)
+	let nonce = tdPetBeginRelease(0, 0)
+	tdPetConfirmRelease(0, nonce).assertTrue()
+	tdPetRerollStones[0].assertEquals(1)
+	tdPetSlotStones[0].assertEquals(1)
+	tdPetConfirmRelease(0, nonce).assertFalse()
+	tdPetRerollStones[0].assertEquals(1)
+	tdPetSlotStones[0].assertEquals(1)
+
+@Test function purpleOwnedResonanceLockedSkillStillGuaranteesSlotStone()
+	let pet = ownedPet(0)
+	pet.setSkill(2, 4, 4)
+	tdPetUnlockedSlots(pet.level).assertEquals(2)
+	pet.qualityAt(0).assertEquals(1)
+	pet.qualityAt(1).assertEquals(2)
+	pet.qualityAt(2).assertEquals(4)
+	pet.quality().assertEquals(4)
+	let nonce = tdPetBeginRelease(0, 0)
+	tdPetConfirmRelease(0, nonce).assertTrue()
+	tdPetRerollStones[0].assertEquals(1)
+	tdPetSlotStones[0].assertEquals(1)
+
+@Test function adoptedLowerQualityRecomputesReleaseColorAndInvalidatesOldTicket()
+	let pet = ownedPet(0)
+	pet.setSkill(0, 0, 4)
+	let stale = tdPetBeginRelease(0, 0)
+	pet.setSkill(0, 0, 2)
+	pet.quality().assertEquals(2)
+	tdPetConfirmRelease(0, stale).assertFalse()
+	tdPetRerollStones[0].assertEquals(0)
+	tdPetSlotStones[0].assertEquals(0)
+	let fresh = tdPetBeginRelease(0, 0)
+	tdPetConfirmRelease(0, fresh).assertTrue()
+	tdPetRerollStones[0].assertEquals(1)
+	(tdPetSlotStones[0] == 0 or tdPetSlotStones[0] == 1).assertTrue()
+
+@Test function purpleReleaseMaterialOverflowAwardsNothingAndKeepsRecord()
+	let pet = ownedPet(0)
+	pet.setSkill(0, 0, 4)
+	tdPetSlotStones[0] = TD_PET_MATERIAL_LIMIT
+	let nonce = tdPetBeginRelease(0, 0)
+	tdPetConfirmRelease(0, nonce).assertFalse()
+	(tdPetAt(0, 0) == pet).assertTrue()
+	pet.released.assertFalse()
+	tdPetRerollStones[0].assertEquals(0)
+	tdPetSlotStones[0].assertEquals(TD_PET_MATERIAL_LIMIT)

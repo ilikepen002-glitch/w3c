@@ -1,0 +1,174 @@
+package TDDamageState
+import TDConfig
+import TDState
+import LinkedList
+
+// Values are finalized event damage capped at pre-hit life, never panel damage.
+public function tdEffectiveDamage(real amount, real preLife) returns real
+	if amount <= 0.0 or preLife <= 0.0
+		return 0.0
+	return min(amount, preLife)
+
+public function tdDamageText(real amount) returns string
+	if amount <= 0.0
+		return "0"
+	if amount < 0.1
+		return "<0.1"
+	if amount < 10.0
+		return R2SW(amount, 0, 1)
+	return R2SW(amount, 0, 0)
+
+// Keep comparator branches explicit: the locked JASS printer drops mixed grouping.
+public function tdDamagePlayerPrecedes(real total, int lane, real otherTotal, int otherLane) returns boolean
+	if total > otherTotal
+		return true
+	if total < otherTotal
+		return false
+	return lane < otherLane
+
+public function tdDamageTowerPrecedes(real total, int lane, int serial, real otherTotal, int otherLane, int otherSerial) returns boolean
+	if total > otherTotal
+		return true
+	if total < otherTotal
+		return false
+	if lane < otherLane
+		return true
+	if lane > otherLane
+		return false
+	return serial < otherSerial
+
+// Rank only startup participants; each active lane has exactly one distinct row.
+public function tdDamagePlayerRank(real total, int lane, real total0, boolean p0, real total1, boolean p1, real total2, boolean p2, real total3, boolean p3) returns int
+	var rank = 0
+	if p0
+		if tdDamagePlayerPrecedes(total0, 0, total, lane)
+			rank += 1
+	if p1
+		if tdDamagePlayerPrecedes(total1, 1, total, lane)
+			rank += 1
+	if p2
+		if tdDamagePlayerPrecedes(total2, 2, total, lane)
+			rank += 1
+	if p3
+		if tdDamagePlayerPrecedes(total3, 3, total, lane)
+			rank += 1
+	return rank
+
+public class TDDamageRecord
+	private TDDamageLedger owner
+	private int serial
+	private int lane
+	private real total = 0.0
+	string label
+	boolean retired = false
+
+	construct(TDDamageLedger owner, int serial, int lane, string label)
+		this.owner = owner
+		this.serial = serial
+		this.lane = lane
+		this.label = label
+
+	function addDamage(TDDamageLedger ledger, real amount) returns boolean
+		if owner != ledger or amount <= 0.0
+			return false
+		total += amount
+		return true
+
+	function getSerial() returns int
+		return serial
+
+	function getLane() returns int
+		return lane
+
+	function getTotal() returns real
+		return total
+
+	function precedes(TDDamageRecord other) returns boolean
+		return tdDamageTowerPrecedes(total, lane, serial, other.total, other.lane, other.serial)
+
+constant Comparator<TDDamageRecord> tdDamageComparator = (left, right) -> left.precedes(right) ? -1 : (right.precedes(left) ? 1 : 0)
+
+public class TDDamageLedger
+	private LinkedList<TDDamageRecord> records = new LinkedList<TDDamageRecord>()
+	private int nextSerial = 1
+	private boolean dirty = false
+	private real total0 = 0.0
+	private real total1 = 0.0
+	private real total2 = 0.0
+	private real total3 = 0.0
+
+	function register(int lane, string label) returns TDDamageRecord
+		if not tdIsLanePlayer(lane)
+			return null
+		let record = new TDDamageRecord(this, nextSerial, lane, label)
+		nextSerial += 1
+		records.add(record)
+		dirty = true
+		return record
+
+	function credit(TDDamageRecord record, real amount, real preLife) returns real
+		let effective = tdEffectiveDamage(amount, preLife)
+		if record == null or not record.addDamage(this, effective)
+			return 0.0
+		if record.getLane() == 0
+			total0 += effective
+		else if record.getLane() == 1
+			total1 += effective
+		else if record.getLane() == 2
+			total2 += effective
+		else
+			total3 += effective
+		dirty = true
+		return effective
+
+	function refreshOrder()
+		if dirty
+			records.sortWith(tdDamageComparator)
+			dirty = false
+
+	function playerTotal(int lane) returns real
+		if lane == 0
+			return total0
+		if lane == 1
+			return total1
+		if lane == 2
+			return total2
+		if lane == 3
+			return total3
+		return 0.0
+
+	function count() returns int
+		return records.size()
+
+	function ranked(int rank) returns TDDamageRecord
+		if rank < 0
+			return null
+		refreshOrder()
+		var index = 0
+		TDDamageRecord result = null
+		let iter = records.iterator()
+		while iter.hasNext()
+			let record = iter.next()
+			if index == rank
+				result = record
+				break
+			index += 1
+		destroy iter
+		return result
+
+	function reset()
+		for record in records
+			destroy record
+		records.clear()
+		nextSerial = 1
+		dirty = false
+		total0 = 0.0
+		total1 = 0.0
+		total2 = 0.0
+		total3 = 0.0
+
+	ondestroy
+		reset()
+		destroy records
+
+public TDDamageLedger tdDamageLedger = new TDDamageLedger()

@@ -1,95 +1,66 @@
 ---
 name: war3-wurst-map-dev
-description: Use when working in MyFirstWurstMap or other Warcraft III map projects that use WurstScript, Grill, WurstStdlib2, .wurst files, wurst.build, wurst_run.args, compiletime object generation, Warcraft III gameplay systems, tower defense logic, map tests, or build-and-deploy-test-map.bat.
+description: Develop, diagnose, or review Warcraft III Wurst maps, including gameplay, object generation, image asset integration, and offline build validation. Run in-game playtests only when the user explicitly requests them.
 ---
 
 # Warcraft III Wurst Map Development
 
-## Overview
+Use this guide for Wurst map work. Discover project-specific paths, commands, collaboration gates, and test conventions from `AGENTS.md`, `wurst.build`, nearby source, and existing tests; do not import another map's layout or toolchain assumptions.
 
-Use this skill to adapt general Warcraft III map-development judgment to this Wurst/Grill project. Prefer the project workflow in `AGENTS.md`; use this skill as a compact decision guide for gameplay changes, object generation, testing, and map-build validation.
+## Route by impact and reuse context
 
-## First Read
+Use the project's [AGENTS.md](../../../AGENTS.md) as the sole source for risk tiers, required Astra/Sol stages, and the validation matrix. Classify the actual scope, coupling, and behavioral impact before implementation; an unclear cause or ownership needs focused investigation before classification. Touching initialization, object generation, rawcodes, abilities, or build scripts does not by itself require full planning and review. When escalating under AGENTS.md, identify the concrete system-level change and affected contracts. Do not impose a second universal review gate from this skill.
 
-Before changing code, read or re-check these anchors:
+For low-risk and ordinary changes, the current agent owns diagnosis, implementation, and validation directly. Do not launch routine exploration, implementation, or review subagents, or delegate merely to match a preferred model. A simple task needs a focused edit and the required checks, not a separate written plan or handoff cycle. Uncertainty calls for targeted investigation first; escalate when the discovered scope meets AGENTS.md's criteria, before implementing the system-level change. Select checks and builds independently from collaboration complexity: a local fix can require a full map build while remaining ordinary work.
 
-- `AGENTS.md` for project-specific collaboration rules and commands.
-- `wurst.build` for `scriptMode`, `wc3Patch`, map metadata, players, forces, and dependencies.
-- Nearby `.wurst` files in the same domain before inventing a new pattern.
-- Matching tests in `tests/wurst/` before changing gameplay logic.
+Reuse confirmed context while the relevant source, dependencies, configuration, and environment remain unchanged. Read only the affected packages, nearby examples, tests, and references needed for the current decision. When delegation is required, reuse a suitable existing agent and pass the goal, relevant files, differences, risks, and validation evidence rather than full conversation history; follow AGENTS.md for model selection and minimal context. Keep high-risk planning and review gates intact.
 
-Do not apply TypeScript/Lua map-template assumptions here. This project uses WurstScript, Grill, WurstStdlib2, `scriptMode: JASS`, and Warcraft III patch `v1.28`.
+## Establish the problem and boundary
 
-## Domain Routing
+Separate observed behavior, reproduction conditions, and hypotheses before implementing a proposed fix. Locate the owner of the rule or state and the nearest working pattern. Read `scriptMode`, `wc3Patch`, dependencies, and map metadata from project configuration before making runtime or compatibility decisions.
 
-| Need | Prefer |
-| --- | --- |
-| Map constants, routes, spawn points, tower coordinates | `wurst/TDConfig.wurst` |
-| Runtime state such as lives, gold, waves, route state | `wurst/TDState.wurst` |
-| Enemy creation and route spawning | `wurst/TDSpawn.wurst` |
-| Wave progression, leaks, HUD, win/loss flow | `wurst/TDGame.wurst` |
-| Startup orchestration and system wiring | `wurst/TDInit.wurst` |
-| Wave definitions and reward cadence | `wurst/TDWaves.wurst` |
-| Stable public tower facade | `wurst/TDTowers.wurst` |
-| Tower catalog IDs, families, levels, upgrade chains | `wurst/towers/TDTowerCatalogData.wurst` |
-| Tower balance, icons, models, button positions | `wurst/towers/TDTowerBalanceData.wurst` |
-| Tower runtime behavior and events | `wurst/towers/TDTowerRuntime.wurst` |
-| Tower object editor generation | `wurst/towers/TDTowerObjectGen.wurst` |
-| Item object generation, inventory, drops, crafting | `wurst/items/` |
-| Tests | `tests/wurst/*Tests.wurst` |
+- Wurst owns rules, state transitions, triggers, combat behavior, testable helpers, and compiletime object generation.
+- Configuration and build scripts own dependencies, test staging, packaging, map metadata, and deployment.
+- World Editor owns terrain, decoration, visual placement, pathing/layout adjustment, and manual asset inspection where those are better handled visually.
 
-If a change spans multiple domains, split by responsibility: config, state, wave/spawn, tower/item data, runtime behavior, object generation, tests.
+Keep shared rules/data, runtime behavior, compiletime assets, and tests separate. Preserve existing public facades; change dependencies only when the task needs it. For mixed code/editor work, finish the code side and identify remaining editor steps.
 
-## Warcraft III Boundary Decisions
+## Default execution scope
 
-Choose the layer before coding:
+For this project, when the user's initial task does not request in-game validation, complete development and only the automated checks, build/deployment, and offline artifact inspection required by the project's validation matrix, without launching or controlling Warcraft III. Gameplay, UI, performance, or visual changes do not implicitly authorize a playtest. Do not routinely ask whether to add one or block delivery merely because runtime behavior remains unobserved; report that boundary briefly.
 
-- Use Wurst for rules, state transitions, combat behavior, triggers, deterministic helper logic, compiletime object generation, and tests.
-- Use `wurst.build` or scripts for build metadata, dependencies, test staging, packaging, and deployment.
-- Use World Editor for terrain, decorations, visual placement, regions, pathing blockers, camera/layout tweaks, and manual asset inspection.
+A later explicit request to play, reproduce in game, or verify live behavior changes this scope. Only then use `war3-map-playtest` for the requested scenario. Build/deployment does not mean starting the game. Documentation or skill-only edits need skill/document validation, not a map rebuild or playtest.
 
-When a request crosses code and editor work, complete the code side and report the remaining World Editor steps separately.
+## Player-facing text
 
-## Implementation Rules
+Write map text for someone learning to play, not for a developer reviewing the design. For tooltips, HUD text, announcements and errors, keep only what helps the player choose an action: what it does, how to use it, its effect, cost, target and relevant limits. Preserve meaningful numbers and irreversible consequences; do not turn concise copy into incomplete or misleading rules.
 
-- Modify source files, not generated files. Treat `_build/`, `_build/dependencies/`, and generated `war3map.j` as outputs.
-- Keep package boundaries narrow. Add logic near the closest existing domain; preserve stable facades such as `TDTowers.wurst` unless the task is to change their API.
-- For object editor data, prefer existing compiletime wrapper and ID allocation patterns. Avoid hand-writing batches of unrelated rawcodes.
-- For initialization, inspect import direction and package init order before using `initlater`; use `initlater` only for a real dependency cycle.
-- For JASS mode, remember op-limit constraints. Add `execute()` or timer chunking only when there is a concrete long-running-thread reason.
-- For handles, classes, stored closures, timers, groups, and effects, decide who owns cleanup. `new` objects commonly need `destroy`.
-- Use Wurst style: package per file, indentation as syntax, `let` by default, `var` only when mutation is needed, and Wurst declarations instead of Jass-style `takes` / `returns nothing`.
+- Put details on the relevant ability or action. Navigation buttons need only their destination or purpose; do not repeat rules already visible on the command card or HUD, or broadcast them whenever a page opens.
+- Remove design rationale, implementation vocabulary, bookkeeping policies and defensive explanations that do not change the player's decision. For example, a collection entry should say “查看技能、上阵或培养”, not explain how its displayed quality is computed. Keep such rationale in source comments or developer documentation when needed.
+- Phrase errors as an understandable outcome and a useful next step. Mention lost or unspent resources when relevant; do not expose record IDs, revision checks or account internals. Keep genuine diagnostic reporting separate from routine gameplay guidance.
+- Read edited strings as a player before delivery. Check neighboring tooltips for the same problem, without expanding a wording change into gameplay redesign. Update obsolete text assertions instead of preserving developer-facing copy merely to satisfy them; retain tests of the underlying gameplay rules.
 
-## Testing and Validation
+## Generated art and imported assets
 
-Use the smallest validation that proves the change:
+When creating or integrating bitmap icons, textures, or model-attachment art, read [image asset integration](references/image-assets.md). Use the available `imagegen` skill for requested AI artwork; preserve source images and prompts in the project, convert them reproducibly, and verify the exact references in the built map. Image generation produces raster artwork, not a ready-to-use animated Warcraft model. Do not load this workflow for unrelated gameplay edits.
 
-| Change | Validation |
-| --- | --- |
-| `.wurst` gameplay logic | `tools\Run-WurstChecks.bat` |
-| Tests only | `tools\Run-WurstChecks.bat`, then targeted `tools\Run-WurstChecks.bat test PackageOrTestName` when useful |
-| Compiletime object generation, unit/ability/item IDs, build menu, upgrades, icons, models | `tools\Run-WurstChecks.bat` and `build-and-deploy-test-map.bat` |
-| `wurst.build`, scripts, packaging, deployment | `build-and-deploy-test-map.bat` |
-| Core playable flow such as spawn, leaks, tower behavior, inventory, crafting | `tools\Run-WurstChecks.bat`; use `build-and-deploy-test-map.bat` when actual map behavior may be affected |
+## Warcraft and Wurst decisions
 
-For bug fixes and behavior changes, add or update a narrow test in `tests/wurst/` when the behavior is testable without the World Editor.
+- Edit source, not generated scripts, dependency copies, or build outputs. Discover their locations from this project.
+- For units, abilities, items, and upgrades, reuse compiletime wrappers and existing rawcode allocation. Check uniqueness, base objects, upgrade chains, ability attachment, button positions, and build menus together.
+- Inspect import direction and initialization order before changing `init` or `initlater`. Do not use delayed initialization to conceal unclear state ownership or a dependency that can be removed.
+- Identify cleanup ownership for handles, classes, stored closures, timers, groups, and effects. Check cancellation/death/removal paths as well as normal completion; tuples are values, while allocated objects commonly require `destroy`.
+- Confirm the script mode before thread changes: JASS has an op limit; `execute()` can reset its counter, and measured long computations may need tick splitting. Lua does not have the same practical op-limit pressure; `execute()` is not an equivalent reset remedy.
+- A count of unfinished asynchronous jobs is not recursion depth. Diagnose call-stack growth separately from pending work, queue limits, cancellation, and completion accounting.
+- Base performance changes on an identified hot path, lifecycle defect, or relevant measurements. Without a requested playtest, use source analysis and offline tests; distinguish reduced work from measured FPS improvement. Prefer appropriate WurstStdlib helpers and `T:` containers where instance volume justifies them; do not add layers or scheduling merely from speculation.
+- Follow adjacent valid Wurst examples when syntax or APIs are uncertain. Watch indentation, `array.length` versus live element count, and the restriction that `code` lambdas cannot capture local variables.
 
-## Common Mistakes
+## Validation and conclusions
 
-- Editing `_build/` or generated `war3map.j` instead of source.
-- Copying TypeScript/Lua, YDWE/KKWE, or w3x2lni workflow assumptions into a Wurst/Grill project.
-- Adding raw object IDs without checking existing catalog and object-generation patterns.
-- Leaving tests in `wurst/_tests/`; that directory is staging, not source.
-- Treating `array.length` as dynamic element count.
-- Capturing locals in a lambda that will be used as `code`.
-- Using `initlater` as a shortcut before understanding package initialization.
-- Running ad hoc build commands instead of the project scripts.
+Use project-mandated checks and build/deploy entrypoints, with their required ordering and collaboration gates. Add a narrow reproduction test for a testable bug; keep test sources in the project's designated source location rather than generated staging.
 
-## Completion Checklist
+Select validation by the changed boundary: logic needs relevant checks/tests; object generation and packaging need a real map build; imported assets need exact packaged-reference and format checks. In-game validation is a separate, explicitly requested activity, even for initialization or core gameplay changes. A successful typecheck cannot prove object output or live behavior. Narrow a failed check using its package, file, or test name before repeating broad runs.
 
-Before reporting completion:
+Reuse successful checks for the same unchanged source, dependency, configuration, and environment state. Revalidate affected paths after later changes or failures; do not repeat checks merely at each handoff. Related small edits can share one validation batch. Run checks and map builds serially because they share staging and build outputs.
 
-- State which source/domain files changed.
-- State which tests or build scripts ran.
-- State what was not verified and why.
-- If the change needs World Editor follow-up, list the exact manual steps.
+Keep delivery proportional to the task: a simple change needs a short result and validation summary, including the risk/model facts required by AGENTS.md, without a stage-by-stage narrative. Distinguish source review, automated checks, compiled objects/deployment, and observed gameplay only where relevant. Include unverified editor or runtime steps and remaining risks. Treat a plausible hypothesis as unproven until the relevant path is verified.

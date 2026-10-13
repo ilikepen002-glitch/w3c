@@ -1,0 +1,58 @@
+package TDTrialObjectGen
+import TDTrialRules
+import Annotations
+import UnitObjEditing
+import Units
+import UnitIds
+
+public function tdTrialIconPath() returns string
+	return "war3mapImported\\BTNTDTrialGoldGolem.blp"
+
+public function tdTrialDisabledIconPath() returns string
+	return "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDTrialGoldGolem.blp"
+
+public function tdTrialNativeModelPath() returns string
+	// Native gold-colored statue approximation, not the generated concept's 3D model.
+	return Units.golemStatue1
+
+@compiletime function tdGenerateTrialObject()
+	new UnitDefinition(TD_TRIAL_TARGET_UNIT_ID, UnitIds.battlegolem)
+	..setName("金币试炼魔像")
+	..setDescription("120秒伤害试炼目标；按本路造成的伤害排名发放奖励。")
+	..setModelFile(tdTrialNativeModelPath())
+	..setTintingColorRed(255)
+	..setTintingColorGreen(220)
+	..setTintingColorBlue(120)
+	// Full imported path uses explicit setters, never presetIcon.
+	..setIconGameInterface(tdTrialIconPath())
+	..setIconScoreScreen(tdTrialIconPath())
+	..setHitPointsMaximumBase(TD_TRIAL_TARGET_HP)
+	..setHitPointsRegenerationRate(0.0)
+	..setHitPointsRegenerationType("none")
+	..setDefenseBase(0)
+	..setDefenseUpgradeBonus(0)
+	..setArmorType(ArmorType.Normal)
+	// Clear all inherited magic immunity/hardened skin and mechanical classification.
+	..setNormalAbilities("")
+	..setDefaultActiveAbility("")
+	..setUnitClassification("")
+	..setTargetedAs("ground")
+	..setUpgradesUsed("")
+	..setSpeedBase(TD_TRIAL_TARGET_SPEED)
+	..setSpeedMinimum(1)
+	..setSpeedMaximum(TD_TRIAL_TARGET_SPEED)
+	..setMovementType(MovementType.Foot)
+	..setAttacksEnabled(0)
+	..setAcquisitionRange(0.0)
+	..setCollisionSize(0.0)
+	..setCanFlee(false)
+	..setSleeps(false)
+	..setFoodCost(0)
+	..setGoldBountyAwardedBase(0)
+	..setGoldBountyAwardedNumberofDice(0)
+	..setGoldBountyAwardedSidesperDie(0)
+	..setLumberBountyAwardedBase(0)
+	..setLumberBountyAwardedNumberofDice(0)
+	..setLumberBountyAwardedSidesperDie(0)
+	..setPointValue(0)
+	..setDeathType(0)

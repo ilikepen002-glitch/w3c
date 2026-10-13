@@ -1,0 +1,62 @@
+package TDEnemySlowState
+import TDAuraState
+import TDEnemyMechanicRuntime
+import GameTimer
+import TDTrialIdentity
+
+public function tdEnemySlowOfferTimed(unit target, unit source, int identity, int rank, real power, real duration)
+	if target == null or not target.isAlive() or power <= 0.0 or duration <= 0.0 or rank < 1 or rank > 4
+		return
+	if tdTrialIsTargetType(target)
+		if not tdTrialTargetValid(target, target.getUserData() div 10000)
+			return
+	tdAuraRegisterTarget(target, false)
+	let record = tdAuraTargetFor(target)
+	let now = getElapsedGameTime()
+	// Source/rank/strength each owns its expiry. Weak cannot extend strong.
+	for entry in record.timed
+		if entry.source == source and entry.identity == identity and entry.rank == rank and entry.power == power
+			entry.expiresAt = now + duration
+			tdEnemySlowRefreshTimed(target)
+			return
+	record.timed.add(new TDAuraTimedContribution(source, identity, rank, power, now + duration))
+	tdEnemySlowRefreshTimed(target)
+
+public function tdEnemySlowCollectTimed(unit target, TDAuraAggregate aggregate)
+	let record = tdAuraTargetFor(target)
+	if record == null
+		return
+	let now = getElapsedGameTime()
+	for entry in record.timed
+		entry.offerIfActive(aggregate, now)
+
+public function tdEnemySlowRetireTarget(unit target)
+	let record = tdAuraTargetFor(target)
+	if record == null
+		return
+	while not record.timed.isEmpty()
+		let entry = record.timed.get(0)
+		record.timed.remove(entry)
+		destroy entry
+
+public function tdEnemySlowExpire(TDAuraTarget record)
+	let now = getElapsedGameTime()
+	let iter = record.timed.iterator()
+	while iter.hasNext()
+		let entry = iter.next()
+		if now >= entry.expiresAt
+			iter.remove()
+			destroy entry
+	destroy iter
+
+public function tdEnemySlowRefreshTimed(unit target)
+	let record = tdAuraTargetFor(target)
+	if record == null
+		return
+	tdEnemySlowExpire(record)
+	// Continuous domains keep sampled coverage. Only timed kinds are reselected.
+	for identity = TD_AURA_POISON_DART to TD_AURA_PET_WIND
+		record.effective.clearIdentity(identity)
+	tdEnemySlowCollectTimed(target, record.effective)
+	tdAuraSyncBuffs(record)
+	tdRefreshEnemyMoveSpeed(target)

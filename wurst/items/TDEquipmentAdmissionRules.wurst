@@ -1,0 +1,31 @@
+package TDEquipmentAdmissionRules
+
+// Rawcode is the equipment identity for tower admission. Workers retain copies
+// for crafting. This helper intentionally does not aggregate effect/aura kinds.
+public function tdEquipmentAdmissionAllowed(boolean isTower, boolean isEquipment, int incomingId, int other0, int other1, int other2, int other3, int other4, int other5) returns boolean
+	if not isTower or not isEquipment
+		return true
+	if incomingId == 0
+		return false
+	return incomingId != other0 and incomingId != other1 and incomingId != other2 and incomingId != other3 and incomingId != other4 and incomingId != other5
+
+public function tdEquipmentReturnOffset(int index) returns vec2
+	// Clockwise, outside a 192-square tower footprint; bounded nearby search.
+	let ring = index div 8
+	let side = ModuloInteger(index, 8)
+	let distance = 160.0 + ring * 32.0
+	if side == 0
+		return vec2(distance, 0)
+	if side == 1
+		return vec2(distance, distance)
+	if side == 2
+		return vec2(0, distance)
+	if side == 3
+		return vec2(-distance, distance)
+	if side == 4
+		return vec2(-distance, 0)
+	if side == 5
+		return vec2(-distance, -distance)
+	if side == 6
+		return vec2(0, -distance)
+	return vec2(distance, -distance)

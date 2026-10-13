@@ -1,0 +1,23 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-10-12",
+  "transparent_background": false,
+  "images": [
+    {
+      "file": "01-裂风猎王.png",
+      "prompt": "Use case: stylized-concept. Create a single original dark fantasy tower-defense boss concept portrait, square composition, production-quality painterly game key art with readable silhouette at thumbnail size. Subject: the Riftwind Hunt King, a lean imposing predatory humanoid knight in jagged black bone armor, forward-leaning poised stance, elegant long crescent weapon, pale cyan-white wind scars curling behind him. Handsome formidable dark villain, not generic skeleton, no gore. Three-quarter body view, face and upper torso large and crisp, black fog background with restrained cold rim light and subtle wind motion, dramatic high contrast without losing armor details. No allies, minions, UI, words, letters, logos, or watermark. This is concept illustration, not a screenshot or 3D asset. Keep a clean outer margin for future portrait cropping."
+    },
+    {
+      "file": "02-黑曜棺卫.png",
+      "prompt": "Use case: stylized-concept. Create one original dark fantasy tower-defense boss concept portrait, square, cinematic painterly high-end game art with bold readable silhouette. Subject: the Obsidian Sepulcher Warden, a colossal armored humanoid guardian in massive angular obsidian plate with a sealed sarcophagus-like torso, molten ember fissures glowing deep inside the chest and helmet, a broad brutal black stone shield and heavy war hammer. Regal menacing craftsmanship, immense weight, handsome design, no gore. Three-quarter body, head and chest prominent for avatar cropping, restrained molten orange rim light over charcoal black armor, smoky ruined vault backdrop with little detail. Single boss only, no minions, words, UI, logos, watermark. Concept art only, not a 3D game model. Preserve clean composition and distinguishable anatomy."
+    },
+    {
+      "file": "03-蚀月织咒者.png",
+      "prompt": "Use case: stylized-concept. One original dark fantasy tower-defense boss portrait, square high-end painterly game concept art. Subject: the Eclipse Spellweaver, an imposing elegant floating sorcerer, shrouded deep black-violet layered robes, sculptural mask with restrained violet eyes, broken crescent halo behind the head, long articulate gauntlets weaving sparse violet magical filaments. Powerful beautiful ominous design, readable silhouette, not a jumble of effects. Three-quarter body with large clear head and upper torso, subtle violet moonlight, near-black misty ruined observatory backdrop. Single boss, no minions or extra creatures, no text, logos, watermark, or UI. Concept illustration, not a 3D asset. Clean margin for portrait crop."
+    },
+    {
+      "file": "04-无冕深渊君王.png",
+      "prompt": "Use case: stylized-concept. One original final-boss dark fantasy concept portrait for a tower-defense game, square composition, polished cinematic painterly game key art. Subject: the Uncrowned Abyss Sovereign, towering powerful humanoid in regal black steel layered armor, shattered crown floating in an incomplete ring, severe handsome obscured face, massive tattered cloak spreading as one bold silhouette, a long dark greatsword held downward. Subtle cyan, ember and violet glints across separate small armor fissures, dominant deep black with cold silver highlights, no rainbow glow. Majestic threatening final antagonist, clean deliberate design with readable face and chest, three-quarter body view, abyssal throne ruin fading into mist behind him. One boss only, no minions, no gore, no text, no UI, no logos or watermark. Concept illustration, not a usable 3D game model."
+    }
+  ]
+}

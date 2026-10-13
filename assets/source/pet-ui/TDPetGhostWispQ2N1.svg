@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>幽灵 / 小精灵</title><desc>Original editable vector artwork. Opaque 64px Warcraft III command-button icon; shared iron frame, distinct semantic silhouette.</desc>
+<defs>
+  <linearGradient id="metal" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#dce8ed"/><stop offset=".45" stop-color="#8499a5"/><stop offset="1" stop-color="#394e59"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#fff0a8"/><stop offset=".45" stop-color="#dfaa47"/><stop offset="1" stop-color="#89551f"/></linearGradient>
+  <linearGradient id="blue" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#d6ffff"/><stop offset=".43" stop-color="#51cee9"/><stop offset="1" stop-color="#237bb7"/></linearGradient>
+  <linearGradient id="green" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#e2ffd0"/><stop offset=".45" stop-color="#71d987"/><stop offset="1" stop-color="#287858"/></linearGradient>
+  <linearGradient id="violet" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#f6caff"/><stop offset=".38" stop-color="#b98bf1"/><stop offset="1" stop-color="#563493"/></linearGradient>
+  <linearGradient id="paper" x1="0" y1="0" x2=".4" y2="1"><stop stop-color="#fff8d5"/><stop offset=".7" stop-color="#e3c68a"/><stop offset="1" stop-color="#a77443"/></linearGradient>
+  <linearGradient id="fire" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe992"/><stop offset=".42" stop-color="#ffa339"/><stop offset="1" stop-color="#c7332b"/></linearGradient>
+  <radialGradient id="wisp"><stop stop-color="#f3ffff"/><stop offset=".45" stop-color="#b9fff1"/><stop offset=".75" stop-color="#55e3dd"/><stop offset="1" stop-color="#3286bc"/></radialGradient>
+  <radialGradient id="back"><stop stop-color="#17394c"/><stop offset="1" stop-color="#080f19"/></radialGradient>
+</defs>
+<rect x="0" y="0" width="64" height="64" fill="#080b10"/>
+<rect x="4" y="4" width="56" height="56" fill="url(#back)"/>
+<path d="M1 1H63L59 5H5V59L1 63Z" fill="#98a3aa"/>
+<path d="M63 1V63H1L5 59H59V5Z" fill="#26323b"/>
+<path d="M2 2H62M2 2V62" fill="none" stroke="#d5d9d8" stroke-width=".7"/>
+<path d="M5 5H59V59H5Z" fill="none" stroke="#8b794f" stroke-width=".8"/>
+<path d="M6 6H58V58H6Z" fill="none" stroke="#030910" stroke-width="1"/>
+<g stroke-linejoin="round" stroke-linecap="round">
+  <path d="M19 28C11 29 6 36 10 42C11 45 16 45 18 41C12 42 13 36 18 35M45 29C55 28 58 18 53 14C48 10 44 13 44 17C49 12 53 18 48 22" fill="none" stroke="#448cb6" stroke-width="3"/>
+  <path d="M29 12C19 14 13 25 17 36C20 43 28 46 26 52C33 53 42 50 45 44C51 37 50 24 42 17C38 13 34 12 29 12Z" fill="url(#wisp)" stroke="#24658b" stroke-width="1.5"/>
+  <path d="M25 16C19 22 19 33 25 37C20 28 25 20 32 18" fill="#e5fff9"/>
+  <path d="M41 33C43 43 36 45 31 47L34 49C42 47 45 43 45 35" fill="#90f0e8"/>
+  <path d="M22 43C14 48 16 55 23 54C19 51 23 49 27 47M45 40C51 42 53 48 48 52C51 45 44 47 40 49" fill="none" stroke="#82d7dc" stroke-width="2"/>
+  <path d="M29 22L34 19L39 25L36 30L30 31L26 27Z" fill="#eeffff"/>
+  <path d="M12 16V22M9 19H15M52 39V45M49 42H55" stroke="#b4e5ef" stroke-width="1.3"/>
+</g>
+<rect x="2" y="2" width="60" height="60" fill="none" stroke="#40dd40" stroke-width="3"/>
+<path d="M6 8V6H8M56 6H58V8M58 56V58H56M8 58H6V56" fill="none" stroke="#40dd40" stroke-width="1.3"/>
+<!-- Owned skill count; Noto Sans CJK Bold outline baked, no font dependency. -->
+<rect x="43" y="6" width="15" height="19" rx="2" fill="#101923" stroke="#ebdbaa" stroke-width=".9"/>
+<path d="M82 0H527V120H388V741H279C232 711 182 692 107 679V587H242V120H82Z" transform="translate(46,22) scale(.017,-.017)" fill="#fff6d8"/>
+</svg>

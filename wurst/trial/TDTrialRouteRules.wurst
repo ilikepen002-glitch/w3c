@@ -1,0 +1,15 @@
+package TDTrialRouteRules
+import TDTrialRules
+
+// Uses positions supplied by the eventual adapter; it does not call TDSpawn.
+public function tdTrialInitialPosition(vec2 spawn, vec2 firstWaypoint, int slot) returns vec2
+	if slot < 0 or slot >= TD_TRIAL_TARGETS_PER_LANE
+		return spawn
+	let delta = firstWaypoint - spawn
+	let length = delta.length()
+	if length <= 0.0 or not tdTrialFiniteWithin(length, 0.0, 100000000.0)
+		return spawn
+	return spawn + delta * (slot * tdTrialFirstSegmentSpacing(length) / length)
+
+public function tdTrialResetWaypoint() returns int
+	return 0

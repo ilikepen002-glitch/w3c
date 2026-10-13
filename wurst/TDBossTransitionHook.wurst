@@ -1,0 +1,11 @@
+package TDBossTransitionHook
+
+public constant int TD_TRANSITION_COMPLETED = 1
+public constant int TD_TRANSITION_TIME_LIMIT = 2
+public constant int TD_TRANSITION_ABORTED = 3
+public constant real TD_BOSS_TRANSITION_TIME_LIMIT = 120.0
+
+// Optional extension only. The game never knows trial units, scores or rewards.
+public interface TDBossTransitionHook
+	function onReady(int completedWave, int transitionToken) returns boolean
+	function onRelease(int transitionToken, int reason)

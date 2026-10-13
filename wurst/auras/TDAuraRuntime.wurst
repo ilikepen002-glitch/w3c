@@ -1,0 +1,233 @@
+package TDAuraRuntime
+import TDActiveCooldownRuntime
+import TDAuraState
+import TDEnemySlowState
+import TDItemData
+import TDEquipmentRules
+import TDPetCombat
+import TDPetState
+import TDPetRules
+import TDPetWild
+import TDEnemyMechanicRuntime
+import TDTowerData
+import TDConfig
+import TDState
+import TDTrialIdentity
+import DamageEvent
+import ClosureTimers
+import Execute
+
+constant int TD_AURA_TARGETS_PER_TICK = 16
+constant real TD_AURA_TICK_PERIOD = 0.03
+boolean tdAuraRuntimeReady = false
+trigger tdAuraDeathTrigger = CreateTrigger()
+
+function tdAuraLaneValid(int lane) returns boolean
+	return tdIsLanePlayer(lane) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
+
+function tdAuraTowerValid(unit tower) returns boolean
+	if tower == null or GetUnitTypeId(tower) == 0 or not tower.isAlive() or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return false
+	return tdAuraLaneValid(GetPlayerId(GetOwningPlayer(tower)))
+
+function tdAuraEnemyValid(unit enemy) returns boolean
+	if tdTrialIsTargetType(enemy)
+		return tdTrialTargetValid(enemy, enemy.getUserData() div 10000)
+	if enemy == null or GetUnitTypeId(enemy) == 0 or not enemy.isAlive() or GetPlayerId(GetOwningPlayer(enemy)) != TD_ENEMY_PLAYER_ID or enemy.getUserData() mod 100 >= 99
+		return false
+	return tdAuraLaneValid(enemy.getUserData() div 10000)
+
+function tdAuraApply(TDAuraTarget record)
+	tdAuraSyncBuffs(record)
+	if record.tower
+		// This call consumes the same aggregate that supplied displayed ranks.
+		tdPetRefreshHost(record.target, 0.0)
+	else
+		tdRefreshEnemyMoveSpeed(record.target)
+
+function tdAuraForget(TDAuraTarget record)
+	for identity = 1 to TD_AURA_ID_COUNT
+		tdAuraSyncDisplayedRank(record, identity, 0)
+	record.effective.clear()
+	tdEnemySlowRetireTarget(record.target)
+	if record.tower
+		// Remove effective aura contributions before the equipment facade refresh.
+		tdPetRefreshHost(record.target, 0.0)
+	else
+		tdRefreshEnemyMoveSpeed(record.target)
+	tdAuraDetachRecord(record)
+	destroy record
+
+function tdPetSkillRank(TDPet pet, int skill) returns int
+	if pet == null
+		return 0
+	for slot = 0 to IMinBJ(pet.skillCount, tdPetUnlockedSlots(pet.level)) - 1
+		if pet.skillAt(slot) == skill
+			return pet.qualityAt(slot)
+	return 0
+
+function tdAuraCooldownTargetEligible(unit target) returns boolean
+	let pet = tdPetForHost(target)
+	var activeUnlocked = false
+	var binding = false
+	if pet != null
+		binding = tdPetBindingValid(pet, target, pet.generation)
+		for slot = 0 to IMinBJ(pet.skillCount, tdPetUnlockedSlots(pet.level)) - 1
+			let skill = pet.skillAt(slot)
+			if tdPetSkillIsActive(skill) and tdPetSkillFitsHost(skill, target)
+				activeUnlocked = true
+	return tdAuraCooldownTargetSupported(tdHasNativeActiveCooldown(target), binding, activeUnlocked)
+
+function tdEquipmentAuraIdentity(int kind) returns int
+	if kind == TD_ITEM_AURA_ATTACK
+		return TD_AURA_EQUIPMENT_ATTACK
+	if kind == TD_ITEM_AURA_ATTACK_SPEED
+		return TD_AURA_EQUIPMENT_SPEED
+	if kind == TD_ITEM_AURA_COOLDOWN
+		return TD_AURA_EQUIPMENT_COOLDOWN
+	if kind == TD_ITEM_AURA_ARMOR_ON_HIT
+		return TD_AURA_EQUIPMENT_ARMOR
+	if kind == TD_ITEM_AURA_ENEMY_SLOW
+		return TD_AURA_EQUIPMENT_FROST
+	return 0
+
+function tdAuraOfferSource(TDAuraTarget record, unit source, TDAuraAggregate aggregate, int targetLane, vec2 targetPos, boolean mechanical, boolean cooldownEligible)
+	if not tdAuraTowerValid(source)
+		return
+	let target = record.target
+	let lane = GetPlayerId(GetOwningPlayer(source))
+	if lane != targetLane
+		return
+	let distance = source.getPos().distanceTo(targetPos)
+	if record.tower
+		aggregate.offer(TD_AURA_WHITE_TIGER, 1, tdArcherAuraDamageBonus(), source.getAbilityLevel(TD_ARCHER_TRUESHOT_ABILITY_ID) > 0 and distance <= 900.0)
+		aggregate.offer(TD_AURA_WHITE_TIGER, 2, tdArcherAuraDamageBonus() * tdEvolutionSkillMultiplier(), source.getAbilityLevel(TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID) > 0 and distance <= 900.0)
+		aggregate.offer(TD_AURA_COMMANDER, 1, tdFootmanCommandAuraDamageBonus(), source.getAbilityLevel(TD_FOOT_COMMAND_ABILITY_ID) > 0 and distance <= 900.0)
+		aggregate.offer(TD_AURA_COMMANDER, 2, tdFootmanCommandAuraDamageBonus() * tdEvolutionSkillMultiplier(), source.getAbilityLevel(TD_FOOT_EVOLVED_COMMAND_ABILITY_ID) > 0 and distance <= 900.0)
+	else if not mechanical
+		let normal = source.getAbilityLevel(TD_DRYAD_SLOW_AURA_ABILITY_ID)
+		let wide = source.getAbilityLevel(TD_DRYAD_WIDE_SLOW_ABILITY_ID)
+		let evolved = source.getAbilityLevel(TD_DRYAD_EVOLVED_SLOW_ABILITY_ID)
+		aggregate.offer(TD_AURA_VINES, 1, tdEquipmentControlReduction(1.0 - tdDryadAuraSlowFactor(), normal), normal > 0 and distance <= tdDryadAuraSlowRadius())
+		aggregate.offer(TD_AURA_VINES, 1, tdEquipmentControlReduction(1.0 - tdDryadAuraSlowFactor(), wide), wide > 0 and distance <= tdDryadWideAuraSlowRadius())
+		aggregate.offer(TD_AURA_VINES, 2, tdEquipmentControlReduction((1.0 - tdDryadAuraSlowFactor()) * tdEvolutionSkillMultiplier(), evolved), evolved > 0 and distance <= tdDryadWideAuraSlowRadius())
+	for slot = 0 to 2
+		let itemId = tdEquipmentItemId(source, slot)
+		let kind = tdItemAuraKind(itemId)
+		if kind == TD_ITEM_AURA_NONE
+			continue
+		if record.tower
+			if kind == TD_ITEM_AURA_ENEMY_SLOW
+				continue
+		else if kind != TD_ITEM_AURA_ENEMY_SLOW
+			continue
+		if kind == TD_ITEM_AURA_COOLDOWN and not cooldownEligible
+			continue
+		aggregate.offer(tdEquipmentAuraIdentity(kind), tdItemQuality(itemId), tdItemAuraValue(itemId), distance <= tdItemAuraRadius(itemId))
+	let pet = tdPetForHost(source)
+	if pet == null or not tdPetBindingValid(pet, source, pet.generation)
+		return
+	if record.tower
+		// Friendly pet aura is strictly host-only; no global/team transmission.
+		aggregate.offer(TD_AURA_PET_COMMAND, tdPetSkillRank(pet, 4), pet.skillPower(4), source == target)
+	else
+		// Enemy-facing pet domain remains an actual 600-unit circle.
+		aggregate.offer(TD_AURA_PET_STASIS, tdPetSkillRank(pet, 5), pet.skillPower(5), distance <= 600.0)
+
+function tdAuraRefresh(TDAuraTarget record)
+	let prepared = new TDAuraAggregate()
+	// Build off-state: a failed source scan never publishes a half aggregate.
+	let success = try() ->
+		tdEnemySlowExpire(record)
+		// Target properties are stable during this synchronous source scan.
+		let target = record.target
+		let targetLane = record.tower ? GetPlayerId(GetOwningPlayer(target)) : target.getUserData() div 10000
+		let targetPos = target.getPos()
+		let mechanical = not record.tower and IsUnitType(target, UNIT_TYPE_MECHANICAL)
+		let cooldownEligible = record.tower and tdAuraCooldownTargetEligible(target)
+		for source in tdAuraTowers
+			tdAuraOfferSource(record, source.target, prepared, targetLane, targetPos, mechanical, cooldownEligible)
+		if not record.tower
+			tdEnemySlowCollectTimed(record.target, prepared)
+		let old = record.effective
+		record.effective = prepared
+		destroy old
+		tdAuraApply(record)
+	if not success
+		if record.effective != prepared
+			destroy prepared
+		// Queue rotation happens before Execute. Preserve this exact target and
+		// retry it next cycle; later targets still receive their own callback.
+		DisplayTimedTextToPlayer(GetOwningPlayer(record.target), 0, 0, 4.0, "光环刷新异常，状态保留并将在下一轮重试；单位句柄 " + record.target.getHandleId())
+
+public function tdForgetAuraTarget(unit target)
+	let record = tdAuraTargetFor(target)
+	if record == null
+		return
+	tdAuraTargets.remove(record)
+	tdAuraForget(record)
+
+function tdAuraOnDeath()
+	let record = tdAuraTargetFor(GetTriggerUnit())
+	if record == null
+		return
+	tdAuraTargets.remove(record)
+	tdAuraForget(record)
+
+function tdCapturePoisonDartMovementSlow()
+	if not tdEquipmentNativeAttackEligible(DamageEvent.isCode(), DamageEvent.isSpell(), DamageEvent.getId()) or DamageEvent.getAmount() <= 0.0
+		return
+	let source = DamageEvent.getSource()
+	let target = DamageEvent.getTarget()
+	if not tdAuraTowerValid(source) or not tdAuraEnemyValid(target) or IsUnitType(target, UNIT_TYPE_MECHANICAL)
+		return
+	if GetPlayerId(GetOwningPlayer(source)) != target.getUserData() div 10000
+		return
+	var level = source.getAbilityLevel(TD_DRYAD_PERFECT_POISON_ABILITY_ID)
+	var rank = 2
+	if level <= 0
+		level = source.getAbilityLevel(TD_DRYAD_POISON_ABILITY_ID)
+		rank = 1
+	if level <= 0
+		return
+	// Match Aspo native applicability/durations; only movement was removed there.
+	let duration = IsUnitType(target, UNIT_TYPE_HERO) ? 1.0 : 5.0
+	tdEnemySlowOfferTimed(target, source, TD_AURA_POISON_DART, rank, tdEquipmentControlReduction(1.0 - tdDryadSlowFactor(), level), duration)
+
+public function tdSetupAuraRuntime()
+	if tdAuraRuntimeReady
+		return
+	tdAuraRuntimeReady = true
+	tdAuraDeathTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
+	tdAuraDeathTrigger.addAction(function tdAuraOnDeath)
+	DamageEvent.addUnreducedListener(2) ->
+		tdCapturePoisonDartMovementSlow()
+	doPeriodically(TD_AURA_TICK_PERIOD) cb ->
+		// Round-robin existing lifecycle registry, never a world enumeration.
+		// Each target runs synchronously through Execute (ForForce) so op counters
+		// do not accumulate across the 16 targets. Timed scans are target-local.
+		// This is a source bound, not an FPS or engine-runtime measurement.
+		let count = IMinBJ(TD_AURA_TARGETS_PER_TICK, tdAuraTargets.size())
+		for index = 1 to count
+			let record = tdAuraTargets.get(0)
+			tdAuraTargets.remove(record)
+			// Rotate before synchronous Execute, so an error cannot orphan a target.
+			tdAuraTargets.add(record)
+			if record.tower
+				if tdAuraTowerValid(record.target)
+					tdAuraRefresh(record)
+				else
+					tdAuraTargets.remove(record)
+					tdAuraForget(record)
+			else if tdAuraEnemyValid(record.target)
+				tdAuraRefresh(record)
+			else if tdPetIsWild(record.target) and record.target.isAlive() and not tdIsGameOver()
+				// Protected neutral wild pets remain registered for their later hostile
+				// transition, but receive no hostile-only aura while protected.
+				record.effective.clear()
+				tdAuraApply(record)
+			else
+				tdAuraTargets.remove(record)
+				tdAuraForget(record)
+		if tdIsGameOver() and tdAuraTargets.isEmpty()
+			destroy cb

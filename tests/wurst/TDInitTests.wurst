@@ -2,6 +2,8 @@ package TDInitTests
 import TDInit
 import TDState
 import TDConfig
+import TDGame
+import TDPetState
 
 @Test function startupWaitsBrieflyBeforeRuntimeBootstrap()
 	tdMapBootstrapDelay().assertGreaterThan(0.0)
@@ -10,6 +12,28 @@ import TDConfig
 @Test function startupRetryPolicyAllowsLatePlayerSlotActivation()
 	tdMapBootstrapRetryInterval().assertEquals(0.25)
 	tdMapBootstrapMaxRetries().assertEquals(8)
+
+@Test function laneLeaveListenerInstallsOnceAcrossDuplicateStartupAndMatchReset()
+	tdSetupLanePlayerLeaveWatcher().assertTrue()
+	tdSetupLanePlayerLeaveWatcher().assertFalse()
+	tdResetState()
+	tdSetupLanePlayerLeaveWatcher().assertFalse()
+	tdResetState()
+
+@Test function aFinishedLaneKeepsItsVictoryWhenThePlayerLeaves()
+	tdResetState()
+	tdPetInitializeLane(0)
+	tdSetLaneActive(0, true)
+	tdSetLaneFinished(0, true)
+	tdSetResolvedWave(0, 32)
+	tdHandleLanePlayerLeft(0)
+	tdIsLaneFinished(0).assertTrue()
+	tdIsLaneDefeated(0).assertFalse()
+	tdGetResolvedWave(0).assertEquals(32)
+	tdGetGold(0).assertEquals(TD_STARTING_GOLD)
+	tdHandleLanePlayerLeft(0)
+	tdIsLaneFinished(0).assertTrue()
+	tdResetState()
 
 @Test function startupFallbackActivatesPlayerOneWhenNoLaneWasDetected()
 	tdResetState()
@@ -30,7 +54,7 @@ import TDConfig
 
 @Test function startupCameraStartsHigherAndAllowsThreeExtraWheelHeights()
 	tdDefaultCameraTargetDistance().assertEquals(3200.0)
-	tdDefaultCameraAngleOfAttack().assertEquals(338.0)
+	tdDefaultCameraAngleOfAttack().assertEquals(315.0)
 	tdCameraWheelLiftStepCount().assertEquals(3)
 	tdCameraWheelLiftDistancePerStep().assertEquals(400.0)
 	tdStartingCameraReapplyDelay().assertEquals(0.10)
@@ -60,3 +84,4 @@ import TDConfig
 	tdResetState()
 	tdTryHandleAddMoneyCommand(0, "-addMoney nope").assertFalse()
 	tdGetGold(0).assertEquals(TD_STARTING_GOLD)
+

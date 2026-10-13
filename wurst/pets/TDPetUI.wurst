@@ -1,0 +1,229 @@
+package TDPetUI
+import TDPetData
+import TDPetState
+import TDPetRules
+import TDPetRuntime
+import TDPetUIState
+import public TDPetUIView
+import TDConfig
+import TDState
+import RegisterEvents
+import ClosureTimers
+import Table
+
+trigger selectionTrigger = CreateTrigger()
+trigger deselectionTrigger = CreateTrigger()
+trigger commandTrigger = CreateTrigger()
+boolean ready = false
+
+function showPage(int lane, int mode, int page, int slot, int nonce)
+	tdPetRenderPage(lane, mode, page, slot, nonce)
+
+function showDetailOrList(int lane, int page, int slot, TDPet expected)
+	let current = tdPetAt(lane, slot)
+	if current != null and current == expected and current.lane == lane and not current.released
+		showPage(lane, TD_PET_UI_DETAIL, page, slot, 0)
+	else
+		showPage(lane, TD_PET_UI_LIST, page, slot, 0)
+
+function showCultivation(int lane)
+	let pet = tdPetAt(lane, tdPetSelectedSlot[lane])
+	if pet == null
+		showPage(lane, TD_PET_UI_LIST, 0, -1, 0)
+	else
+		showPage(lane, pet.proposalSlot >= 0 ? TD_PET_UI_PREVIEW : TD_PET_UI_CULTIVATE, tdPetSelectedSlot[lane] div 10, tdPetSelectedSlot[lane], 0)
+
+public function tdPetShowCollection(int lane)
+	if not tdIsLanePlayer(lane) or not tdPetLaneCanManage(lane)
+		return
+	let pet = tdPetAt(lane, tdPetSelectedSlot[lane])
+	// Keep the last record's unresolved proposal across ordinary selection/close.
+	if pet != null and pet.proposalSlot >= 0
+		showCultivation(lane)
+	else
+		showPage(lane, TD_PET_UI_LIST, tdPetSelectedSlot[lane] >= 10 ? 1 : 0, tdPetSelectedSlot[lane], 0)
+
+function refreshStale(int lane, int previousMode)
+	let session = tdPetUISessions[lane]
+	let slot = tdPetSelectedSlot[lane]
+	let current = tdPetAt(lane, slot)
+	tdPetCancelRelease(lane)
+	if previousMode == TD_PET_UI_LIST or current == null or current != session.pet
+		showPage(lane, TD_PET_UI_LIST, session.page, slot, 0)
+	else if previousMode == TD_PET_UI_CULTIVATE or previousMode == TD_PET_UI_PREVIEW
+		showCultivation(lane)
+	else
+		showPage(lane, TD_PET_UI_DETAIL, slot div 10, slot, 0)
+
+function navigate(int lane, int direction)
+	let slot = tdPetNextOccupied(lane, tdPetSelectedSlot[lane], direction)
+	if slot < 0
+		showPage(lane, TD_PET_UI_LIST, 0, -1, 0)
+	else
+		showPage(lane, TD_PET_UI_DETAIL, slot div 10, slot, 0)
+
+function showReleaseConfirmation(int lane)
+	let slot = tdPetSelectedSlot[lane]
+	let expected = tdPetAt(lane, slot)
+	let nonce = tdPetBeginRelease(lane, slot)
+	if nonce <= 0
+		tdPetNotice(lane, "暂时无法释放。请先解绑精灵，并完成洗练选择。")
+		showDetailOrList(lane, slot div 10, slot, expected)
+		return
+	showPage(lane, TD_PET_UI_RELEASE, slot div 10, slot, nonce)
+
+function onCommand() returns boolean
+	let caster = GetTriggerUnit()
+	if caster == null
+		return false
+	let lane = GetPlayerId(GetOwningPlayer(caster))
+	if not tdIsLanePlayer(lane) or caster != tdPetDisplays[lane] or not tdPetDisplayOwners.hasInt(caster.getHandleId()) or tdPetDisplayOwners.loadInt(caster.getHandleId()) != lane
+		return false
+	if not tdPetLaneCanManage(lane)
+		tdPetCloseManager(lane)
+		return false
+	let session = tdPetUISessions[lane]
+	let abilityId = GetSpellAbilityId()
+	let level = GetUnitAbilityLevel(caster, abilityId)
+	let mode = session.mode
+	let page = session.page
+	let slot = session.selectedSlot
+	let pet = tdPetAt(lane, slot)
+	let nonce = session.releaseNonce
+	let proposalVersion = session.proposalVersion
+	let proposalRevision = session.proposalRevision
+	let action = session.admitCommand(lane, caster.getHandleId(), abilityId, level)
+	if action == TD_PET_COMMAND_INVALID or action == TD_PET_COMMAND_EMPTY
+		return false
+	if action == TD_PET_COMMAND_STALE
+		// Admission consumed old authority; never apply the click to new state.
+		tdPetDisplayOwners.removeInt(caster.getHandleId())
+		tdPetNotice(lane, "精灵信息已更新，请重新选择。")
+		refreshStale(lane, mode)
+		return false
+	if action == TD_PET_COMMAND_REFRESH
+		// Stable refresh only emits text; polling and refresh never churn units.
+		tdPetShowPageSummary(lane)
+		return false
+	// Revoke before any transaction. Every branch publishes at most one new unit.
+	tdPetDisplayOwners.removeInt(caster.getHandleId())
+	if mode == TD_PET_UI_LIST
+		if action >= 100 and action < 110
+			let selected = tdPetPageSlot(page, action - 100)
+			showPage(lane, TD_PET_UI_DETAIL, page, selected, 0)
+		else if action == TD_PET_ACTION_PAGE
+			showPage(lane, TD_PET_UI_LIST, 1 - page, slot, 0)
+		else
+			tdPetSelectFarmer(lane)
+		return false
+	if action == 0
+		showPage(lane, TD_PET_UI_LIST, page, slot, 0)
+	else if action == 1 or action == 2
+		navigate(lane, action == 1 ? -1 : 1)
+	else if action == 3 or action == TD_PET_ACTION_FARMER
+		tdPetSelectFarmer(lane)
+	else if action == 4
+		// Target cursor/ESC has no effect event. Actual click validates before recall.
+		if not tdPetDeploy(pet, GetSpellTargetUnit())
+			tdPetNotice(lane, "请选择本路已完工、尚未上阵精灵的塔。")
+		showPage(lane, TD_PET_UI_DETAIL, page, slot, 0)
+	else if action == 5
+		pet.recall()
+		showPage(lane, TD_PET_UI_DETAIL, page, slot, 0)
+	else if action == 6
+		showCultivation(lane)
+	else if action >= TD_PET_ACTION_REROLL_FIRST and action < TD_PET_ACTION_OPEN
+		if not tdPetBeginReroll(lane, slot, action - TD_PET_ACTION_REROLL_FIRST)
+			tdPetNotice(lane, "无法洗练：材料不足、空栏或已有待选结果；未扣材料。")
+		showCultivation(lane)
+	else if action == TD_PET_ACTION_OPEN
+		if not tdPetOpenSlot(lane, slot)
+			tdPetNotice(lane, "无法开栏：材料不足、已满4栏或待洗练；未扣材料。")
+		showCultivation(lane)
+	else if action == TD_PET_ACTION_RELEASE
+		showReleaseConfirmation(lane)
+	else if action == TD_PET_ACTION_DETAIL
+		showPage(lane, TD_PET_UI_DETAIL, page, slot, 0)
+	else if action == TD_PET_ACTION_PREVIEW_DETAIL
+		showDetailOrList(lane, page, slot, pet)
+	else if action == TD_PET_ACTION_CONTINUE
+		if not tdPetContinueReroll(lane, slot, session.pet, proposalVersion, proposalRevision)
+			tdPetNotice(lane, "无法继续洗练，请检查洗练石。本次结果保留。")
+		showCultivation(lane)
+	else if action == TD_PET_ACTION_KEEP or action == TD_PET_ACTION_ADOPT
+		if not tdPetResolveRerollVersion(lane, slot, proposalVersion, action == TD_PET_ACTION_ADOPT)
+			tdPetNotice(lane, "本次洗练结果已无法使用。请保留旧技能后重新洗练。")
+		showCultivation(lane)
+	else if action == TD_PET_ACTION_CONFIRM
+		let oldExtra = tdPetSlotStones[lane]
+		if tdPetConfirmRelease(lane, nonce)
+			tdPetNotice(lane, "释放奖励：洗练石 +1" + (tdPetSlotStones[lane] > oldExtra ? " · 开栏石 +1" : ""))
+			showPage(lane, TD_PET_UI_LIST, page, slot, 0)
+		else
+			tdPetNotice(lane, "释放失败，精灵仍在收藏中。请检查材料是否已满，或重新选择精灵。")
+			showDetailOrList(lane, page, slot, pet)
+	else if action == TD_PET_ACTION_CANCEL
+		tdPetCancelRelease(lane)
+		showDetailOrList(lane, page, slot, pet)
+	return false
+
+function onCollection() returns boolean
+	let farmer = GetTriggerUnit()
+	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
+		tdPetShowCollection(GetPlayerId(GetOwningPlayer(farmer)))
+	return false
+
+function onDeploy() returns boolean
+	let farmer = GetTriggerUnit()
+	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
+		let lane = GetPlayerId(GetOwningPlayer(farmer))
+		// Legacy farmer entrance is navigation only. All binding requires session.
+		var slot = tdIsLanePlayer(lane) ? tdPetSelectedSlot[lane] : -1
+		if tdPetAt(lane, slot) == null
+			slot = tdPetNextOccupied(lane, slot, 1)
+		if slot >= 0
+			showPage(lane, TD_PET_UI_DETAIL, slot div 10, slot, 0)
+		else
+			tdPetShowCollection(lane)
+	return false
+
+function onSelected()
+	let selected = GetTriggerUnit()
+	if selected != null
+		tdPetHandleSelectionIdentity(GetPlayerId(GetTriggerPlayer()), selected.getHandleId(), GetUnitTypeId(selected), GetPlayerId(GetOwningPlayer(selected)), false)
+
+function onDeselected()
+	let selected = GetTriggerUnit()
+	if selected != null
+		tdPetHandleSelectionIdentity(GetPlayerId(GetTriggerPlayer()), selected.getHandleId(), GetUnitTypeId(selected), GetPlayerId(GetOwningPlayer(selected)), true)
+
+public function tdPetSetupUI()
+	if ready
+		return
+	ready = true
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdPetUISessions[lane] = new TDPetUISession(lane)
+		tdPetSelectedSlot[lane] = -1
+	registerSpellEffectEvent(TD_PET_COLLECTION_ABILITY_ID, function onCollection)
+	registerSpellEffectEvent(TD_PET_DEPLOY_ABILITY_ID, function onDeploy)
+	// Every manager button shares the same admission path. Register it once:
+	// hundreds of per-rawcode triggers exhaust the legacy JASS startup budget.
+	// onCommand checks display identity and the exact mounted session ability.
+	commandTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+	commandTrigger.addCondition(Filter(function onCommand))
+	selectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SELECTED)
+	deselectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DESELECTED)
+	selectionTrigger.addAction(function onSelected)
+	deselectionTrigger.addAction(function onDeselected)
+	doPeriodically(0.5) cb ->
+		for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			if not tdPetLaneCanManage(lane)
+				tdPetCloseManager(lane)
+			else
+				tdPetRefreshDisplay(lane)
+		if tdIsGameOver()
+			for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+				if tdPetUISessions[lane] != null
+					destroy tdPetUISessions[lane]
+					tdPetUISessions[lane] = null
+			destroy cb

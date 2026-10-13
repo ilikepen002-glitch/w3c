@@ -1,0 +1,237 @@
+package TDPetObjectGen
+import TDPetData
+import TDPetUIData
+import TDPetRules
+import TDPetUIState
+import TDWaves
+import ItemObjEditing
+import ChannelAbilityPreset
+
+function command(int abilityId, string name, string key, int x, int y, Targettype targetType, string icon, string description)
+	new ChannelAbilityPreset(abilityId, 1, true)
+	..setName(name)
+	..setTooltipNormal(1, abilityId == tdPetUICommandId(6) ? name : name + " (" + key + ")")
+	..setTooltipNormalExtended(1, description)
+	..presetHotkey(key)
+	..presetButtonPosNormal(x, y)
+	..presetTargetTypes(targetType)
+	..presetCastRange(lvl -> 99999.0)
+	..setIconNormal(icon)
+	..setIconResearch(icon)
+	..makeUnitSpell(0, 0.0)
+	..setCheckDependencies(false)
+	..setTargetsAllowed(1, "friend,enemy,neutral,ground,air,organic,mechanical,structure,vulnerable,invulnerable")
+
+function tdPetCommandDescription(int command) returns string
+	if command == 0
+		return "查看精灵收藏列表，选择要查看或培养的精灵。"
+	if command == 1
+		return "选中上一只收藏精灵。"
+	if command == 2
+		return "选中下一只收藏精灵。"
+	if command == 3
+		return "重新选中本路工人。"
+	if command == 4
+		return "将当前精灵附身到本路已完工、未绑定精灵的塔。|n每座塔可上阵1只精灵；换塔保留主动技能冷却。"
+	if command == 5
+		return "召回当前精灵，解除与塔的绑定，停止提供加成。|n精灵保留在收藏中，主动技能冷却不重置。"
+	if command == 6
+		return "打开养成面板，进行洗练或开栏。"
+	return "查看当前精灵的共鸣等级、附身塔和技能未生效原因。"
+
+function displayUnit(int typeId, string name, string model, string icon)
+	new BuildingDefinition(typeId, 'hpea')
+	..setName(name)
+	..setModelFile(model)
+	..setIconGameInterface(icon)
+	..setIconScoreScreen(icon)
+	..setScalingValue(0.65)
+	..setNormalAbilities("Avul")
+	..setAttacksEnabled(0)
+	..setAcquisitionRange(0.0)
+	..setCollisionSize(0.0)
+	..setMovementType(MovementType.None)
+	..setSpeedBase(0)
+	..setFoodCost(0)
+	..setStructuresBuilt("")
+	..setIsaBuilding(true)
+	..setPathingMap("")
+	..setUnitsTrained("")
+	..setUpgradesTo("")
+
+// Only one variant per physical cell is mounted. Allocate its order once.
+function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, string order, string name, string icon)
+	listAbility..setLevels(2)..setName(name)..presetHotkey(tdPetListHotkey(cell))..presetButtonPosNormal(cell mod 4, cell div 4)
+	..presetBaseOrderID(lvl -> order)..presetTargetType(lvl -> 0)..presetOptions(lvl -> 1)
+	..presetDisableOtherAbilities(lvl -> false)..presetFollowThroughTime(lvl -> 0.0)..presetArtDuration(lvl -> 0.0)
+	..setArtCaster("")..setArtEffect("")..setArtSpecial("")..setArtTarget("")
+	..setHeroAbility(false)..setItemAbility(false)..presetManaCost(lvl -> 0)..presetCooldown(lvl -> 0.0)
+	..presetCastRange(lvl -> 99999.0)..setIconNormal(icon)..setIconResearch(icon)..setCheckDependencies(false)
+
+@compiletime function tdGeneratePetObjects()
+	displayUnit(tdPetListUnitId(), "精灵收藏 · 01–20", tdPetModel(3), tdPetCollectionIconPath())
+	let capture = new ChannelAbilityPreset(TD_PET_CAPTURE_ABILITY_ID, 61, true)
+	capture..setName("普通球捕获")..presetHotkey("Q")..presetButtonPosNormal(1, 2)..presetTargetTypes(Targettype.UNIT)..presetCastRange(lvl -> 99999.0)..setIconNormal(tdPetCaptureIconPath())..setIconResearch(tdPetCaptureIconPath())..makeUnitSpell(0, 0.0)..setCheckDependencies(false)
+	for level = 1 to 61
+		capture.setTooltipNormal(level, "普通球捕获 (Q) · " + (level - 1).toString() + "/60")
+		capture.setTooltipNormalExtended(level, tdPetCaptureTooltip(level - 1))
+		capture.setTargetsAllowed(level, "neutral,enemy,ground,air,organic,invulnerable,vulnerable")
+	command(TD_PET_COLLECTION_ABILITY_ID, "精灵收藏", "W", 2, 2, Targettype.NONE, tdPetCollectionIconPath(), "管理已捕获的精灵，最多收藏20只。")
+	command(TD_PET_DEPLOY_ABILITY_ID, "精灵绑定详情", "E", 3, 2, Targettype.NONE, tdPetDeployIconPath(), "打开精灵详情，在详情中E选择本路已完工空塔绑定或换绑。|n每座塔可上阵1只精灵；换塔保留主动技能冷却。")
+	for cmd = 0 to 7
+		var label = "精灵收藏"
+		var key = tdPetActionHotkey(cmd)
+		if cmd == 1
+			label = "上一只"
+			key = "A"
+		else if cmd == 2
+			label = "下一只"
+			key = "D"
+		else if cmd == 3
+			label = "返回农民"
+			key = "R"
+		else if cmd == 4
+			label = "上阵 / 换绑"
+			key = "E"
+		else if cmd == 5
+			label = "解绑"
+			key = "Q"
+		else if cmd == 6
+			label = "洗练 / 开栏(C)"
+			key = "C"
+		else if cmd == 7
+			label = "查看状态"
+			key = "W"
+		command(tdPetUICommandId(cmd), label, key, cmd mod 4, cmd < 4 ? 0 : 2, cmd == 4 ? Targettype.UNIT : Targettype.NONE, tdPetUICommandIconPath(cmd), tdPetCommandDescription(cmd))
+	// Two levels alter fixed collection numbers only; count is owned, not unlocked.
+	for cell = 0 to 9
+		let anchor = new ChannelAbilityPreset(tdPetListAbilityId(cell, 0, 0, 0), 2, true)
+		let order = anchor.getOrderString()
+		for variant = 0 to 48
+			let species = variant == 0 ? 0 : (variant - 1) div 16 + 1
+			let quality = variant == 0 ? 0 : ((variant - 1) mod 16) div 4 + 1
+			let ownedCount = variant == 0 ? 0 : (variant - 1) mod 4 + 1
+			let label = variant == 0 ? "空位" : tdPetQualityName(quality) + " " + tdPetSpeciesName(species)
+			let icon = variant == 0 ? tdPetSlotIconPath(128) : tdPetSpeciesCountIconPath(species, quality, ownedCount)
+			let listAbility = variant == 0 ? anchor : new AbilityDefinitionIllidanChannel(tdPetListAbilityId(cell, species, quality, ownedCount))
+			listCommand(listAbility, cell, order, label, icon)
+			for level = 1 to 2
+				let number = tdPetCollectionNumber(tdPetPageSlot(level - 1, cell))
+				listAbility.setTooltipNormal(level, number + " · " + label + " (" + tdPetListHotkey(cell) + ")")
+				listAbility.setTooltipNormalExtended(level, variant == 0 ? "捕获精灵后可在此查看。" : ownedCount + "个技能。查看技能、上阵或培养。")
+	for action = 8 to TD_PET_ACTION_PREVIEW_DETAIL
+		var label = "切换收藏页"
+		var description = "查看另一页精灵。"
+		var cell = tdPetActionCell(TD_PET_UI_LIST, action)
+		if action == TD_PET_ACTION_FARMER
+			label = "返回农民"
+			description = "选中农民，继续建造。"
+		else if action >= TD_PET_ACTION_REROLL_FIRST and action < TD_PET_ACTION_OPEN
+			cell = tdPetActionCell(TD_PET_UI_CULTIVATE, action)
+			label = "洗练栏" + (action - TD_PET_ACTION_REROLL_FIRST + 1)
+			description = "消耗1洗练石，随机获得一个新技能，再选择保留旧技能或采用新技能。保留旧技能也会消耗洗练石。|n未解锁的技能也可洗练；空栏须先开栏。"
+		else if action == TD_PET_ACTION_OPEN
+			cell = 8
+			label = "开栏"
+			description = "消耗1开栏石，随机新增1个不重复技能，最多4栏。请先完成当前洗练选择。"
+		else if action == TD_PET_ACTION_RELEASE
+			cell = 11
+			label = "释放精灵…"
+			description = "永久失去这只精灵，获得1洗练石。紫色精灵必得1开栏石；其他品质有2%概率获得1开栏石。捕获球和已用材料不返还。|n须先解绑并完成洗练选择，点击后需再次确认。"
+		else if action == TD_PET_ACTION_DETAIL
+			cell = 10
+			label = "返回详情"
+			description = "返回精灵详情。未选完的洗练结果会保留。"
+		else if action == TD_PET_ACTION_KEEP
+			cell = 4
+			label = "保留原技能"
+			description = "保留旧技能，放弃本次新技能。洗练石不返还。"
+		else if action == TD_PET_ACTION_ADOPT
+			cell = 7
+			label = "换成新技能"
+			description = "用新技能替换旧技能。仍在冷却时，须等冷却结束后才能施放。"
+		else if action == TD_PET_ACTION_CONFIRM
+			cell = 8
+			label = "确认永久释放"
+			description = "永久失去这只精灵，无法撤销。获得1洗练石；紫色精灵必得1开栏石，其他品质有2%概率获得1开栏石。捕获球和已用材料不返还。"
+		else if action == TD_PET_ACTION_CANCEL
+			cell = 9
+			label = "取消释放"
+			description = "保留这只精灵，返回详情。"
+		else if action == TD_PET_ACTION_CONTINUE
+			cell = 8
+			label = "继续洗练"
+			description = "消耗1洗练石，重新随机本栏新技能。本次新技能会被替换，原技能保持不变。"
+		else if action == TD_PET_ACTION_PREVIEW_DETAIL
+			cell = 11
+			label = "返回详情"
+			description = "返回精灵详情，保留本次洗练结果。"
+		command(tdPetManagerCommandId(action), label, tdPetActionHotkey(action), cell mod 4, cell div 4, Targettype.NONE, tdPetManagerCommandIconPath(action), description)
+	for position = 0 to 1
+		for skill = 0 to 15
+			let displaySkill = new AbilityDefinitionBladeMasterCriticalStrike(tdPetPreviewAbilityId(position, skill))
+			displaySkill..setName((position == 0 ? "旧技能 · " : "新技能 · ") + tdPetSkillNameById(skill))..setLevels(4)..setIconNormal("ReplaceableTextures\\CommandButtons\\" + tdPetSkillIconName(skill) + ".blp")..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setRequirements("")..setButtonPositionNormalX(position == 0 ? 0 : 3)..setButtonPositionNormalY(0)
+			for quality = 1 to 4
+				displaySkill.setTooltipNormal(quality, (position == 0 ? "旧：" : "新：") + tdPetQualityName(quality) + " " + tdPetSkillNameById(skill))
+				displaySkill.setTooltipNormalExtended(quality, tdPetSkillDescriptionById(skill, quality))
+				displaySkill.setChancetoCriticalStrike(quality, 0.0)
+				displaySkill.setDamageMultiplier(quality, 1.0)
+	for position = 0 to 1
+		let arrow = new AbilityDefinitionBladeMasterCriticalStrike(tdPetPreviewArrowAbilityId(position))
+		arrow..setName("洗练结果")..setLevels(1)..setIconNormal(tdPetUICommandIconPath(2))..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setRequirements("")..setButtonPositionNormalX(position + 1)..setButtonPositionNormalY(0)..setChancetoCriticalStrike(1, 0.0)..setDamageMultiplier(1, 1.0)
+	for slot = 0 to 3
+		for variant = 0 to 128
+			let skill = (variant mod 64) div 4
+			let quality = variant mod 4 + 1
+			let locked = variant >= 64 and variant < 128
+			let empty = variant == 128
+			let label = empty ? "空栏" : tdPetQualityName(quality) + " " + tdPetSkillNameById(skill) + (locked ? " [共鸣锁定]" : "")
+			let description = empty ? "消耗1开栏石，随机新增1个不重复技能，最多4栏。新增第3/4栏仍需完成本路第4/8波才能生效。" : (locked ? "技能已获得；共鸣锁定，完成本路第" + (slot == 2 ? "4" : "8") + "波解锁。|n" + tdPetSkillDescriptionById(skill, quality) : tdPetSkillDescriptionById(skill, quality))
+			let displaySkill = new AbilityDefinitionBladeMasterCriticalStrike(tdPetSlotAbilityId(slot, variant))
+			displaySkill..setName(label)..setTooltipNormal(1, label)..setTooltipNormalExtended(1, description)..setIconNormal(tdPetSlotIconPath(variant))..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setRequirements("")..setButtonPositionNormalX(slot)..setButtonPositionNormalY(1)..setChancetoCriticalStrike(1, 0.0)..setDamageMultiplier(1, 1.0)
+	let attack = new AbilityDefinitionAttackBonus(TD_PET_ATTACK_BONUS_ID)
+	attack..setLevels(512)..setItemAbility(true)..setCheckDependencies(false)
+	for level = 1 to 512
+		attack.setAttackBonus(level, level)
+	let speed = new AbilityDefinitionAttackSpeedIncrease(TD_PET_SPEED_BONUS_ID)
+	speed..setLevels(150)..setItemAbility(true)..setCheckDependencies(false)
+	for level = 1 to 150
+		speed.setAttackSpeedIncrease(level, level / 100.0)
+	let armor = new AbilityDefinitionDefenseBonusPlus1(TD_PET_ARMOR_ID)
+	armor..setLevels(8)..setItemAbility(true)..setCheckDependencies(false)
+	for level = 1 to 8
+		armor.setDefenseBonus(level, -level)
+	for species = 1 to 3
+		new UnitDefinition(tdPetVisualUnitId(species), 'hpea')..setName(tdPetSpeciesName(species))..setModelFile(tdPetModel(species))..setScalingValue(0.45)..setNormalAbilities("Aloc,Avul")..setAttacksEnabled(0)..setAcquisitionRange(0.0)..setCollisionSize(0.0)..setMovementType(MovementType.None)..setSpeedBase(0)..setFoodCost(0)..setStructuresBuilt("")
+		for quality = 1 to 4
+			displayUnit(tdPetDisplayUnitId(species, quality), "精灵收藏 · " + tdPetQualityName(quality) + " " + tdPetSpeciesName(species), tdPetModel(species), tdPetSpeciesQualityIconPath(species, quality))
+		for wave = 1 to tdWaveCount()
+			new UnitDefinition(tdPetWildUnitId(wave, species), 'hpea')
+			..setName("[野生精灵] " + tdPetSpeciesName(species))
+			..setIconGameInterface(tdPetSpeciesIconPath(species))
+			..setIconScoreScreen(tdPetSpeciesIconPath(species))
+			..setDescription("本路中立无敌停留60秒，仅可捕获。")
+			..setModelFile(tdPetModel(species))
+			..setScalingValue(0.85)
+			..setHitPointsMaximumBase(tdWaveBaseHitPoints(wave))
+			..setDefenseBase(tdWaveBaseArmor(wave))
+			..setSpeedBase(120)
+			..setSpeedMinimum(1)
+			..setSpeedMaximum(150)
+			// Own pathing is disabled at spawn; Ghost Visible lets other units pass through.
+			..setNormalAbilities("Aeth")
+			..setAttacksEnabled(0)
+			..setAcquisitionRange(0.0)
+			..setCollisionSize(0.0)
+			..setCanFlee(false)
+			..setSleeps(false)
+			..setFoodCost(0)
+			..setStructuresBuilt("")
+			..setGoldBountyAwardedBase(0)
+			..setGoldBountyAwardedNumberofDice(0)
+			..setGoldBountyAwardedSidesperDie(0)
+	new ItemDefinition(TD_PET_BALL_ITEM_ID, 'ratf')..setName("普通捕获球")..setTooltipBasic("普通捕获球 · 本路专属")..setTooltipExtended("工人或塔拾取后，本路普通球+1，上限60；已满时留在地面。")..setModelUsed("Objects\\InventoryItems\\CrystalShard\\CrystalShard.mdl")..setInterfaceIcon(tdPetCaptureIconPath())..setAbilities("")..setUseAutomaticallyWhenAcquired(false)..setActivelyUsed(false)..setIncludeAsRandomChoice(false)..setCanBeDropped(true)..setCanBeSoldToMerchants(false)..setGoldCost(0)
+
+
+
+

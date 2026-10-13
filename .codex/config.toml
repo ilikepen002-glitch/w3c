@@ -1,4 +1,4 @@
-# Project-scoped Codex configuration for the MyFirstWurstMap dual-agent workflow.
+# Project-scoped Codex configuration; collaboration follows AGENTS.md risk tiers.
 
 [agents]
 max_threads = 2

@@ -1,0 +1,13 @@
+package TDPetReleaseRewardTests
+import TDPetState
+import TDState
+
+@Test function ownedPetReleaseMustCreditOriginalMaterialReward()
+	tdResetState()
+	tdSetLaneActive(0, true)
+	tdPetInitializeLane(0)
+	tdPetStore(0, new TDPet(0, 1, 1)).assertTrue()
+	let nonce = tdPetBeginRelease(0, 0)
+	(nonce > 0).assertTrue()
+	tdPetConfirmRelease(0, nonce).assertTrue()
+	tdPetRerollStones[0].assertEquals(1)

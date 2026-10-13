@@ -1,0 +1,276 @@
+package TDPetCombat
+import TDActiveSkillData
+import TDActiveCooldownRuntime
+import TDItemCatalogSchema
+import TDPetData
+import TDPetRules
+import TDAuraState
+import TDEnemySlowState
+import TDPetState
+import TDPetRuntime
+import TDTowerData
+import TDInventory
+import TDEquipmentRules
+import DamageEvent
+import ClosureTimers
+import GameTimer
+import LinkedList
+import TDState
+import TDEnemyMechanicRuntime
+import Preloader
+import ErrorHandling
+import TDTrialIdentity
+import TDWaveFlowState
+
+boolean tdPetCombatReady = false
+
+public function tdPetDamageSourceEligible(boolean codeDamage, boolean spellDamage, int eventId) returns boolean
+	return not codeDamage and not spellDamage and eventId != 'Tspl' and eventId != TD_PET_DAMAGE_ID
+
+public function tdPetBindingValid(TDPet pet, unit host, int generation) returns boolean
+	return pet != null and not pet.released and pet.host == host and pet.generation == generation and not pet.paused and host != null and host.isAlive() and tdTowerChoiceForUnitTypeId(GetUnitTypeId(host)) != 0 and GetPlayerId(GetOwningPlayer(host)) == pet.lane and tdPetLaneCanAct(pet.lane)
+
+public function tdPetSkillFitsAbilities(int skill, boolean hasSplitArrow, boolean hasCorpseExplosion) returns boolean
+	if skill == 9
+		return hasSplitArrow
+	if skill == 10
+		return hasCorpseExplosion
+	return true
+
+public function tdPetSkillFitsHost(int skill, unit host) returns boolean
+	return host != null and tdPetSkillFitsAbilities(skill, host.getAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID) > 0, host.getAbilityLevel(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID) > 0)
+
+public function tdPetProcReady(boolean pending, real now, real readyAt) returns boolean
+	return not pending and now >= readyAt
+
+function damage(TDPet pet, unit host, int generation, unit target, real amount)
+	if not tdPetBindingValid(pet, host, generation) or not tdPetEnemyIsValid(target, pet.lane) or amount <= 0.0
+		return
+	DamageEvent.setNextDamageFromCode()
+	DamageEvent.setNextDamageId(TD_PET_DAMAGE_ID)
+	host.damageTarget(target, amount)
+
+// Only spell procs use this wrapper; combo/execute derived attacks use damage.
+function spellDamage(TDPet pet, unit host, int generation, unit target, real amount)
+	damage(pet, host, generation, target, tdEnemyMechanicScaleSpellDamage(target, amount))
+
+class TDPetDebuff
+	unit target
+	real armor = 0.0
+	real armorUntil = 0.0
+	construct(unit target)
+		this.target = target
+	ondestroy
+		if target != null
+			target.removeAbility(TD_PET_ARMOR_ID)
+
+LinkedList<TDPetDebuff> debuffs = new LinkedList<TDPetDebuff>()
+
+public function tdPetForgetEnemy(unit target)
+	let iter = debuffs.iterator()
+	while iter.hasNext()
+		let entry = iter.next()
+		if entry.target == target
+			iter.remove()
+			destroy entry
+	iter.close()
+
+public function tdPetEnemyDebuffCount() returns int
+	return debuffs.size()
+
+function debuffFor(unit target) returns TDPetDebuff
+	for entry in debuffs
+		if entry.target == target
+			return entry
+	let newEntry = new TDPetDebuff(target)
+	debuffs.add(newEntry)
+	return newEntry
+
+function applyArmor(unit target, real power)
+	let entry = debuffFor(target)
+	let now = getElapsedGameTime()
+	if now >= entry.armorUntil or power >= entry.armor
+		entry.armor = power
+		entry.armorUntil = now + 3.0
+		if target.getAbilityLevel(TD_PET_ARMOR_ID) == 0
+			target.addAbility(TD_PET_ARMOR_ID)
+		target.setAbilityLevel(TD_PET_ARMOR_ID, power.toInt())
+
+function setBonus(unit tower, int abilityId, int level)
+	let clamped = IMinBJ(level, abilityId == TD_PET_ATTACK_BONUS_ID ? 512 : 150)
+	if clamped <= 0
+		tower.removeAbility(abilityId)
+	else
+		if tower.getAbilityLevel(abilityId) == 0
+			tower.addPermanentAbility(abilityId, clamped)
+		else if tower.getAbilityLevel(abilityId) != clamped
+			tower.setAbilityLevel(abilityId, clamped)
+
+public function tdPetRefreshHost(unit tower, real _aura)
+	let pet = tdPetForHost(tower)
+	var attack = 0.0
+	var speed = tdAuraPower(tower, TD_AURA_PET_COMMAND)
+	if pet != null and tdPetBindingValid(pet, tower, pet.generation)
+		let base = tdTowerBaseDamageForBranch(tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)), tdTowerBranchForUnitTypeId(GetUnitTypeId(tower))).toReal()
+		attack = pet.skillPower(0) + base * pet.skillPower(1)
+		speed += pet.skillPower(2)
+		if getElapsedGameTime() < pet.buffUntil
+			if pet.buffSkill == 11
+				speed += pet.buffPower
+			else if pet.buffSkill == 12
+				attack += base * pet.buffPower
+	setBonus(tower, TD_PET_ATTACK_BONUS_ID, (attack + 0.5).toInt())
+	setBonus(tower, TD_PET_SPEED_BONUS_ID, (speed * 100.0 + 0.5).toInt())
+	// Existing inventory entry owns native equipment + pet cooldown aggregation.
+	tdRefreshTowerEquipmentBonuses(tower)
+
+public function tdPetOnSplitArrowImpact(unit source, unit target)
+	let pet = tdPetForHost(source)
+	if pet != null and tdPetBindingValid(pet, source, pet.generation) and tdPetEnemyIsValid(target, pet.lane) and tdPetSkillFitsHost(9, source)
+		let power = pet.skillPower(9)
+		if power > 0.0
+			tdEnemySlowOfferTimed(target, source, TD_AURA_PET_FROST_ARROW, ((power - 0.08) / 0.04 + 0.5).toInt(), power, 3.0)
+
+public function tdPetOnCorpseExplosion(unit source, vec2 center)
+	let pet = tdPetForHost(source)
+	if pet == null or not tdPetBindingValid(pet, source, pet.generation) or not tdPetSkillFitsHost(10, source)
+		return
+	let power = pet.skillPower(10)
+	if power <= 0.0
+		return
+	let generation = pet.generation
+	let amount = tdGhoulCorpseExplosionDamage() * power
+	let context = tdTrialCaptureContext(null)
+	doPeriodicallyCounted(1.0, 3) cb ->
+		if not tdTrialContextValid(context) or not tdPetBindingValid(pet, source, generation)
+			destroy cb
+			return
+		let poisonEffect = AddSpecialEffect("Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayDamage.mdl", center.x, center.y)
+		DestroyEffect(poisonEffect)
+		let targets = CreateGroup()
+		targets.enumUnitsInRange(center, tdGhoulCorpseExplosionRadius())
+		var hits = 0
+		for target in targets
+			if tdTrialAoeTargetContextValid(target, pet.lane, context) and tdPetEnemyIsValid(target, pet.lane) and hits < 12
+				spellDamage(pet, source, generation, target, amount)
+				hits += 1
+		targets.destr()
+
+function resolveActive(TDPet pet, unit host, int generation, vec2 center, int skill, real power, real base, tdTrialCombatContext context)
+	if skill == 11 or skill == 12
+		pet.buffSkill = skill
+		pet.buffPower = power
+		pet.buffUntil = getElapsedGameTime() + 6.0
+		tdPetRefreshHost(host, 0.0)
+		return
+	let targets = CreateGroup()
+	targets.enumUnitsInRange(center, skill == 13 ? 450.0 : 220.0)
+	var hits = 0
+	for victim in targets
+		if tdTrialAoeTargetContextValid(victim, pet.lane, context) and tdPetEnemyIsValid(victim, pet.lane) and hits < (skill == 13 ? 3 : 12)
+			if skill == 15
+				tdEnemySlowOfferTimed(victim, host, TD_AURA_PET_WIND, ((power - 0.25) / 0.15 + 0.5).toInt(), power, 3.0)
+				victim.flashEffect("Abilities\\Spells\\Other\\Tornado\\TornadoElementalSmall.mdl", "origin")
+			else
+				victim.flashEffect(skill == 13 ? "Abilities\\Spells\\Other\\Monsoon\\MonsoonBoltTarget.mdl" : "Abilities\\Spells\\Other\\Incinerate\\FireLordDeathExplode.mdl", "origin")
+				spellDamage(pet, host, generation, victim, base * power)
+			hits += 1
+	targets.destr()
+
+function onAttack()
+	if not tdPetDamageSourceEligible(DamageEvent.isCode(), DamageEvent.isSpell(), DamageEvent.getId())
+		return
+	let host = DamageEvent.getSource()
+	let target = DamageEvent.getTarget()
+	let pet = tdPetForHost(host)
+	if pet == null or not tdPetBindingValid(pet, host, pet.generation) or not tdPetEnemyIsValid(target, pet.lane)
+		return
+	let base = DamageEvent.getUnreducedAmount()
+	if base <= 0.0
+		return
+	let armor = pet.skillPower(6)
+	if armor > 0.0
+		applyArmor(target, armor)
+	pet.rotation += 1
+	var additional = 0.0
+	if pet.rotation mod 4 == 0
+		additional += pet.skillPower(7)
+	if target.getLife() <= GetUnitState(target, UNIT_STATE_MAX_LIFE) * 0.30
+		additional += pet.skillPower(8)
+	var active = -1
+	var power = 0.0
+	for slot = 0 to IMinBJ(pet.skillCount, tdPetUnlockedSlots(pet.level)) - 1
+		let candidateSkill = pet.skillAt(slot)
+		if tdPetSkillIsActive(candidateSkill)
+			active = candidateSkill
+			power = tdPetSkillPower(candidateSkill, pet.qualityAt(slot))
+	let now = getElapsedGameTime()
+	let proc = active >= 0 and tdPetProcReady(pet.pendingSkill, now, pet.readyAt)
+	if additional <= 0.0 and not proc
+		return
+	let center = target.getPos()
+	let generation = pet.generation
+	let extra = additional
+	let skill = active
+	let strength = power
+	if proc
+		pet.pendingSkill = true
+		pet.pendingSerial += 1
+	let pendingSerial = pet.pendingSerial
+	let context = tdTrialCaptureContext(target)
+	let binding = tdTrialBindingFor(target)
+	let targetRevision = binding == null ? 0 : binding.revision
+	doAfter(0.0) ->
+		if not tdTrialTargetContextValid(target, pet.lane, context, targetRevision) or not tdPetBindingValid(pet, host, generation)
+			if proc and context.epoch == tdFlowEpoch() and context.generation == tdTrialState.getGeneration() and pet.generation == generation and pet.pendingSerial == pendingSerial
+				pet.pendingSkill = false
+			return
+		if proc and pet.pendingSerial == pendingSerial
+			pet.pendingSkill = false
+		damage(pet, host, generation, target, base * extra)
+		if proc
+			if skill > 12
+				let nearby = CreateGroup()
+				nearby.enumUnitsInRange(center, skill == 13 ? 450.0 : 220.0)
+				var found = false
+				for candidate in nearby
+					if tdTrialAoeTargetContextValid(candidate, pet.lane, context) and tdPetEnemyIsValid(candidate, pet.lane)
+						found = true
+				nearby.destr()
+				if not found
+					return
+			pet.readyAt = tdStartScriptActiveCooldown(host, tdActiveSkillDefinitionForPetSkill(skill).key, getElapsedGameTime())
+			resolveActive(pet, host, generation, center, skill, strength, base, context)
+
+public function tdPetSetupCombat()
+	if tdPetCombatReady
+		return
+	tdPetCombatReady = true
+	DamageEvent.addListener(3) ->
+		onAttack()
+	doPeriodically(0.25) cb ->
+		let now = getElapsedGameTime()
+		let iter = debuffs.iterator()
+		while iter.hasNext()
+			let entry = iter.next()
+			if not tdPetEnemyIsValid(entry.target, entry.target.getUserData() div 10000) or tdIsGameOver() or not tdPetLaneCanAct(entry.target.getUserData() div 10000)
+				iter.remove()
+				destroy entry
+			else
+				if now >= entry.armorUntil
+					entry.target.removeAbility(TD_PET_ARMOR_ID)
+					entry.armor = 0.0
+				if entry.armor == 0.0
+					iter.remove()
+					destroy entry
+		iter.close()
+		if tdIsGameOver()
+			destroy cb
+
+
+
+init
+	if not preloadAbility(TD_PET_ATTACK_BONUS_ID, TD_PET_SPEED_BONUS_ID, TD_PET_ARMOR_ID)
+		error("Failed to preload pet host bonus/debuff abilities Pbat/Pbsp/Pbar.")
+
+

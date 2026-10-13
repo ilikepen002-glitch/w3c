@@ -1,0 +1,274 @@
+package TDNativeEquipmentEffectsProbe
+import TDState
+import TDSpawn
+import TDWaves
+import TDTowers
+import TDItems
+import TDInventory
+import TDEquipmentCombat
+import TDEquipmentAbilities
+import DamageEvent
+import ClosureTimers
+import GameTimer
+import Orders
+import ObjectIds
+
+// Opt-in disposable single-player fixture. Normal builds never include this package.
+// -equipment-effects / -equipment-effects-snapshot / -equipment-effects-cleanup
+// Observations are actual damage/spell events, never an ability-level-only PASS.
+unit archer = null
+unit storm = null
+unit attackTarget = null
+unit stormTarget = null
+item armorItem = null
+item poisonItem = null
+item cooldownItem = null
+trigger spells = null
+DamageListener listener = null
+boolean running = false
+int generation = 0
+int stage = 0
+real stageStart = 0.0
+real initialHp = 0.0
+int attacks = 0
+int poisonTicks = 0
+int stormPulses = 0
+real nativeDamage = 0.0
+real nativeRaw = 0.0
+real poisonDamage = 0.0
+int casts = 0
+real array castTimes
+real lastOrderAt = 0.0
+boolean swapped = false
+string array stageEvidence
+
+function report(string text)
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 30.0, "EFFECTS " + text)
+
+function snapshot()
+	if not running
+		let message = GetEventPlayerChatString()
+		let prefix = "-equipment-effects-snapshot "
+		if StringLength(message) <= StringLength(prefix)
+			report("saved stages 0..6; snapshot 0:stages0..2, 1:stages3..5, 2:cooldown")
+			return
+		let sampleGroup = S2I(SubString(message, StringLength(prefix), StringLength(message)))
+		let first = sampleGroup == 0 ? 0 : (sampleGroup == 1 ? 3 : 6)
+		let last = sampleGroup == 0 ? 2 : (sampleGroup == 1 ? 5 : 6)
+		for savedStage = 0 to last
+			if savedStage >= first and stageEvidence[savedStage] != null and stageEvidence[savedStage] != ""
+				report(stageEvidence[savedStage])
+		return
+	let hp = attackTarget == null ? 0.0 : attackTarget.getHP()
+	stageEvidence[stage] = "stage=" + stage.toString() + " elapsed=" + (getElapsedGameTime() - stageStart).toString() + " HP=" + initialHp.toString() + "->" + hp.toString() + " main=" + attacks.toString() + " nativeEvent/snapshot=" + nativeDamage.toString() + "/" + nativeRaw.toString() + " equipmentPoison=" + poisonTicks.toString() + "/" + poisonDamage.toString() + " casts=" + casts.toString() + " stormPulses=" + stormPulses.toString()
+	if casts == 3
+		stageEvidence[stage] += " intervals=" + (castTimes[1] - castTimes[0]).toString() + "," + (castTimes[2] - castTimes[1]).toString()
+	report(stageEvidence[stage])
+
+function forgetTower(unit tower)
+	if tower != null
+		tdForgetEquipmentTower(tower)
+		tdForgetEquipmentAbilities(tower)
+		RemoveUnit(tower)
+
+function forgetTarget(unit target)
+	if target != null
+		tdForgetEquipmentEnemy(target)
+		RemoveUnit(target)
+
+function cleanup()
+	if not running
+		return
+	snapshot()
+	running = false
+	generation += 1
+	if listener != null
+		destroy listener
+		listener = null
+	if spells != null
+		DestroyTrigger(spells)
+		spells = null
+	forgetTower(archer)
+	forgetTower(storm)
+	forgetTarget(attackTarget)
+	forgetTarget(stormTarget)
+	archer = null
+	storm = null
+	attackTarget = null
+	stormTarget = null
+	if armorItem != null
+		RemoveItem(armorItem)
+	if poisonItem != null
+		RemoveItem(poisonItem)
+	if cooldownItem != null
+		RemoveItem(cooldownItem)
+	armorItem = null
+	poisonItem = null
+	cooldownItem = null
+	report("CLEANED fixture; diagnostic life grant remains in disposable test match. No economy/wave-completion evidence or automatic native-behavior PASS.")
+
+function beginStage(int next)
+	if stageStart > 0.0
+		snapshot()
+	stage = next
+	stageStart = getElapsedGameTime()
+	initialHp = attackTarget.getHP()
+	attacks = 0
+	poisonTicks = 0
+	nativeDamage = 0.0
+	nativeRaw = 0.0
+	poisonDamage = 0.0
+	report("BEGIN stage " + next.toString())
+
+function onDamage()
+	if not running
+		return
+	if DamageEvent.getSource() == archer and DamageEvent.getTarget() == attackTarget
+		if DamageEvent.isCode()
+			poisonTicks += 1
+			poisonDamage += DamageEvent.getAmount()
+		else if not DamageEvent.isSpell()
+			attacks += 1
+			nativeDamage += DamageEvent.getAmount()
+			nativeRaw += DamageEvent.getUnreducedAmount()
+			if stage == 4 and attacks == 1
+				// One genuine natural attack seeds poison. Unequip immediately afterwards.
+				PauseUnit(archer, true)
+				UnitRemoveItem(archer, poisonItem)
+	if DamageEvent.getSource() == storm and DamageEvent.getTarget() == stormTarget and DamageEvent.isCode()
+		stormPulses += 1
+
+function onSpell()
+	if not running or GetTriggerUnit() != storm or GetSpellAbilityId() != TD_ORC_BLADESTORM_ABILITY_ID
+		return
+	if casts < 3
+		castTimes[casts] = getElapsedGameTime()
+		casts += 1
+
+function tick()
+	if tdIsGameOver() or tdIsLaneDefeated(0) or tdIsLaneFinished(0)
+		report("ABORT match ended; incomplete evidence")
+		cleanup()
+		return
+	if not archer.isAlive() or not storm.isAlive() or not attackTarget.isAlive() or not stormTarget.isAlive()
+		report("ABORT fixture died; incomplete evidence")
+		cleanup()
+		return
+	let elapsed = getElapsedGameTime() - stageStart
+	if stage == 0 and elapsed >= 5.0
+		beginStage(1)
+		if not UnitAddItem(archer, armorItem)
+			report("ABORT armor pickup rejected")
+			cleanup()
+	else if stage == 1 and elapsed >= 5.0
+		beginStage(2)
+		PauseUnit(archer, true)
+		UnitRemoveItem(archer, armorItem)
+	else if stage == 2 and elapsed >= 4.0
+		beginStage(3)
+		PauseUnit(archer, false)
+		IssueTargetOrderById(archer, Orders.attack, attackTarget)
+	else if stage == 3 and elapsed >= 5.0
+		beginStage(4)
+		if not UnitAddItem(archer, poisonItem)
+			report("ABORT poison pickup rejected")
+			cleanup()
+	else if stage == 4 and elapsed >= 7.0
+		// Count must come from three code-damage events and actual HP loss.
+		report("OBSERVE single-hit poison after unequip: expected three positive ticks; got " + poisonTicks.toString())
+		beginStage(5)
+		PauseUnit(archer, false)
+		IssueTargetOrderById(archer, Orders.attack, attackTarget)
+	else if stage == 5 and elapsed >= 5.0
+		beginStage(6)
+		PauseUnit(archer, true)
+		PauseUnit(storm, false)
+	else if stage == 6
+		if casts >= 1 and not swapped and getElapsedGameTime() >= castTimes[0] + 1.0
+			swapped = true
+			if not UnitAddItem(storm, cooldownItem)
+				report("ABORT cooldown pickup rejected")
+				cleanup()
+				return
+			report("CD item equipped 1s after actual first cast; pending aura CDR=18%, existing CD must stay 9s")
+		if getElapsedGameTime() - lastOrderAt >= 0.5 and casts < 3
+			lastOrderAt = getElapsedGameTime()
+			IssueTargetOrderById(storm, Orders.slow, stormTarget)
+		if casts == 3
+			report("OBSERVE actual spell intervals " + (castTimes[1] - castTimes[0]).toString() + "," + (castTimes[2] - castTimes[1]).toString() + " expected about 9.0 then 7.38 (+order sampling/cast point); pulses=" + stormPulses.toString())
+			cleanup()
+		else if elapsed >= 26.0
+			report("ABORT cast timeout; actual casts=" + casts.toString())
+			cleanup()
+
+function start()
+	if running or tdIsGameOver() or tdCountActiveLanes() != 1 or not tdIsLaneActive(0) or tdIsLaneDefeated(0) or tdIsLaneFinished(0)
+		report("REFUSED: requires one active surviving P1 lane; protect normal route during finite probe")
+		return
+	running = true
+	// Keep eligibility active while natural waves run; do not disable the lane.
+	tdLoseLife(0, -10000)
+	report("DIAGNOSTIC +10000 lives; disposable match only, no economy/progression claims")
+	generation += 1
+	let thisRun = generation
+	for savedStage = 0 to 6
+		stageEvidence[savedStage] = ""
+	casts = 0
+	stormPulses = 0
+	swapped = false
+	stageStart = 0.0
+	archer = CreateUnit(Player(0), TD_ARCHER_LEVEL_1_ID, -1800, 2400, 0)
+	storm = CreateUnit(Player(0), TD_ORC_LEVEL_6_B_ID, -2600, 2400, 0)
+	// Native wave29 armor fixture; high-health Boss32 survives repeated storm casts.
+	attackTarget = tdCreateEnemy(0, 29, tdWaveUnitId(29))
+	stormTarget = tdCreateEnemy(0, 32, tdWaveSpecialUnitId(32))
+	if archer == null or storm == null or attackTarget == null or stormTarget == null
+		report("ABORT creation failed")
+		cleanup()
+		return
+	SetUnitPathing(archer, false)
+	SetUnitPathing(storm, false)
+	SetUnitPathing(attackTarget, false)
+	SetUnitPathing(stormTarget, false)
+	SetUnitX(attackTarget, -1550)
+	SetUnitY(attackTarget, 2400)
+	SetUnitX(stormTarget, -2850)
+	SetUnitY(stormTarget, 2400)
+	PauseUnit(attackTarget, true)
+	PauseUnit(stormTarget, true)
+	PauseUnit(storm, true)
+	armorItem = CreateItem(TD_ITEM_BLUE_ARMOR_ID, -1800, 2400)
+	poisonItem = CreateItem(TD_ITEM_WHITE_POISON_ID, -1800, 2400)
+	cooldownItem = CreateItem(TD_ITEM_PURPLE_GOLD_ID, -2600, 2400)
+	spells = CreateTrigger()
+	spells.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+	spells.addAction(function onSpell)
+	listener = DamageEvent.addListener(10) ->
+		onDamage()
+	tdRefreshTowerEquipmentBonuses(archer)
+	tdRefreshTowerEquipmentBonuses(storm)
+	report("FIXTURE archer=" + GetUnitTypeId(archer).toRawCode() + " attackTarget=" + GetUnitTypeId(attackTarget).toRawCode() + " HP=" + attackTarget.getHP().toString() + " stormTarget=" + GetUnitTypeId(stormTarget).toRawCode() + " HP=" + stormTarget.getHP().toString())
+	beginStage(0)
+	IssueTargetOrderById(archer, Orders.attack, attackTarget)
+	PanCameraToTimed(-2200, 2400, 0)
+	report("START 0 baseline / 1 armor-equipped / 2 wait expiry / 3 armor-removed / 4 single-hit poison+unequip / 5 no poison / 6 cooldown swap. Event snapshots do not prove armor; use -equipment-damage HP fixture.")
+	doPeriodically(0.10) cb ->
+		if not running or generation != thisRun
+			destroy cb
+			return
+		tick()
+		if not running
+			destroy cb
+
+init
+	if not compiletime
+		let chat = CreateTrigger()
+		TriggerRegisterPlayerChatEvent(chat, Player(0), "-equipment-effects", true)
+		TriggerAddAction(chat, function start)
+		let snap = CreateTrigger()
+		TriggerRegisterPlayerChatEvent(snap, Player(0), "-equipment-effects-snapshot", false)
+		TriggerAddAction(snap, function snapshot)
+		let clear = CreateTrigger()
+		TriggerRegisterPlayerChatEvent(clear, Player(0), "-equipment-effects-cleanup", true)
+		TriggerAddAction(clear, function cleanup)
+

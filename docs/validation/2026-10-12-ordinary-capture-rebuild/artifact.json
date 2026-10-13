@@ -1,0 +1,26 @@
+{
+  "base_commit": "0384ccddcfdbaa868f773573c1f7403fe809d3e2",
+  "base_tree": "dd4de89877b0d2a902944a6bc640c7eaa9b16fa2",
+  "artifact": "ExampleMap.w3x",
+  "map_sha256": "fe7f464dd5d0ade134a0958ce2298ff6d5196792aa3b990d327ac624bb99dfe6",
+  "map_git_blob": "5d904f11c03f885d89bcfaed55f0afc503049a95",
+  "bytes": 1713543,
+  "timestamp_UTC8": "20261012-1024-UTC+8",
+  "wurst_tests": 316,
+  "python_tests": 292,
+  "checks": "PASS",
+  "removal_delta": "PASS",
+  "inherited_boss_jass": "PASS",
+  "review": "PASS WITH NOTES",
+  "runtime_boundary": "No native 1.27a gameplay/UI/pathing or Windows execution; existing JASS/v1.28 configuration unchanged.",
+  "review_model": "gpt-6-astra",
+  "review_reasoning_effort": "xhigh",
+  "review_stage": "New source/tests/new artifact final read-only review",
+  "review_date": "2026-10-12",
+  "reviewed_tree": "248dd5fafaa8852202905595270e2ad733093e55",
+  "review_notes": [
+    "Native 1.27a UI/capture/pathing/combat/trigger timing remain untested.",
+    "Existing JASS/v1.28 configuration unchanged."
+  ],
+  "review_blockers": []
+}

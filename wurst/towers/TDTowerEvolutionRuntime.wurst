@@ -1,0 +1,154 @@
+package TDTowerEvolutionRuntime
+import TDTowerEvolutionState
+import TDTowerData
+import TDState
+import TDConfig
+import Table
+import LinkedList
+import TDInventory
+
+constant Table tdEvolutionRecords = new Table()
+TDTowerEvolutionMatch tdEvolutionMatch = new TDTowerEvolutionMatch()
+LinkedList<TDEvolutionTower> tdEvolutionTowers = new LinkedList<TDEvolutionTower>()
+
+class TDEvolutionTower
+	unit tower
+	int kills = 0
+	boolean evolved = false
+	boolean working = false
+	effect wings = null
+
+	construct(unit tower)
+		this.tower = tower
+
+	ondestroy
+		if wings != null
+			DestroyEffect(wings)
+
+function tdEvolutionRecord(unit tower) returns TDEvolutionTower
+	let key = tower.getHandleId()
+	if not tdEvolutionRecords.hasInt(key)
+		let record = new TDEvolutionTower(tower)
+		tdEvolutionRecords.saveInt(key, record castTo int)
+		tdEvolutionTowers.add(record)
+	return tdEvolutionRecords.loadInt(key) castTo TDEvolutionTower
+
+public function tdTowerIsEvolved(unit tower) returns boolean
+	return tower != null and tdEvolutionRecords.hasInt(tower.getHandleId()) and (tdEvolutionRecords.loadInt(tower.getHandleId()) castTo TDEvolutionTower).evolved
+
+public function tdEvolutionSkillReplacement(int choice, int branch) returns int
+	if choice == TD_TOWER_CHOICE_ARCHER
+		return branch == TD_TOWER_BRANCH_B ? TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID : 0
+	if choice == TD_TOWER_CHOICE_ORC
+		return TD_ORC_PERFECT_CRIT_ABILITY_ID
+	if choice == TD_TOWER_CHOICE_FOOTMAN
+		return branch == TD_TOWER_BRANCH_B ? TD_FOOT_EVOLVED_COMMAND_ABILITY_ID : TD_FOOT_PERFECT_BASH_ABILITY_ID
+	if choice == TD_TOWER_CHOICE_DRYAD
+		return branch == TD_TOWER_BRANCH_B ? TD_DRYAD_EVOLVED_SLOW_ABILITY_ID : TD_DRYAD_PERFECT_POISON_ABILITY_ID
+	return branch == TD_TOWER_BRANCH_B ? 0 : TD_GHOUL_PERFECT_FRENZY_ABILITY_ID
+
+public function tdEvolutionSkillOriginal(int choice, int branch) returns int
+	if choice == TD_TOWER_CHOICE_ARCHER
+		return branch == TD_TOWER_BRANCH_B ? TD_ARCHER_TRUESHOT_ABILITY_ID : 0
+	if choice == TD_TOWER_CHOICE_FOOTMAN and branch == TD_TOWER_BRANCH_B
+		return TD_FOOT_COMMAND_ABILITY_ID
+	if choice == TD_TOWER_CHOICE_DRYAD and branch == TD_TOWER_BRANCH_B
+		return TD_DRYAD_WIDE_SLOW_ABILITY_ID
+	if choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_B
+		return 0
+	return tdTowerBaseSkillAbilityId(choice)
+
+public function tdEvolutionDisplayOriginal(int choice, int branch) returns int
+	if choice == TD_TOWER_CHOICE_DRYAD and branch == TD_TOWER_BRANCH_B
+		return TD_DRYAD_WIDE_SLOW_DISPLAY_ABILITY_ID
+	if choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_A
+		return TD_GHOUL_FRENZY_DISPLAY_ABILITY_ID
+	return 0
+
+public function tdEvolutionDisplayReplacement(int choice, int branch) returns int
+	if choice == TD_TOWER_CHOICE_DRYAD and branch == TD_TOWER_BRANCH_B
+		return TD_DRYAD_EVOLVED_SLOW_DISPLAY_ABILITY_ID
+	if choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_A
+		return TD_GHOUL_PERFECT_FRENZY_DISPLAY_ABILITY_ID
+	return 0
+
+public function tdEvolutionSplitArrowDisplayLevel(int choice, int branch, boolean evolved) returns int
+	return choice == TD_TOWER_CHOICE_ARCHER and branch == TD_TOWER_BRANCH_A and evolved ? 2 : 1
+
+public function tdEvolutionCorpseDisplayLevel(int choice, int branch, boolean evolved) returns int
+	return choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_B and evolved ? 2 : 1
+
+public function tdEvolutionRefresh(unit tower)
+	if tower == null or not tower.isAlive() or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return
+	let record = tdEvolutionRecord(tower)
+	let lane = GetPlayerId(GetOwningPlayer(tower))
+	let level = tdTowerLevelForUnitTypeId(GetUnitTypeId(tower))
+	let eligible = tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
+	if not record.evolved and tdEvolutionMatch.tryClaim(record.kills, level, eligible, record.working)
+		// The global slot is claimed synchronously before abilities/effects change.
+		record.evolved = true
+		let choice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
+		let branch = tdTowerBranchForUnitTypeId(GetUnitTypeId(tower))
+		let replacement = tdEvolutionSkillReplacement(choice, branch)
+		if replacement != 0
+			tower.removeAbility(tdEvolutionSkillOriginal(choice, branch))
+			tower.addPermanentAbility(replacement, 1)
+			let displayOriginal = tdEvolutionDisplayOriginal(choice, branch)
+			if displayOriginal != 0
+				tower.removeAbility(displayOriginal)
+				tower.addPermanentAbility(tdEvolutionDisplayReplacement(choice, branch), 1)
+		// These display upgrades also belong to branches with no replaced effect.
+		if choice == TD_TOWER_CHOICE_ARCHER
+			tower.setAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID, tdEvolutionSplitArrowDisplayLevel(choice, branch, record.evolved))
+		if choice == TD_TOWER_CHOICE_GHOUL
+			tower.setAbilityLevel(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID, tdEvolutionCorpseDisplayLevel(choice, branch, record.evolved))
+		tdRefreshTowerEquipmentBonuses(tower)
+		record.wings = AddSpecialEffectTarget("war3mapImported\\TDEvolutionWings" + choice.toString() + ".mdx", tower, "origin")
+		DisplayTimedTextToPlayer(GetOwningPlayer(tower), 0, 0, 8.0, "自动进化！击杀达到" + TD_EVOLUTION_KILL_REQUIREMENT.toString() + "，获得双翼与当前分支20%强化。全局进化名额已使用。")
+		for other in tdEvolutionTowers
+			if other != record
+				tdEvolutionRefresh(other.tower)
+	if tower.getAbilityLevel(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID) == 0
+		tower.addPermanentAbility(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID, 1)
+	tower.setAbilityLevel(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID, tdEvolutionProgressLevel(record.kills))
+	let statusLevel = tdEvolutionStatusLevel(record.kills, record.evolved, tdEvolutionMatch.claimed)
+	if statusLevel > 0
+		if tower.getAbilityLevel(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID) == 0
+			tower.addPermanentAbility(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID, 1)
+		tower.setAbilityLevel(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID, statusLevel)
+
+public function tdEvolutionWorkStarted(unit tower)
+	if tower != null
+		tdEvolutionRecord(tower).working = true
+
+public function tdEvolutionWorkFinished(unit tower)
+	if tower != null and tdEvolutionRecords.hasInt(tower.getHandleId())
+		(tdEvolutionRecords.loadInt(tower.getHandleId()) castTo TDEvolutionTower).working = false
+
+public function tdEvolutionRecordKill(unit tower, int enemyLane)
+	if tower == null or not tdEvolutionKillEligible(true, false, tower.isAlive(), tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), GetPlayerId(GetOwningPlayer(tower)), enemyLane)
+		return
+	let record = tdEvolutionRecord(tower)
+	record.kills += 1
+	tdEvolutionRefresh(tower)
+
+public function tdEvolutionForgetTower(unit tower)
+	if tower == null or not tdEvolutionRecords.hasInt(tower.getHandleId())
+		return
+	let record = tdEvolutionRecords.loadInt(tower.getHandleId()) castTo TDEvolutionTower
+	tdEvolutionRecords.removeInt(tower.getHandleId())
+	tdEvolutionTowers.remove(record)
+	destroy record
+
+public function tdEvolutionClearLaneEffects(int lane)
+	for record in tdEvolutionTowers
+		if GetPlayerId(GetOwningPlayer(record.tower)) == lane and record.wings != null
+			DestroyEffect(record.wings)
+			record.wings = null
+
+public function tdEvolutionShutdown()
+	for record in tdEvolutionTowers
+		tdEvolutionRecords.removeInt(record.tower.getHandleId())
+		destroy record
+	tdEvolutionTowers.clear()

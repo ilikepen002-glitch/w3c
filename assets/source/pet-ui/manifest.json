@@ -1,0 +1,1127 @@
+{
+  "schema_version": 1,
+  "artwork_method": "Original editable SVG vectors; no AI raster generation and no external images or fonts. New counts and choice labels use self-contained Noto Sans CJK Bold glyph outlines (OFL), with no runtime font dependency.",
+  "size": [
+    64,
+    64
+  ],
+  "alpha": "Fully opaque normal and disabled buttons.",
+  "build_command": "python tools/BuildPetUiAssets.py",
+  "manifest": "assets/source/pet-ui/manifest.json",
+  "preview": "assets/source/pet-ui/pet-ui-contactsheet.png",
+  "preview_scope": "Offline BLP1-decoded 64px normal/disabled texture contact sheet. Not an in-game screenshot.",
+  "assets": [
+    {
+      "name": "TDPetMenuTools",
+      "purpose": "功能工具 / 齿轮",
+      "source_svg": "assets/source/pet-ui/TDPetMenuTools.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetMenuTools.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetMenuTools.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetMenuTools.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetMenuTools.blp",
+      "sha256": {
+        "source_svg": "43de025749b7a86959d9c80fc01f4ea48636bdac7e8f16eec61dbb6eb1a8d8a3",
+        "normal_blp": "37e5812d51d294ebb76be159d7116d495ea9a2fde13bebabc075da7c4dee85b9",
+        "disabled_blp": "17f466a86c7ab0bcdbef64dab4e764b319e32fb391fad6b4acc9366e645d6422"
+      }
+    },
+    {
+      "name": "TDPetCollection",
+      "purpose": "宠物收藏册",
+      "source_svg": "assets/source/pet-ui/TDPetCollection.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetCollection.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetCollection.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetCollection.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetCollection.blp",
+      "sha256": {
+        "source_svg": "33e0ade72cbfca5cd68786b8b7282ecb6aedc9e0e870b44f8529a2fc96755550",
+        "normal_blp": "030766bcb2f6abbba5af1535c8922aa92b3832379c7a10fe98a2ab66c91c11b0",
+        "disabled_blp": "2d9fdf30ce10a626099aa7d080f8bf2adeed70225848cfe35528134ea43ced2b"
+      }
+    },
+    {
+      "name": "TDPetPrevious",
+      "purpose": "上一页 / 左箭头",
+      "source_svg": "assets/source/pet-ui/TDPetPrevious.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetPrevious.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetPrevious.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetPrevious.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetPrevious.blp",
+      "sha256": {
+        "source_svg": "ccb465b91acdc475097afac7d566c5712cec731d52059c871dc3dbad6406ba3d",
+        "normal_blp": "ebc1c9400cc1dd0ac744812e1c7647f6478b31ab84b46aef9fdb0a808aa7316e",
+        "disabled_blp": "fc136ad3d5cdccd50cf0da6f3530a168a54c852b3680409511c62ed67ce5c4f6"
+      }
+    },
+    {
+      "name": "TDPetNext",
+      "purpose": "下一页 / 右箭头",
+      "source_svg": "assets/source/pet-ui/TDPetNext.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetNext.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetNext.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetNext.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetNext.blp",
+      "sha256": {
+        "source_svg": "412acd67b9ab44528ed1ca892ffa97afac23eb70c491ba959bebef8fd1309afe",
+        "normal_blp": "78133488330594e7dab24062a7308a2dd9d5e3a7e0ced747e91c274719db499a",
+        "disabled_blp": "b7d9cdcf32e714747a35022f4bb0dba9774ee4f848125382a05da52f566b6c1a"
+      }
+    },
+    {
+      "name": "TDPetReturnBuilder",
+      "purpose": "返回农民 / 返回箭头",
+      "source_svg": "assets/source/pet-ui/TDPetReturnBuilder.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetReturnBuilder.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetReturnBuilder.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetReturnBuilder.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetReturnBuilder.blp",
+      "sha256": {
+        "source_svg": "be9d572b2e87cd4970b197d9fe66b1a2461d0ae2c3da2f25dca4cde2fc05aa93",
+        "normal_blp": "01431868d964cda6285538697f92128788f09e4d04c578476fad202d6facadaf",
+        "disabled_blp": "d98381dca5d019d7724a87965852ebc0ac5fe47ab2feba402028abe2a90764be"
+      }
+    },
+    {
+      "name": "TDPetDeploy",
+      "purpose": "上阵 / 塔与精灵",
+      "source_svg": "assets/source/pet-ui/TDPetDeploy.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetDeploy.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetDeploy.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetDeploy.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetDeploy.blp",
+      "sha256": {
+        "source_svg": "a947497fccff48fdc896dbfe2ab293037d7037e24739e2c4e8cde82fe3567055",
+        "normal_blp": "99349674464fcc96e7311b652353239333add6d57147623a370742464812e650",
+        "disabled_blp": "9a75218704f005c9896187af222c6fda229f04f1b1a66ae35143ad893edeb296"
+      }
+    },
+    {
+      "name": "TDPetRecall",
+      "purpose": "召回 / 回转箭头",
+      "source_svg": "assets/source/pet-ui/TDPetRecall.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetRecall.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetRecall.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetRecall.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetRecall.blp",
+      "sha256": {
+        "source_svg": "0ff692b6d08684830dfc97d81817c6d8c6af68d8c816a07cacff4a9d924f14e5",
+        "normal_blp": "cd4133074b832de960d5fe4c19f5706b28e1cbaaeb0e4d5b6cf4b699426d275b",
+        "disabled_blp": "b3339e1db3bcadd9b44985891a0c86b73a90339b864fcc667ba765cd894e15c1"
+      }
+    },
+    {
+      "name": "TDPetCultivate",
+      "purpose": "培养 / 晶石",
+      "source_svg": "assets/source/pet-ui/TDPetCultivate.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetCultivate.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetCultivate.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetCultivate.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetCultivate.blp",
+      "sha256": {
+        "source_svg": "12a0a742d2b479bc301a65def063ce2d93b24466f863993f874ca802cf17406e",
+        "normal_blp": "905ae5f98051e3a7b9f83f7afa40424b48a8b004355eac9067718eacce4a9dde",
+        "disabled_blp": "4b89f89ed42c46b8c93f69f1ad3522781ecbf7f8c3ba2b4fdbb0bcffb31ee2b4"
+      }
+    },
+    {
+      "name": "TDPetInfo",
+      "purpose": "信息 / 卷轴",
+      "source_svg": "assets/source/pet-ui/TDPetInfo.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetInfo.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetInfo.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetInfo.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetInfo.blp",
+      "sha256": {
+        "source_svg": "3647820c459c70d1294cb7f9d29795c1ef884aedf79df2c1d76ef893332d2b65",
+        "normal_blp": "9101121fbbd919532850db56d73e483f1728324d30f0520d921276b1d2b325d7",
+        "disabled_blp": "0e5087ffc095ec1ae1e33429fa9ec40e211497c15f4d97a5dea007cc9e8cafdd"
+      }
+    },
+    {
+      "name": "TDPetEmptySlot",
+      "purpose": "空栏 / 暗色插槽与加号",
+      "source_svg": "assets/source/pet-ui/TDPetEmptySlot.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetEmptySlot.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetEmptySlot.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetEmptySlot.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetEmptySlot.blp",
+      "sha256": {
+        "source_svg": "192a9ba3b25f2b87fa578077682a28286b24781ceabb50cca0001456cd4ff589",
+        "normal_blp": "1b6b37ef0038afaedf2470feee1953dafdec86417941e3bff637948cc919eaed",
+        "disabled_blp": "b0e74a437464908098dbd5f6824980a8c95a9b3ee37952234f041d472a39ffc5"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenix",
+      "purpose": "炎灵 / 凤凰",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenix.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenix.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenix.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenix.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenix.blp",
+      "sha256": {
+        "source_svg": "abdb4433f8513e70d90738cebcefbdd4250c0d476a2d938512f4a85b6c16799f",
+        "normal_blp": "e5f7147a0a12e14cd5f3e811fcba042a0df526b42aa0d1cef3f06aa6b4a73734",
+        "disabled_blp": "21834bd6b1d2423712ce6a77613025837dbc2eb450e2b195439564ef711e5a9c"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragon",
+      "purpose": "雷灵 / 仙女龙",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragon.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragon.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragon.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragon.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragon.blp",
+      "sha256": {
+        "source_svg": "cd556441d65b46696401b92e82fa3154feb82d9bb37bf1783848c9971c6aead1",
+        "normal_blp": "0e0c3ea67ed63f51d872360731475f73ceb90ac0d21dbb1af9f6dcf1e7190c0d",
+        "disabled_blp": "ef96038bffa7e5a762d0c4aadcc9f67a931f12aff89306761f1ba64ef5f6dd95"
+      }
+    },
+    {
+      "name": "TDPetGhostWisp",
+      "purpose": "幽灵 / 小精灵",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWisp.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWisp.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWisp.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWisp.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWisp.blp",
+      "sha256": {
+        "source_svg": "d28d1e73e2819c03bf34167152770f6636c9068613b5466dedb3a6421833f7b0",
+        "normal_blp": "73fd59ce4bc69a9d5fd857cb37522a20df6bbbc6747f9ba5315621dbfcb9dbaf",
+        "disabled_blp": "f4642590f12300b3abd82492d5acb6016215e072e58d29eaf366e228561d7ed7"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ1",
+      "purpose": "TDPetFlamePhoenix，品质1边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ1.blp",
+      "sha256": {
+        "source_svg": "58415881889fc1e4b2458698d37fc3d376f0b53a5523c17cffc0b931da254c05",
+        "normal_blp": "2caa2e9eee81e17c7cf93f378b1bbb684d0775ab67cac28a723e3a42b2b0e9cf",
+        "disabled_blp": "f67e99403c0b076bb916d1007df237a56bd1b260adc42dd68be988bc41f263f8"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ2",
+      "purpose": "TDPetFlamePhoenix，品质2边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ2.blp",
+      "sha256": {
+        "source_svg": "5b960ee98922c7c78e6dcc5d448c638e58bdaf9e17026de63ae0ed1d00bca589",
+        "normal_blp": "4b1585922a22a5b4be590503640def2ee892ec8c70229b937b4aab7222ba55f7",
+        "disabled_blp": "7a53bb09f889cdecaede27997f965e2b024488544c77273f9724a3a92f6f2024"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ3",
+      "purpose": "TDPetFlamePhoenix，品质3边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ3.blp",
+      "sha256": {
+        "source_svg": "1a25d71a88dd39fc43073774d9180f5b7e2637e2573f0fc920eb2be5fe63ae3e",
+        "normal_blp": "20897c25a460c41316c54a9c958ba78071e851a0168febd4d19b991106f7ba88",
+        "disabled_blp": "56015e6d87ce7e08e53f6a006d5081326c576f792104f81d8a423f015293e695"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ4",
+      "purpose": "TDPetFlamePhoenix，品质4边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ4.blp",
+      "sha256": {
+        "source_svg": "c124bc809ad03c63d7635f0c19e10789fc5deff59ee8df8fcfdb9747e7ff3657",
+        "normal_blp": "aabc43d6dadaa12d336faf282a6ad887de647857ca3b6977d239ccd91705cb94",
+        "disabled_blp": "111934e6a3cd85178500e9c4575c48654685f8773e2d51e8ea518d50f0c75e1b"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ1",
+      "purpose": "TDPetStormFaerieDragon，品质1边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ1.blp",
+      "sha256": {
+        "source_svg": "b83769b0cc119b17a3de8210cc109dc8cf313cd86f836191c689457f8d7e6689",
+        "normal_blp": "c2fd40273e07da6f227e88d6915b7a5d71182b68834a29c114e66308c1e8169a",
+        "disabled_blp": "ab4ee31306b4beb84bdd96994fbad1258b7060535b4f08b0680985d7d868aec5"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ2",
+      "purpose": "TDPetStormFaerieDragon，品质2边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ2.blp",
+      "sha256": {
+        "source_svg": "59a203a6ba069e739dc3702ccfee17aa507c12fa0246cc65f76de44ca41a4841",
+        "normal_blp": "76f66db8762de2e981c5e027d4b0369db6fb40e2f5998ed587a00bb5925ce147",
+        "disabled_blp": "cf1da21ce52630082b8068cc303be7a3c6750f0fdfb36b190e68f4398196cde0"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ3",
+      "purpose": "TDPetStormFaerieDragon，品质3边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ3.blp",
+      "sha256": {
+        "source_svg": "82eba111d0e602f672fe8cb91f3ab95bd140b0632807d1be7eaa2281374678d2",
+        "normal_blp": "6ac1af9c487d25530f76aecd88ec73dea8d752efceeca3f3e0dffa4ba05c7450",
+        "disabled_blp": "a90271b39440c28e918cbd9fdbdb42fa73e5555e98db640bd50723aec70d5ba8"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ4",
+      "purpose": "TDPetStormFaerieDragon，品质4边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ4.blp",
+      "sha256": {
+        "source_svg": "8a4b6099fc50b12bacce1bd064fe715bc58f502cbc1869231b013b310efbc2f7",
+        "normal_blp": "3d45a27f9cd9fb3e4bfe45ba287a7bba2804ef3859f4f9b3901b39c991981c5f",
+        "disabled_blp": "be81171b7d7a2fd4c16683e5320d710d5ea7e7eba4e0f58ed48d116523cb8fc9"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ1",
+      "purpose": "TDPetGhostWisp，品质1边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ1.blp",
+      "sha256": {
+        "source_svg": "f771a1a87f138b6aec54603b979649bad4e4c872600d1287674ffb6ca74cffaf",
+        "normal_blp": "115abde2274cd306b5901b7780a40a148de1ad10cc849fb9cafd0564811287cf",
+        "disabled_blp": "f261323273829bf114073db76fc0873cf590d11ed5850829ea913791f409c442"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ2",
+      "purpose": "TDPetGhostWisp，品质2边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ2.blp",
+      "sha256": {
+        "source_svg": "fae8aa5f679e44c1c5f6e768f7e2308a6acc39f2a7a407511f2056165e9c6387",
+        "normal_blp": "62cf63570ab12d88d75478d4a99be9528829a383b76a8213b7c81c914c386758",
+        "disabled_blp": "5c54653f369205c5483c54bd56c508f2306770d23a4e1678f28cef4b1904f9d8"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ3",
+      "purpose": "TDPetGhostWisp，品质3边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ3.blp",
+      "sha256": {
+        "source_svg": "9c764a59b9b5a62bb779b4b6ae7bad4a235c9d7423930938037825bf573ff687",
+        "normal_blp": "c74d88bdacef04ce13d3d9faaadbef748208a2284b83b1dad6340279d18eb769",
+        "disabled_blp": "16e6e442bec30921576b4da9bfda32db8949e0a2e77697ac543cfc41765f472e"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ4",
+      "purpose": "TDPetGhostWisp，品质4边框；主体沿用原SVG",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ4.blp",
+      "sha256": {
+        "source_svg": "66d3eeab619d8b69041bb1fff03a7f7935bd75fe1691c29ea3ae0c2c0e09236f",
+        "normal_blp": "61e955069d648a3590dfb10ddd6898b9522f798dd52ccd82cc92a312c4374ac0",
+        "disabled_blp": "fa821e666f151bd49b9d46ef54547fe95ea700fe373e10f391adddc49f2b6c2c"
+      }
+    },
+    {
+      "name": "TDPetRelease",
+      "purpose": "永久释放 / 敞开笼门",
+      "source_svg": "assets/source/pet-ui/TDPetRelease.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetRelease.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetRelease.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetRelease.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetRelease.blp",
+      "sha256": {
+        "source_svg": "94fd6cd387b6b2a3f9299a800783aabfca02575df06e953c687b145ef4908476",
+        "normal_blp": "8195085b7326afc4473a7f8967fba0a1411e181fcdde570439813a84e8d6beeb",
+        "disabled_blp": "e88edd6e42625a263b721488d74663f7642bd035490588eac3f0ae1a269e8c9c"
+      }
+    },
+    {
+      "name": "TDPetKeep",
+      "purpose": "保留旧技能 / 盾与回转箭",
+      "source_svg": "assets/source/pet-ui/TDPetKeep.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetKeep.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetKeep.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetKeep.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetKeep.blp",
+      "sha256": {
+        "source_svg": "6ce92224a9bce23ca771935321be8d564cb728b8be5cc30d0cb1e9b96997fc1f",
+        "normal_blp": "9b85b5a583cd86c0f7b58264047746b169b87781327979db554ae8367105d3cf",
+        "disabled_blp": "659ef5461263cf97057253c00c3b9c561b9ff34618c1abb239ff368f2a6e19f0"
+      }
+    },
+    {
+      "name": "TDPetAdopt",
+      "purpose": "采用新技能 / 双层确认箭",
+      "source_svg": "assets/source/pet-ui/TDPetAdopt.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetAdopt.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetAdopt.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetAdopt.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetAdopt.blp",
+      "sha256": {
+        "source_svg": "52f8dbd3684a3cab3cb7a6d5f291a548fb9775f9a113ad8b2e45c8966682baf1",
+        "normal_blp": "672f919b4057791a4104d560ff2dc302747c98a83d9e47e81d951335f07a566c",
+        "disabled_blp": "29ee88d4de9c8103a27aafecaefd805dca5bf271d24306b5ab8dece6117abc81"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ1N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ1N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ1N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ1N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ1N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ1N1.blp",
+      "sha256": {
+        "source_svg": "aba116673e6cc28756a28850f3fcfa456135f6656f3e4f962239f45265bd991c",
+        "normal_blp": "1c22abb94cf1d9a47a63e004f6057481a98de904f0ac9916a78727942b4c7de5",
+        "disabled_blp": "308d0ac9a05ed00f5ae546b55cf9d6cbb46f10e2cec70592bbd0cd2553437415"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ1N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ1N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ1N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ1N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ1N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ1N2.blp",
+      "sha256": {
+        "source_svg": "dfad7db73c3c55ca6358680448146a92e927e22388902c7d934a48171b62c890",
+        "normal_blp": "dcabafa5946d3c6db724db9980421a322b91ec97b7ac59e8897ec244b7c8ccae",
+        "disabled_blp": "559567ee600bf480b344d13f838a3a67ee5cd0957032b28efe01a5c7ddad7b22"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ1N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ1N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ1N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ1N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ1N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ1N3.blp",
+      "sha256": {
+        "source_svg": "45426c2afad0ed109cc73301e16d127b4c5a40ddf50caf4cc0043a765c5e8935",
+        "normal_blp": "4d63578eb944259da85275c19a5a222dc5cc87a4656d480f0de5be0910d02ede",
+        "disabled_blp": "f2a95a707ab1b2716d93ba271b184a1fcebc84d6844813938eb9d4bcdd9c2db6"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ1N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ1N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ1N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ1N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ1N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ1N4.blp",
+      "sha256": {
+        "source_svg": "8e335ab77cf9c30f4122cea3ba1244bce1e64d62569a06e57bda5eaa35239037",
+        "normal_blp": "d0529e69d96be6b838af3226be24c4e65771e4ab015bf69f2c123c05814309b3",
+        "disabled_blp": "5871f5e65081dbef7f42dbd71909c433203fd796147f6d4171bb170c07748c61"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ2N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ2N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ2N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ2N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ2N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ2N1.blp",
+      "sha256": {
+        "source_svg": "a535caba7afeb6d4449bea4c5952b4af665d96d99035a5247c970905ee194b21",
+        "normal_blp": "8bc05c5e3949e33afe3d0bbb138dd4239c76f57f47d1526dc95df65dd2983f50",
+        "disabled_blp": "9ab41ebf56f8d415d1084f4dcf874a9708c5cc680c354f9d8956bf4b01e6c293"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ2N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ2N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ2N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ2N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ2N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ2N2.blp",
+      "sha256": {
+        "source_svg": "7d452bc1a281402cc7d5c0fb0b21119c64d49fad34a02274b0a51b96e024ee38",
+        "normal_blp": "c5b62ef07666a6e0547d994dddc7697b439a749e09b5300c54b33404d4775a2f",
+        "disabled_blp": "fc899b84c83fab7809a9f6992d6445988c4f4af32059230c618308ed3055dd4e"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ2N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ2N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ2N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ2N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ2N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ2N3.blp",
+      "sha256": {
+        "source_svg": "6fa98c129945927111421398f20fed6312c939bb1a95eef266a4414082742790",
+        "normal_blp": "c22c0189ce4e1ec705ca5beef3faadb9122b8c6d2f6be7374b9ec04dc038aa17",
+        "disabled_blp": "d9138b8619c59b2e79c5aa447c9a5452f2e97ef7dc998db133d5cf90421f4e50"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ2N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ2N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ2N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ2N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ2N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ2N4.blp",
+      "sha256": {
+        "source_svg": "36d36a4b4b6a0479edaa46f2f3a920f5d00f8394c415e08f780fae8f2b7062c9",
+        "normal_blp": "4054cc5fb38ad9a621fd34460be33abbaab71fcdd7884da39ff2218c6a464e1c",
+        "disabled_blp": "7a138d62c2156dfe8a4c9f129efb2ac86db026915db142f515b322fb57276331"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ3N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ3N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ3N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ3N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ3N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ3N1.blp",
+      "sha256": {
+        "source_svg": "d235153723d55467d77fd38b74174c392bf313b16fdd10e74a8443115719b175",
+        "normal_blp": "8b24451b6198902b79d18486a9d977ab95b590ae5d3496560b24c7e3b56e97a8",
+        "disabled_blp": "04d5ef82a506b72e9bc0e2aff0f456df7514b4d3fc0563641a6f641f25df497a"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ3N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ3N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ3N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ3N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ3N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ3N2.blp",
+      "sha256": {
+        "source_svg": "cd1677f5189af418a8fcd86ee142872c871a7936130634ca0689c5152f068c17",
+        "normal_blp": "80ff4495ef5bd049ce3b133f3c23be15c13524265b2bf6837587c1108aeb8916",
+        "disabled_blp": "3b2b4ff11db71b7815799102fbc8504a6dbabc9b4dd4b4bebd1d661add656df4"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ3N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ3N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ3N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ3N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ3N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ3N3.blp",
+      "sha256": {
+        "source_svg": "853b6752503fdbc14f149c463653c55d1da117f0ee5ef2d19cf4f07d276800cb",
+        "normal_blp": "c3b3202ce5f28af81a61896f24ea0231cca336a3a504772e97deef098e777648",
+        "disabled_blp": "e7705bba56d2534878e2ceb696729c0acfa3d29196a64259d7dfbf4f38ef692c"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ3N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ3N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ3N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ3N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ3N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ3N4.blp",
+      "sha256": {
+        "source_svg": "c4fb773d38f29b32ec2ef43be52e879424d38bee00796f712005eebce0dfd4e4",
+        "normal_blp": "3ac88dfb25e68cdbe0865cf2ac48b6e5945c75c0f81b29c55d9f3789f484d320",
+        "disabled_blp": "c6ef5bd90c467bcffb8513351f8c4bf8646af8c19701b2ef8f8f707bcd25b111"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ4N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ4N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ4N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ4N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ4N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ4N1.blp",
+      "sha256": {
+        "source_svg": "03527e0001a7ddbb4bf45e85fc7271ed44e55131650e42d970cc87e4abf6f320",
+        "normal_blp": "1ba86620dd7ba758fb7f38b37827facd43c59fddcc10e5a848abfa414ffdc1cc",
+        "disabled_blp": "fe9ee87eb91d7ab81414c500228f37e791b2404f63c0d123a6d3de018b99c4b2"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ4N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ4N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ4N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ4N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ4N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ4N2.blp",
+      "sha256": {
+        "source_svg": "72df81252072e377338ebffdb0b916b7dd7615a5a364ac22fe0d2cc9e13e02b0",
+        "normal_blp": "ad34f9fff893bc6c93bce27572102ed2840e00ead638993aea99beb134584d7c",
+        "disabled_blp": "3b0b0b2b6aad7ed10bbb75b091a66a887c088640e157c90fa4c5bd84d637e48e"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ4N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ4N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ4N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ4N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ4N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ4N3.blp",
+      "sha256": {
+        "source_svg": "5412feedee88dd3acf78adff5494af77e1235a172822f668096bec2132d9acb0",
+        "normal_blp": "44b2aa7265e26ba274a922bb243168c221ed75bbbbb3ff3e26b7b20a8195f7cd",
+        "disabled_blp": "8fc2f95be35a4f7bf74411c2bd00f6cf5ee806b4c495cb7a083eec570c1e4355"
+      }
+    },
+    {
+      "name": "TDPetFlamePhoenixQ4N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetFlamePhoenixQ4N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetFlamePhoenixQ4N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetFlamePhoenixQ4N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetFlamePhoenixQ4N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetFlamePhoenixQ4N4.blp",
+      "sha256": {
+        "source_svg": "8cf8cdf60a1aa14d3b77470b91729a1c3e89b10b13c165ec7d328d88af87fc08",
+        "normal_blp": "1f7bc7824120b946296d7658f1a99e45b71395221593872a6fde33fd0986b3de",
+        "disabled_blp": "cd190d0031964bad03fc96ae1586f090265fcea3d761258406cead63d40a7342"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ1N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ1N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ1N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ1N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ1N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ1N1.blp",
+      "sha256": {
+        "source_svg": "6786ef27d047992a2b14d95dfe7aadbec0a1e88445bc8a089b8b7e7eb9a887b0",
+        "normal_blp": "9a03f9364b9665fcd07516f7910f433d8e4521bc10126d584976dc8ec920b504",
+        "disabled_blp": "33e135df85c6c3b92651e94c0b11e89e955c981963a47aa7001d5970a5e44920"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ1N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ1N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ1N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ1N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ1N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ1N2.blp",
+      "sha256": {
+        "source_svg": "537b589b3ad5de9f20afc105794131d2fde1e44fa3157bae4add21ccf437329a",
+        "normal_blp": "59c87bc2acd6b09a7a23e0e8de1515f5d6753a3a0cf257e02a520a4c578f210a",
+        "disabled_blp": "b6840dc92ae4fa9392b5a1a615d5b45869fe2fa5808bad225c339cddfad39542"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ1N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ1N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ1N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ1N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ1N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ1N3.blp",
+      "sha256": {
+        "source_svg": "0de11f200f9dff269fb35816ae4389cf310e049b288757ac2e2f29b204fd53a6",
+        "normal_blp": "42bdc5a25cb72d2dd1014f3e8ff78164304aa01ae2885f877f9ea0c7656f6d15",
+        "disabled_blp": "0670bd08d72541b7bb5f4f4601cef45f8b109f13bcd267a8fc51465d7ba76ed3"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ1N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ1N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ1N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ1N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ1N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ1N4.blp",
+      "sha256": {
+        "source_svg": "538724e7d507566155f55673126a1625451b97e52bdc4db02b8b247ccfb9f58e",
+        "normal_blp": "5e3eb70ef6dd9ee5a1d3a298e689ec7692252fbd685a87844ef0f3fe03cd05e2",
+        "disabled_blp": "1146b452bbec751ae4958b7ec442944effb10b53878280f12dd6fcdaf7aaa979"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ2N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ2N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ2N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ2N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ2N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ2N1.blp",
+      "sha256": {
+        "source_svg": "b2f2244abc4f99e276ceaf2887ea4889504083b06649609e5bcb7ad7bdcd7561",
+        "normal_blp": "31b7348b63e3b3362409fd2d5cd3ee66b19c0a07f395176320266c2e306289df",
+        "disabled_blp": "662d8e7fd480adea1d4eb9a644101e6cb384fe964d65616674a211e78ff43974"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ2N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ2N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ2N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ2N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ2N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ2N2.blp",
+      "sha256": {
+        "source_svg": "e69251226012b335db5ac6172ae0d413587b1cbe396f1006e45f48bf915fef09",
+        "normal_blp": "7cdfa5d0274bfb04b206a0b66fced4f1d59acfb74ce96b428b687ab5b1cf38e1",
+        "disabled_blp": "732a3d6e1c52fab853d2dd33ee6d877f74c9d09101d6a95da972282b52309480"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ2N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ2N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ2N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ2N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ2N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ2N3.blp",
+      "sha256": {
+        "source_svg": "25bcde1b3a5391ee4628d78f4dabcddd6c3f6d1b8db509faee5c3bd42955e52c",
+        "normal_blp": "f9b0e13ac7f16aa01189cce9710cd26b4278dcf29cebd32ab7343b31d35be3bf",
+        "disabled_blp": "8b0f3ae452d549210c32d467762b573d258e99924c385155d2d5055de4897d3b"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ2N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ2N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ2N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ2N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ2N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ2N4.blp",
+      "sha256": {
+        "source_svg": "eee1fa01b5b68f8daae115f65571570cd6b6d380645b6f0db83378cd0f06a224",
+        "normal_blp": "6431629da6fab439d894eab3df85e7e94b8243ae6a8d7a2e4444461588a371fb",
+        "disabled_blp": "e108776c7158b7d59206783c5284519580fe677e4cc343e3988678eff0ec5e78"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ3N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ3N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ3N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ3N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ3N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ3N1.blp",
+      "sha256": {
+        "source_svg": "baa904a58d2c1b8c241160b8d7c806dfe531893ac61f2e3851b3088f1d956103",
+        "normal_blp": "9dd519390d6ca02edf17e82e7422ad0284aa8efe136c9319d8faa9565ca87543",
+        "disabled_blp": "edc9cc886d3e63b4fe73f3939d43280e87332c44abc7ce82a1c3a3aab86c3de3"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ3N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ3N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ3N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ3N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ3N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ3N2.blp",
+      "sha256": {
+        "source_svg": "1f81be0bcbb7bcdb085894311127cc17fada54207f6bcd945dd4306211fbcd14",
+        "normal_blp": "08f2b50a1e577377bb39a02c917fa2aebeeefd988df3b23a372d679607c9173d",
+        "disabled_blp": "bb37947b8f3a3f204439c021461e5eb794da093dd21f07e1fe99c1ddcb31df35"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ3N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ3N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ3N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ3N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ3N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ3N3.blp",
+      "sha256": {
+        "source_svg": "d9e74447b5408642c5eaf4d15b5eff49df9a2df073a9b02ae905e1f658ade8b4",
+        "normal_blp": "b2c908dd013313e84c340c4d2dd3fec0abc398f0813ccf6d6a7a86b714eb40fc",
+        "disabled_blp": "cb54e331fd0496079fb623913af0ba9a113c653ea11295571f8bdcc372371571"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ3N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ3N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ3N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ3N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ3N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ3N4.blp",
+      "sha256": {
+        "source_svg": "eaf186a372548d9837a23908f1100395d92b08ceb9eab088bf3d97f432d0ec1d",
+        "normal_blp": "9c993c3b1fbdc888a16674eb460890f73555416774a24f5af3eb44a04f9da872",
+        "disabled_blp": "825cc9547e8ec5df5a54b15c5566c2fcf6ac0c3c644f65619b2283969bd2943c"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ4N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ4N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ4N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ4N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ4N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ4N1.blp",
+      "sha256": {
+        "source_svg": "d675cd0f677aa5508555880578096883a21674d0527fe2eb7548f88b5d673612",
+        "normal_blp": "295d05cb322e5c0426c85c0f03b3fe8dd2f0c7bbab0b93bd74798f4399b06720",
+        "disabled_blp": "c2a1307a3ad1d4386f768ef0d277efd29beb56fbc9d48fc55a60530501cb34e7"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ4N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ4N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ4N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ4N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ4N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ4N2.blp",
+      "sha256": {
+        "source_svg": "6bf1d3f61b97e42014e2f91219d6da810d9947987fd4dad4a0952b139e735f7e",
+        "normal_blp": "44d51f929f5e91d856380aa67e35bf46910ff832f735fab781cf7d182e0d63ad",
+        "disabled_blp": "579b943a982195738dd4fa213781b344e999e92072ba9ad81dd0e6934a75711c"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ4N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ4N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ4N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ4N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ4N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ4N3.blp",
+      "sha256": {
+        "source_svg": "8906a1095033dfa21736c3bd499a10170f984d1c3679d93d9e51db8c941bbe8c",
+        "normal_blp": "0096d8a4b1a7488448958b9c3b3e554c99ecc8c98c0c307e9a8e85590120e35c",
+        "disabled_blp": "2cf1d0f694b1f2dec448075cec8de136c6e8ce936b883b1a732411f802e0f187"
+      }
+    },
+    {
+      "name": "TDPetStormFaerieDragonQ4N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetStormFaerieDragonQ4N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetStormFaerieDragonQ4N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetStormFaerieDragonQ4N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetStormFaerieDragonQ4N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetStormFaerieDragonQ4N4.blp",
+      "sha256": {
+        "source_svg": "8e07c461dfa01db8d825ebc5fcaf56ec55820b63778bc5cd3aa11f46afc36e5f",
+        "normal_blp": "20ee97f349f3da3dfd21dc7fc1d34c6109a4e53689d456e9c5d797bddbeb377d",
+        "disabled_blp": "3ad30fdb05f9e736c845445185522b19311c9e17119297541e6463c6e3404eb9"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ1N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ1N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ1N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ1N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ1N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ1N1.blp",
+      "sha256": {
+        "source_svg": "34e1dec8dd16fc06f6c5712152ab2bee42c14020f740fc0a2869c1897d679c3e",
+        "normal_blp": "c09fe84d919adfff7cd80416bb0bd9ce4da0a8088b0f93c2ef18c6c82e6f1f99",
+        "disabled_blp": "bfe530df4e4e3da1d3d54ce5204edca4e3286fda32c2f1d982ef6ea6cfe46f7a"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ1N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ1N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ1N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ1N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ1N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ1N2.blp",
+      "sha256": {
+        "source_svg": "b66f7ed7f3369ff323b48c4dabbbd85a48eda9eecdeee72269438043197a7a01",
+        "normal_blp": "71ac3dc6d2502450e1fad803edb9ac0d59864457253db41077683ba9079ce444",
+        "disabled_blp": "2fbe957e248d9ea629adcd3ff39c4fe40d554857a10e12dbe5863d20dfb94b58"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ1N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ1N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ1N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ1N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ1N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ1N3.blp",
+      "sha256": {
+        "source_svg": "9cfb575848b4237f13e524b03809f78375f7c5d13ca6b2c5e1df54f9708a882b",
+        "normal_blp": "e6b8560ebdeae45bf6271a99848dbee9b5ae56d5ba222f70f23ad29328929c5b",
+        "disabled_blp": "f015316b5df65b880fe8876a3c1242a0cc3a15cf9b58ab7a3c72014733744b01"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ1N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质1",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ1N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ1N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ1N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ1N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ1N4.blp",
+      "sha256": {
+        "source_svg": "8062836931ff5ab219754ca01c421de21e0eb989a0c4da909066761ca2dd3518",
+        "normal_blp": "0e82eccce451984698fef0a112b03804906294cde6df8309552f8b9395d0312c",
+        "disabled_blp": "276fc771242ff6ccd37e290887f036960001ff331f91001e1773ced4f9982262"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ2N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ2N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ2N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ2N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ2N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ2N1.blp",
+      "sha256": {
+        "source_svg": "416d5c314a73792878875d6e8235c196466457e6de87aa622bcb9e63475feced",
+        "normal_blp": "5353bcf3f28fa9779c6bee45138fbff268fe9e97be72a53f99af104b0acf7ea8",
+        "disabled_blp": "998d044ddc2eae0f5223dd501f2fb8495bf4fd327d3bd510c8ae59dac674f354"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ2N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ2N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ2N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ2N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ2N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ2N2.blp",
+      "sha256": {
+        "source_svg": "757506b9727f9bda0f8703900d57420071010ece5af1711f3c0e210125083453",
+        "normal_blp": "a705df7dbea30aad7a6a3c5163efdebc18edbe3eb90d9da65108f679449bd761",
+        "disabled_blp": "870a08a7f438f5ac8ad97f4ef602790cf7c9da275ee08d09ccd5054fc20b494b"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ2N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ2N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ2N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ2N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ2N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ2N3.blp",
+      "sha256": {
+        "source_svg": "448ab3360630f2cf9959214806a201c13e5e2efd53cf7f7450fe9c268f376df3",
+        "normal_blp": "5881ed09a71e5485cb5c3d9ab173197195b3c3b9999154cb8fe233f3bc8a91a2",
+        "disabled_blp": "74e50edb11a58bbe23bcbc63559793dfd6df3acf50bc2342d0c49306890e0a88"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ2N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质2",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ2N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ2N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ2N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ2N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ2N4.blp",
+      "sha256": {
+        "source_svg": "b8c83ab71a9ab9c97cae2bf422174a59bba920c2eb330d7c6d3c62ce5cbd5ed5",
+        "normal_blp": "ef7157c61aa5a645fbab4cc6c119a3c962e41493ecd668118667a5711e585dd8",
+        "disabled_blp": "a90b369960d6a603d98ea3cfbf2c506cc3255dae32b19d6370d32970ca62ac1c"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ3N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ3N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ3N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ3N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ3N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ3N1.blp",
+      "sha256": {
+        "source_svg": "c32efdda7e406c92559b2211492ed8093c1bfee0029f842fb4b01c78838fb0d0",
+        "normal_blp": "e6bb34265e95f0f5753b6045453f3fa286932de736e128ba0e13248c7fe0bde8",
+        "disabled_blp": "cfe17565c0ae026de2105bd61cb322380af6ebc800015d17bb09925543971ad1"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ3N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ3N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ3N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ3N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ3N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ3N2.blp",
+      "sha256": {
+        "source_svg": "8070de0d081b79c63e99833c50f8ec28924da64cd4946978b570a7e2544ec069",
+        "normal_blp": "0b9c191fbdd242c8f25c36117574730133dc2969e29924d27fd6725c92881dd4",
+        "disabled_blp": "9d29709ed6ca3a0bf4c0ae27762621c04029dae55008b1fbc8e51bf6194a5627"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ3N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ3N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ3N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ3N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ3N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ3N3.blp",
+      "sha256": {
+        "source_svg": "86f381d9903ebbcf2230ef3ff9447cd973d3ca188da9fc54ebafcefeb30a85f1",
+        "normal_blp": "07771a1ca3822d36e9a700452735a06962c0f43fc33eba70a7b9c05005363d27",
+        "disabled_blp": "45c68c0ffdb3e438657cf7bd001c258de0d44aff2558580121f01d47e0a47615"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ3N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质3",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ3N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ3N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ3N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ3N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ3N4.blp",
+      "sha256": {
+        "source_svg": "f98ab8d0d7791c7111f5be9cdd07a01ec85e0df35f78f4fce006986f5135244b",
+        "normal_blp": "d324b62ca0f435e589cf6a9da3d68aaf54e837dad833e5d567743048043fa212",
+        "disabled_blp": "76c8d6cdb9619d13d0689f50c8f3e9fdb7c2dfd9c251722979d614361370861e"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ4N1",
+      "purpose": "已拥有技能数1，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ4N1.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ4N1.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ4N1.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ4N1.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ4N1.blp",
+      "sha256": {
+        "source_svg": "9566d881f859bca33b49dfb4b5656e4f8483a9692e8140059cd4fc5b0449a3c1",
+        "normal_blp": "0368fc2a3e3632813313dab9d7c8a326eb29ca4cebf895cdd24ab398b5ca5e31",
+        "disabled_blp": "9d244026276dd301d05a3c140b91d66073af09d911bbe055dff6b927a3bf26a9"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ4N2",
+      "purpose": "已拥有技能数2，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ4N2.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ4N2.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ4N2.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ4N2.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ4N2.blp",
+      "sha256": {
+        "source_svg": "666674a7700dbb69c88af89e1391c00c15fe12c6b74974187d3c5d022da54b3d",
+        "normal_blp": "bf5532b50e0ab24a7e8b38e7d212ce4e60edb81f47f9b306b21959bdcf18f282",
+        "disabled_blp": "90b410d743cc8f5b062ba6ffc65a161ae20e36c0e1f28b47bcfe4df84b04fec9"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ4N3",
+      "purpose": "已拥有技能数3，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ4N3.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ4N3.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ4N3.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ4N3.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ4N3.blp",
+      "sha256": {
+        "source_svg": "102648b841350b04964d696ca99c33ba1d4547046632941f154d9e3bc656f0d2",
+        "normal_blp": "5bb2cc6612c0b5562124dbb6f2a2ff8771ba60c4b6f72b3d579500764c8dd1b2",
+        "disabled_blp": "9e438abb027a60b8c2c82a1a840ff45a2172db90295176dc389c42d263658aef"
+      }
+    },
+    {
+      "name": "TDPetGhostWispQ4N4",
+      "purpose": "已拥有技能数4，包含共鸣锁定；最高品质4",
+      "source_svg": "assets/source/pet-ui/TDPetGhostWispQ4N4.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetGhostWispQ4N4.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetGhostWispQ4N4.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetGhostWispQ4N4.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetGhostWispQ4N4.blp",
+      "sha256": {
+        "source_svg": "ac4e30f18fd0c3b2fd64e3bc7d50b7dc68202b35b66ad0f5f8ba9d3bbd26fd6f",
+        "normal_blp": "bb41993057fa79e7a29889a2d9799157a8348f4b4c0e8ebe6e94ea6f5b90d640",
+        "disabled_blp": "8486031f2a8098d5ba7e985cb19ca0a9ed8e348a7679adb95c171b4d4249a5d8"
+      }
+    },
+    {
+      "name": "TDPetKeepOld",
+      "purpose": "留旧；保留原技能",
+      "source_svg": "assets/source/pet-ui/TDPetKeepOld.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetKeepOld.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetKeepOld.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetKeepOld.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetKeepOld.blp",
+      "sha256": {
+        "source_svg": "122e659b4a645fcd92856d2c0ddb22940c9958764aff08d99ec3eacbc05e5c05",
+        "normal_blp": "a437a6b0b0064cd8c99d0f2806b47bb1148d000e18f724fedb04f2e78a4173a3",
+        "disabled_blp": "aa17d03e1c2587086c623357aa841d7af55b14bd427e3c8714d8620639806d9f"
+      }
+    },
+    {
+      "name": "TDPetUseNew",
+      "purpose": "换新；换成新技能",
+      "source_svg": "assets/source/pet-ui/TDPetUseNew.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetUseNew.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetUseNew.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetUseNew.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetUseNew.blp",
+      "sha256": {
+        "source_svg": "d449eeb2a73e789203df45d48cbea5773ff34dde2788fe60558a5f0550e9b64e",
+        "normal_blp": "2d17bf255b89c590115e0e4c50195f20d3d47ff6cfa1556a1e6f001b73effa6e",
+        "disabled_blp": "2d1cd675ead2e8c4fdbae1033be682b848bbdb690f30f669f5e8eb9c921e4e0c"
+      }
+    }
+  ],
+  "rationale": "The native BTNSelectHeroOn is a red question mark; using it for an empty pet slot was a semantic selection error, not proof of a missing native texture. Dedicated imported SVG artwork removes this native selection dependency.",
+  "tool_versions": {
+    "inkscape": "Inkscape 1.4 (e7c3feb100, 2024-10-09)",
+    "pillow": "12.3.0",
+    "blp_encoder": "tools/BuildEvolutionAssets.py:blp (import only)"
+  },
+  "rendering": {
+    "svg_export_size": [
+      256,
+      256
+    ],
+    "button_size": [
+      64,
+      64
+    ],
+    "resampler": "Pillow LANCZOS",
+    "disabled_brightness": 0.45,
+    "blp": "BLP1 paletted, alpha8, 7 mip levels"
+  },
+  "preview_sha256": "6b16c2de8e0b2433fe2a721925cfb143aa39480a9bc349b2a8b98078ab87fd60"
+}

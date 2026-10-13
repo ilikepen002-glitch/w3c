@@ -1,11 +1,40 @@
 package TDTowerCommonData
+import TDActiveSkillData
 import TDConfig
 import Icons
 import TDTowerCatalogData
 import ObjEditingCommons
 
+public function tdTowerEvolutionProgressIconPath() returns string
+	return "ReplaceableTextures\\CommandButtons\\BTNMarkOfFire.blp"
+
+public function tdTowerEvolutionStatusIconPath() returns string
+	return Icons.bTNMetamorphosis
+
+public function tdTowerSellRefundPercent() returns int
+	return 80
+
+public function tdTowerSellIconPath() returns string
+	return "ReplaceableTextures\\CommandButtons\\BTNReturnGoods.blp"
+
+public function tdTowerSellButtonX() returns int
+	return 3
+
+public function tdTowerSellButtonY() returns int
+	return 1
+
+public function tdTowerSellTooltip() returns string
+	return "出售此塔，返还已完成建造与升级花费的80%，不足1金币部分舍去；装备留在原地。|n建造或升级中不可出售。已使用的全局进化名额不返还。"
+
 public function tdFarmerBuildAbilityId() returns int
 	return TD_FARMER_BUILD_ABILITY_ID
+
+public function tdFarmerRaceForObjectGen() returns Race
+	// Native autonomous construction follows worker race, not tower race.
+	return Race.Undead
+
+public function tdFarmerRaceObjectStringForTest() returns string
+	return tdFarmerRaceForObjectGen().toObjectString()
 
 public function tdFarmerBuildableTowerCount() returns int
 	return TD_TOWER_CHOICE_COUNT
@@ -14,7 +43,10 @@ public function tdFarmersShouldBeInvulnerable() returns boolean
 	return true
 
 public function tdTowersShouldBeInvulnerable() returns boolean
-	return true
+	return false
+
+public function tdTowerBloodlustTargetsAllowed() returns string
+	return "self,structure,vulnerable"
 
 public function tdFarmersShouldBeInvulnerableForTest() returns boolean
 	return tdFarmersShouldBeInvulnerable()
@@ -26,16 +58,16 @@ public function tdTowerNormalSelectionScale() returns real
 	return 1.35
 
 public function tdTowerCollisionSize() returns real
-	return 64.0
+	return TD_TOWER_HALF_FOOTPRINT
 
 public function tdTowerPathingMap() returns string
-	return "PathTextures\\2x2Default.tga"
+	return "war3mapImported\\TDTower192.tga"
 
 public function tdTowerPlacementRequires() returns string
 	return ""
 
 public function tdTowerPlacementPreventedBy() returns string
-	return "" // unbuildable,unwalkable,unflyable,blighted,water
+	return "unbuildable,unwalkable,water"
 
 public function tdTowerRaceForObjectGen() returns Race
 	return Race.Human
@@ -67,18 +99,6 @@ public function tdFarmerUsesFlyingMovement() returns boolean
 public function tdFarmerBaseMoveSpeed() returns int
 	return 522
 
-public function tdFarmerBlinkMaxRange() returns real
-	return 99999.0
-
-public function tdFarmerBlinkCooldown() returns real
-	return 0.0
-
-public function tdFarmerBlinkHotkey() returns string
-	return "F"
-
-public function tdFarmerBlinkIconPath() returns string
-	return Icons.bTNBlink
-
 public function tdFarmerWageCooldown() returns real
 	return 180.0
 
@@ -100,44 +120,14 @@ public function tdFarmerWageMaximumGold(int wave) returns int
 public function tdRollFarmerWageGold(int wave) returns int
 	return tdFarmerWageGoldForWaveAndBonus(wave, GetRandomInt(1, 3))
 
-public function tdPerfectUpgradeChance() returns real
-	return 0.10
-
-public function tdPerfectUpgradeSourceLevel() returns int
-	return 5
-
-public function tdPerfectUpgradeTargetLevel() returns int
-	return 6
-
-public function tdShouldRollPerfectUpgrade(int oldLevel, int newLevel) returns boolean
-	return oldLevel == tdPerfectUpgradeSourceLevel() and newLevel == tdPerfectUpgradeTargetLevel()
-
-public function tdRefinePerfectUpgradeGoldCost() returns int
-	return 150
-
-public function tdTowerRefineIconPath() returns string
-	return Icons.bTNEngineeringUpgrade
-
 public function tdTowerFoodCostForObjectGen() returns int
 	return 1
 
 public function tdFarmerFoodCostForObjectGen() returns int
 	return 0
 
-public function tdPerfectUpgradeScaleMultiplier() returns real
-	return 1.18
-
-public function tdPerfectUpgradeSkillMultiplier() returns real
+public function tdEvolutionSkillMultiplier() returns real
 	return 1.20
-
-public function tdPerfectUpgradeAvatarEffectPath() returns string
-	return "Abilities\\Spells\\Human\\Avatar\\AvatarCaster.mdx"
-
-public function tdPerfectUpgradeAvatarAttachmentPoint() returns string
-	return "origin"
-
-public function tdPerfectUpgradeAvatarRefreshInterval() returns real
-	return 0.50
 
 public function tdGhoulCorpseExplosionLifeThreshold() returns real
 	return 0.25
@@ -152,22 +142,22 @@ public function tdArcherAuraDamageBonus() returns real
 	return 0.18
 
 public function tdArcherAuraIconPath() returns string
-	return Icons.bTNStrengthOfTheMoon
+	return "war3mapImported\\BTNTDTowerTrueshotAura.blp"
 
 public function tdArcherPerfectAuraIconPath() returns string
-	return Icons.bTNImprovedStrengthOfTheMoon
+	return "war3mapImported\\BTNTDTowerTrueshotAura.blp"
 
 public function tdTowerBaseSkillIconPath(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		return Icons.bTNSearingArrows
+		return "war3mapImported\\BTNTDTowerSplitShot.blp"
 	if towerChoice == TD_TOWER_CHOICE_ORC
-		return Icons.bTNCriticalStrike
+		return tdOrcCriticalStrikeIconPath()
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
-		return Icons.bTNBash
+		return "war3mapImported\\BTNTDTowerShieldBash.blp"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
-		return Icons.bTNSlowPoison
+		return "war3mapImported\\BTNTDTowerPoisonDart.blp"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
-		return Icons.bTNUnholyFrenzy
+		return "war3mapImported\\BTNTDTowerFrenzy.blp"
 	return ""
 
 public function tdTowerSupportSkillIconPath(int towerChoice) returns string
@@ -176,24 +166,24 @@ public function tdTowerSupportSkillIconPath(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		return tdOrcBladestormIconPath()
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
-		return Icons.bTNCommand
+		return "war3mapImported\\BTNTDTowerCommandAura.blp"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
-		return Icons.bTNEntanglingRoots
+		return "war3mapImported\\BTNTDTowerVinesAura.blp"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
-		return Icons.bTNCorpseExplode
+		return "war3mapImported\\BTNTDTowerCorpseExplosion.blp"
 	return ""
 
 public function tdTowerPerfectSkillIconPath(int towerChoice) returns string
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		return tdArcherPerfectAuraIconPath()
 	if towerChoice == TD_TOWER_CHOICE_ORC
-		return Icons.bTNBattleRoar
+		return tdOrcCriticalStrikeIconPath()
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
-		return Icons.bTNStormHammer
+		return "war3mapImported\\BTNTDTowerShieldBash.blp"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
-		return Icons.bTNPoisonSting
+		return "war3mapImported\\BTNTDTowerPoisonDart.blp"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
-		return Icons.bTNBerserk
+		return "war3mapImported\\BTNTDTowerFrenzy.blp"
 	return ""
 
 public function tdArcherSplitArrowTargetCount(int level) returns int
@@ -204,14 +194,31 @@ public function tdArcherSplitArrowTargetCount(int level) returns int
 		clampedLevel = TD_MAX_TOWER_LEVEL
 	return clampedLevel + 1
 
-public function tdArcherHasSplitArrowAtLevelBranch(int level, int branch) returns boolean
-	if level < 1
-		return false
-	if level < TD_MAX_TOWER_LEVEL
-		return true
-	return branch == TD_TOWER_BRANCH_A
+public function tdArcherHasSplitArrowAtLevelBranch(int level, int _branch) returns boolean
+	return level >= 1 and level <= TD_MAX_TOWER_LEVEL
+
+public function tdArcherSplitArrowDamageMultiplier(int level, int branch, boolean evolved) returns real
+	return evolved and level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_A ? tdEvolutionSkillMultiplier() : 1.0
+
+public function tdGhoulCorpseExplosionDamageForBranch(int level, int branch, boolean evolved) returns real
+	return tdGhoulCorpseExplosionDamage() * (evolved and level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_B ? tdEvolutionSkillMultiplier() : 1.0)
+
+public function tdOrcUltimateSkillButtonX() returns int
+	return 2
+
+public function tdOrcUltimateSkillButtonY() returns int
+	return 1
+
+public function tdOrcUltimateSkillHotkey() returns string
+	return "E"
 
 public function tdArcherSplitArrowUsesBounceDamageForTest() returns boolean
+	return false
+
+public function tdArcherSplitArrowSearchesFromTowerRangeForTest() returns boolean
+	return true
+
+public function tdArcherSplitArrowDealsAttackDamageForTest() returns boolean
 	return true
 
 public function tdOrcCriticalStrikeChance() returns real
@@ -233,22 +240,25 @@ public function tdOrcBloodlustMoveSpeedBonus() returns real
 	return 0.0
 
 public function tdOrcBloodlustCooldown() returns real
-	return 12.0
+	return tdActiveSkillDefinitionForKey(TD_ACTIVE_BLOODLUST).baseCooldown
 
 public function tdOrcBloodlustDuration() returns real
 	return 5.0
 
+public function tdOrcCriticalStrikeIconPath() returns string
+	return "war3mapImported\\BTNTDTowerCriticalStrike.blp"
+
 public function tdOrcSwordDanceIconPath() returns string
-	return Icons.bTNMirrorImage
+	return "war3mapImported\\BTNTDTowerSwordDance.blp"
 
 public function tdOrcBloodlustIconPath() returns string
-	return Icons.bTNBloodLust
+	return "war3mapImported\\BTNTDTowerBloodlust.blp"
 
 public function tdOrcBladestormIconPath() returns string
-	return Icons.bTNWhirlwind
+	return "war3mapImported\\BTNTDTowerBladestorm.blp"
 
 public function tdOrcBladestormCooldown() returns real
-	return 9.0
+	return tdActiveSkillDefinitionForKey(TD_ACTIVE_BLADESTORM).baseCooldown
 
 public function tdOrcBladestormDuration() returns real
 	return 2.5
@@ -260,25 +270,24 @@ public function tdOrcBladestormDamagePerSecond() returns real
 	return 70.0
 
 public function tdOrcBladestormRadius() returns real
-	return 200.0
-
-public function tdOrcBladestormEffectPath() returns string
-	return "Abilities\\Spells\\Orc\\Whirlwind\\Whirlwind.mdl"
+	// Fixed spell range shared by native targeting and runtime damage, independent of attack range bonuses.
+	return 780.0
 
 public function tdFootmanBashChance() returns real
 	return 0.22
 
 public function tdFootmanBashDamageMultiplier() returns real
-	return 1.45
+	// Display compatibility only: scripted shield stun adds no damage.
+	return 1.0
 
 public function tdFootmanBashDamageBonus() returns real
-	return 20
+	return 0.0
 
 public function tdFootmanCommandAuraDamageBonus() returns real
 	return 0.16
 
 public function tdTowerAuraTargetsAllowed() returns string
-	return "friend,ground,air,structure,mechanical,organic,vulnerable"
+	return "friend,ground,air,structure,mechanical,organic,vulnerable,invulnerable"
 
 public function tdDryadPoisonDps() returns real
 	return 12.0
@@ -292,6 +301,11 @@ public function tdDryadAuraSlowFactor() returns real
 public function tdDryadAuraSlowRadius() returns real
 	return 225.0
 
+public function tdDryadWideAuraSlowRadius() returns real
+	// Approved: 225 * 940 / 800 = 264.375, rounded to a 5-unit step.
+	// Evolution preserves this radius; this is not an in-game balance result.
+	return 265.0
+
 public function tdDryadAttackSlowFactor() returns real
 	return 0.84
 
@@ -303,3 +317,15 @@ public function tdBonusPercentString(real bonus) returns string
 
 public function tdSlowPercentString(real remainingFactor) returns string
 	return ((1.0 - remainingFactor) * 100.0 + 0.5).toInt().toString() + "%"
+
+public function tdPreciseBonusPercentString(real bonus) returns string
+	// Three fractional percentage digits cover all 61 control levels exactly.
+	let scaled = R2I(bonus * 100000.0 + 0.5)
+	let whole = scaled div 1000
+	let fraction = scaled mod 1000
+	if fraction == 0
+		return whole.toString() + "%"
+	var digits = (fraction + 1000).toString().substring(1, 4)
+	while digits.substring(digits.length() - 1, digits.length()) == "0"
+		digits = digits.substring(0, digits.length() - 1)
+	return whole.toString() + "." + digits + "%"

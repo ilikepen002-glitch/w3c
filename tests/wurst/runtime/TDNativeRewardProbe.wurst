@@ -1,0 +1,318 @@
+package TDNativeRewardProbe
+import TDConfig
+import TDState
+import TDSpawn
+import TDGame
+import TDWaves
+import TDItems
+import TDInventory
+import TDTowers
+import TDDrops
+import ClosureTimers
+import ObjectIds
+
+unit ownTower = null
+unit otherTower = null
+unit worker = null
+rect arena = null
+boolean started = false
+boolean failed = false
+int phase = 0
+int dropSeed = 0
+int bossNextRandom = 0
+int foundItems = 0
+int foundItemId = 0
+int array bossItems
+int array currentItems
+int spawnWave = 1
+int spawnTypesChecked = 0
+unit movingElite = null
+real eliteStartX = 0.0
+real eliteStartY = 0.0
+
+function report(string message)
+    ClearTextMessages()
+    DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "REWARDS " + message + " phase=" + phase.toString())
+
+function fail(string message)
+    failed = true
+    report("FAIL " + message)
+
+function clearInventory(unit target)
+    for slot = 0 to 5
+        let itm = UnitItemInSlot(target, slot)
+        if itm != null
+            UnitRemoveItem(target, itm)
+            RemoveItem(itm)
+
+function equip(unit target, int itemId)
+    let itm = CreateItem(itemId, 0, 0)
+    if not UnitAddItem(target, itm)
+        RemoveItem(itm)
+        fail("equip rejected")
+
+function collectDrop()
+    let itm = GetEnumItem()
+    if itm == null or not tdItemIsEquipment(GetItemTypeId(itm))
+        return
+    foundItems += 1
+    foundItemId = GetItemTypeId(itm)
+    for index = 1 to tdItemDefinitionCount()
+        if foundItemId == tdItemIdForCatalogIndex(index)
+            currentItems[index] += 1
+    RemoveItem(itm)
+
+function collectDrops()
+    foundItems = 0
+    foundItemId = 0
+    for index = 1 to tdItemDefinitionCount()
+        currentItems[index] = 0
+    EnumItemsInRect(arena, null, function collectDrop)
+
+function target(int wave, int typeId) returns unit
+    let enemy = tdCreateEnemy(0, wave, typeId)
+    if enemy == null or GetUnitTypeId(enemy) != typeId or not enemy.isAlive()
+        fail("target creation failed " + typeId.toRawCode())
+        return enemy
+    PauseUnit(enemy, true)
+    SetUnitX(enemy, 0)
+    SetUnitY(enemy, 0)
+    return enemy
+
+function killAndCheck(unit killer, int wave, int typeId, int bonus)
+    let enemy = target(wave, typeId)
+    if failed
+        if enemy != null
+            RemoveUnit(enemy)
+        return
+    let before = tdGetGold(0)
+    let otherBefore = tdGetGold(1)
+    if killer == null
+        KillUnit(enemy)
+    else
+        UnitDamageTarget(killer, enemy, 10000000.0, false, false, ATTACK_TYPE_CHAOS, DAMAGE_TYPE_UNIVERSAL, WEAPON_TYPE_WHOKNOWS)
+    if enemy.isAlive()
+        fail("native lethal damage did not kill enemy")
+    else if tdGetGold(0) != before + tdWaveKillGold(wave) + bonus or tdGetGold(1) != otherBefore
+        fail("gold delta=" + (tdGetGold(0) - before).toString() + " expected=" + (tdWaveKillGold(wave) + bonus).toString())
+    RemoveUnit(enemy)
+
+function findDropSeed()
+    // Find a real RNG sequence where one extra quality roll improves elite green to blue.
+    for seed = 1 to 200
+        SetRandomSeed(seed)
+        let base = GetRandomInt(1, 10000)
+        let extra = GetRandomInt(1, 10000)
+        if base > 2500 and extra <= 2500
+            dropSeed = seed
+            return
+    fail("no deterministic quality comparison seed")
+
+function checkEliteDrop(boolean equipped)
+    clearInventory(ownTower)
+    if equipped
+        equip(ownTower, TD_ITEM_GREEN_GOLD_ID)
+    collectDrops()
+    let enemy = target(12, tdWaveSpecialUnitId(12))
+    if failed
+        return
+    let expectedQuality = equipped ? TD_ITEM_QUALITY_BLUE : TD_ITEM_QUALITY_GREEN
+    SetRandomSeed(dropSeed)
+    GetRandomInt(1, 10000)
+    if equipped
+        GetRandomInt(1, 10000)
+    let expectedId = tdRandomItemIdForQuality(expectedQuality)
+    let expectedNext = GetRandomInt(1, 10000)
+    let countBefore = tdGetLaneWaveDropCount(0, 12)
+    SetRandomSeed(dropSeed)
+    UnitDamageTarget(ownTower, enemy, 10000000.0, false, false, ATTACK_TYPE_CHAOS, DAMAGE_TYPE_UNIVERSAL, WEAPON_TYPE_WHOKNOWS)
+    if enemy.isAlive()
+        fail("elite survived native lethal damage")
+        RemoveUnit(enemy)
+        return
+    let actualNext = GetRandomInt(1, 10000)
+    collectDrops()
+    if foundItems != 1 or foundItemId != expectedId or actualNext != expectedNext or tdGetLaneWaveDropCount(0, 12) != countBefore + 1
+        fail("elite reroll equipped=" + equipped.toString() + " items=" + foundItems.toString() + " quality=" + tdItemQuality(foundItemId).toString() + " next=" + actualNext.toString() + "/" + expectedNext.toString())
+    RemoveUnit(enemy)
+
+function checkBossDrops(boolean equipped)
+    clearInventory(ownTower)
+    if equipped
+        equip(ownTower, TD_ITEM_BLUE_GOLD_ID)
+    collectDrops()
+    let enemy = target(8, tdWaveSpecialUnitId(8))
+    if failed
+        return
+    let before = tdGetGold(0)
+    SetRandomSeed(42)
+    UnitDamageTarget(ownTower, enemy, 10000000.0, false, false, ATTACK_TYPE_CHAOS, DAMAGE_TYPE_UNIVERSAL, WEAPON_TYPE_WHOKNOWS)
+    if enemy.isAlive()
+        fail("boss survived native lethal damage")
+        RemoveUnit(enemy)
+        return
+    let nextRandom = GetRandomInt(1, 10000)
+    if equipped and nextRandom != bossNextRandom
+        fail("boss consumed extra equipment random rolls")
+    if not equipped
+        bossNextRandom = nextRandom
+    collectDrops()
+    if tdGetGold(0) != before + tdWaveKillGold(8)
+        fail("boss received equipment gold")
+    if foundItems < 1 or foundItems > 3
+        fail("boss guaranteed drop missing or extra items")
+    for index = 1 to tdItemDefinitionCount()
+        if equipped
+            if currentItems[index] != bossItems[index]
+                fail("boss loot changed with equipment")
+        else
+            bossItems[index] = currentItems[index]
+    RemoveUnit(enemy)
+
+function checkExhaustedNormalBudget()
+    collectDrops()
+    for _count = 1 to tdLaneDropBudgetForWave(13)
+        tdMarkLaneWaveDrop(0, 13)
+    var seedForDrop = 0
+    for seed = 1 to 200
+        SetRandomSeed(seed)
+        if GetRandomInt(1, 10000) <= tdNormalDropChanceBasisPointsForWave(13)
+            seedForDrop = seed
+            break
+    if seedForDrop == 0
+        fail("no seed for guaranteed normal drop attempt")
+        return
+    let enemy = target(13, tdWaveUnitId(13))
+    if failed
+        return
+    SetRandomSeed(seedForDrop)
+    UnitDamageTarget(ownTower, enemy, 10000000.0, false, false, ATTACK_TYPE_CHAOS, DAMAGE_TYPE_UNIVERSAL, WEAPON_TYPE_WHOKNOWS)
+    collectDrops()
+    if enemy.isAlive() or foundItems != 0 or tdGetLaneWaveDropCount(0, 13) != tdLaneDropBudgetForWave(13)
+        fail("normal drop exceeded budget")
+    RemoveUnit(enemy)
+
+function advance()
+    if phase == 0
+        killAndCheck(ownTower, 29, tdWaveUnitId(29), 0)
+    else if phase == 1
+        equip(ownTower, TD_ITEM_WHITE_GOLD_ID)
+        killAndCheck(ownTower, 29, tdWaveUnitId(29), 1)
+    else if phase == 2
+        equip(otherTower, TD_ITEM_WHITE_GOLD_ID)
+        killAndCheck(otherTower, 29, tdWaveUnitId(29), 0)
+    else if phase == 3
+        equip(worker, TD_ITEM_WHITE_GOLD_ID)
+        killAndCheck(worker, 29, tdWaveUnitId(29), 0)
+    else if phase == 4
+        clearInventory(ownTower)
+        killAndCheck(ownTower, 29, tdWaveUnitId(29), 0)
+    else if phase == 5
+        for _copy = 1 to 3
+            equip(ownTower, TD_ITEM_BLUE_GOLD_ID)
+        // Arrange a nearly spent budget; the real death handler must clip the +7 to +3.
+        let budget = tdWaveEquipmentGoldBudget(30)
+        tdTakeLaneWaveEquipmentGold(0, 30, budget - 3, budget)
+        killAndCheck(ownTower, 30, tdWaveUnitId(30), 3)
+    else if phase == 6
+        killAndCheck(ownTower, 30, tdWaveUnitId(30), 0)
+    else if phase == 7
+        killAndCheck(null, 29, tdWaveUnitId(29), 0)
+    else if phase == 8
+        let enemy = target(29, tdWaveUnitId(29))
+        let before = tdGetGold(0)
+        tdHandleEnemyLeak(enemy)
+        if tdGetGold(0) != before
+            fail("leak granted gold")
+        RemoveUnit(enemy)
+    else if phase == 9
+        checkEliteDrop(false)
+    else if phase == 10
+        checkEliteDrop(true)
+    else if phase == 11
+        // Equipment cannot create ordinary drops once this lane/wave's budget is spent.
+        checkExhaustedNormalBudget()
+    else if phase == 12
+        checkBossDrops(false)
+    else if phase == 13
+        checkBossDrops(true)
+    phase += 1
+
+function cleanup()
+    if movingElite != null
+        RemoveUnit(movingElite)
+        movingElite = null
+    clearInventory(ownTower)
+    clearInventory(otherTower)
+    clearInventory(worker)
+    RemoveUnit(ownTower)
+    RemoveUnit(otherTower)
+    RemoveUnit(worker)
+    collectDrops()
+    RemoveRect(arena)
+
+function verifyEnemyType(int wave, int typeId, int expectedLife)
+    let enemy = tdCreateEnemy(0, wave, typeId)
+    if enemy == null
+        fail("enemy creation returned null " + typeId.toRawCode())
+        return
+    if GetUnitTypeId(enemy) != typeId or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdEnemyLaneId(enemy) != 0 or tdEnemyWave(enemy) != wave
+        fail("enemy identity mismatch " + typeId.toRawCode())
+    if (GetUnitState(enemy, UNIT_STATE_MAX_LIFE) - expectedLife.toReal()).abs() > 0.5
+        fail("enemy max life " + typeId.toRawCode() + " actual=" + GetUnitState(enemy, UNIT_STATE_MAX_LIFE).toString() + " expected=" + expectedLife.toString())
+    spawnTypesChecked += 1
+    if wave == 12 and typeId == tdWaveSpecialUnitId(12) and not failed
+        movingElite = enemy
+        eliteStartX = GetUnitX(enemy)
+        eliteStartY = GetUnitY(enemy)
+    else
+        RemoveUnit(enemy)
+
+function verifyNextWaveTypes()
+    if movingElite != null
+        if (GetUnitX(movingElite) - eliteStartX).abs() + (GetUnitY(movingElite) - eliteStartY).abs() < 1.0
+            fail("uS12 did not move along its lane")
+        RemoveUnit(movingElite)
+        movingElite = null
+    if failed
+        return
+    verifyEnemyType(spawnWave, tdWaveUnitId(spawnWave), tdWaveBaseHitPoints(spawnWave))
+    if tdWaveEliteEnemyCount(spawnWave) > 0 and not failed
+        verifyEnemyType(spawnWave, tdWaveSpecialUnitId(spawnWave), tdWaveEliteHitPoints(spawnWave))
+    if tdWaveBossGuardEnemyCount(spawnWave) > 0 and not failed
+        verifyEnemyType(spawnWave, tdWaveBossGuardUnitId(spawnWave), tdWaveBossGuardHitPoints(spawnWave))
+    if tdWaveBossEnemyCount(spawnWave) > 0 and not failed
+        verifyEnemyType(spawnWave, tdWaveSpecialUnitId(spawnWave), tdWaveBossHitPoints(spawnWave))
+    spawnWave += 1
+
+function start()
+    if started or tdIsGameOver() or tdCountActiveLanes() != 1 or GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_USED) != 0
+        return
+    started = true
+    tdLoseLife(0, -10000)
+    arena = Rect(-256, -256, 256, 256)
+    ownTower = CreateUnit(Player(0), TD_ARCHER_LEVEL_1_ID, -1600, 2000, 0)
+    otherTower = CreateUnit(Player(1), TD_ARCHER_LEVEL_1_ID, 1600, 2000, 0)
+    worker = CreateUnit(Player(0), TD_FARMER_UNIT_ID, -1600, 1600, 0)
+    PauseUnit(ownTower, true)
+    PauseUnit(otherTower, true)
+    PauseUnit(worker, true)
+    findDropSeed()
+    if not failed
+        report("START native kills + equipment reward rules")
+    doPeriodically(0.4) cb ->
+        if failed or phase >= 14
+            if not failed
+                report("PASS enemy types=" + spawnTypesChecked.toString() + "; gold rules/cap; drop green->blue; boss unchanged")
+            cleanup()
+            destroy cb
+        else if spawnWave <= tdWaveCount()
+            verifyNextWaveTypes()
+        else
+            advance()
+
+init
+    if not compiletime
+        let chat = CreateTrigger()
+        TriggerRegisterPlayerChatEvent(chat, Player(0), "-rewards", true)
+        TriggerAddAction(chat, function start)

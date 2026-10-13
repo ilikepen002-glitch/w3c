@@ -1,0 +1,154 @@
+{
+  "baseline_commit": "0330fd12de4d66c4a1ca4980e10b771f0903fbfc",
+  "baseline_map_sha256": "10a6eb992b4a9fb0edf2aa81db8700e5b78042462e5d5a130b71a2747907bb0f",
+  "baseline_source_digest": "6f03a91f98a34c436b500b25b2bcfc50d668accb23a13390e9288c7544ad26d7",
+  "stdlib_tree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+  "wrapper_sha256": "de59b76c08788f7241b7c5a2cf6c1ef6641ea214c0999491a4baed82e20bf9f6",
+  "display_name": "深渊守望 20261012-0938-UTC+8",
+  "wurst_tests": {
+    "passed": 315,
+    "total": 315,
+    "staged_file_count": 46,
+    "staging_hashes_match": true,
+    "stage_restored": true
+  },
+  "python_tests": {
+    "passed": 273,
+    "total": 273,
+    "skipped": 0,
+    "boss_final_mpq_tests": 6,
+    "boss_resolver_selftests": 42
+  },
+  "artifact_cli_counts": {
+    "boss_specialized": 1,
+    "common": 11,
+    "player_tooltip": 1,
+    "total": 13
+  },
+  "current_helper_checks": [
+    "semantic icons112 source/hash/alpha/all7mips",
+    "deployment gate and protected runtime structure",
+    "wild96 Aeth-only and capture masks"
+  ],
+  "mpq_members": {
+    "total": 144,
+    "unchanged": 142,
+    "changed": [
+      "war3map.j",
+      "war3map.w3i"
+    ]
+  },
+  "files": {
+    "ExampleMap.w3x": {
+      "size": 1732510,
+      "sha256": "1b2b9671d3ce7b05837811dbfbb8efa0815fe4bcea840f53f8dde4789761f96e"
+    },
+    "wurst/TDWaves.wurst": {
+      "size": 27756,
+      "sha256": "314296087a7fb1995f83e4d61ea29389703efa65f3647f36c2c5ef59aa11037a"
+    },
+    "wurst/enemies/TDEnemyMechanicData.wurst": {
+      "size": 1960,
+      "sha256": "1ceb70729e684510de2aa431da6cf571bf1e48d8efe91e92b768bf473a8ab27e"
+    },
+    "wurst/enemies/TDEnemyMechanicState.wurst": {
+      "size": 2378,
+      "sha256": "d04e6f4d982ccb7c912b9c2432c4c115a0b3f69bc8305c379da1c2fd6bfa440e"
+    },
+    "wurst/enemies/TDEnemyMechanicRuntime.wurst": {
+      "size": 6649,
+      "sha256": "9040673a6b3ce517ec7611ccc5b295b4f66094ba78112bdeec62802fdad520e5"
+    },
+    "wurst/towers/TDTowerRuntime.wurst": {
+      "size": 31013,
+      "sha256": "39a6a76efe9548771cc8d0c142f2b53322bf0a1a188ea986c8e97632374ad769"
+    },
+    "wurst/items/TDEquipmentCombat.wurst": {
+      "size": 6788,
+      "sha256": "4312c3329576be85710fb64027e7359721623253f35ecac568f51abc9f442126"
+    },
+    "wurst/pets/TDPetCombat.wurst": {
+      "size": 11091,
+      "sha256": "c72a268e524ed568c46ee7d8487495f36781ed03c18b287c95a609f1d8a71c07"
+    },
+    "tests/wurst/TDWavesTests.wurst": {
+      "size": 6395,
+      "sha256": "cf472d4fb2f112a03878b87fb5e9c15207e7aae0a7c5372e9288d854c682c6f0"
+    },
+    "tests/wurst/TDBossSpellResistanceTests.wurst": {
+      "size": 2909,
+      "sha256": "741b0fc2e80d85f3bc078914e7ad06e74dab5dea0d6e00e8e2d64db4e3ca7e86"
+    },
+    "tools/VerifyTowerUpgradeArtifact.py": {
+      "size": 26004,
+      "sha256": "7433cd136b7591893c4918cc3e2e18a2a2fc57918aeb4da0bd30b45e1037e9cd"
+    },
+    "tools/VerifyBossSpellResistanceArtifact.py": {
+      "size": 48619,
+      "sha256": "468030b8af34f7b7fdcaf7634f86657a43e85308e23475627d7710f8059fa4b3"
+    },
+    "tests/python/test_boss_spell_resistance_artifact.py": {
+      "size": 32024,
+      "sha256": "f6788c793341b34b860d7c5596fc155b7f08255ede0c09cab04f6d4f8da53d1e"
+    }
+  },
+  "staged_test_hashes": {
+    "TDBossSpellResistanceTests.wurst": "741b0fc2e80d85f3bc078914e7ad06e74dab5dea0d6e00e8e2d64db4e3ca7e86",
+    "TDConfigTests.wurst": "596fb2e87e3029fae807528711eba4198e05d2b4a51ac785bfc97859b479e015",
+    "TDCraftingTests.wurst": "5c669efece92f8450416b1ad2929b78669aa188762409f8a6cae63ca25f0ada9",
+    "TDDamageTests.wurst": "f95cc94630c0124fbd195b67b98a9787743a6f8440df58967449761cf7745cb8",
+    "TDDropsTests.wurst": "b9dc38bb00ea77d97e6fe7981478f5452a8982546f9c1067f771d83f4c4b8f04",
+    "TDEconomyTests.wurst": "192e2671d915e912152eab87731ed65abc1c0d3aca1b64ecc852bb6fc88a0292",
+    "TDEnemyMechanicsTests.wurst": "8c51acd2f5d84d5b45972ea38901684da008a034afca2d04f8e7f95fc602cbb1",
+    "TDEquipmentTests.wurst": "de3ee2edc7263daec98c3c0deb094751056d24b8700dc05a56c7497ae049b7bc",
+    "TDGameTests.wurst": "0a50fd92a19759dc80476677f0f3e0832e8a10c7b0f2a6ad56a73cb83c317d79",
+    "TDGroundItemTests.wurst": "48a06202f8dcbd8cb9bc8b8cb80bad1ae5cdad007bd5ef00c05c185a91790e7a",
+    "TDHudTests.wurst": "63ca51ec95fe690ff366f3da3a5740601049bb416c5696b3c974839faa1cdbbd",
+    "TDInitTests.wurst": "7d1c4dbd1041a638d647f424c3295fe3fc5441d97e75345836232579c0417226",
+    "TDInventoryTests.wurst": "53c105865faffc199a181541fb1d87c7e3216e1d3646f2735662c9d8b28ab50d",
+    "TDItemRewardTests.wurst": "e6e2080b01330e95a844b01a4a0d01243fe9decd9e46ae7d78c6e2db4e9e4083",
+    "TDItemsTests.wurst": "53b03be9f7df69f24c0e85ea0b779216a75c763ae040fa390c6582780ac4b459",
+    "TDLeakTests.wurst": "3e32e33dfe3db476a63804287febaae899d39fbe605a20ed7788d3b565616770",
+    "TDPetReleaseRewardTests.wurst": "c0b4bbf6b3b699b13a59008b4b790b79b191564b89da45e86250cd3e6b312364",
+    "TDPetReleaseTests.wurst": "67bcf22370b1c8ed3c2e45759f878dfafd77eabddda139d3203d4f4def94f7fc",
+    "TDPetUIDataTests.wurst": "ffd47eed342ef706836c3affcb0cc03ea2f6ffe31cb7acf9c6149ff9427e5a5a",
+    "TDPetsTests.wurst": "b9859624373039db754241398e91b2a6da8690367502fef89a9e974dbc28e665",
+    "TDPlayerTooltipTests.wurst": "176d9d2e3177785c9b48fcdd3f540026fb355faf07c506e7b653fa53b1c4ab4c",
+    "TDSemanticIconTests.wurst": "2973de44593de1427e55c261544365264c3f09e039597a77f9a1e71f24832838",
+    "TDSpawnTests.wurst": "918cde5ee58fa3f6e82afeeada1661189ff8b0d3820fa28b941acb26a7ca8d18",
+    "TDStateTests.wurst": "6d628dfd1ade19e6e13caf932a891b603e3bc1b8b58eee0a4f76ebd4e91d27eb",
+    "TDTowerEvolutionTests.wurst": "513de97d695278a4989cdccbf8a91884fb1b8ac109db57bcb66880296fe91a10",
+    "TDTowerPlacementTests.wurst": "446544477eff34b944b25f036309d5aa2b2776b8ea3dc74700080f64730e83c4",
+    "TDTowerSaleTests.wurst": "0f7bd8d72cb83b22a4829bc55fb3db051fcecdbaa61b75de367688279ad40590",
+    "TDTowerUpgradeContinuityTests.wurst": "1591205c9e356f1d01a5f9ec16ad658e117ffb7305ae2f830ed4325ab13b4733",
+    "TDTowersTests.wurst": "689fd73672c0b9f1f1930febf9df1ade525cfcb8052d949261c425b4215f8b22",
+    "TDWavesTests.wurst": "cf472d4fb2f112a03878b87fb5e9c15207e7aae0a7c5372e9288d854c682c6f0",
+    "runtime/TDNativeBladestormProbe.wurst": "21cecf2770dd3d680e425dd2e5ece2d83b528dcc744c1350683311d3acfc391b",
+    "runtime/TDNativeDamageChainProbe.wurst": "807495ea4ef39dbb4fe8a6bf08dcfd505ba072608df3666493a77d28149e5270",
+    "runtime/TDNativeDenseDamageProbe.wurst": "1929eb8e19ff29c66a84f72fd956b51f3fb84c090e589a46fd935ff37e30a55d",
+    "runtime/TDNativeEnemyMechanicProbe.wurst": "3f9fae63f77dc23e6c9cf0cc7399bba6c904718d318d2fc71798c4c654f98c19",
+    "runtime/TDNativeEquipmentDamageProbe.wurst": "9539553a687a7f21768a9a492bed8000654c72c138b32bfca5243e9dd3cdea81",
+    "runtime/TDNativeEquipmentEffectsProbe.wurst": "737a5116d1c33caefdb27544cf77e186b8375401aeb1a76158afe27b889c49a5",
+    "runtime/TDNativeEquipmentProbe.wurst": "2c23fa91be728b56025b47d9a378ad16dc4303c24dbca5efc2ab23a81c981d65",
+    "runtime/TDNativeNormalPlayProbe.wurst": "3c28f1043c6d38b69e51dadb4be61fb9b3826b90715b603a8f296e8f25cf2af1",
+    "runtime/TDNativePetLifecycleProbe.wurst": "dbbc313a49883d6ee2386566c583e436fb99e13a77fccc702bfbdfb4cffbf0d4",
+    "runtime/TDNativePetProbe.wurst": "5687cadac258d5ab0b664641c7298aac168541617e50a29f0ebe72cf7fc10536",
+    "runtime/TDNativePetSkillsProbe.wurst": "98cdcedf2ccc3fd55271c72b12b04cb69aab5da216026bdf6d4e14da37a3d938",
+    "runtime/TDNativeRewardProbe.wurst": "dc54f72c33dae5a6385ed4f80995e54cee7c1c4ed13caeaa6264b0031cf2f694",
+    "runtime/TDNativeRouteProbe.wurst": "c080c9554e22f943c5840a0c76dfc8a498f7362619a83fc66fbf3fcceea4956a",
+    "runtime/TDNativeSlowProbe.wurst": "3cb08665a0c37bcc8424f44f6bfe513732dbdb10917b4969dbe96c4ab39d1935",
+    "runtime/TDNativeSplitArrowProfileProbe.wurst": "2be262c68c56c21abde27761a4ed254cb80c8baf59ab94c54feb993dd24be129",
+    "runtime/TDNativeWaveProbe.wurst": "72d573883b1cbf3489859a9cce2f427fa2f334642909404e50f90cabf5853dab"
+  },
+  "not_tested": [
+    "Windows bat/deployment",
+    "Warcraft native HP/trigger timing/shield absorption/classification",
+    "UI/gameplay/balance",
+    "native unit parent catalog (target MPQ unavailable)"
+  ],
+  "public_evidence": {
+    "environment_details_redacted": true,
+    "raw_evidence_retained_privately": true,
+    "production_map_code_unchanged_from_review": true
+  }
+}

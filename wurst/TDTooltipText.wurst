@@ -1,0 +1,12 @@
+package TDTooltipText
+
+// Compact positive display values without changing the underlying game numbers.
+public function tdTooltipNumber(real value) returns string
+	var text = value.toString()
+	if not text.contains(".")
+		return text
+	while text.substring(text.length() - 1, text.length()) == "0"
+		text = text.substring(0, text.length() - 1)
+	if text.substring(text.length() - 1, text.length()) == "."
+		text = text.substring(0, text.length() - 1)
+	return text

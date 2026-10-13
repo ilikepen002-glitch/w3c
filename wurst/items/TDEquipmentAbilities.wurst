@@ -1,0 +1,47 @@
+package TDEquipmentAbilities
+import TDActiveSkillData
+import TDActiveCooldownRuntime
+import TDEquipmentRules
+import TDPetState
+import TDTowerData
+import TDConfig
+import TDState
+
+public function tdEquipmentAbilityLaneEligible(boolean gameOver, boolean active, boolean defeated, boolean finished) returns boolean
+	return tdActiveCooldownLaneEligible(gameOver, active, defeated, finished)
+
+function tdEquipmentAbilityTowerEligible(unit tower) returns boolean
+	if tower == null or not tower.isAlive() or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return false
+	let lane = GetPlayerId(GetOwningPlayer(tower))
+	return tdIsLanePlayer(lane) and tdEquipmentAbilityLaneEligible(tdIsGameOver(), tdIsLaneActive(lane), tdIsLaneDefeated(lane), tdIsLaneFinished(lane))
+
+public function tdEquipmentCooldownCanApply(real now, real readyAt) returns boolean
+	return tdActiveCooldownCanApply(now, readyAt)
+
+public function tdForgetEquipmentAbilities(unit tower)
+	tdForgetNativeActiveCooldowns(tower)
+
+function tdEquipmentSyncControl(unit tower, int abilityId, int level)
+	if tower.getAbilityLevel(abilityId) > 0
+		tower.setAbilityLevel(abilityId, level)
+
+public function tdRefreshEquipmentAbilities(unit tower, real cooldownReduction, real controlPower)
+	if not tdEquipmentAbilityTowerEligible(tower)
+		tdForgetEquipmentAbilities(tower)
+		return
+	tdRefreshNativeActiveCooldowns(tower, cooldownReduction)
+	let controlLevel = tdEquipmentPercentLevel(controlPower, 60)
+	tdEquipmentSyncControl(tower, TD_DRYAD_POISON_ABILITY_ID, controlLevel)
+	tdEquipmentSyncControl(tower, TD_DRYAD_PERFECT_POISON_ABILITY_ID, controlLevel)
+	tdEquipmentSyncControl(tower, TD_DRYAD_SLOW_AURA_ABILITY_ID, controlLevel)
+	tdEquipmentSyncControl(tower, TD_DRYAD_EVOLVED_SLOW_ABILITY_ID, controlLevel)
+	tdEquipmentSyncControl(tower, TD_DRYAD_WIDE_SLOW_ABILITY_ID, controlLevel)
+	tdEquipmentSyncControl(tower, TD_DRYAD_WIDE_SLOW_DISPLAY_ABILITY_ID, controlLevel)
+	tdEquipmentSyncControl(tower, TD_DRYAD_SLOW_DISPLAY_ABILITY_ID, controlLevel)
+	tdEquipmentSyncControl(tower, TD_DRYAD_EVOLVED_SLOW_DISPLAY_ABILITY_ID, controlLevel)
+	tdEquipmentSyncControl(tower, TD_FOOT_BASH_ABILITY_ID, controlLevel)
+	tdEquipmentSyncControl(tower, TD_FOOT_PERFECT_BASH_ABILITY_ID, controlLevel)
+
+public function tdSetupEquipmentAbilities()
+	tdSetupNativeActiveCooldowns()

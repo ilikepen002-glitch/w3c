@@ -1,0 +1,130 @@
+package TDPetUIView
+import TDPetData
+import TDPetRules
+import TDPetState
+import TDPetUIState
+import TDPetRuntime
+import TDPetCombat
+import TDConfig
+import ClosureTimers
+import Table
+
+public int array tdPetSelectedSlot
+public unit array tdPetDisplays
+public TDPetUISession array tdPetUISessions
+public constant Table tdPetDisplayOwners = new Table()
+
+function retire(unit old)
+	if old == null
+		return
+	tdPetDisplayOwners.removeInt(old.getHandleId())
+	// Only capture the retired handle, never a session or record. New identity
+	// already owns the lane; zero delay is cleanup, not a network-drain guarantee.
+	doAfter(0.0) ->
+		old.remove()
+
+public function tdPetCloseManager(int lane)
+	if not tdIsLanePlayer(lane)
+		return
+	tdPetCancelRelease(lane)
+	if tdPetUISessions[lane] != null
+		tdPetUISessions[lane].close()
+	let old = tdPetDisplays[lane]
+	tdPetDisplays[lane] = null
+	retire(old)
+
+// Event facts are passed directly from native selection triggers. Shared closure
+// is the real close/release transaction, including ordinary shift-add selection.
+public function tdPetHandleSelectionIdentity(int lane, int eventKey, int typeId, int unitOwner, boolean deselected)
+	if not tdIsLanePlayer(lane) or tdPetUISessions[lane] == null
+		return
+	if tdPetUISessions[lane].selectionCloses(lane, eventKey, typeId, unitOwner, deselected)
+		tdPetCloseManager(lane)
+
+public function tdPetSelectFarmer(int lane)
+	tdPetCloseManager(lane)
+	if GetLocalPlayer() == Player(lane) and tdPetFarmers[lane] != null
+		ClearSelection()
+		SelectUnit(tdPetFarmers[lane], true)
+
+public function tdPetRenderPage(int lane, int mode, int page, int slot, int nonce) returns boolean
+	if not tdPetLaneCanManage(lane) or tdPetUISessions[lane] == null
+		tdPetCloseManager(lane)
+		return false
+	let pet = tdPetAt(lane, slot)
+	if mode != TD_PET_UI_LIST and pet == null
+		tdPetCloseManager(lane)
+		return false
+	if mode != TD_PET_UI_RELEASE
+		tdPetCancelRelease(lane)
+	let typeId = mode == TD_PET_UI_LIST ? tdPetListUnitId() : tdPetDisplayUnitId(pet.species, pet.quality())
+	let fresh = createUnit(Player(lane), typeId, tdFarmerSpawnPosition(lane) + vec2(120.0, 0.0), 0 .fromDeg())
+	if fresh == null
+		tdPetCloseManager(lane)
+		return false
+	fresh.setPathing(false)
+	fresh.setInvulnerable(true)
+	let session = tdPetUISessions[lane]
+	if not session.open(mode, page, slot, pet, nonce, fresh.getHandleId())
+		fresh.remove()
+		tdPetCloseManager(lane)
+		return false
+	for cell = 0 to 11
+		if session.abilities[cell] != 0
+			fresh.addPermanentAbility(session.abilities[cell], session.levels[cell])
+	let old = tdPetDisplays[lane]
+	// Publish synchronized authority only after the new command card is ready.
+	tdPetSelectedSlot[lane] = slot
+	tdPetDisplays[lane] = fresh
+	tdPetDisplayOwners.saveInt(fresh.getHandleId(), lane)
+	retire(old)
+	if GetLocalPlayer() == Player(lane)
+		ClearSelection()
+		SelectUnit(fresh, true)
+	return true
+
+// Polling and external callers invalidate; they never rebuild or force selection.
+public function tdPetRefreshDisplay(int lane)
+	if not tdIsLanePlayer(lane) or tdPetUISessions[lane] == null
+		return
+	let session = tdPetUISessions[lane]
+	if session.active and not session.snapshotCurrent()
+		session.dirty = true
+		if session.mode == TD_PET_UI_RELEASE
+			tdPetCancelRelease(lane)
+
+public function tdPetSkillRestriction(TDPet pet, int slot, int skill) returns string
+	if slot >= tdPetUnlockedSlots(pet.level)
+		return " [共鸣锁定：本路第" + (slot == 2 ? "4" : "8") + "波完成解锁]"
+	if pet.paused
+		return " [施工/升级暂停：完工后恢复]"
+	if pet.host == null
+		return " [未绑定：需绑定塔]"
+	if not tdPetSkillFitsHost(skill, pet.host)
+		return " [不适配：宿主需要" + (skill == 9 ? "分裂箭能力" : "尸爆能力") + "]"
+	return ""
+
+public function tdPetPageSummary(int lane) returns string
+	let session = tdPetUISessions[lane]
+	if session == null or not session.active or session.mode != TD_PET_UI_DETAIL
+		return ""
+	let pet = tdPetAt(lane, session.selectedSlot)
+	if pet == null
+		return ""
+	var text = "编号" + tdPetCollectionNumber(session.selectedSlot) + " · 共鸣Lv" + pet.level.toString()
+	if pet.host == null
+		text += " · 未上阵"
+	else
+		text += " · " + pet.host.getName() + (pet.paused ? "（施工/升级暂停）" : "")
+	let activeHost = pet.host != null and not pet.paused
+	for slot = 0 to pet.skillCount - 1
+		if slot >= tdPetUnlockedSlots(pet.level) or activeHost
+			let restriction = tdPetSkillRestriction(pet, slot, pet.skillAt(slot))
+			if restriction != ""
+				text += "\n栏" + (slot + 1) + "：" + restriction
+	return text
+
+public function tdPetShowPageSummary(int lane)
+	let text = tdPetPageSummary(lane)
+	if text != ""
+		DisplayTimedTextToPlayer(Player(lane), 0, 0, 8.0, text)

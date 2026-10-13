@@ -1,0 +1,29 @@
+package TDSemanticIconTests
+import TDConfig
+import TDItems
+import TDTowers
+import TDPetUIData
+
+@Test function allFortyEquipmentIdentitiesResolveKnownRankIcons()
+	for index = 1 to tdItemDefinitionCount()
+		let path = tdItemIconPath(tdItemIdForCatalogIndex(index))
+		(path != "").assertTrue()
+		(path != "ReplaceableTextures\\CommandButtons\\BTNScroll.blp").assertTrue()
+	tdItemIconPath(TD_ITEM_WHITE_SCOPE_ID).assertEquals("war3mapImported\\BTNTDItemEagleScope.blp")
+	tdItemIconPath(TD_ITEM_WHITE_SWIFT_ID).assertEquals("ReplaceableTextures\\CommandButtons\\BTNGlove.blp")
+	tdItemIconPath(0).assertEquals("ReplaceableTextures\\CommandButtons\\BTNScroll.blp")
+
+@Test function inventoryCraftAndGroundUpgradeHaveSeparateActionIcons()
+	tdFarmerCraftIconPath().assertEquals("war3mapImported\\BTNTDActionInventoryCraft.blp")
+	tdFarmerGroundUpgradeIconPath().assertEquals("war3mapImported\\BTNTDActionGroundUpgrade.blp")
+	(tdFarmerCraftIconPath() != tdFarmerGroundUpgradeIconPath()).assertTrue()
+
+@Test function ordinaryCaptureRetainsItsDedicatedIcon()
+	tdPetCaptureIconPath().assertEquals("war3mapImported\\BTNTDActionCaptureOrb.blp")
+
+@Test function orcCriticalStrikeAndSwordDanceCannotShareAnIcon()
+	tdOrcCriticalStrikeIconPath().assertEquals("war3mapImported\\BTNTDTowerCriticalStrike.blp")
+	tdOrcSwordDanceIconPath().assertEquals("war3mapImported\\BTNTDTowerSwordDance.blp")
+	tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_ORC).assertEquals(tdOrcCriticalStrikeIconPath())
+	tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_ORC).assertEquals(tdOrcCriticalStrikeIconPath())
+	(tdOrcCriticalStrikeIconPath() != tdOrcSwordDanceIconPath()).assertTrue()

@@ -1,0 +1,109 @@
+package TDTowerPlacementTests
+import TDConfig
+import TDTowers
+import TDTowerTerrainMask
+
+@Test function towerFootprintIsSixPathingCellsWithOneCellMargin()
+	TD_TOWER_FOOTPRINT_SIZE.assertEquals(192.0)
+	TD_TOWER_HALF_FOOTPRINT.assertEquals(96.0)
+	TD_TOWER_CLIFF_MARGIN.assertEquals(32.0)
+	TD_TERRAIN_CELL_SIZE.assertEquals(32.0)
+
+@Test function footprintUsesActualCoordinatesAndEveryIntersectingCell()
+	let origin = TD_TERRAIN_ORIGIN_X
+	(tdFootprintLastCell(-2048.0, origin) - tdFootprintFirstCell(-2048.0, origin) + 1).assertEquals(6)
+	(tdFootprintLastCell(-2047.0, origin) - tdFootprintFirstCell(-2047.0, origin) + 1).assertEquals(7)
+	(tdFootprintLastCell(-2049.0, origin) - tdFootprintFirstCell(-2049.0, origin) + 1).assertEquals(7)
+	(tdFootprintFirstCell(-1985.0, origin) != tdFootprintFirstCell(-1983.0, origin)).assertTrue()
+
+@Test function identicalPartialAndDiagonalTowerFootprintsOverlap()
+	let center = vec2(-2048.0, 2048.0)
+	tdTowerFootprintsOverlap(center, center).assertTrue()
+	tdTowerFootprintsOverlap(center, center.add(191.0, 0.0)).assertTrue()
+	tdTowerFootprintsOverlap(center, center.add(191.0, 191.0)).assertTrue()
+	tdTowerFootprintsOverlap(center, center.add(-191.0, -191.0)).assertTrue()
+
+@Test function exactlyAdjacentTowersDoNotOverlap()
+	let center = vec2(-2048.0, 2048.0)
+	tdTowerFootprintsOverlap(center, center.add(192.0, 0.0)).assertFalse()
+	tdTowerFootprintsOverlap(center, center.add(0.0, -192.0)).assertFalse()
+	tdTowerFootprintsOverlap(center, center.add(192.0, 192.0)).assertFalse()
+
+@Test function everyTowerLevelAndBranchBlocksIncludingConstruction()
+	let center = vec2(-2048.0, 2048.0)
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		for level = 1 to TD_MAX_TOWER_LEVEL
+			let unitId = tdTowerUnitIdForLevel(choice, level)
+			// Neither owner nor construction progress is a filter.
+			tdTowerBlocksPlacement(center, center, false, true, unitId).assertTrue()
+			// Native upgrades retain their handle and are not a new obstacle to self.
+			tdTowerBlocksPlacement(center, center, true, true, unitId).assertFalse()
+			tdTowerBlocksPlacement(center, center, false, false, unitId).assertFalse()
+		for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+			tdTowerBlocksPlacement(center, center, false, true, tdTowerUnitIdForLevelBranch(choice, 6, branch)).assertTrue()
+
+@Test function removedTowerOrWorkerCannotLeaveAReservation()
+	let center = vec2(-2048.0, 2048.0)
+	// Removed native units have typeId 0; occupancy has no separate claim cache.
+	tdTowerBlocksPlacement(center, center, false, true, 0).assertFalse()
+	tdTowerBlocksPlacement(center, center, false, true, TD_FARMER_UNIT_ID).assertFalse()
+
+@Test function fourVisualQuadrantsBelongToTheirOwnPlayers()
+	tdIsInLaneBuildZone(0, vec2(-2048.0, 2048.0)).assertTrue()
+	tdIsInLaneBuildZone(1, vec2(2048.0, 2048.0)).assertTrue()
+	tdIsInLaneBuildZone(2, vec2(2048.0, -2432.0)).assertTrue()
+	tdIsInLaneBuildZone(3, vec2(-2048.0, -2432.0)).assertTrue()
+	for owner = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for other = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			if owner != other
+				var center = vec2(-2048.0, 2048.0)
+				if owner == 1
+					center = vec2(2048.0, 2048.0)
+				if owner == 2
+					center = vec2(2048.0, -2432.0)
+				if owner == 3
+					center = vec2(-2048.0, -2432.0)
+				tdIsInLaneBuildZone(other, center).assertFalse()
+	tdIsInLaneBuildZone(-1, vec2(-2048.0, 2048.0)).assertFalse()
+	tdIsInLaneBuildZone(4, vec2(-2048.0, 2048.0)).assertFalse()
+
+@Test function fullFootprintAndMarginStayInsideOwnerQuadrant()
+	tdBuildAreaOwner(vec2(-128.0, 2048.0)).assertEquals(0)
+	tdBuildAreaOwner(vec2(-127.0, 2048.0)).assertEquals(-1)
+	tdBuildAreaOwner(vec2(128.0, 2048.0)).assertEquals(1)
+	tdBuildAreaOwner(vec2(127.0, 2048.0)).assertEquals(-1)
+	tdBuildAreaOwner(vec2(-2048.0, 128.0)).assertEquals(0)
+	tdBuildAreaOwner(vec2(-2048.0, 127.0)).assertEquals(-1)
+
+@Test function centerExitAndItsBorderAreReserved()
+	tdBuildAreaOwner(vec2(-16.0, -192.0)).assertEquals(-1)
+	tdBuildAreaOwner(vec2(-480.0, -480.0)).assertEquals(-1)
+	tdBuildAreaOwner(vec2(-512.0, -480.0)).assertEquals(3)
+	tdBuildPlotHasValidTerrain(vec2(-16.0, -192.0)).assertFalse()
+
+@Test function roadSlopeAndOuterMountainAreNotPlatforms()
+	tdBuildPlotHasValidTerrain(vec2(-2000.0, 2672.0)).assertFalse()
+	tdBuildPlotHasValidTerrain(vec2(-1168.0, 2048.0)).assertFalse()
+	tdBuildPlotHasValidTerrain(vec2(-1280.0, 768.0)).assertFalse()
+	tdBuildPlotHasValidTerrain(vec2(-3840.0, 3840.0)).assertFalse()
+	tdBuildPlotHasValidTerrain(vec2(-5000.0, 2048.0)).assertFalse()
+
+@Test function plateauAcceptsActualOffGridPositionWithoutSelfPathingCheck()
+	tdBuildPlotHasValidTerrain(vec2(-2047.0, 2049.0)).assertTrue()
+	tdBuildPlotIsFlat(vec2(-2047.0, 2049.0)).assertTrue()
+
+@Test function approvedPlayerOneCoreSupportsFivePerRoadFacingRow()
+	for column = 0 to 4
+		let x = -2432.0 + column * TD_TOWER_FOOTPRINT_SIZE
+		for row = 0 to 1
+			let center = vec2(x, 1792.0 + row * 512.0)
+			tdIsInLaneBuildZone(0, center).assertTrue()
+			tdBuildPlotHasValidTerrain(center).assertTrue()
+			tdBuildPlotIsFlat(center).assertTrue()
+			if column < 4
+				tdTowerFootprintsOverlap(center, center.add(192.0, 0.0)).assertFalse()
+
+@Test function plateauExamplesRemainBuildableForEveryPlayer()
+	tdBuildPlotHasValidTerrain(vec2(2048.0, 2048.0)).assertTrue()
+	tdBuildPlotHasValidTerrain(vec2(2048.0, -2432.0)).assertTrue()
+	tdBuildPlotHasValidTerrain(vec2(-2048.0, -2432.0)).assertTrue()

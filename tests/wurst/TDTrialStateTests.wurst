@@ -1,0 +1,264 @@
+package TDTrialStateTests
+import TDTrialRules
+import TDTrialState
+import TDDamageState
+
+function prepareTrial(TDTrialState state, int wave, int token, real now, boolean p0, boolean p1, boolean p2, boolean p3)
+	let generation = state.getGeneration()
+	state.prepare(wave, token, generation, now).assertTrue()
+	state.snapshotLane(0, p0).assertTrue()
+	state.snapshotLane(1, p1).assertTrue()
+	state.snapshotLane(2, p2).assertTrue()
+	state.snapshotLane(3, p3).assertTrue()
+	for lane = 0 to 3
+		let participant = lane == 0 ? p0 : (lane == 1 ? p1 : (lane == 2 ? p2 : p3))
+		if participant
+			for slot = 0 to 4
+				state.bindTarget(lane, slot, lane * 5 + slot + 1, token, generation, now).assertTrue()
+	state.activate(token, generation, now).assertTrue()
+
+function creditTrial(TDTrialState state, int lane, int slot, real amount, real now) returns real
+	let ticket = state.hitTicket(lane, slot, lane * 5 + slot + 1, state.getToken(), state.getGeneration(), now, 1000000.0)
+	let effective = state.credit(ticket, lane, amount, now)
+	if ticket != null
+		destroy ticket
+	return effective
+
+@Test function trialFourLaneRankingRewardsRemainWithinBudget()
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 101, 10.0, true, true, true, true)
+	for lane = 0 to 3
+		creditTrial(state, lane, 0, (4 - lane) * 100.0, 11.0)
+	state.seal(101, state.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 130.0).assertTrue()
+	var paid = 0
+	for lane = 0 to 3
+		state.rank(lane).assertEquals(lane)
+		state.reward(lane).assertEquals(tdTrialPrize(1, lane))
+		state.takeReward(lane, state.getToken(), state.getGeneration()).assertEquals(0)
+	state.targetCount().assertEquals(0)
+	state.markTargetsCleared(101, state.getGeneration()).assertTrue()
+	for lane = 0 to 3
+		state.takeReward(lane, 100, state.getGeneration()).assertEquals(0)
+		paid += state.takeReward(lane, state.getToken(), state.getGeneration())
+		state.takeReward(lane, state.getToken(), state.getGeneration()).assertEquals(0)
+	paid.assertEquals(84)
+	state.averageDps(0, 999.0).assertEquals(400.0 / 120.0)
+	destroy state
+
+@Test function trialTiesPoolRanksAndWithdrawalRetainsPlaceWithoutReward()
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 17, 0.0, true, true, true, true)
+	creditTrial(state, 0, 0, 100.0, 1.0)
+	creditTrial(state, 1, 0, 100.25, 1.0)
+	creditTrial(state, 2, 0, 50.0, 1.0)
+	state.withdraw(0).assertTrue()
+	state.withdraw(0).assertFalse()
+	creditTrial(state, 0, 0, 999.0, 2.0).assertEquals(0.0)
+	state.total(0).assertEquals(100.0)
+	state.targetCount().assertEquals(15)
+	state.seal(17, state.getGeneration(), TD_TRIAL_RELEASE_COMPLETED, 120.0)
+	state.rank(0).assertEquals(0)
+	state.rank(1).assertEquals(0)
+	state.rank(2).assertEquals(2)
+	state.reward(0).assertEquals(0)
+	state.reward(1).assertEquals(27)
+	state.reward(2).assertEquals(18)
+	state.reward(3).assertEquals(0)
+	destroy state
+
+@Test function trialSinglePositiveLaneWinsAndZeroLanesReceiveNothing()
+	let state = new TDTrialState()
+	prepareTrial(state, 24, 9, 5.0, false, false, true, false)
+	creditTrial(state, 2, 0, 0.125, 6.0).assertEquals(0.125)
+	state.seal(9, state.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 125.0)
+	state.reward(2).assertEquals(60)
+	state.rank(0).assertEquals(-1)
+	destroy state
+
+@Test function trialZeroDamageCannotGetPrizeEvenAsOnlyParticipant()
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 9, 5.0, false, true, false, false)
+	state.seal(9, state.getGeneration(), TD_TRIAL_RELEASE_COMPLETED, 125.0)
+	state.reward(1).assertEquals(0)
+	destroy state
+
+@Test function trialBoundaryAndSourceLaneGuardKeepOrdinaryLedgerSeparate()
+	let ordinary = new TDDamageLedger()
+	let source = ordinary.register(0, "普通榜")
+	ordinary.credit(source, 25.0, 25.0)
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 5, 10.0, true, false, false, false)
+	let wrongLane = state.hitTicket(0, 0, 1, 5, state.getGeneration(), 11.0, 1000000.0)
+	state.credit(wrongLane, 1, 10.0, 11.0).assertEquals(0.0)
+	state.credit(wrongLane, 0, 10.0, 11.0).assertEquals(0.0)
+	destroy wrongLane
+	creditTrial(state, 0, 0, 10.0, 9.0).assertEquals(0.0)
+	creditTrial(state, 0, 0, 10.0, 129.0).assertEquals(10.0)
+	creditTrial(state, 0, 0, 10.0, 130.0).assertEquals(0.0)
+	creditTrial(state, 0, 0, 10.0, 131.0).assertEquals(0.0)
+	ordinary.playerTotal(0).assertEquals(25.0)
+	state.total(0).assertEquals(10.0)
+	state.averageDps(0, 15.0).assertEquals(2.0)
+	destroy ordinary
+	destroy state
+
+@Test function trialHitTicketsCreditEveryDistinctSegmentExactlyOnce()
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 5, 0.0, true, true, true, true)
+	for lane = 0 to 3
+		for slot = 0 to 4
+			for segment = 0 to 2
+				let ticket = state.hitTicket(lane, slot, lane * 5 + slot + 1, 5, state.getGeneration(), 1.0, 1000000.0)
+				state.credit(ticket, lane, 0.25, 1.0).assertEquals(0.25)
+				state.credit(ticket, lane, 0.25, 1.0).assertEquals(0.0)
+				destroy ticket
+	for lane = 0 to 3
+		state.total(lane).assertEquals(3.75)
+	state.seal(5, state.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 120.0)
+	state.targetCount().assertEquals(0)
+	for lane = 0 to 3
+		state.reward(lane).assertEquals(21)
+	destroy state
+
+@Test function trialNestedTicketsDoNotOverwriteEachOther()
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 5, 0.0, true, false, false, false)
+	let outer = state.hitTicket(0, 0, 1, 5, state.getGeneration(), 1.0, 1000000.0)
+	let inner = state.hitTicket(0, 0, 1, 5, state.getGeneration(), 1.0, 1000000.0)
+	state.credit(inner, 0, 2.0, 1.0).assertEquals(2.0)
+	state.credit(outer, 0, 3.0, 1.0).assertEquals(3.0)
+	state.total(0).assertEquals(5.0)
+	destroy outer
+	destroy inner
+	destroy state
+
+@Test function trialOldTargetRevisionAndGenerationCannotCreditReplacement()
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 5, 0.0, true, false, false, false)
+	let generation = state.getGeneration()
+	let revision = state.targetRevision(0, 0)
+	let stale = state.hitTicket(0, 0, 1, 5, generation, 1.0, 1000000.0)
+	state.unbindTarget(0, 0, 1, revision, 5, generation).assertTrue()
+	state.bindTarget(0, 0, 21, 5, generation, 1.0).assertTrue()
+	state.credit(stale, 0, 10.0, 1.0).assertEquals(0.0)
+	state.unbindTarget(0, 0, 21, revision, 5, generation).assertFalse()
+	state.reset()
+	state.prepare(8, 5, generation, 2.0).assertFalse()
+	state.credit(stale, 0, 10.0, 2.0).assertEquals(0.0)
+	destroy stale
+	destroy state
+
+@Test function trialFailedPartialPreparationCompletedReleaseCannotAward()
+	let state = new TDTrialState()
+	let generation = state.getGeneration()
+	state.prepare(8, 51, generation, 0.0).assertTrue()
+	state.snapshotLane(0, true)
+	state.snapshotLane(1, false)
+	state.snapshotLane(2, false)
+	state.snapshotLane(3, false)
+	state.bindTarget(0, 0, 1, 51, generation, 0.0)
+	state.activate(51, generation, 0.0).assertFalse()
+	state.rollback(51, generation).assertTrue()
+	state.rollback(51, generation).assertFalse()
+	state.targetCount().assertEquals(0)
+	// Game still issues onRelease(COMPLETED) after onReady returns false.
+	state.seal(51, generation, TD_TRIAL_RELEASE_COMPLETED, 120.0).assertFalse()
+	state.reward(0).assertEquals(0)
+	state.wasCompleted(1).assertFalse()
+	state.wasAttempted(1).assertTrue()
+	state.prepare(8, 52, generation, 121.0).assertFalse()
+	destroy state
+
+@Test function trialTimerFirstAndGameWatchdogFirstBothSettleOnlyOnce()
+	let timerFirst = new TDTrialState()
+	prepareTrial(timerFirst, 8, 5, 0.0, true, false, false, false)
+	creditTrial(timerFirst, 0, 0, 20.0, 1.0)
+	timerFirst.shouldResume(5, timerFirst.getGeneration(), 119.99).assertFalse()
+	timerFirst.shouldResume(5, timerFirst.getGeneration(), 120.0).assertTrue()
+	timerFirst.noteResumeAccepted(5, timerFirst.getGeneration()).assertTrue()
+	timerFirst.getPhase().assertEquals(TD_TRIAL_ACTIVE)
+	timerFirst.seal(5, timerFirst.getGeneration(), TD_TRIAL_RELEASE_COMPLETED, 120.0).assertTrue()
+	timerFirst.seal(5, timerFirst.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 120.0).assertFalse()
+	timerFirst.reward(0).assertEquals(30)
+	let watchdogFirst = new TDTrialState()
+	prepareTrial(watchdogFirst, 8, 5, 0.0, true, false, false, false)
+	creditTrial(watchdogFirst, 0, 0, 20.0, 1.0)
+	watchdogFirst.seal(5, watchdogFirst.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 120.0).assertTrue()
+	watchdogFirst.shouldResume(5, watchdogFirst.getGeneration(), 120.0).assertFalse()
+	watchdogFirst.noteResumeAccepted(5, watchdogFirst.getGeneration()).assertFalse()
+	watchdogFirst.seal(5, watchdogFirst.getGeneration(), TD_TRIAL_RELEASE_COMPLETED, 120.0).assertFalse()
+	watchdogFirst.reward(0).assertEquals(30)
+	destroy timerFirst
+	destroy watchdogFirst
+
+@Test function trialAbortAndUnexpectedEarlyReleaseAreZeroRewardCleanup()
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 5, 0.0, true, false, false, false)
+	creditTrial(state, 0, 0, 20.0, 1.0)
+	state.seal(4, state.getGeneration(), TD_TRIAL_RELEASE_ABORTED, 2.0).assertFalse()
+	state.seal(5, state.getGeneration(), TD_TRIAL_RELEASE_ABORTED, 2.0).assertTrue()
+	state.targetCount().assertEquals(0)
+	state.reward(0).assertEquals(0)
+	state.wasCompleted(1).assertFalse()
+	state.canReturnToGame().assertFalse()
+	state.prepare(24, 6, state.getGeneration(), 3.0).assertFalse()
+	state.markTargetsCleared(5, state.getGeneration()).assertTrue()
+	state.markTargetsCleared(5, state.getGeneration()).assertFalse()
+	state.canReturnToGame().assertTrue()
+	prepareTrial(state, 24, 6, 3.0, true, false, false, false)
+	creditTrial(state, 0, 0, 20.0, 4.0)
+	state.seal(6, state.getGeneration(), TD_TRIAL_RELEASE_COMPLETED, 4.0).assertTrue()
+	state.reward(0).assertEquals(0)
+	destroy state
+
+@Test function trialOpaqueTokensAndResetDoNotDependOnNumericOrdering()
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 999, 0.0, true, false, false, false)
+	state.seal(999, state.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 120.0)
+	state.markTargetsCleared(999, state.getGeneration())
+	state.prepare(24, 999, state.getGeneration(), 121.0).assertFalse()
+	prepareTrial(state, 24, 2, 121.0, true, false, false, false)
+	state.seal(999, state.getGeneration(), TD_TRIAL_RELEASE_COMPLETED, 241.0).assertFalse()
+	state.seal(2, state.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 241.0).assertTrue()
+	state.wasCompleted(1).assertTrue()
+	state.wasCompleted(2).assertTrue()
+	let oldGeneration = state.getGeneration()
+	state.reset()
+	state.wasAttempted(1).assertFalse()
+	state.wasCompleted(2).assertFalse()
+	state.prepare(8, 999, oldGeneration, 0.0).assertFalse()
+	prepareTrial(state, 8, 999, 0.0, true, false, false, false)
+	destroy state
+
+@Test function trialSnapshotMissingZeroParticipantsAndDuplicateLaneFailSafely()
+	let state = new TDTrialState()
+	let generation = state.getGeneration()
+	state.prepare(16, 9, generation, 0.0).assertFalse()
+	state.prepare(8, 9, generation, 0.0).assertTrue()
+	state.snapshotLane(0, false).assertTrue()
+	state.snapshotLane(0, true).assertFalse()
+	state.snapshotLane(1, false)
+	state.snapshotLane(2, false)
+	state.activate(9, generation, 0.0).assertFalse()
+	state.snapshotLane(3, false)
+	state.activate(9, generation, 0.0).assertFalse()
+	state.bindTarget(0, 0, 1, 9, generation, 0.0).assertFalse()
+	state.rollback(9, generation).assertTrue()
+	destroy state
+
+@Test function trialReleaseReconciliationClosesLeaveAfterLastRouteTick()
+	let state = new TDTrialState()
+	prepareTrial(state, 8, 5, 0.0, true, true, false, false)
+	creditTrial(state, 0, 0, 100.0, 1.0)
+	creditTrial(state, 1, 0, 100.0, 1.0)
+	// Actual Hook calls this immediately before seal, without relying on route tick.
+	state.reconcileLane(0, false).assertTrue()
+	state.reconcileLane(0, false).assertFalse()
+	state.reconcileLane(1, true).assertFalse()
+	state.total(0).assertEquals(100.0)
+	state.seal(5, state.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 120.0).assertTrue()
+	state.rank(0).assertEquals(0)
+	state.rank(1).assertEquals(0)
+	state.reward(0).assertEquals(0)
+	state.reward(1).assertEquals(27)
+	destroy state

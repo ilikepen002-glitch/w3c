@@ -1,0 +1,126 @@
+package TDNativePetSkillsProbe
+import TDPets
+import TDSpawn
+import TDState
+import TDConfig
+import TDWaves
+import TDTowerData
+import DamageEvent
+import ClosureTimers
+import Orders
+
+// Opt-in native fixture. -pet-skills N (0..15), -pet-skills-lethal N,
+// -pet-skills-snapshot, -pet-skills-cleanup. Actual native attack only.
+// Reports observations; never infers a global PASS from injected fixture data.
+unit host = null
+unit array targets
+TDPet pet = null
+int epoch = 0
+int nativeHits = 0
+int taggedHits = 0
+real taggedAmount = 0.0
+int skill = 0
+DamageListener listener = null
+
+function report(string text)
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 25.0, "PET-SKILLS " + text)
+
+function cleanup()
+	epoch += 1
+	if listener != null
+		destroy listener
+		listener = null
+	if pet != null
+		pet.recall()
+		for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+			if tdPetAt(0, slot) == pet
+				tdPetDiscardOwned(0, slot)
+		pet = null
+	if host != null
+		tdPetTowerRemoved(host)
+		host.remove()
+		host = null
+	for index = 0 to 13
+		if targets[index] != null
+			targets[index].remove()
+			targets[index] = null
+
+function snapshot()
+	report("skill=" + tdPetSkillNameById(skill) + " native/Pdam=" + nativeHits.toString() + "/" + taggedHits.toString() + " taggedAmount=" + taggedAmount.toString())
+	if pet != null
+		report("cooldownReadyAt=" + pet.readyAt.toString() + " buff=" + pet.buffSkill.toString() + " until=" + pet.buffUntil.toString() + " generation=" + pet.generation.toString() + " attack/speedAbility=" + host.getAbilityLevel(TD_PET_ATTACK_BONUS_ID).toString() + "/" + host.getAbilityLevel(TD_PET_SPEED_BONUS_ID).toString())
+	if targets[0] != null
+		report("target0HP=" + targets[0].getLife().toString() + " armor=" + targets[0].getAbilityLevel(TD_PET_ARMOR_ID).toString() + " speed=" + GetUnitMoveSpeed(targets[0]).toString())
+	report("OBSERVATION ONLY: fixture uses white skill; global aura/quality scaling/32-wave economy not asserted here. Lethal mode tests proc after killing the original target.")
+
+function start(boolean lethal, int requested)
+	cleanup()
+	if requested < 0 or requested > 15 or tdIsGameOver() or tdIsLaneDefeated(0)
+		return
+	skill = requested
+	nativeHits = 0
+	taggedHits = 0
+	taggedAmount = 0.0
+	let choice = skill == 9 ? TD_TOWER_CHOICE_ARCHER : (skill == 10 ? TD_TOWER_CHOICE_GHOUL : TD_TOWER_CHOICE_ORC)
+	host = createUnit(Player(0), tdTowerUnitIdForLevel(choice, 1), vec2(-1800.0, 2400.0), 0 .fromDeg())
+	host.setPathing(false)
+	PauseUnit(host, true)
+	pet = new TDPet(0, 1, tdGetGlobalWave())
+	pet.setSkill(0, skill <= 3 ? skill : 0, 1)
+	pet.setSkill(1, skill >= 4 and tdPetSkillIsUniversal(skill) ? skill : 5, 1)
+	if skill == 9 or skill == 10
+		pet.setSkill(2, skill, 1)
+	if not tdPetStore(0, pet)
+		destroy pet
+		pet = null
+		report("REFUSED: collection full")
+		cleanup()
+		return
+	pet.level = skill == 9 or skill == 10 ? 2 : 1
+	if not tdPetDeploy(pet, host)
+		report("REFUSED: deploy invalid/full")
+		cleanup()
+		return
+	for index = 0 to 13
+		targets[index] = tdCreateEnemy(0, 29, tdWaveUnitId(29))
+		targets[index].setPathing(false)
+		targets[index].setPos(vec2(-1700.0 + (index == 13 ? 800.0 : (index mod 4) * 15.0), 2400.0 + (index div 4) * 15.0))
+		PauseUnit(targets[index], true)
+	if lethal or skill == 10
+		targets[0].setLife(1.0)
+	let token = epoch
+	listener = DamageEvent.addListener(30) ->
+		if token != epoch or DamageEvent.getSource() != host
+			return
+		if DamageEvent.getId() == TD_PET_DAMAGE_ID
+			taggedHits += 1
+			taggedAmount += DamageEvent.getAmount()
+		else if not DamageEvent.isCode() and not DamageEvent.isSpell() and DamageEvent.getId() != 'Tspl'
+			nativeHits += 1
+			if nativeHits >= (skill == 7 ? 4 : 1)
+				PauseUnit(host, true)
+	PauseUnit(host, false)
+	IssueTargetOrderById(host, Orders.attack, targets[0])
+	doAfter(4.0) ->
+		if token == epoch
+			snapshot()
+	report("Fixture requested actual native attack. -pet-skills-snapshot reads effects; -pet-skills-cleanup removes fixtures. Outside target index13 at800 must remain untouched.")
+
+function command()
+	let text = GetEventPlayerChatString()
+	if text == "-pet-skills-cleanup"
+		cleanup()
+	else if text == "-pet-skills-snapshot"
+		snapshot()
+	else if SubString(text, 0, 19) == "-pet-skills-lethal "
+		start(true, S2I(SubString(text, 19, StringLength(text))))
+	else if SubString(text, 0, 12) == "-pet-skills "
+		start(false, S2I(SubString(text, 12, StringLength(text))))
+
+init
+	if not compiletime
+		let chat = CreateTrigger()
+		TriggerRegisterPlayerChatEvent(chat, Player(0), "-pet-skills", false)
+		TriggerAddAction(chat, function command)
+
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Warcraft III 地图快速试玩"
+  short_description: "仅按明确试玩请求进入正确部署地图，验证指定场景；普通开发默认不启动游戏"
+  default_prompt: "使用 $war3-map-playtest 进入本项目已部署的正确地图，按需编译并完成指定玩法验证。"

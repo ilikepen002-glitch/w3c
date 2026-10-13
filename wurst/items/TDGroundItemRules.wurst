@@ -1,0 +1,47 @@
+package TDGroundItemRules
+import TDItemData
+import TDConfig
+import TDPetData
+
+public constant real TD_GROUND_UPGRADE_RADIUS = 144.0
+public constant real TD_GROUND_SORT_INTERVAL = 30.0
+
+public function tdGroundCraftBatchSize(int quality, int count) returns int
+	if quality < TD_ITEM_QUALITY_WHITE or quality >= TD_ITEM_QUALITY_PURPLE
+		return 0
+	if count >= 3
+		return 3
+	return 0
+
+public function tdGroundItemGroup(int itemId) returns int
+	if tdItemIsEquipment(itemId)
+		return tdItemQuality(itemId)
+	if itemId == TD_PET_BALL_ITEM_ID
+		return 5
+	return 0
+
+public function tdGroundSortItemEligible(int requestedLane, int sourceLane, int pileGroup) returns boolean
+	if sourceLane < 0 or sourceLane >= TD_ACTIVE_PLAYER_COUNT or pileGroup < TD_ITEM_QUALITY_WHITE or pileGroup > 5
+		return false
+	// Periodic sorting includes capture balls on all lanes. A completed upgrade
+	// sorts only equipment still inside that player's connected lowland road.
+	if requestedLane == -1
+		return true
+	return requestedLane == sourceLane and pileGroup <= TD_ITEM_QUALITY_PURPLE
+
+public function tdGroundPointInUpgradeCircle(real x, real y, real centerX, real centerY) returns boolean
+	let dx = x - centerX
+	let dy = y - centerY
+	return dx * dx + dy * dy <= TD_GROUND_UPGRADE_RADIUS * TD_GROUND_UPGRADE_RADIUS
+
+public function tdGroundItemLane(real x, real y) returns int
+	// Half-open quadrants assign axes to the north/east side deterministically.
+	if x < 0.0
+		return y >= 0.0 ? 0 : 3
+	return y >= 0.0 ? 1 : 2
+
+public function tdGroundItemPilePosition(int lane, int pileGroup, int index) returns vec2
+	// Reuse a finite set of safe cells; overflow stacks rather than discards items.
+	let cell = ModuloInteger(index, 15)
+	return tdGroundItemPileCenter(lane, pileGroup) + vec2((ModuloInteger(cell, 5) - 2) * 32.0, (cell div 5 - 1) * 32.0)
+

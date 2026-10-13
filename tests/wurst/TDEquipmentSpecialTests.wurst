@@ -1,0 +1,128 @@
+package TDEquipmentSpecialTests
+import TDEquipmentSpecialRules
+import TDShieldRules
+import TDItemCatalogConfig
+import TDItemData
+import TDTowerData
+
+function assertSpecialNear(real actual, real expected)
+	((actual - expected).abs() < 0.000001).assertTrue()
+
+@Test function warFourthHitStartsFixedBurstWithoutExtendingOrStacking()
+	let war = new TDWarIntentState()
+	war.hit(101, 0.0).assertFalse()
+	war.hit(101, 0.2).assertFalse()
+	war.hit(101, 0.4).assertFalse()
+	war.stack.assertEquals(3)
+	war.hit(101, 0.6).assertTrue()
+	assertSpecialNear(war.burstUntil, 3.6)
+	war.stack.assertEquals(0)
+	war.hit(101, 1.0).assertFalse()
+	war.stage(1.0).assertEquals(4)
+	assertSpecialNear(war.burstUntil, 3.6)
+	war.stack.assertEquals(0)
+	war.hit(101, 3.6).assertFalse()
+	war.stage(3.6).assertEquals(1)
+	destroy war
+
+@Test function warTargetSwitchStopAndExplicitClearRemoveStageAndBurst()
+	let war = new TDWarIntentState()
+	for hit = 1 to 4
+		war.hit(11, hit * 0.1)
+	war.hit(12, 0.5).assertFalse()
+	war.stack.assertEquals(1)
+	assertSpecialNear(war.burstUntil, 0.0)
+	war.tick(3.5)
+	war.stage(3.5).assertEquals(0)
+	war.currentTarget.assertEquals(0)
+	war.hit(12, 4.0)
+	war.clear()
+	war.currentTarget.assertEquals(0)
+	war.stack.assertEquals(0)
+	destroy war
+
+@Test function poisonThirdHitClearsBeforeExplosionAndTargetSwitchResets()
+	let poison = new TDPoisonBurstState()
+	poison.hit(1, 0.1).assertFalse()
+	poison.hit(1, 0.2).assertFalse()
+	poison.hit(2, 0.3).assertFalse()
+	poison.stack.assertEquals(1)
+	poison.hit(2, 0.4).assertFalse()
+	poison.hit(2, 0.5).assertTrue()
+	poison.stack.assertEquals(0)
+	poison.hit(2, 0.6).assertFalse()
+	poison.clear()
+	poison.currentTarget.assertEquals(0)
+	destroy poison
+
+@Test function corpseCountsAllSixMainHitsWithoutAnyTargetIdentity()
+	let corpse = new TDCorpseBurstState()
+	for hit = 1 to 5
+		corpse.hit().assertFalse()
+	corpse.hit().assertTrue()
+	corpse.hits.assertEquals(0)
+	corpse.hit().assertFalse()
+	corpse.clear()
+	corpse.hits.assertEquals(0)
+	destroy corpse
+
+@Test function shieldChanceOnlyTruePerfectAbilityUsesEvolutionMultiplier()
+	assertSpecialNear(tdShieldProcChance(false), 0.22)
+	assertSpecialNear(tdShieldProcChance(true), 0.264)
+	assertSpecialNear(tdFootmanBashDamageBonus(), 0.0)
+	assertSpecialNear(tdFootmanBashDamageMultiplier(), 1.0)
+
+@Test function shieldSharedWindowReservesBeforeCastAndFailureRollsBack()
+	let window = new TDShieldWindow()
+	let old = window.reserve(0.0, false, 0.0)
+	assertSpecialNear(old, 0.0)
+	assertSpecialNear(window.readyAt, 1.28)
+	window.reserve(1.0, false, 0.0).assertEquals(-1.0)
+	window.rollback(old)
+	assertSpecialNear(window.readyAt, 0.0)
+	window.reserve(1.0, true, 0.60)
+	assertSpecialNear(window.readyAt, 3.08)
+	assertSpecialNear(window.reserve(3.08, false, 0.50), 3.08)
+	assertSpecialNear(window.readyAt, 4.66)
+	destroy window
+
+@Test function shieldNormalHeroCandidatesAndBossDurationsAreSeparate()
+	assertSpecialNear(tdShieldStunDuration(false, 0.0), 0.60)
+	assertSpecialNear(tdShieldStunDuration(false, 0.40), 0.84)
+	assertSpecialNear(tdShieldStunDuration(false, 0.60), 0.90)
+	assertSpecialNear(tdShieldStunDuration(true, 0.0), 0.25)
+	assertSpecialNear(tdShieldStunDuration(true, 0.60), 0.25)
+	assertSpecialNear(tdConfiguredSpecialRadius(TD_ITEM_SPECIAL_SHIELD_SPREAD), 200.0)
+	tdConfiguredSpecialTargetCap(TD_ITEM_SPECIAL_SHIELD_SPREAD).assertEquals(2)
+	tdItemTooltip(TD_ITEM_PURPLE_SHIELD_ID).contains("目标周围200范围").assertTrue()
+
+@Test function specialNumbersAndHostStageTooltipsShareConfiguration()
+	tdConfiguredSpecialCount(TD_ITEM_SPECIAL_CORPSE_BURST).assertEquals(6)
+	tdConfiguredSpecialCount(TD_ITEM_SPECIAL_POISON_BURST).assertEquals(3)
+	assertSpecialNear(tdConfiguredSpecialDamageFactor(TD_ITEM_SPECIAL_CORPSE_BURST), 0.50)
+	assertSpecialNear(tdConfiguredSpecialRadius(TD_ITEM_SPECIAL_CORPSE_BURST), 180.0)
+	assertSpecialNear(tdConfiguredSpecialRadius(TD_ITEM_SPECIAL_POISON_BURST), 220.0)
+	tdConfiguredSpecialTargetCap(TD_ITEM_SPECIAL_POISON_BURST).assertEquals(4)
+	tdWarStageTooltip(4).contains("攻速提高20%").assertTrue()
+	tdWarStageTooltip(4).contains("持续3秒").assertTrue()
+	tdPoisonStageTooltip(2).contains("220范围内最多4名敌人").assertTrue()
+	tdPoisonStageTooltip(2).contains("本次普攻伤害的50%").assertTrue()
+
+@Test function poisonInactivityClearsAtThreeSecondsAndHitStartsFresh()
+	let poison = new TDPoisonBurstState()
+	poison.hit(7, 1.0).assertFalse()
+	poison.hit(7, 1.1).assertFalse()
+	let deadline = poison.lastHit + tdConfiguredPoisonBurstInactivity()
+	poison.tick(deadline - 0.01)
+	poison.stack.assertEquals(2)
+	poison.tick(deadline)
+	poison.stack.assertEquals(0)
+	poison.currentTarget.assertEquals(0)
+	poison.hit(7, 5.0).assertFalse()
+	poison.hit(7, 5.1).assertFalse()
+	// Hit itself checks timeout even before the periodic stage refresh.
+	poison.hit(7, 8.2).assertFalse()
+	poison.stack.assertEquals(1)
+	poison.tick(poison.lastHit + tdConfiguredPoisonBurstInactivity() + 0.01)
+	poison.stack.assertEquals(0)
+	destroy poison

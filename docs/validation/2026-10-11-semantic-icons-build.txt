@@ -1,0 +1,24 @@
+Verified stdlib: /workspace/shared/fixed-build-tools-20261011/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Verified stdlib: /workspace/shared/w3c-icons-20261011/_build/dependencies/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Verified stdlib: /workspace/shared/fixed-build-tools-20261011/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Verified stdlib: /workspace/shared/w3c-icons-20261011/_build/dependencies/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Temporarily isolated obsolete nested dependency: _build/dependencies/pre1.29; saved intact at /workspace/shared/fixed-build-tools-20261011/run-history/legacy-dependency-9px8fo1c/pre1.29.original
+Running: /workspace/shared/fixed-build-tools-20261011/jdk/jdk-25+36/bin/java -Duser.home=/workspace/shared/fixed-build-tools-20261011/home -cp /workspace/shared/fixed-build-tools-20261011/classes:/workspace/shared/fixed-build-tools-20261011/linux-toolchain/wurst-compiler/wurstscript.jar DiagnoseBuildLibraries /workspace/shared/w3c-icons-20261011 /workspace/shared/w3c-icons-20261011/_build/dependencies/WurstStdlib2-source/wurst
+Wurst -> /workspace/shared/w3c-icons-20261011/_build/dependencies/WurstStdlib2-source/wurst/Wurst.wurst -> model eligible=true, locked root=true
+Libraries=164, model-rejected selected libraries=0, outside locked root=0
+Running: /workspace/shared/fixed-build-tools-20261011/bin/grill build _build/ExampleMap.input.w3x --quiet
+✅ Map built.
+Verified stdlib: /workspace/shared/w3c-icons-20261011/_build/dependencies/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Restored legacy dependency: all file hashes, types, modes, mtimes and tracked status unchanged
+Restored original wurst.build byte-for-byte
+Running: /workspace/shared/fixed-build-tools-20261011/jdk/jdk-25+36/bin/javac -cp /workspace/shared/fixed-build-tools-20261011/linux-toolchain/wurst-compiler/wurstscript.jar -d /workspace/shared/fixed-build-tools-20261011/run-history/display-name-x2hzxwx1 /workspace/shared/w3c-icons-20261011/tools/PatchMapDisplayName.java
+Note: /workspace/shared/w3c-icons-20261011/tools/PatchMapDisplayName.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Running: /workspace/shared/fixed-build-tools-20261011/jdk/jdk-25+36/bin/java -cp /workspace/shared/fixed-build-tools-20261011/run-history/display-name-x2hzxwx1:/workspace/shared/fixed-build-tools-20261011/linux-toolchain/wurst-compiler/wurstscript.jar PatchMapDisplayName /workspace/shared/w3c-icons-20261011/_build/MyFirstWurstMap.w3x.w3x 20261011-2326-UTC+8
+Patched map name: 深渊守望 20261011-2326-UTC+8
+Patched loading title: 深渊守望 20261011-2326-UTC+8
+Packaged map: /workspace/shared/w3c-icons-20261011/ExampleMap.w3x
+SHA256: af3ac1daddf6a14060630f025c2ff5fe216452621da994d24770aa4b9b395e26
+Timestamp: 20261011-2326-UTC+8
+Not run: Windows deployment, World Editor, Warcraft III, or native playtest
+Restored original .vscode/settings.json bytes and existence state

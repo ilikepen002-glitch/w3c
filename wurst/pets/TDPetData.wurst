@@ -1,0 +1,124 @@
+package TDPetData
+import ObjectIds
+
+public constant int TD_PET_CAPTURE_ABILITY_ID = 'Pcap'
+public constant int TD_PET_COLLECTION_ABILITY_ID = 'Pcol'
+public constant int TD_PET_DEPLOY_ABILITY_ID = 'Pdep'
+public constant int TD_PET_BALL_ITEM_ID = 'Ibal'
+public constant int TD_PET_DAMAGE_ID = 'Pdam'
+public constant int TD_PET_COLLECTION_LIMIT = 20
+public constant int TD_PET_BALL_LIMIT = 60
+
+public function tdPetWildUnitId(int wave, int species) returns int
+	let hex = "0123456789ABCDEF"
+	return ("p" + SubString(hex, wave div 16, wave div 16 + 1) + SubString(hex, wave mod 16, wave mod 16 + 1) + species.toString()).fromRawCode()
+
+public function tdPetVisualUnitId(int species) returns int
+	return 'pv01' + species - 1
+
+function tdPetHexDigit(int ascii) returns int
+	if ascii >= 48 and ascii <= 57
+		return ascii - 48
+	if ascii >= 65 and ascii <= 70
+		return ascii - 55
+	return -100
+
+// Stable type identity in O(1), including after death settlement.
+public function tdPetSpeciesForWildType(int typeId) returns int
+	let species = typeId mod 256 - 48
+	if species < 1 or species > 3 or typeId div 16777216 != 112
+		return 0
+	let wave = tdPetHexDigit((typeId div 65536) mod 256) * 16 + tdPetHexDigit((typeId div 256) mod 256)
+	return wave >= 1 and wave <= 32 ? species : 0
+public function tdPetSpeciesName(int species) returns string
+	if species == 1
+		return "炎灵"
+	if species == 2
+		return "雷灵"
+	return "幽灵"
+
+public function tdPetModel(int species) returns string
+	if species == 1
+		return "Units\\Human\\Phoenix\\Phoenix.mdl"
+	if species == 2
+		return "Units\\NightElf\\FaerieDragon\\FaerieDragon.mdl"
+	return "Units\\NightElf\\Wisp\\Wisp.mdl"
+
+public function tdPetCaptureChance(real _currentLife, real _maxLife) returns real
+	return 0.60
+
+public function tdPetCaptureTooltip(int balls) returns string
+	return "消耗1普通球捕获本路野生精灵，成功率60%；首只教学精灵首次投普通球必成。|n现有普通球" + balls.toString() + "/60；收藏已满不扣球。野生精灵出现60秒后消失。"
+
+public constant int TD_PET_ATTACK_BONUS_ID = 'Pbat'
+public constant int TD_PET_SPEED_BONUS_ID = 'Pbsp'
+public constant int TD_PET_ARMOR_ID = 'Pbar'
+public constant int TD_PET_SKILL_COUNT = 16
+
+// baseCode ends in '00'. Encode each hex digit separately, preserving every ID.
+// Runtime string.fromRawCode scans CHARMAP four times per ID during UI startup.
+public function tdPetHexRawcode(int baseCode, int index, int limit) returns int
+	if index < 0 or index >= limit
+		return 0
+	var high = index div 16
+	var low = index mod 16
+	if high >= 10
+		high += 7
+	if low >= 10
+		low += 7
+	return baseCode + high * 256 + low
+
+public function tdPetDisplayUnitId(int species, int quality) returns int
+	if species < 1 or species > 3 or quality < 1 or quality > 4
+		return 0
+	return tdPetHexRawcode('pd00', 1 + (species - 1) * 4 + quality - 1, 13)
+
+public function tdPetDisplayUnitId(int species) returns int
+	return tdPetDisplayUnitId(species, 1)
+
+public function tdPetListUnitId() returns int
+	return 'pd00'
+
+public function tdPetIsDisplayType(int typeId) returns boolean
+	for index = 0 to 12
+		if typeId == tdPetHexRawcode('pd00', index, 13)
+			return true
+	return false
+
+// Ten cells, forty-nine mutually exclusive portrait/count states per cell.
+public function tdPetListAbilityId(int cell, int species, int quality, int ownedCount) returns int
+	if cell < 0 or cell >= 10
+		return 0
+	var variant = 0
+	if species >= 1 and species <= 3 and quality >= 1 and quality <= 4 and ownedCount >= 1 and ownedCount <= 4
+		variant = (species - 1) * 16 + (quality - 1) * 4 + ownedCount
+	else if species != 0 or quality != 0 or ownedCount != 0
+		return 0
+	let index = cell * 49 + variant
+	return tdPetHexRawcode('L000', index mod 256, 256) + (index div 256) * 65536
+
+public function tdPetPreviewArrowAbilityId(int position) returns int
+	return tdPetHexRawcode('Pa00', position, 2)
+
+public function tdPetPreviewAbilityId(int position, int skill) returns int
+	if position < 0 or position > 1 or skill < 0 or skill >= TD_PET_SKILL_COUNT
+		return 0
+	return tdPetHexRawcode('Ps00', position * 16 + skill, 32)
+
+public function tdPetSlotAbilityId(int slot, int variant) returns int
+	if slot < 0 or slot > 3 or variant < 0 or variant > 128
+		return 0
+	let hex = "0123456789ABCDEF"
+	return ("s" + slot.toString() + SubString(hex, variant div 16, variant div 16 + 1) + SubString(hex, variant mod 16, variant mod 16 + 1)).fromRawCode()
+
+public function tdPetUICommandId(int command) returns int
+	return tdPetHexRawcode('Pc00', command, 8)
+
+public function tdPetManagerCommandId(int action) returns int
+	if action >= 0 and action <= 7
+		return tdPetUICommandId(action)
+	return tdPetHexRawcode('Pm00', action - 8, 15)
+
+
+
+

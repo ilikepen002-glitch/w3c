@@ -1,0 +1,42 @@
+package TDBossRewardRules
+import TDConfig
+
+public constant int TD_BOSS_BONUS_DROP_CHANCE = 15
+
+public function tdBossKillCompensation(int wave) returns int
+	var base = 0
+	if wave == 8
+		base = 55
+	else if wave == 16
+		base = 90
+	else if wave == 24
+		base = 144
+	else if wave == 32
+		base = 200
+	return R2I(base * tdEconomyMultiplier() + 0.5)
+
+public function tdBossNormalDropAttempts(int wave) returns int
+	if wave == 8
+		return 10
+	if wave == 16
+		return 14
+	if wave == 24
+		return 16
+	if wave == 32
+		return 18
+	return 0
+
+public function tdBossBallDropAttempts(int wave) returns int
+	if wave == 8
+		return 11
+	if wave == 16
+		return 15
+	if wave == 24
+		return 18
+	return 0
+
+public function tdBossBonusDropSucceeds(int roll) returns boolean
+	return roll >= 1 and roll <= TD_BOSS_BONUS_DROP_CHANCE
+
+public function tdBossBallDropSucceeds(int roll) returns boolean
+	return roll >= 1 and roll <= 2

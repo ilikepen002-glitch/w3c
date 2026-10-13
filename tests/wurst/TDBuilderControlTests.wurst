@@ -1,0 +1,22 @@
+package TDBuilderControlTests
+import TDItemData
+import TDInit
+import TDTowers
+
+@Test function groundUpgradeUsesTheFarmerMainBarRepairSlot()
+	tdFarmerGroundUpgradeButtonX().assertEquals(1)
+	tdFarmerGroundUpgradeButtonY().assertEquals(1)
+	tdFarmerGroundUpgradeHotkey().assertEquals("U")
+
+@Test function startupGuideShowsMainBarUpgradeAndDoesNotAdvertiseBlink()
+	tdStartupGuideMessage().contains("U 范围升级").assertTrue()
+	tdStartupGuideMessage().contains("C 背包合成").assertTrue()
+	tdStartupGuideMessage().contains("闪烁").assertFalse()
+	tdStartupGuideMessage().contains("F ").assertFalse()
+
+@Test function removingBlinkDoesNotChangeNativeBuildOrFarmerMobility()
+	tdFarmerBuildAbilityId().assertEquals('AUbu')
+	tdFarmerRaceObjectStringForTest().assertEquals("undead")
+	tdFarmerUsesFlyingMovement().assertTrue()
+	tdFarmerBaseMoveSpeed().assertEquals(522)
+	tdFarmerWageCooldown().assertEquals(180.0)

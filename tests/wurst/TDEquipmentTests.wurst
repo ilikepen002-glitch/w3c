@@ -1,0 +1,95 @@
+package TDEquipmentTests
+import TDEquipmentRules
+import TDEquipmentAbilities
+import TDItemData
+import TDTowerData
+import TDWaves
+import TDConfig
+
+function assertEquipmentNear(real actual, real expected)
+	((actual - expected).abs() < 0.000001).assertTrue()
+
+@Test function conditionalDamageUsesHalfHealthAndTrueBossOnly()
+	assertEquipmentNear(tdEquipmentConditionalMultiplier(50.0, 100.0, false, 0.12, 0.25), 1.12)
+	assertEquipmentNear(tdEquipmentConditionalMultiplier(50.1, 100.0, false, 0.12, 0.25), 1.0)
+	assertEquipmentNear(tdEquipmentConditionalMultiplier(50.0, 100.0, true, 0.12, 0.25), 1.37)
+	assertEquipmentNear(tdEquipmentConditionalMultiplier(0.0, 0.0, false, 0.12, 0.25), 1.0)
+	tdIsBossUnitTypeId(tdWaveBossGuardUnitId(8)).assertFalse()
+	tdIsBossUnitTypeId(tdWaveSpecialUnitId(8)).assertTrue()
+	tdEquipmentNativeAttackEligible(false, false, 0).assertTrue()
+	tdEquipmentNativeAttackEligible(true, false, 0).assertFalse()
+	tdEquipmentNativeAttackEligible(false, true, 0).assertFalse()
+	tdEquipmentNativeAttackEligible(false, false, 'Tspl').assertFalse()
+	tdItemTooltip(TD_ITEM_GREEN_WAR_AXE_ID).contains("主目标生命不高于50%").assertTrue()
+	tdItemTooltip(TD_ITEM_GREEN_WAR_AXE_ID).contains("法术、副箭、精灵伤害不触发").assertTrue()
+	tdItemTooltip(TD_ITEM_PURPLE_WAR_AXE_ID).contains("半血追加相加").assertTrue()
+	assertEquipmentNear(tdEquipmentConditionalBonus(50.0, 100.0, true, 0.12, 0.25), 0.37)
+	assertEquipmentNear(tdEquipmentConditionalBonus(50.1, 100.0, false, 0.12, 0.25), 0.0)
+
+@Test function strongestDebuffOnlyRefreshesForEqualOrStronger()
+	tdEquipmentDebuffRefreshes(2.0, 1.0).assertTrue()
+	tdEquipmentDebuffRefreshes(2.0, 2.0).assertTrue()
+	tdEquipmentDebuffRefreshes(1.0, 2.0).assertFalse()
+	tdEquipmentDebuffRefreshes(0.0, 0.0).assertFalse()
+	tdEquipmentPoisonNextTick(10.0, 0.0, 0.0).assertEquals(11.0)
+	tdEquipmentPoisonNextTick(10.5, 4.0, 11.0).assertEquals(11.0)
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_WHITE_ARMOR_ID, TD_ITEM_WHITE_ARMOR_ID, TD_ITEM_WHITE_ARMOR_ID, TD_ITEM_EFFECT_ARMOR_SHRED), 1.0)
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_GREEN_WAR_AXE_ID, TD_ITEM_GREEN_WAR_AXE_ID, TD_ITEM_GREEN_WAR_AXE_ID, TD_ITEM_EFFECT_EXECUTE), 0.12)
+	tdEquipmentArmorLevel(2.5).assertEquals(3)
+	tdEquipmentArmorLevel(2.49).assertEquals(2)
+	tdEquipmentArmorLevel(100.0).assertEquals(30)
+	tdEquipmentArmorLevel(0.0).assertEquals(0)
+
+@Test function equipmentAbilityTasksStopWhenLaneOrMatchEnds()
+	tdEquipmentAbilityLaneEligible(false, true, false, false).assertTrue()
+	tdEquipmentAbilityLaneEligible(true, true, false, false).assertFalse()
+	tdEquipmentAbilityLaneEligible(false, false, false, false).assertFalse()
+	tdEquipmentAbilityLaneEligible(false, true, true, false).assertFalse()
+	tdEquipmentAbilityLaneEligible(false, true, false, true).assertFalse()
+
+@Test function cooldownWaitsUntilRecordedExpiryAndMapsZeroToBase()
+	tdEquipmentPercentLevel(0.0, 40).assertEquals(1)
+	tdEquipmentPercentLevel(0.08, 40).assertEquals(9)
+	tdEquipmentPercentLevel(0.99, 40).assertEquals(41)
+	tdEquipmentPercentLevel(-1.0, 40).assertEquals(1)
+	tdEquipmentCooldownCanApply(11.9, 12.0).assertFalse()
+	tdEquipmentCooldownCanApply(12.0, 12.0).assertTrue()
+
+@Test function controlCapsAndUnloadingRestoresNativeLevel()
+	tdEquipmentPercentLevel(0.0, 60).assertEquals(1)
+	tdEquipmentPercentLevel(0.4, 60).assertEquals(41)
+	tdEquipmentPercentLevel(1.0, 60).assertEquals(61)
+	assertEquipmentNear(tdEquipmentControlReduction(0.5, 61), 0.70)
+	assertEquipmentNear(tdEquipmentControlReduction(0.22, 1), 0.22)
+	tdTowerHotkeyForLevelBranch(TD_TOWER_CHOICE_FOOTMAN, 6, TD_TOWER_BRANCH_A).assertEquals("Q")
+	tdTowerHotkeyForLevelBranch(TD_TOWER_CHOICE_FOOTMAN, 6, TD_TOWER_BRANCH_B).assertEquals("W")
+	tdTowerHotkeyForLevelBranch(TD_TOWER_CHOICE_FOOTMAN, 5, TD_TOWER_BRANCH_B).assertEquals("Q")
+
+
+@Test function personalMechanismHighestTierFallsBackWhenStrongItemIsRemoved()
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_WHITE_ARMOR_ID, TD_ITEM_GREEN_ARMOR_ID, TD_ITEM_BLUE_ARMOR_ID, TD_ITEM_EFFECT_ARMOR_SHRED), 3.0)
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_WHITE_ARMOR_ID, TD_ITEM_GREEN_ARMOR_ID, 0, TD_ITEM_EFFECT_ARMOR_SHRED), 2.0)
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_WHITE_POISON_ID, TD_ITEM_GREEN_POISON_ID, TD_ITEM_BLUE_POISON_ID, TD_ITEM_EFFECT_POISON), 20.0)
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_WHITE_POISON_ID, TD_ITEM_GREEN_POISON_ID, 0, TD_ITEM_EFFECT_POISON), 12.0)
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_WHITE_SHIELD_ID, TD_ITEM_GREEN_SHIELD_ID, TD_ITEM_BLUE_SHIELD_ID, TD_ITEM_EFFECT_CONTROL_POWER), 0.28)
+	tdItemTooltip(TD_ITEM_BLUE_POISON_ID).contains("装备毒伤取最强").assertTrue()
+
+@Test function differentConditionalKindsCoexistButSameKindDoesNotAdd()
+	let execute = tdEquipmentEffectForItems(TD_ITEM_GREEN_WAR_AXE_ID, TD_ITEM_BLUE_WAR_AXE_ID, TD_ITEM_PURPLE_WAR_AXE_ID, TD_ITEM_EFFECT_EXECUTE)
+	let boss = tdEquipmentEffectForItems(TD_ITEM_GREEN_WAR_AXE_ID, TD_ITEM_BLUE_WAR_AXE_ID, TD_ITEM_PURPLE_WAR_AXE_ID, TD_ITEM_EFFECT_BOSS_DAMAGE)
+	assertEquipmentNear(execute, 0.20)
+	assertEquipmentNear(boss, 0.25)
+	assertEquipmentNear(tdEquipmentConditionalBonus(40, 100, true, execute, boss), 0.45)
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_GREEN_WAR_AXE_ID, TD_ITEM_BLUE_WAR_AXE_ID, TD_ITEM_EFFECT_ATTACK), 52.0)
+
+@Test function auraDataIsSeparateFromPersonalSpecialMechanismMax()
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_WHITE_COMMAND_ID, TD_ITEM_GREEN_COMMAND_ID, TD_ITEM_PURPLE_COMMAND_ID, TD_ITEM_EFFECT_ATTACK), 0.0)
+	assertEquipmentNear(tdItemAuraValue(TD_ITEM_PURPLE_COMMAND_ID), 0.12)
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_WHITE_GOLD_ID, TD_ITEM_GREEN_GOLD_ID, TD_ITEM_BLUE_GOLD_ID, TD_ITEM_EFFECT_KILL_GOLD), 3.0)
+	assertEquipmentNear(tdEquipmentEffectForItems(TD_ITEM_GREEN_GOLD_ID, TD_ITEM_BLUE_GOLD_ID, TD_ITEM_PURPLE_GOLD_ID, TD_ITEM_EFFECT_DROP_BONUS), 2.0)
+
+@Test function cooldownEquipmentDescribesNativeAndPetActivesTogether()
+	let tome = tdItemTooltip(TD_ITEM_PURPLE_GOLD_ID)
+	tome.contains("主动技能冷却缩短").assertTrue()
+	tome.contains("附身精灵").assertTrue()
+	tome.contains("上限40%").assertTrue()

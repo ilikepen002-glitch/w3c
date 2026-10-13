@@ -1,0 +1,349 @@
+package TDNativeEquipmentDamageProbe
+import TDState
+import TDSpawn
+import TDWaves
+import TDTowers
+import TDItems
+import TDInventory
+import TDEquipmentCombat
+import TDItemTargetRules
+import TDEquipmentAbilities
+import DamageEvent
+import ClosureTimers
+import GameTimer
+import Orders
+
+// Finite HP evidence, separate from event-value-only observations.
+// -equipment-damage / -equipment-damage-snapshot / -equipment-damage-cleanup
+constant int FIXED_PHYSICAL_ID = 'Ephy'
+constant int FIXED_UNIVERSAL_ID = 'Euni'
+unit source = null
+unit target = null
+item armor = null
+item executeItem = null
+item bossItem = null
+DamageListener early = null
+DamageListener reduced = null
+boolean active = false
+boolean waiting = false
+boolean polluted = false
+int run = 0
+int phaseIndex = 0
+int extraEvents = 0
+real extraAmount = 0.0
+real regen = 0.0
+real preHp = 0.0
+real eventValue = 0.0
+real eventAt = 0.0
+real expectedExtra = 0.0
+real bossNative = 0.0
+string array results
+trigger deaths = null
+int killerOwner = -1
+boolean killedBySource = false
+
+function log(string text)
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 30.0, "DAMAGE " + text)
+
+function snapshot()
+	let message = GetEventPlayerChatString()
+	let prefix = "-equipment-damage-snapshot "
+	if StringLength(message) <= StringLength(prefix)
+		log("saved steps=" + phaseIndex.toString() + "; snapshot 0:physical+universal, 1:full/half/Boss/guard, 2:lethal/append-kill/source-remove, 3:Boss fixed10 CHAOS/NORMAL")
+		return
+	let sampleGroup = S2I(SubString(message, StringLength(prefix), StringLength(message)))
+	let first = sampleGroup == 0 ? 1 : (sampleGroup == 1 ? 6 : (sampleGroup == 2 ? 10 : 13))
+	let last = sampleGroup == 0 ? 5 : (sampleGroup == 1 ? 9 : (sampleGroup == 2 ? 12 : 14))
+	for index = 0 to last
+		if index >= first and results[index] != null and results[index] != ""
+			log(results[index])
+
+function disposeTarget()
+	if target != null
+		tdForgetEquipmentEnemy(target)
+		RemoveUnit(target)
+		target = null
+
+function disposeSource()
+	if source != null
+		tdForgetEquipmentTower(source)
+		tdForgetEquipmentAbilities(source)
+		RemoveUnit(source)
+		source = null
+
+function cleanup()
+	active = false
+	waiting = false
+	run += 1
+	if early != null
+		destroy early
+		early = null
+	if reduced != null
+		destroy reduced
+		reduced = null
+	if deaths != null
+		DestroyTrigger(deaths)
+		deaths = null
+	disposeTarget()
+	disposeSource()
+	if armor != null
+		RemoveItem(armor)
+	if executeItem != null
+		RemoveItem(executeItem)
+	if bossItem != null
+		RemoveItem(bossItem)
+	armor = null
+	executeItem = null
+	bossItem = null
+	log("CLEANED; saved HP results remain available. Diagnostic lives remain; no economy/completion claim.")
+
+function valid() returns boolean
+	return active and not tdIsGameOver() and tdIsLaneActive(0) and not tdIsLaneDefeated(0) and not tdIsLaneFinished(0)
+
+function setupTarget(int typeId, int wave)
+	disposeTarget()
+	target = tdCreateEnemy(0, wave, typeId)
+	if target == null
+		log("ABORT target creation failed")
+		cleanup()
+		return
+	SetUnitPathing(target, false)
+	SetUnitX(target, -1550)
+	SetUnitY(target, 2400)
+	PauseUnit(target, true)
+	target.setHP(target.getMaxHP() * 0.8)
+	polluted = false
+
+function advance()
+	if not valid()
+		log("ABORT match/lane ended")
+		cleanup()
+		return
+	phaseIndex += 1
+	let token = run
+	let launchedStep = phaseIndex
+	if phaseIndex == 1 or phaseIndex == 3 or phaseIndex == 4 or phaseIndex == 5
+		// Independent fixed physical/universal segments cannot seed equipment procs.
+		let universal = phaseIndex >= 4
+		if phaseIndex == 4
+			setupTarget(tdWaveUnitId(1), 1)
+		else if phaseIndex == 5
+			setupTarget(tdWaveUnitId(29), 29)
+		if not valid()
+			return
+		let baselineHp = target.getHP()
+		doAfter(0.10) ->
+			if run != token or not valid()
+				return
+			regen = (target.getHP() - baselineHp) / 0.10
+			let before = target.getHP()
+			let amount = universal ? 10.0 : 100.0
+			DamageEvent.setNextDamageFromCode()
+			DamageEvent.setNextDamageId(universal ? FIXED_UNIVERSAL_ID : FIXED_PHYSICAL_ID)
+			if universal
+				source.damageTarget(target, amount)
+			else
+				source.damageTarget(target, amount, true, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+			doAfter(0.10) ->
+				if run != token or not valid()
+					return
+				let loss = before + regen * 0.10 - target.getHP()
+				results[phaseIndex] = "phaseIndex=" + phaseIndex.toString() + " fixed=" + amount.toString() + (universal ? " universal" : " physical") + " HP=" + before.toString() + "->" + target.getHP().toString() + " regen/s=" + regen.toString() + " correctedLoss=" + loss.toString() + " polluted=" + polluted.toString()
+				log(results[phaseIndex])
+				advance()
+	else if phaseIndex == 2
+		UnitAddItem(source, armor)
+		waiting = true
+		PauseUnit(source, false)
+		IssueTargetOrderById(source, Orders.attack, target)
+		// First actual native hit attaches armor. Observer then pauses the source.
+		doAfter(4.0) ->
+			if run == token and phaseIndex == launchedStep and waiting
+				log("ABORT no actual armor-seeding attack")
+				cleanup()
+	else if phaseIndex >= 6 and phaseIndex <= 12
+		UnitRemoveItem(source, armor)
+		if phaseIndex == 6
+			UnitAddItem(source, executeItem)
+			UnitAddItem(source, bossItem)
+		let isBoss = phaseIndex == 8 or phaseIndex == 11
+		let isGuard = phaseIndex == 9
+		setupTarget(isBoss ? tdWaveSpecialUnitId(32) : (isGuard ? tdWaveBossGuardUnitId(32) : tdWaveUnitId(29)), isBoss or isGuard ? 32 : 29)
+		if not valid()
+			return
+		let life = phaseIndex == 6 ? target.getMaxHP() * 0.75 : target.getMaxHP() * 0.49
+		if phaseIndex == 10
+			target.setHP(1.0)
+		else if phaseIndex == 11
+			target.setHP(bossNative * 1.25)
+		else
+			target.setHP(life)
+		extraEvents = 0
+		extraAmount = 0.0
+		killerOwner = -1
+		killedBySource = false
+		let baselineHp = target.getHP()
+		doAfter(0.10) ->
+			if run != token or not valid()
+				return
+			regen = (target.getHP() - baselineHp) / 0.10
+			waiting = true
+			PauseUnit(source, false)
+			IssueTargetOrderById(source, Orders.attack, target)
+		doAfter(4.0) ->
+			if run == token and phaseIndex == launchedStep and waiting
+				log("ABORT no actual conditional native hit")
+				cleanup()
+	else
+		if phaseIndex == 13 or phaseIndex == 14
+			if source == null
+				source = CreateUnit(Player(0), TD_ARCHER_LEVEL_1_ID, -1800, 2400, 0)
+				if source == null
+					log("ABORT source recreation failed")
+					cleanup()
+					return
+				SetUnitPathing(source, false)
+				PauseUnit(source, true)
+			setupTarget(tdWaveSpecialUnitId(32), 32)
+			if not valid()
+				return
+			let baselineHp = target.getHP()
+			doAfter(0.10) ->
+				if run != token or not valid()
+					return
+				regen = (target.getHP() - baselineHp) / 0.10
+				let before = target.getHP()
+				DamageEvent.setNextDamageFromCode()
+				DamageEvent.setNextDamageId(FIXED_UNIVERSAL_ID)
+				if phaseIndex == 13
+					source.damageTarget(target, 10.0)
+				else
+					source.damageTarget(target, 10.0, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_UNIVERSAL, WEAPON_TYPE_WHOKNOWS)
+				doAfter(0.10) ->
+					if run != token or not valid()
+						return
+					results[phaseIndex] = "Boss32 fixed10 " + (phaseIndex == 13 ? "CHAOS/UNIVERSAL" : "old NORMAL/UNIVERSAL") + " HP=" + before.toString() + "->" + target.getHP().toString() + " regen/s=" + regen.toString() + " correctedLoss=" + (before + regen * 0.10 - target.getHP()).toString() + " polluted=" + polluted.toString()
+					log(results[phaseIndex])
+					advance()
+		else
+			log("DONE HP observations; inspect contamination, tolerances and true death source before declaring PASS")
+			cleanup()
+
+function onEarly()
+	if not active or DamageEvent.getTarget() != target
+		return
+	if DamageEvent.getSource() != source
+		polluted = true
+		return
+	if DamageEvent.isCode()
+		return
+	if DamageEvent.isSpell() or not waiting
+		polluted = true
+		return
+	waiting = false
+	PauseUnit(source, true)
+	preHp = target.getHP()
+	eventValue = DamageEvent.getAmount()
+	eventAt = getElapsedGameTime()
+	let token = run
+	if phaseIndex == 2
+		// Fixed100 while the native armor debuff is still alive, then expire it.
+		doAfter(0.50) ->
+			if run != token or not valid()
+				return
+			let before = target.getHP()
+			DamageEvent.setNextDamageFromCode()
+			DamageEvent.setNextDamageId(FIXED_PHYSICAL_ID)
+			source.damageTarget(target, 100.0, true, false, ATTACK_TYPE_PIERCE, DAMAGE_TYPE_NORMAL, WEAPON_TYPE_WHOKNOWS)
+			doAfter(0.10) ->
+				if run != token or not valid()
+					return
+				results[2] = "step2 genuine armor seed; fixed100 HP=" + before.toString() + "->" + target.getHP().toString() + " correctedLoss=" + (before + regen * 0.10 - target.getHP()).toString() + " polluted=" + polluted.toString()
+				log(results[2])
+				UnitRemoveItem(source, armor)
+				doAfter(3.50) ->
+					if run == token and valid()
+						advance()
+		return
+	expectedExtra = eventValue * tdEquipmentConditionalBonus(preHp, target.getMaxHP(), tdEquipmentBossDamageEligible(GetUnitTypeId(target)), tdItemSecondaryEffectValue(TD_ITEM_GREEN_WAR_AXE_ID), tdItemSecondaryEffectValue(TD_ITEM_PURPLE_WAR_AXE_ID))
+	if phaseIndex == 8
+		bossNative = eventValue
+	if phaseIndex == 12
+		// Production has already captured its delayed segment; remove before .01s.
+		doAfter(0.0) ->
+			if run == token
+				disposeSource()
+	doAfter(0.10) ->
+		if run != token or not valid()
+			return
+		results[phaseIndex] = "phaseIndex=" + phaseIndex.toString() + " preHP=" + preHp.toString() + " event=" + eventValue.toString() + " expectedExtra=" + expectedExtra.toString() + " extraEvents=" + extraEvents.toString() + " extraValue=" + extraAmount.toString() + " actualHP=" + target.getHP().toString() + " correctedLoss=" + (preHp + regen * (getElapsedGameTime() - eventAt) - target.getHP()).toString() + " alive=" + target.isAlive().toString() + " killerOwner=" + killerOwner.toString() + " hostKill=" + killedBySource.toString() + " polluted=" + polluted.toString()
+		log(results[phaseIndex])
+		advance()
+
+function start()
+	if active or tdIsGameOver() or tdCountActiveLanes() != 1 or not tdIsLaneActive(0)
+		return
+	active = true
+	run += 1
+	phaseIndex = 0
+	bossNative = 0.0
+	for index = 0 to 14
+		results[index] = ""
+	tdLoseLife(0, -10000)
+	source = CreateUnit(Player(0), TD_ARCHER_LEVEL_1_ID, -1800, 2400, 0)
+	if source == null
+		log("ABORT source creation failed")
+		cleanup()
+		return
+	SetUnitPathing(source, false)
+	PauseUnit(source, true)
+	setupTarget(tdWaveUnitId(29), 29)
+	if not valid()
+		return
+	armor = CreateItem(TD_ITEM_BLUE_ARMOR_ID, -1800, 2400)
+	executeItem = CreateItem(TD_ITEM_GREEN_WAR_AXE_ID, -1800, 2400)
+	bossItem = CreateItem(TD_ITEM_PURPLE_WAR_AXE_ID, -1800, 2400)
+	tdRefreshTowerEquipmentBonuses(source)
+	early = DamageEvent.addUnreducedListener(20) ->
+		onEarly()
+	reduced = DamageEvent.addListener(20) ->
+		if active and DamageEvent.getTarget() == target
+			if DamageEvent.getId() == TD_EQUIPMENT_ADDITIONAL_DAMAGE_ID
+				extraEvents += 1
+				extraAmount += DamageEvent.getAmount()
+			else if DamageEvent.isCode() and DamageEvent.getId() != FIXED_PHYSICAL_ID and DamageEvent.getId() != FIXED_UNIVERSAL_ID
+				polluted = true
+	deaths = CreateTrigger()
+	deaths.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
+	deaths.addAction() ->
+		if active and GetTriggerUnit() == target
+			let killer = GetKillingUnit()
+			killerOwner = killer == null ? -1 : GetPlayerId(GetOwningPlayer(killer))
+			killedBySource = killer != null and killer == source
+	log("START fixed100 baseline/armor/expired; universal10 armor0/armor8; native full/half/Boss/guard/lethal/append-kill/source-remove. +10000 diagnostic lives.")
+	advance()
+	let token = run
+	doPeriodically(0.10) cb ->
+		if run != token or not active
+			destroy cb
+		else if not valid()
+			log("ABORT match/lane ended during delayed sample")
+			cleanup()
+			destroy cb
+
+init
+	if not compiletime
+		let chat = CreateTrigger()
+		TriggerRegisterPlayerChatEvent(chat, Player(0), "-equipment-damage", true)
+		TriggerAddAction(chat, function start)
+		let snap = CreateTrigger()
+		TriggerRegisterPlayerChatEvent(snap, Player(0), "-equipment-damage-snapshot", false)
+		TriggerAddAction(snap, function snapshot)
+		let clear = CreateTrigger()
+		TriggerRegisterPlayerChatEvent(clear, Player(0), "-equipment-damage-cleanup", true)
+		TriggerAddAction(clear, function cleanup)
+
+
+
+
+

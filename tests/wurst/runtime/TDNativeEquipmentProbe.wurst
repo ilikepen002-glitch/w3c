@@ -1,0 +1,233 @@
+package TDNativeEquipmentProbe
+import TDTowers
+import TDItems
+import TDInventoryRuntime
+import TDState
+import TDConfig
+import ClosureTimers
+import RegisterEvents
+import Orders
+import ObjectIds
+import TDGroundItemTerrainMask
+
+// Opt-in native engine probe. Never included by a normal map build.
+unit towerA = null
+unit towerB = null
+unit worker = null
+unit holder = null
+item array equipment
+item duplicateBow = null
+boolean started = false
+boolean failed = false
+int transferStep = 0
+int pickups = 0
+int drops = 0
+int upgradeStarts = 0
+int upgradeCancels = 0
+int upgradeFinishes = 0
+int upgradeStage = 0
+int upgradeTicks = 0
+
+function report(string message)
+    ClearTextMessages()
+    DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "EQUIPMENT " + message + " transferStep=" + transferStep.toString() + " pickup=" + pickups.toString() + " drop=" + drops.toString())
+
+function fail(string message)
+    if failed
+        return
+    failed = true
+    report("FAIL " + message)
+
+function contains(unit owner, item target) returns boolean
+    for slot = 0 to 5
+        if UnitItemInSlot(owner, slot) == target
+            return true
+    return false
+
+function checkTower(unit tower, boolean equipped) returns boolean
+    let attack = GetUnitAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID)
+    let speed = GetUnitAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID)
+    let expectedAttack = equipped ? 8 : 0
+    let expectedSpeed = equipped ? 12 : 0
+    let id = GetUnitTypeId(tower)
+    let base = tdTowerBaseRangeForBranch(tdTowerChoiceForUnitTypeId(id), tdTowerLevelForUnitTypeId(id), tdTowerBranchForUnitTypeId(id)).toReal()
+    let expectedRange = base + (equipped ? 90.0 : 0.0)
+    let range = GetUnitAcquireRange(tower)
+    if attack != expectedAttack or speed != expectedSpeed or (range - expectedRange).abs() > 0.5
+        fail("unit=" + id.toRawCode() + " attack=" + attack.toString() + "/" + expectedAttack.toString() + " speed=" + speed.toString() + "/" + expectedSpeed.toString() + " range=" + range.toString() + "/" + expectedRange.toString())
+        return false
+    return true
+
+function checkState() returns boolean
+    for i = 0 to 2
+        if contains(towerA, equipment[i]) != (holder == towerA) or contains(towerB, equipment[i]) != (holder == towerB) or contains(worker, equipment[i]) != (holder == worker)
+            fail("holder mismatch item=" + GetHandleId(equipment[i]).toString())
+            return false
+    return checkTower(towerA, holder == towerA) and checkTower(towerB, holder == towerB)
+
+function transfer(unit next)
+    for i = 0 to 2
+        if holder != null
+            UnitRemoveItem(holder, equipment[i])
+        if next != null and not UnitAddItem(next, equipment[i])
+            fail("UnitAddItem returned false item=" + GetHandleId(equipment[i]).toString())
+            return
+    holder = next
+
+function findWorker()
+    let candidate = GetEnumUnit()
+    if GetUnitTypeId(candidate) == TD_FARMER_UNIT_ID and GetOwningPlayer(candidate) == Player(0)
+        worker = candidate
+
+function onPickup()
+    if started
+        pickups += 1
+
+function onDrop()
+    if started
+        drops += 1
+
+function onUpgradeStart()
+    if GetTriggerUnit() == towerA
+        upgradeStarts += 1
+        if upgradeStage == 1
+            doAfter(0.10) ->
+                if not IssueImmediateOrderById(towerA, Orders.cancel)
+                    fail("cancel upgrade order rejected")
+
+function onUpgradeCancel()
+    if GetTriggerUnit() == towerA
+        upgradeCancels += 1
+
+function onUpgradeFinish()
+    if GetTriggerUnit() == towerA
+        upgradeFinishes += 1
+
+function tickUpgrade()
+    upgradeTicks += 1
+    if upgradeTicks > 80
+        fail("upgrade timeout stage=" + upgradeStage.toString())
+    else if upgradeStage == 1 and upgradeCancels == 1
+        if GetUnitTypeId(towerA) != TD_ARCHER_LEVEL_1_ID or not checkState()
+            fail("cancel did not preserve level1/loadout")
+            return
+        upgradeStage = 2
+        upgradeTicks = 0
+        if not IssueImmediateOrderById(towerA, TD_ARCHER_LEVEL_2_ID)
+            fail("second upgrade order rejected")
+    else if upgradeStage == 2 and upgradeFinishes == 1
+        if GetUnitTypeId(towerA) != TD_ARCHER_LEVEL_2_ID or not checkState()
+            fail("upgrade did not preserve loadout")
+            return
+        upgradeStage = 3
+        transfer(null)
+    else if upgradeStage == 3
+        if upgradeStarts != 2
+            fail("expected exactly two native upgrade starts")
+        else if checkState()
+            upgradeStage = 4
+            duplicateBow = CreateItem(TD_ITEM_WHITE_WAR_AXE_ID, -1696, 2016)
+            if not tdTryGiveEquipmentItem(towerA, equipment[2])
+                fail("first bow scripted admission rejected")
+                return
+            // Native pickup can return true even when the pickup trigger then
+            // rejects the copy. Observe final handles instead of that return.
+            UnitAddItem(towerA, duplicateBow)
+    else if upgradeStage == 4
+        if GetUnitAbilityLevel(towerA, TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID) != 8 or not contains(towerA, equipment[2]) or contains(towerA, duplicateBow) or GetItemTypeId(duplicateBow) != TD_ITEM_WHITE_WAR_AXE_ID or IsItemOwned(duplicateBow)
+            fail("duplicate rejection must preserve first bow and ground copy")
+            return
+        if tdTryGiveEquipmentItem(towerA, duplicateBow)
+            fail("scripted addition accepted duplicate")
+            return
+        let returned = vec2(GetItemX(duplicateBow), GetItemY(duplicateBow))
+        if not tdGroundPointSafeForItem(returned.x, returned.y) or (returned - towerA.getPos()).lengthSq() > 512.0 * 512.0
+            fail("rejected copy did not reach a safe nearby ground point")
+            return
+        UnitRemoveItem(towerA, equipment[2])
+        if not tdTryGiveEquipmentItem(worker, equipment[2]) or not tdTryGiveEquipmentItem(worker, duplicateBow)
+            fail("worker should hold duplicate crafting materials")
+            return
+        upgradeStage = 5
+    else if upgradeStage == 5
+        if GetUnitAbilityLevel(towerA, TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID) != 0 or contains(towerA, equipment[2]) or contains(towerA, duplicateBow) or not contains(worker, equipment[2]) or not contains(worker, duplicateBow)
+            fail("tower should unequip while worker keeps both bows")
+            return
+        UnitRemoveItem(worker, equipment[2])
+        UnitRemoveItem(worker, duplicateBow)
+        upgradeStage = 6
+    else if upgradeStage == 6
+        if checkState() and not contains(towerA, duplicateBow)
+            upgradeStage = 7
+            report("PASS 32 cycles; cancel+upgrade; tower unique8/0; worker copies; starts=" + upgradeStarts.toString())
+
+function start()
+    if started or tdIsGameOver() or tdCountActiveLanes() != 1
+        return
+    let units = CreateGroup()
+    GroupEnumUnitsOfPlayer(units, Player(0), null)
+    ForGroup(units, function findWorker)
+    DestroyGroup(units)
+    if worker == null
+        report("FAIL no worker")
+        return
+    started = true
+    // Isolated stability test only: keep waves active while the finite probe runs.
+    tdLoseLife(0, -10000)
+    tdGainGold(0, 10000)
+    towerA = createUnit(Player(0), TD_ARCHER_LEVEL_1_ID, vec2(-1696, 2016), 0 .fromDeg())
+    towerB = createUnit(Player(0), TD_ORC_LEVEL_1_ID, vec2(-1888, 2016), 0 .fromDeg())
+    equipment[0] = CreateItem(TD_ITEM_WHITE_SWIFT_ID, -1696, 2016)
+    equipment[1] = CreateItem(TD_ITEM_WHITE_SCOPE_ID, -1696, 2016)
+    equipment[2] = CreateItem(TD_ITEM_WHITE_WAR_AXE_ID, -1696, 2016)
+    transfer(towerA)
+    report("START handles=" + GetHandleId(equipment[0]).toString() + "," + GetHandleId(equipment[1]).toString() + "," + GetHandleId(equipment[2]).toString())
+    doPeriodically(0.25) cb ->
+        if failed or upgradeStage == 7
+            destroy cb
+            return
+        if upgradeStage > 0
+            tickUpgrade()
+            return
+        if not checkState()
+            destroy cb
+            return
+        if transferStep == 192
+            upgradeStage = 1
+            report("TRANSFERS PASS; upgrading with loadout")
+            if not IssueImmediateOrderById(towerA, TD_ARCHER_LEVEL_2_ID)
+                fail("upgrade order rejected")
+            return
+        let part = transferStep mod 6
+        if part == 0 or part == 4
+            transfer(null)
+        else if part == 2
+            transfer(towerB)
+        else if part == 3
+            transfer(worker)
+        else
+            transfer(towerA)
+        transferStep += 1
+        if transferStep mod 24 == 0 and not failed
+            report("RUNNING")
+
+init
+    if not compiletime
+        let chat = CreateTrigger()
+        TriggerRegisterPlayerChatEvent(chat, Player(0), "-equipment", true)
+        TriggerAddAction(chat, function start)
+        let pickup = CreateTrigger()
+        pickup.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
+        pickup.addAction(function onPickup)
+        let drop = CreateTrigger()
+        drop.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DROP_ITEM)
+        drop.addAction(function onDrop)
+        let upgrade = CreateTrigger()
+        upgrade.registerAnyUnitEvent(EVENT_PLAYER_UNIT_UPGRADE_START)
+        upgrade.addAction(function onUpgradeStart)
+        let cancel = CreateTrigger()
+        cancel.registerAnyUnitEvent(EVENT_PLAYER_UNIT_UPGRADE_CANCEL)
+        cancel.addAction(function onUpgradeCancel)
+        let finish = CreateTrigger()
+        finish.registerAnyUnitEvent(EVENT_PLAYER_UNIT_UPGRADE_FINISH)
+        finish.addAction(function onUpgradeFinish)

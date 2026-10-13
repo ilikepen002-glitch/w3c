@@ -1,0 +1,99 @@
+diff --git a/wurst/event/DamageEvent.wurst b/wurst/event/DamageEvent.wurst
+index b568682..7149ab6 100644
+--- a/wurst/event/DamageEvent.wurst
++++ b/wurst/event/DamageEvent.wurst
+@@ -156,6 +156,8 @@ class DamageInstance
+     protected bool isCode
+     protected DamageType damageType
+     protected DamageElement damageElement
++    // Causal depth survives deferred processing; sibling hits are independent.
++    protected int causalDepth = 1
+ 
+     protected static thistype current = null
+     protected static int count = 0
+@@ -211,8 +213,6 @@ public class DamageEvent
+     private static LinkedList<DamageInstance> damageList = new LinkedList<DamageInstance>()
+     private static trigger dmgTrg = null
+ 
+-    protected static int recursion = 0
+-
+     /* ON DAMAGE */
+     protected static function onUnreducedDamage()
+         var amount = GetEventDamage()
+@@ -232,17 +232,19 @@ public class DamageEvent
+ 
+         let target = GetTriggerUnit()
+ 
++        var depth = 1
++        if DamageInstance.current != null
++            depth = DamageInstance.current.causalDepth + 1
++        if depth > LIMIT_RECURSION
++            error("There is an infinite loop with the Damage Engine")
++
+         let dmg = new DamageInstance(nextDamageId, GetEventDamageSource(), target, amount, isSpell, isCode, nextDamageType, nextDamageElement)
++        dmg.causalDepth = depth
+ 
+         nextDamageId = 0
+         nextDamageType = UNKNOWN
+         nextDamageElement = null
+         
+-        recursion++
+-
+-        if recursion > LIMIT_RECURSION
+-            error("There is an infinite loop with the Damage Engine")
+-
+         for i = 0 to maxUnreducedPriority
+             var listener = firstUnreducedListeners[i]
+             while listener != null
+@@ -260,7 +262,6 @@ public class DamageEvent
+         
+         if amount == 0.
+             destroy dmg
+-            recursion--
+             return
+         
+         // All events have run and the damage amount is finalized.
+@@ -290,21 +291,20 @@ public class DamageEvent
+                 target.setLife(max(life, 0.42))
+         
+             nullTimer() ->
+-                DamageInstance.current = dmg
+-                onDamage()
++                onDamage(dmg)
+     
+     private static function onTrg()
+         for damage in damageList
+             if damage.target == GetTriggerUnit()
+-                DamageInstance.current = damage
+-                onDamage()
++                onDamage(damage)
+                 damageList.remove(damage)
+         dmgTrg.clearActions()
+         dmgTrg.destr()
+         dmgTrg = null
+ 
+-    protected static function onDamage()
+-        let dmg = DamageInstance.current
++    protected static function onDamage(DamageInstance dmg)
++        let previous = DamageInstance.current
++        DamageInstance.current = dmg
+         
+         if not abort
+             if dmg.isSpell
+@@ -334,8 +334,8 @@ public class DamageEvent
+                 if abort
+                     break
+ 
++        DamageInstance.current = previous
+         destroy dmg
+-        recursion--
+         abort = false
+ 
+     /* LISTENERS */
+@@ -572,4 +572,4 @@ init
+     forUnitsInRect(bj_mapInitialPlayableArea, iter -> begin
+         iter..addAbility(DAMAGE_TYPE_CHECK_ID)
+             ..makeAbilityPermanent(DAMAGE_TYPE_CHECK_ID, true)
+-    end)
+\ No newline at end of file
++    end)

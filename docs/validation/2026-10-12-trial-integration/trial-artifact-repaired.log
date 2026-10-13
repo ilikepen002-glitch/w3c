@@ -1,0 +1,12 @@
+test_corrupt_icons_missing_icon_and_wrong_path_rejected (test_trial_artifact.TrialArtifactTests.test_corrupt_icons_missing_icon_and_wrong_path_rejected) ... ok
+test_current_packaged_trial_bonus_text_and_percent_mutations (test_trial_artifact.TrialArtifactTests.test_current_packaged_trial_bonus_text_and_percent_mutations) ... ok
+test_every_gameplay_override_is_required_and_exact (test_trial_artifact.TrialArtifactTests.test_every_gameplay_override_is_required_and_exact) ... ok
+test_explicit_unit_contract (test_trial_artifact.TrialArtifactTests.test_explicit_unit_contract) ... ok
+test_hero_and_native_parent_change_rejected (test_trial_artifact.TrialArtifactTests.test_hero_and_native_parent_change_rejected) ... ok
+test_no_installation_never_passes_native_model_or_table (test_trial_artifact.TrialArtifactTests.test_no_installation_never_passes_native_model_or_table) ... ok
+test_packaged_icon_hash_paths_and_seven_mips (test_trial_artifact.TrialArtifactTests.test_packaged_icon_hash_paths_and_seven_mips) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.081s
+
+OK

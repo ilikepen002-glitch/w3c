@@ -1,0 +1,1 @@
+{'actual_score_additions': 4297, 'exact_totals': ['2148000001', '2148000000'], 'hud_rank_reward_consistent': True, 'native_precision_boundary': 'Accumulation operands stay below2^21; arbitrary fractional float32 behavior is not emulated by this scalar interpreter'}

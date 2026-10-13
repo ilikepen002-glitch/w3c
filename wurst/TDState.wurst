@@ -1,5 +1,6 @@
 package TDState
 import TDConfig
+import TDWaveFlowState
 
 int array tdLives
 int array tdGold
@@ -16,6 +17,7 @@ boolean tdNextWaveQueued = false
 int tdQueuedWave = 0
 boolean array tdWaveResolvedFlags
 int array tdLaneWaveDropCounts
+int array tdLaneWaveEquipmentGold
 int array tdNativeGoldStateSnapshots
 boolean array tdHasNativeGoldStateSnapshot
 int tdTowerPopulationLimit = 4
@@ -57,6 +59,7 @@ function tdSyncPlayerResources(int playerId)
 
 // 重置本局里所有会变化的状态，避免一次测试的结果污染下一次测试。
 public function tdResetState()
+	tdResetWaveFlowState()
 	tdTeamScore = 0
 	tdGameOver = false
 	tdGlobalWave = 0
@@ -78,6 +81,7 @@ public function tdResetState()
 		for wave = 0 to TD_TRACKED_WAVE_LIMIT - 1
 			tdWaveResolvedFlags[tdWaveResolutionKey(i, wave)] = false
 			tdLaneWaveDropCounts[tdLaneWaveDropKey(i, wave)] = 0
+			tdLaneWaveEquipmentGold[tdWaveResolutionKey(i, wave)] = 0
 		tdSyncPlayerResources(i)
 
 public function tdGetLives(int playerId) returns int
@@ -117,6 +121,18 @@ public function tdMarkLaneWaveDrop(int playerId, int wave)
 	if wave < 0 or wave >= TD_TRACKED_WAVE_LIMIT
 		return
 	tdLaneWaveDropCounts[tdLaneWaveDropKey(playerId, wave)] += 1
+
+// The caller owns the budget rule; state owns atomic consumption and reset.
+public function tdTakeLaneWaveEquipmentGold(int playerId, int wave, int requested, int budget) returns int
+	if not tdIsLanePlayer(playerId) or wave <= 0 or wave >= TD_TRACKED_WAVE_LIMIT or requested <= 0
+		return 0
+	let key = tdWaveResolutionKey(playerId, wave)
+	let remaining = budget - tdLaneWaveEquipmentGold[key]
+	if remaining <= 0
+		return 0
+	let granted = requested < remaining ? requested : remaining
+	tdLaneWaveEquipmentGold[key] += granted
+	return granted
 
 public function tdGetTeamScore() returns int
 	return tdTeamScore
@@ -216,6 +232,8 @@ public function tdGainGold(int playerId, int amount)
 
 public function tdLoseLife(int playerId, int amount)
 	tdLives[playerId] -= amount
+	if tdLives[playerId] < 0
+		tdLives[playerId] = 0
 
 public function tdAddScore(int playerId, int amount)
 	tdLaneScore[playerId] += amount

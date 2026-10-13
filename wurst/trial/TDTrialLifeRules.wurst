@@ -1,0 +1,14 @@
+package TDTrialLifeRules
+import TDTrialRules
+
+public constant int TD_TRIAL_REFILL_PRIORITY = 0
+public constant int TD_TRIAL_CREDIT_PRIORITY = 4
+
+// Runtime will call setLife(maxHP) only before damage while identity is current.
+// Never setAmount(0), modify reduced damage, or suppress the tower/pet proc event.
+public function tdTrialShouldRefill(boolean currentTarget, real eventAmount) returns boolean
+	return currentTarget and eventAmount == eventAmount and eventAmount > 0.0
+
+// This is an equipment qualification only, not a TDWaves Boss identity.
+public function tdTrialEquipmentBossBonusEligible(boolean currentTarget, int sourceLane, int targetLane) returns boolean
+	return currentTarget and tdTrialLaneValid(sourceLane) and sourceLane == targetLane

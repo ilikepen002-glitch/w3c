@@ -1,0 +1,516 @@
+package TDPetManagerTests
+import TDPetData
+import TDPetRules
+import TDPetState
+import TDPetUIState
+import TDPetUIView
+import TDState
+
+function managerPet(int lane) returns TDPet
+	tdResetState()
+	tdSetLaneActive(lane, true)
+	tdPetInitializeLane(lane)
+	let pet = new TDPet(lane, 1, 1)
+	pet.setSkill(0, 0, 1)
+	pet.setSkill(1, 5, 2)
+	tdPetStore(lane, pet).assertTrue()
+	return pet
+
+@Test function managerCapacityHasTwentyIndependentStableSlots()
+	tdResetState()
+	for lane = 0 to 3
+		tdSetLaneActive(lane, true)
+		tdPetInitializeLane(lane)
+		for slot = 0 to 19
+			tdPetStore(lane, new TDPet(lane, slot mod 3 + 1, 1)).assertTrue()
+		tdPetCollectionCount(lane).assertEquals(20)
+		(tdPetAt(lane, 0) != null).assertTrue()
+		(tdPetAt(lane, 19) != null).assertTrue()
+		(tdPetAt(lane, 20) == null).assertTrue()
+		(tdPetAt(lane, -1) == null).assertTrue()
+		let balls = tdPetBallsForLane(lane)
+		tdPetSpendCaptureBall(lane, true).assertFalse()
+		tdPetBallsForLane(lane).assertEquals(balls)
+		let last = tdPetAt(lane, 19)
+		tdPetDiscardOwned(lane, 3).assertTrue()
+		(tdPetAt(lane, 19) == last).assertTrue()
+		let fresh = new TDPet(lane, 2, 2)
+		tdPetStore(lane, fresh).assertTrue()
+		(tdPetAt(lane, 3) == fresh).assertTrue()
+		(tdPetAt(lane, 19) == last).assertTrue()
+	(tdPetAt(0, 19) != tdPetAt(3, 19)).assertTrue()
+
+@Test function managerFixedNumbersPagesAndWrapNavigationSkipHoles()
+	let first = managerPet(0)
+	for slot = 1 to 19
+		tdPetStore(0, new TDPet(0, 1, 1)).assertTrue()
+	for slot = 1 to 18
+		tdPetDiscardOwned(0, slot).assertTrue()
+	tdPetNextOccupied(0, 0, 1).assertEquals(19)
+	tdPetNextOccupied(0, 0, -1).assertEquals(19)
+	tdPetNextOccupied(0, 19, 1).assertEquals(0)
+	tdPetNextOccupied(0, 19, -1).assertEquals(0)
+	tdPetCollectionNumber(0).assertEquals("01")
+	tdPetCollectionNumber(19).assertEquals("20")
+	tdPetPageSlot(0, 9).assertEquals(9)
+	tdPetPageSlot(1, 0).assertEquals(10)
+	tdPetPageSlot(1, 9).assertEquals(19)
+	tdPetPageSlot(2, 0).assertEquals(-1)
+	tdPetPageSlot(0, 10).assertEquals(-1)
+	tdPetDiscardOwned(0, 19).assertTrue()
+	tdPetNextOccupied(0, 0, 1).assertEquals(0)
+	tdPetNextOccupied(0, 0, -1).assertEquals(0)
+	tdPetDiscardOwned(0, 0).assertTrue()
+	tdPetNextOccupied(0, 0, 1).assertEquals(-1)
+	first.released.assertTrue()
+
+@Test function managerQualityIncludesLockedOwnedSkillsAndExcludesProposal()
+	let pet = managerPet(0)
+	pet.setSkill(2, 9, 4)
+	pet.level.assertEquals(1)
+	pet.quality().assertEquals(4)
+	pet.setSkill(2, 9, 1)
+	pet.quality().assertEquals(2)
+	tdPetRerollStones[0] = 2
+	tdPetBeginReroll(0, 0, 2).assertTrue()
+	pet.proposalQuality = 4
+	pet.quality().assertEquals(2)
+	let candidateVersion = pet.proposalVersion
+	tdPetResolveRerollVersion(0, 0, candidateVersion, false).assertTrue()
+	pet.quality().assertEquals(2)
+	tdPetBeginReroll(0, 0, 2).assertTrue()
+	pet.proposalQuality = 4
+	tdPetResolveRerollVersion(0, 0, pet.proposalVersion, true).assertTrue()
+	pet.quality().assertEquals(4)
+	pet.setSkill(2, pet.skillAt(2), 1)
+	pet.quality().assertEquals(2)
+
+@Test function managerPreviewPersistsAcrossCloseAndRecallAndPaysOnlyOnce()
+	let pet = managerPet(0)
+	tdPetRerollStones[0] = 2
+	pet.readyAt = 77.0
+	tdPetBeginReroll(0, 0, 1).assertTrue()
+	let candidate = pet.proposalSkill
+	let quality = pet.proposalQuality
+	let candidateVersion = pet.proposalVersion
+	let session = new TDPetUISession(0)
+	session.open(TD_PET_UI_PREVIEW, 0, 0, pet, 0, 101).assertTrue()
+	session.close()
+	pet.recall()
+	session.open(TD_PET_UI_PREVIEW, 0, 0, pet, 0, 102).assertTrue()
+	pet.proposalSkill.assertEquals(candidate)
+	pet.proposalQuality.assertEquals(quality)
+	pet.proposalVersion.assertEquals(candidateVersion)
+	tdPetRerollStones[0].assertEquals(1)
+	tdPetBeginReroll(0, 0, 1).assertFalse()
+	tdPetResolveRerollVersion(0, 0, candidateVersion + 1, true).assertFalse()
+	tdPetResolveRerollVersion(0, 0, candidateVersion, true).assertTrue()
+	pet.readyAt.assertEquals(77.0)
+	tdPetResolveRerollVersion(0, 0, candidateVersion, true).assertFalse()
+	destroy session
+
+@Test function managerStaleCandidateCannotOverwriteChangedSkills()
+	let pet = managerPet(0)
+	tdPetRerollStones[0] = 1
+	tdPetBeginReroll(0, 0, 1).assertTrue()
+	let candidateVersion = pet.proposalVersion
+	pet.setSkill(0, 1, 3)
+	tdPetResolveRerollVersion(0, 0, candidateVersion, true).assertFalse()
+	pet.skillAt(0).assertEquals(1)
+	pet.proposalVersion.assertEquals(candidateVersion)
+	(pet.proposalSlot >= 0).assertTrue()
+	// Explicit keep discards only this candidate, never rolls/resolves implicitly.
+	tdPetResolveRerollVersion(0, 0, candidateVersion, false).assertTrue()
+	pet.skillAt(0).assertEquals(1)
+	tdPetRerollStones[0].assertEquals(0)
+
+@Test function managerSessionRejectsWrongOwnerCasterAbilityLevelPageAndRepeat()
+	let pet = managerPet(0)
+	let session = new TDPetUISession(0)
+	session.open(TD_PET_UI_DETAIL, 0, 0, pet, 0, 101).assertTrue()
+	let abilityId = tdPetManagerCommandId(6)
+	session.consumeCommand(1, 101, abilityId, 1).assertEquals(-1)
+	session.consumeCommand(0, 100, abilityId, 1).assertEquals(-1)
+	session.consumeCommand(0, 101, abilityId, 2).assertEquals(-1)
+	session.consumeCommand(0, 101, tdPetManagerCommandId(19), 1).assertEquals(-1)
+	session.consumeCommand(0, 101, abilityId, 1).assertEquals(6)
+	session.consumeCommand(0, 101, abilityId, 1).assertEquals(-1)
+	session.open(TD_PET_UI_DETAIL, 0, 0, pet, 0, 102).assertTrue()
+	// Same abilityId reappears; old unit identity still cannot authorize it.
+	session.consumeCommand(0, 101, abilityId, 1).assertEquals(-1)
+	session.consumeCommand(0, 102, abilityId, 1).assertEquals(6)
+	session.open(TD_PET_UI_LIST, 1, 0, pet, 0, 103).assertTrue()
+	let empty = tdPetListAbilityId(0, 0, 0, 0)
+	session.commandAction(0, 103, empty, 1).assertEquals(-1)
+	session.commandAction(0, 103, empty, 2).assertEquals(100)
+	session.consumeCommand(0, 103, tdPetManagerCommandId(4), 1).assertEquals(-1)
+	session.close()
+	session.consumeCommand(0, 103, empty, 2).assertEquals(-1)
+	destroy session
+
+@Test function managerSessionSnapshotsRejectSlotReuseAndEveryRelevantVersion()
+	let pet = managerPet(0)
+	let session = new TDPetUISession(0)
+	session.open(TD_PET_UI_DETAIL, 0, 0, pet, 0, 1).assertTrue()
+	session.snapshotCurrent().assertTrue()
+	pet.level += 1
+	session.snapshotCurrent().assertFalse()
+	session.open(TD_PET_UI_DETAIL, 0, 0, pet, 0, 2).assertTrue()
+	pet.generation += 1
+	session.snapshotCurrent().assertFalse()
+	session.open(TD_PET_UI_DETAIL, 0, 0, pet, 0, 3).assertTrue()
+	pet.setSkill(0, 1, 2)
+	session.snapshotCurrent().assertFalse()
+	session.open(TD_PET_UI_LIST, 0, 0, pet, 0, 4).assertTrue()
+	tdPetDiscardOwned(0, 0).assertTrue()
+	let fresh = new TDPet(0, 1, 2)
+	tdPetStore(0, fresh).assertTrue()
+	session.matchesListCell(0).assertFalse()
+	session.snapshotCurrent().assertFalse()
+	session.open(TD_PET_UI_DETAIL, 0, 0, fresh, 0, 5).assertTrue()
+	fresh.proposalVersion += 1
+	session.snapshotCurrent().assertFalse()
+	destroy session
+
+@Test function managerReleaseSessionAndNonceAreSingleUseAndCloseInvalidates()
+	let pet = managerPet(0)
+	let session = new TDPetUISession(0)
+	let first = tdPetBeginRelease(0, 0)
+	session.open(TD_PET_UI_RELEASE, 0, 0, pet, first, 1).assertTrue()
+	session.consumeCommand(0, 1, tdPetManagerCommandId(15), 1).assertEquals(-1)
+	session.close()
+	tdPetCancelRelease(0)
+	tdPetConfirmRelease(0, first).assertFalse()
+	let second = tdPetBeginRelease(0, 0)
+	session.open(TD_PET_UI_RELEASE, 0, 0, pet, second, 2).assertTrue()
+	session.consumeCommand(0, 1, tdPetManagerCommandId(19), 1).assertEquals(-1)
+	session.consumeCommand(0, 2, tdPetManagerCommandId(19), 1).assertEquals(19)
+	tdPetConfirmRelease(0, second).assertTrue()
+	session.consumeCommand(0, 2, tdPetManagerCommandId(19), 1).assertEquals(-1)
+	tdPetConfirmRelease(0, second).assertFalse()
+	tdPetRerollStones[0].assertEquals(1)
+	destroy session
+
+@Test function managerAllModesMountOnlyTheirWhitelistWithNoGridOverlap()
+	let _pet = managerPet(0)
+	for mode = TD_PET_UI_LIST to TD_PET_UI_RELEASE
+		int array seen
+		for cell = 0 to 11
+			seen[cell] = 0
+		for action = 0 to 120
+			let cell = tdPetActionCell(mode, action)
+			if cell >= 0
+				(cell < 12).assertTrue()
+				seen[cell] += 1
+		for cell = 0 to 11
+			(seen[cell] <= 1).assertTrue()
+	for mode = TD_PET_UI_CLOSED to TD_PET_UI_RELEASE
+		tdPetActionCell(mode, 23).assertEquals(-1)
+		tdPetActionCell(mode, 110).assertEquals(-1)
+		tdPetActionCell(mode, 120).assertEquals(-1)
+	tdPetActionHotkey(19).assertEquals("Y")
+	tdPetActionHotkey(20).assertEquals("N")
+	for cell = 0 to 9
+		(tdPetListHotkey(cell) != "").assertTrue()
+	tdPetListAbilityId(9, 3, 4, 4).assertEquals('L1E9')
+	tdPetListAbilityId(10, 1, 1, 1).assertEquals(0)
+	tdPetManagerCommandId(20).assertEquals('Pm0C')
+	tdPetPreviewAbilityId(1, 15).assertEquals('Ps1F')
+	tdPetManagerCommandId(23).assertEquals(0)
+	tdPetIsDisplayType(tdPetDisplayUnitId(3, 4)).assertTrue()
+	tdPetIsDisplayType(tdPetWildUnitId(1, 3)).assertFalse()
+
+@Test function managerReleaseLastSlotAndStaleSlotReuseCannotDeleteReplacement()
+	let _pet = managerPet(0)
+	for slot = 1 to 19
+		tdPetStore(0, new TDPet(0, 1, 1)).assertTrue()
+	let last = tdPetAt(0, 19)
+	let nonce = tdPetBeginRelease(0, 19)
+	(nonce > 0).assertTrue()
+	tdPetBeginRelease(0, 20).assertEquals(0)
+	// The invalid new request cancels the old ticket, without removing a record.
+	tdPetConfirmRelease(0, nonce).assertFalse()
+	(tdPetAt(0, 19) == last).assertTrue()
+	let stale = tdPetBeginRelease(0, 19)
+	tdPetDiscardOwned(0, 19).assertTrue()
+	let replacement = new TDPet(0, 2, 2)
+	tdPetStore(0, replacement).assertTrue()
+	tdPetConfirmRelease(0, stale).assertFalse()
+	(tdPetAt(0, 19) == replacement).assertTrue()
+	tdPetRerollStones[0].assertEquals(0)
+	let valid = tdPetBeginRelease(0, 19)
+	tdPetConfirmRelease(0, valid).assertTrue()
+	(tdPetAt(0, 19) == null).assertTrue()
+	tdPetRerollStones[0].assertEquals(1)
+
+@Test function managerEmptyLockedFullAndStoppedCultivationFailWithoutCharging()
+	let pet = managerPet(0)
+	tdPetBeginReroll(0, 0, 0).assertFalse()
+	tdPetOpenSlot(0, 0).assertFalse()
+	tdPetRerollStones[0] = 2
+	tdPetSlotStones[0] = 2
+	tdPetBeginReroll(0, 0, 2).assertFalse()
+	tdPetRerollStones[0].assertEquals(2)
+	pet.setSkill(2, 9, 4)
+	pet.setSkill(3, 10, 2)
+	tdPetUnlockedSlots(pet.level).assertEquals(2)
+	tdPetBeginReroll(0, 0, 3).assertTrue()
+	tdPetRerollStones[0].assertEquals(1)
+	tdPetOpenSlot(0, 0).assertFalse()
+	tdPetResolveRerollVersion(0, 0, pet.proposalVersion, false).assertTrue()
+	tdPetOpenSlot(0, 0).assertFalse()
+	tdPetSlotStones[0].assertEquals(2)
+	tdSetLaneActive(0, false)
+	tdPetBeginReroll(0, 0, 0).assertFalse()
+	tdPetOpenSlot(0, 0).assertFalse()
+	tdPetRerollStones[0].assertEquals(1)
+	tdPetSlotStones[0].assertEquals(2)
+
+function installManagerSession(int lane, int mode, int key, TDPet pet, int nonce) returns TDPetUISession
+	if tdPetUISessions[lane] != null
+		destroy tdPetUISessions[lane]
+	let session = new TDPetUISession(lane)
+	tdPetUISessions[lane] = session
+	tdPetSelectedSlot[lane] = 0
+	session.open(mode, 0, 0, pet, nonce, key).assertTrue()
+	return session
+
+@Test function managerProductionAdmissionRejectsDirtyAndOldCasterBeforeTransaction()
+	let pet = managerPet(0)
+	tdPetRerollStones[0] = 2
+	let session = installManagerSession(0, TD_PET_UI_CULTIVATE, 101, pet, 0)
+	let abilityId = tdPetManagerCommandId(TD_PET_ACTION_REROLL_FIRST)
+	pet.setSkill(0, 1, 3)
+	tdPetRefreshDisplay(0)
+	session.dirty.assertTrue()
+	session.currentKey.assertEquals(101)
+	session.epoch.assertEquals(1)
+	session.admitCommand(0, 101, abilityId, 1).assertEquals(TD_PET_COMMAND_STALE)
+	session.active.assertFalse()
+	session.currentKey.assertEquals(0)
+	tdPetRerollStones[0].assertEquals(2)
+	pet.proposalSlot.assertEquals(-1)
+	session.admitCommand(0, 101, abilityId, 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.open(TD_PET_UI_CULTIVATE, 0, 0, pet, 0, 102).assertTrue()
+	session.admitCommand(0, 101, abilityId, 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(1, 102, abilityId, 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 102, abilityId, 2).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 102, abilityId, 1).assertEquals(TD_PET_ACTION_REROLL_FIRST)
+	tdPetBeginReroll(0, 0, 0).assertTrue()
+	tdPetRerollStones[0].assertEquals(1)
+	session.admitCommand(0, 102, abilityId, 1).assertEquals(TD_PET_COMMAND_INVALID)
+	tdPetCloseManager(0)
+
+@Test function managerSharedListenerIgnoresUnrelatedSpellsWithoutConsumingSession()
+	let pet = managerPet(0)
+	let session = installManagerSession(0, TD_PET_UI_CULTIVATE, 101, pet, 0)
+	// A shared spell listener also sees farmer, combat and unmounted UI spells.
+	session.admitCommand(0, 101, TD_PET_CAPTURE_ABILITY_ID, 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 101, TD_PET_COLLECTION_ABILITY_ID, 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 101, tdPetListAbilityId(0, 1, 2, 2), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 101, 0, 0).assertEquals(TD_PET_COMMAND_INVALID)
+	session.active.assertTrue()
+	session.currentKey.assertEquals(101)
+	session.epoch.assertEquals(1)
+	session.admitCommand(0, 101, tdPetManagerCommandId(TD_PET_ACTION_REROLL_FIRST), 1).assertEquals(TD_PET_ACTION_REROLL_FIRST)
+	session.active.assertFalse()
+	tdPetCloseManager(0)
+
+@Test function managerProductionStableRefreshEmptyAndPollKeepIdentity()
+	let pet = managerPet(0)
+	tdPetRerollStones[0] = 1
+	tdPetBeginReroll(0, 0, 0).assertTrue()
+	let session = installManagerSession(0, TD_PET_UI_PREVIEW, 201, pet, 0)
+	session.admitCommand(0, 201, tdPetManagerCommandId(7), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.active.assertTrue()
+	session.currentKey.assertEquals(201)
+	session.epoch.assertEquals(1)
+	tdPetRefreshDisplay(0)
+	session.dirty.assertFalse()
+	session.currentKey.assertEquals(201)
+	session.open(TD_PET_UI_LIST, 0, 0, pet, 0, 202).assertTrue()
+	session.admitCommand(0, 202, tdPetListAbilityId(1, 0, 0, 0), 1).assertEquals(TD_PET_COMMAND_EMPTY)
+	session.active.assertTrue()
+	session.currentKey.assertEquals(202)
+	tdPetRefreshDisplay(0)
+	session.epoch.assertEquals(2)
+	session.currentKey.assertEquals(202)
+	tdPetCloseManager(0)
+
+@Test function managerProductionSelectionClosesOnlyCurrentOrOrdinaryAndKeepsCandidate()
+	let pet = managerPet(0)
+	tdPetRerollStones[0] = 1
+	tdPetBeginReroll(0, 0, 0).assertTrue()
+	let candidateVersion = pet.proposalVersion
+	let session = installManagerSession(0, TD_PET_UI_PREVIEW, 301, pet, 0)
+	tdPetHandleSelectionIdentity(1, 301, tdPetDisplayUnitId(1, 1), 0, true)
+	session.active.assertTrue()
+	tdPetHandleSelectionIdentity(0, 301, tdPetDisplayUnitId(1, 1), 0, false)
+	session.active.assertTrue()
+	tdPetHandleSelectionIdentity(0, 300, tdPetDisplayUnitId(1, 1), 0, false)
+	tdPetHandleSelectionIdentity(0, 300, tdPetDisplayUnitId(1, 1), 0, true)
+	tdPetHandleSelectionIdentity(0, 300, 0, 0, false)
+	session.currentKey.assertEquals(301)
+	// A native ordinary SELECTED fires for both replacement and shift-add.
+	tdPetHandleSelectionIdentity(0, 400, 'hpea', 0, false)
+	session.active.assertFalse()
+	pet.proposalVersion.assertEquals(candidateVersion)
+	(pet.proposalSlot >= 0).assertTrue()
+	tdPetRerollStones[0].assertEquals(0)
+	session.open(TD_PET_UI_PREVIEW, 0, 0, pet, 0, 302).assertTrue()
+	tdPetHandleSelectionIdentity(0, 301, tdPetDisplayUnitId(1, 1), 0, true)
+	session.active.assertTrue()
+	tdPetHandleSelectionIdentity(0, 302, tdPetDisplayUnitId(1, 1), 0, true)
+	session.active.assertFalse()
+	pet.proposalVersion.assertEquals(candidateVersion)
+
+@Test function managerProductionLeavingReleaseInvalidatesNonceAndPollNeverRebuilds()
+	let pet = managerPet(0)
+	let nonce = tdPetBeginRelease(0, 0)
+	let session = installManagerSession(0, TD_PET_UI_RELEASE, 401, pet, nonce)
+	tdPetHandleSelectionIdentity(0, 500, 'hpea', 0, false)
+	session.active.assertFalse()
+	tdPetConfirmRelease(0, nonce).assertFalse()
+	pet.released.assertFalse()
+	let fresh = tdPetBeginRelease(0, 0)
+	session.open(TD_PET_UI_RELEASE, 0, 0, pet, fresh, 402).assertTrue()
+	pet.paused = true
+	tdPetRefreshDisplay(0)
+	session.dirty.assertTrue()
+	session.currentKey.assertEquals(402)
+	session.epoch.assertEquals(2)
+	tdPetConfirmRelease(0, fresh).assertFalse()
+	session.admitCommand(0, 402, tdPetManagerCommandId(19), 1).assertEquals(TD_PET_COMMAND_STALE)
+	pet.released.assertFalse()
+	tdPetRerollStones[0].assertEquals(0)
+	tdPetCloseManager(0)
+
+@Test function managerPausedRestrictionAndLockedRestrictionHaveExplicitReasons()
+	let pet = managerPet(0)
+	pet.paused = true
+	tdPetSkillRestriction(pet, 0, pet.skillAt(0)).assertEquals(" [施工/升级暂停：完工后恢复]")
+	tdPetSkillRestriction(pet, 2, 9).assertEquals(" [共鸣锁定：本路第4波完成解锁]")
+	pet.paused = false
+	tdPetSkillRestriction(pet, 0, pet.skillAt(0)).assertEquals(" [未绑定：需绑定塔]")
+
+@Test function managerPreviewHasEightCellsAndFourUniqueChoiceKeys()
+	let pet = managerPet(0)
+	tdPetRerollStones[0] = 2
+	tdPetBeginReroll(0, 0, 0).assertTrue()
+	let session = installManagerSession(0, TD_PET_UI_PREVIEW, 901, pet, 0)
+	session.abilities[0].assertEquals(tdPetPreviewAbilityId(0, pet.proposalOldSkill))
+	session.abilities[1].assertEquals(tdPetPreviewArrowAbilityId(0))
+	session.abilities[2].assertEquals(tdPetPreviewArrowAbilityId(1))
+	session.abilities[3].assertEquals(tdPetPreviewAbilityId(1, pet.proposalSkill))
+	session.actions[4].assertEquals(TD_PET_ACTION_KEEP)
+	session.actions[7].assertEquals(TD_PET_ACTION_ADOPT)
+	session.actions[8].assertEquals(TD_PET_ACTION_CONTINUE)
+	session.actions[11].assertEquals(TD_PET_ACTION_PREVIEW_DETAIL)
+	session.abilities[5].assertEquals(0)
+	session.abilities[6].assertEquals(0)
+	session.abilities[9].assertEquals(0)
+	session.abilities[10].assertEquals(0)
+	tdPetActionHotkey(17).assertEquals("Q")
+	tdPetActionHotkey(18).assertEquals("E")
+	tdPetActionHotkey(21).assertEquals("W")
+	tdPetActionHotkey(22).assertEquals("R")
+	for action = 0 to 3
+		session.admitCommand(0, 901, tdPetManagerCommandId(action), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 901, tdPetManagerCommandId(7), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 901, tdPetManagerCommandId(15), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 901, tdPetManagerCommandId(16), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	tdPetCloseManager(0)
+
+@Test function managerDetailReleaseUsesWAndCancelRejectsOldConfirmCaster()
+	let pet = managerPet(0)
+	let session = installManagerSession(0, TD_PET_UI_DETAIL, 931, pet, 0)
+	session.actions[11].assertEquals(TD_PET_ACTION_RELEASE)
+	tdPetActionHotkey(15).assertEquals("W")
+	session.admitCommand(0, 931, tdPetManagerCommandId(7), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 931, tdPetManagerCommandId(15), 1).assertEquals(TD_PET_ACTION_RELEASE)
+	let nonce = tdPetBeginRelease(0, 0)
+	session.open(TD_PET_UI_RELEASE, 0, 0, pet, nonce, 932).assertTrue()
+	session.admitCommand(0, 931, tdPetManagerCommandId(19), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 932, tdPetManagerCommandId(15), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 932, tdPetManagerCommandId(20), 1).assertEquals(TD_PET_ACTION_CANCEL)
+	tdPetCancelRelease(0)
+	session.open(TD_PET_UI_DETAIL, 0, 0, pet, 0, 933).assertTrue()
+	session.admitCommand(0, 932, tdPetManagerCommandId(19), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	tdPetConfirmRelease(0, nonce).assertFalse()
+	tdPetRerollStones[0].assertEquals(0)
+	tdPetSlotStones[0].assertEquals(0)
+	session.open(TD_PET_UI_CULTIVATE, 0, 0, pet, 0, 934).assertTrue()
+	session.abilities[9].assertEquals(0)
+	session.admitCommand(0, 934, tdPetManagerCommandId(15), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	tdPetCloseManager(0)
+
+@Test function managerContinueReplacesOnlyCandidateOnceAndOldCasterCannotChargeAgain()
+	let pet = managerPet(0)
+	tdPetRerollStones[0] = 3
+	pet.readyAt = 88.0
+	tdPetBeginReroll(0, 0, 0).assertTrue()
+	let candidateVersion = pet.proposalVersion
+	let revision = pet.revision
+	let generation = pet.generation
+	let ownedQuality = pet.quality()
+	let oldSkill = pet.skillAt(0)
+	let session = installManagerSession(0, TD_PET_UI_PREVIEW, 911, pet, 0)
+	session.admitCommand(0, 911, tdPetManagerCommandId(21), 1).assertEquals(TD_PET_ACTION_CONTINUE)
+	tdPetContinueReroll(0, 0, pet, candidateVersion, revision).assertTrue()
+	tdPetRerollStones[0].assertEquals(1)
+	pet.proposalVersion.assertEquals(candidateVersion + 1)
+	pet.proposalOldSkill.assertEquals(oldSkill)
+	pet.skillAt(0).assertEquals(oldSkill)
+	pet.skillCount.assertEquals(2)
+	pet.quality().assertEquals(ownedQuality)
+	pet.revision.assertEquals(revision)
+	pet.generation.assertEquals(generation)
+	pet.readyAt.assertEquals(88.0)
+	session.admitCommand(0, 911, tdPetManagerCommandId(21), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	tdPetContinueReroll(0, 0, pet, candidateVersion, revision).assertFalse()
+	session.open(TD_PET_UI_PREVIEW, 0, 0, pet, 0, 912).assertTrue()
+	session.admitCommand(0, 911, tdPetManagerCommandId(21), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 912, tdPetManagerCommandId(22), 1).assertEquals(TD_PET_ACTION_PREVIEW_DETAIL)
+	session.open(TD_PET_UI_DETAIL, 0, 0, pet, 0, 913).assertTrue()
+	pet.proposalVersion.assertEquals(candidateVersion + 1)
+	tdPetRerollStones[0].assertEquals(1)
+	tdPetCloseManager(0)
+
+@Test function managerContinueFailurePreservesCandidateAndBalance()
+	let pet = managerPet(0)
+	tdPetRerollStones[0] = 1
+	tdPetBeginReroll(0, 0, 0).assertTrue()
+	let candidateVersion = pet.proposalVersion
+	let revision = pet.revision
+	let candidate = pet.proposalSkill
+	let quality = pet.proposalQuality
+	tdPetContinueReroll(0, 0, pet, candidateVersion, revision).assertFalse()
+	tdPetRerollStones[0] = 1
+	tdPetContinueReroll(0, 0, pet, candidateVersion + 1, revision).assertFalse()
+	tdPetContinueReroll(0, 0, pet, candidateVersion, revision + 1).assertFalse()
+	let other = new TDPet(0, 1, 1)
+	tdPetContinueReroll(0, 0, other, candidateVersion, revision).assertFalse()
+	destroy other
+	tdSetLaneActive(0, false)
+	tdPetContinueReroll(0, 0, pet, candidateVersion, revision).assertFalse()
+	pet.proposalVersion.assertEquals(candidateVersion)
+	pet.proposalSkill.assertEquals(candidate)
+	pet.proposalQuality.assertEquals(quality)
+	pet.proposalSlot.assertEquals(0)
+	tdPetRerollStones[0].assertEquals(1)
+
+@Test function managerOwnedCountStalesListAndDetailAndMalformedPortraitRejectsOpen()
+	let pet = managerPet(0)
+	let session = installManagerSession(0, TD_PET_UI_LIST, 921, pet, 0)
+	session.abilities[0].assertEquals(tdPetListAbilityId(0, pet.species, pet.quality(), 2))
+	tdPetSlotStones[0] = 1
+	tdPetOpenSlot(0, 0).assertTrue()
+	session.snapshotCurrent().assertFalse()
+	session.open(TD_PET_UI_DETAIL, 0, 0, pet, 0, 922).assertTrue()
+	pet.skillCount = 4
+	session.snapshotCurrent().assertFalse()
+	pet.skillCount = 0
+	session.open(TD_PET_UI_LIST, 0, 0, pet, 0, 923).assertFalse()
+	session.active.assertFalse()
+	pet.skillCount = 3
+	tdPetCloseManager(0)

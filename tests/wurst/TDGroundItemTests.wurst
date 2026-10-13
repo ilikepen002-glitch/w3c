@@ -1,0 +1,194 @@
+package TDGroundItemTests
+import TDGroundItemRules
+import TDGroundItemTerrainMask
+import TDItemData
+import TDPetData
+import TDConfig
+import TDCraftingLogic
+
+@Test function groundCraftOnlyConsumesGuaranteedTriples()
+	for quality = TD_ITEM_QUALITY_WHITE to TD_ITEM_QUALITY_BLUE
+		for count = 0 to 2
+			tdGroundCraftBatchSize(quality, count).assertEquals(0)
+		for count = 3 to 9
+			tdGroundCraftBatchSize(quality, count).assertEquals(3)
+		tdGroundCraftBatchSize(quality, -1).assertEquals(0)
+	for quality = 4 to 5
+		tdGroundCraftBatchSize(quality, 100).assertEquals(0)
+	tdGroundCraftBatchSize(0, 3).assertEquals(0)
+	for roll = 1 to 100
+		tdCraftSucceeds(tdGroundCraftBatchSize(2, 3), roll).assertTrue()
+
+@Test function groundGroupsSeparateBallsAndIgnoreUnknownItems()
+	tdGroundItemGroup(TD_ITEM_WHITE_WAR_AXE_ID).assertEquals(1)
+	tdGroundItemGroup(TD_PET_BALL_ITEM_ID).assertEquals(5)
+	tdGroundItemGroup(0).assertEquals(0)
+
+@Test function groundCircleIncludesBoundaryAndExcludesAdjacentPile()
+	tdGroundPointInUpgradeCircle(144, 0, 0, 0).assertTrue()
+	tdGroundPointInUpgradeCircle(145, 0, 0, 0).assertFalse()
+	for pileGroup = 1 to 5
+		let center = tdGroundItemPileCenter(0, pileGroup)
+		for index = 0 to 29
+			let point = tdGroundItemPilePosition(0, pileGroup, index)
+			tdGroundPointInUpgradeCircle(point.x, point.y, center.x, center.y).assertTrue()
+			if pileGroup < 5
+				let neighbor = tdGroundItemPileCenter(0, pileGroup + 1)
+				tdGroundPointInUpgradeCircle(point.x, point.y, neighbor.x, neighbor.y).assertFalse()
+
+@Test function groundPileOverflowReusesSafeCells()
+	let first = tdGroundItemPilePosition(0, 1, 0)
+	let overflow = tdGroundItemPilePosition(0, 1, 15)
+	first.x.assertEquals(overflow.x)
+	first.y.assertEquals(overflow.y)
+
+@Test function groundSortKeepsAllFourLanePositionsStableAndSeparated()
+	tdGroundItemLane(-1, 1).assertEquals(0)
+	tdGroundItemLane(1, 1).assertEquals(1)
+	tdGroundItemLane(1, -1).assertEquals(2)
+	tdGroundItemLane(-1, -1).assertEquals(3)
+	tdGroundItemLane(0, 1).assertEquals(1)
+	tdGroundItemLane(1, 0).assertEquals(1)
+	tdGroundItemLane(0, 0).assertEquals(1)
+	tdGroundItemLane(-1, 0).assertEquals(0)
+	tdGroundItemLane(0, -1).assertEquals(2)
+	for lane = 0 to 3
+		for pileGroup = 1 to 5
+			let center = tdGroundItemPileCenter(lane, pileGroup)
+			for index = 0 to 29
+				let point = tdGroundItemPilePosition(lane, pileGroup, index)
+				tdGroundItemLane(point.x, point.y).assertEquals(lane)
+				tdGroundPointInUpgradeCircle(point.x, point.y, center.x, center.y).assertTrue()
+				let repeat = tdGroundItemPilePosition(tdGroundItemLane(point.x, point.y), pileGroup, index)
+				repeat.x.assertEquals(point.x)
+				repeat.y.assertEquals(point.y)
+				if pileGroup < 5
+					let neighbor = tdGroundItemPileCenter(lane, pileGroup + 1)
+					tdGroundPointInUpgradeCircle(point.x, point.y, neighbor.x, neighbor.y).assertFalse()
+	tdGroundItemPileCenter(0, 1).x.assertEquals(-768.0)
+	tdGroundItemPileCenter(1, 1).x.assertEquals(1024.0)
+	tdGroundItemPileCenter(2, 1).y.assertEquals(-2816.0)
+	tdGroundItemPileCenter(3, 1).x.assertEquals(-1024.0)
+
+@Test function groundBatchZeroThroughNineKeepsOneOrTwoLeftovers()
+	for count = 0 to 9
+		var remaining = count
+		var triples = 0
+		while tdGroundCraftBatchSize(1, remaining) > 0
+			remaining -= tdGroundCraftBatchSize(1, remaining)
+			triples += 1
+		triples.assertEquals(count div 3)
+		remaining.assertEquals(ModuloInteger(count, 3))
+
+@Test function groundMixedEquipmentTypesKeepTheSameQualityGroup()
+	tdGroundItemGroup(TD_ITEM_WHITE_WAR_AXE_ID).assertEquals(1)
+	tdGroundItemGroup(TD_ITEM_WHITE_SCOPE_ID).assertEquals(1)
+	tdGroundItemGroup(TD_ITEM_WHITE_ARMOR_ID).assertEquals(1)
+	tdGroundItemGroup(TD_ITEM_GREEN_WAR_AXE_ID).assertEquals(2)
+	tdGroundItemGroup(TD_ITEM_BLUE_SCOPE_ID).assertEquals(3)
+	tdGroundItemGroup(TD_ITEM_PURPLE_SCOPE_ID).assertEquals(4)
+
+@Test function groundProductPilesFollowFrozenPlayerAndNextQuality()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for quality = TD_ITEM_QUALITY_WHITE to TD_ITEM_QUALITY_BLUE
+			let nextQuality = tdCraftResultQuality(quality)
+			for index = 0 to 29
+				let product = tdGroundItemPilePosition(lane, nextQuality, index)
+				tdGroundItemLane(product.x, product.y).assertEquals(lane)
+				let center = tdGroundItemPileCenter(lane, nextQuality)
+				tdGroundPointInUpgradeCircle(product.x, product.y, center.x, center.y).assertTrue()
+
+@Test function groundAutomaticSortOnlyAcceptsConnectedLowlandRoads()
+	tdGroundSortSourceLane(-2320.0, 2672.0).assertEquals(0)
+	tdGroundSortSourceLane(2448.0, 2704.0).assertEquals(1)
+	tdGroundSortSourceLane(2352.0, -3056.0).assertEquals(2)
+	tdGroundSortSourceLane(-2320.0, -3056.0).assertEquals(3)
+	// A road's bounding rectangle also contains grass, which is not a source.
+	tdGroundSortSourceLane(-2048.0, 2048.0).assertEquals(-1)
+	tdGroundSortSourceLane(2048.0, 2048.0).assertEquals(-1)
+	tdGroundSortSourceLane(2048.0, -2432.0).assertEquals(-1)
+	tdGroundSortSourceLane(-2048.0, -2432.0).assertEquals(-1)
+
+@Test function groundAutomaticSortLeavesCentralMergerAndCliffEdgesAlone()
+	// These are known lowland cells from the pre-protection review mask.
+	tdGroundSortSourceLane(-1008.0, 16.0).assertEquals(-1)
+	tdGroundSortSourceLane(368.0, 16.0).assertEquals(-1)
+	tdGroundSortSourceLane(368.0, -16.0).assertEquals(-1)
+	tdGroundSortSourceLane(-1008.0, -16.0).assertEquals(-1)
+	tdGroundSortSourceLane(0.0, 0.0).assertEquals(-1)
+	// Mixed-layer cliff quads adjacent to the northern road are ambiguous.
+	tdGroundSortSourceLane(-1024.0, 2672.0).assertEquals(-1)
+	tdGroundSortSourceLane(-1024.001, 2672.0).assertEquals(0)
+
+@Test function groundAutomaticSortHasFiniteDisjointSourceBounds()
+	tdGroundSortSourceMin(0).x.assertEquals(-3072.0)
+	tdGroundSortSourceMin(0).y.assertEquals(128.0)
+	tdGroundSortSourceMax(0).x.assertEquals(-1024.0)
+	tdGroundSortSourceMax(0).y.assertEquals(2816.0)
+	tdGroundSortSourceMin(1).x.assertEquals(1024.0)
+	tdGroundSortSourceMin(1).y.assertEquals(384.0)
+	tdGroundSortSourceMax(1).x.assertEquals(2816.0)
+	tdGroundSortSourceMax(1).y.assertEquals(2816.0)
+	tdGroundSortSourceMin(2).x.assertEquals(896.0)
+	tdGroundSortSourceMin(2).y.assertEquals(-3200.0)
+	tdGroundSortSourceMax(2).x.assertEquals(2816.0)
+	tdGroundSortSourceMax(2).y.assertEquals(-512.0)
+	tdGroundSortSourceMin(3).x.assertEquals(-2944.0)
+	tdGroundSortSourceMin(3).y.assertEquals(-3200.0)
+	tdGroundSortSourceMax(3).x.assertEquals(-896.0)
+	tdGroundSortSourceMax(3).y.assertEquals(-512.0)
+
+@Test function groundAutomaticSortRejectsUnknownAndOutOfMapPoints()
+	tdGroundSortSourceLane(-4096.001, 0.0).assertEquals(-1)
+	tdGroundSortSourceLane(4096.0, 0.0).assertEquals(-1)
+	tdGroundSortSourceLane(0.0, -4096.001).assertEquals(-1)
+	tdGroundSortSourceLane(0.0, 4096.0).assertEquals(-1)
+	tdGroundPointSafeForItem(-4096.001, 0.0).assertFalse()
+	tdGroundPointSafeForItem(4096.0, 0.0).assertFalse()
+	tdGroundPointSafeForItem(0.0, -4096.001).assertFalse()
+	tdGroundPointSafeForItem(0.0, 4096.0).assertFalse()
+	tdGroundSortDestinationAllowed(-1, -768.0, 2560.0).assertFalse()
+	tdGroundSortDestinationAllowed(4, -768.0, 2560.0).assertFalse()
+
+@Test function groundAutomaticSortKeepsExistingPilesOnSameLanePlateau()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for pileGroup = 1 to 5
+			for index = 0 to 14
+				let point = tdGroundItemPilePosition(lane, pileGroup, index)
+				tdGroundSortDestinationAllowed(lane, point.x, point.y).assertTrue()
+				tdGroundPointSafeForItem(point.x, point.y).assertTrue()
+				tdGroundSortSourceLane(point.x, point.y).assertEquals(-1)
+				for other = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+					if other != lane
+						tdGroundSortDestinationAllowed(other, point.x, point.y).assertFalse()
+	// Lowland source points can be safe to return an item, never pile targets.
+	tdGroundPointSafeForItem(-2320.0, 2672.0).assertTrue()
+	tdGroundSortDestinationAllowed(0, -2320.0, 2672.0).assertFalse()
+
+@Test function groundUpgradeSortKeepsItsLaneAndIncludesAllEquipmentQualities()
+	for requestedLane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for sourceLane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			for quality = TD_ITEM_QUALITY_WHITE to TD_ITEM_QUALITY_PURPLE
+				tdGroundSortItemEligible(requestedLane, sourceLane, quality).assertEquals(requestedLane == sourceLane)
+			tdGroundSortItemEligible(requestedLane, sourceLane, 5).assertFalse()
+
+@Test function groundUpgradeSortLeavesGrassPilesAndCentralMergerAlone()
+	for quality = TD_ITEM_QUALITY_WHITE to TD_ITEM_QUALITY_PURPLE
+		tdGroundSortItemEligible(0, tdGroundSortSourceLane(-2320.0, 2672.0), quality).assertTrue()
+		tdGroundSortItemEligible(0, tdGroundSortSourceLane(-2048.0, 2048.0), quality).assertFalse()
+		tdGroundSortItemEligible(0, tdGroundSortSourceLane(-1008.0, 16.0), quality).assertFalse()
+		let pile = tdGroundItemPileCenter(0, quality)
+		tdGroundSortItemEligible(0, tdGroundSortSourceLane(pile.x, pile.y), quality).assertFalse()
+
+@Test function groundPeriodicSortRetainsAllLanesAndCaptureBalls()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for pileGroup = 1 to 5
+			tdGroundSortItemEligible(-1, lane, pileGroup).assertTrue()
+		for requestedLane = -2 to TD_ACTIVE_PLAYER_COUNT
+			tdGroundSortItemEligible(requestedLane, lane, 0).assertFalse()
+			tdGroundSortItemEligible(requestedLane, lane, 6).assertFalse()
+		tdGroundSortItemEligible(-2, lane, 1).assertFalse()
+		tdGroundSortItemEligible(TD_ACTIVE_PLAYER_COUNT, lane, 1).assertFalse()
+	for requestedLane = -1 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdGroundSortItemEligible(requestedLane, -1, 1).assertFalse()
+		tdGroundSortItemEligible(requestedLane, TD_ACTIVE_PLAYER_COUNT, 1).assertFalse()

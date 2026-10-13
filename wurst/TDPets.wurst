@@ -1,0 +1,15 @@
+package TDPets
+import public TDPetData
+import public TDPetRules
+import public TDPetWild
+import public TDPetState
+import public TDPetRuntime
+import public TDPetCombat
+import public TDPetUI
+import TDPetObjectGen
+
+public function tdSetupPets()
+	tdPetSetupRuntime()
+	tdPetSetupCombat()
+	tdPetSetupUI()
+

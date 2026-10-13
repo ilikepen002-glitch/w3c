@@ -1,0 +1,89 @@
+{
+  "archive": {
+    "new_assets": 30,
+    "new_members": 170,
+    "old_members": 140
+  },
+  "global_channels": 158,
+  "jass": {
+    "diagnostic_relocations": 66,
+    "feature_functions_checked_separately": [
+      "TDPet_init",
+      "TDPet_rollSkill",
+      "TDPet_summary",
+      "bridge_onCommand",
+      "call_doPeriodically_TDPetUI",
+      "dispatch_TDPet_TDPet_summary",
+      "init_TDPetData",
+      "init_TDPetUI",
+      "init_TDPetUIState",
+      "navigate",
+      "onCommand",
+      "onDeploy",
+      "showCultivation",
+      "showReleaseConfirmation",
+      "tdPetBeginReroll",
+      "tdPetDisplayUnitId",
+      "tdPetOpenSlot",
+      "tdPetRefreshDisplay",
+      "tdPetSetupUI",
+      "tdPetShowCollection",
+      "tdPetSlotAbilityId",
+      "tdPetUICommandId",
+      "tdRefreshStatusBoard"
+    ],
+    "named_allocator_changes": 43,
+    "protected_functions": 1550,
+    "protected_globals": 1016,
+    "temp_bijections": {
+      "call_doAfter_TDPetCombat": {
+        "temp170": "temp161",
+        "temp171_x": "temp162_x",
+        "temp171_y": "temp162_y",
+        "temp172": "temp163"
+      },
+      "call_doPeriodically_TDPetCombat": {
+        "temp169": "temp160"
+      },
+      "tdGhoulCorpseExplosionDamageForBranch": {
+        "temp93": "temp84"
+      },
+      "tdHandleArcherSplitArrowDamage": {
+        "temp109": "temp100"
+      },
+      "tdHandleOrcBladestormCast": {
+        "temp110": "temp101",
+        "temp111": "temp102"
+      },
+      "tdPetHandleBallPickup": {
+        "temp76": "temp70"
+      },
+      "tdPetSpawnWild": {
+        "temp85": "temp76",
+        "temp86": "temp77",
+        "temp87": "temp78"
+      },
+      "tdPetWildTravelSpeed": {
+        "temp185": "temp171"
+      },
+      "tdQueueArcherSplitArrowVolley": {
+        "temp112": "temp103"
+      },
+      "tdSetupDialogTrigger": {
+        "temp113": "temp104"
+      },
+      "tdSpawnWave": {
+        "temp88": "temp79",
+        "temp89": "temp80",
+        "temp90": "temp81"
+      }
+    },
+    "type_sites": 98
+  },
+  "objects": {
+    "added_abilities": 175,
+    "added_units": 10,
+    "changed_fields": 281,
+    "unchanged_fields": 24516
+  }
+}

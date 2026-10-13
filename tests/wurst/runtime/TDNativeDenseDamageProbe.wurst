@@ -1,0 +1,144 @@
+package TDNativeDenseDamageProbe
+import TDConfig
+import TDState
+import TDSpawn
+import TDWaves
+import TDTowers
+import ClosureTimers
+import RegisterEvents
+import DamageEvent
+import ErrorHandling
+import Table
+import Orders
+
+unit caster = null
+unit array targets
+real array initialHp
+int array hits
+constant Table indices = new Table()
+trigger chat = null
+trigger spells = null
+DamageListener damageListener = null
+boolean started = false
+boolean failed = false
+boolean effectSeen = false
+boolean complete = false
+int count = 0
+int ticks = 0
+int stage = 0
+int stageTicks = 0
+
+function report(string message)
+    DisplayTimedTextToPlayer(Player(0), 0, 0, 600, "DENSE " + message)
+
+function fail(string message)
+    if not failed
+        failed = true
+        report("FAIL " + message)
+
+function onSpell()
+    if GetTriggerUnit() == caster and GetSpellAbilityId() == TD_ORC_BLADESTORM_ABILITY_ID and GetSpellTargetUnit() == targets[0]
+        if effectSeen
+            fail("duplicate cast")
+        effectSeen = true
+        stageTicks = 0
+
+function spawnTarget()
+    let enemy = tdCreateEnemy(0, 29, tdWaveUnitId(29))
+    if enemy == null or not enemy.isAlive() or GetUnitTypeId(enemy) != tdWaveUnitId(29)
+        fail("target creation")
+        if enemy != null
+            RemoveUnit(enemy)
+        return
+    SetUnitPathing(enemy, false)
+    PauseUnit(enemy, true)
+    SetUnitX(enemy, -1890.0 + (count mod 10) * 20.0)
+    SetUnitY(enemy, 2672.0 + (count div 10) * 20.0)
+    indices.saveInt(GetHandleId(enemy), count + 1)
+    targets[count] = enemy
+    initialHp[count] = GetWidgetLife(enemy)
+    count += 1
+
+function cleanup()
+    if caster != null
+        RemoveUnit(caster)
+    caster = null
+    for index = 0 to count - 1
+        indices.removeInt(GetHandleId(targets[index]))
+        RemoveUnit(targets[index])
+        targets[index] = null
+    DestroyTrigger(chat)
+    DestroyTrigger(spells)
+    if damageListener != null
+        destroy damageListener
+    tdSetLaneActive(0, true)
+
+function advance()
+    stageTicks += 1
+    if stage == 0
+        for _i = 1 to 5
+            if not failed and count < 50
+                spawnTarget()
+        if count == 50
+            caster = CreateUnit(Player(0), TD_ORC_LEVEL_6_B_ID, -1800, 2400, 0)
+            if caster == null or GetUnitTypeId(caster) != TD_ORC_LEVEL_6_B_ID
+                fail("caster creation")
+                return
+            SetUnitPathing(caster, false)
+            stage = 1
+            stageTicks = 0
+            if not IssueTargetOrderById(caster, Orders.slow, targets[0])
+                fail("cast order rejected")
+        return
+    for index = 0 to count - 1
+        if not targets[index].isAlive() or targets[index].getPos().distanceTo(caster.getPos()) > tdOrcBladestormRadius()
+            fail("target died or left radius index=" + index.toString())
+    if not effectSeen
+        if stageTicks >= 50
+            fail("no native spell effect")
+        return
+    if stageTicks == 1
+        PauseUnit(caster, true)
+    if stageTicks == 32
+        for index = 0 to count - 1
+            if hits[index] != 5 or GetWidgetLife(targets[index]) >= initialHp[index]
+                fail("target=" + index.toString() + " hits=" + hits[index].toString() + " expected5")
+        if not failed
+            complete = true
+            report("PASS 50 targets x 5 real production pulses; no engine errors")
+
+function start()
+    if started or tdIsGameOver() or tdCountActiveLanes() != 1 or not tdIsLaneActive(0) or GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_USED) != 0
+        return
+    started = true
+    tdSetLaneActive(0, false)
+    lastError = ""
+    damageListener = DamageEvent.addListener() ->
+        if DamageEvent.getSource() == caster and DamageEvent.isCode() and indices.hasInt(GetHandleId(DamageEvent.getTarget()))
+            let index = indices.loadInt(GetHandleId(DamageEvent.getTarget())) - 1
+            hits[index] += 1
+            if (DamageEvent.getUnreducedOriginalAmount() - 35.0).abs() > 0.01 or DamageEvent.getAmount() <= 0
+                fail("wrong pulse amount index=" + index.toString())
+    PanCameraToTimed(-1850, 2550, 0)
+    report("START native Bladestorm on 50 targets")
+    // This monitor is separate from the production damage/cast threads.
+    doPeriodically(0.1) cb ->
+        ticks += 1
+        if lastError != ""
+            fail("engine error: " + lastError)
+        if not failed and not complete
+            advance()
+        if ticks >= 120
+            fail("watchdog timeout")
+        if failed or complete
+            cleanup()
+            destroy cb
+
+init
+    if not compiletime
+        chat = CreateTrigger()
+        TriggerRegisterPlayerChatEvent(chat, Player(0), "-dense", true)
+        TriggerAddAction(chat, function start)
+        spells = CreateTrigger()
+        spells.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+        spells.addAction(function onSpell)

@@ -1,0 +1,6 @@
+Verified stdlib: /workspace/shared/fixed-build-tools-20261011/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Running: /workspace/shared/fixed-build-tools-20261011/bin/grill install --quiet
+Restored original wurst.build byte-for-byte
+Verified stdlib: /workspace/shared/fixed-build-tools-20261011/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Verified stdlib: /workspace/shared/w3c-deploy-cap-20261011/_build/dependencies/WurstStdlib2-source: 90b45617eda50c15703e8cb2ec3241d3c7b61816
+Restored original .vscode/settings.json bytes and existence state

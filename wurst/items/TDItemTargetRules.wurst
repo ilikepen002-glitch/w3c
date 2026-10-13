@@ -1,0 +1,15 @@
+package TDItemTargetRules
+import TDWaves
+import TDTrialIdentity
+import TDTrialLifeRules
+
+public function tdEquipmentBossDamageEligible(int targetType) returns boolean
+	// Reward/wave and shield Boss identity remains exactly the four real Bosses.
+	return tdIsBossUnitTypeId(targetType)
+
+public function tdEquipmentBossDamageEligible(unit target, int sourceLane) returns boolean
+	if target == null
+		return false
+	if tdEquipmentBossDamageEligible(GetUnitTypeId(target))
+		return true
+	return tdTrialEquipmentBossBonusEligible(tdTrialTargetValid(target, sourceLane), sourceLane, target.getUserData() div 10000)

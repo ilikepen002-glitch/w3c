@@ -1,0 +1,87 @@
+[
+  {
+    "gate": "EquipmentAbility",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "Evolution",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "GroundItem",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "GroundUpgrade",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "PetUI",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "PlayerTooltip",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "SlowAbility",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "BladestormAbility",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "TowerPlacement",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "TowerSale",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "TowerUiGround",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "TowerUpgrade",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "PetDeployment",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "BuilderConstruction",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "BuilderControl",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "BloodlustAutocast",
+    "returncode": 0,
+    "passed": true
+  },
+  {
+    "gate": "PetManagerDelta",
+    "returncode": 0,
+    "passed": true
+  }
+]

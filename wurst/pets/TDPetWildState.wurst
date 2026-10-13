@@ -1,0 +1,25 @@
+package TDPetWildState
+
+public constant int TD_PET_WILD_ALIVE = 0
+public constant int TD_PET_WILD_CAPTURED = 1
+public constant int TD_PET_WILD_EXPIRED = 2
+
+public class TDPetWildState
+	int lane
+	int state = TD_PET_WILD_ALIVE
+	real deadline
+	construct(int lane, real appearedAt)
+		this.lane = lane
+		deadline = appearedAt + 60.0
+
+	function canCapture(boolean alive, real now) returns boolean
+		return state == TD_PET_WILD_ALIVE and alive and now < deadline
+
+	function settle(int nextState, real now) returns boolean
+		if state != TD_PET_WILD_ALIVE or (nextState != TD_PET_WILD_CAPTURED and nextState != TD_PET_WILD_EXPIRED)
+			return false
+		if nextState == TD_PET_WILD_CAPTURED and now >= deadline
+			state = TD_PET_WILD_EXPIRED
+			return false
+		state = nextState
+		return true

@@ -14,6 +14,8 @@ param(
 
     [string]$Notes = "",
 
+    [string]$Model = "gemini-2.5-flash",
+
     [ValidateSet("text", "json")]
     [string]$OutputFormat = "text",
 
@@ -84,21 +86,49 @@ function Quote-ProcessArg {
     return $Value
 }
 
-if (-not (Get-Command gemini -ErrorAction SilentlyContinue)) {
-    throw "Gemini CLI was not found in PATH."
+function Convert-JsonToAscii {
+    param(
+        [string]$JsonText
+    )
+
+    if ($null -eq $JsonText) {
+        return ""
+    }
+
+    $builder = New-Object System.Text.StringBuilder
+    foreach ($char in $JsonText.ToCharArray()) {
+        $codePoint = [int][char]$char
+        if ($codePoint -le 0x7F) {
+            [void]$builder.Append($char)
+        } else {
+            [void]$builder.AppendFormat("\u{0:x4}", $codePoint)
+        }
+    }
+
+    return $builder.ToString()
 }
 
-$geminiCommand = Get-Command gemini -ErrorAction Stop
-$geminiBaseDir = Split-Path $geminiCommand.Source -Parent
-$geminiNodePath = Join-Path $geminiBaseDir "node.exe"
-$geminiEntryPath = Join-Path $geminiBaseDir "node_modules/@google/gemini-cli/bundle/gemini.js"
+$useGeminiApi = -not [string]::IsNullOrWhiteSpace($env:GEMINI_API_KEY)
+$geminiNodePath = $null
+$geminiEntryPath = $null
 
-if (-not (Test-Path $geminiEntryPath)) {
-    throw "Gemini CLI entry file was not found at $geminiEntryPath"
-}
+if (-not $useGeminiApi) {
+    if (-not (Get-Command gemini -ErrorAction SilentlyContinue)) {
+        throw "Gemini CLI was not found in PATH, and GEMINI_API_KEY is not set."
+    }
 
-if (-not (Test-Path $geminiNodePath)) {
-    $geminiNodePath = "node.exe"
+    $geminiCommand = Get-Command gemini -ErrorAction Stop
+    $geminiBaseDir = Split-Path $geminiCommand.Source -Parent
+    $geminiNodePath = Join-Path $geminiBaseDir "node.exe"
+    $geminiEntryPath = Join-Path $geminiBaseDir "node_modules/@google/gemini-cli/bundle/gemini.js"
+
+    if (-not (Test-Path $geminiEntryPath)) {
+        throw "Gemini CLI entry file was not found at $geminiEntryPath"
+    }
+
+    if (-not (Test-Path $geminiNodePath)) {
+        $geminiNodePath = "node.exe"
+    }
 }
 
 $repoRoot = Get-GitOutput -GitArgs @("rev-parse", "--show-toplevel")
@@ -154,6 +184,28 @@ $changedFilesBlock = if ($uniqueFiles.Count -gt 0) {
     "- (no changed files auto-detected)"
 }
 
+$reviewSpecificInstructions = if ($ReviewKind -eq "proposal") {
+@"
+Proposal review expectations:
+- Treat Task, Changed files, Validation summary, and Additional notes as the proposed implementation plan.
+- Review whether the approach targets the right source files, stays out of generated outputs, is appropriately scoped, and has a credible validation plan.
+- If there is no diff yet, that is expected. Do not treat the lack of code changes as a problem by itself.
+- Challenge weak assumptions, risky sequencing, missing alternatives, and gaps between the stated goal and the proposed approach.
+"@
+} else {
+@"
+Implementation review expectations:
+- Review the actual code changes and validation evidence for defects, regressions, missing tests, and build or gameplay risk.
+- Use the diff as primary evidence and call out when the validation summary does not adequately cover the touched behavior.
+"@
+}
+
+$reviewPriorityInstruction = if ($ReviewKind -eq "proposal") {
+    "- Prioritize plan flaws, risky assumptions, wrong file targeting, missing validation, and over- or under-scoping over style-only commentary."
+} else {
+    "- Prioritize real defects, regression risk, and missing validation over style-only commentary."
+}
+
 $prompt = @"
 You are ReviewAgent for a Warcraft III WurstScript map project.
 
@@ -167,6 +219,8 @@ Repository constraints:
 - Standard validation uses tools\Run-WurstChecks.bat.
 - Build-sensitive validation uses build-and-deploy-test-map.bat.
 - Focus on gameplay correctness, initialization order, compiletime object generation safety, rawcode and upgrade-chain consistency, test adequacy, and regression risk.
+
+$reviewSpecificInstructions
 
 Changed files:
 $changedFilesBlock
@@ -183,7 +237,7 @@ $Notes
 Diff stat:
 $(Limit-Text -Text $diffStat -MaxChars 4000 -Label "diff stat")
 
-Unified diff:
+Unified diff (may be empty for proposal reviews):
 $(Limit-Text -Text $diffText -MaxChars 40000 -Label "diff")
 
 Output requirements:
@@ -195,7 +249,7 @@ Output requirements:
   Findings:
   Risks:
   Suggested follow-up:
-- Prioritize real defects, regression risk, and missing validation over style-only commentary.
+$reviewPriorityInstruction
 - If context is insufficient, state what is missing instead of inventing facts.
 "@
 
@@ -204,9 +258,77 @@ if ($DryRun) {
     return
 }
 
+$apiUri = "https://generativelanguage.googleapis.com/v1beta/models/$($Model):generateContent"
+
+if ($useGeminiApi) {
+    $requestBody = @{
+        contents = @(
+            @{
+                role = "user"
+                parts = @(
+                    @{
+                        text = $prompt
+                    }
+                )
+            }
+        )
+        generationConfig = @{
+            temperature = 0
+            maxOutputTokens = 4096
+        }
+    } | ConvertTo-Json -Depth 8
+    $requestBody = Convert-JsonToAscii $requestBody
+
+    try {
+        $apiResponse = Invoke-RestMethod `
+            -Uri $apiUri `
+            -Method Post `
+            -Headers @{ "x-goog-api-key" = $env:GEMINI_API_KEY } `
+            -ContentType "application/json" `
+            -Body $requestBody `
+            -Proxy $env:HTTP_PROXY `
+            -TimeoutSec 180
+    } catch {
+        $errorText = $_.ToString()
+        if ($_.ErrorDetails -and -not [string]::IsNullOrWhiteSpace($_.ErrorDetails.Message)) {
+            $errorText += "`n" + $_.ErrorDetails.Message
+        } elseif ($_.Exception.Response) {
+            $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+            $errorBody = $reader.ReadToEnd()
+            if (-not [string]::IsNullOrWhiteSpace($errorBody)) {
+                $errorText += "`n" + $errorBody
+            }
+        }
+        throw "Gemini API review command failed.`n$errorText"
+    }
+
+    if ($OutputFormat -eq "json") {
+        $rawText = $apiResponse | ConvertTo-Json -Depth 20
+    } else {
+        $rawText = (
+            $apiResponse.candidates |
+            ForEach-Object { $_.content.parts } |
+            ForEach-Object { $_ } |
+            ForEach-Object { $_.text }
+        ) -join ""
+    }
+
+    if ($OutputFile) {
+        Set-Content -Path $OutputFile -Value $rawText -Encoding UTF8
+    }
+
+    $rawText | Write-Output
+    return
+}
+
+$sessionId = [guid]::NewGuid().ToString()
+
 $geminiArgs = @(
     $geminiEntryPath,
     "--prompt=",
+    "--model", $Model,
+    "--skip-trust",
+    "--session-id", $sessionId,
     "--output-format", $OutputFormat,
     "--approval-mode", "plan"
 )

@@ -1,0 +1,8 @@
+{
+  "upstream": "https://github.com/wurstscript/WurstStdlib2.git",
+  "baseCommit": "6604e4a9b04bce1ff723a2b81eb90a1dd7c0c25f",
+  "fixedTree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+  "referenceCommit": "44d9465b78d241d3a2f7d226a1b382b85bab91ba",
+  "source": "E:/WurstToolchain/WurstStdlib2-source",
+  "dependency": "file:///E:/WurstToolchain/WurstStdlib2-source:pre1.29"
+}

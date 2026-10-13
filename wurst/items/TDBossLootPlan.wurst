@@ -1,0 +1,50 @@
+package TDBossLootPlan
+import TDItemData
+import TDDropLogic
+import TDBossRewardRules
+
+// Freeze the Boss guarantee before ordinary compensation can consume its budget.
+public class TDBossLootPlan
+	int wave
+	int bossCount = 1
+	int sharedCount = 0
+	int remainingNormalBudget
+	int normalAttempts = 0
+	int bonusQuality = 0
+	boolean bonusTried = false
+	int array[8] qualities
+
+	construct(int wave, int usedBudget, int firstBossQuality, boolean secondBoss, boolean thirdBoss)
+		this.wave = wave
+		qualities[0] = firstBossQuality
+		if secondBoss
+			qualities[bossCount] = TD_ITEM_QUALITY_BLUE
+			bossCount += 1
+		if thirdBoss
+			qualities[bossCount] = TD_ITEM_QUALITY_PURPLE
+			bossCount += 1
+		sharedCount = bossCount
+		remainingNormalBudget = IMaxBJ(0, tdLaneDropBudgetForWave(wave) - IMaxBJ(0, usedBudget) - bossCount)
+
+	function tryNormal(int chanceRoll, int qualityRoll) returns boolean
+		if normalAttempts >= tdBossNormalDropAttempts(wave) or remainingNormalBudget <= 0
+			return false
+		normalAttempts += 1
+		if chanceRoll < 1 or chanceRoll > tdNormalDropChanceBasisPointsForWave(wave)
+			return false
+		qualities[sharedCount] = tdDropQualityForRoll(wave, false, false, qualityRoll)
+		sharedCount += 1
+		remainingNormalBudget -= 1
+		return true
+
+	function appendBonus(int chanceRoll, int qualityRoll) returns boolean
+		if bonusTried
+			return false
+		bonusTried = true
+		if not tdBossBonusDropSucceeds(chanceRoll)
+			return false
+		bonusQuality = tdDropQualityForRoll(wave, false, false, qualityRoll)
+		return true
+
+	function totalCount() returns int
+		return sharedCount + (bonusQuality > 0 ? 1 : 0)

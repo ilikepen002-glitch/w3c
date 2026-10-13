@@ -1,13 +1,29 @@
 package TDSpawn
 import TDConfig
+import TDAuraState
 import TDState
 import initlater TDGame
 import TDWaves
 import ClosureTimers
 import Orders
+import TDPetWild
+import TDEnemyMechanicData
+import TDEnemyMechanicRuntime
+import TDWaveFlowState
+import Table
+
+constant Table tdEnemyMatchEpochs = new Table()
+
+public function tdEnemyBelongsToCurrentMatch(unit enemy) returns boolean
+	return enemy != null and tdEnemyMatchEpochs.hasInt(enemy.getHandleId()) and tdEnemyMatchEpochs.loadInt(enemy.getHandleId()) == tdFlowEpoch()
+
+public function tdForgetEnemyMatch(unit enemy)
+	if enemy != null
+		tdEnemyMatchEpochs.removeInt(enemy.getHandleId())
 
 rect tdWorldRect = GetWorldBounds()
 int tdLaneEnemyCheckPlayer = -1
+int tdLaneEnemyCheckWave = 0
 boolean tdLaneEnemyCheckFound = false
 // 测试环境可能缺少 World Editor rect 句柄；兜底时用接近 32x32 路点的半径，
 // 避免在拐角前过早切到下一个 waypoint。
@@ -33,10 +49,16 @@ function tdSetEnemyData(unit enemy, int playerId, int wave, int state)
 public function tdEnemyWasLeaked(unit enemy) returns boolean
 	return tdEnemyState(enemy) >= 99
 
+public function tdEnemyDeathWasSettled(unit enemy) returns boolean
+	return tdEnemyState(enemy) >= 98
+
+public function tdMarkEnemyKilled(unit enemy)
+	tdSetEnemyData(enemy, tdEnemyLaneId(enemy), tdEnemyWave(enemy), 98)
+
 public function tdMarkEnemyLeaked(unit enemy)
 	tdSetEnemyData(enemy, tdEnemyLaneId(enemy), tdEnemyWave(enemy), 99)
 
-function tdEnemyWaypointIndex(unit enemy) returns int
+public function tdEnemyWaypointIndex(unit enemy) returns int
 	return tdEnemyState(enemy)
 
 function tdSetEnemyWaypointIndex(unit enemy, int index)
@@ -69,11 +91,8 @@ public function tdEnemyLaneOrderIdForTest() returns int
 public function tdEnemyLaneOrderNameForTest() returns string
 	return "move"
 
-function tdEnemyPinsLaneOrder() returns boolean
-	return true
-
 function tdEnemyNeedsLaneOrderRefresh(int currentOrder, int laneOrderId) returns boolean
-	return currentOrder != laneOrderId or tdEnemyPinsLaneOrder()
+	return currentOrder != laneOrderId
 
 public function tdEnemyNeedsLaneOrderRefreshForTest(int currentOrder, int laneOrderId) returns boolean
 	return tdEnemyNeedsLaneOrderRefresh(currentOrder, laneOrderId)
@@ -85,6 +104,8 @@ public function tdEnemyShouldIssueLaneOrderForTest(int currentOrder, int laneOrd
 	return tdEnemyShouldIssueLaneOrder(currentOrder, laneOrderId, waypointAdvanced)
 
 function tdOrderEnemyAlongLane(unit enemy, boolean waypointAdvanced)
+	if not tdEnemyBelongsToCurrentMatch(enemy)
+		return
 	let playerId = tdEnemyLaneId(enemy)
 	if not tdIsLaneActive(playerId)
 		return
@@ -93,8 +114,8 @@ function tdOrderEnemyAlongLane(unit enemy, boolean waypointAdvanced)
 		return
 	let waypointIndex = tdEnemyWaypointIndex(enemy)
 	if waypointIndex < tdLaneWaypointCount(playerId)
-		// 魔兽原生受击反应可能在保留 move order 的同时把怪物朝向拉回攻击者，
-		// 所以这里持续重下路线命令，把逃跑朝向钉在当前 waypoint 上。
+		// 只有路线命令被中断或 waypoint 推进时才重新下令，
+		// 避免每次轮询都重置正在执行的 move order。
 		enemy.issuePointOrderById(laneOrderId, tdLaneWaypointPosition(playerId, waypointIndex))
 	else
 		enemy.issuePointOrderById(laneOrderId, tdLaneExitPosition(playerId))
@@ -110,6 +131,16 @@ public function tdCreateEnemy(int playerId, int wave, int unitId) returns unit
 	if tdEnemyRemovesGuardPosition()
 		enemy.removeGuardPosition()
 	tdSetEnemyData(enemy, playerId, wave, 0)
+	tdEnemyMatchEpochs.saveInt(enemy.getHandleId(), tdFlowEpoch())
+	var role = TD_ENEMY_ROLE_NORMAL
+	if tdIsBossUnitTypeId(unitId)
+		role = TD_ENEMY_ROLE_BOSS
+	else if tdIsBossGuardUnitTypeId(unitId)
+		role = TD_ENEMY_ROLE_GUARD
+	else if tdIsEliteUnitTypeId(unitId)
+		role = TD_ENEMY_ROLE_ELITE
+	tdEnemyMechanicRegister(enemy, playerId, wave, role)
+	tdAuraRegisterTarget(enemy, false)
 	tdOrderEnemyAlongLane(enemy)
 	return enemy
 
@@ -137,28 +168,36 @@ function tdEnemyReachedWaypoint(unit enemy, int playerId, int waypointIndex) ret
 	return tdEnemyReachedWaypointPosition(playerId, waypointIndex, enemy.getPos())
 
 function tdAdvanceEnemyWaypoint(unit enemy)
-	if enemy == null or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdEnemyWasLeaked(enemy)
+	if tdPetIsWild(enemy) or enemy == null or not tdEnemyBelongsToCurrentMatch(enemy) or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdEnemyWasLeaked(enemy)
 		return
 	let playerId = tdEnemyLaneId(enemy)
 	let waypointIndex = tdEnemyWaypointIndex(enemy)
 	var waypointAdvanced = false
 	if waypointIndex < tdLaneWaypointCount(playerId)
 		if tdEnemyReachedWaypoint(enemy, playerId, waypointIndex)
+			// This is the reached index BEFORE increment, not the next destination.
+			tdEnemyMechanicOnWaypoint(enemy, waypointIndex)
 			tdSetEnemyWaypointIndex(enemy, waypointIndex + 1)
 			waypointAdvanced = true
 	tdOrderEnemyAlongLane(enemy, waypointAdvanced)
 
 function tdLaneEnemyCheckEnum()
 	let enemy = GetEnumUnit()
-	if not tdLaneEnemyCheckFound and enemy != null and enemy.isAlive() and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == tdLaneEnemyCheckPlayer
-		tdLaneEnemyCheckFound = true
+	// Keep every eligibility guard ahead of the optional wave match; avoid mixed and/or.
+	if enemy == null or not tdEnemyBelongsToCurrentMatch(enemy) or tdLaneEnemyCheckFound or tdPetIsWild(enemy) or not enemy.isAlive() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID) or tdEnemyLaneId(enemy) != tdLaneEnemyCheckPlayer
+		return
+	if tdLaneEnemyCheckWave != 0 and tdEnemyWave(enemy) != tdLaneEnemyCheckWave
+		return
+	tdLaneEnemyCheckFound = true
 
 function tdWaypointAdvanceEnum()
 	let enemy = GetEnumUnit()
 	tdAdvanceEnemyWaypoint(enemy)
 
-public function tdLaneHasLivingEnemies(int playerId) returns boolean
+// wave 0 queries all waves. ForGroup completes synchronously without yielding.
+public function tdLaneHasLivingEnemies(int playerId, int wave) returns boolean
 	tdLaneEnemyCheckPlayer = playerId
+	tdLaneEnemyCheckWave = wave
 	tdLaneEnemyCheckFound = false
 	let g = CreateGroup()
 	g.enumUnitsInRect(tdWorldRect)
@@ -166,32 +205,62 @@ public function tdLaneHasLivingEnemies(int playerId) returns boolean
 	g.destr()
 	return tdLaneEnemyCheckFound
 
-function tdWaitForLaneToClear(int playerId, int wave)
+public function tdLaneHasLivingEnemies(int playerId) returns boolean
+	return tdLaneHasLivingEnemies(playerId, 0)
+
+function tdWaitForLaneToClear(int playerId, int wave, int epoch)
 	doPeriodically(0.40) cb ->
-		if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId)
+		if epoch != tdFlowEpoch() or tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsWaveResolved(playerId, wave)
 			destroy cb
-		else if not tdLaneHasLivingEnemies(playerId)
+		else if not tdLaneHasLivingEnemies(playerId, wave)
 			destroy cb
 			tdHandleWaveFinished(playerId, wave)
 
-// 按时间间隔逐个刷出这一波的怪，等该路所有存活敌人都消失后，
+// 按时间间隔逐个刷出这一波的怪，等该路这一波的存活敌人都消失后，
 // 再由 TDGame 决定发奖励还是开启下一波。
+public function tdLaneCanReceiveSpawns(int playerId) returns boolean
+	if not tdIsLanePlayer(playerId)
+		return false
+	return not tdIsGameOver() and tdIsLaneActive(playerId) and not tdIsLaneDefeated(playerId) and not tdIsLaneFinished(playerId)
+
 public function tdSpawnWave(int playerId, int wave)
-	if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId)
+	if not tdLaneCanReceiveSpawns(playerId)
+		return
+	if tdIsPureBossWave(wave)
+		return
+	let epoch = tdFlowEpoch()
+	let generation = tdFlowBeginSpawn(playerId)
+	if generation == 0
 		return
 	let count = tdWaveEnemyCount(wave)
 	let interval = tdWaveSpawnInterval(wave)
+	tdPetWildOnWave(playerId, wave)
 	doPeriodicallyCounted(interval, count) cb ->
-		tdCreateEnemy(playerId, wave, tdWaveSpawnUnitId(wave, cb.getCount()))
+		if not tdFlowSpawnCallbackValid(playerId, epoch, generation) or not tdLaneCanReceiveSpawns(playerId)
+			tdFlowEndSpawn(playerId, generation)
+			destroy cb
+			return
+		let typeId = tdWaveSpawnUnitId(wave, cb.getCount())
+		tdCreateEnemy(playerId, wave, typeId)
+		if cb.getCount() == 1
+			tdFlowEndSpawn(playerId, generation)
 	doAfter(interval * count + 0.25) ->
-		tdWaitForLaneToClear(playerId, wave)
+		if tdFlowSpawnCallbackValid(playerId, epoch, generation) and tdLaneCanReceiveSpawns(playerId)
+			tdWaitForLaneToClear(playerId, wave, epoch)
 
 public function tdStartLaneWaypointWatcher()
+	let epoch = tdFlowEpoch()
 	// 用轻量轮询检测区域进入，避免每个 waypoint 都单独创建触发器和状态。
 	doPeriodically(0.20) cb ->
+		if epoch != tdFlowEpoch()
+			destroy cb
+			return
 		let g = CreateGroup()
 		g.enumUnitsInRect(tdWorldRect)
 		ForGroup(g, function tdWaypointAdvanceEnum)
 		g.destr()
+		tdEnemyMechanicsTick()
 		if tdIsGameOver()
 			destroy cb
+
+

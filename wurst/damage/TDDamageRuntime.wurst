@@ -1,0 +1,131 @@
+package TDDamageRuntime
+import TDDamageState
+import TDConfig
+import TDState
+import TDSpawn
+import TDTowerData
+import DamageEvent
+import Table
+import ClosureTimers
+import LinkedList
+import TDTrialIdentity
+import GameTimer
+
+// Keep source references for the match: lingering native damage retains its tower.
+class TDDamageTowerBinding
+	unit source
+	TDDamageRecord record
+	construct(unit source, TDDamageRecord record)
+		this.source = source
+		this.record = record
+
+Table tdDamageTowers = new Table()
+LinkedList<TDDamageTowerBinding> tdDamageBindings = new LinkedList<TDDamageTowerBinding>()
+boolean tdDamageReady = false
+constant int TD_DAMAGE_TAG_LIMIT = 80
+int tdDamageLiveTags = 0
+
+public function tdDamageTrackTower(unit tower) returns TDDamageRecord
+	if tower == null
+		return null
+	let key = tower.getHandleId()
+	if tdDamageTowers.hasInt(key)
+		let existingBinding = tdDamageTowers.loadInt(key) castTo TDDamageTowerBinding
+		if existingBinding.source == tower
+			if GetUnitTypeId(tower) != 0
+				existingBinding.record.label = GetUnitName(tower)
+			return existingBinding.record
+	let lane = GetPlayerId(GetOwningPlayer(tower))
+	if not tdIsLanePlayer(lane) or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return null
+	let record = tdDamageLedger.register(lane, GetUnitName(tower))
+	let binding = new TDDamageTowerBinding(tower, record)
+	tdDamageBindings.add(binding)
+	tdDamageTowers.saveInt(key, binding castTo int)
+	return record
+
+public function tdDamageRetireTower(unit tower)
+	// Cancellation/rejection must not register a tower that never completed.
+	if tower == null or not tdDamageTowers.hasInt(tower.getHandleId())
+		return
+	let binding = tdDamageTowers.loadInt(tower.getHandleId()) castTo TDDamageTowerBinding
+	if binding.source == tower
+		binding.record.retired = true
+
+public function tdDamageRefreshCatalog()
+	for binding in tdDamageBindings
+		if not binding.record.retired and binding.source != null and GetUnitTypeId(binding.source) != 0
+			binding.record.label = GetUnitName(binding.source)
+	tdDamageLedger.refreshOrder()
+public function tdResetDamageStatistics()
+	tdDamageTowers.flush()
+	for binding in tdDamageBindings
+		binding.source = null
+		destroy binding
+	tdDamageBindings.clear()
+	tdDamageLedger.reset()
+	// Existing tags still own their expiry decrement, even across a reset.
+
+function tdDamageShowHit(unit target, real amount)
+	if tdDamageLiveTags >= TD_DAMAGE_TAG_LIMIT
+		return
+	let tag = CreateTextTag()
+	if tag == null
+		return
+	tdDamageLiveTags += 1
+	SetTextTagText(tag, tdDamageText(amount), 0.020)
+	SetTextTagPos(tag, GetUnitX(target), GetUnitY(target), 55.0)
+	SetTextTagColor(tag, 255, 210, 80, 255)
+	SetTextTagVelocity(tag, 0.0, 0.035)
+	SetTextTagPermanent(tag, false)
+	SetTextTagLifespan(tag, 0.9)
+	SetTextTagFadepoint(tag, 0.55)
+	// Allocate all handles synchronously; visibility alone follows the local view.
+	SetTextTagVisibility(tag, IsUnitVisible(target, GetLocalPlayer()) and not IsUnitHidden(target))
+	doAfter(0.95) ->
+		tdDamageLiveTags -= 1
+
+function tdDamageCaptureHit()
+	if tdIsGameOver()
+		return
+	let source = DamageEvent.getSource()
+	let target = DamageEvent.getTarget()
+	if source == null or target == null or GetPlayerId(GetOwningPlayer(target)) != TD_ENEMY_PLAYER_ID
+		return
+	// All trial rawcodes are intercepted, including stale/unregistered targets.
+	if tdTrialIsTargetType(target)
+		let trialRecord = tdDamageTrackTower(source)
+		if trialRecord == null or not tdTrialTargetValid(target, trialRecord.getLane())
+			return
+		let binding = tdTrialBindingFor(target)
+		let ticket = tdTrialState.hitTicket(binding.lane, binding.slot, target.getHandleId(), binding.token, binding.generation, getElapsedGameTime(), min(target.getLife(), TD_TRIAL_TARGET_HP * 1.0))
+		let effective = tdTrialState.credit(ticket, trialRecord.getLane(), DamageEvent.getAmount(), getElapsedGameTime())
+		if ticket != null
+			destroy ticket
+		tdTrialDiagnoseDamage(trialRecord.getLane(), DamageEvent.getAmount())
+		if effective > 0.0
+			tdDamageShowHit(target, effective)
+		return
+	let amount = tdEffectiveDamage(DamageEvent.getAmount(), target.getLife())
+	if amount <= 0.0 or not tdIsLanePlayer(tdEnemyLaneId(target)) or tdEnemyWave(target) <= 0 or tdEnemyWasLeaked(target)
+		return
+	// Pet skills already use host.damageTarget; every segment belongs to that host.
+	let record = tdDamageTrackTower(source)
+	if record == null or not tdIsLaneActive(record.getLane())
+		return
+	tdDamageLedger.credit(record, amount, amount)
+	tdDamageShowHit(target, amount)
+
+public function tdSetupDamageStatistics()
+	if tdDamageReady or compiletime
+		return
+	tdDamageReady = true
+	// Locked pre1.29 engine: event value is authoritative here, not pre-armor.
+	// Reserve priority 4 after all early modifiers; never modify damage here.
+	DamageEvent.addUnreducedListener(4) ->
+		tdDamageCaptureHit()
+
+
+
+
+

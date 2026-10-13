@@ -1,0 +1,141 @@
+{
+  "status": "PASS",
+  "production": {
+    "allocator": {
+      "array": "TDBossTransitionHook_typeId",
+      "type_id": 821
+    },
+    "registration": "production compiled hook; no dummy callback interception"
+  },
+  "cases": [
+    {
+      "wave": 8,
+      "order": "trialTimerFirst",
+      "targets_created": 20,
+      "targets_removed": 20,
+      "next_wave": 9,
+      "resume_synchronous": true
+    },
+    {
+      "wave": 8,
+      "order": "gameWatchdogFirst",
+      "targets_created": 20,
+      "targets_removed": 20,
+      "next_wave": 9,
+      "resume_synchronous": true
+    },
+    {
+      "wave": 24,
+      "order": "trialTimerFirst",
+      "targets_created": 20,
+      "targets_removed": 20,
+      "next_wave": 25,
+      "resume_synchronous": true
+    },
+    {
+      "wave": 24,
+      "order": "gameWatchdogFirst",
+      "targets_created": 20,
+      "targets_removed": 20,
+      "next_wave": 25,
+      "resume_synchronous": true
+    }
+  ],
+  "damage_chain": {
+    "cases": 11,
+    "listeners": {
+      "refill": 0,
+      "final_credit": 4
+    },
+    "ordinary_ledger": "actual production register/credit/playerTotal executed, unaffected by trial hits",
+    "score": "123.75 effective actual segments, rendered 124 after aggregate rounding"
+  },
+  "lifecycle": {
+    "cases": [
+      {
+        "prepare_failure_at": 1,
+        "created_removed": 0,
+        "reward": 0
+      },
+      {
+        "prepare_failure_at": 7,
+        "created_removed": 6,
+        "reward": 0
+      },
+      {
+        "prepare_failure_at": 20,
+        "created_removed": 19,
+        "reward": 0
+      },
+      {
+        "two_real_TDInit_matches": true,
+        "old_callbacks_rejected": [
+          "deadline",
+          "route",
+          "watchdog",
+          "death"
+        ],
+        "aborted_prize": 0
+      },
+      {
+        "release_order": "trialTimerFirst",
+        "last_tick_departed_leader_gold": 0,
+        "remaining_second_place_gold": 24
+      },
+      {
+        "release_order": "gameWatchdogFirst",
+        "last_tick_departed_leader_gold": 0,
+        "remaining_second_place_gold": 24
+      }
+    ]
+  },
+  "routes": {
+    "slots": 20,
+    "waypoint_advances": 5,
+    "native_exit_loops": 20,
+    "life_loss": 0,
+    "death_replacement_slots": 1,
+    "repeat_death_spawn": 0,
+    "lane_leave_removed": 5
+  },
+  "debuff_late_proc": {
+    "slow": {
+      "base": 260,
+      "active": 130,
+      "explicit_cleanup_restored": 260
+    },
+    "release_debuff_records": 0,
+    "old_trial_aoe_new_wave_damage": 0,
+    "old_proc_new_pending_serial_preserved": true,
+    "capture": "Actual onAttack + listener captured epoch/generation/token/revision and center; no fabricated closure"
+  },
+  "exact_hud": {
+    "actual_score_additions": 4297,
+    "exact_totals": [
+      "2148000001",
+      "2148000000"
+    ],
+    "hud_rank_reward_consistent": true,
+    "native_precision_boundary": "Accumulation operands stay below2^21; arbitrary fractional float32 behavior is not emulated by this scalar interpreter"
+  },
+  "equipment_segments": {
+    "normal_boss_whitelist_excludes_trial": true,
+    "actual_berserker_badge_trial_bonus": 25,
+    "actual_delayed_segment_credited": 25,
+    "old_handle_replacement_damage": 0,
+    "post_release_segment_damage": 0
+  },
+  "boundaries": [
+    "Warcraft native unit/timer/rendering boundary modeled; no game launched",
+    "Collections modeled, all gameplay guards, hook dispatch, score, ledger and cleanup ownership execute packaged JASS"
+  ],
+  "command": [
+    "tools/VerifyTrialReplay.py",
+    "ExampleMap.w3x",
+    "--output",
+    "docs/validation/2026-10-12-trial-integration/replay-final-result.json"
+  ],
+  "map_sha256": "03921c61e64e5392f8f9100291ca62df539b3f0bb8c7c4af47e82fa2bba21dde",
+  "jass_sha256": "a47a8d6226776bf27ab033bb6539fae258f3e889ed55746ccc6b9d219445536c",
+  "tool_sha256": "a170844221b661ef8b9193436768f41212bda6c48c1138b8b75941043d5ef942"
+}

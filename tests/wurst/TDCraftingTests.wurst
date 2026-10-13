@@ -3,31 +3,34 @@ import TDCrafting
 import TDInventory
 import TDItems
 
-@Test function craftingPrioritizesThreeOfAKindBeforeTwoOfAKind()
-	tdCraftModeForQualities(TD_ITEM_QUALITY_WHITE, TD_ITEM_QUALITY_WHITE, TD_ITEM_QUALITY_WHITE).assertEquals(TD_CRAFT_MODE_THREE)
-	tdCraftModeForQualities(TD_ITEM_QUALITY_WHITE, TD_ITEM_QUALITY_WHITE, TD_ITEM_QUALITY_GREEN).assertEquals(TD_CRAFT_MODE_TWO)
-	tdCraftModeForQualities(TD_ITEM_QUALITY_WHITE, TD_ITEM_QUALITY_GREEN, TD_ITEM_QUALITY_BLUE).assertEquals(TD_CRAFT_MODE_NONE)
+@Test function craftingAcceptsOnlyThreeSameQualitiesBelowPurple()
+	tdCraftModeForQualities(1, 1, 1).assertEquals(TD_CRAFT_MODE_THREE)
+	tdCraftModeForQualities(1, 1, 2).assertEquals(TD_CRAFT_MODE_NONE)
+	tdCraftModeForQualities(1, 1, 0).assertEquals(TD_CRAFT_MODE_NONE)
+	tdCraftModeForQualities(1, 2, 3).assertEquals(TD_CRAFT_MODE_NONE)
+	tdCraftModeForQualities(4, 4, 4).assertEquals(TD_CRAFT_MODE_NONE)
 
-@Test function craftingConsumesOnlyMatchingInputSlots()
-	tdCraftConsumesSlot(TD_ITEM_QUALITY_WHITE, TD_ITEM_QUALITY_WHITE, TD_ITEM_QUALITY_GREEN, 0).assertTrue()
-	tdCraftConsumesSlot(TD_ITEM_QUALITY_WHITE, TD_ITEM_QUALITY_WHITE, TD_ITEM_QUALITY_GREEN, 1).assertTrue()
-	tdCraftConsumesSlot(TD_ITEM_QUALITY_WHITE, TD_ITEM_QUALITY_WHITE, TD_ITEM_QUALITY_GREEN, 2).assertFalse()
+@Test function craftingConsumesAllThreeValidSlotsAndNoInvalidInputs()
+	for slot = 0 to 2
+		tdCraftConsumesSlot(1, 1, 1, slot).assertTrue()
+		tdCraftConsumesSlot(1, 1, 2, slot).assertFalse()
+		tdCraftConsumesSlot(1, 1, 0, slot).assertFalse()
+	tdCraftConsumesSlot(1, 1, 1, 3).assertFalse()
 
-@Test function craftingSuccessRatesMatchDesign()
-	tdCraftSucceeds(TD_CRAFT_MODE_TWO, 65).assertTrue()
-	tdCraftSucceeds(TD_CRAFT_MODE_TWO, 66).assertFalse()
-	tdCraftSucceeds(TD_CRAFT_MODE_THREE, 100).assertTrue()
-	tdCraftSucceeds(TD_CRAFT_MODE_THREE, 1).assertTrue()
+@Test function tripleCraftingHasNoGamblingFailure()
+	for roll = 1 to 100
+		tdCraftSucceeds(TD_CRAFT_MODE_THREE, roll).assertTrue()
+	tdCraftSucceeds(TD_CRAFT_MODE_NONE, 1).assertFalse()
 
-@Test function craftingAdvancesQualityButNeverPastPurple()
-	tdCraftResultQuality(TD_ITEM_QUALITY_WHITE).assertEquals(TD_ITEM_QUALITY_GREEN)
-	tdCraftResultQuality(TD_ITEM_QUALITY_GREEN).assertEquals(TD_ITEM_QUALITY_BLUE)
-	tdCraftResultQuality(TD_ITEM_QUALITY_BLUE).assertEquals(TD_ITEM_QUALITY_PURPLE)
-	tdCraftResultQuality(TD_ITEM_QUALITY_PURPLE).assertEquals(TD_ITEM_QUALITY_PURPLE)
+@Test function craftingAdvancesOneQualityAndRejectsPurple()
+	tdCraftResultQuality(1).assertEquals(2)
+	tdCraftResultQuality(2).assertEquals(3)
+	tdCraftResultQuality(3).assertEquals(4)
+	tdCraftResultQuality(4).assertEquals(0)
 
-@Test function craftingReadsVisibleFrontThreeInventorySlots()
-	tdCraftModeForInventorySlots(TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, 0, 0, 0).assertEquals(TD_CRAFT_MODE_THREE)
-	tdCraftModeForInventorySlots(TD_ITEM_SHORT_BOW_ID, TD_ITEM_SHORT_BOW_ID, 0, TD_ITEM_STEEL_LONGBOW_ID, 0, 0).assertEquals(TD_CRAFT_MODE_TWO)
+@Test function craftingReadsOnlyVisibleFrontThreeSlots()
+	tdCraftModeForInventorySlots(TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_WHITE_WAR_AXE_ID, 0, 0, 0).assertEquals(TD_CRAFT_MODE_THREE)
+	tdCraftModeForInventorySlots(TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_WHITE_WAR_AXE_ID, 0, TD_ITEM_GREEN_WAR_AXE_ID, 0, 0).assertEquals(TD_CRAFT_MODE_NONE)
 
-@Test function craftingTreatsDifferentWhiteRawcodesAsSameQuality()
-	tdCraftModeForInventorySlots(TD_ITEM_EAGLE_SCOPE_ID, TD_ITEM_ARMOR_SPIKE_ID, TD_ITEM_SWIFT_GLOVES_ID, 0, 0, 0).assertEquals(TD_CRAFT_MODE_THREE)
+@Test function mixedNamesOfSameQualityRemainValidTriples()
+	tdCraftModeForInventorySlots(TD_ITEM_WHITE_SCOPE_ID, TD_ITEM_WHITE_ARMOR_ID, TD_ITEM_WHITE_SWIFT_ID, 0, 0, 0).assertEquals(TD_CRAFT_MODE_THREE)

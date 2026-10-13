@@ -1,0 +1,122 @@
+package TDNativePetProbe
+import TDPets
+import TDSpawn
+import TDState
+import TDTowers
+import TDConfig
+import TDWaves
+import DamageEvent
+import TDEquipmentCombat
+import TDEquipmentAbilities
+
+// Opt-in native fixture only: this package lives outside production wurst/.
+trigger petProbeChat = CreateTrigger()
+unit probeWild = null
+unit probeTower = null
+unit probeCombatTarget = null
+int probeNativeHits = 0
+int probePetHits = 0
+real probeLastBase = 0.0
+real probeLastPetDamage = 0.0
+real probePetDamageTotal = 0.0
+
+function petProbeReport(string text)
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 20.0, "PETS " + text)
+
+function petProbeSnapshot()
+	petProbeReport("balls=" + tdPetBallsForLane(0).toString() + " collection=" + tdPetCollectionCount(0).toString() + " deployed=" + tdPetDeployedCount(0).toString())
+	petProbeReport("observed tower nativeHits=" + probeNativeHits.toString() + " lastUnreducedBase=" + probeLastBase.toString() + " petEvents=" + probePetHits.toString() + " lastPetDamage=" + probeLastPetDamage.toString() + " petDamageTotal=" + probePetDamageTotal.toString() + "; counters are observations, not PASS")
+	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+		let pet = tdPetAt(0, slot)
+		if pet != null
+			petProbeReport("slot=" + slot.toString() + " " + pet.summary() + " resonance=" + pet.level.toString() + " captureWave=" + pet.captureWave.toString() + " generation=" + pet.generation.toString())
+
+function petProbeCleanup()
+	if probeTower != null
+		PauseUnit(probeTower, true)
+		tdPetTowerRemoved(probeTower)
+		tdForgetEquipmentTower(probeTower)
+		tdForgetEquipmentAbilities(probeTower)
+		probeTower.remove()
+		probeTower = null
+	if probeWild != null
+		tdForgetEquipmentEnemy(probeWild)
+		probeWild.remove()
+		probeWild = null
+	if probeCombatTarget != null
+		tdForgetEquipmentEnemy(probeCombatTarget)
+		probeCombatTarget.remove()
+		probeCombatTarget = null
+	petProbeReport("probe handles removed; captured pets recalled. Test resource grants remain; restart for a normal economy run.")
+
+function petProbeCommand()
+	if GetPlayerId(GetTriggerPlayer()) != 0
+		return
+	let command = GetEventPlayerChatString()
+	if command == "-pets fixture"
+		let farmer = tdGetFarmer(0)
+		if farmer == null or tdIsGameOver()
+			petProbeReport("fixture unavailable before startup or after game over")
+			return
+		// Explicit test grants prevent natural leaks from disabling the diagnostic lane.
+		tdLoseLife(0, -10000)
+		tdGainGold(0, 30000)
+		petProbeReport("TEST ONLY: +10000 lives/+30000 gold; this run is not economy or full-clear evidence")
+		if probeWild != null
+			probeWild.remove()
+		let wave = tdGetGlobalWave() > 0 ? tdGetGlobalWave() : 1
+		probeWild = tdPetSpawnWild(0, wave, 1).creature
+		probeWild.setPos(farmer.getPos() + vec2(180.0, 0.0))
+		SetUnitInvulnerable(probeWild, true)
+		PauseUnit(probeWild, true)
+		if probeTower == null or GetUnitTypeId(probeTower) == 0
+			probeTower = createUnit(Player(0), tdTowerUnitIdForLevelBranch(TD_TOWER_CHOICE_ORC, 1, TD_TOWER_BRANCH_A), farmer.getPos() + vec2(300.0, 150.0), 0 .fromDeg())
+		PauseUnit(probeTower, true)
+		petProbeReport("fixture ready: Q protected wild (fixed60%, tutorial first ordinary attempt guaranteed); W select; E empty tower. This is an added debug fixture, not normal wave count evidence.")
+	else if command == "-pets combat"
+		if probeTower == null or tdPetForHost(probeTower) == null or not tdPetLaneCanAct(0)
+			petProbeReport("first capture with Q, select with W and deploy with E onto fixture tower")
+			return
+		if probeCombatTarget != null
+			tdForgetEquipmentEnemy(probeCombatTarget)
+			probeCombatTarget.remove()
+		// Ordinary wave-32 template supplies enough HP; metadata uses the current wave.
+		// This mixed-stat debug target is not evidence of normal wave balance.
+		let wave = tdGetGlobalWave() > 0 ? tdGetGlobalWave() : 1
+		probeCombatTarget = tdCreateEnemy(0, wave, tdWaveUnitId(32))
+		probeCombatTarget.setPos(probeTower.getPos() + vec2(160.0, 0.0))
+		PauseUnit(probeCombatTarget, true)
+		probeNativeHits = 0
+		probePetHits = 0
+		probeLastBase = 0.0
+		probeLastPetDamage = 0.0
+		probePetDamageTotal = 0.0
+		PauseUnit(probeTower, false)
+		IssueTargetOrder(probeTower, "attack", probeCombatTarget)
+		petProbeReport("combat started against paused ordinary high-HP debug target; snapshot reads actual events. No result asserted.")
+	else if command == "-pets cleanup"
+		petProbeCleanup()
+	else if command == "-pets snapshot"
+		petProbeSnapshot()
+	else if command == "-pets xp"
+		let pet = tdPetAt(0, 0)
+		if pet != null
+			for wave = pet.captureWave + 1 to pet.captureWave + 5
+				tdPetCreditWave(0, wave)
+			petProbeSnapshot()
+			petProbeReport("synthetic clear-credit only; actual wave watcher remains a separate validation")
+
+init
+	TriggerRegisterPlayerChatEvent(petProbeChat, Player(0), "-pets ", false)
+	petProbeChat.addAction(function petProbeCommand)
+	DamageEvent.addListener(4) ->
+		if probeTower != null and DamageEvent.getSource() == probeTower
+			if DamageEvent.getId() == TD_PET_DAMAGE_ID
+				probePetHits += 1
+				probeLastPetDamage = DamageEvent.getAmount()
+				probePetDamageTotal += probeLastPetDamage
+			else if not DamageEvent.isCode() and not DamageEvent.isSpell()
+				probeNativeHits += 1
+				probeLastBase = DamageEvent.getUnreducedAmount()
+
+

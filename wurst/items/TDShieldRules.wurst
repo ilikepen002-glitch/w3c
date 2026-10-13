@@ -1,0 +1,25 @@
+package TDShieldRules
+import TDTowerData
+import TDItemCatalogConfig
+
+public function tdShieldProcChance(boolean perfect) returns real
+	return tdFootmanBashChance() * (perfect ? tdEvolutionSkillMultiplier() : 1.0)
+
+public function tdShieldStunDuration(boolean boss, real control) returns real
+	if boss
+		return tdConfiguredShieldBossStunDuration()
+	return RMinBJ(tdConfiguredShieldNormalStunCap(), tdConfiguredShieldNormalStunDuration() * (1.0 + RMaxBJ(0.0, control)))
+
+public function tdShieldWindowUntil(real now, boolean boss, real control) returns real
+	return now + tdShieldStunDuration(boss, control) + (boss ? tdConfiguredShieldBossProtection() : tdConfiguredShieldNormalProtection()) + tdConfiguredShieldCastMargin()
+
+public class TDShieldWindow
+	real readyAt = 0.0
+	function reserve(real now, boolean boss, real control) returns real
+		if now < readyAt
+			return -1.0
+		let previous = readyAt
+		readyAt = tdShieldWindowUntil(now, boss, control)
+		return previous
+	function rollback(real previous)
+		readyAt = previous

@@ -1,0 +1,164 @@
+package TDNativeBladestormProbe
+import TDConfig
+import TDState
+import TDSpawn
+import TDWaves
+import TDTowers
+import ClosureTimers
+import RegisterEvents
+import DamageEvent
+import Orders
+
+unit caster = null
+unit target = null
+trigger chat = null
+trigger spells = null
+DamageListener damageListener = null
+boolean started = false
+boolean failed = false
+boolean effectSeen = false
+int mode = 0
+int ticks = 0
+int stageTicks = 0
+int pulses = 0
+real startX = 0
+real startY = 0
+real initialHp = 0
+real baseline = 0
+real ratio = 0
+
+function report(string message)
+    DisplayTimedTextToPlayer(Player(0), 0, 0, 600, "STORM mode=" + mode.toString() + " " + message)
+
+function fail(string message)
+    if not failed
+        failed = true
+        report("FAIL " + message)
+
+function onSpell()
+    if GetTriggerUnit() == caster and GetSpellAbilityId() == TD_ORC_BLADESTORM_ABILITY_ID and GetSpellTargetUnit() == target
+        if effectSeen
+            fail("duplicate cast")
+        effectSeen = true
+        stageTicks = 0
+
+function setup()
+    if caster != null
+        RemoveUnit(caster)
+    if target != null
+        RemoveUnit(target)
+    effectSeen = false
+    stageTicks = 0
+    pulses = 0
+    caster = CreateUnit(Player(0), TD_ORC_LEVEL_6_B_ID, -1800, 2400, 0)
+    target = tdCreateEnemy(0, 29, tdWaveUnitId(29))
+    if caster == null or GetUnitTypeId(caster) != TD_ORC_LEVEL_6_B_ID or target == null or GetUnitTypeId(target) != tdWaveUnitId(29) or not target.isAlive()
+        fail("unit creation")
+        return
+    SetUnitPathing(caster, false)
+    SetUnitPathing(target, false)
+    SetUnitX(target, -2200)
+    SetUnitY(target, 2672)
+    PauseUnit(target, true)
+    initialHp = GetWidgetLife(target)
+    if mode == 0
+        PauseUnit(caster, true)
+        effectSeen = true
+    else if mode == 1
+        if not IssueTargetOrderById(caster, Orders.slow, target)
+            fail("manual slow order rejected")
+    else
+        if not IssueImmediateOrderById(caster, Orders.slowon)
+            fail("autocast order rejected")
+
+function cleanup()
+    if caster != null
+        RemoveUnit(caster)
+    if target != null
+        RemoveUnit(target)
+    caster = null
+    target = null
+    DestroyTrigger(chat)
+    DestroyTrigger(spells)
+    if damageListener != null
+        destroy damageListener
+    tdSetLaneActive(0, true)
+
+function advance()
+    stageTicks += 1
+    if not effectSeen
+        if stageTicks >= 100
+            fail("no native spell effect")
+        return
+    if not target.isAlive() or target.getPos().distanceTo(caster.getPos()) > tdOrcBladestormRadius()
+        fail("target died or left radius")
+        return
+    if stageTicks == 1
+        // Native spell effect has happened; isolate the scripted pulses from attacks.
+        PauseUnit(caster, true)
+        PauseUnit(target, false)
+        if not IssuePointOrderById(target, Orders.move, -1300, 2672)
+            fail("move rejected")
+    if stageTicks == 2
+        startX = GetUnitX(target)
+        startY = GetUnitY(target)
+    if stageTicks == 7
+        let distance = GetUnitX(target) - startX
+        if (GetUnitY(target) - startY).abs() > 8 or distance <= 0
+            fail("invalid/stopped straight movement")
+            return
+        if mode == 0
+            baseline = distance
+            if baseline < 100
+                fail("invalid baseline")
+                return
+            report("baseline=" + baseline.toString())
+            mode += 1
+            setup()
+            return
+        ratio = distance / baseline
+        report("distance=" + distance.toString() + " ratio=" + ratio.toString())
+        if (ratio - 1.0).abs() > 0.02
+            fail("unwanted native movement slow")
+    if stageTicks == 32
+        if pulses != 5 or GetWidgetLife(target) >= initialHp
+            fail("expected five damaging pulses, got " + pulses.toString())
+            return
+        report("PASS ratio=" + ratio.toString() + " pulses=" + pulses.toString() + " hp=" + initialHp.toString() + "->" + GetWidgetLife(target).toString())
+        mode += 1
+        if mode < 3
+            setup()
+
+function start()
+    if started or tdIsGameOver() or tdCountActiveLanes() != 1 or not tdIsLaneActive(0) or GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_USED) != 0
+        return
+    started = true
+    tdSetLaneActive(0, false)
+    damageListener = DamageEvent.addListener() ->
+        if DamageEvent.getSource() == caster and DamageEvent.getTarget() == target and DamageEvent.isCode()
+            pulses += 1
+            if (DamageEvent.getUnreducedOriginalAmount() - 35.0).abs() > 0.01 or DamageEvent.getAmount() <= 0
+                fail("wrong pulse damage")
+    setup()
+    PanCameraToTimed(-1950, 2550, 0)
+    report("START baseline / manual / native autocast")
+    doPeriodically(0.1) cb ->
+        ticks += 1
+        if not failed and mode < 3
+            advance()
+        if ticks >= 400
+            fail("timeout")
+        if failed or mode == 3
+            if not failed
+                report("PASS native manual/autocast; no slow; five pulses each")
+            cleanup()
+            destroy cb
+
+init
+    if not compiletime
+        chat = CreateTrigger()
+        TriggerRegisterPlayerChatEvent(chat, Player(0), "-storm", true)
+        TriggerAddAction(chat, function start)
+        spells = CreateTrigger()
+        spells.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+        spells.addAction(function onSpell)

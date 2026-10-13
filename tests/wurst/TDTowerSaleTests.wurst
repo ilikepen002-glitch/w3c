@@ -1,0 +1,65 @@
+package TDTowerSaleTests
+import TDTowerData
+import TDTowerSaleState
+import TDConfig
+
+@Test function saleRefundCoversEveryFamilyLevelAndUltimateBranch()
+	for towerChoice = 1 to TD_TOWER_CHOICE_COUNT
+		for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+			var invested = 0
+			for level = 1 to TD_MAX_TOWER_LEVEL
+				invested += tdTowerGoldCostForLevelBranch(towerChoice, level, branch)
+				let unitTypeId = tdTowerUnitIdForLevelBranch(towerChoice, level, branch)
+				tdTowerInvestedGoldForUnitTypeId(unitTypeId).assertEquals(invested)
+				tdTowerSellRefund(unitTypeId).assertEquals(invested * 80 div 100)
+
+@Test function ultimateBranchRefundsUseTheirActualCosts()
+	tdTowerSellRefund('uO6A').assertEquals(840)
+	tdTowerSellRefund('uO6B').assertEquals(800)
+	tdTowerSellRefund('uH6A').assertEquals(728)
+	tdTowerSellRefund('uH6B').assertEquals(740)
+
+@Test function evolutionDoesNotAddPaidInvestment()
+	tdTowerSellRefund('uA6A').assertEquals(776)
+	tdTowerSellRefund('uA6A').assertEquals(776)
+
+@Test function saleRefundRoundsDownAndRejectsInvalidInputs()
+	tdTowerSellRefund('uA11').assertEquals(40)
+	tdTowerSellRefund(0).assertEquals(0)
+	tdTowerSellRefund('hpea').assertEquals(0)
+	tdTowerSellRefund('uA11').assertEquals(40)
+
+@Test function constructionAndUpgradeBlockSaleUntilCompletionOrCancellation()
+	let state = new TDTowerSaleState()
+	state.startWork()
+	state.beginSale().assertFalse()
+	state.finishWork()
+	state.canSell().assertTrue()
+	state.startWork()
+	state.beginSale().assertFalse()
+	state.finishWork()
+	state.beginSale().assertTrue()
+	state.beginSale().assertFalse()
+	destroy state
+
+@Test function oldUpgradeCancelCannotUnlockNewUpgrade()
+	let state = new TDTowerSaleState()
+	state.startWork()
+	let cancelledGeneration = state.getWorkGeneration()
+	state.startWork()
+	state.finishWorkForGeneration(cancelledGeneration).assertFalse()
+	state.beginSale().assertFalse()
+	state.finishWorkForGeneration(state.getWorkGeneration()).assertTrue()
+	state.beginSale().assertTrue()
+	destroy state
+
+@Test function oldCancelCannotUnlockRecreatedSaleState()
+	let oldState = new TDTowerSaleState()
+	oldState.startWork()
+	let cancelledGeneration = oldState.getWorkGeneration()
+	destroy oldState
+	let state = new TDTowerSaleState()
+	state.startWork()
+	state.finishWorkForGeneration(cancelledGeneration).assertFalse()
+	state.canSell().assertFalse()
+	destroy state

@@ -1,0 +1,108 @@
+package TDAuraState
+import BuffObjEditing
+import public TDAuraRules
+import TDAuraObjectIds
+import Table
+import LinkedList
+
+// Lower state layer: no inventory, pet, mechanic or runtime import cycles.
+public class TDAuraTarget
+	unit target
+	boolean tower
+	TDAuraAggregate effective = new TDAuraAggregate()
+	LinkedList<TDAuraTimedContribution> timed = new LinkedList<TDAuraTimedContribution>()
+	boolean array[14] pendingApplications
+	int array[14] shownRanks
+	construct(unit target, boolean tower)
+		this.target = target
+		this.tower = tower
+	ondestroy
+		while not timed.isEmpty()
+			let entry = timed.get(0)
+			timed.remove(entry)
+			destroy entry
+		destroy timed
+		destroy effective
+
+public constant LinkedList<TDAuraTarget> tdAuraTargets = new LinkedList<TDAuraTarget>()
+public constant LinkedList<TDAuraTarget> tdAuraTowers = new LinkedList<TDAuraTarget>()
+constant Table tdAuraByHandle = new Table()
+
+public function tdAuraTargetFor(unit target) returns TDAuraTarget
+	if target == null or not tdAuraByHandle.hasInt(target.getHandleId())
+		return null
+	return tdAuraByHandle.loadInt(target.getHandleId()) castTo TDAuraTarget
+
+public function tdAuraRegisterTarget(unit target, boolean tower)
+	if target == null or GetUnitTypeId(target) == 0 or tdAuraTargetFor(target) != null
+		return
+	let record = new TDAuraTarget(target, tower)
+	tdAuraByHandle.saveInt(target.getHandleId(), record castTo int)
+	tdAuraTargets.add(record)
+	if tower
+		tdAuraTowers.add(record)
+
+public function tdAuraDetachRecord(TDAuraTarget record)
+	tdAuraByHandle.removeInt(record.target.getHandleId())
+	if record.tower
+		tdAuraTowers.remove(record)
+
+public function tdAuraPower(unit target, int identity) returns real
+	let record = tdAuraTargetFor(target)
+	return record == null ? 0.0 : record.effective.power(identity)
+
+public function tdAuraRank(unit target, int identity) returns int
+	let record = tdAuraTargetFor(target)
+	return record == null ? 0 : record.effective.rank(identity)
+
+public function tdAuraEnemySpeedFactor(unit enemy) returns real
+	let record = tdAuraTargetFor(enemy)
+	return record == null ? 1.0 : tdCombinedEnemySlowFactor(record.effective.enemySlowPower())
+
+function tdAuraCarrier(int identity, int rank) returns int
+	if identity == TD_AURA_WHITE_TIGER
+		return rank == 1 ? TD_AURA_WHITE_TIGER_NORMAL_CARRIER : TD_AURA_WHITE_TIGER_EVOLVED_CARRIER
+	return rank == 1 ? TD_AURA_COMMANDER_NORMAL_CARRIER : TD_AURA_COMMANDER_EVOLVED_CARRIER
+
+function tdAuraRankCarrier(int identity, int rank) returns int
+	let stateBuff = tdAuraBuff(identity, rank)
+	if stateBuff.buffId == 0
+		return 0
+	return identity <= TD_AURA_COMMANDER ? tdAuraCarrier(identity, rank) : stateBuff.abilId
+
+public function tdAuraSyncDisplayedRank(TDAuraTarget record, int identity, int rank)
+	let oldRank = record.shownRanks[identity]
+	let target = record.target
+	let carrier = tdAuraRankCarrier(identity, rank)
+	var carrierPresent = carrier != 0 and target.getAbilityLevel(carrier) > 0
+	if not record.pendingApplications[identity] and not tdAuraCarrierRepairNeeded(rank, oldRank, carrierPresent)
+		return
+	// Set before side effects. An interrupted add/remove is repaired even if the
+	// next requested rank returns to zero or the previously shown rank.
+	record.pendingApplications[identity] = true
+	for previousRank = 1 to 4
+		if previousRank == rank
+			continue
+		let previous = tdAuraBuff(identity, previousRank)
+		let previousCarrier = tdAuraRankCarrier(identity, previousRank)
+		if previousCarrier != 0
+			target.removeAbility(previousCarrier)
+		if previous.buffId != 0
+			target.removeAbility(previous.buffId)
+	if rank > 0
+		// Native percentage identities emit their own Buff; others use one dummy.
+		if not carrierPresent and carrier != 0
+			target.addPermanentAbility(carrier)
+		carrierPresent = carrier != 0 and target.getAbilityLevel(carrier) > 0
+		if not carrierPresent
+			// Do not apply numeric state when its required native carrier is absent.
+			record.effective.clearIdentity(identity)
+			record.shownRanks[identity] = 0
+			return // pending stays true; next round retries this exact identity.
+	// Commit only after the actual ability exists (Buff projection is engine-owned).
+	record.shownRanks[identity] = tdAuraConfirmedAppliedRank(rank, carrierPresent)
+	record.pendingApplications[identity] = false
+
+public function tdAuraSyncBuffs(TDAuraTarget record)
+	for identity = 1 to TD_AURA_ID_COUNT
+		tdAuraSyncDisplayedRank(record, identity, record.effective.rank(identity))

@@ -16,3 +16,8 @@ import TDConfig
 	tdWaveForceStartDelay(5).assertEquals(60.0)
 	tdWaveClearDelay(16).assertEquals(30.0)
 	tdWaveForceStartDelay(16).assertEquals(90.0)
+
+@Test function leakFeedbackUsesRemainingLives()
+	tdLeakLifeText(19).assertEquals("生命 -1，剩余 19")
+	tdLeakLifeText(0).assertEquals("生命 -1，剩余 0")
+	tdDefeatText().assertEquals("已失败，下次再战")

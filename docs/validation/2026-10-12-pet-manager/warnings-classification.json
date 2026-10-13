@@ -1,0 +1,16 @@
+{
+  "total": 396,
+  "unchangedSourceLines": 394,
+  "unmapped": [],
+  "newManagerWarnings": 0,
+  "inheritedConversionsInChangedSummary": {
+    "file": "wurst/pets/TDPetState.wurst",
+    "oldLine": 117,
+    "newLine": 126,
+    "unchangedConversionExpressions": [
+      "skillCount.toString()",
+      "level.toString()"
+    ],
+    "count": 2
+  }
+}

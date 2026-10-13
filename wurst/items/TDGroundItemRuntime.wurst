@@ -1,0 +1,107 @@
+package TDGroundItemRuntime
+import TDGroundItemRules
+import TDGroundItemTerrainMask
+import TDItemPlacement
+import TDItemOperationState
+import TDItemData
+import TDConfig
+import TDState
+import LinkedList
+import ClosureTimers
+
+LinkedList<item> array tdGroundQueues
+int array tdGroundPileCounts
+boolean tdGroundBusy = false
+boolean tdGroundRuntimeReady = false
+int tdGroundQuality = 1
+int tdGroundSortLane = -1
+
+function tdGroundItemAvailable(item itm, int quality) returns boolean
+	if not tdGroundItemHandleValid(itm) or not IsItemVisible(itm)
+		return false
+	if not tdGroundSortItemEligible(tdGroundSortLane, tdGroundSortSourceLane(GetItemX(itm), GetItemY(itm)), quality)
+		return false
+	return tdGroundItemGroup(GetItemTypeId(itm)) == quality
+
+function tdGroundCaptureItem()
+	let itm = GetEnumItem()
+	let pileGroup = tdGroundItemGroup(GetItemTypeId(itm))
+	if pileGroup <= 0 or pileGroup > 5
+		return
+	if tdGroundItemAvailable(itm, pileGroup)
+		tdGroundQueues[pileGroup].add(itm)
+
+function tdGroundFinish()
+	tdGroundBusy = false
+	tdGroundSortLane = -1
+	tdItemOperationRelease()
+
+function tdGroundProcessOne()
+	if tdGroundQuality > 5
+		tdGroundFinish()
+		return
+	let queue = tdGroundQueues[tdGroundQuality]
+	if queue.isEmpty()
+		tdGroundQuality += 1
+		return
+	let itm = queue.dequeue()
+	if tdIsGameOver() or not tdGroundItemAvailable(itm, tdGroundQuality)
+		return
+	let origin = tdItemActualPosition(itm)
+	let lane = tdGroundSortSourceLane(origin.x, origin.y)
+	if not tdIsLanePlayer(lane) or IsTerrainPathable(origin.x, origin.y, PATHING_TYPE_WALKABILITY)
+		return
+	let pileIndex = lane * 5 + tdGroundQuality
+	// Move only after source checks. Placement tries every same-pile safe cell,
+	// checking the actual native coordinates each time, never requested coords.
+	let index = tdTryPlaceItemInPile(itm, lane, tdGroundQuality, tdGroundPileCounts[pileIndex])
+	if index >= 0
+		tdGroundPileCounts[pileIndex] = index + 1
+	else if index == -2
+		// No admissible destination was attempted; do not move even to "restore".
+		return
+	else if not tdRestoreSortedItem(itm, lane, origin)
+		// No successful-sort count and no deletion on an abnormal native rollback.
+		DisplayTimedTextToPlayer(Player(lane), 0, 0, 6.0, "整理落点及归位未确认，物品未删除。句柄 " + GetHandleId(itm) + "，坐标(" + GetItemX(itm) + "," + GetItemY(itm) + ")，请核对。")
+
+function tdGroundStart(int requestedLane)
+	if not tdItemOperationTryAcquire()
+		return
+	tdGroundBusy = true
+	tdGroundQuality = 1
+	tdGroundSortLane = requestedLane
+	for index = 1 to TD_ACTIVE_PLAYER_COUNT * 5
+		tdGroundPileCounts[index] = 0
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if requestedLane >= 0 and lane != requestedLane
+			continue
+		let minimum = tdGroundSortSourceMin(lane)
+		let maximum = tdGroundSortSourceMax(lane)
+		let bounds = Rect(minimum.x, minimum.y, maximum.x, maximum.y)
+		EnumItemsInRect(bounds, null, function tdGroundCaptureItem)
+		RemoveRect(bounds)
+
+public function tdSortGroundEquipmentAfterUpgrade(int lane)
+	if tdGroundRuntimeReady and tdIsLanePlayer(lane) and not tdIsGameOver()
+		tdGroundStart(lane)
+
+public function tdSetupGroundItemRuntime()
+	if tdGroundRuntimeReady
+		return
+	tdGroundRuntimeReady = true
+	for pileGroup = 1 to 5
+		tdGroundQueues[pileGroup] = new LinkedList<item>()
+	doPeriodically(TD_GROUND_SORT_INTERVAL) cb ->
+		if tdIsGameOver()
+			destroy cb
+		else if not tdGroundBusy and not tdItemOperationIsBusy()
+			tdGroundStart(-1)
+	doPeriodically(0.03) cb ->
+		if tdGroundBusy
+			for _operation = 1 to 24
+				if tdGroundBusy
+					tdGroundProcessOne()
+		if tdIsGameOver() and not tdGroundBusy
+			for pileGroup = 1 to 5
+				destroy tdGroundQueues[pileGroup]
+			destroy cb

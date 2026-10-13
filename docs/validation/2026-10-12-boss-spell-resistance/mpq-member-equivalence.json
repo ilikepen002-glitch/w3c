@@ -1,0 +1,22 @@
+{
+  "member_count": 144,
+  "unchanged_member_count": 142,
+  "changed_members": [
+    "war3map.j",
+    "war3map.w3i"
+  ],
+  "changes": {
+    "war3map.j": {
+      "before_sha256": "c67874b889488a43f912f53f1c77698c83fc6c397d4b057910f6ef09a7d2b3ea",
+      "after_sha256": "247037e889f625c09f01e14672e89fcc97023e1b67e85ea1abc0f0b158781d83",
+      "before_size": 1016188,
+      "after_size": 1025274
+    },
+    "war3map.w3i": {
+      "before_sha256": "7461c716bb19617da99a398f3670b265428f9624f767a8578cc10ad4045664fa",
+      "after_sha256": "129c7b8b8d3d31dc4ec0f72451110c26589701a2c064d8de095e54daee63b4b1",
+      "before_size": 799,
+      "after_size": 799
+    }
+  }
+}

@@ -1,0 +1,171 @@
+package TDTrialRuntime
+import public TDTrialIdentity
+import TDTrialObjectGen
+import TDTrialRouteRules
+import TDTrialLifeRules
+import TDSpawn
+import TDConfig
+import TDAuraRuntime
+import TDAuraState
+import TDShieldRuntime
+import TDEquipmentCombat
+import TDPetCombat
+import DamageEvent
+import ClosureTimers
+import GameTimer
+import Orders
+
+// One bounded 20-slot watcher, never a full-map enumeration.
+timer tdTrialRouteTimer = null
+boolean tdTrialRuntimeReady = false
+trigger tdTrialDeathTrigger = CreateTrigger()
+
+function tdTrialDestination(TDTrialBinding binding) returns vec2
+	if binding.waypoint < tdLaneWaypointCount(binding.lane)
+		return tdLaneWaypointPosition(binding.lane, binding.waypoint)
+	return tdLaneExitPosition(binding.lane)
+
+function tdTrialOrderTarget(TDTrialBinding binding, boolean advanced)
+	if not tdTrialTargetValid(binding.target, binding.lane)
+		return
+	if advanced or binding.target.getCurrentOrder() != Orders.move
+		binding.target.issuePointOrderById(Orders.move, tdTrialDestination(binding))
+
+public function tdTrialRemoveTarget(TDTrialBinding binding)
+	if binding == null
+		return
+	let target = binding.target
+	// Invalidate lookup/slot before native callbacks or debuff cleanup.
+	tdTrialForgetBinding(binding)
+	if target != null
+		tdTrialState.unbindTarget(binding.lane, binding.slot, target.getHandleId(), binding.revision, binding.token, binding.generation)
+		tdForgetAuraTarget(target)
+		tdForgetEquipmentShieldEnemy(target)
+		tdForgetEquipmentEnemy(target)
+		tdPetForgetEnemy(target)
+		tdForgetEnemyMatch(target)
+		target.remove()
+	binding.target = null
+	destroy binding
+
+public function tdTrialClearLaneTargets(int lane)
+	for slot = 0 to TD_TRIAL_TARGETS_PER_LANE - 1
+		let index = tdTrialSlotIndex(lane, slot)
+		if index >= 0
+			tdTrialRemoveTarget(tdTrialNativeSlots[index])
+
+public function tdTrialClearTargets()
+	if tdTrialRouteTimer != null
+		DestroyTimer(tdTrialRouteTimer)
+		tdTrialRouteTimer = null
+	for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+		tdTrialClearLaneTargets(lane)
+
+public function tdTrialCreateTarget(int lane, int slot, int token, int generation, real now) returns boolean
+	let index = tdTrialSlotIndex(lane, slot)
+	if index < 0 or tdTrialNativeSlots[index] != null or not tdTrialLaneContinues(lane)
+		return false
+	let spawn = tdLaneSpawnPosition(lane)
+	let first = tdLaneWaypointCount(lane) > 0 ? tdLaneWaypointPosition(lane, 0) : tdLaneExitPosition(lane)
+	let origin = tdTrialInitialPosition(spawn, first, slot)
+	let target = createUnit(Player(TD_ENEMY_PLAYER_ID), TD_TRIAL_TARGET_UNIT_ID, origin, 0 .fromDeg())
+	if target == null or GetUnitTypeId(target) == 0
+		return false
+	// Wave 0 is lane metadata only; never register as a main-wave enemy.
+	tdForgetEnemyMatch(target)
+	target.setUserData(lane * 10000)
+	SetUnitCreepGuard(target, false)
+	target.removeGuardPosition()
+	target.setPathing(true)
+	target.setLife(TD_TRIAL_TARGET_HP * 1.0)
+	if tdEnemyBelongsToCurrentMatch(target) or not tdTrialState.bindTarget(lane, slot, target.getHandleId(), token, generation, now)
+		target.remove()
+		return false
+	let binding = new TDTrialBinding(target, lane, slot, origin)
+	if not tdTrialRegisterBinding(binding)
+		tdTrialState.unbindTarget(lane, slot, target.getHandleId(), binding.revision, token, generation)
+		target.remove()
+		destroy binding
+		return false
+	tdAuraRegisterTarget(target, false)
+	return true
+
+public function tdTrialStartTargets(int token, int generation, real now) returns boolean
+	for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+		if tdTrialState.isParticipant(lane)
+			for slot = 0 to TD_TRIAL_TARGETS_PER_LANE - 1
+				if not tdTrialCreateTarget(lane, slot, token, generation, now)
+					return false
+	return true
+
+public function tdTrialTickTargets()
+	if tdTrialState.getPhase() != TD_TRIAL_ACTIVE
+		return
+	for lane = 0 to TD_TRIAL_LANE_COUNT - 1
+		if tdTrialState.reconcileLane(lane, tdTrialLaneContinues(lane))
+			tdTrialClearLaneTargets(lane)
+	for index = 0 to TD_TRIAL_MAX_TARGETS - 1
+		let binding = tdTrialNativeSlots[index]
+		if binding != null and tdTrialTargetValid(binding.target, binding.lane)
+			var advanced = false
+			let position = binding.target.getPos()
+			if binding.waypoint < tdLaneWaypointCount(binding.lane)
+				if tdEnemyReachedWaypointPositionForTest(binding.lane, binding.waypoint, position)
+					binding.waypoint += 1
+					advanced = true
+			else if position.distanceTo(tdLaneExitPosition(binding.lane)) <= tdEnemyWaypointArrivalRadiusForTest()
+				binding.target.setPos(binding.origin)
+				binding.waypoint = tdTrialResetWaypoint()
+				advanced = true
+			tdTrialOrderTarget(binding, advanced)
+
+function tdTrialRouteTimerTick()
+	if tdTrialRouteTimer == null or GetExpiredTimer() != tdTrialRouteTimer
+		return
+	tdTrialTickTargets()
+
+public function tdTrialBeginRouteWatcher()
+	tdTrialRouteTimer = CreateTimer()
+	TimerStart(tdTrialRouteTimer, 0.20, true, function tdTrialRouteTimerTick)
+	for index = 0 to TD_TRIAL_MAX_TARGETS - 1
+		if tdTrialNativeSlots[index] != null
+			tdTrialOrderTarget(tdTrialNativeSlots[index], true)
+
+function tdTrialOnTargetDeath()
+	let binding = tdTrialBindingFor(GetTriggerUnit())
+	if binding == null
+		return
+	let lane = binding.lane
+	let slot = binding.slot
+	let token = binding.token
+	let generation = binding.generation
+	tdTrialRemoveTarget(binding)
+	let revision = tdTrialState.targetRevision(lane, slot)
+	// Let every synchronous death listener finish before replacing the empty slot.
+	doAfter(0.0) ->
+		let now = getElapsedGameTime()
+		if tdTrialState.getPhase() != TD_TRIAL_ACTIVE or not tdTrialState.current(token, generation) or now >= tdTrialState.getDeadline() or not tdTrialLaneContinues(lane)
+			return
+		if tdTrialState.isWithdrawn(lane) or tdTrialState.targetRevision(lane, slot) != revision or tdTrialState.targetIdentity(lane, slot) != 0
+			return
+		if tdTrialCreateTarget(lane, slot, token, generation, now)
+			tdTrialOrderTarget(tdTrialNativeSlots[tdTrialSlotIndex(lane, slot)], true)
+
+function tdTrialRefillBeforeDamage()
+	let target = DamageEvent.getTarget()
+	let binding = tdTrialBindingFor(target)
+	if binding != null and tdTrialShouldRefill(tdTrialTargetValid(target, binding.lane), DamageEvent.getAmount())
+		// Fixed cap avoids the locked engine's temporary max-HP padding.
+		target.setLife(TD_TRIAL_TARGET_HP * 1.0)
+
+public function tdTrialSetupRuntime()
+	if tdTrialRuntimeReady or compiletime
+		return
+	tdTrialRuntimeReady = true
+	// The icon reference keeps the dedicated object's package in production.
+	if tdTrialIconPath() == ""
+		return
+	TriggerRegisterPlayerUnitEvent(tdTrialDeathTrigger, Player(TD_ENEMY_PLAYER_ID), EVENT_PLAYER_UNIT_DEATH, null)
+	TriggerAddAction(tdTrialDeathTrigger, function tdTrialOnTargetDeath)
+	DamageEvent.addUnreducedListener(TD_TRIAL_REFILL_PRIORITY) ->
+		tdTrialRefillBeforeDamage()

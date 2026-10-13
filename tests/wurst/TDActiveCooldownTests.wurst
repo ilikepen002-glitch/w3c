@@ -1,0 +1,112 @@
+package TDActiveCooldownTests
+import TDActiveSkillData
+import TDTowerCatalogData
+import TDTowerBloodlustAutocast
+import TDPetRules
+import TDAuraRules
+import Orders
+
+function assertActiveNear(real actual, real expected)
+	((actual - expected).abs() < 0.000001).assertTrue()
+
+@Test function everyActiveDefinitionUsesOnePositiveCooldownAndUniqueIdentity()
+	for index = 0 to tdActiveSkillDefinitionCount() - 1
+		let active = tdActiveSkillDefinitionAt(index)
+		(active.key > 0 and active.baseCooldown > 0.0).assertTrue()
+		(tdActiveSkillDefinitionForKey(active.key) == active).assertTrue()
+		for otherIndex = 0 to index - 1
+			let other = tdActiveSkillDefinitionAt(otherIndex)
+			(active.key != other.key).assertTrue()
+			if active.driver == TD_ACTIVE_DRIVER_NATIVE_ABILITY and other.driver == TD_ACTIVE_DRIVER_NATIVE_ABILITY
+				(active.abilityId != other.abilityId).assertTrue()
+			if active.driver == TD_ACTIVE_DRIVER_PET_PROC and other.driver == TD_ACTIVE_DRIVER_PET_PROC
+				(active.petSkillId != other.petSkillId).assertTrue()
+		if active.driver == TD_ACTIVE_DRIVER_NATIVE_ABILITY
+			(tdActiveSkillDefinitionForAbility(active.abilityId) == active).assertTrue()
+		else
+			(tdActiveSkillDefinitionForPetSkill(active.petSkillId) == active).assertTrue()
+			tdPetSkillIsActive(active.petSkillId).assertTrue()
+	tdActiveSkillDefinitionAt(-1).key.assertEquals(0)
+	tdActiveSkillDefinitionAt(tdActiveSkillDefinitionCount()).key.assertEquals(0)
+	tdActiveSkillDefinitionForAbility('xxxx').key.assertEquals(0)
+	tdActiveSkillDefinitionForPetSkill(99).key.assertEquals(0)
+	tdPetSkillIsActive(-1).assertFalse()
+	tdPetSkillIsActive(10).assertFalse()
+	tdPetSkillIsActive(99).assertFalse()
+
+@Test function allActiveCooldownsClampAndApplyEveryContributionOnce()
+	for index = 0 to tdActiveSkillDefinitionCount() - 1
+		let base = tdActiveSkillDefinitionAt(index).baseCooldown
+		assertActiveNear(tdActiveCooldownDuration(base, 0.0), base)
+		assertActiveNear(tdActiveCooldownDuration(base, 0.18), base * 0.82)
+		assertActiveNear(tdActiveCooldownDuration(base, -1.0), base)
+		assertActiveNear(tdActiveCooldownDuration(base, 2.0), base * 0.60)
+		for quality = 1 to 4
+			let combined = tdFinalCooldownReduction(0.0, tdPetSkillPower(3, quality), 0.18)
+			assertActiveNear(tdActiveCooldownDuration(base, combined), base * (1.0 - RMinBJ(0.40, 0.06 * quality + 0.18)))
+	assertActiveNear(tdActiveCooldownDuration(tdActiveSkillDefinitionForKey(TD_ACTIVE_BLOODLUST).baseCooldown, 0.40), 7.2)
+	assertActiveNear(tdActiveCooldownDuration(tdActiveSkillDefinitionForKey(TD_ACTIVE_BLADESTORM).baseCooldown, 0.40), 5.4)
+	assertActiveNear(tdActiveCooldownDuration(tdActiveSkillDefinitionForPetSkill(11).baseCooldown, 0.40), 8.4)
+	assertActiveNear(tdActiveCooldownDuration(tdActiveSkillDefinitionForPetSkill(13).baseCooldown, 0.40), 6.0)
+
+@Test function physicalCooldownLevelsRoundAndDecodeAllFortyOneSlots()
+	tdActiveCooldownNativeLevel(-1.0).assertEquals(1)
+	tdActiveCooldownNativeLevel(0.0).assertEquals(1)
+	tdActiveCooldownNativeLevel(0.184).assertEquals(19)
+	tdActiveCooldownNativeLevel(0.186).assertEquals(20)
+	tdActiveCooldownNativeLevel(1.0).assertEquals(41)
+	for level = 1 to TD_ACTIVE_NATIVE_LEVEL_COUNT
+		tdActiveCooldownNativeLevelValid(level).assertTrue()
+		tdActiveCooldownNativeLevel(tdActiveCooldownReductionAtNativeLevel(level)).assertEquals(level)
+	tdActiveCooldownNativeLevelValid(0).assertFalse()
+	tdActiveCooldownNativeLevelValid(42).assertFalse()
+
+@Test function castLocksActualLevelUntilExpiryWhileDesiredChanges()
+	let state = new TDActiveNativeCooldownState(1)
+	state.requestLevel(41)
+	state.startCast(2.0, 12.0, 19)
+	assertActiveNear(state.readyAt, 11.84)
+	state.requestLevel(1)
+	assertActiveNear(state.readyAt, 11.84)
+	state.needsLevel(11.83, 19, false).assertFalse()
+	state.needsLevel(11.84, 19, true).assertFalse()
+	state.needsLevel(11.84, 0, false).assertFalse()
+	state.needsLevel(11.84, 19, false).assertTrue()
+	state.needsLevel(11.84, 1, false).assertFalse()
+	state.startCast(12.0, 12.0, 1)
+	assertActiveNear(state.readyAt, 24.0)
+	destroy state
+
+@Test function auraGearAndInspirationChangesOnlyAlterTheNextNativeCast()
+	let state = new TDActiveNativeCooldownState(1)
+	state.startCast(0.0, 9.0, 1)
+	for percent = 0 to 40
+		state.requestLevel(percent + 1)
+		assertActiveNear(state.readyAt, 9.0)
+		state.needsLevel(8.99, 1, false).assertFalse()
+	state.needsLevel(9.0, 1, false).assertTrue()
+	state.startCast(9.0, 9.0, 41)
+	assertActiveNear(state.readyAt, 14.4)
+	destroy state
+
+@Test function syntheticNativeAndPetUseTheSameScalarAndChoiceConsumers()
+	let nativeActive = tdActiveSkillDefinition(900, TD_ACTIVE_DRIVER_NATIVE_ABILITY, 'A9x1', -1, 20.0, Orders.innerfireon, Orders.innerfireoff, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	let petActive = tdActiveSkillDefinition(901, TD_ACTIVE_DRIVER_PET_PROC, 0, 99, 17.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	assertActiveNear(tdActiveCooldownReadyAt(3.0, nativeActive.baseCooldown, 0.18), 19.4)
+	assertActiveNear(tdActiveCooldownReadyAt(3.0, petActive.baseCooldown, 0.40), 13.2)
+	tdAuraCooldownTargetSupported(true, false, false).assertTrue()
+	tdAuraCooldownTargetSupported(false, true, true).assertTrue()
+	tdActiveAutocastChoiceAfterInitialization(0, true, nativeActive.initialAutocastChoice).assertEquals(0)
+	tdActiveAutocastChoiceAfterOrder(0, nativeActive.autocastOffOrder, true, false, nativeActive.autocastOnOrder, nativeActive.autocastOffOrder).assertEquals(2)
+
+@Test function slowUnknownChoiceStaysUnknownUntilAPlayerSelectsIt()
+	let active = tdActiveSkillDefinitionForKey(TD_ACTIVE_BLADESTORM)
+	tdActiveAutocastChoiceAfterInitialization(0, true, active.initialAutocastChoice).assertEquals(0)
+	tdActiveAutocastOrderForChoice(0, true, active.autocastOnOrder, active.autocastOffOrder).assertEquals(0)
+	let off = tdActiveAutocastChoiceAfterOrder(0, Orders.slowoff, true, false, active.autocastOnOrder, active.autocastOffOrder)
+	off.assertEquals(2)
+	tdActiveAutocastChoiceAfterInitialization(off, true, active.initialAutocastChoice).assertEquals(2)
+	tdActiveAutocastOrderForChoice(off, false, active.autocastOnOrder, active.autocastOffOrder).assertEquals(0)
+	tdActiveAutocastOrderForChoice(off, true, active.autocastOnOrder, active.autocastOffOrder).assertEquals(Orders.slowoff)
+	tdActiveAutocastChoiceAfterOrder(off, Orders.slowon, true, true, active.autocastOnOrder, active.autocastOffOrder).assertEquals(2)
+	tdNativeActiveIndependentAbilityChoicesRegressionForTest().assertTrue()

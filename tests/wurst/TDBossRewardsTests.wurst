@@ -1,0 +1,107 @@
+package TDBossRewardsTests
+import TDBossRewardRules
+import TDBossLootPlan
+import TDDrops
+import TDItems
+import TDWaveFlowState
+import TDState
+import TDWaves
+import TDPetState
+
+@Test function removedEnemyCompensationAndRealKillTotalsAreExact()
+	(tdBossKillCompensation(8) + tdBossKillCompensation(16) + tdBossKillCompensation(24) + tdBossKillCompensation(32)).assertEquals(489)
+	tdMatchEnemyCountPerLane().assertEquals(474)
+	(538 - tdMatchEnemyCountPerLane()).assertEquals(64)
+	(tdBossNormalDropAttempts(8) + tdBossNormalDropAttempts(16) + tdBossNormalDropAttempts(24) + tdBossNormalDropAttempts(32)).assertEquals(58)
+	tdBossKillCompensation(7).assertEquals(0)
+	tdBossBallDropAttempts(32).assertEquals(0)
+
+@Test function guaranteedBossLootReservesBudgetBeforeOrdinaryCompensation()
+	for chapter = 1 to 4
+		let wave = chapter * 8
+		for count = 1 to 3
+			let plan = new TDBossLootPlan(wave, 0, TD_ITEM_QUALITY_BLUE, count >= 2, count == 3)
+			plan.bossCount.assertEquals(count)
+			for _attempt = 1 to tdBossNormalDropAttempts(wave)
+				plan.tryNormal(1, 10000)
+			plan.sharedCount.assertEquals(tdLaneDropBudgetForWave(wave))
+			plan.qualities[0].assertEquals(TD_ITEM_QUALITY_BLUE)
+			if count >= 2
+				plan.qualities[1].assertEquals(TD_ITEM_QUALITY_BLUE)
+			if count == 3
+				plan.qualities[2].assertEquals(TD_ITEM_QUALITY_PURPLE)
+			destroy plan
+
+@Test function ordinaryCompensationUsesOriginalChanceAndOrdinaryQuality()
+	for chapter = 1 to 4
+		let wave = chapter * 8
+		let plan = new TDBossLootPlan(wave, 0, TD_ITEM_QUALITY_BLUE, false, false)
+		let chance = tdNormalDropChanceBasisPointsForWave(wave)
+		plan.tryNormal(chance + 1, 1).assertFalse()
+		plan.tryNormal(chance, 1).assertTrue()
+		(plan.qualities[1] <= TD_ITEM_QUALITY_BLUE).assertTrue()
+		destroy plan
+
+@Test function bonusSlotNeverConsumesOrReordersFrozenSharedLoot()
+	for chapter = 1 to 4
+		let wave = chapter * 8
+		let plan = new TDBossLootPlan(wave, 0, TD_ITEM_QUALITY_BLUE, true, true)
+		for _attempt = 1 to tdBossNormalDropAttempts(wave)
+			plan.tryNormal(1, 10000)
+		let original = plan.sharedCount
+		plan.appendBonus(15, 1).assertTrue()
+		plan.sharedCount.assertEquals(original)
+		plan.totalCount().assertEquals(tdLaneDropBudgetForWave(wave) + 1)
+		plan.appendBonus(1, 1).assertFalse()
+		plan.qualities[0].assertEquals(TD_ITEM_QUALITY_BLUE)
+		plan.qualities[2].assertEquals(TD_ITEM_QUALITY_PURPLE)
+		destroy plan
+	let failed = new TDBossLootPlan(8, 3, TD_ITEM_QUALITY_BLUE, false, false)
+	failed.appendBonus(16, 1).assertFalse()
+	failed.appendBonus(1, 1).assertFalse()
+	failed.totalCount().assertEquals(1)
+	destroy failed
+
+@Test function onlyClaimedKilledBossCanClaimOneRewardTransaction()
+	tdResetState()
+	tdFlowPrepareBoss(8)
+	tdFlowStartBoss(8)
+	let epoch = tdFlowEpoch()
+	tdFlowClaimBossReward(0, 8, epoch).assertFalse()
+	tdFlowActivateBoss(0, 8, 0.0)
+	tdFlowClaimBossResult(0, 8, TD_BOSS_RESULT_KILLED).assertTrue()
+	tdFlowClaimBossReward(0, 8, epoch - 1).assertFalse()
+	tdFlowClaimBossReward(0, 8, epoch).assertTrue()
+	tdFlowClaimBossReward(0, 8, epoch).assertFalse()
+	tdFlowClaimBossLoot(0, 8).assertTrue()
+	tdFlowClaimBossLoot(0, 8).assertFalse()
+	tdFlowClaimBossBallCompensation(0, 8).assertTrue()
+	tdFlowClaimBossBallCompensation(0, 8).assertFalse()
+	for lane = 1 to 3
+		tdFlowActivateBoss(lane, 8, 0.0)
+		tdFlowClaimBossResult(lane, 8, lane == 1 ? TD_BOSS_RESULT_LEAKED : (lane == 2 ? TD_BOSS_RESULT_TIMED_OUT : TD_BOSS_RESULT_ABORTED))
+		tdFlowClaimBossReward(lane, 8, epoch).assertFalse()
+	tdResetState()
+	tdFlowClaimBossReward(0, 8, epoch).assertFalse()
+
+@Test function captureBallCompensationSharesOriginalGlobalQuota()
+	tdResetState()
+	tdPetInitializeLane(0)
+	tdBossBallDropSucceeds(2).assertTrue()
+	tdBossBallDropSucceeds(3).assertFalse()
+	tdBossBallDropAttempts(8).assertEquals(11)
+	tdBossBallDropAttempts(16).assertEquals(15)
+	tdBossBallDropAttempts(24).assertEquals(18)
+	tdBossBallDropAttempts(32).assertEquals(0)
+	tdPetTakeDropBudget(0, 8).assertTrue()
+	tdPetTakeDropBudget(0, 8).assertFalse()
+	tdPetTakeDropBudget(0, 16).assertFalse()
+	tdPetTakeDropBudget(0, 24).assertFalse()
+	tdResetState()
+
+@Test function bossWildClaimsHardRejectAllStagesWhileSeventeenIsAvailable()
+	tdPetInitializeLane(0)
+	for chapter = 1 to 4
+		tdPetClaimWildSpawn(0, chapter * 8).assertFalse()
+	tdPetClaimWildSpawn(0, 17).assertTrue()
+	tdPetClaimWildSpawn(0, 17).assertFalse()

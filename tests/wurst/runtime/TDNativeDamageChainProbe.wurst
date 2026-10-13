@@ -1,0 +1,175 @@
+package TDNativeDamageChainProbe
+import TDConfig
+import TDState
+import TDSpawn
+import TDWaves
+import TDTowers
+import DamageEvent
+import ErrorHandling
+import ClosureTimers
+
+unit source = null
+unit first = null
+unit second = null
+trigger chat = null
+DamageListener before = null
+DamageListener after = null
+boolean started = false
+boolean failed = false
+boolean complete = false
+int phase = 0
+int phaseTicks = 0
+int totalTicks = 0
+int beforeCount = 0
+int afterCount = 0
+int parentCount = 0
+real cancelHp = 0
+
+function report(string message)
+    DisplayTimedTextToPlayer(Player(0), 0, 0, 600, "CHAIN " + phase.toString() + " " + message)
+
+function fail(string message)
+    if not failed
+        failed = true
+        report("FAIL " + message)
+
+function deal(unit victim, int id, real amount)
+    DamageEvent.setNextDamageFromCode()
+    DamageEvent.setNextDamageId(id)
+    source.damageTarget(victim, amount)
+
+function checkContext(unit victim, int id)
+    if DamageEvent.getSource() != source or DamageEvent.getTarget() != victim or DamageEvent.getId() != id or not DamageEvent.isCode()
+        fail("parent context changed")
+
+function siblings()
+    for _index = 1 to 50
+        deal(second, 2, 0.25)
+        checkContext(first, 1)
+
+function onBefore()
+    if DamageEvent.getSource() != source
+        return
+    beforeCount += 1
+    if phase == 0 and DamageEvent.getId() == 1
+        siblings()
+    if phase == 5
+        DamageEvent.abortCurrent()
+    if phase == 7 and not DamageEvent.isSpell()
+        fail("native spell path was not exercised")
+
+function onAfter()
+    if DamageEvent.getSource() != source
+        return
+    afterCount += 1
+    let id = DamageEvent.getId()
+    let victim = DamageEvent.getTarget()
+    if phase <= 1 and id == 1
+        parentCount += 1
+        if phase == 1
+            siblings()
+    if phase == 2 or phase == 3 or phase == 8
+        let limit = phase == 8 ? 49 : 40
+        if id < limit
+            let child = victim == first ? second : first
+            deal(child, id + 1, 0.25)
+            checkContext(victim, id)
+    if phase == 7 and not DamageEvent.isSpell()
+        fail("native spell reduced path was not exercised")
+
+function cleanup()
+    destroy before
+    destroy after
+    DestroyTrigger(chat)
+    RemoveUnit(source)
+    RemoveUnit(first)
+    RemoveUnit(second)
+    tdSetLaneActive(0, true)
+
+function advance()
+    phaseTicks += 1
+    if phaseTicks == 1
+        if phase == 4
+            deal(first, 1, 0.0)
+        else if phase == 7
+            DamageEvent.setNextDamageFromCode()
+            DamageEvent.setNextDamageId(1)
+            source.damageTarget(first, 0.25, ATTACK_TYPE_NORMAL)
+        else
+            if phase == 5
+                cancelHp = GetWidgetLife(first)
+            if phase == 8
+                report("expect recursion error at child 49; exit after result")
+            deal(first, 1, 0.25)
+            if phase == 5 and GetWidgetLife(first) < cancelHp - 0.01
+                fail("cancel immediately lost life")
+    if phase == 4 and phaseTicks == 5
+        // Zero native damage may be ignored by the engine. Test recovery after it.
+        beforeCount = 0
+        afterCount = 0
+        deal(second, 2, 0.25)
+    if phaseTicks < 30
+        return
+    if phase <= 1
+        if beforeCount != 51 or afterCount != 51 or parentCount != 1
+            fail("sibling counts " + beforeCount.toString() + "/" + afterCount.toString())
+    else if phase == 2 or phase == 3
+        if beforeCount != 40 or afterCount != 40
+            fail("finite chain counts " + beforeCount.toString() + "/" + afterCount.toString())
+    else if phase == 5
+        if beforeCount != 1 or afterCount != 0 or GetWidgetLife(first) < cancelHp - 0.01
+            fail("cancel did not stay isolated")
+    else if phase == 8
+        fail("recursion guard did not fire")
+    else
+        if beforeCount != 1 or afterCount != 1
+            fail("independent counts " + beforeCount.toString() + "/" + afterCount.toString())
+    if not failed
+        report("PASS")
+        phase += 1
+        phaseTicks = 0
+        beforeCount = 0
+        afterCount = 0
+        parentCount = 0
+
+function start()
+    if started or tdIsGameOver() or tdCountActiveLanes() != 1 or not tdIsLaneActive(0) or GetPlayerState(Player(0), PLAYER_STATE_RESOURCE_FOOD_USED) != 0
+        return
+    started = true
+    tdSetLaneActive(0, false)
+    source = CreateUnit(Player(0), TD_FARMER_UNIT_ID, -1600, 1600, 0)
+    first = tdCreateEnemy(0, 29, tdWaveUnitId(29))
+    second = tdCreateEnemy(0, 29, tdWaveUnitId(29))
+    PauseUnit(source, true)
+    PauseUnit(first, true)
+    PauseUnit(second, true)
+    before = DamageEvent.addUnreducedListener() ->
+        onBefore()
+    after = DamageEvent.addListener() ->
+        onAfter()
+    lastError = ""
+    report("START")
+    doPeriodically(0.1) cb ->
+        totalTicks += 1
+        if not source.isAlive() or not first.isAlive() or not second.isAlive()
+            fail("fixture unit died or failed to spawn")
+        if lastError != ""
+            if not failed and phase == 8 and lastError == "There is an infinite loop with the Damage Engine" and beforeCount == 48 and afterCount == 48
+                complete = true
+            else
+                fail("unexpected engine error: " + lastError)
+        if not failed and not complete
+            advance()
+        if totalTicks >= 400
+            fail("watchdog")
+        if complete and not failed
+            report("PASS expected guard at 49; all earlier cases passed")
+        if failed or complete
+            cleanup()
+            destroy cb
+
+init
+    if not compiletime
+        chat = CreateTrigger()
+        TriggerRegisterPlayerChatEvent(chat, Player(0), "-chain", true)
+        TriggerAddAction(chat, function start)

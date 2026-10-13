@@ -1,0 +1,41 @@
+package TDBossRewardRuntime
+import TDBossRewardRules
+import TDBossLootPlan
+import TDDropLogic
+import TDItemData
+import TDState
+import TDWaveFlowState
+import TDWaves
+import TDSpawn
+
+function tdCreateBossLootItem(unit enemy, int lane, int wave, int quality)
+	let itemId = tdRandomItemIdForQuality(quality)
+	if itemId == 0
+		return
+	createItem(itemId, enemy.getPos())
+	tdMarkLaneWaveDrop(lane, wave)
+	if quality >= TD_ITEM_QUALITY_GREEN
+		DisplayTimedTextToPlayer(Player(lane), 0, 0, 4.0, "掉落：" + tdItemQualityName(quality) + " " + tdItemName(itemId))
+
+public function tdHandlePureBossLoot(unit enemy, int lane, int wave)
+	if enemy == null or not tdEnemyBelongsToCurrentMatch(enemy) or GetUnitTypeId(enemy) != tdWaveSpecialUnitId(wave) or tdEnemyWasLeaked(enemy) or tdFlowBossResult(lane, wave) != TD_BOSS_RESULT_KILLED or not tdFlowClaimBossLoot(lane, wave)
+		return
+	let primary = tdDropQualityForRoll(wave, false, true, GetRandomInt(1, 10000))
+	let second = GetRandomInt(1, 100) <= 50
+	let third = GetRandomInt(1, 10000) <= 1200
+	let plan = new TDBossLootPlan(wave, tdGetLaneWaveDropCount(lane, wave), primary, second, third)
+	for _attempt = 1 to tdBossNormalDropAttempts(wave)
+		if plan.remainingNormalBudget > 0
+			let chance = GetRandomInt(1, 10000)
+			if chance <= tdNormalDropChanceBasisPointsForWave(wave)
+				plan.tryNormal(chance, GetRandomInt(1, 10000))
+			else
+				plan.tryNormal(chance, 10000)
+	// The extra slot is appended after the shared plan is frozen; no lucky rerolls.
+	let bonus = GetRandomInt(1, 100)
+	plan.appendBonus(bonus, tdBossBonusDropSucceeds(bonus) ? GetRandomInt(1, 10000) : 10000)
+	for index = 0 to plan.sharedCount - 1
+		tdCreateBossLootItem(enemy, lane, wave, plan.qualities[index])
+	if plan.bonusQuality > 0
+		tdCreateBossLootItem(enemy, lane, wave, plan.bonusQuality)
+	destroy plan

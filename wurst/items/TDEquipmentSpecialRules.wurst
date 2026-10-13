@@ -1,0 +1,88 @@
+package TDEquipmentSpecialRules
+import TDItemCatalogConfig
+import TDItemCatalogSchema
+
+public class TDWarIntentState
+	int currentTarget = 0
+	int stack = 0
+	real lastHit = 0.0
+	real burstUntil = 0.0
+
+	function clear()
+		currentTarget = 0
+		stack = 0
+		lastHit = 0.0
+		burstUntil = 0.0
+
+	function tick(real now)
+		if currentTarget != 0 and now >= lastHit + tdConfiguredWarInactivity()
+			clear()
+		else if now >= burstUntil
+			burstUntil = 0.0
+
+	function hit(int targetKey, real now) returns boolean
+		tick(now)
+		if currentTarget != 0 and currentTarget != targetKey
+			clear()
+		currentTarget = targetKey
+		lastHit = now
+		if now < burstUntil
+			return false
+		stack += 1
+		if stack < tdConfiguredSpecialCount(TD_ITEM_SPECIAL_WAR_INTENT)
+			return false
+		stack = 0
+		burstUntil = now + tdConfiguredWarDuration()
+		return true
+
+	function stage(real now) returns int
+		return now < burstUntil ? 4 : stack
+
+public class TDPoisonBurstState
+	int currentTarget = 0
+	int stack = 0
+	real lastHit = 0.0
+	function clear()
+		currentTarget = 0
+		stack = 0
+		lastHit = 0.0
+	function tick(real now)
+		if currentTarget != 0 and now >= lastHit + tdConfiguredPoisonBurstInactivity()
+			clear()
+	function hit(int targetKey, real now) returns boolean
+		tick(now)
+		if currentTarget != targetKey
+			clear()
+		currentTarget = targetKey
+		lastHit = now
+		stack += 1
+		if stack < tdConfiguredSpecialCount(TD_ITEM_SPECIAL_POISON_BURST)
+			return false
+		// Clear BEFORE the runtime queues the explosion, including lethal thirds.
+		stack = 0
+		return true
+
+public class TDCorpseBurstState
+	int hits = 0
+	function clear()
+		hits = 0
+	function hit() returns boolean
+		// Total valid main attacks: switching targets deliberately does not reset.
+		hits += 1
+		if hits < tdConfiguredSpecialCount(TD_ITEM_SPECIAL_CORPSE_BURST)
+			return false
+		hits = 0
+		return true
+
+public function tdWarStageName(int stage) returns string
+	return stage == 4 ? "剑圣战意 爆发" : "剑圣战意 " + stage + "/" + tdConfiguredSpecialCount(TD_ITEM_SPECIAL_WAR_INTENT)
+
+public function tdWarStageTooltip(int stage) returns string
+	let description = stage == 4 ? "爆发中：" : "同目标普攻 " + stage + "/" + tdConfiguredSpecialCount(TD_ITEM_SPECIAL_WAR_INTENT) + "；达到后"
+	return description + "攻速提高" + R2I(tdConfiguredWarAttackSpeed() * 100.0) + "%，持续" + R2I(tdConfiguredWarDuration()) + "秒。期间不叠层、不续时；换目标、停攻" + R2I(tdConfiguredWarInactivity()) + "秒或卸下装备后清除。"
+
+public function tdPoisonStageName(int stage) returns string
+	return "森蚀 " + stage + "/" + tdConfiguredSpecialCount(TD_ITEM_SPECIAL_POISON_BURST)
+
+public function tdPoisonStageTooltip(int stage) returns string
+	return "同目标普攻 " + stage + "/" + tdConfiguredSpecialCount(TD_ITEM_SPECIAL_POISON_BURST) + "。达到所需次数后，对目标周围" + R2I(tdConfiguredSpecialRadius(TD_ITEM_SPECIAL_POISON_BURST)) + "范围内最多" + tdConfiguredSpecialTargetCap(TD_ITEM_SPECIAL_POISON_BURST) + "名敌人，造成本次普攻伤害的" + R2I(tdConfiguredSpecialDamageFactor(TD_ITEM_SPECIAL_POISON_BURST) * 100.0) + "%。换目标或停攻" + R2I(tdConfiguredPoisonBurstInactivity()) + "秒清除次数。"

@@ -1,0 +1,1 @@
+{'slow': {'base': 260, 'active': 130, 'explicit_cleanup_restored': 260}, 'release_debuff_records': 0, 'old_trial_aoe_new_wave_damage': 0, 'old_proc_new_pending_serial_preserved': True, 'capture': 'Actual onAttack + listener captured epoch/generation/token/revision and center; no fabricated closure'}

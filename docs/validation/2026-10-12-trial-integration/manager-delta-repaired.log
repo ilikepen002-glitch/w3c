@@ -1,0 +1,16 @@
+test_actual_objects_members_sources_and_individual_inherited_bodies (test_verify_pet_manager_delta.ManagerInheritanceTests.test_actual_objects_members_sources_and_individual_inherited_bodies) ... ok
+test_rejects_callback_dispatch_target_and_argument_change (test_verify_pet_manager_delta.ManagerInheritanceTests.test_rejects_callback_dispatch_target_and_argument_change) ... ok
+test_rejects_diagnostic_line_even_when_behavior_text_is_equal (test_verify_pet_manager_delta.ManagerInheritanceTests.test_rejects_diagnostic_line_even_when_behavior_text_is_equal) ... ok
+test_rejects_display_metadata_without_shape_or_value_change (test_verify_pet_manager_delta.ManagerInheritanceTests.test_rejects_display_metadata_without_shape_or_value_change) ... ok
+test_rejects_extra_object_without_allowlisting_new_set (test_verify_pet_manager_delta.ManagerInheritanceTests.test_rejects_extra_object_without_allowlisting_new_set) ... ok
+test_rejects_inherited_boss_bloodlust_rank_and_wild_behavior (test_verify_pet_manager_delta.ManagerInheritanceTests.test_rejects_inherited_boss_bloodlust_rank_and_wild_behavior) ... ok
+test_rejects_main_init_glue_or_inherited_global_change (test_verify_pet_manager_delta.ManagerInheritanceTests.test_rejects_main_init_glue_or_inherited_global_change) ... ok
+test_rejects_temp_type_or_inconsistent_use_site (test_verify_pet_manager_delta.ManagerInheritanceTests.test_rejects_temp_type_or_inconsistent_use_site) ... ok
+test_rejects_type_assignment_operator_reference_or_duplicate_owner (test_verify_pet_manager_delta.ManagerInheritanceTests.test_rejects_type_assignment_operator_reference_or_duplicate_owner) ... ok
+test_rejects_unrelated_object_field_and_locked_tooltip_change (test_verify_pet_manager_delta.ManagerInheritanceTests.test_rejects_unrelated_object_field_and_locked_tooltip_change) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 6.368s
+
+OK
+PASS GLOBAL RAWCODES: 980 unique strict-decoded object identities

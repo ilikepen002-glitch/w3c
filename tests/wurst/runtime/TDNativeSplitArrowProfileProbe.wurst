@@ -1,0 +1,27 @@
+package TDNativeSplitArrowProfileProbe
+import TDTowers
+import ClosureTimers
+
+// Opt-in only. Equip several archer towers with attack-speed gloves and place
+// dense, durable enemies in range before -split-profile. Repeat without gloves.
+// Logs object pressure; this does not itself measure frame time or prove lag.
+boolean profiling = false
+
+function report()
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 15.0, "SPLIT queued=" + tdSplitArrowPendingVolleyCount().toString() + " live=" + tdSplitArrowLiveVolleyCount().toString() + " arrows=" + tdSplitArrowVisualCount().toString())
+
+function start()
+	if profiling
+		return
+	profiling = true
+	doPeriodicallyCounted(1.0, 30) cb ->
+		report()
+		if cb.isLast()
+			profiling = false
+			destroy cb
+
+init
+	if not compiletime
+		let chat = CreateTrigger()
+		TriggerRegisterPlayerChatEvent(chat, Player(0), "-split-profile", true)
+		TriggerAddAction(chat, function start)

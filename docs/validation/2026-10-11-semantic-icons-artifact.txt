@@ -1,0 +1,6 @@
+PASS: exact rawcode/global-field bindings; 28 equipment, 5 actions, critical strike, all tower icon uses and 96 wild identities; 516 whole pet slots and 61 Pcap levels unchanged.
+PASS: 32 source-reproducible + 11 byte-preserved tower + 13 byte-preserved pet UI pairs; MPQ/import hashes, all seven decoded mips/alpha, casefold uniqueness and old-path absence.
+FINAL MAP SHA256: af3ac1daddf6a14060630f025c2ff5fe216452621da994d24770aa4b9b395e26
+BASELINE MAP SHA256: 6bb99d0bb17fdbe929a33e4c24bf2ea9e730a41173c2dee7bd5ebcb8057e9c40
+OFFLINE NON-GAMEPLAY CONTACT SHEET: /workspace/shared/icon-improvement-20261011/validation/final-packed-icons-offline.png; SHA256=0cc01216d249b4aaa6b7a17b3e5b5e570c5bcf2d9e96e5298a99f388bf33733e
+NOT TESTED: in-game command rendering, portraits, gameplay or performance.

@@ -1,0 +1,195 @@
+package TDPetRuntime
+import TDPetData
+import TDPetState
+import TDPetWild
+import TDState
+import TDConfig
+import TDSpawn
+import TDWaves
+import TDTowerData
+import RegisterEvents
+import GameTimer
+import Table
+import ClosureTimers
+import TDEquipmentCombat
+import TDEnemyMechanicRuntime
+import TDBossRewardRules
+import TDWaveFlowState
+import TDTrialIdentity
+
+public unit array tdPetFarmers
+real array tdPetCaptureReadyAt
+constant Table tdPetBallOwners = new Table()
+trigger tdPetBallPickupTrigger = CreateTrigger()
+boolean tdPetRuntimeReady = false
+
+public function tdPetNotice(int lane, string message)
+	DisplayTimedTextToPlayer(Player(lane), 0, 0, 3.0, message)
+
+public function tdPetSyncBallAbility(int lane)
+	let farmer = tdPetFarmers[lane]
+	if farmer != null
+		farmer.setAbilityLevel(TD_PET_CAPTURE_ABILITY_ID, IMinBJ(tdPetBallsForLane(lane), 60) + 1)
+
+public function tdPetEnemyIsValid(unit enemy, int lane) returns boolean
+	if tdTrialIsTargetType(enemy)
+		return tdTrialTargetValid(enemy, lane)
+	return enemy != null and enemy.isAlive() and GetOwningPlayer(enemy) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(enemy) == lane and not tdEnemyWasLeaked(enemy)
+
+public function tdPetLaneCanAct(int lane) returns boolean
+	return tdPetLaneCanManage(lane)
+
+public function tdPetCanDeploy(TDPet pet, unit tower) returns boolean
+	if pet == null or pet.released or tower == null or not tower.isAlive() or not tdPetLaneCanAct(pet.lane)
+		return false
+	if GetPlayerId(GetOwningPlayer(tower)) != pet.lane or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0 or tdPetBusyTowers.hasBoolean(tower.getHandleId())
+		return false
+	if tdPetForHost(tower) != null
+		return false
+	return true
+
+public function tdPetDeploy(TDPet pet, unit tower) returns boolean
+	if not tdPetCanDeploy(pet, tower)
+		return false
+	pet.recall()
+	pet.host = tower
+	pet.visual = createUnit(Player(pet.lane), tdPetVisualUnitId(pet.species), tower.getPos() + vec2(100.0, 50.0), 0 .fromDeg())
+	pet.visual.setPathing(false)
+	return true
+
+function tdPetHandleCapture() returns boolean
+	let farmer = GetTriggerUnit()
+	if farmer == null or GetUnitTypeId(farmer) != TD_FARMER_UNIT_ID
+		return false
+	let lane = GetPlayerId(GetOwningPlayer(farmer))
+	let target = GetSpellTargetUnit()
+	let wild = tdPetWildFor(target)
+	if not tdPetLaneCanAct(lane) or not tdPetWildCanCapture(wild, lane)
+		tdPetNotice(lane, "只能捕获本路存活的野生宝宝。")
+		return false
+	let species = tdPetSpeciesForWildType(GetUnitTypeId(target))
+	if species == 0
+		tdPetNotice(lane, "这个目标不是野生宝宝。")
+		return false
+	if tdPetCollectionCount(lane) >= TD_PET_COLLECTION_LIMIT
+		tdPetNotice(lane, "收藏已满20只。按W打开收藏，选择精灵后C养成、X释放；上阵精灵须先解绑。")
+		return false
+	let now = getElapsedGameTime()
+	if now < tdPetCaptureReadyAt[lane]
+		tdPetNotice(lane, "捕获冷却中。")
+		return false
+	if not tdPetSpendCaptureBall(lane, tdPetWildCanCapture(wild, lane))
+		tdPetNotice(lane, "捕获球不足。")
+		return false
+	tdPetCaptureReadyAt[lane] = now + 1.0
+	tdPetSyncBallAbility(lane)
+	farmer.flashEffect("Abilities\\Spells\\Other\\Charm\\CharmCaster.mdl", "origin")
+	target.flashEffect("Abilities\\Spells\\Other\\Charm\\CharmTarget.mdl", "origin")
+	let guaranteed = wild.tutorial and not tdPetTutorialUsed[lane]
+	if wild.tutorial
+		tdPetTutorialUsed[lane] = true
+	if not guaranteed and GetRandomInt(1, 100) > 60
+		tdPetNotice(lane, "|cffff8080捕获失败|r，宝宝继续行进；剩余球 " + tdPetBallsForLane(lane).toString())
+		return false
+	let pet = new TDPet(lane, species, tdGetGlobalWave())
+	pet.rollCaptureSkills()
+	if not tdPetStore(lane, pet)
+		// No yielding between capacity check and insertion; retain an explicit failure path.
+		destroy pet
+		tdPetAddBall(lane)
+		tdPetSyncBallAbility(lane)
+		tdPetNotice(lane, "收藏登记失败，已退还捕获球。")
+		return false
+	// RemoveUnit intentionally bypasses kill gold, score and all death drops.
+	tdPetWildTransition(wild, TD_PET_WILD_CAPTURED)
+	tdForgetEquipmentEnemy(target)
+	tdEnemyMechanicUnregister(target)
+	target.remove()
+	wild.creature = null
+	tdPetNotice(lane, "|cff80ff80捕获成功|r：" + pet.summary() + "。按W打开收藏，选择编号后E点塔绑定、C养成。")
+	return false
+
+public function tdPetHandleEnemyBallDrop(unit enemy, int lane, int wave)
+	if tdPetIsWild(enemy) or enemy == null or GetKillingUnit() == null or not tdPetLaneCanAct(lane) or tdIsBossUnitTypeId(GetUnitTypeId(enemy)) or tdEnemyWasLeaked(enemy)
+		return
+	if wave > 25 or GetRandomInt(1, 100) > 2 or not tdPetTakeDropBudget(lane, wave)
+		return
+	let ball = createItem(TD_PET_BALL_ITEM_ID, enemy.getPos())
+	tdPetBallOwners.saveInt(ball.getHandleId(), lane + 1)
+
+public function tdPetHandleBossBallCompensation(unit enemy, int lane, int wave)
+	if enemy == null or GetKillingUnit() == null or not tdPetLaneCanAct(lane) or tdEnemyWasLeaked(enemy) or tdFlowBossResult(lane, wave) != TD_BOSS_RESULT_KILLED or not tdFlowClaimBossBallCompensation(lane, wave)
+		return
+	for _attempt = 1 to tdBossBallDropAttempts(wave)
+		if tdBossBallDropSucceeds(GetRandomInt(1, 100)) and tdPetTakeDropBudget(lane, wave)
+			let ball = createItem(TD_PET_BALL_ITEM_ID, enemy.getPos())
+			tdPetBallOwners.saveInt(ball.getHandleId(), lane + 1)
+			return
+
+function tdPetHandleBallPickup()
+	let ball = GetManipulatedItem()
+	let carrier = GetManipulatingUnit()
+	if ball == null or carrier == null or GetItemTypeId(ball) != TD_PET_BALL_ITEM_ID
+		return
+	let lane = GetPlayerId(GetOwningPlayer(carrier))
+	let key = ball.getHandleId()
+	let owner = tdPetBallOwners.loadInt(key) - 1
+	if owner != lane or not tdPetLaneCanAct(lane) or not tdPetAddBall(lane)
+		let position = carrier.getPos()
+		UnitRemoveItem(carrier, ball)
+		SetItemPosition(ball, position.x, position.y)
+		tdPetNotice(lane, owner != lane ? "捕获球属于其他路线。" : "捕获球已满或路线已停止，道具留在地面。")
+		return
+	tdPetBallOwners.removeInt(key)
+	UnitRemoveItem(carrier, ball)
+	ball.remove()
+	tdPetSyncBallAbility(lane)
+	tdPetNotice(lane, "捕获球 +1 · " + tdPetBallsForLane(lane).toString() + "/60")
+
+public function tdPetInitializeFarmer(int lane, unit farmer)
+	tdPetInitializeLane(lane)
+	tdPetWildPlanLane(lane)
+	tdPetFarmers[lane] = farmer
+	tdPetCaptureReadyAt[lane] = 0.0
+	tdPetSyncBallAbility(lane)
+
+public function tdPetSetupRuntime()
+	if tdPetRuntimeReady
+		return
+	tdPetRuntimeReady = true
+	tdPetSetupWild()
+	registerSpellEffectEvent(TD_PET_CAPTURE_ABILITY_ID, function tdPetHandleCapture)
+	tdPetBallPickupTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
+	tdPetBallPickupTrigger.addAction(function tdPetHandleBallPickup)
+	doPeriodically(0.5) cb ->
+		for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+				let pet = tdPetAt(lane, slot)
+				if pet != null and pet.host != null
+					if not pet.host.isAlive() or tdTowerChoiceForUnitTypeId(GetUnitTypeId(pet.host)) == 0 or GetPlayerId(GetOwningPlayer(pet.host)) != lane or not tdPetLaneCanAct(lane)
+						pet.recall()
+					else if pet.visual != null
+						let desired = pet.host.getPos() + vec2(100.0, 50.0)
+						if pet.visual.getPos().distanceTo(desired) > 1.0
+							pet.visual.setPos(desired)
+		if tdIsGameOver()
+			for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+				tdPetCancelRelease(lane)
+			// All delayed attacks have zero delay or at most three one-second ticks.
+			// Stop new procs now, then reclaim records only after every callback expires.
+			doAfter(4.0) ->
+				for pet in tdPetMatchRecords
+					pet.recall()
+					destroy pet
+				destroy tdPetMatchRecords
+				tdPetMatchRecords = null
+				for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+					for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+						tdPets[lane * TD_PET_COLLECTION_LIMIT + slot] = null
+			destroy cb
+
+
+
+
+
+

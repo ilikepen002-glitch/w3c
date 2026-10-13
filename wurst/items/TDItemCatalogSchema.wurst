@@ -1,0 +1,38 @@
+package TDItemCatalogSchema
+
+public constant int TD_ITEM_QUALITY_WHITE = 1
+public constant int TD_ITEM_QUALITY_GREEN = 2
+public constant int TD_ITEM_QUALITY_BLUE = 3
+public constant int TD_ITEM_QUALITY_PURPLE = 4
+
+public constant int TD_ITEM_EFFECT_NONE = 0
+public constant int TD_ITEM_EFFECT_ATTACK = 1
+public constant int TD_ITEM_EFFECT_RANGE = 2
+public constant int TD_ITEM_EFFECT_ATTACK_SPEED = 3
+public constant int TD_ITEM_EFFECT_COOLDOWN = 4
+public constant int TD_ITEM_EFFECT_KILL_GOLD = 5
+public constant int TD_ITEM_EFFECT_ARMOR_SHRED = 6
+public constant int TD_ITEM_EFFECT_EXECUTE = 7
+public constant int TD_ITEM_EFFECT_POISON = 8
+public constant int TD_ITEM_EFFECT_CONTROL_POWER = 9
+public constant int TD_ITEM_EFFECT_DROP_BONUS = 10
+public constant int TD_ITEM_EFFECT_BOSS_DAMAGE = 11
+
+public constant int TD_ITEM_AURA_NONE = 0
+public constant int TD_ITEM_AURA_ATTACK = 1
+public constant int TD_ITEM_AURA_ATTACK_SPEED = 2
+public constant int TD_ITEM_AURA_COOLDOWN = 3
+public constant int TD_ITEM_AURA_ARMOR_ON_HIT = 4
+public constant int TD_ITEM_AURA_ENEMY_SLOW = 5
+
+public constant int TD_ITEM_SPECIAL_NONE = 0
+public constant int TD_ITEM_SPECIAL_ARCHER_ARROW = 1
+public constant int TD_ITEM_SPECIAL_WAR_INTENT = 2
+public constant int TD_ITEM_SPECIAL_CORPSE_BURST = 3
+public constant int TD_ITEM_SPECIAL_SHIELD_SPREAD = 4
+public constant int TD_ITEM_SPECIAL_POISON_BURST = 5
+
+public tuple tdEquipmentDefinition(int rawcode, int quality, int line, int nextId, string name, int primaryKind, real primaryValue, int secondaryKind, real secondaryValue, int auraKind, real auraValue, real auraRadius, int specialization)
+
+public function tdItemPersonalEffectStacks(int kind) returns boolean
+	return kind == TD_ITEM_EFFECT_ATTACK or kind == TD_ITEM_EFFECT_ATTACK_SPEED or kind == TD_ITEM_EFFECT_RANGE

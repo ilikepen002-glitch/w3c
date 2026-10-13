@@ -1,0 +1,493 @@
+package TDPetState
+import TDPetData
+import TDAuraState
+import TDPetRules
+import TDConfig
+import TDState
+import TDEnemyMechanicData
+import Table
+import BitSet
+import LinkedList
+
+public class TDPet
+	int lane
+	int species
+	int captureWave
+	int level = 1
+	int usedSkills = 0
+	int skillCount = 0
+	int array[4] skills
+	int array[4] qualities
+	int rotation = 0
+	real readyAt = 0.0
+	real buffUntil = 0.0
+	int buffSkill = -1
+	real buffPower = 0.0
+	boolean pendingSkill = false
+	int pendingSerial = 0
+	unit host = null
+	unit visual = null
+	int generation = 0
+	boolean paused = false
+	boolean released = false
+	int revision = 0
+	int proposalSlot = -1
+	int proposalSkill = -1
+	int proposalQuality = 0
+	int proposalVersion = 0
+	int proposalRevision = 0
+	int proposalOldSkill = -1
+	int proposalOldQuality = 0
+
+	construct(int lane, int species, int captureWave)
+		this.lane = lane
+		this.species = species
+		this.captureWave = captureWave
+		for slot = 0 to 3
+			skills[slot] = -1
+
+	function hasActiveExcept(int except) returns boolean
+		for slot = 0 to skillCount - 1
+			if slot != except and tdPetSkillIsActive(skills[slot])
+				return true
+		return false
+
+	function rollSkill(int slot) returns int
+		var mask = 0
+		for index = 0 to skillCount - 1
+			if index != slot
+				mask = bitset(mask).set(skills[index]).val
+		var count = 0
+		for skill = 0 to 15
+			if tdPetSkillAllowed(skill, slot, mask, hasActiveExcept(slot))
+				count += 1
+		if count <= 0
+			return -1
+		let rank = GetRandomInt(0, count - 1)
+		var remaining = rank
+		for skill = 0 to 15
+			if tdPetSkillAllowed(skill, slot, mask, hasActiveExcept(slot))
+				if remaining == 0
+					return skill
+				remaining -= 1
+		return -1
+
+	function setSkill(int slot, int skill, int quality)
+		if slot < 0 or slot > 3 or slot > skillCount or skill < 0 or skill > 15 or quality < 1 or quality > 4
+			return
+		var mask = 0
+		for index = 0 to skillCount - 1
+			if index != slot
+				mask = bitset(mask).set(skills[index]).val
+		if not tdPetSkillAllowed(skill, slot, mask, hasActiveExcept(slot))
+			return
+		skills[slot] = skill
+		qualities[slot] = quality
+		skillCount = IMaxBJ(skillCount, slot + 1)
+		usedSkills = 0
+		for index = 0 to skillCount - 1
+			usedSkills = bitset(usedSkills).set(skills[index]).val
+		revision += 1
+
+	function rollCaptureSkills()
+		let count = tdPetSkillCountForRoll(GetRandomInt(1, 100))
+		for slot = 0 to count - 1
+			setSkill(slot, rollSkill(slot), tdPetQualityForRoll(GetRandomInt(1, 100)))
+
+	function skillAt(int slot) returns int
+		return slot >= 0 and slot < skillCount ? skills[slot] : -1
+
+	function qualityAt(int slot) returns int
+		return slot >= 0 and slot < skillCount ? qualities[slot] : 0
+
+	function skillPower(int skill) returns real
+		if paused or released or host == null
+			return 0.0
+		for slot = 0 to IMinBJ(skillCount, tdPetUnlockedSlots(level)) - 1
+			if skills[slot] == skill
+				return tdPetSkillPower(skill, qualities[slot])
+		return 0.0
+
+	function recall()
+		generation += 1
+		pendingSkill = false
+		pendingSerial += 1
+		buffUntil = 0.0
+		buffSkill = -1
+		if host != null
+			host.removeAbility(TD_PET_ATTACK_BONUS_ID)
+			host.removeAbility(TD_PET_SPEED_BONUS_ID)
+		host = null
+		paused = false
+		if visual != null
+			visual.remove()
+			visual = null
+
+	function quality() returns int
+		return tdPetOwnedQuality(skillCount, qualities[0], qualities[1], qualities[2], qualities[3])
+
+	function summary() returns string
+		return tdPetQualityName(quality()) + " " + tdPetSpeciesName(species) + " · " + skillCount.toString() + "技能 · 共鸣Lv" + level.toString() + (host == null ? " [收藏]" : " [上阵]")
+public TDPet array tdPets
+public LinkedList<TDPet> tdPetMatchRecords = new LinkedList<TDPet>()
+int array tdPetBalls
+boolean array tdPetWaveCredited
+int array tdPetBallDrops
+boolean array tdPetWildSpawnClaimed
+public constant Table tdPetBusyTowers = new Table()
+
+public function tdPetAt(int lane, int slot) returns TDPet
+	if not tdIsLanePlayer(lane) or slot < 0 or slot >= TD_PET_COLLECTION_LIMIT
+		return null
+	return tdPets[lane * TD_PET_COLLECTION_LIMIT + slot]
+
+public function tdPetCollectionCount(int lane) returns int
+	var count = 0
+	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+		if tdPetAt(lane, slot) != null
+			count += 1
+	return count
+
+public function tdPetDeployedCount(int lane) returns int
+	var count = 0
+	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+		let pet = tdPetAt(lane, slot)
+		if pet != null and pet.host != null
+			count += 1
+	return count
+
+public function tdPetForHost(unit host) returns TDPet
+	if host == null
+		return null
+	let lane = GetPlayerId(GetOwningPlayer(host))
+	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+		let pet = tdPetAt(lane, slot)
+		if pet != null and pet.host == host
+			return pet
+	return null
+
+public function tdPetBallsForLane(int lane) returns int
+	if not tdIsLanePlayer(lane)
+		return 0
+	return tdPetBalls[lane]
+
+public function tdPetTakeBall(int lane) returns boolean
+	if not tdIsLanePlayer(lane) or tdPetBalls[lane] <= 0
+		return false
+	tdPetBalls[lane] -= 1
+	return true
+
+public function tdPetAddBall(int lane) returns boolean
+	if not tdIsLanePlayer(lane) or tdPetBalls[lane] >= TD_PET_BALL_LIMIT
+		return false
+	tdPetBalls[lane] += 1
+	return true
+
+public function tdPetStore(int lane, TDPet pet) returns boolean
+	if not tdIsLanePlayer(lane) or pet == null or pet.lane != lane or pet.released or tdPetMatchRecords == null
+		return false
+	// A record has one match owner, even if its public lane was changed by a caller.
+	// Validate against all owned records before touching slots or ownership lists.
+	for owned in tdPetMatchRecords
+		if owned == pet
+			return false
+	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+		let key = lane * TD_PET_COLLECTION_LIMIT + slot
+		if tdPets[key] == null
+			pet.level = tdPetResonance[lane]
+			tdPets[key] = pet
+			tdPetMatchRecords.add(pet)
+			return true
+	return false
+
+// Internal no-reward removal for lifecycle/probe cleanup, never the player release entry.
+// Keep discarded records alive until match end: delayed damage closures may hold them.
+public function tdPetDiscardOwned(int lane, int slot) returns boolean
+	let pet = tdPetAt(lane, slot)
+	if pet == null or pet.lane != lane or pet.released or pet.host != null
+		return false
+	tdPetCancelRelease(lane)
+	pet.released = true
+	pet.recall()
+	tdPets[lane * TD_PET_COLLECTION_LIMIT + slot] = null
+	return true
+
+// Release tickets are lane-owned and single-use. Records stay alive until match end.
+public constant int TD_PET_MATERIAL_LIMIT = 2147483647
+boolean array tdPetPlayerLeft
+int releaseSerial = 0
+int array releaseNonce
+int array releaseSlot
+TDPet array releasePet
+int array releaseRevision
+int array releaseGeneration
+
+public function tdPetLaneCanManage(int lane) returns boolean
+	return tdIsLanePlayer(lane) and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsGameOver() and not tdPetPlayerLeft[lane]
+
+public function tdPetCancelRelease(int lane)
+	if not tdIsLanePlayer(lane)
+		return
+	releaseNonce[lane] = 0
+	releaseSlot[lane] = -1
+	releasePet[lane] = null
+
+public function tdPetReleaseNonce(int lane) returns int
+	return tdIsLanePlayer(lane) ? releaseNonce[lane] : 0
+
+public function tdPetPlayerHasLeft(int lane) returns boolean
+	return not tdIsLanePlayer(lane) or tdPetPlayerLeft[lane]
+
+public function tdPetMarkPlayerLeft(int lane)
+	if tdIsLanePlayer(lane)
+		tdPetPlayerLeft[lane] = true
+		tdPetCancelRelease(lane)
+
+function canReleaseRecord(int lane, TDPet pet) returns boolean
+	return tdPetLaneCanManage(lane) and not tdIsLaneFinished(lane) and pet != null and pet.lane == lane and tdPetReleaseLifecycleAllows(pet.host != null, pet.released, pet.proposalSlot >= 0)
+
+public function tdPetBeginRelease(int lane, int slot) returns int
+	if not tdIsLanePlayer(lane)
+		return 0
+	tdPetCancelRelease(lane)
+	let pet = tdPetAt(lane, slot)
+	if not canReleaseRecord(lane, pet) or releaseSerial >= 2147483647
+		return 0
+	releaseSerial += 1
+	releaseNonce[lane] = releaseSerial
+	releaseSlot[lane] = slot
+	releasePet[lane] = pet
+	releaseRevision[lane] = pet.revision
+	releaseGeneration[lane] = pet.generation
+	return releaseNonce[lane]
+
+public function tdPetConfirmRelease(int lane, int nonce) returns boolean
+	if not tdIsLanePlayer(lane) or nonce <= 0 or nonce != releaseNonce[lane]
+		// A stale click must not invalidate a newer ticket.
+		return false
+	let slot = releaseSlot[lane]
+	let pet = releasePet[lane]
+	let revision = releaseRevision[lane]
+	let generation = releaseGeneration[lane]
+	// Consume the valid ticket before revalidation or randomness; never yield.
+	tdPetCancelRelease(lane)
+	if pet == null or tdPetAt(lane, slot) != pet or not canReleaseRecord(lane, pet) or pet.revision != revision or pet.generation != generation
+		return false
+	// Refuse before removal when either possible material reward would overflow.
+	if tdPetRerollStones[lane] < 0 or tdPetSlotStones[lane] < 0 or tdPetRerollStones[lane] >= TD_PET_MATERIAL_LIMIT or tdPetSlotStones[lane] >= TD_PET_MATERIAL_LIMIT
+		return false
+	// Owned quality includes resonance-locked skills; decide before removing the record.
+	var extra = pet.quality() == 4
+	if not extra
+		extra = tdPetReleaseGetsSlotStone(GetRandomInt(1, 100))
+	if not tdPetDiscardOwned(lane, slot)
+		return false
+	tdPetRerollStones[lane] += 1
+	if extra
+		tdPetSlotStones[lane] += 1
+	return true
+
+public int array tdPetResonance
+public int array tdPetRerollStones
+public int array tdPetSlotStones
+public boolean array tdPetTutorialUsed
+public int array tdPetExtraEncounterWave
+
+public function tdPetBeginReroll(int lane, int slot, int skillSlot) returns boolean
+	let pet = tdPetAt(lane, slot)
+	if not tdPetLaneCanManage(lane) or pet == null or pet.released or skillSlot < 0 or skillSlot >= pet.skillCount or pet.proposalSlot >= 0 or tdPetRerollStones[lane] <= 0 or pet.proposalVersion >= 2147483647
+		return false
+	// rollSkill refuses an empty candidate set before invoking random natives.
+	let candidate = pet.rollSkill(skillSlot)
+	if candidate < 0
+		return false
+	let quality = tdPetQualityForRoll(GetRandomInt(1, 100))
+	pet.proposalVersion += 1
+	pet.proposalRevision = pet.revision
+	pet.proposalOldSkill = pet.skillAt(skillSlot)
+	pet.proposalOldQuality = pet.qualityAt(skillSlot)
+	pet.proposalSlot = skillSlot
+	pet.proposalSkill = candidate
+	pet.proposalQuality = quality
+	tdPetRerollStones[lane] -= 1
+	return true
+
+// Validate the old candidate before drawing or charging; failure preserves it.
+public function tdPetContinueReroll(int lane, int slot, TDPet expected, int candidateVersion, int sourceRevision) returns boolean
+	let pet = tdPetAt(lane, slot)
+	if not tdPetLaneCanManage(lane) or pet == null or pet != expected or pet.released
+		return false
+	if pet.proposalSlot < 0 or pet.proposalSlot >= pet.skillCount or pet.proposalSlot >= 4 or candidateVersion <= 0 or pet.proposalVersion != candidateVersion or pet.proposalVersion >= 2147483647
+		return false
+	if pet.proposalRevision != sourceRevision or pet.revision != sourceRevision or tdPetRerollStones[lane] < 1 or tdPetRerollStones[lane] > TD_PET_MATERIAL_LIMIT
+		return false
+	let candidate = pet.rollSkill(pet.proposalSlot)
+	if candidate < 0
+		return false
+	let quality = tdPetQualityForRoll(GetRandomInt(1, 100))
+	pet.proposalVersion += 1
+	pet.proposalRevision = pet.revision
+	pet.proposalOldSkill = pet.skillAt(pet.proposalSlot)
+	pet.proposalOldQuality = pet.qualityAt(pet.proposalSlot)
+	pet.proposalSkill = candidate
+	pet.proposalQuality = quality
+	tdPetRerollStones[lane] -= 1
+	return true
+
+public function tdPetResolveRerollVersion(int lane, int slot, int candidateVersion, boolean replace) returns boolean
+	let pet = tdPetAt(lane, slot)
+	if not tdPetLaneCanManage(lane) or pet == null or pet.released or pet.proposalSlot < 0 or candidateVersion <= 0 or pet.proposalVersion != candidateVersion
+		return false
+	if replace
+		// An explicit keep may discard a stale candidate; adoption must match its source.
+		if pet.revision != pet.proposalRevision
+			return false
+		let revision = pet.revision
+		pet.setSkill(pet.proposalSlot, pet.proposalSkill, pet.proposalQuality)
+		if pet.revision == revision
+			return false
+		pet.buffUntil = 0.0
+		pet.buffSkill = -1
+		pet.buffPower = 0.0
+		pet.generation += 1
+		pet.pendingSkill = false
+	pet.proposalSlot = -1
+	pet.proposalSkill = -1
+	pet.proposalQuality = 0
+	pet.proposalOldSkill = -1
+	pet.proposalOldQuality = 0
+	return true
+
+public function tdPetResolveReroll(int lane, int slot, boolean replace) returns boolean
+	let pet = tdPetAt(lane, slot)
+	return pet != null and tdPetResolveRerollVersion(lane, slot, pet.proposalVersion, replace)
+
+public function tdPetOpenSlot(int lane, int slot) returns boolean
+	let pet = tdPetAt(lane, slot)
+	if not tdPetLaneCanManage(lane) or pet == null or pet.released or pet.skillCount >= 4 or pet.proposalSlot >= 0 or tdPetSlotStones[lane] <= 0
+		return false
+	let skill = pet.rollSkill(pet.skillCount)
+	if skill < 0
+		return false
+	let revision = pet.revision
+	pet.setSkill(pet.skillCount, skill, tdPetQualityForRoll(GetRandomInt(1, 100)))
+	if pet.revision == revision
+		return false
+	tdPetSlotStones[lane] -= 1
+	return true
+
+public function tdPetNextOccupied(int lane, int slot, int direction) returns int
+	if not tdIsLanePlayer(lane)
+		return -1
+	if direction != -1 and direction != 1
+		return -1
+	var candidate = slot >= 0 and slot < TD_PET_COLLECTION_LIMIT ? slot : (direction == 1 ? TD_PET_COLLECTION_LIMIT - 1 : 0)
+	for _step = 1 to TD_PET_COLLECTION_LIMIT
+		candidate = tdPetStepSlot(candidate, direction)
+		if tdPetAt(lane, candidate) != null
+			return candidate
+	return -1
+
+public function tdPetCreditWave(int lane, int wave)
+	if not tdIsLanePlayer(lane) or wave < 1 or wave > 32
+		return
+	let key = lane * 40 + wave
+	if tdPetWaveCredited[key]
+		return
+	tdPetWaveCredited[key] = true
+	tdPetResonance[lane] = IMaxBJ(tdPetResonance[lane], tdPetResonanceForWave(wave))
+	let reward = tdPetStageBallReward(wave)
+	for _ball = 1 to reward
+		tdPetAddBall(lane)
+	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+		let pet = tdPetAt(lane, slot)
+		if pet != null
+			pet.level = tdPetResonance[lane]
+	if not compiletime and reward > 0
+		DisplayTimedTextToPlayer(Player(lane), 0, 0, 5.0, "精灵补给：普通球 +6 · 共鸣Lv" + tdPetResonance[lane].toString())
+public function tdPetTakeDropBudget(int lane, int wave) returns boolean
+	if not tdIsLanePlayer(lane) or wave < 1 or wave > 32
+		return false
+	let key = lane * 40 + wave
+	var total = 0
+	for originalWave = 1 to 25
+		total += tdPetBallDrops[lane * 40 + originalWave]
+	if total >= 1 or tdPetBallDrops[key] >= 1
+		return false
+	tdPetBallDrops[key] += 1
+	return true
+
+public function tdPetClaimWildSpawn(int lane, int wave) returns boolean
+	if not tdIsLanePlayer(lane) or wave < 1 or wave > 32 or tdIsPureBossWave(wave)
+		return false
+	let key = lane * 40 + wave
+	if tdPetWildSpawnClaimed[key]
+		return false
+	tdPetWildSpawnClaimed[key] = true
+	return true
+
+public function tdPetTowerWorkStarted(unit tower)
+	if tower == null
+		return
+	tdPetBusyTowers.saveBoolean(tower.getHandleId(), true)
+	let pet = tdPetForHost(tower)
+	if pet != null
+		pet.paused = true
+		pet.generation += 1
+		pet.pendingSkill = false
+
+public function tdPetTowerWorkFinished(unit tower)
+	if tower == null
+		return
+	tdPetBusyTowers.removeBoolean(tower.getHandleId())
+	let pet = tdPetForHost(tower)
+	if pet != null
+		pet.paused = false
+
+public function tdPetTowerRemoved(unit tower)
+	let pet = tdPetForHost(tower)
+	if pet != null
+		pet.recall()
+	if tower != null
+		tdPetBusyTowers.removeBoolean(tower.getHandleId())
+
+public function tdPetLaneDefeated(int lane)
+	tdPetCancelRelease(lane)
+	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+		let pet = tdPetAt(lane, slot)
+		if pet != null
+			pet.recall()
+
+public function tdPetInitializeLane(int lane)
+	if not tdIsLanePlayer(lane)
+		return
+	tdPetCancelRelease(lane)
+	tdPetPlayerLeft[lane] = false
+	tdPetBalls[lane] = 3
+	tdPetResonance[lane] = 1
+	tdPetRerollStones[lane] = 0
+	tdPetSlotStones[lane] = 0
+	tdPetTutorialUsed[lane] = false
+	for stage = 0 to 3
+		tdPetExtraEncounterWave[lane * 4 + stage] = 0
+	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+		tdPets[lane * TD_PET_COLLECTION_LIMIT + slot] = null
+	for wave = 0 to 39
+		tdPetWaveCredited[lane * 40 + wave] = false
+		tdPetBallDrops[lane * 40 + wave] = 0
+		tdPetWildSpawnClaimed[lane * 40 + wave] = false
+
+
+public function tdPetCooldownReduction(unit tower) returns real
+	let pet = tdPetForHost(tower)
+	return pet != null ? pet.skillPower(3) : 0.0
+
+// Compatibility facade for mechanic callers; all identities now share one factor.
+public function tdPetEnemySpeedFactor(unit enemy) returns real
+	return tdAuraEnemySpeedFactor(enemy)
+
+// Complete preconditions and consume in one synchronous transaction.
+public function tdPetSpendCaptureBall(int lane, boolean validTarget) returns boolean
+	if not tdIsLanePlayer(lane) or not validTarget or tdPetCollectionCount(lane) >= TD_PET_COLLECTION_LIMIT
+		return false
+	return tdPetTakeBall(lane)

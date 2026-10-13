@@ -35,9 +35,19 @@ import TDWaves
 	tdDropQualityForRoll(13, false, false, 250).assertEquals(TD_ITEM_QUALITY_BLUE)
 	tdDropQualityForRoll(25, false, false, 500).assertEquals(TD_ITEM_QUALITY_BLUE)
 
-@Test function scavengerBagAddsOneExtraQualityRollStep()
-	tdDropQualityWithBonusRoll(9, false, false, 9500, 0).assertEquals(TD_ITEM_QUALITY_WHITE)
-	tdDropQualityWithBonusRoll(9, false, false, 9500, 1).assertEquals(TD_ITEM_QUALITY_GREEN)
+@Test function extraQualityRollOnlyImprovesWhenItBeatsTheQualityThreshold()
+	tdDropQualityForRoll(9, false, false, tdBestDropQualityRoll(9500, 9000)).assertEquals(TD_ITEM_QUALITY_WHITE)
+	tdDropQualityForRoll(9, false, false, tdBestDropQualityRoll(9500, 1200)).assertEquals(TD_ITEM_QUALITY_GREEN)
+	tdDropQualityForRoll(9, false, false, tdBestDropQualityRoll(1200, 9500)).assertEquals(TD_ITEM_QUALITY_GREEN)
+	tdDropQualityForRoll(13, false, false, tdBestDropQualityRoll(9500, 250)).assertEquals(TD_ITEM_QUALITY_BLUE)
+	tdDropQualityForRoll(13, false, false, tdBestDropQualityRoll(9500, 251)).assertEquals(TD_ITEM_QUALITY_GREEN)
+
+@Test function extraQualityRollRespectsNormalMonsterQualityCeilings()
+	for wave = 1 to tdWaveCount()
+		let best = tdDropQualityForRoll(wave, false, false, tdBestDropQualityRoll(10000, 1))
+		(best <= TD_ITEM_QUALITY_BLUE).assertTrue()
+		if wave < 5
+			best.assertEquals(TD_ITEM_QUALITY_WHITE)
 
 @Test function bossGuardsSkipIndependentDropBudgetAndEliteGuarantees()
 	tdBossGuardSkipsIndependentDropForUnitTypeId(tdWaveBossGuardUnitId(8)).assertTrue()

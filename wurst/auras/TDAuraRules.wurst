@@ -1,0 +1,100 @@
+package TDAuraRules
+
+// Stable identities. Rank belongs to the source, never to a transient total.
+public constant int TD_AURA_WHITE_TIGER = 1
+public constant int TD_AURA_COMMANDER = 2
+public constant int TD_AURA_EQUIPMENT_ATTACK = 3
+public constant int TD_AURA_EQUIPMENT_SPEED = 4
+public constant int TD_AURA_EQUIPMENT_COOLDOWN = 5
+public constant int TD_AURA_EQUIPMENT_ARMOR = 6
+public constant int TD_AURA_EQUIPMENT_FROST = 7
+public constant int TD_AURA_PET_COMMAND = 8
+public constant int TD_AURA_PET_STASIS = 9
+public constant int TD_AURA_VINES = 10
+public constant int TD_AURA_POISON_DART = 11
+public constant int TD_AURA_PET_FROST_ARROW = 12
+public constant int TD_AURA_PET_WIND = 13
+public constant int TD_AURA_ID_COUNT = 13
+public constant real TD_AURA_ENEMY_SLOW_CAP = 0.75
+public constant real TD_AURA_COOLDOWN_CAP = 0.40
+
+public function tdAuraRankWins(int incomingRank, real incomingPower, int rank, real power) returns boolean
+	if incomingRank > rank
+		return true
+	return incomingRank == rank and incomingPower > power
+
+public function tdAuraCovers(boolean sourceValid, boolean sameLane, boolean hostOnly, boolean sameHandle, real distance, real radius) returns boolean
+	if not sourceValid or not sameLane
+		return false
+	if hostOnly
+		return sameHandle
+	return distance <= radius
+
+public function tdFinalCooldownReduction(real personal, real inspiration, real aura) returns real
+	return RMinBJ(TD_AURA_COOLDOWN_CAP, RMaxBJ(0.0, personal) + RMaxBJ(0.0, inspiration) + RMaxBJ(0.0, aura))
+
+public function tdCombinedEnemySlowFactor(real combined) returns real
+	return 1.0 - RMinBJ(TD_AURA_ENEMY_SLOW_CAP, RMaxBJ(0.0, combined))
+
+public class TDAuraAggregate
+	private int array[14] ranks
+	private real array[14] powers
+
+	function clear()
+		for identity = 1 to TD_AURA_ID_COUNT
+			ranks[identity] = 0
+			powers[identity] = 0.0
+
+	function offer(int identity, int rank, real power, boolean covered)
+		// Coverage FIRST: a stronger small circle cannot suppress a weaker wide one.
+		if not covered or identity < 1 or identity > TD_AURA_ID_COUNT or rank < 1 or rank > 4 or power <= 0.0
+			return
+		if tdAuraRankWins(rank, power, ranks[identity], powers[identity])
+			ranks[identity] = rank
+			powers[identity] = power
+
+	function clearIdentity(int identity)
+		if identity >= 1 and identity <= TD_AURA_ID_COUNT
+			ranks[identity] = 0
+			powers[identity] = 0.0
+
+	function rank(int identity) returns int
+		return identity >= 1 and identity <= TD_AURA_ID_COUNT ? ranks[identity] : 0
+
+	function power(int identity) returns real
+		return identity >= 1 and identity <= TD_AURA_ID_COUNT ? powers[identity] : 0.0
+
+	function enemySlowPower() returns real
+		return powers[TD_AURA_EQUIPMENT_FROST] + powers[TD_AURA_PET_STASIS] + powers[TD_AURA_VINES] + powers[TD_AURA_POISON_DART] + powers[TD_AURA_PET_FROST_ARROW] + powers[TD_AURA_PET_WIND]
+
+public class TDAuraTimedContribution
+	unit source
+	int identity
+	int rank
+	real power
+	real expiresAt
+	construct(unit source, int identity, int rank, real power, real expiresAt)
+		this.source = source
+		this.identity = identity
+		this.rank = rank
+		this.power = power
+		this.expiresAt = expiresAt
+
+	function offerIfActive(TDAuraAggregate aggregate, real now)
+		aggregate.offer(identity, rank, power, now < expiresAt)
+
+public function tdAuraCooldownTargetSupported(boolean hasNativeActive, boolean petBindingValid, boolean unlockedActiveSkill) returns boolean
+	if hasNativeActive
+		return true
+	return petBindingValid and unlockedActiveSkill
+
+public function tdAuraCarrierRepairNeeded(int desiredRank, int shownRank, boolean carrierPresent) returns boolean
+	if desiredRank != shownRank
+		return true
+	return desiredRank > 0 and not carrierPresent
+
+public function tdAuraConfirmedAppliedRank(int desiredRank, boolean carrierPresent) returns int
+	return desiredRank > 0 and carrierPresent ? desiredRank : 0
+
+public function tdAuraSpeedForBaseAndFactor(real mechanicBase, real slowFactor) returns real
+	return mechanicBase * slowFactor

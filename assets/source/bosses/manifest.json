@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "description": "Four concept portraits converted to static Warcraft III button textures. No 3D models or game screenshots.",
+  "generator": "built-in image_gen",
+  "generation_date": "2026-10-12",
+  "transparent_background": false,
+  "provenance_file": "assets/source/bosses/prompts.json",
+  "provenance_sha256": "570126586ae9b2c93176dd34c3ad8c7686725ed9ffe6a943bd3a7f0d47ea8547",
+  "required_pillow_version": "12.3.0",
+  "rendering": {
+    "button_size": [
+      64,
+      64
+    ],
+    "crop_coordinates": "Pillow left/top/right/bottom in source pixels; right/bottom exclusive",
+    "resampler": "Pillow LANCZOS",
+    "normal_enhancements": "none",
+    "disabled_grayscale": "Pillow ImageOps.grayscale",
+    "disabled_brightness": 0.45,
+    "blp": "BLP1 paletted, alpha8, 7 mip levels; opaque at every mip"
+  },
+  "preview": "assets/source/bosses/contact-sheet.png",
+  "assets": [
+    {
+      "name": "TDBossRiftwind",
+      "boss_name": "裂风猎王",
+      "source_png": "assets/source/bosses/01-裂风猎王.png",
+      "prompt": "Use case: stylized-concept. Create a single original dark fantasy tower-defense boss concept portrait, square composition, production-quality painterly game key art with readable silhouette at thumbnail size. Subject: the Riftwind Hunt King, a lean imposing predatory humanoid knight in jagged black bone armor, forward-leaning poised stance, elegant long crescent weapon, pale cyan-white wind scars curling behind him. Handsome formidable dark villain, not generic skeleton, no gore. Three-quarter body view, face and upper torso large and crisp, black fog background with restrained cold rim light and subtle wind motion, dramatic high contrast without losing armor details. No allies, minions, UI, words, letters, logos, or watermark. This is concept illustration, not a screenshot or 3D asset. Keep a clean outer margin for future portrait cropping.",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_mode": "RGB",
+      "crop": [
+        600,
+        0,
+        1100,
+        500
+      ],
+      "crop_subject": "Head/face or helmet and upper chest; offline static portrait only.",
+      "normal_blp": "imports/war3mapImported/BTNTDBossRiftwind.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDBossRiftwind.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDBossRiftwind.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDBossRiftwind.blp",
+      "sha256": {
+        "source_png": "689376ab97abee6740a0e7cae35b0fe5e4b929a6dc8ef9c09ac5d3e536bf4f0d",
+        "normal_blp": "b8f0db393bc2463e83faf1a1a264011f4cb0bad1c0f647440e0c308e08978189",
+        "disabled_blp": "bd7d893ab96ff8f2ad8212e429e5d319de4d7d95c2cd395a9491b21333441efc"
+      }
+    },
+    {
+      "name": "TDBossObsidian",
+      "boss_name": "黑曜棺卫",
+      "source_png": "assets/source/bosses/02-黑曜棺卫.png",
+      "prompt": "Use case: stylized-concept. Create one original dark fantasy tower-defense boss concept portrait, square, cinematic painterly high-end game art with bold readable silhouette. Subject: the Obsidian Sepulcher Warden, a colossal armored humanoid guardian in massive angular obsidian plate with a sealed sarcophagus-like torso, molten ember fissures glowing deep inside the chest and helmet, a broad brutal black stone shield and heavy war hammer. Regal menacing craftsmanship, immense weight, handsome design, no gore. Three-quarter body, head and chest prominent for avatar cropping, restrained molten orange rim light over charcoal black armor, smoky ruined vault backdrop with little detail. Single boss only, no minions, words, UI, logos, watermark. Concept art only, not a 3D game model. Preserve clean composition and distinguishable anatomy.",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_mode": "RGB",
+      "crop": [
+        420,
+        0,
+        940,
+        520
+      ],
+      "crop_subject": "Head/face or helmet and upper chest; offline static portrait only.",
+      "normal_blp": "imports/war3mapImported/BTNTDBossObsidian.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDBossObsidian.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDBossObsidian.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDBossObsidian.blp",
+      "sha256": {
+        "source_png": "ddda61e04ee293b5fb28ec9493abf2ee2bb481f6f8929f0ed991614c07b3d0c6",
+        "normal_blp": "1b41be2e35ca40c90c53dbf48f5308249054eef6754d949394aeca97c7b17d17",
+        "disabled_blp": "234c800154041335a851bede327c052977a3c5344056aa32e496eee09b09aee8"
+      }
+    },
+    {
+      "name": "TDBossEclipse",
+      "boss_name": "蚀月织咒者",
+      "source_png": "assets/source/bosses/03-蚀月织咒者.png",
+      "prompt": "Use case: stylized-concept. One original dark fantasy tower-defense boss portrait, square high-end painterly game concept art. Subject: the Eclipse Spellweaver, an imposing elegant floating sorcerer, shrouded deep black-violet layered robes, sculptural mask with restrained violet eyes, broken crescent halo behind the head, long articulate gauntlets weaving sparse violet magical filaments. Powerful beautiful ominous design, readable silhouette, not a jumble of effects. Three-quarter body with large clear head and upper torso, subtle violet moonlight, near-black misty ruined observatory backdrop. Single boss, no minions or extra creatures, no text, logos, watermark, or UI. Concept illustration, not a 3D asset. Clean margin for portrait crop.",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_mode": "RGB",
+      "crop": [
+        365,
+        65,
+        865,
+        565
+      ],
+      "crop_subject": "Head/face or helmet and upper chest; offline static portrait only.",
+      "normal_blp": "imports/war3mapImported/BTNTDBossEclipse.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDBossEclipse.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDBossEclipse.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDBossEclipse.blp",
+      "sha256": {
+        "source_png": "83660fc702a38a278bce3656cafaa04fb9acb16378a499fe0eee8c2bae30db7f",
+        "normal_blp": "72458f5c99f72b44a55e26b409c8f172d342cc7b8b6a90a2a6b1f554472ed864",
+        "disabled_blp": "ed2788545294aadbc3293b1c35a7762518f030d26c63735e9cc72ba05b3b4dbe"
+      }
+    },
+    {
+      "name": "TDBossAbyss",
+      "boss_name": "无冕深渊君王",
+      "source_png": "assets/source/bosses/04-无冕深渊君王.png",
+      "prompt": "Use case: stylized-concept. One original final-boss dark fantasy concept portrait for a tower-defense game, square composition, polished cinematic painterly game key art. Subject: the Uncrowned Abyss Sovereign, towering powerful humanoid in regal black steel layered armor, shattered crown floating in an incomplete ring, severe handsome obscured face, massive tattered cloak spreading as one bold silhouette, a long dark greatsword held downward. Subtle cyan, ember and violet glints across separate small armor fissures, dominant deep black with cold silver highlights, no rainbow glow. Majestic threatening final antagonist, clean deliberate design with readable face and chest, three-quarter body view, abyssal throne ruin fading into mist behind him. One boss only, no minions, no gore, no text, no UI, no logos or watermark. Concept illustration, not a usable 3D game model.",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "source_mode": "RGB",
+      "crop": [
+        450,
+        0,
+        900,
+        450
+      ],
+      "crop_subject": "Head/face or helmet and upper chest; offline static portrait only.",
+      "normal_blp": "imports/war3mapImported/BTNTDBossAbyss.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDBossAbyss.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDBossAbyss.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDBossAbyss.blp",
+      "sha256": {
+        "source_png": "b23fa6134b43db4342017371afbd72436b0b34c67bb7222860e0f6fb1c4df8cf",
+        "normal_blp": "d739814a45763415b248881a5cc7235d50c270492e95d332f8448761e85a1588",
+        "disabled_blp": "d1854557c16920c25ddd4a26409fa02286477350486b513f005be8a1b1129452"
+      }
+    }
+  ],
+  "tool_versions": {
+    "pillow": "12.3.0",
+    "blp_encoder": "tools/BuildEvolutionAssets.py:blp (import only)",
+    "blp_encoder_sha256": "04e8726f28fe58d676c4ba1ac1039d8e34fa90270eba175ee2368ee27f582ffe",
+    "boss_converter_sha256": "85f30e75e6f6d28daf0e2b964e73e61af96c7a6b5ca4112afeab613e3588e2bb"
+  },
+  "preview_sha256": "14ea2130985ab3c0b04a00aa29404020b4687ab3b5b4aa32e3a473c276f3a3fa"
+}

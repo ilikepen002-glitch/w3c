@@ -1,6 +1,7 @@
 package TDWaves
 import TDConfig
 import UnitObjEditing
+import TDEnemyMechanicData
 
 constant int TD_WAVE_1_UNIT_ID = 'uE01'
 constant int TD_WAVE_2_UNIT_ID = 'uE02'
@@ -92,7 +93,8 @@ function UnitDefinition.tdApplyEscaperStats(string name, int hitPoints, int armo
 	..setHitPointsMaximumBase(hitPoints)
 	..setDefenseBase(armor)
 	..setSpeedBase(speed)
-	..setSpeedMinimum(speed)
+	// Native slows must be able to reduce speed below the unmodified base.
+	..setSpeedMinimum(1)
 	..setSpeedMaximum(speed)
 	..setAttacksEnabled(tdEnemyAttacksEnabled())
 	..setAcquisitionRange(tdEnemyAcquisitionRange())
@@ -114,6 +116,8 @@ public function tdWaveCount() returns int
 	return 32
 
 public function tdWaveNormalEnemyCount(int wave) returns int
+	if tdIsPureBossWave(wave)
+		return 0
 	if wave == 1
 		return 8
 	if wave == 2
@@ -192,10 +196,6 @@ public function tdWaveEliteEnemyCount(int wave) returns int
 	return 0
 
 public function tdWaveBossGuardEnemyCount(int wave) returns int
-	if wave == 8 or wave == 16
-		return 1
-	if wave == 24 or wave == 32
-		return 2
 	return 0
 
 public function tdWaveBossEnemyCount(int wave) returns int
@@ -208,6 +208,13 @@ function tdWaveSpecialEnemyCount(int wave) returns int
 
 public function tdWaveEnemyCount(int wave) returns int
 	return tdWaveNormalEnemyCount(wave) + tdWaveSpecialEnemyCount(wave)
+
+// Only scheduled wave enemies are created; independent wild pets are additional and excluded from the regular wave count.
+public function tdMatchEnemyCountPerLane() returns int
+	var total = 0
+	for wave = 1 to tdWaveCount()
+		total += tdWaveEnemyCount(wave)
+	return total
 
 public function tdWaveBaseHitPoints(int wave) returns int
 	if wave == 1
@@ -474,24 +481,24 @@ public function tdWaveBossGuardSpeed(int wave) returns int
 
 public function tdWaveBossHitPoints(int wave) returns int
 	if wave == 8
-		return tdScaledEnemyStat(1800, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(3200, tdEnemyHealthMultiplier())
 	if wave == 16
-		return tdScaledEnemyStat(4500, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(6800, tdEnemyHealthMultiplier())
 	if wave == 24
-		return tdScaledEnemyStat(9500, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(19000, tdEnemyHealthMultiplier())
 	if wave == 32
-		return tdScaledEnemyStat(18000, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(36000, tdEnemyHealthMultiplier())
 	return 0
 
 public function tdWaveBossArmor(int wave) returns int
 	if wave == 8
 		return tdScaledEnemyStat(2, tdEnemyArmorMultiplier())
 	if wave == 16
-		return tdScaledEnemyStat(6, tdEnemyArmorMultiplier())
+		return tdScaledEnemyStat(10, tdEnemyArmorMultiplier())
 	if wave == 24
 		return tdScaledEnemyStat(9, tdEnemyArmorMultiplier())
 	if wave == 32
-		return tdScaledEnemyStat(12, tdEnemyArmorMultiplier())
+		return tdScaledEnemyStat(8, tdEnemyArmorMultiplier())
 	return 0
 
 public function tdWaveBossSpeed(int wave) returns int
@@ -506,28 +513,58 @@ public function tdWaveBossSpeed(int wave) returns int
 	return 0
 
 public function tdWaveBossSpellDamageTakenFactor(int wave) returns real
+	// Additional stage factor on the existing damage channel's native result.
+	// Wave 8 stays unchanged; this is not a replacement for native hero resistance.
 	if wave == 32
 		return 0.58
 	if wave == 24
 		return 0.68
 	if wave == 16
-		return 0.82
+		return 1.00
 	return 1.00
 
-function tdWaveNormalName(int wave) returns string
+public function tdWaveNormalName(int wave) returns string
+	if wave == 1
+		return "农民逃兵"
+	if wave == 2
+		return "步兵逃兵"
+	if wave == 3
+		return "食尸鬼"
 	if wave == 4
-		return "精英护卫"
+		return "矮人火枪手"
+	if wave == 5
+		return "兽人步兵"
+	if wave == 6
+		return "树妖"
+	if wave == 7
+		return "女猎手"
 	if wave == 8
-		return "早期Boss护卫"
+		return "侍僧"
+	if wave == 9
+		return "科多兽"
+	if wave == 10
+		return "邪恶兽人"
+	if wave == 11
+		return "牛头人"
+	if wave == 12
+		return "憎恶"
+	if wave == 13
+		return "半人马"
+	if wave == 14
+		return "骑士"
+	if wave == 15
+		return "末日守卫"
 	if wave == 16
-		return "中期Boss护卫"
-	if wave == 24
-		return "后期Boss护卫"
-	if wave == 32
-		return "终局Boss护卫"
-	return "第" + wave.toString() + "波逃兵"
+		return "苦工"
+	if wave <= 20
+		return "娜迦暴徒"
+	if wave <= 24
+		return "海巨人"
+	if wave <= 28
+		return "无面者"
+	return "亡魂"
 
-function tdWaveEliteName(int wave) returns string
+public function tdWaveEliteName(int wave) returns string
 	if wave == 4
 		return "铁木桩精英"
 	if wave == 12
@@ -536,7 +573,7 @@ function tdWaveEliteName(int wave) returns string
 		return "破阵精英"
 	return "终局精英"
 
-function tdWaveBossGuardName(int wave) returns string
+public function tdWaveBossGuardName(int wave) returns string
 	if wave == 8
 		return "早期近卫队长"
 	if wave == 16
@@ -545,14 +582,26 @@ function tdWaveBossGuardName(int wave) returns string
 		return "后期近卫队长"
 	return "终局近卫队长"
 
-function tdWaveBossName(int wave) returns string
+public function tdWaveBossName(int wave) returns string
 	if wave == 8
-		return "早期Boss"
+		return "裂风猎王"
 	if wave == 16
-		return "阶段Boss"
+		return "黑曜棺卫"
 	if wave == 24
-		return "后期Boss"
-	return "最终Boss"
+		return "蚀月织咒者"
+	return "无冕深渊君王"
+
+public function tdWaveCompositionText(int wave) returns string
+	if wave < 1 or wave > tdWaveCount()
+		return ""
+	var text = tdWaveNormalEnemyCount(wave) > 0 ? tdWaveNormalName(wave) + " ×" + tdWaveNormalEnemyCount(wave) : ""
+	if tdWaveEliteEnemyCount(wave) > 0
+		text += "、" + tdWaveEliteName(wave) + " ×" + tdWaveEliteEnemyCount(wave).toString()
+	if tdWaveBossGuardEnemyCount(wave) > 0
+		text += "、" + tdWaveBossGuardName(wave) + " ×" + tdWaveBossGuardEnemyCount(wave).toString()
+	if tdWaveBossEnemyCount(wave) > 0
+		text += (text == "" ? "" : "、") + tdWaveBossName(wave) + " ×" + tdWaveBossEnemyCount(wave)
+	return text
 
 public function tdWaveUnitId(int wave) returns int
 	if wave == 1
@@ -661,7 +710,11 @@ public function tdIsBossUnitTypeId(int unitTypeId) returns boolean
 public function tdWaveSpawnUnitId(int wave, int remainingCount) returns int
 	let normalCount = tdWaveNormalEnemyCount(wave)
 	let guardCount = tdWaveBossGuardEnemyCount(wave)
-	if tdWaveBossEnemyCount(wave) > 0 and remainingCount > normalCount + guardCount
+	// Counted timers emit remainingCount in descending order: guards first,
+	// then Boss, then the unchanged normal segment.
+	if tdWaveBossEnemyCount(wave) > 0 and remainingCount > normalCount
+		if remainingCount > normalCount + tdWaveBossEnemyCount(wave)
+			return tdWaveBossGuardUnitId(wave)
 		return tdWaveSpecialUnitId(wave)
 	if guardCount > 0 and remainingCount > normalCount
 		return tdWaveBossGuardUnitId(wave)
@@ -813,7 +866,7 @@ function tdWaveObjectParentId(int wave) returns int
 	if wave <= 20
 		return 'nmyr'
 	if wave <= 24
-		return 'nsgu'
+		return 'nsgn'
 	if wave <= 28
 		return 'nfod'
 	return 'nrvd'
@@ -825,27 +878,44 @@ function tdWaveObjectParentId(int wave) returns int
 
 	new UnitDefinition(TD_WAVE_4_ELITE_UNIT_ID, 'nfel')
 	..tdApplyEscaperStats(tdWaveEliteName(4), tdWaveEliteHitPoints(4), tdWaveEliteArmor(4), tdWaveEliteSpeed(4))
-	new UnitDefinition(TD_WAVE_12_ELITE_UNIT_ID, 'nbst')
+	new UnitDefinition(TD_WAVE_12_ELITE_UNIT_ID, 'Nbst')
 	..tdApplyEscaperStats(tdWaveEliteName(12), tdWaveEliteHitPoints(12), tdWaveEliteArmor(12), tdWaveEliteSpeed(12))
-	new UnitDefinition(TD_WAVE_20_ELITE_UNIT_ID, 'ordr')
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(12, TD_ENEMY_ROLE_ELITE, tdWaveEliteSpeed(12)))
+	new UnitDefinition(TD_WAVE_20_ELITE_UNIT_ID, 'otau')
 	..tdApplyEscaperStats(tdWaveEliteName(20), tdWaveEliteHitPoints(20), tdWaveEliteArmor(20), tdWaveEliteSpeed(20))
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(20, TD_ENEMY_ROLE_ELITE, tdWaveEliteSpeed(20)))
 	new UnitDefinition(TD_WAVE_28_ELITE_UNIT_ID, 'nbal')
 	..tdApplyEscaperStats(tdWaveEliteName(28), tdWaveEliteHitPoints(28), tdWaveEliteArmor(28), tdWaveEliteSpeed(28))
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(28, TD_ENEMY_ROLE_ELITE, tdWaveEliteSpeed(28)))
 
 	new UnitDefinition(TD_WAVE_8_GUARD_UNIT_ID, 'nmyr')
 	..tdApplyEscaperStats(tdWaveBossGuardName(8), tdWaveBossGuardHitPoints(8), tdWaveBossGuardArmor(8), tdWaveBossGuardSpeed(8))
-	new UnitDefinition(TD_WAVE_16_GUARD_UNIT_ID, 'nsgu')
+	new UnitDefinition(TD_WAVE_16_GUARD_UNIT_ID, 'nsgn')
 	..tdApplyEscaperStats(tdWaveBossGuardName(16), tdWaveBossGuardHitPoints(16), tdWaveBossGuardArmor(16), tdWaveBossGuardSpeed(16))
 	new UnitDefinition(TD_WAVE_24_GUARD_UNIT_ID, 'nfod')
 	..tdApplyEscaperStats(tdWaveBossGuardName(24), tdWaveBossGuardHitPoints(24), tdWaveBossGuardArmor(24), tdWaveBossGuardSpeed(24))
 	new UnitDefinition(TD_WAVE_32_GUARD_UNIT_ID, 'nrvd')
 	..tdApplyEscaperStats(tdWaveBossGuardName(32), tdWaveBossGuardHitPoints(32), tdWaveBossGuardArmor(32), tdWaveBossGuardSpeed(32))
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(32, TD_ENEMY_ROLE_GUARD, tdWaveBossGuardSpeed(32)))
 
 	new UnitDefinition(TD_WAVE_8_BOSS_UNIT_ID, 'Ocbh')
 	..tdApplyEscaperStats(tdWaveBossName(8), tdWaveBossHitPoints(8), tdWaveBossArmor(8), tdWaveBossSpeed(8))
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(8, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(8)))
+	..setIconGameInterface(tdBossIconPath(8))
 	new UnitDefinition(TD_WAVE_16_BOSS_UNIT_ID, 'Ocbh')
 	..tdApplyEscaperStats(tdWaveBossName(16), tdWaveBossHitPoints(16), tdWaveBossArmor(16), tdWaveBossSpeed(16))
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(16, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(16)))
+	..setIconGameInterface(tdBossIconPath(16))
+	// Original King Leoric by HappyTauren, AnemicRoyalty and Tarrasque/Jigrael.
+	// Source/credits and exact unchanged asset hashes: assets/source/king-leoric.json.
+	..setModelFile("war3mapImported\\Leoric.mdx")
+	..setScalingValue(1.30)
 	new UnitDefinition(TD_WAVE_24_BOSS_UNIT_ID, 'Udre')
 	..tdApplyEscaperStats(tdWaveBossName(24), tdWaveBossHitPoints(24), tdWaveBossArmor(24), tdWaveBossSpeed(24))
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(24, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(24)))
+	..setIconGameInterface(tdBossIconPath(24))
 	new UnitDefinition(TD_WAVE_32_BOSS_UNIT_ID, 'Ulic')
 	..tdApplyEscaperStats(tdWaveBossName(32), tdWaveBossHitPoints(32), tdWaveBossArmor(32), tdWaveBossSpeed(32))
+	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(32, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(32)))
+	..setIconGameInterface(tdBossIconPath(32))
+

@@ -1,0 +1,13 @@
+{
+  "mode": "all",
+  "sourceCommit": "0330fd12de4d66c4a1ca4980e10b771f0903fbfc",
+  "sourceTree": "996e27413004cb9ca5dc2602e011d9f9f0a4f6f2",
+  "templateSha256": "3fd31a78aaa5d017565fca6c6f3758d40ed6131999c701bdf1f99557ba39e408",
+  "stdlibTree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+  "nativeJassSha256": "95cb24509ca5210908221ac0edf0614529fb8d1fb681578fbcc0b4e8689ab75e",
+  "stagedFileCount": 46,
+  "artifactSha256": "1b2b9671d3ce7b05837811dbfbb8efa0815fe4bcea840f53f8dde4789761f96e",
+  "timestampUTC8": "20261012-0938-UTC+8",
+  "displayName": "深渊守望 20261012-0938-UTC+8",
+  "publishedRoot": "ExampleMap.w3x"
+}

@@ -1,0 +1,156 @@
+package TDNativePetLifecycleProbe
+import TDPets
+import TDSpawn
+import TDState
+import TDWaves
+import TDTowerData
+import DamageEvent
+import ClosureTimers
+import Orders
+
+// Opt-in actual native lifecycle fixture. -pet-life starts; transfer/upgrade/
+// recall/sell commands exercise production interfaces or native orders.
+// No artificial DOT expectations; observations require human in-game review.
+unit array hosts
+unit target = null
+TDPet pet = null
+int epoch = 0
+int nativeHits = 0
+int taggedHits = 0
+real savedReadyAt = 0.0
+int savedGeneration = 0
+DamageListener observer = null
+trigger upgradeStart = CreateTrigger()
+trigger upgradeFinish = CreateTrigger()
+
+function report(string text)
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 30.0, "PET-LIFE " + text)
+
+function snapshot()
+	if pet == null
+		return
+	report("native/Pdam=" + nativeHits.toString() + "/" + taggedHits.toString() + " generation=" + pet.generation.toString() + " readyAt=" + pet.readyAt.toString() + " buffUntil=" + pet.buffUntil.toString() + " paused=" + pet.paused.toString() + " deployed=" + (pet.host != null).toString())
+	report("OBSERVED ONLY. Expected: transfer/recall/sell preserve readyAt, clear buff and invalidate generation; real upgrade start pauses and finish resumes. Pending Pdam must not cross generation. No global PASS or economy claim.")
+
+function cleanup()
+	epoch += 1
+	if observer != null
+		destroy observer
+		observer = null
+	if pet != null
+		pet.recall()
+		for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+			if tdPetAt(0, slot) == pet
+				tdPetDiscardOwned(0, slot)
+		pet = null
+	for index = 0 to 1
+		if hosts[index] != null
+			tdPetTowerRemoved(hosts[index])
+			hosts[index].remove()
+			hosts[index] = null
+	if target != null
+		target.remove()
+		target = null
+
+function attack()
+	if pet == null or pet.host == null or target == null
+		return
+	PauseUnit(pet.host, false)
+	IssueTargetOrderById(pet.host, Orders.attack, target)
+
+function start()
+	cleanup()
+	if tdIsGameOver() or tdIsLaneDefeated(0)
+		return
+	nativeHits = 0
+	taggedHits = 0
+	for index = 0 to 1
+		hosts[index] = createUnit(Player(0), TD_ORC_LEVEL_1_ID, vec2(-1800.0, 2400.0 + index * 100.0), 0 .fromDeg())
+		hosts[index].setPathing(false)
+		PauseUnit(hosts[index], true)
+	pet = new TDPet(0, 1, tdGetGlobalWave())
+	pet.setSkill(0, 0, 1)
+	pet.setSkill(1, 13, 1)
+	if not tdPetStore(0, pet)
+		destroy pet
+		pet = null
+		report("REFUSED: collection capacity")
+		cleanup()
+		return
+	if not tdPetDeploy(pet, hosts[0])
+		report("REFUSED: deploy capacity")
+		cleanup()
+		return
+	target = tdCreateEnemy(0, 29, tdWaveUnitId(29))
+	target.setPathing(false)
+	target.setPos(vec2(-1700.0, 2400.0))
+	PauseUnit(target, true)
+	let token = epoch
+	observer = DamageEvent.addListener(30) ->
+		if token != epoch or pet == null
+			return
+		if DamageEvent.getSource() != hosts[0] and DamageEvent.getSource() != hosts[1]
+			return
+		if DamageEvent.getId() == TD_PET_DAMAGE_ID
+			taggedHits += 1
+		else if not DamageEvent.isCode() and not DamageEvent.isSpell()
+			nativeHits += 1
+			PauseUnit(DamageEvent.getSource(), true)
+			let generation = pet.generation
+			doAfter(0.10) ->
+				if token == epoch and pet != null
+					report("actual hit generation=" + generation.toString() + " ->" + pet.generation.toString())
+					snapshot()
+	attack()
+	report("Use -pet-life-transfer, -pet-life-upgrade, -pet-life-recall, -pet-life-sell, -pet-life-attack, -pet-life-snapshot, -pet-life-cleanup. Upgrade needs actual gold/time; fixture does not bypass economy.")
+
+function onUpgradeStart()
+	if pet != null and GetTriggerUnit() == pet.host
+		report("NATIVE UPGRADE_START")
+		snapshot()
+
+function onUpgradeFinish()
+	if pet != null and GetTriggerUnit() == pet.host
+		report("NATIVE UPGRADE_FINISH")
+		snapshot()
+
+function command()
+	let text = GetEventPlayerChatString()
+	if text == "-pet-life"
+		start()
+	else if text == "-pet-life-cleanup"
+		cleanup()
+	else if pet != null
+		savedReadyAt = pet.readyAt
+		savedGeneration = pet.generation
+		if text == "-pet-life-transfer"
+			let next = pet.host == hosts[0] ? hosts[1] : hosts[0]
+			report("production transfer accepted=" + tdPetDeploy(pet, next).toString())
+		else if text == "-pet-life-upgrade" and pet.host != null
+			PauseUnit(pet.host, false)
+			report("actual native upgrade order accepted=" + IssueImmediateOrderById(pet.host, TD_ORC_LEVEL_2_ID).toString())
+		else if text == "-pet-life-recall"
+			pet.recall()
+		else if text == "-pet-life-sell" and pet.host != null
+			PauseUnit(pet.host, false)
+			if GetLocalPlayer() == Player(0)
+				ClearSelection()
+				SelectUnit(pet.host, true)
+			report("Host selected: click its actual sell button. This probe does not treat ability rawcode as an order ID; snapshot after the production sale.")
+		else if text == "-pet-life-attack"
+			attack()
+		report("before generation/readyAt=" + savedGeneration.toString() + "/" + savedReadyAt.toString())
+		snapshot()
+
+init
+	if not compiletime
+		let chat = CreateTrigger()
+		TriggerRegisterPlayerChatEvent(chat, Player(0), "-pet-life", false)
+		TriggerAddAction(chat, function command)
+		TriggerRegisterAnyUnitEventBJ(upgradeStart, EVENT_PLAYER_UNIT_UPGRADE_START)
+		TriggerRegisterAnyUnitEventBJ(upgradeFinish, EVENT_PLAYER_UNIT_UPGRADE_FINISH)
+		TriggerAddAction(upgradeStart, function onUpgradeStart)
+		TriggerAddAction(upgradeFinish, function onUpgradeFinish)
+
+
+

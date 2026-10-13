@@ -1,0 +1,14 @@
+{
+  "baselineFailedSubtestsAndErrors": 1363,
+  "fixedFailedSubtestsAndErrors": 1363,
+  "sameFailureMultiset": true,
+  "added": [],
+  "removed": [],
+  "normalization": [
+    "Random temporary directory names",
+    "Ordering of the same 13-element owner set"
+  ],
+  "baselineTests": 468,
+  "fixedTests": 474,
+  "note": "Frozen 243e4f6 plus updated phase_b source contract; HOTPATH_CANDIDATE_MAP points at frozen map, so six new hotpath tests execute."
+}

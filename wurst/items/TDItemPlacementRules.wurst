@@ -1,0 +1,14 @@
+package TDItemPlacementRules
+import TDGroundItemRules
+import TDEquipmentAdmissionRules
+
+public function tdItemNearbyPointEligible(int physicalLane, vec2 origin, vec2 point, real radius, boolean staticSafe, boolean unblocked) returns boolean
+	return radius >= 0.0 and staticSafe and unblocked and tdGroundItemLane(point.x, point.y) == physicalLane and (point - origin).lengthSq() <= radius * radius
+
+public function tdItemNearbyOffset(int index, boolean towerNearby) returns vec2
+	if index == 0
+		return vec2(0, 0)
+	if towerNearby
+		return tdEquipmentReturnOffset(index - 1)
+	let direction = tdEquipmentReturnOffset(ModuloInteger(index - 1, 8))
+	return direction * ((1 + (index - 1) div 8) * 16.0 / 160.0)

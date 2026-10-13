@@ -1,0 +1,36 @@
+package TDItemRewardTests
+import TDState
+import TDGame
+import TDWaves
+
+@Test function equipmentGoldBudgetClipsLastKillAndCannotBeSpentTwice()
+    tdResetState()
+    tdTakeLaneWaveEquipmentGold(0, 1, 7, 10).assertEquals(7)
+    tdTakeLaneWaveEquipmentGold(0, 1, 7, 10).assertEquals(3)
+    tdTakeLaneWaveEquipmentGold(0, 1, 7, 10).assertEquals(0)
+
+@Test function equipmentGoldBudgetsAreIndependentAcrossLanesAndOverlappingWaves()
+    tdResetState()
+    tdTakeLaneWaveEquipmentGold(0, 1, 10, 10).assertEquals(10)
+    tdTakeLaneWaveEquipmentGold(1, 1, 10, 10).assertEquals(10)
+    tdTakeLaneWaveEquipmentGold(0, 2, 10, 10).assertEquals(10)
+    tdTakeLaneWaveEquipmentGold(0, 1, 1, 10).assertEquals(0)
+    tdResetState()
+    tdTakeLaneWaveEquipmentGold(0, 1, 10, 10).assertEquals(10)
+
+@Test function invalidEquipmentGoldRequestsDoNotSpendBudget()
+    tdResetState()
+    tdTakeLaneWaveEquipmentGold(-1, 1, 1, 10).assertEquals(0)
+    tdTakeLaneWaveEquipmentGold(4, 1, 1, 10).assertEquals(0)
+    tdTakeLaneWaveEquipmentGold(0, 0, 1, 10).assertEquals(0)
+    tdTakeLaneWaveEquipmentGold(0, 40, 1, 10).assertEquals(0)
+    tdTakeLaneWaveEquipmentGold(0, 1, -5, 10).assertEquals(0)
+    tdTakeLaneWaveEquipmentGold(0, 1, 5, -1).assertEquals(0)
+    tdTakeLaneWaveEquipmentGold(0, 1, 10, 10).assertEquals(10)
+
+@Test function equipmentGoldBudgetExcludesBossButIncludesGuards()
+    tdWaveEquipmentGoldBudget(1).assertEquals(tdWaveEnemyCount(1) * tdWaveKillGold(1))
+    tdWaveEquipmentGoldBudget(8).assertEquals((tdWaveEnemyCount(8) - 1) * tdWaveKillGold(8))
+    tdWaveEquipmentGoldBudget(32).assertEquals((tdWaveEnemyCount(32) - 1) * tdWaveKillGold(32))
+    tdWaveEquipmentGoldBudget(0).assertEquals(0)
+    tdWaveEquipmentGoldBudget(33).assertEquals(0)

@@ -1,0 +1,142 @@
+package TDAuraMetadata
+import TDAuraRules
+import TDItemCatalogConfig
+import TDItemCatalogSchema
+import TDTowerData
+import TDPetRules
+import Icons
+
+public function tdAuraName(int identity) returns string
+	if identity == 1
+		return "白虎战吼"
+	if identity == 2
+		return "统帅光环"
+	if identity == 3
+		return "统御攻击光环"
+	if identity == 4
+		return "疾风攻速光环"
+	if identity == 5
+		return "灵感冷却光环"
+	if identity == 6
+		return "裂甲普攻光环"
+	if identity == 7
+		return "寒霜领域"
+	if identity == 8
+		return "精灵统御"
+	if identity == 9
+		return "精灵迟滞"
+	if identity == 10
+		return "缓速藤蔓"
+	if identity == 11
+		return "毒镖移动缓速"
+	if identity == 12
+		return "精灵霜箭"
+	if identity == 13
+		return "精灵风缚"
+	return "未知光环"
+
+public function tdAuraNominalPower(int identity, int rank) returns real
+	if identity == TD_AURA_WHITE_TIGER
+		return tdArcherAuraDamageBonus() * (rank == 2 ? tdEvolutionSkillMultiplier() : 1.0)
+	if identity == TD_AURA_COMMANDER
+		return tdFootmanCommandAuraDamageBonus() * (rank == 2 ? tdEvolutionSkillMultiplier() : 1.0)
+	if identity == 3
+		for index = 1 to 40
+			let definition = tdConfiguredEquipment(index)
+			if definition.quality == rank and definition.auraKind == TD_ITEM_AURA_ATTACK
+				return definition.auraValue
+	if identity == 4
+		for index = 1 to 40
+			let definition = tdConfiguredEquipment(index)
+			if definition.quality == rank and definition.auraKind == TD_ITEM_AURA_ATTACK_SPEED
+				return definition.auraValue
+	if identity == 5
+		for index = 1 to 40
+			let definition = tdConfiguredEquipment(index)
+			if definition.quality == rank and definition.auraKind == TD_ITEM_AURA_COOLDOWN
+				return definition.auraValue
+	if identity == 6
+		for index = 1 to 40
+			let definition = tdConfiguredEquipment(index)
+			if definition.quality == rank and definition.auraKind == TD_ITEM_AURA_ARMOR_ON_HIT
+				return definition.auraValue
+	if identity == 7
+		for index = 1 to 40
+			let definition = tdConfiguredEquipment(index)
+			if definition.quality == rank and definition.auraKind == TD_ITEM_AURA_ENEMY_SLOW
+				return definition.auraValue
+	if identity == TD_AURA_PET_COMMAND
+		return tdPetSkillPower(4, rank)
+	if identity == TD_AURA_PET_STASIS
+		return tdPetSkillPower(5, rank)
+	if identity == TD_AURA_PET_FROST_ARROW
+		return tdPetSkillPower(9, rank)
+	if identity == TD_AURA_PET_WIND
+		return tdPetSkillPower(15, rank)
+	if identity == TD_AURA_VINES
+		return (1.0 - tdDryadAuraSlowFactor()) * (rank == 2 ? tdEvolutionSkillMultiplier() : 1.0)
+	if identity == TD_AURA_POISON_DART
+		return 1.0 - tdDryadSlowFactor()
+	return 0.0
+
+public function tdAuraNominalRadius(int identity, int rank) returns real
+	if identity <= TD_AURA_COMMANDER
+		return 900.0
+	if identity >= TD_AURA_EQUIPMENT_ATTACK and identity <= TD_AURA_EQUIPMENT_FROST
+		for index = 1 to 40
+			let definition = tdConfiguredEquipment(index)
+			if definition.quality == rank and definition.auraKind == identity - TD_AURA_EQUIPMENT_ATTACK + 1
+				return definition.auraRadius
+		return 0.0
+	if identity == TD_AURA_PET_STASIS
+		return 600.0
+	if identity == TD_AURA_VINES
+		return rank == 2 ? tdDryadWideAuraSlowRadius() : tdDryadAuraSlowRadius()
+	return 0.0
+
+public function tdAuraStateTooltip(int identity, int rank) returns string
+	let power = tdAuraNominalPower(identity, rank)
+	let percent = tdPreciseBonusPercentString(power)
+	var description = "基础移动减速" + percent + "。"
+	if identity <= TD_AURA_COMMANDER
+		description = "攻击力提高" + percent + "。"
+	else if identity == TD_AURA_EQUIPMENT_ATTACK
+		description = "增加基础攻击的" + percent + "攻击力。"
+	else if identity == TD_AURA_EQUIPMENT_SPEED
+		description = "攻击速度提高" + percent + "；与装备攻速合计上限120%。"
+	else if identity == TD_AURA_EQUIPMENT_COOLDOWN
+		description = "全部主动技能冷却缩短（包括附身精灵主动技能）" + percent + "；与装备、灵感合计上限40%，不重置进行中的冷却。"
+	else if identity == TD_AURA_EQUIPMENT_ARMOR
+		description = "普攻主目标破甲" + R2I(power) + "，持续3秒；与装备破甲取最高。"
+	else if identity == TD_AURA_PET_COMMAND
+		description = "附身塔攻击速度提高" + percent + "。"
+	let radius = tdAuraNominalRadius(identity, rank)
+	if radius > 0.0 and identity != TD_AURA_VINES
+		description += "范围" + R2I(radius) + "。"
+	if identity == TD_AURA_VINES
+		description += "范围：普通" + R2I(tdDryadAuraSlowRadius()) + "，宽域" + R2I(tdDryadWideAuraSlowRadius()) + "；减速受装备控制强化影响。"
+	if identity == TD_AURA_POISON_DART
+		description += "持续5秒（英雄1秒），减速受装备控制强化影响。"
+	if identity == TD_AURA_PET_FROST_ARROW or identity == TD_AURA_PET_WIND
+		description += "持续3秒；强效结束后，尚未到期的弱效仍生效。"
+	description += "同名取最高等级，异名可叠加。"
+	if identity == TD_AURA_EQUIPMENT_FROST or identity >= TD_AURA_PET_STASIS
+		description += "减速合计上限75%。"
+	return description
+
+public function tdAuraIcon(int identity) returns string
+	if identity == TD_AURA_WHITE_TIGER
+		return Icons.bTNTrueShot
+	if identity == TD_AURA_COMMANDER or identity == TD_AURA_EQUIPMENT_ATTACK
+		return Icons.bTNCommand
+	if identity == TD_AURA_EQUIPMENT_SPEED or identity == TD_AURA_PET_COMMAND
+		return Icons.bTNDrum
+	if identity == TD_AURA_EQUIPMENT_COOLDOWN
+		return Icons.bTNBrilliance
+	if identity == TD_AURA_EQUIPMENT_ARMOR
+		return Icons.bTNDevotion
+	if identity == TD_AURA_VINES
+		return Icons.bTNEntanglingRoots
+	if identity == TD_AURA_POISON_DART
+		return Icons.bTNSlowPoison
+	return Icons.bTNOrbOfFrost

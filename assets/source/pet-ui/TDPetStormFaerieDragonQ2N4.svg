@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<title>雷灵 / 仙女龙</title><desc>Original editable vector artwork. Opaque 64px Warcraft III command-button icon; shared iron frame, distinct semantic silhouette.</desc>
+<defs>
+  <linearGradient id="metal" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#dce8ed"/><stop offset=".45" stop-color="#8499a5"/><stop offset="1" stop-color="#394e59"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#fff0a8"/><stop offset=".45" stop-color="#dfaa47"/><stop offset="1" stop-color="#89551f"/></linearGradient>
+  <linearGradient id="blue" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#d6ffff"/><stop offset=".43" stop-color="#51cee9"/><stop offset="1" stop-color="#237bb7"/></linearGradient>
+  <linearGradient id="green" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#e2ffd0"/><stop offset=".45" stop-color="#71d987"/><stop offset="1" stop-color="#287858"/></linearGradient>
+  <linearGradient id="violet" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#f6caff"/><stop offset=".38" stop-color="#b98bf1"/><stop offset="1" stop-color="#563493"/></linearGradient>
+  <linearGradient id="paper" x1="0" y1="0" x2=".4" y2="1"><stop stop-color="#fff8d5"/><stop offset=".7" stop-color="#e3c68a"/><stop offset="1" stop-color="#a77443"/></linearGradient>
+  <linearGradient id="fire" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe992"/><stop offset=".42" stop-color="#ffa339"/><stop offset="1" stop-color="#c7332b"/></linearGradient>
+  <radialGradient id="wisp"><stop stop-color="#f3ffff"/><stop offset=".45" stop-color="#b9fff1"/><stop offset=".75" stop-color="#55e3dd"/><stop offset="1" stop-color="#3286bc"/></radialGradient>
+  <radialGradient id="back"><stop stop-color="#303554"/><stop offset="1" stop-color="#080f19"/></radialGradient>
+</defs>
+<rect x="0" y="0" width="64" height="64" fill="#080b10"/>
+<rect x="4" y="4" width="56" height="56" fill="url(#back)"/>
+<path d="M1 1H63L59 5H5V59L1 63Z" fill="#98a3aa"/>
+<path d="M63 1V63H1L5 59H59V5Z" fill="#26323b"/>
+<path d="M2 2H62M2 2V62" fill="none" stroke="#d5d9d8" stroke-width=".7"/>
+<path d="M5 5H59V59H5Z" fill="none" stroke="#8b794f" stroke-width=".8"/>
+<path d="M6 6H58V58H6Z" fill="none" stroke="#030910" stroke-width="1"/>
+<g stroke-linejoin="round" stroke-linecap="round">
+  <path d="M29 29C24 16 16 9 10 12C8 18 11 25 20 30C8 30 9 39 14 45C22 47 27 39 31 34" fill="url(#violet)" stroke="#211e37" stroke-width="1.7"/>
+  <path d="M34 27C40 12 48 8 54 12C58 21 49 28 43 30C56 30 56 39 49 45C42 44 37 38 34 32" fill="url(#blue)" stroke="#182747" stroke-width="1.7"/>
+  <path d="M13 15L28 30L15 39M51 15L37 30L50 39" fill="none" stroke="#e2dfff" stroke-width="1.3"/>
+  <path d="M16 21L19 25M17 34L20 33M49 21L46 25M47 34L44 33" stroke="#80e5ef" stroke-width="2"/>
+  <path d="M34 21C30 22 28 27 30 33L35 41C37 47 31 52 26 48C24 46 26 44 27 44C23 41 18 47 23 52C31 60 42 51 42 44C42 40 36 34 36 30C43 30 47 24 43 20L38 19L40 13L34 17L30 15L31 21Z" fill="url(#green)" stroke="#173f40" stroke-width="1.7"/>
+  <path d="M35 23C31 27 33 32 36 36M36 44C38 49 31 53 27 50" fill="none" stroke="#d9fff0" stroke-width="1.2"/>
+  <path d="M40 20L45 22L43 26L38 26" fill="#90dfd0"/>
+  <circle cx="39" cy="22" r="1.5" fill="#173238"/>
+  <circle cx="39.3" cy="21.6" r=".5" fill="#fff7c8"/>
+  <path d="M26 9L22 17H26L22 23" fill="none" stroke="#f7e29c" stroke-width="1.8"/>
+</g>
+<rect x="2" y="2" width="60" height="60" fill="none" stroke="#40dd40" stroke-width="3"/>
+<path d="M6 8V6H8M56 6H58V8M58 56V58H56M8 58H6V56" fill="none" stroke="#40dd40" stroke-width="1.3"/>
+<!-- Owned skill count; Noto Sans CJK Bold outline baked, no font dependency. -->
+<rect x="43" y="6" width="15" height="19" rx="2" fill="#101923" stroke="#ebdbaa" stroke-width=".9"/>
+<path d="M337 0H474V192H562V304H474V741H297L21 292V192H337ZM337 304H164L279 488C300 528 320 569 338 609H343C340 565 337 498 337 455Z" transform="translate(46,22) scale(.017,-.017)" fill="#fff6d8"/>
+</svg>

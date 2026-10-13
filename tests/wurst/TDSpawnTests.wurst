@@ -2,6 +2,23 @@ package TDSpawnTests
 import TDSpawn
 import TDWaves
 import Orders
+import TDState
+
+@Test function spawningStopsWhenLaneOrMatchEnds()
+	tdResetState()
+	tdLaneCanReceiveSpawns(-1).assertFalse()
+	tdLaneCanReceiveSpawns(0).assertFalse()
+	tdSetLaneActive(0, true)
+	tdLaneCanReceiveSpawns(0).assertTrue()
+	tdSetLaneDefeated(0, true)
+	tdLaneCanReceiveSpawns(0).assertFalse()
+	tdSetLaneDefeated(0, false)
+	tdSetLaneFinished(0, true)
+	tdLaneCanReceiveSpawns(0).assertFalse()
+	tdSetLaneFinished(0, false)
+	tdSetGameOver(true)
+	tdLaneCanReceiveSpawns(0).assertFalse()
+	tdResetState()
 
 @Test function spawnedEnemiesDoNotUseCreepGuard()
 	tdEnemyUsesCreepGuard().assertEquals(false)
@@ -14,9 +31,9 @@ import Orders
 	tdEnemyNativeGoldBountySides().assertEquals(0)
 	tdEnemyLaneOrderNameForTest().assertEquals("move")
 	tdEnemyLaneOrderIdForTest().assertEquals(Orders.move)
-	tdEnemyNeedsLaneOrderRefreshForTest(Orders.move, Orders.move).assertTrue()
+	tdEnemyNeedsLaneOrderRefreshForTest(Orders.move, Orders.move).assertFalse()
 	tdEnemyNeedsLaneOrderRefreshForTest(Orders.patrol, Orders.move).assertTrue()
-	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, false).assertTrue()
+	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, false).assertFalse()
 	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, true).assertTrue()
 
 @Test function enemyHealthDisplayIsNotManagedByRuntime()
@@ -25,3 +42,20 @@ import Orders
 @Test function waypointAdvanceWaitsForEnteringCornerRegion()
 	tdEnemyReachedWaypointPositionForTest(0, 3, vec2(-2800., 528.)).assertFalse()
 	tdEnemyReachedWaypointPositionForTest(0, 3, vec2(-2800., 400.)).assertTrue()
+
+@Test function movingEnemyKeepsItsCurrentWaypointOrder()
+	tdEnemyNeedsLaneOrderRefreshForTest(Orders.move, Orders.move).assertFalse()
+	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, false).assertFalse()
+
+@Test function idleEnemyResumesItsLaneOrder()
+	tdEnemyNeedsLaneOrderRefreshForTest(0, Orders.move).assertTrue()
+	tdEnemyShouldIssueLaneOrderForTest(0, Orders.move, false).assertTrue()
+
+@Test function stoppedAndPatrollingEnemiesResumeTheirLaneOrder()
+	tdEnemyNeedsLaneOrderRefreshForTest(Orders.stop, Orders.move).assertTrue()
+	tdEnemyShouldIssueLaneOrderForTest(Orders.stop, Orders.move, false).assertTrue()
+	tdEnemyNeedsLaneOrderRefreshForTest(Orders.patrol, Orders.move).assertTrue()
+	tdEnemyShouldIssueLaneOrderForTest(Orders.patrol, Orders.move, false).assertTrue()
+
+@Test function waypointAdvanceIssuesANewMoveOrder()
+	tdEnemyShouldIssueLaneOrderForTest(Orders.move, Orders.move, true).assertTrue()

@@ -1,0 +1,67 @@
+package TDEquipmentRules
+import TDItemData
+
+public constant int TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID = 'A134'
+public constant int TD_EQUIPMENT_DAMAGE_PRIORITY = 1
+public constant int TD_EQUIPMENT_ARMOR_MAX = 30
+public constant int TD_EQUIPMENT_ADDITIONAL_DAMAGE_ID = 'Eadd'
+
+public function tdEquipmentConditionalBonus(real life, real maxLife, boolean boss, real executeBonus, real bossBonus) returns real
+	return (maxLife > 0.0 and life <= maxLife * 0.5 ? executeBonus : 0.0) + (boss ? bossBonus : 0.0)
+
+public function tdEquipmentArmorLevel(real armor) returns int
+	var level = R2I(armor + 0.5)
+	if level < 0
+		level = 0
+	if level > TD_EQUIPMENT_ARMOR_MAX
+		level = TD_EQUIPMENT_ARMOR_MAX
+	return level
+
+public function tdEquipmentEffectForItems(int item1, int item2, int item3, int kind) returns real
+	// Defensive identity filtering matches tower admission even for pure callers.
+	var total = 0.0
+	for slot = 0 to 2
+		let id = slot == 0 ? item1 : (slot == 1 ? item2 : item3)
+		if slot >= 1 and item1 == id
+			continue
+		if slot == 2 and item2 == id
+			continue
+		var contribution = 0.0
+		if tdItemPrimaryEffectKind(id) == kind
+			contribution += tdItemPrimaryEffectValue(id)
+		if tdItemSecondaryEffectKind(id) == kind
+			contribution += tdItemSecondaryEffectValue(id)
+		if tdItemPersonalEffectStacks(kind)
+			total += contribution
+		else
+			total = max(total, contribution)
+	return total
+
+public function tdEquipmentPercentLevel(real value, int cap) returns int
+	var percent = R2I(value * 100.0 + 0.5)
+	if percent < 0
+		percent = 0
+	if percent > cap
+		percent = cap
+	return percent + 1
+
+public function tdEquipmentControlReduction(real baseReduction, int level) returns real
+	let reduction = baseReduction * (1.0 + (level - 1) / 100.0)
+	return reduction > 0.70 ? 0.70 : reduction
+
+public function tdEquipmentConditionalMultiplier(real life, real maxLife, boolean boss, real executeBonus, real bossBonus) returns real
+	return 1.0 + tdEquipmentConditionalBonus(life, maxLife, boss, executeBonus, bossBonus)
+
+public function tdEquipmentDebuffRefreshes(real incoming, real current) returns boolean
+	return incoming > 0.0 and incoming >= current
+
+public function tdEquipmentPoisonNextTick(real now, real currentPoison, real nextTick) returns real
+	// Refresh duration without postponing damage indefinitely under fast attacks.
+	return currentPoison > 0.0 ? nextTick : now + 1.0
+
+public function tdEquipmentNativeAttackEligible(boolean codeDamage, boolean spellDamage, int eventId) returns boolean
+	return not codeDamage and not spellDamage and eventId != 'Tspl'
+
+public function tdEquipmentItemId(unit tower, int slot) returns int
+	let itm = tower.itemInSlot(slot)
+	return itm != null and tdItemIsEquipment(itm.getTypeId()) ? itm.getTypeId() : 0
