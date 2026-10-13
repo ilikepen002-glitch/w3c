@@ -158,6 +158,7 @@ Astra / Sol 调用：
 - 测试源码真相目录是 `tests/wurst/`
 - `wurst/_tests/` 只是检查脚本的临时 staging 目录
 - 最终编译与部署只允许走 `build-and-deploy-test-map.bat`
+- 用户已授权 Linux 隔离构建入口 `python3 tools/Run-WurstLinux.py`：保留 Windows 入口，Linux 执行检查/测试/构图和最终产物门禁，仅输出地图，不部署、不启动游戏；不得绕过锁、测试 staging 或地图门禁。
 
 ## 架构要求
 

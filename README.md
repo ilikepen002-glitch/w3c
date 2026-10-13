@@ -33,3 +33,22 @@
 源图回归：`python3 tools/VerifyTowerTerrainMask.py`。实际打包检查：`python3 tools/VerifyTowerPlacementArtifact.py ExampleMap.w3x`。
 
 详见 [高台建塔解决记录](docs/solutions/2026-10-08-高台建塔占地与禁建掩码.md)。
+
+## Linux 隔离检查与构建（2026-10-13 用户授权）
+
+保留上面的 Windows 入口。Linux 使用一个独立入口，输出地图后由本机部署/试玩；此入口从不部署或启动 Warcraft。需要 Python 3、Git，以及现有 Python 产物检查所需的 Pillow/PyYAML。
+
+准备以下真实材料，不修改 `tools/compiler/compiler-lock.json` 或 `tools/stdlib/lock.json`：
+- 同一目录里的锁定 `wurstscript.jar` 和 `grill.jar`。
+- 官方 OpenJDK 27+35-2325 Linux x64；入口校验 java、javac、release、modules 和 libjvm 的精确 SHA，实际 Grill compiler 子进程须解析到这个 Java。官方归档：https://jdk.java.net/archive/ ，归档 SHA256 为 `95fc37eb3a18a27a26d5904c2d89d52bace8dafa9a078ca27f4747fbc4bf070b`。
+- 按 `tools/stdlib/README.md` 准备的独立 `pre1.29` Git 源树，tree 必须为 `90b45617eda50c15703e8cb2ec3241d3c7b61816`，包括真实 common.j/blizzard.j；不接受替代存根。
+
+```bash
+python3 tools/Run-WurstLinux.py checks --tools /绝对路径/verified-wurst-tools --jdk /绝对路径/jdk-27 --stdlib /绝对路径/WurstStdlib2-source
+python3 tools/Run-WurstLinux.py test TDPetReleaseTests --tools /绝对路径/verified-wurst-tools --jdk /绝对路径/jdk-27 --stdlib /绝对路径/WurstStdlib2-source
+python3 tools/Run-WurstLinux.py build --tools /绝对路径/verified-wurst-tools --jdk /绝对路径/jdk-27 --stdlib /绝对路径/WurstStdlib2-source
+```
+
+`checks` 串行 typecheck 和全部 Wurst tests，失败即中断；`typecheck` 和 `test` 可定向诊断。`build` 在没有测试 staging 的新事务中构建。检查/构建都复制实际 tracked、未提交/新增及 ignored imports 字节，拒绝未知链接和既有 staging，并记录输入哈希；只在临时配置精确映射那一条 stdlib URL。原始模板另复制给 Grill，不直接交给可能写 MPQ 的工具。
+
+全仓库各 worktree 共用 Linux checks/build 锁。事务目录 `_build/linux-*` 保留日志和 manifest；结束或中断前停止整个子进程组，再清理该事务的测试 staging。编译前后校验工具/stdlib，最终地图先追加显示名，再通过原 `VerifyLegacyJass` 的真实 MPQ/JASS 门禁和独立 Python MPQ/对象表/全部 imports 字节检查；输入或候选变化、缺少/多个/旧输出均拒绝发布。所有门禁通过才原子更新根目录 `ExampleMap.w3x`（或显式 `--output` 地图路径），旧根图副本保留在事务目录。历史封闭 delta 检查仍要各自的真实历史基线，不能拿当前图冒充或放宽断言。
