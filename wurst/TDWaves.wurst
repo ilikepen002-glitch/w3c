@@ -920,7 +920,7 @@ function tdWaveObjectParentId(int wave) returns int
 	// Original King Leoric by HappyTauren, AnemicRoyalty and Tarrasque/Jigrael.
 	// Source/credits and exact unchanged asset hashes: assets/source/king-leoric.json.
 	..setModelFile("war3mapImported\\Leoric.mdx")
-	..setScalingValue(1.30)
+	..setScalingValue(6.50)
 	new UnitDefinition(TD_WAVE_24_BOSS_UNIT_ID, 'Udre')
 	..tdApplyEscaperStats(tdWaveBossName(24), tdWaveBossHitPoints(24), tdWaveBossArmor(24), tdWaveBossSpeed(24))
 	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(24, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(24)))

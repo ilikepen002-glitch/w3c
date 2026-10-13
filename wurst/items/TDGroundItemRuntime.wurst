@@ -81,10 +81,6 @@ function tdGroundStart(int requestedLane)
 		EnumItemsInRect(bounds, null, function tdGroundCaptureItem)
 		RemoveRect(bounds)
 
-public function tdSortGroundEquipmentAfterUpgrade(int lane)
-	if tdGroundRuntimeReady and tdIsLanePlayer(lane) and not tdIsGameOver()
-		tdGroundStart(lane)
-
 public function tdSetupGroundItemRuntime()
 	if tdGroundRuntimeReady
 		return

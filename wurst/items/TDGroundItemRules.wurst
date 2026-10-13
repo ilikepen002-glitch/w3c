@@ -23,8 +23,8 @@ public function tdGroundItemGroup(int itemId) returns int
 public function tdGroundSortItemEligible(int requestedLane, int sourceLane, int pileGroup) returns boolean
 	if sourceLane < 0 or sourceLane >= TD_ACTIVE_PLAYER_COUNT or pileGroup < TD_ITEM_QUALITY_WHITE or pileGroup > 5
 		return false
-	// Periodic sorting includes capture balls on all lanes. A completed upgrade
-	// sorts only equipment still inside that player's connected lowland road.
+	// Periodic sorting includes capture balls on all lanes. Explicit lane filters
+	// admit equipment only; range upgrades deliver their own products directly.
 	if requestedLane == -1
 		return true
 	return requestedLane == sourceLane and pileGroup <= TD_ITEM_QUALITY_PURPLE

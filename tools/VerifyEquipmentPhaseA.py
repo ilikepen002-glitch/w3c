@@ -30,8 +30,16 @@ def verify_runtime_entrypoints(root=ROOT):
             'Ground sorter must not import crafting runtime')
     require('tdSetupCraftingRuntime()' not in ground,
             'Ground setup must not initialize crafting runtime')
-    require('tdSortGroundEquipmentAfterUpgrade(groundLane)' in crafting,
-            'Ground craft finish must start the lane sorter')
+    require('tdSortGroundEquipmentAfterUpgrade' not in crafting,
+            'Ground craft must not sort unrelated equipment')
+    backend = (root / 'wurst/items/TDCraftingNativeBackend.wurst').read_text()
+    prepare = backend.split('override function prepareResult', 1)[1].split('override function consumeThree', 1)[0]
+    require('let quality = tdItemQuality(rawcode)' in prepare and
+            'tdTryPlaceItemInPile(output, lane, quality, pileCounts[quality])' in prepare,
+            'Ground craft must prepare output in its result-quality lane pile')
+    consume = backend.split('override function consumeThree', 1)[1].split('override function publishResult', 1)[0]
+    require('if not inventory and not tdItemActualInPile(output, lane, tdItemQuality(outputId))' in consume,
+            'Ground craft must revalidate the final output pile before consumption')
     registration = re.compile(r'\bregisterSpellEffectEvent\s*\(\s*TD_FARMER_GROUND_UPGRADE_ABILITY_ID\s*,')
     handler = re.compile(r'^(?:public )?function tdGroundHandleUpgrade\(', re.M)
     registrations = []

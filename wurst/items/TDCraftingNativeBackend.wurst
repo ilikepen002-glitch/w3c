@@ -55,6 +55,7 @@ public class TDCraftNativeBackend implements TDCraftCommitBackend
 	private item output = null
 	private int outputId = 0
 	private int outputKey = 0
+	private int array[5] pileCounts
 	int deliveryExceptions = 0
 
 	construct(unit farmer, int lane, vec2 origin, boolean inventory)
@@ -103,7 +104,19 @@ public class TDCraftNativeBackend implements TDCraftCommitBackend
 		if output == null
 			return 0
 		SetItemVisible(output, false)
-		if GetItemTypeId(output) != rawcode or not tdTryPlaceItemNear(output, lane, origin, false)
+		var placed = false
+		if GetItemTypeId(output) == rawcode
+			if inventory
+				placed = tdTryPlaceItemNear(output, lane, origin, false)
+			else
+				// Prepare at the final next-quality pile before consuming anything.
+				// Source terrain is irrelevant; reuse the checked native pile placement.
+				let quality = tdItemQuality(rawcode)
+				let index = tdTryPlaceItemInPile(output, lane, quality, pileCounts[quality])
+				if index >= 0
+					pileCounts[quality] = index + 1
+					placed = true
+		if not placed
 			RemoveItem(output)
 			output = null
 			return 0
@@ -113,6 +126,8 @@ public class TDCraftNativeBackend implements TDCraftCommitBackend
 
 	override function consumeThree(int first, int second, int third) returns boolean
 		if not tdGroundItemHandleValid(output) or GetItemTypeId(output) != outputId or not tdItemGroundPointSafe(lane, tdItemActualPosition(output))
+			return false
+		if not inventory and not tdItemActualInPile(output, lane, tdItemQuality(outputId))
 			return false
 		if first == second or first == third or second == third
 			return false

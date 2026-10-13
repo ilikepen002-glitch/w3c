@@ -60,21 +60,14 @@ function tdCaptureCraftGroundItem()
 
 function tdFinishCraftSession()
 	let session = tdCraftSession
-	let groundLane = tdCraftCaptureLane
 	if not tdIsGameOver()
 		DisplayTimedTextToPlayer(session.caster, 0, 0, 5.0, "合成完成：成功 " + session.successes + " 组，取消 " + session.cancelled + " 组。未成组三的材料保留，产物只升一级。")
-		if tdIsLanePlayer(groundLane)
-			DisplayTimedTextToPlayer(session.caster, 0, 0, 4.0, "本路坑道内装备正在按品质归堆；坑外物品保留原位。")
 		if session.backend.deliveryExceptions > 0
 			DisplayTimedTextToPlayer(session.caster, 0, 0, 6.0, "有 " + session.backend.deliveryExceptions + " 个产物交付异常，物品未删除，请按前述句柄核对。")
 	tdCraftSession = null
 	tdCraftCaptureLane = -1
 	destroy session
 	tdItemOperationRelease()
-	// Synchronous release/reacquire: no yield or second craft can enter between
-	// snapshot cleanup and the sort. Empty/cancelled batches also sort leftovers.
-	if tdIsLanePlayer(groundLane) and not tdIsGameOver()
-		tdSortGroundEquipmentAfterUpgrade(groundLane)
 
 function tdGroundHandleUpgrade() returns boolean
 	let farmer = GetTriggerUnit()

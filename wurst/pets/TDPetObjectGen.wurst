@@ -224,7 +224,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			..setIconScoreScreen(tdPetSpeciesIconPath(species))
 			..setDescription("本路中立无敌停留60秒，仅可捕获。")
 			..setModelFile(tdPetModel(species))
-			..setScalingValue(0.85)
+			..setScalingValue(4.25)
 			..setHitPointsMaximumBase(tdWaveBaseHitPoints(wave))
 			..setDefenseBase(tdWaveBaseArmor(wave))
 			..setSpeedBase(120)
@@ -242,7 +242,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			..setGoldBountyAwardedBase(0)
 			..setGoldBountyAwardedNumberofDice(0)
 			..setGoldBountyAwardedSidesperDie(0)
-	new ItemDefinition(TD_PET_BALL_ITEM_ID, 'ratf')..setName("普通捕获球")..setTooltipBasic("普通捕获球 · 本路专属")..setTooltipExtended("工人或塔拾取后，本路普通球+1，上限60；已满时留在地面。")..setModelUsed("Objects\\InventoryItems\\CrystalShard\\CrystalShard.mdl")..setInterfaceIcon(tdPetCaptureIconPath())..setAbilities("")..setUseAutomaticallyWhenAcquired(false)..setActivelyUsed(false)..setIncludeAsRandomChoice(false)..setCanBeDropped(true)..setCanBeSoldToMerchants(false)..setGoldCost(0)
+	new ItemDefinition(TD_PET_BALL_ITEM_ID, 'ratf')..setName("普通捕获球")..setTooltipBasic("普通捕获球 · 本路专属")..setTooltipExtended("掉落时自动获得，本路普通球+1，上限60；已满时留在地面，可由工人或塔拾取。")..setModelUsed("Objects\\InventoryItems\\CrystalShard\\CrystalShard.mdl")..setInterfaceIcon(tdPetCaptureIconPath())..setAbilities("")..setUseAutomaticallyWhenAcquired(false)..setActivelyUsed(false)..setIncludeAsRandomChoice(false)..setCanBeDropped(true)..setCanBeSoldToMerchants(false)..setGoldCost(0)
 
 
 

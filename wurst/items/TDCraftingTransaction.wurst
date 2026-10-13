@@ -11,7 +11,8 @@ public constant int TD_CRAFT_COMMIT_ALREADY_ATTEMPTED = 3
 // - available checks the exact captured handle/rawcode, holder or original cast
 //   circle, visibility/liveness, and no intervening pickup/movement out of scope.
 // - prepareResult creates a fully valid hidden output at a legal final drop point
-//   near the operation. Return 0 without an output on failure. Never consume.
+//   (ground upgrades: next-quality pile; inventory: near the operation).
+//   Return 0 without an output on failure. Never consume.
 // - consumeThree either removes all three, or returns false without any mutation.
 // - publishResult is a no-fail visibility handoff of that prepared output.
 // Every method is synchronous. No timer/yield, spell callbacks or user input.
