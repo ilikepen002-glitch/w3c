@@ -17,6 +17,7 @@ from VerifyEquipmentAbilityArtifact import ability_objects, require
 from VerifyEquipmentCombatReplay import EquipmentTrialRuntime
 from VerifyTowerPlacementArtifact import unit_objects
 from VerifyTowerUpgradeArtifact import rawcode
+from VerifyBuilderControlDelta import allocations
 from VerifyDamageRankingJass import functions
 from VerifyPetUIArtifact import field_value, verify_skill_allowed, verify_phase_one_slots, verify_phase_one_preview
 
@@ -36,6 +37,7 @@ class PetAttackRuntime(EquipmentTrialRuntime):
         self.auto_post = True
         self.final_catalog = self.globals.get('TDPetData_TD_PET_SKILL_COUNT') == 49
         self.visual_handles = {}
+        self.lightning_handles = {}
         self.visual_serial = 100000
         self.initialize_match()
         self.timer_trace.clear()
@@ -60,6 +62,11 @@ class PetAttackRuntime(EquipmentTrialRuntime):
             else: self.invoke('TDPet_recall',action)
             return handled,result
         if name == 'nullTimer': return False, None  # Execute the packed wrapper into doAfter(0).
+        if name == 'doPeriodically':
+            self.timer_serial += 1
+            self.timers[self.timer_serial] = {'destroyed':False, 'closure':args[1], 'periodic':True}
+            self.globals['CallbackPeriodic_t'][args[1]] = self.timer_serial
+            self.periodics.append(tuple(args[:2])); return True, args[1]
         if name == 'doAfter':
             self.timer_serial += 1
             self.timers[self.timer_serial] = {'destroyed':False, 'closure':args[1]}
@@ -91,10 +98,24 @@ class PetAttackRuntime(EquipmentTrialRuntime):
             require(len(args) == 2 or signature[1] in ('w__wurst_stackPos', 'stackPos'),
                     'Unknown packed generic list-add parameter')
             self.lists[args[0]].append(args[-1]); return True, None
-        if name == 'AddSpecialEffect':
+        if name in ('AddSpecialEffect', 'AddSpecialEffectTarget'):
             self.visual_serial += 1
             self.visual_handles[self.visual_serial] = tuple(args[:3])
             return True, self.visual_serial
+        if name == 'AddLightningEx':
+            self.visual_serial += 1
+            self.lightning_handles[self.visual_serial] = tuple(args)
+            return True, self.visual_serial
+        if name == 'SetLightningColor':
+            require(args[0] in self.lightning_handles, 'Unknown lightning color owner')
+            return True, True
+        if name == 'DestroyLightning':
+            require(args[0] in self.lightning_handles, 'Unknown/double-owned lightning destruction')
+            del self.lightning_handles[args[0]]; return True, True
+        if name == 'vec2_getTerrainZ':
+            # Actual native terrain height is a controlled flat-map boundary.
+            require(name in self.functions and len(args) in (2, 3), 'Unknown terrain tuple lowering')
+            return True, 0.0
         if name == 'DestroyEffect':
             require(args[0] in self.visual_handles, 'Unknown/double-owned visual destruction')
             del self.visual_handles[args[0]]; return True, None
@@ -189,7 +210,9 @@ class PetAttackRuntime(EquipmentTrialRuntime):
 
     def tick_effects(self, elapsed=.05):
         self.now += elapsed
-        callbacks = [cb for interval, cb in self.periodics if interval == .05]
+        callbacks = [cb for interval, cb in self.periodics if interval == .05 and
+                     self.globals['CallbackPeriodic_typeId'][cb] ==
+                     allocations(self.script)['alloc_CallbackPeriodic_doPeriodically_TDPetEffectScheduler'][1]]
         require(len(callbacks) == 1, 'Final catalog must use one shared effect scheduler')
         self.invoke('call_doPeriodically_TDPetEffectScheduler', callbacks[0], callbacks[0])
         self.drain_zero()

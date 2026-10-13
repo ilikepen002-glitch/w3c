@@ -19,6 +19,7 @@ from VerifyEquipmentAbilityArtifact import require
 from VerifyPetAttackArtifact import PetAttackRuntime, near
 from VerifyPetHeroSource import HOSTS, POWERS
 from VerifyTowerUpgradeArtifact import rawcode
+from VerifyBuilderControlDelta import allocations
 
 CONTEXT_FIELDS = ('generation', 'token', 'fromTrial')
 STORM_FIELDS = ('ownerKey', 'generation', 'revision', 'quality',
@@ -36,6 +37,7 @@ class HeroRuntime(PetAttackRuntime):
         self.invoke('tdPetHeroSetup')
         self.invoke('tdPetSetupEffectScheduler')
         self.death_trace = []
+        self.callback_allocations = allocations(script)
         require(self.globals['DamageEvent_firstUnreducedListeners'][0] != 0,
                 'Actual original ordinal early0 listener not registered')
         self.units[102]['userdata'] = 100
@@ -129,10 +131,21 @@ class HeroRuntime(PetAttackRuntime):
 
     def tick(self, elapsed):
         self.now += elapsed
-        callbacks = [cb for interval, cb in self.periodics if interval == .05]
-        require(callbacks, 'Shared scheduler native registration missing')
-        # Invoke its exact generated closure, retaining the real runEffect dispatch.
-        self.invoke('call_doPeriodically_TDPetEffectScheduler', callbacks[-1], callbacks[-1])
+        for package in ('TDCombatVisualRuntime', 'TDPetEffectScheduler'):
+            allocation = self.callback_allocations.get('alloc_CallbackPeriodic_doPeriodically_' + package)
+            if allocation is None:
+                require(package == 'TDCombatVisualRuntime', 'Battle callback allocator missing')
+                continue
+            array, type_id = allocation
+            require(array == 'CallbackPeriodic_typeId', 'Unknown actual periodic allocator')
+            callbacks = sorted({cb for interval, cb in self.periodics if interval == .05 and
+                                self.globals[array][cb] == type_id and
+                                not self.timers[self.globals['CallbackPeriodic_t'][cb]]['destroyed']})
+            require(len(callbacks) == 1 if package == 'TDPetEffectScheduler' else len(callbacks) <= 1,
+                    'Shared periodic callback ownership changed')
+            for cb in callbacks:
+                self.executed_steps = 0
+                self.invoke('call_doPeriodically_' + package, cb, cb)
         self.drain_zero()
 
     def owner_ticket(self, pet, skill):

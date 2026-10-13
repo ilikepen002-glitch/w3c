@@ -1,4 +1,5 @@
 package TDPetCombat
+import TDCombatVisualRuntime
 import TDActiveSkillData
 import TDActiveCooldownRuntime
 import TDItemCatalogSchema
@@ -170,6 +171,7 @@ function onAttack()
 		pet.resolveRotation = tdPetNextAttackCount(pet.resolveRotation, 5)
 		if pet.resolveRotation == 0
 			DamageEvent.setAmount(DamageEvent.getAmount() * resolve)
+	tdCombatVisualHit(host, host.getPos(), center, tdPetSpeciesElement(pet.species), pet.lane, resolve > 0.0 and pet.resolveRotation == 0)
 	tdPetHeroCapturePrimary(pet, host, target, heroSkill, heroQuality, base, preLife, DamageEvent.getAmount(), originalSerial, context, snapshot)
 	if combo <= 0.0 and charge <= 0.0 and pursuit <= 0.0 and heavy <= 0.0 and not proc
 		return

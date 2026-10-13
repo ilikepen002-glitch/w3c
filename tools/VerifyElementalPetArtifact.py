@@ -12,6 +12,7 @@ from GenerateTowerTerrainMask import Mpq
 from VerifyPetAttackArtifact import PetAttackRuntime, near
 from VerifyEquipmentAbilityArtifact import require
 from VerifyTowerUpgradeArtifact import rawcode
+from VerifyBuilderControlDelta import allocations
 
 class ElementRuntime(PetAttackRuntime):
     def __init__(self,script):
@@ -19,6 +20,7 @@ class ElementRuntime(PetAttackRuntime):
         self.control_orders=[];self.reject_visual=False;self.reject_control=False
         super().__init__(script)
         self.visual_history.clear()
+        self.callback_allocations=allocations(script)
     def native(self,name,args):
         if name=='UnitDamageTarget' and getattr(self,'terminal_in_hit',False):
             self.terminal_in_hit=False
@@ -80,13 +82,26 @@ class ElementRuntime(PetAttackRuntime):
     def enemy(self,target,x=100.,y=0.,lane=0,life=100000.):
         self.units[target]={**self.units[102],'alive':True,'life':life,'maxLife':life,'abilities':{},
                                                                                         'x':x,'y':y,'userdata':lane*10000+100,'lane':lane}
+    def periodic_callbacks(self,package):
+        allocation=self.callback_allocations.get('alloc_CallbackPeriodic_doPeriodically_'+package)
+        if allocation is None:return []  # Optional visual closure can be DCE in a baseline.
+        array,type_id=allocation
+        require(array=='CallbackPeriodic_typeId','Unrecognized actual periodic allocator')
+        return sorted({cb for interval,cb in self.periodics if interval==.05 and
+                       self.globals[array][cb]==type_id and
+                       not self.timers[self.globals['CallbackPeriodic_t'][cb]]['destroyed']})
     def tick(self,elapsed=.05):
-        # Each delivered native periodic callback is a separate bounded interpreter turn.
-        self.executed_steps=0
         self.now+=elapsed
-        callbacks=[cb for interval,cb in self.periodics if interval==.05]
-        require(len(callbacks)==1,'One shared native scheduler required')
-        self.invoke('call_doPeriodically_TDPetEffectScheduler',callbacks[0],callbacks[0]);self.drain_zero()
+        # Visual expiry and battle scheduling are separate actual closures, not
+        # an interval-based guess. Deliver each as its own controlled native turn.
+        for package in ('TDCombatVisualRuntime','TDPetEffectScheduler'):
+            callbacks=self.periodic_callbacks(package)
+            if package=='TDPetEffectScheduler':require(len(callbacks)==1,'One shared battle scheduler required')
+            else:require(len(callbacks)<=1,'Multiple shared visual recyclers')
+            for cb in callbacks:
+                self.executed_steps=0
+                self.invoke('call_doPeriodically_'+package,cb,cb)
+        self.drain_zero()
     def finish(self,seconds=5.25):
         for _ in range(round(seconds/.05)):self.tick()
 
@@ -268,7 +283,7 @@ def verify_negatives(script):
                                     'Existing half-second callback did not retry and destroy after ownership completion')
     cleanup_timer=r.globals['CallbackPeriodic_t'][r.cleanup_cb]
     require(r.timers[cleanup_timer]['destroyed'],'Terminal watcher native timer was not released')
-    scheduler=next(cb for interval,cb in r.periodics if interval==.05)
+    scheduler=r.periodic_callbacks('TDPetEffectScheduler')[0]
     scheduler_timer=r.globals['CallbackPeriodic_t'][scheduler]
     r.tick()
     require(r.globals['CallbackPeriodic_typeId'][scheduler]==0 and r.timers[scheduler_timer]['destroyed'],

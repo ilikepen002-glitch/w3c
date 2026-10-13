@@ -1,0 +1,484 @@
+package TDCombatVisualRuntime
+import public TDCombatVisualData
+import TDState
+import TDWaveFlowState
+import GameTimer
+import ClosureTimers
+import LinkedList
+import Table
+import Fx
+
+constant Table sourceIndex = new Table()
+int hitVisualCount = 0
+
+// Visual ownership is independent of pet/inventory/combat rules. Callers pass
+// admitted snapshots; no damage, random, orders or target enumeration lives here.
+class TDVisualSource
+	unit source
+	int key
+	int lane
+	int epoch
+	int serial
+	int petSerial = 0
+	int hitCount = 0
+	real nextHitVisualAt = 0.0
+	boolean gearSuspended = false
+	int gearProfile = 0
+	int gearType = 0
+	effect gear = null
+	construct(unit source, int lane, int serial)
+		this.source = source
+		key = source.getHandleId()
+		this.lane = lane
+		epoch = tdFlowEpoch()
+		this.serial = serial
+	ondestroy
+		if gear != null
+			DestroyEffect(gear)
+		if sourceIndex.loadInt(key) == this castTo int
+			sourceIndex.removeInt(key)
+		source = null
+
+class TDVisualHit
+	int sourceKey
+	int ownerSerial
+	int petSerial
+	int epoch
+	real expiresAt
+	effect art = null
+	lightning line = null
+	construct(TDVisualSource owner, real expiresAt)
+		sourceKey = owner.key
+		ownerSerial = owner.serial
+		petSerial = owner.petSerial
+		epoch = owner.epoch
+		this.expiresAt = expiresAt
+	function valid() returns boolean
+		let owner = sourceForKey(sourceKey)
+		return owner != null and owner.serial == ownerSerial and owner.petSerial == petSerial and owner.epoch == epoch and sourceValid(owner)
+	ondestroy
+		if art != null
+			DestroyEffect(art)
+		if line != null
+			DestroyLightning(line)
+		let owner = sourceForKey(sourceKey)
+		if owner != null and owner.serial == ownerSerial
+			owner.hitCount -= 1
+		hitVisualCount -= 1
+
+class TDVisualMoving
+	int serial
+	int slot
+	unit source
+	int lane
+	int epoch
+	Fx fx
+	construct(int serial, int slot, unit source, int lane, string model, vec3 point, angle facing, real scale)
+		this.serial = serial
+		this.slot = slot
+		this.source = source
+		this.lane = lane
+		epoch = tdFlowEpoch()
+		fx = new Fx(point.toVec2(), facing)
+		fx.setXYZ(point, false)
+		fx.setScale(scale)
+		fx.setFx(model)
+	ondestroy
+		destroy fx
+		source = null
+
+class TDVisualCastLine
+	int serial
+	unit source
+	int lane
+	int epoch
+	real expiresAt
+	lightning line
+	construct(int serial, unit source, int lane, lightning line, real expiresAt)
+		this.serial = serial
+		this.source = source
+		this.lane = lane
+		this.line = line
+		epoch = tdFlowEpoch()
+		this.expiresAt = expiresAt
+	ondestroy
+		DestroyLightning(line)
+		tdCombatVisualReleaseCast()
+		source = null
+
+constant LinkedList<TDVisualCastLine> castLines = new LinkedList<TDVisualCastLine>()
+constant LinkedList<TDVisualSource> sources = new LinkedList<TDVisualSource>()
+constant LinkedList<TDVisualHit> hits = new LinkedList<TDVisualHit>()
+constant LinkedList<TDVisualMoving> moving = new LinkedList<TDVisualMoving>()
+CallbackPeriodic cleanup = null
+boolean executing = false
+int serialCounter = 0
+int castVisualCount = 0
+int creationWindow = -1
+int creationCount = 0
+int movingCreationCount = 0
+int array[4] laneWindows
+int array[4] laneGroups
+
+public function tdCombatVisualNewSerial() returns int
+	if serialCounter >= 2147483647
+		return 0
+	serialCounter += 1
+	return serialCounter
+
+function sourceForKey(int key) returns TDVisualSource
+	return sourceIndex.hasInt(key) ? sourceIndex.loadInt(key) castTo TDVisualSource : null
+
+function laneValid(int lane) returns boolean
+	return lane >= 0 and lane < 4 and tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
+
+function sourceValid(TDVisualSource owner) returns boolean
+	return owner.epoch == tdFlowEpoch() and laneValid(owner.lane) and owner.source != null and GetUnitTypeId(owner.source) != 0 and owner.source.isAlive() and GetPlayerId(GetOwningPlayer(owner.source)) == owner.lane
+
+function creationAvailable() returns boolean
+	let window = getElapsedGameTime().toInt()
+	if creationWindow != window
+		creationWindow = window
+		creationCount = 0
+		movingCreationCount = 0
+	return creationCount < TD_VISUAL_NEW_PER_SECOND
+
+public function tdCombatVisualAcquireCast() returns boolean
+	if tdIsGameOver() or tdCombatVisualShortCount() >= TD_VISUAL_SHORT_LIMIT or not creationAvailable()
+		return false
+	castVisualCount += 1
+	creationCount += 1
+	return true
+
+public function tdCombatVisualReleaseCast()
+	if castVisualCount > 0
+		castVisualCount -= 1
+
+public function tdCombatVisualShortCount() returns int
+	return castVisualCount + hitVisualCount + moving.size()
+
+public function tdCombatVisualHitCount() returns int
+	return hitVisualCount
+
+public function tdCombatVisualGearCount() returns int
+	var count = 0
+	for owner in sources
+		if owner.gear != null
+			count += 1
+	return count
+
+public function tdCombatVisualMovingCount() returns int
+	return moving.size()
+
+function clearHits(int key, int serial)
+	let iter = hits.iterator()
+	while iter.hasNext()
+		let entry = iter.next()
+		if entry.sourceKey == key and entry.ownerSerial == serial
+			iter.remove()
+			destroy entry
+	iter.close()
+
+public function tdCombatVisualClearPet(unit source)
+	if source == null
+		return
+	let owner = sourceForKey(source.getHandleId())
+	if owner != null
+		owner.petSerial += 1
+		clearHits(owner.key, owner.serial)
+
+public function tdCombatVisualClearGear(unit source)
+	if source == null
+		return
+	let owner = sourceForKey(source.getHandleId())
+	if owner != null
+		owner.gearProfile = 0
+		owner.gearType = 0
+		if owner.gear != null
+			DestroyEffect(owner.gear)
+			owner.gear = null
+
+public function tdCombatVisualSuspendGear(unit source)
+	if source == null
+		return
+	let lane = GetPlayerId(GetOwningPlayer(source))
+	if not laneValid(lane)
+		return
+	let owner = sourceFor(source, lane)
+	if owner != null
+		owner.gearSuspended = true
+		tdCombatVisualClearGear(source)
+
+public function tdCombatVisualResumeGear(unit source)
+	if source == null
+		return
+	let owner = sourceForKey(source.getHandleId())
+	if owner != null and sourceValid(owner)
+		owner.gearSuspended = false
+
+public function tdCombatVisualForgetSource(unit source)
+	if source == null
+		return
+	let owner = sourceForKey(source.getHandleId())
+	if owner != null
+		owner.petSerial += 1
+		clearHits(owner.key, owner.serial)
+		sources.remove(owner)
+		destroy owner
+
+function tick()
+	let now = getElapsedGameTime()
+	let li = castLines.iterator()
+	while li.hasNext()
+		let entry = li.next()
+		if now >= entry.expiresAt or entry.epoch != tdFlowEpoch() or not laneValid(entry.lane) or entry.source == null or GetUnitTypeId(entry.source) == 0 or not entry.source.isAlive()
+			li.remove()
+			destroy entry
+	li.close()
+	let hi = hits.iterator()
+	while hi.hasNext()
+		let entry = hi.next()
+		if now >= entry.expiresAt or not entry.valid()
+			hi.remove()
+			destroy entry
+	hi.close()
+	let mi = moving.iterator()
+	while mi.hasNext()
+		let entry = mi.next()
+		if entry.epoch != tdFlowEpoch() or not laneValid(entry.lane) or entry.source == null or GetUnitTypeId(entry.source) == 0 or not entry.source.isAlive() or GetPlayerId(GetOwningPlayer(entry.source)) != entry.lane
+			mi.remove()
+			destroy entry
+	mi.close()
+	let si = sources.iterator()
+	while si.hasNext()
+		let owner = si.next()
+		if not sourceValid(owner)
+			owner.petSerial += 1
+			clearHits(owner.key, owner.serial)
+			si.remove()
+			destroy owner
+		else if not owner.gearSuspended and owner.gear == null and owner.hitCount == 0 and now >= owner.nextHitVisualAt
+			si.remove()
+			destroy owner
+	si.close()
+
+function wake()
+	if cleanup != null
+		return
+	cleanup = doPeriodically(0.05) cb ->
+		executing = true
+		tick()
+		executing = false
+		if sources.isEmpty() and hits.isEmpty() and moving.isEmpty() and castLines.isEmpty()
+			cleanup = null
+			destroy cb
+
+function sourceFor(unit source, int lane) returns TDVisualSource
+	let key = source.getHandleId()
+	var owner = sourceForKey(key)
+	if owner != null and not sourceValid(owner)
+		tdCombatVisualForgetSource(source)
+		owner = null
+	if owner == null
+		let serial = tdCombatVisualNewSerial()
+		if serial == 0
+			return null
+		owner = new TDVisualSource(source, lane, serial)
+		sourceIndex.saveInt(key, owner castTo int)
+		sources.add(owner)
+		wake()
+	return owner
+
+function addHitArt(TDVisualSource owner, string model, vec2 point, real duration) returns boolean
+	if owner.hitCount >= 2 or hitVisualCount >= TD_VISUAL_HIT_LIMIT or tdCombatVisualShortCount() >= TD_VISUAL_SHORT_LIMIT or not creationAvailable()
+		return false
+	creationCount += 1
+	let art = AddSpecialEffect(model, point.x, point.y)
+	if art == null
+		return false
+	let entry = new TDVisualHit(owner, getElapsedGameTime() + duration)
+	entry.art = art
+	owner.hitCount += 1
+	hitVisualCount += 1
+	hits.add(entry)
+	return true
+
+public function tdCombatVisualHit(unit source, vec2 origin, vec2 point, int element, int lane, boolean decisive)
+	if source == null or not laneValid(lane) or tdCombatVisualHitModel(element) == ""
+		return
+	let owner = sourceFor(source, lane)
+	if owner == null or not sourceValid(owner)
+		return
+	let now = getElapsedGameTime()
+	let window = now.toInt()
+	if laneWindows[lane] != window
+		laneWindows[lane] = window
+		laneGroups[lane] = 0
+	let available = creationAvailable()
+	if not available or not tdCombatVisualHitBudget(now, owner.nextHitVisualAt, owner.hitCount, laneGroups[lane], hitVisualCount, tdCombatVisualShortCount(), creationCount)
+		return
+	owner.nextHitVisualAt = now + 0.20
+	laneGroups[lane] += 1
+	let duration = tdCombatVisualHitDuration(element)
+	let side = element == 2 ? vec2(12.0, 0.0) : vec2(0.0, 0.0)
+	addHitArt(owner, tdCombatVisualHitModel(element), point + side, duration)
+	if decisive
+		addHitArt(owner, "Abilities\\Weapons\\Rifle\\RifleImpact.mdx", point, 0.15)
+	else if element == 2
+		addHitArt(owner, tdCombatVisualHitModel(element), point - side, duration)
+	else if element == 1 and owner.hitCount < 2 and hitVisualCount < TD_VISUAL_HIT_LIMIT and tdCombatVisualShortCount() < TD_VISUAL_SHORT_LIMIT and creationAvailable()
+		let delta = point - origin
+		let distance = SquareRoot(delta.x * delta.x + delta.y * delta.y)
+		let start = distance > 320.0 ? point - delta * (320.0 / distance) : origin
+		creationCount += 1
+		let startPoint = start.withTerrainZ(90.0)
+		let endPoint = point.withTerrainZ(60.0)
+		let line = AddLightningEx("DRAM", false, startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z)
+		if line != null
+			SetLightningColor(line, 1.0, 0.85, 0.30, 0.80)
+			let entry = new TDVisualHit(owner, now + duration)
+			entry.line = line
+			owner.hitCount += 1
+			hitVisualCount += 1
+			hits.add(entry)
+	wake()
+
+// A kill replaces an already admitted hit's core; it is not a second attack/group.
+public function tdCombatVisualFinisher(unit source, vec2 point)
+	if source == null or not creationAvailable()
+		return
+	let owner = sourceForKey(source.getHandleId())
+	if owner == null or not sourceValid(owner)
+		return
+	for entry in hits
+		if entry.sourceKey == owner.key and entry.ownerSerial == owner.serial and entry.petSerial == owner.petSerial and entry.art != null
+			creationCount += 1
+			let art = AddSpecialEffect("Abilities\\Weapons\\Rifle\\RifleImpact.mdx", point.x, point.y)
+			if art != null
+				DestroyEffect(entry.art)
+				entry.art = art
+				entry.expiresAt = getElapsedGameTime() + 0.30
+			return
+
+public function tdCombatVisualRefreshGear(unit source, int choice, int item1, int item2, int item3)
+	if source == null
+		return
+	let lane = GetPlayerId(GetOwningPlayer(source))
+	let profile = tdCombatVisualGearProfile(choice, item1, item2, item3)
+	if profile == 0 or not laneValid(lane) or GetUnitTypeId(source) == 0 or not source.isAlive()
+		tdCombatVisualClearGear(source)
+		return
+	let owner = sourceFor(source, lane)
+	if owner == null
+		return
+	if owner.gearSuspended
+		return
+	let typeId = GetUnitTypeId(source)
+	if owner.gearProfile == profile and owner.gearType == typeId and owner.gear != null
+		return
+	tdCombatVisualClearGear(source)
+	if tdCombatVisualGearCount() >= 40
+		return
+	owner.gearProfile = profile
+	owner.gearType = typeId
+	owner.gear = AddSpecialEffectTarget(tdCombatVisualGearModel(profile), source, "origin")
+	wake()
+
+public function tdCombatVisualClearLane(int lane)
+	let li = castLines.iterator()
+	while li.hasNext()
+		let entry = li.next()
+		if entry.lane == lane
+			li.remove()
+			destroy entry
+	li.close()
+	let si = sources.iterator()
+	while si.hasNext()
+		let owner = si.next()
+		if owner.lane == lane
+			owner.petSerial += 1
+			clearHits(owner.key, owner.serial)
+			si.remove()
+			destroy owner
+	si.close()
+	let mi = moving.iterator()
+	while mi.hasNext()
+		let entry = mi.next()
+		if entry.lane == lane
+			mi.remove()
+			destroy entry
+	mi.close()
+
+public function tdCombatVisualShutdown()
+	for lane = 0 to 3
+		tdCombatVisualClearLane(lane)
+	// Cast effects remain owned by their original contexts until those are destroyed.
+	if cleanup != null and not executing
+		destroy cleanup
+		cleanup = null
+
+public function tdCombatVisualClearLines(int serial)
+	let li = castLines.iterator()
+	while li.hasNext()
+		let entry = li.next()
+		if entry.serial == serial
+			li.remove()
+			destroy entry
+	li.close()
+
+public function tdCombatVisualLineCount(int serial) returns int
+	var count = 0
+	for entry in castLines
+		if entry.serial == serial
+			count += 1
+	return count
+
+public function tdCombatVisualMovingOwnerCount(int serial) returns int
+	var count = 0
+	for entry in moving
+		if entry.serial == serial
+			count += 1
+	return count
+
+public function tdCombatVisualCreateLine(int serial, unit source, int lane, string lightningCode, vec3 start, vec3 endPoint, real red, real green, real blue, real alpha, real duration) returns boolean
+	if serial <= 0 or source == null or not laneValid(lane) or not tdCombatVisualAcquireCast()
+		return false
+	let line = AddLightningEx(lightningCode, false, start.x, start.y, start.z, endPoint.x, endPoint.y, endPoint.z)
+	if line == null
+		tdCombatVisualReleaseCast()
+		return false
+	SetLightningColor(line, red, green, blue, alpha)
+	castLines.add(new TDVisualCastLine(serial, source, lane, line, getElapsedGameTime() + RMaxBJ(0.10, RMinBJ(0.25, duration))))
+	wake()
+	return true
+
+public function tdCombatVisualClearMoving(int serial)
+	let mi = moving.iterator()
+	while mi.hasNext()
+		let entry = mi.next()
+		if entry.serial == serial
+			mi.remove()
+			destroy entry
+	mi.close()
+
+public function tdCombatVisualCreateMoving(int serial, int slot, unit source, int lane, string model, vec3 point, angle facing, real scale) returns boolean
+	if serial <= 0 or slot < 0 or slot > 1 or source == null or not laneValid(lane) or moving.size() >= TD_VISUAL_MOVING_LIMIT or tdCombatVisualShortCount() >= TD_VISUAL_SHORT_LIMIT or not creationAvailable() or movingCreationCount >= 8
+		return false
+	if tdCombatVisualMovingOwnerCount(serial) >= 2
+		return false
+	for entry in moving
+		if entry.serial == serial and entry.slot == slot
+			return false
+	creationCount += 1
+	movingCreationCount += 1
+	moving.add(new TDVisualMoving(serial, slot, source, lane, model, point, facing, scale))
+	wake()
+	return true
+
+public function tdCombatVisualMoveMoving(int serial, int slot, vec3 point, angle facing, real scale)
+	for entry in moving
+		if entry.serial == serial and entry.slot == slot and entry.epoch == tdFlowEpoch()
+			entry.fx.setXYZ(point, false)
+			entry.fx.setXYAngle(facing)
+			entry.fx.setScale(scale)
+			return

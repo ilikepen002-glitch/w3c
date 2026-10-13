@@ -41,7 +41,7 @@ class TrialJassRuntime(PureBossJassRuntime):
             self.globals[field] = code
         self.invoke('CreateRegions')
         # Only relevant production package initialization, not main/UI/game boot.
-        for name in ('init_TDPetEffectScheduler', 'init_TDPetHeroState', 'init_TDPetHeroEffects',
+        for name in ('init_TDCombatVisualRuntime', 'init_TDPetEffectScheduler', 'init_TDPetHeroState', 'init_TDPetHeroEffects',
                      'init_TDPetCastContext', 'init_TDPetEffectTargetState', 'init_TDPetActiveVisuals',
                      'init_TDEnemyControlRuntime', 'init_TDPetRuntime',
                      'init_TDBossDarkTideRuntime', 'init_TDTowerEvolutionRuntime', 'init_TDPetWild', 'init_TDDamageState', 'init_TDDamageRuntime', 'init_TDEquipmentCombat',

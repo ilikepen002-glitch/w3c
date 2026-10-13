@@ -1,4 +1,5 @@
 package TDTowerRuntime
+import TDCombatVisualRuntime
 import TDBossDarkTideRuntime
 import TDConfig
 import TDState
@@ -111,6 +112,7 @@ function tdHandleTowerUpgradeStarted()
 		tdDarkTideForgetTower(tower)
 		tdForgetEquipmentSpecial(tower)
 		tdGetTowerSaleState(tower).startWork()
+		tdCombatVisualSuspendGear(tower)
 		tdEvolutionWorkStarted(tower)
 		tdPetHeroTowerInvalidated(tower)
 		tdPetTowerWorkStarted(tower)
@@ -349,6 +351,7 @@ function tdHandleTowerConstructionStarted()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	tdGetTowerSaleState(tower).startWork()
+	tdCombatVisualSuspendGear(tower)
 	tdEvolutionWorkStarted(tower)
 	tdPetHeroTowerInvalidated(tower)
 	tdPetTowerWorkStarted(tower)
@@ -359,6 +362,7 @@ function tdHandleTowerConstructionFinished()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	tdGetTowerSaleState(tower).finishWork()
+	tdCombatVisualResumeGear(tower)
 	tdPetTowerWorkFinished(tower)
 	tdEvolutionWorkFinished(tower)
 	tdDamageTrackTower(tower)
@@ -405,6 +409,7 @@ function tdHandleTowerUpgradeCancelled()
 		let state = tdTowerSaleStates.loadInt(key) castTo TDTowerSaleState
 		if not state.finishWorkForGeneration(cancelledGeneration)
 			return
+		tdCombatVisualResumeGear(tower)
 		tdPetTowerWorkFinished(tower)
 		tdEvolutionWorkFinished(tower)
 		tdRefreshTowerEquipmentBonuses(tower)
@@ -421,6 +426,7 @@ function tdHandleTowerUpgradeFinished()
 		return
 	tdForgetEquipmentSpecial(tower)
 	tdGetTowerSaleState(tower).finishWork()
+	tdCombatVisualResumeGear(tower)
 	tdPetTowerWorkFinished(tower)
 	tdEvolutionWorkFinished(tower)
 	tdDamageTrackTower(tower)

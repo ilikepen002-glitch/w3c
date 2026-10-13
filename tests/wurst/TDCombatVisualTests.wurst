@@ -1,0 +1,35 @@
+package TDCombatVisualTests
+import TDCombatVisualData
+import TDItemData
+import TDTowerData
+
+@Test function combatVisualOnlyMatchingPurpleSpecializationCanAppear()
+	for choice = 1 to 5
+		for index = 0 to 39
+			let itemId = tdItemIdForQualityRoll(index div 10 + 1, index mod 10 + 1)
+			let profile = tdCombatVisualGearProfile(choice, itemId, 0, 0)
+			let expected = choice == 1 ? 'iP01' : (choice == 2 ? 'iP02' : (choice == 3 ? 'iP03' : (choice == 4 ? 'iP05' : 'iP04')))
+			profile.assertEquals(itemId == expected ? choice : 0)
+			tdCombatVisualGearProfile(choice, 0, itemId, 0).assertEquals(profile)
+			tdCombatVisualGearProfile(choice, 0, 0, itemId).assertEquals(profile)
+	tdCombatVisualGearProfile(0, 'iP01', 'iP02', 'iP03').assertEquals(0)
+	tdCombatVisualGearProfile(6, 'iP04', 'iP05', 'iP01').assertEquals(0)
+
+@Test function combatVisualFiveElementsHaveDifferentClassicHitProfiles()
+	for element = 1 to 5
+		(tdCombatVisualHitModel(element) != "").assertTrue()
+		for other = element + 1 to 5
+			(tdCombatVisualHitModel(element) != tdCombatVisualHitModel(other)).assertTrue()
+		(tdCombatVisualHitDuration(element) >= 0.10).assertTrue()
+		(tdCombatVisualHitDuration(element) <= 0.25).assertTrue()
+	tdCombatVisualHitModel(0).assertEquals("")
+	tdCombatVisualHitModel(6).assertEquals("")
+
+@Test function combatVisualBudgetsRejectEveryBoundaryWithoutRandomness()
+	tdCombatVisualHitBudget(1.0, 1.0, 1, 9, 31, 127, 119).assertTrue()
+	tdCombatVisualHitBudget(0.99, 1.0, 1, 9, 31, 127, 119).assertFalse()
+	tdCombatVisualHitBudget(1.0, 1.0, 2, 9, 31, 127, 119).assertFalse()
+	tdCombatVisualHitBudget(1.0, 1.0, 1, 10, 31, 127, 119).assertFalse()
+	tdCombatVisualHitBudget(1.0, 1.0, 1, 9, 32, 127, 119).assertFalse()
+	tdCombatVisualHitBudget(1.0, 1.0, 1, 9, 31, 128, 119).assertFalse()
+	tdCombatVisualHitBudget(1.0, 1.0, 1, 9, 31, 127, 120).assertFalse()

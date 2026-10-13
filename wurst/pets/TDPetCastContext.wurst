@@ -1,4 +1,5 @@
 package TDPetCastContext
+import TDCombatVisualRuntime
 import TDPetEffectScheduler
 import TDPetEffectTargetState
 import TDPetCombatSource
@@ -65,12 +66,14 @@ public abstract class TDPetCastContext extends TDPetEffectTask
 	int controlCount = 0
 	int markCount = 0
 	group candidates = CreateGroup()
+	int visualSerial
 	int visualFrame = -1
 	int visualSize = 0
 	effect array[8] visuals
 
 	construct(TDPet pet, unit host, int generation, int skill, int quality, real damageBase, unit primary, int primaryRevision, vec2 center, tdTrialCombatContext trial, tdEquipmentTrialAoeSnapshot trialTargets, vec2 roadSecond, vec2 roadThird, vec2 roadFourth)
 		super(pet castTo int)
+		visualSerial = tdCombatVisualNewSerial()
 		this.pet = pet
 		this.host = host
 		this.generation = generation
@@ -166,27 +169,49 @@ public abstract class TDPetCastContext extends TDPetEffectTask
 		let accepted = tdTryEnemyControlToken(host, target, pet.lane, duration, abilityId, level, not boss and kind == 1 ? Orders.entanglingroots : Orders.thunderbolt, this castTo int, buffId)
 		if accepted
 			// Ownership must outlive the native duration measured at actual application,
-			// including the initial scheduler quantum; cancellation can still end it.
+			// including the initial scheduler quantum; cancellation can still endPoint it.
 			expiresAt = RMaxBJ(expiresAt, getElapsedGameTime() + (boss ? RMinBJ(0.25, duration) : duration))
 		return accepted
 
 	function clearVisuals()
 		for index = 0 to visualSize - 1
 			DestroyEffect(visuals[index])
+			tdCombatVisualReleaseCast()
 			visuals[index] = null
 			visualCount -= 1
 		visualSize = 0
 
 	function addVisual(string model, vec2 point)
-		if not valid() or visualSize >= 8 or visualCount >= TD_PET_EFFECT_VISUAL_LIMIT
+		if not valid() or visualSlots() >= 8 or visualCount >= TD_PET_EFFECT_VISUAL_LIMIT or not tdCombatVisualAcquireCast()
 			return
 		let visual = AddSpecialEffect(model, point.x, point.y)
 		if visual != null
 			visuals[visualSize] = visual
 			visualSize += 1
 			visualCount += 1
+		else
+			tdCombatVisualReleaseCast()
+
+	function visualSlots() returns int
+		return visualSize + tdCombatVisualLineCount(visualSerial) + tdCombatVisualMovingOwnerCount(visualSerial)
+
+	function addTimedLine(string lightningCode, vec3 start, vec3 endPoint, real red, real green, real blue, real alpha, real duration)
+		if valid() and visualSlots() < 8
+			tdCombatVisualCreateLine(visualSerial, host, pet.lane, lightningCode, start, endPoint, red, green, blue, alpha, duration)
+
+	function addMoving(int slot, string model, vec3 point, angle facing, real scale) returns boolean
+		return valid() and visualSlots() < 8 and tdCombatVisualCreateMoving(visualSerial, slot, host, pet.lane, model, point, facing, scale)
+
+	function moveMoving(int slot, vec3 point, angle facing, real scale)
+		if valid()
+			tdCombatVisualMoveMoving(visualSerial, slot, point, facing, scale)
+
+	function clearMoving()
+		tdCombatVisualClearMoving(visualSerial)
 
 	ondestroy
+		tdCombatVisualClearMoving(visualSerial)
+		tdCombatVisualClearLines(visualSerial)
 		if tdPetActiveCastIndex.loadInt(ownerKey) == this castTo int
 			tdPetActiveCastIndex.removeInt(ownerKey)
 		for index = 0 to victimCount - 1

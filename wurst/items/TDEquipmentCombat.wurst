@@ -1,4 +1,5 @@
 package TDEquipmentCombat
+import TDCombatVisualRuntime
 import public TDEquipmentRules
 import TDItemData
 import TDAuraState
@@ -77,6 +78,7 @@ public function tdForgetEquipmentEnemy(unit target)
 	destroy entry
 
 public function tdForgetEquipmentTower(unit tower)
+	tdCombatVisualForgetSource(tower)
 	tdForgetEquipmentSpecial(tower)
 	for entry in tdEquipmentDebuffs
 		if entry.source == tower

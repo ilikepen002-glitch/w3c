@@ -1,4 +1,5 @@
 package TDPetState
+import TDCombatVisualRuntime
 import TDPetData
 import TDAuraState
 import TDPetRules
@@ -107,6 +108,7 @@ public class TDPet
 		revision += 1
 
 	function invalidateCombat()
+		tdCombatVisualClearPet(host)
 		generation += 1
 		pendingSkill = false
 		pendingSerial += 1
