@@ -2,9 +2,9 @@
 from copy import deepcopy
 from pathlib import Path
 import subprocess
-import os
 import sys
 import unittest
+from python_check_inputs import candidate_map
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 from GenerateTowerTerrainMask import Mpq
@@ -80,11 +80,12 @@ class BloodlustStaticSourceTests(unittest.TestCase):
             with self.subTest(case=old), self.assertRaises(ValueError): verifier.validate_sources(*source)
 
     def test_bladestorm_native_effects_and_evolution_remain_preserved(self):
+        path = candidate_map('W3C_ACTIVE_COOLDOWN_MAP')
         from VerifyActiveCooldownContract import verify_source, read_sources
         sources = read_sources()
         sources['items/TDEquipmentObjectGen.wurst'] = self.sources[3]
         expected = verify_source(sources=sources)['native_objects']['A132']
-        artifact = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        artifact = Mpq(path.read_bytes())
         parent, fields = ability_objects(artifact.extract('war3map.w3a'))['A132']
         self.assertEqual(parent, expected[0])
         for key, value in expected[1].items():
@@ -130,10 +131,9 @@ class BloodlustNativeInvariantTests(unittest.TestCase):
                     verifier.validate_native_bloodlust(abilities)
 
 
-@unittest.skipUnless(os.environ.get('W3C_ACTIVE_COOLDOWN_MAP'), 'New universal-cooldown MPQ not built; set W3C_ACTIVE_COOLDOWN_MAP explicitly')
 class BloodlustActualNewArtifactTests(unittest.TestCase):
     def test_actual_new_packaged_choice_matrix_lifecycle_and_tooltips(self):
-        artifact = Mpq(Path(os.environ['W3C_ACTIVE_COOLDOWN_MAP']).read_bytes())
+        artifact = Mpq(candidate_map('W3C_ACTIVE_COOLDOWN_MAP').read_bytes())
         verifier.validate_native_bloodlust(ability_objects(artifact.extract('war3map.w3a')), tooltips=True)
         script = artifact.extract('war3map.j').decode('utf-8')
         verifier.validate_packed_choice_matrix(script)
@@ -141,7 +141,7 @@ class BloodlustActualNewArtifactTests(unittest.TestCase):
 
     def test_actual_generic_choice_mutation_still_rejected(self):
         from VerifyTowerUpgradeArtifact import function_body
-        script = Mpq(Path(os.environ['W3C_ACTIVE_COOLDOWN_MAP']).read_bytes()).extract('war3map.j').decode()
+        script = Mpq(candidate_map('W3C_ACTIVE_COOLDOWN_MAP').read_bytes()).extract('war3map.j').decode()
         body = function_body(script, 'tdActiveAutocastChoiceAfterInitialization')
         self.assertIn('return initialChoice', body)
         changed = script.replace(body, body.replace('return initialChoice', 'return 0', 1), 1)

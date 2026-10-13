@@ -7,6 +7,7 @@ import sys
 import struct
 import subprocess
 import unittest
+from python_check_inputs import candidate_map
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 from GenerateTowerTerrainMask import Mpq
@@ -17,15 +18,17 @@ from VerifySemanticIconArtifact import Field, load_objects
 
 
 class ArtifactFixture:
+    map_path = staticmethod(lambda: ROOT / 'ExampleMap.w3x')
     @classmethod
     def setUpClass(cls):
-        artifact = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        artifact = Mpq(cls.map_path().read_bytes())
         data = artifact.extract('war3map.w3u')
         cls.units, cls.parents = unit_objects(data), unit_parents(data)
         cls.script = artifact.extract('war3map.j').decode('utf-8')
 
 
 class BuilderConstructionActualArtifactTests(ArtifactFixture, unittest.TestCase):
+    map_path = staticmethod(candidate_map)
     def test_actual_native_builder_and_all_towers(self):
         verifier.validate_builder_objects(self.units, self.parents)
         verifier.validate_construction_jass(self.script)

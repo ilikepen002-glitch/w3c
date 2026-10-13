@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 import sys
 import unittest
+from python_check_inputs import candidate_map
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
@@ -21,7 +22,7 @@ def replace_body(script, name, body):
 class GroundUpgradeArtifactTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        artifact = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        artifact = Mpq((candidate_map()).read_bytes())
         cls.script = artifact.extract('war3map.j').decode('utf-8')
         cls.abilities = ability_objects(artifact.extract('war3map.w3a'))
 

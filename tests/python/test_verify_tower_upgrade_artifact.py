@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import sys
 import unittest
+from python_check_inputs import candidate_map
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
@@ -22,7 +23,7 @@ import VerifyTowerUpgradeArtifact as verifier
 class TowerUpgradeArtifactTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.artifact = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        cls.artifact = Mpq((candidate_map()).read_bytes())
         cls.units = unit_objects(cls.artifact.extract('war3map.w3u'))
         cls.abilities = ability_objects(cls.artifact.extract('war3map.w3a'))
         cls.script = cls.artifact.extract('war3map.j').decode('utf-8')

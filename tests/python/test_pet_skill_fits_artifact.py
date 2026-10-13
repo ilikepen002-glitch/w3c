@@ -2,6 +2,7 @@
 from pathlib import Path
 import sys
 import unittest
+from python_check_inputs import candidate_map
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
@@ -22,7 +23,7 @@ endfunction
 
 class PetSkillFitsArtifactTests(unittest.TestCase):
     def test_actual_all_64_skill_and_host_capability_combinations(self):
-        script = Mpq((ROOT / 'ExampleMap.w3x').read_bytes()).extract('war3map.j').decode('utf-8')
+        script = Mpq((candidate_map()).read_bytes()).extract('war3map.j').decode('utf-8')
         verifier.verify_skill_fit_abilities(script)
 
 

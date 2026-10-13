@@ -7,6 +7,7 @@ import struct
 import sys
 import tempfile
 import unittest
+from python_check_inputs import candidate_map
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -237,7 +238,7 @@ class AliasProofTests(unittest.TestCase):
 class ActualArtifactTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.script = Mpq((ROOT / 'ExampleMap.w3x').read_bytes()).extract('war3map.j').decode('utf-8')
+        cls.script = Mpq((candidate_map()).read_bytes()).extract('war3map.j').decode('utf-8')
 
     def test_final_real_comparators(self): self.assertEqual(scalar.verify_comparators(self.script), 16000)
     def test_final_player_selection(self): self.assertEqual(scalar.verify_player_selection(self.script), 8192)

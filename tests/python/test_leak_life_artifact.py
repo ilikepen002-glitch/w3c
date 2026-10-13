@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import sys
 import unittest
+from python_check_inputs import candidate_map
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
@@ -207,7 +208,7 @@ class Harness:
 class LeakLifeArtifactTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.script = Mpq((ROOT / 'ExampleMap.w3x').read_bytes()).extract('war3map.j').decode('utf-8')
+        cls.script = Mpq((candidate_map()).read_bytes()).extract('war3map.j').decode('utf-8')
 
     def test_all_44_actual_enemy_rawcodes(self):
         h = Harness(self.script)

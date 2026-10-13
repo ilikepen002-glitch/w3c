@@ -13,6 +13,7 @@ import struct
 import subprocess
 import tempfile
 import unittest
+from python_check_inputs import candidate_map
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -27,7 +28,7 @@ from pet_artifact_fixture import correct_release_contract
 class PetUIArtifactTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.artifact = Mpq((ROOT / "ExampleMap.w3x").read_bytes())
+        cls.artifact = Mpq((candidate_map()).read_bytes())
         cls.abilities = ability_objects(cls.artifact.extract("war3map.w3a"))
         cls.units = unit_objects(cls.artifact.extract("war3map.w3u"))
 
