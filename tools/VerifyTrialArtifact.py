@@ -67,7 +67,7 @@ def verify_icons(mpq):
         result[path] = {'sha256': sha(data), 'mips': [64, 32, 16, 8, 4, 2, 1]}
     return result
 
-def verify_equipment_tooltips(mpq, *, profile='current40', source_root=None):
+def verify_equipment_tooltips(mpq, *, profile='current40', source_root=None, shared_active_cooldown=False, current_pet_ui=False):
     from VerifyTowerPlacementArtifact import unit_objects
     from VerifyEquipmentAbilityArtifact import ability_objects
     from VerifyPlayerTooltipArtifact import validate, ROOT
@@ -92,21 +92,29 @@ def verify_equipment_tooltips(mpq, *, profile='current40', source_root=None):
     for code, percent, target in rules:
         require(code in items, 'Trial bonus equipment item missing: ' + code)
         expected = '普攻命中' + target + '主目标时，追加本次普攻伤害的' + str(percent) + '%'
+        eligibility = '法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。'
+        if profile == 'current40':
+            expected = ('主目标生命不高于50%时，普攻追加' if code == 'iB02' else '普攻对首领或金币试炼主目标追加') + str(percent) + '%'
+            eligibility = '法术、副箭、精灵伤害不触发；普攻击杀不追加'
         text = items[code].get('utub', '')
+        compact_boss = profile == 'current40' and code == 'iP02' and '首领或金币试炼主目标普攻 +' in text
+        if compact_boss:
+            expected = '首领或金币试炼主目标普攻 +' + str(percent) + '%伤害'
+            eligibility = '法术、副箭、精灵及击杀不触发'
         require(text.count(expected) == 1, 'Trial exact tooltip/value mismatch: ' + code)
-        require('法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。' in text,
+        require(eligibility in text,
                 'Trial equipment tooltip lost attack eligibility constraints: ' + code)
         if profile == 'current40' and code == 'iB02':
-            require('普攻命中首领或金币试炼主目标' not in text,
+            require('普攻对首领或金币试炼主目标' not in text,
                     'Trial blue equipment acquired forbidden Boss/trial damage')
         else:
-            require('与半血追加比例相加' in text, 'Trial Boss/trial addition rule missing: ' + code)
+            require(('半血追加相加' if compact_boss else '半血与首领追加比例相加' if profile == 'current40' else '与半血追加比例相加') in text, 'Trial Boss/trial addition rule missing: ' + code)
         result[code] = {'percent': percent, 'required_text': expected}
     # Always validate the real objects. Historical source and map are supplied
     # together; no old-item view, prefix waiver, or auto-detected fallback.
     checked = validate(ability_objects(mpq.extract('war3map.w3a')),
                        unit_objects(mpq.extract('war3map.w3u')), items,
-                       profile=profile, source_root=source_root)
+                       profile=profile, source_root=source_root, shared_active_cooldown=shared_active_cooldown, current_pet_ui=current_pet_ui)
     return {'profile': profile, 'equipment_bonus_texts': result,
             'player_tooltip_numeric_cases': checked,
             'view': 'Actual packed objects checked against the explicit matching source profile'}
@@ -136,12 +144,12 @@ def verify_installation(archives):
             'misc_data_sha256': sha(found[r'Units\MiscData.txt']), 'attack_type_rows': rows,
             'version_boundary': 'Archive identity/version must be externally confirmed as the target 1.28 installation'}
 
-def verify(path, archives=(), *, profile='current40', source_root=None):
+def verify(path, archives=(), *, profile='current40', source_root=None, shared_active_cooldown=False, current_pet_ui=False):
     data = Path(path).read_bytes(); mpq = Mpq(data)
     return {'status': 'PASS', 'map': str(Path(path).resolve()), 'map_sha256': sha(data),
             'jass_sha256': sha(mpq.extract('war3map.j')),
             'unit': verify_unit(parse_objects(mpq.extract('war3map.w3u'), False)),
-            'icons': verify_icons(mpq), 'equipment_tooltips': verify_equipment_tooltips(mpq, profile=profile, source_root=source_root), 'native_installation': verify_installation(archives),
+            'icons': verify_icons(mpq), 'equipment_tooltips': verify_equipment_tooltips(mpq, profile=profile, source_root=source_root, shared_active_cooldown=shared_active_cooldown, current_pet_ui=current_pet_ui), 'native_installation': verify_installation(archives),
             'boundary': 'No native gameplay, visuals, FPS, or arbitrary future equipment damage guarantee'}
 
 def main():
@@ -150,7 +158,9 @@ def main():
     parser.add_argument('--output')
     parser.add_argument('--profile', choices=('legacy009', 'current40'), default='current40')
     parser.add_argument('--source-root', type=Path)
-    args = parser.parse_args(); result = verify(args.map, args.installation_archive, profile=args.profile, source_root=args.source_root)
+    parser.add_argument('--shared-active-cooldown', action='store_true')
+    parser.add_argument('--current-pet-ui', action='store_true')
+    args = parser.parse_args(); result = verify(args.map, args.installation_archive, profile=args.profile, source_root=args.source_root, shared_active_cooldown=args.shared_active_cooldown, current_pet_ui=args.current_pet_ui)
     result['command'] = __import__('sys').argv
     if args.output: Path(args.output).write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps(result, ensure_ascii=False, indent=2))

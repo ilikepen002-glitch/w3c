@@ -7,3 +7,10 @@ wurst/_tests/
 
 # Python source-map generation and verification helpers
 **/__pycache__/
+
+# Third-party King Leoric: author permits map use; standalone redistribution
+# has not been established. Restore unchanged bytes with RestoreKingLeoricAssets.py.
+/imports/Leoric.blp
+/imports/war3mapImported/Leoric.mdx
+/imports/war3mapImported/Leoric_Portrait.mdx
+/imports/KingLeoric-original-readme.html

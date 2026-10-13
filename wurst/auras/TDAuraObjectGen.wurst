@@ -21,6 +21,10 @@ import TDAuraMetadata
 		whiteTiger.setBuffs(1, tdAuraBuff(TD_AURA_WHITE_TIGER, rank).buffId.toRawCode())
 		whiteTiger.setItemAbility(true)
 		whiteTiger.setHeroAbility(false)
+		// Receiving an aura must not expose AEar's inherited command-card button.
+		// Legacy object fields hide only the button; the self bonus/Buff remains.
+		whiteTiger.setButtonPositionNormalX(0)
+		whiteTiger.setButtonPositionNormalY(-11)
 		whiteTiger.setCheckDependencies(false)
 		whiteTiger.setArtTarget("")
 		let commander = new AbilityDefinitionItemAuraCommand(rank == 1 ? TD_AURA_COMMANDER_NORMAL_CARRIER : TD_AURA_COMMANDER_EVOLVED_CARRIER)
@@ -35,5 +39,7 @@ import TDAuraMetadata
 		commander.setBuffs(1, tdAuraBuff(TD_AURA_COMMANDER, rank).buffId.toRawCode())
 		commander.setItemAbility(true)
 		commander.setHeroAbility(false)
+		commander.setButtonPositionNormalX(0)
+		commander.setButtonPositionNormalY(-11)
 		commander.setCheckDependencies(false)
 		commander.setArtTarget("")

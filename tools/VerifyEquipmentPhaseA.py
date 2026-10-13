@@ -17,6 +17,40 @@ def require(condition, message):
         raise ValueError(message)
 
 
+def verify_runtime_entrypoints(root=ROOT):
+    """Check the live craft entry owner and its one-way sorter dependency."""
+    inventory = (root / 'wurst/items/TDInventoryRuntime.wurst').read_text()
+    ground = (root / 'wurst/items/TDGroundItemRuntime.wurst').read_text()
+    crafting = (root / 'wurst/items/TDCraftingRuntime.wurst').read_text()
+    require('tdStartInventoryCraft(farmer)' in inventory, 'Inventory entry not connected')
+    require('tdStartGroundCraft(farmer,' in crafting, 'Ground craft entry not connected in crafting runtime')
+    require(re.search(r'^import TDGroundItemRuntime$', crafting, re.M),
+            'Crafting runtime must import the ground sorter')
+    require(not re.search(r'^import (?:public )?TDCraftingRuntime$', ground, re.M),
+            'Ground sorter must not import crafting runtime')
+    require('tdSetupCraftingRuntime()' not in ground,
+            'Ground setup must not initialize crafting runtime')
+    require('tdSortGroundEquipmentAfterUpgrade(groundLane)' in crafting,
+            'Ground craft finish must start the lane sorter')
+    registration = re.compile(r'\bregisterSpellEffectEvent\s*\(\s*TD_FARMER_GROUND_UPGRADE_ABILITY_ID\s*,')
+    handler = re.compile(r'^(?:public )?function tdGroundHandleUpgrade\(', re.M)
+    registrations = []
+    handlers = []
+    for file in (root / 'wurst').rglob('*.wurst'):
+        if '_tests' in file.relative_to(root / 'wurst').parts:
+            continue
+        code = '\n'.join(row.split('//', 1)[0] for row in file.read_text().splitlines())
+        registrations.extend([file] * len(registration.findall(code)))
+        handlers.extend([file] * len(handler.findall(code)))
+    expected_owner = root / 'wurst/items/TDCraftingRuntime.wurst'
+    require(registrations == [expected_owner],
+            'Ground upgrade spell must be registered exactly once in crafting runtime')
+    require(handlers == [expected_owner],
+            'Ground upgrade handler must have exactly one crafting-runtime owner')
+    require('registerSpellEffectEvent(TD_FARMER_GROUND_UPGRADE_ABILITY_ID, function tdGroundHandleUpgrade)' in crafting,
+            'Ground upgrade registration must connect the live crafting handler')
+
+
 def verify_source(root=ROOT):
     entries = catalog(root)
     by_id = {entry.rawcode: entry for entry in entries}
@@ -48,12 +82,10 @@ def verify_source(root=ROOT):
         else:
             require(path == 'ReplaceableTextures\\CommandButtons\\BTNGlove.blp',
                     'Unexpected native equipment asset: ' + path)
-    inventory = (root / 'wurst/items/TDInventoryRuntime.wurst').read_text()
     ground = (root / 'wurst/items/TDGroundItemRuntime.wurst').read_text()
     crafting = (root / 'wurst/items/TDCraftingRuntime.wurst').read_text()
     backend = (root / 'wurst/items/TDCraftingNativeBackend.wurst').read_text()
-    require('tdStartInventoryCraft(farmer)' in inventory, 'Inventory entry not connected')
-    require('tdStartGroundCraft(farmer,' in ground, 'Ground entry not connected')
+    verify_runtime_entrypoints(root)
     require('GetWorldBounds' not in ground + crafting, 'Craft/sort whole-map enumeration returned')
     require('point.x - radius' in crafting and 'tdGroundPointInUpgradeCircle' in crafting,
             'Ground snapshot must be bounded and precisely filtered')
@@ -92,7 +124,8 @@ def verify_map(path, root=ROOT):
         require(fields['iico'] == paths[entry.line, entry.quality], entry.rawcode + ': icon path')
         require(fields['iabi'] == '', entry.rawcode + ': native item passive double application')
         text = fields['utub']
-        for phrase in ('同塔不能重复', '同名确定下一阶', '混名随机下一品质'):
+        require(fields.get('ides') == text, entry.rawcode + ': selected item description missing')
+        for phrase in ('同塔同名限1件', '紫装不能合成' if entry.quality == 4 else '三件同品质可由工人合成'):
             require(phrase in text, entry.rawcode + ': stale tooltip ' + phrase)
     abilities = ability_objects(archive.extract('war3map.w3a'))
     verify_current_equipment_abilities(abilities)

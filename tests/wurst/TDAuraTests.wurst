@@ -109,7 +109,7 @@ function assertAuraNear(real actual, real expected)
 	// Worst fixed attack: purple34+blue28+shield24, max static base260*command12%.
 	(34.0 + 28.0 + 24.0 + 260.0 * tdItemAuraValue(TD_ITEM_PURPLE_COMMAND_ID) < TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL).assertTrue()
 	tdItemPickupSummary(TD_ITEM_PURPLE_COMMAND_ID, 1).contains("攻击光环 4级").assertTrue()
-	tdAuraStateTooltip(TD_AURA_PET_COMMAND, 1).contains("仅宿主").assertTrue()
+	tdAuraStateTooltip(TD_AURA_PET_COMMAND, 1).contains("附身塔攻击速度").assertTrue()
 	tdAuraStateTooltip(TD_AURA_PET_WIND, 4).contains("上限75%").assertTrue()
 
 @Test function cooldownIdentityOnlyAppearsOnActualSupportedTarget()

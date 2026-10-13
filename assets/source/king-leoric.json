@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "title": "Diablo III King Leoric",
+  "source_url": "https://www.hiveworkshop.com/threads/diablo-iii-king-leoric.224358/",
+  "import_instructions_url": "https://www.hiveworkshop.com/resources/diablo-iii-king-leoric.33561/import",
+  "credits": {
+    "mesh": "HappyTauren (TotallyAwesome)",
+    "texture": "AnemicRoyalty (A.R.)",
+    "animation_and_particles": "Tarrasque / Jigrael (original description: Terrasque)"
+  },
+  "permission_scope": "Original resource publicly shared by its creators for use in Warcraft maps. Preserve credits. No blanket license for independent resource redistribution or arbitrary modification has been established.",
+  "source_archive_observed_sha256": "44b5324f1a0b7d7bab75306dfe8763dbb448bdaa0c2cbac016d7ab1a24470108",
+  "unit_id": "uB16",
+  "parent_unit_id": "Ocbh",
+  "unit_name": "黑曜棺卫",
+  "object_model_path": "war3mapImported\\Leoric.mdx",
+  "object_scale": 1.3,
+  "original_bytes_unchanged": true,
+  "assets": [
+    {
+      "name": "Leoric.mdx",
+      "import_path": "imports/war3mapImported/Leoric.mdx",
+      "mpq_path": "war3mapImported\\Leoric.mdx",
+      "size_bytes": 249337,
+      "sha256": "f68cc2971589fac2518d934a8f445e8667812ecd5f1a7d26fb295bf26a1e5245"
+    },
+    {
+      "name": "Leoric_Portrait.mdx",
+      "import_path": "imports/war3mapImported/Leoric_Portrait.mdx",
+      "mpq_path": "war3mapImported\\Leoric_Portrait.mdx",
+      "size_bytes": 37130,
+      "sha256": "1c9a56c3025369a5eb5eb00481b7b7a7239a68c730f7b0fb2dae03830fce143f"
+    },
+    {
+      "name": "Leoric.blp",
+      "import_path": "imports/Leoric.blp",
+      "mpq_path": "Leoric.blp",
+      "size_bytes": 175942,
+      "sha256": "c7b229e3ddae7cda6ea632e9fbabfe6f1c8863d37d6fef7c97b51318c600ed2c"
+    },
+    {
+      "name": "readme.html",
+      "import_path": "imports/KingLeoric-original-readme.html",
+      "mpq_path": "KingLeoric-original-readme.html",
+      "size_bytes": 1862,
+      "sha256": "0e6547dac6b9c642e3ca7805fa56235dd66f716a851ae089d151192e15e99be3"
+    }
+  ],
+  "native_texture_references": [
+    "Textures\\clouds_anim1.blp",
+    "Textures\\RibbonBlur1.blp"
+  ],
+  "portrait_native_replaceable_ids": [2],
+  "main_native_event_objects": [
+    "SNDXDPLD", "FPTxFBR1", "FPTxFBL1", "SPLxDBL1", "SPLxDBL2",
+    "SPLxDBS0", "SPLxDBL3", "FPTmFBL1", "FPTdFBR1"
+  ],
+  "native_dependency_target_status": "Not yet verified against an actual Warcraft III 1.27a installation archive. The author's original classic model uses these native references. Do not replace this status with a gameplay claim.",
+  "credits_mpq_path": "Credits-KingLeoric.txt",
+  "preview_scope": "Offline original MDX mesh, skinning and original BLP diffuse/alpha only; particles, ribbons, sounds and footprints are not simulated. Not a game screenshot."
+}

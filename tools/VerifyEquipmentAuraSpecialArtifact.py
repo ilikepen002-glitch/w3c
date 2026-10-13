@@ -47,6 +47,8 @@ def verify(objects, buffs):
         require(bool(field(obj, 'fart')), f'{rawcode}: missing real native status icon')
         tooltip = field(obj, 'fube')
         require(isinstance(tooltip, str) and tooltip, f'{rawcode}: missing status tooltip')
+        from VerifyPlayerTooltipArtifact import text_check
+        text_check(tooltip, f'{rawcode}: status tooltip', max_chars=220)
         dummy_id, dummy = named(objects, 'Aura Dummy: ' + name)
         require(dummy.identity[:4] == b'Aasl', f'{dummy_id}: dummy aura parent')
         require(field(dummy, 'atar', 1) == 'self', f'{dummy_id}: status dummy must be self-only')

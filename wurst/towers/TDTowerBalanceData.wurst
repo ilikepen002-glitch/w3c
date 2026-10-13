@@ -581,7 +581,7 @@ public function tdTowerTalentSummary(int towerChoice, int level) returns string
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if level >= 5
 			return "普攻22%概率盾击；统帅光环使900范围内友塔攻击力提高16%。"
-		return "主普攻" + tdBonusPercentString(tdFootmanBashChance()) + "概率盾击，无额外伤害；普通短晕" + tdTooltipNumber(tdConfiguredShieldNormalStunDuration()) + "秒，真正首领" + tdTooltipNumber(tdConfiguredShieldBossStunDuration()) + "秒，不同塔共享敌人盾击窗口。"
+		return "普攻" + tdBonusPercentString(tdFootmanBashChance()) + "概率盾击，无额外伤害；普通短晕" + tdTooltipNumber(tdConfiguredShieldNormalStunDuration()) + "秒，首领" + tdTooltipNumber(tdConfiguredShieldBossStunDuration()) + "秒，保护期间不受任何塔的盾击。"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if level >= 5
 			return "普攻附毒并减速；缓速藤蔓使225范围内敌人移动速度降低18%。"
@@ -604,7 +604,7 @@ public function tdTowerTalentSummaryForBranch(int towerChoice, int level, int br
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
 			return "分支: 统帅支援；保留22%盾击与16%统帅光环。进化后仅光环16%→19.2%。"
-		return "分支: 盾击审判；保留16%统帅光环。进化后盾击概率" + tdPreciseBonusPercentString(tdFootmanBashChance()) + "→" + tdPreciseBonusPercentString(tdFootmanBashChance() * tdEvolutionSkillMultiplier()) + "，无额外伤害；短晕与共享敌窗规则不变。"
+		return "分支: 盾击审判；保留16%统帅光环。进化后盾击概率" + tdPreciseBonusPercentString(tdFootmanBashChance()) + "→" + tdPreciseBonusPercentString(tdFootmanBashChance() * tdEvolutionSkillMultiplier()) + "，无额外伤害；眩晕与保护时间不变。"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if branch == TD_TOWER_BRANCH_B
 			return "分支: 宽域藤蔓；保留毒伤12/秒和单体减速。藤蔓范围265、减速18%；进化后仅藤蔓减速21.6%。"

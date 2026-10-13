@@ -75,7 +75,7 @@ public function tdConfigureEquipmentBash(AbilityDefinitionMountainKingBash defin
 	for level = 1 to 61
 		let normalDuration = tdShieldStunDuration(false, (level - 1) / 100.0)
 		definition.setTooltipNormal(level, perfect ? "进化盾击" : "盾击")
-		definition.setTooltipNormalExtended(level, "有效主普攻有" + tdPreciseBonusPercentString(tdShieldProcChance(perfect)) + "概率盾击。普通敌人眩晕" + tdTooltipNumber(normalDuration) + "秒，上限" + tdTooltipNumber(tdConfiguredShieldNormalStunCap()) + "秒，结束后保护" + tdTooltipNumber(tdConfiguredShieldNormalProtection()) + "秒；真正首领眩晕" + tdTooltipNumber(tdConfiguredShieldBossStunDuration()) + "秒，结束后保护" + tdTooltipNumber(tdConfiguredShieldBossProtection()) + "秒。不同塔共享每名敌人的盾击窗口；失败施放不扩散。")
+		definition.setTooltipNormalExtended(level, "普攻有" + tdPreciseBonusPercentString(tdShieldProcChance(perfect)) + "概率盾击。普通敌人眩晕" + tdTooltipNumber(normalDuration) + "秒，上限" + tdTooltipNumber(tdConfiguredShieldNormalStunCap()) + "秒，结束后保护" + tdTooltipNumber(tdConfiguredShieldNormalProtection()) + "秒；首领眩晕" + tdTooltipNumber(tdConfiguredShieldBossStunDuration()) + "秒，结束后保护" + tdTooltipNumber(tdConfiguredShieldBossProtection()) + "秒。保护期间不受任何塔的盾击；不造成额外伤害。")
 		// Display/evolution ID stays native. Actual zero-damage AHtb is script only.
 		definition.setChancetoBash(level, 0.0)
 		definition.setDamageMultiplier(level, 1.0)

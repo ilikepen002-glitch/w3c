@@ -3,24 +3,23 @@ import TDGroundItemRules
 import TDGroundItemTerrainMask
 import TDItemPlacement
 import TDItemOperationState
-import TDCraftingRuntime
 import TDItemData
 import TDConfig
 import TDState
 import LinkedList
 import ClosureTimers
-import RegisterEvents
 
 LinkedList<item> array tdGroundQueues
 int array tdGroundPileCounts
 boolean tdGroundBusy = false
 boolean tdGroundRuntimeReady = false
 int tdGroundQuality = 1
+int tdGroundSortLane = -1
 
 function tdGroundItemAvailable(item itm, int quality) returns boolean
 	if not tdGroundItemHandleValid(itm) or not IsItemVisible(itm)
 		return false
-	if tdGroundSortSourceLane(GetItemX(itm), GetItemY(itm)) < 0
+	if not tdGroundSortItemEligible(tdGroundSortLane, tdGroundSortSourceLane(GetItemX(itm), GetItemY(itm)), quality)
 		return false
 	return tdGroundItemGroup(GetItemTypeId(itm)) == quality
 
@@ -34,6 +33,7 @@ function tdGroundCaptureItem()
 
 function tdGroundFinish()
 	tdGroundBusy = false
+	tdGroundSortLane = -1
 	tdItemOperationRelease()
 
 function tdGroundProcessOne()
@@ -64,39 +64,38 @@ function tdGroundProcessOne()
 		// No successful-sort count and no deletion on an abnormal native rollback.
 		DisplayTimedTextToPlayer(Player(lane), 0, 0, 6.0, "整理落点及归位未确认，物品未删除。句柄 " + GetHandleId(itm) + "，坐标(" + GetItemX(itm) + "," + GetItemY(itm) + ")，请核对。")
 
-function tdGroundStart()
+function tdGroundStart(int requestedLane)
 	if not tdItemOperationTryAcquire()
 		return
 	tdGroundBusy = true
 	tdGroundQuality = 1
+	tdGroundSortLane = requestedLane
 	for index = 1 to TD_ACTIVE_PLAYER_COUNT * 5
 		tdGroundPileCounts[index] = 0
 	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if requestedLane >= 0 and lane != requestedLane
+			continue
 		let minimum = tdGroundSortSourceMin(lane)
 		let maximum = tdGroundSortSourceMax(lane)
 		let bounds = Rect(minimum.x, minimum.y, maximum.x, maximum.y)
 		EnumItemsInRect(bounds, null, function tdGroundCaptureItem)
 		RemoveRect(bounds)
 
-function tdGroundHandleUpgrade() returns boolean
-	let farmer = GetTriggerUnit()
-	if farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID
-		tdStartGroundCraft(farmer, vec2(GetSpellTargetX(), GetSpellTargetY()))
-	return false
+public function tdSortGroundEquipmentAfterUpgrade(int lane)
+	if tdGroundRuntimeReady and tdIsLanePlayer(lane) and not tdIsGameOver()
+		tdGroundStart(lane)
 
 public function tdSetupGroundItemRuntime()
 	if tdGroundRuntimeReady
 		return
 	tdGroundRuntimeReady = true
-	tdSetupCraftingRuntime()
 	for pileGroup = 1 to 5
 		tdGroundQueues[pileGroup] = new LinkedList<item>()
-	registerSpellEffectEvent(TD_FARMER_GROUND_UPGRADE_ABILITY_ID, function tdGroundHandleUpgrade)
 	doPeriodically(TD_GROUND_SORT_INTERVAL) cb ->
 		if tdIsGameOver()
 			destroy cb
 		else if not tdGroundBusy and not tdItemOperationIsBusy()
-			tdGroundStart()
+			tdGroundStart(-1)
 	doPeriodically(0.03) cb ->
 		if tdGroundBusy
 			for _operation = 1 to 24

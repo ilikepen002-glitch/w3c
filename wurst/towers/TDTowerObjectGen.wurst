@@ -58,7 +58,7 @@ function BuildingDefinition.tdApplyTowerBuildingStats(int towerChoice, int level
 	..setName(tdTowerDisplayNameForBranch(towerChoice, level, branch))
 	..setTooltipBasic(tdTowerDisplayNameForBranch(towerChoice, level, branch))
 	..setTooltipExtended(tdTowerTooltipExtendedForBranch(towerChoice, level, branch))
-	..setDescription(tdTowerLoreForBranch(towerChoice, level, branch))
+	..setDescription(tdTowerTalentSummaryForBranch(towerChoice, level, branch))
 	..setHitPointsMaximumBase(tdTowerBaseHitPointsForBranch(towerChoice, level, branch))
 	..setDefenseBase(tdTowerBaseArmorForBranch(towerChoice, level, branch))
 	..setAttack1DamageBase(tdTowerBaseDamageForBranch(towerChoice, level, branch))

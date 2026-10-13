@@ -14,7 +14,7 @@ from VerifyEquipmentAbilityArtifact import ability_objects, require
 from VerifyTowerPlacementArtifact import unit_objects
 
 ROOT = Path(__file__).resolve().parents[1]
-FORBIDDEN = ('原生强化', '受控技能', '动态收藏共用命令', '动态模型', '全局补充预算', 'compiletime', 'rawcode', 'getUnreducedAmount', '伤害骰')
+FORBIDDEN = ('原生强化', '受控技能', '动态收藏共用命令', '动态模型', '全局补充预算', 'compiletime', 'rawcode', 'getUnreducedAmount', '伤害骰', '静态基础', '原生百分比', '载体上限', '本击事件', '回灌', '圈内快照', '同身份', '合法塔', '标称')
 
 
 def value(fields, name, level=0, column=0):
@@ -62,18 +62,18 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
         'COOLDOWN': (r'冷却时间缩短([\d.]+)%', 100),
         'KILL_GOLD': (r'击杀金币 \+([\d.]+)', 1),
         'ARMOR_SHRED': (r'护甲降低([\d.]+)', 1),
-        'EXECUTE': (r'不高于50%的主目标时，追加本次普攻伤害的([\d.]+)%', 100),
+        'EXECUTE': (r'主目标生命不高于50%时，普攻追加([\d.]+)%', 100),
         'POISON': (r'每秒([\d.]+)伤害', 1),
         'CONTROL_POWER': (r'眩晕时间提高([\d.]+)%', 100),
         'DROP_BONUS': (r'额外抽取([\d.]+)次', 1),
-        'BOSS_DAMAGE': (r'首领或金币试炼主目标时，追加本次普攻伤害的([\d.]+)%', 100),
+        'BOSS_DAMAGE': (r'首领或金币试炼主目标(?:追加|普攻 \+)([\d.]+)%', 100),
     }
     aura_patterns = {
-        'ATTACK': (r'静态基础攻击的([\d.]+)%', 100),
-        'ATTACK_SPEED': (r'攻速光环：标称攻击速度 \+([\d.]+)%', 100),
-        'COOLDOWN': (r'冷却光环：嗜血、剑刃风暴与精灵主动技能冷却缩短([\d.]+)%', 100),
+        'ATTACK': (r'增加基础攻击的([\d.]+)%', 100),
+        'ATTACK_SPEED': (r'攻速光环：攻击速度 \+([\d.]+)%', 100),
+        'COOLDOWN': (r'冷却光环：嗜血、剑刃风暴及精灵主动冷却缩短([\d.]+)%', 100),
         'ARMOR_ON_HIT': (r'普攻主目标破甲([\d.]+)', 1),
-        'ENEMY_SLOW': (r'敌方移动减速光环：标称减速([\d.]+)%', 100),
+        'ENEMY_SLOW': (r'本路敌人移动速度降低([\d.]+)%', 100),
     }
     if shared_active_cooldown:
         aura_patterns['COOLDOWN'] = (r'冷却光环：主动技能冷却缩短([\d.]+)%（包括附身精灵的主动技能）', 100)
@@ -83,9 +83,10 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
         label = entry.rawcode
         name = re.sub(r'\|c[0-9a-fA-F]{8}|\|r', '', fields.get('unam', ''))
         require(name == entry.name, label + ': config name mismatch')
-        text_check(text, label, max_chars=650)
-        for phrase in ('同塔不能重复装备同名物品', '前3格三件同品质装备',
-                       '同名确定下一阶', '混名随机下一品质', '紫装不能合成'):
+        text_check(text, label, max_chars=320)
+        require(fields.get('ides') == text, label + ': ground selection description must match equipment tooltip')
+        for phrase in ('塔可装备', '同塔同名限1件',
+                       '紫装不能合成' if entry.quality == 4 else '三件同品质可由工人合成'):
             require(phrase in text, label + ': current crafting/admission rule missing: ' + phrase)
         require('同塔第3件同名装备' not in text and '65%' not in text,
                 label + ': retired equipment rule')
@@ -99,41 +100,51 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
             elif kind == 'CONTROL_POWER':
                 require('上限60%' in text, label + ': control cap')
             elif kind in ('EXECUTE', 'BOSS_DAMAGE'):
-                require('法术、分裂箭和精灵伤害不生效。普攻击杀时不再追加。' in text,
+                require((('仅主目标普攻' in text and '半血与首领追加比例相加' in text and
+                          '法术、副箭、精灵伤害不触发；普攻击杀不追加' in text) or
+                         (kind == 'BOSS_DAMAGE' and '同类最高，半血追加相加' in text and
+                          '法术、副箭、精灵及击杀不触发' in text)),
                         label + ': additional damage eligibility')
         if entry.aura != 'NONE':
             pattern, multiplier = aura_patterns[entry.aura]
             number(text, pattern, int(entry.aura_value * multiplier + .5), label)
             number(text, r'光环范围([\d.]+)', entry.aura_radius, label)
-            require('同光环仅最高等级生效，异名光环可叠加' in text, label + ': aura stacking rule')
+            require(any(p in text for p in ('同名取最高等级，异名可叠加', '同名取最高等级，异名叠加')), label + ': aura stacking rule')
             require('不受装备射程影响' in text, label + ': aura radius ownership')
             if entry.aura == 'ENEMY_SLOW':
-                require('总上限75%' in text, label + ': slow cap')
+                require('合计上限75%' in text, label + ': slow cap')
             else:
-                require('作用于本玩家本路合法塔，包含自己' in text, label + ': aura owner/lane')
+                require('本路己方塔，含自身' in text, label + ': aura owner/lane')
             if entry.aura == 'COOLDOWN':
-                require('合计上限40%' in text and '不刷新已开始的冷却' in text, label + ': cooldown cap/lifecycle')
+                require('合计上限40%' in text and any(p in text for p in ('不重置进行中的冷却', '不重置当前冷却', '不重置冷却')), label + ': cooldown cap/lifecycle')
             if entry.aura == 'ATTACK_SPEED':
-                require('载体上限120%' in text, label + ': attack-speed cap')
+                require('与装备攻速合计上限120%' in text, label + ': attack-speed cap')
         if entry.specialization != 'NONE':
             config = 'items/TDItemCatalogConfig.wurst'
             if entry.specialization == 'WAR_INTENT':
                 number(text, r'攻速 \+([\d.]+)%', 100 * scalar(root, config, 'tdConfiguredWarAttackSpeed'), label)
                 number(text, r'持续([\d.]+)秒', scalar(root, config, 'tdConfiguredWarDuration'), label)
-                require('4次主普攻击中' in text and '爆发中不叠层不续时' in text, label + ': war-intent lifecycle')
+                require(('同目标4次普攻命中' in text and '期间不叠层、不续时' in text) or
+                        ('剑圣同目标4次普攻' in text and '不叠层不续时' in text), label + ': war-intent lifecycle')
+                number(text, r'停攻([\d.]+)秒', scalar(root, config, 'tdConfiguredWarInactivity'), label)
             elif entry.specialization == 'ARCHER_ARROW':
                 require('额外增加1支副箭' in text, label + ': arrow count')
             elif entry.specialization in ('CORPSE_BURST', 'POISON_BURST'):
                 count, radius = (6, 180) if entry.specialization == 'CORPSE_BURST' else (3, 220)
-                number(text, r'每([\d.]+)次有效主普攻击中', count, label)
-                number(text, r'事件伤害([\d.]+)%', 50, label)
-                number(text, r'范围伤害，范围([\d.]+)', radius, label)
-                require('最多4个活目标' in text and '每目标法抗只计算一次，副箭与毒伤不回灌' in text,
+                number(text, r'每([\d.]+)次普攻命中', count, label)
+                number(text, r'本次普攻伤害的([\d.]+)%', 50, label)
+                number(text, r'目标周围([\d.]+)范围', radius, label)
+                require('最多4名敌人' in text and '副箭、毒伤不计次' in text,
                         label + ': burst eligibility/cap')
+                if entry.specialization == 'POISON_BURST':
+                    require(('须同一目标' in text or '同目标；换目标' in text) and '换目标' in text, label + ': poison target reset')
+                    number(text, r'停攻([\d.]+)秒', scalar(root, config, 'tdConfiguredPoisonBurstInactivity'), label)
             elif entry.specialization == 'SHIELD_SPREAD':
-                require('中心200范围' in text and '扩散最多2名非首领' in text and '首领不额外硬控' in text,
+                require('目标周围200范围' in text and '最多2名非首领' in text and '不受额外眩晕' in text,
                         label + ': shield spread/real Boss rule')
-                number(text, r'仅装备破甲([\d.]+)', scalar(root, config, 'tdConfiguredShieldBossArmor'), label)
+                number(text, r'首领只受破甲([\d.]+)', scalar(root, config, 'tdConfiguredShieldBossArmor'), label)
+                # This duration belongs to the specialization, not the personal control line.
+                number(text, r'首领只受破甲[\d.]+，持续([\d.]+)秒', scalar(root, config, 'tdConfiguredShieldBossArmorDuration'), label)
     return len(entries)
 
 
@@ -185,8 +196,8 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
                 duration = min(scalar(root, config, 'tdConfiguredShieldNormalStunCap'),
                                scalar(root, config, 'tdConfiguredShieldNormalStunDuration') * (1 + (level - 1) / 100))
                 number(text, r'普通敌人眩晕([\d.]+)秒', duration, label)
-                number(text, r'真正首领眩晕([\d.]+)秒', scalar(root, config, 'tdConfiguredShieldBossStunDuration'), label)
-                require('不同塔共享每名敌人的盾击窗口' in text and '失败施放不扩散' in text,
+                number(text, r'首领眩晕([\d.]+)秒', scalar(root, config, 'tdConfiguredShieldBossStunDuration'), label)
+                require('保护期间不受任何塔的盾击' in text and '不造成额外伤害' in text,
                         label + ': shared shield window/failed cast')
             else:
                 number(text, r'有([\d.]+)%概率', value(fields, 'Hbh1', level, 1), label)
@@ -210,7 +221,7 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
     pet_tokens = ('攻击力', '基础攻击', '攻击速度', '冷却缩短', '全队所有塔', '600范围', '护甲降低',
                   '第4次普攻', '不高于30%', '分裂箭', '180范围毒域', '持续6秒', '基础攻击', '450范围', '220范围', '220范围')
     if current:
-        pet_tokens = pet_tokens[:4] + ('仅附身宿主',) + pet_tokens[5:]
+        pet_tokens = pet_tokens[:4] + ('仅附身塔',) + pet_tokens[5:]
     for skill in range(16):
         for quality in range(1, 5):
             variant = skill * 4 + quality - 1
@@ -332,6 +343,12 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
         require('先解绑' in value(abilities['Pm07'][1], 'aub1', 1) and '再次确认' in value(abilities['Pm07'][1], 'aub1', 1), 'Pm07: current release prerequisites missing')
         require('无法撤销' in value(abilities['Pm0B'][1], 'aub1', 1), 'Pm0B: current release irreversibility missing')
         require('洗练石不返还' in value(abilities['Pm09'][1], 'aub1', 1), 'Pm09: current reroll refund risk missing')
+        for uid in ('Pm02', 'Pm03', 'Pm04', 'Pm05', 'Pm06', 'Pm07', 'Pm09', 'Pm0A', 'Pm0B', 'Pm0D', 'Pm0E'):
+            text_check(value(abilities[uid][1], 'aub1', 1), uid)
+        require('冷却结束' in value(abilities['Pm0A'][1], 'aub1', 1), 'adopt cooldown restriction missing')
+        continuation = value(abilities['Pm0D'][1], 'aub1', 1)
+        require(all(x in continuation for x in ('消耗1洗练石', '新技能会被替换', '原技能保持不变')), 'continue reroll cost/preservation missing')
+        require('保留本次洗练结果' in value(abilities['Pm0E'][1], 'aub1', 1), 'preview return preservation missing')
     else:
         cultivation = value(abilities['Pc06'][1], 'aub1', 1)
         require(all(x in cultivation for x in ('不退石', '共鸣锁定', '永久删除', '不退球和已用材料', '1洗练石', '2%', '1开栏石', '先召回')), 'cultivation risk/cost missing')
@@ -340,8 +357,8 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
     ground = value(abilities['Gupg'][1], 'aub1', 1)
     craft = value(abilities['A119'][1], 'aub1', 1)
     if current:
-        require(all(x in ground for x in ('本路', '144范围', '同名三件确定下一阶', '同品质混名三件随机', '每次只升一级', '本次不再参与', '余1至2件', '紫装', '捕获球不消耗')), 'current ground craft rule missing')
-        require(all(x in craft for x in ('前3格', '三件同品质', '同名确定下一阶', '混名', '产物生成失败不消耗材料')), 'current backpack craft risks missing')
+        require(all(x in ground for x in ('本路', '144范围', '三件同名升为对应下一阶', '同品质混名三件随机', '每次只升一级', '余1至2件', '紫装', '捕获球不消耗', '材料被移走则取消该组')), 'current ground craft rule missing')
+        require(all(x in craft for x in ('前3格', '三件同品质', '三件同名升为对应下一阶', '混名随机获得下一品质', '均必成', '紫装不能合成', '未成功不耗材料')), 'current backpack craft risks missing')
         require(not any(x in craft + ground for x in ('65%', '失败时材料全部消失', '两件必成')), 'current retired craft rule remains')
     else:
         require(all(x in ground for x in ('本路', '144范围', '每3件必得1件', '高一品质', '可不同名', '每次只升一级', '对应品质堆', '本次不再参与升级', '余1至2件原地保留')), 'ground craft rule missing')
