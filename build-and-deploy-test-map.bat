@@ -3,6 +3,10 @@ setlocal
 
 cd /d "%~dp0"
 
+rem Fail closed on active-skill contract omissions before starting a build.
+python tools\VerifyActiveCooldownContract.py --source-only
+if errorlevel 1 exit /b 1
+
 set "TARGET_DIR=D:\War3_1.27a\Warcraft III Frozen Throne 1.27a publish\Maps\Test"
 set "MAP_TIMESTAMP="
 if not defined WURST_TOOLCHAIN_HOME set "WURST_TOOLCHAIN_HOME=%USERPROFILE%\.wurst"
@@ -103,6 +107,12 @@ if errorlevel 1 exit /b 1
 "%PATCH_JAVA%" -cp "_build\compiler-gate;%PATCH_COMPILER_JAR%" VerifyLegacyJass "%SOURCE_MAP%"
 if errorlevel 1 (
 	echo Legacy Jass artifact gate failed. Map was not published or deployed.
+	exit /b 1
+)
+rem Verify native cooldown objects and generic consumers in this exact candidate.
+python tools\VerifyActiveCooldownContract.py --map "%SOURCE_MAP%"
+if errorlevel 1 (
+	echo Active cooldown artifact gate failed. Map was not published or deployed.
 	exit /b 1
 )
 copy /y "%SOURCE_MAP%" "ExampleMap.w3x" >nul

@@ -1,0 +1,127 @@
+package TDActiveSkillData
+import TDTowerCatalogData
+import Orders
+import ErrorHandling
+
+public constant int TD_ACTIVE_DRIVER_NATIVE_ABILITY = 1
+public constant int TD_ACTIVE_DRIVER_PET_PROC = 2
+public constant int TD_ACTIVE_AUTOCAST_UNKNOWN = 0
+public constant int TD_ACTIVE_AUTOCAST_ON = 1
+public constant int TD_ACTIVE_AUTOCAST_OFF = 2
+public constant int TD_ACTIVE_BLOODLUST = 1
+public constant int TD_ACTIVE_BLADESTORM = 2
+public constant int TD_ACTIVE_PET_FRENZY = 3
+public constant int TD_ACTIVE_PET_CHARGE = 4
+public constant int TD_ACTIVE_PET_CHAIN = 5
+public constant int TD_ACTIVE_PET_FIRE = 6
+public constant int TD_ACTIVE_PET_WIND = 7
+public constant int TD_ACTIVE_NATIVE_LEVEL_COUNT = 41
+
+// Active identity describes execution, never optional cooldown eligibility.
+public tuple tdActiveSkillDefinition(int key, int driver, int abilityId, int petSkillId, real baseCooldown, int autocastOnOrder, int autocastOffOrder, int initialAutocastChoice)
+
+public function tdActiveSkillDefinitionCount() returns int
+	return 7
+
+public function tdActiveSkillDefinitionAt(int index) returns tdActiveSkillDefinition
+	if index == 0
+		return tdActiveSkillDefinition(TD_ACTIVE_BLOODLUST, TD_ACTIVE_DRIVER_NATIVE_ABILITY, TD_ORC_BLOODLUST_ABILITY_ID, -1, 12.0, Orders.bloodluston, Orders.bloodlustoff, TD_ACTIVE_AUTOCAST_ON)
+	if index == 1
+		return tdActiveSkillDefinition(TD_ACTIVE_BLADESTORM, TD_ACTIVE_DRIVER_NATIVE_ABILITY, TD_ORC_BLADESTORM_ABILITY_ID, -1, 9.0, Orders.slowon, Orders.slowoff, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 2
+		return tdActiveSkillDefinition(TD_ACTIVE_PET_FRENZY, TD_ACTIVE_DRIVER_PET_PROC, 0, 11, 14.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 3
+		return tdActiveSkillDefinition(TD_ACTIVE_PET_CHARGE, TD_ACTIVE_DRIVER_PET_PROC, 0, 12, 14.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 4
+		return tdActiveSkillDefinition(TD_ACTIVE_PET_CHAIN, TD_ACTIVE_DRIVER_PET_PROC, 0, 13, 10.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 5
+		return tdActiveSkillDefinition(TD_ACTIVE_PET_FIRE, TD_ACTIVE_DRIVER_PET_PROC, 0, 14, 10.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 6
+		return tdActiveSkillDefinition(TD_ACTIVE_PET_WIND, TD_ACTIVE_DRIVER_PET_PROC, 0, 15, 10.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	return tdActiveSkillDefinition(0, 0, 0, -1, 0.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+
+public function tdActiveSkillDefinitionForKey(int key) returns tdActiveSkillDefinition
+	for index = 0 to tdActiveSkillDefinitionCount() - 1
+		let definition = tdActiveSkillDefinitionAt(index)
+		if definition.key == key
+			return definition
+	return tdActiveSkillDefinitionAt(-1)
+
+public function tdActiveSkillDefinitionForAbility(int abilityId) returns tdActiveSkillDefinition
+	for index = 0 to tdActiveSkillDefinitionCount() - 1
+		let definition = tdActiveSkillDefinitionAt(index)
+		if definition.driver == TD_ACTIVE_DRIVER_NATIVE_ABILITY and definition.abilityId == abilityId
+			return definition
+	return tdActiveSkillDefinitionAt(-1)
+
+public function tdActiveSkillDefinitionForPetSkill(int petSkillId) returns tdActiveSkillDefinition
+	for index = 0 to tdActiveSkillDefinitionCount() - 1
+		let definition = tdActiveSkillDefinitionAt(index)
+		if definition.driver == TD_ACTIVE_DRIVER_PET_PROC and definition.petSkillId == petSkillId
+			return definition
+	return tdActiveSkillDefinitionAt(-1)
+
+public function tdActiveCooldownDuration(real baseCooldown, real reduction) returns real
+	return baseCooldown * (1.0 - RMinBJ(0.40, RMaxBJ(0.0, reduction)))
+
+public function tdActiveCooldownNativeLevel(real reduction) returns int
+	return R2I(RMinBJ(0.40, RMaxBJ(0.0, reduction)) * 100.0 + 0.5) + 1
+
+public function tdActiveCooldownNativeLevelValid(int physicalLevel) returns boolean
+	return physicalLevel >= 1 and physicalLevel <= TD_ACTIVE_NATIVE_LEVEL_COUNT
+
+public function tdActiveCooldownReductionAtNativeLevel(int physicalLevel) returns real
+	if not tdActiveCooldownNativeLevelValid(physicalLevel)
+		error("Active cooldown requires a physical CDR level in 1..41.")
+		return 0.0
+	return (physicalLevel - 1) / 100.0
+
+public function tdActiveCooldownReadyAt(real now, real baseCooldown, real reduction) returns real
+	return now + tdActiveCooldownDuration(baseCooldown, reduction)
+
+public function tdActiveCooldownCanApply(real now, real readyAt) returns boolean
+	return now >= readyAt
+
+public function tdActiveCooldownNeedsNativeLevel(real now, real readyAt, int actualLevel, int desiredLevel, boolean busy) returns boolean
+	if busy or actualLevel <= 0 or actualLevel == desiredLevel
+		return false
+	return tdActiveCooldownCanApply(now, readyAt)
+
+// Shared state used by native runtime and deterministic lifecycle tests.
+public class TDActiveNativeCooldownState
+	int desiredLevel
+	real readyAt = 0.0
+	construct(int initialLevel)
+		desiredLevel = initialLevel
+
+	function requestLevel(int nextLevel)
+		desiredLevel = nextLevel
+
+	function startCast(real now, real baseCooldown, int actualLevel)
+		readyAt = tdActiveCooldownReadyAt(now, baseCooldown, tdActiveCooldownReductionAtNativeLevel(actualLevel))
+
+	function needsLevel(real now, int actualLevel, boolean busy) returns boolean
+		return tdActiveCooldownNeedsNativeLevel(now, readyAt, actualLevel, desiredLevel, busy)
+
+public function tdActiveAutocastChoiceAfterInitialization(int choice, boolean eligible, int initialChoice) returns int
+	if eligible and choice == TD_ACTIVE_AUTOCAST_UNKNOWN
+		return initialChoice
+	return choice
+
+public function tdActiveAutocastChoiceAfterOrder(int choice, int orderId, boolean eligible, boolean scripted, int onOrder, int offOrder) returns int
+	if not eligible or scripted
+		return choice
+	if onOrder != 0 and orderId == onOrder
+		return TD_ACTIVE_AUTOCAST_ON
+	if offOrder != 0 and orderId == offOrder
+		return TD_ACTIVE_AUTOCAST_OFF
+	return choice
+
+public function tdActiveAutocastOrderForChoice(int choice, boolean eligible, int onOrder, int offOrder) returns int
+	if not eligible
+		return 0
+	if choice == TD_ACTIVE_AUTOCAST_ON
+		return onOrder
+	if choice == TD_ACTIVE_AUTOCAST_OFF
+		return offOrder
+	return 0

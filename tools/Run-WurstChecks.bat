@@ -3,6 +3,10 @@ setlocal
 
 cd /d "%~dp0\.."
 
+rem Reject undeclared combat actives before test staging/compiler execution.
+python tools\VerifyActiveCooldownContract.py --source-only
+if errorlevel 1 exit /b 1
+
 set "MODE=%~1"
 if "%MODE%"=="" set "MODE=all"
 

@@ -357,12 +357,16 @@ def execute(args):
         env.update(HOME=str(home), JAVA_HOME=str(jdk), PATH=str(jdk / 'bin') + ':/usr/bin:/bin',
                    XDG_CONFIG_HOME=str(home / '.config'), XDG_CACHE_HOME=str(home / '.cache'),
                    XDG_DATA_HOME=str(home / '.local/share'),
+                   WURST_STDLIB_SOURCE=str(stdlib),
                    PYTHONDONTWRITEBYTECODE='1',
                    JAVA_TOOL_OPTIONS=f'-Duser.home="{home}" -Djava.io.tmpdir="{temp}"')
         runner = Runner(tx, env)
         handlers = {s: signal.signal(s, signal.default_int_handler) for s in (signal.SIGINT, signal.SIGTERM)}
         try:
             snapshot(root, project, recorded)
+            runner.run([sys.executable, safe_path(project / 'tools/VerifyActiveCooldownContract.py', file=True),
+                        '--source-only'], project)
+            report['activeCooldownSourceGate'] = 'PASS'
             report['nativeMapScript'] = prepare_map_script(project)
             local_stdlib = tx / 'stdlib-source/WurstStdlib2-source'
             local_stdlib.parent.mkdir()
@@ -442,6 +446,9 @@ def execute(args):
                 final_sha = sha(candidate)
                 runner.run([java, '-cp', compiler_cp, 'VerifyLegacyJass', candidate], project)
                 require(sha(candidate) == final_sha, 'Legacy JASS gate changed candidate')
+                runner.run([sys.executable, project / 'tools/VerifyActiveCooldownContract.py', '--map', candidate], project)
+                require(sha(candidate) == final_sha, 'Active cooldown gate changed candidate')
+                report['activeCooldownArtifactGate'] = 'real MPQ/JASS PASS'
                 report['artifact'] = python_map_gate(project, candidate, '契灵守卫战 ' + stamp)
                 require(report['artifact']['sha256'] == final_sha, 'Candidate changed between gates')
                 report['artifact']['candidate'] = str(candidate)

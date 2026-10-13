@@ -1,4 +1,5 @@
 package TDTowerCommonData
+import TDActiveSkillData
 import TDConfig
 import Icons
 import TDTowerCatalogData
@@ -239,7 +240,7 @@ public function tdOrcBloodlustMoveSpeedBonus() returns real
 	return 0.0
 
 public function tdOrcBloodlustCooldown() returns real
-	return 12.0
+	return tdActiveSkillDefinitionForKey(TD_ACTIVE_BLOODLUST).baseCooldown
 
 public function tdOrcBloodlustDuration() returns real
 	return 5.0
@@ -257,7 +258,7 @@ public function tdOrcBladestormIconPath() returns string
 	return "war3mapImported\\BTNTDTowerBladestorm.blp"
 
 public function tdOrcBladestormCooldown() returns real
-	return 9.0
+	return tdActiveSkillDefinitionForKey(TD_ACTIVE_BLADESTORM).baseCooldown
 
 public function tdOrcBladestormDuration() returns real
 	return 2.5

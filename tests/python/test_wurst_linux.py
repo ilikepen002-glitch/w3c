@@ -37,6 +37,7 @@ class LinuxFailureTests(unittest.TestCase):
         for name, data in {'wurst.build': 'dependencies:\n- file:///E:/WurstToolchain/WurstStdlib2-source:pre1.29\nscriptMode: JASS\nwc3Patch: v1.28\n',
                            'wurst/Main.wurst': 'package Main\n', 'tests/wurst/Small.wurst': 'package Small\n',
                            'maps/ExampleMap.source.w3x': 'ORIGINAL-TEMPLATE', 'ExampleMap.w3x': 'OLD-OUTPUT',
+                           'tools/VerifyActiveCooldownContract.py': '# explicit synthetic gate boundary\n',
                            '.gitignore': '/_build/\n/imports/ignored.bin\n',
                            'tools/compiler/legacy-jass-array-capacity.patch': 'compiler patch'}.items():
             p = self.root / name; p.parent.mkdir(parents=True, exist_ok=True); p.write_text(data)
@@ -288,6 +289,8 @@ class LinuxFailureTests(unittest.TestCase):
                 (cwd / '_build/dependencies/WurstStdlib2-source').mkdir(parents=True)
             if 'build' in args:
                 (cwd / '_build/new.w3x').write_text('FAKE-MAP')
+            if fail_at == 'mutate-active-map' and '--map' in args:
+                Path(args[-1]).write_text('MUTATED-AFTER-LEGACY-GATE')
             if fail_at in args:
                 raise KeyboardInterrupt() if fail_at == 'typecheck' else RuntimeError('injected failure')
         args = SimpleNamespace(root=self.root, tools=self.tools, jdk=self.jdk, stdlib=self.stdlib,
@@ -320,6 +323,24 @@ class LinuxFailureTests(unittest.TestCase):
 
     def test_real_gate_path_failure_has_no_root_publish(self):
         self.run_fake_transaction('build', 'never-in-args')
+
+    def test_active_cooldown_source_failure_precedes_install_checks_or_build(self):
+        for mode in ('checks', 'typecheck', 'test', 'build'):
+            with self.subTest(mode=mode):
+                calls = self.run_fake_transaction(mode, '--source-only')
+                self.assertFalse(any('install' in c or 'typecheck' in c or 'test' in c or 'build' in c for c in calls))
+
+    def test_active_cooldown_actual_candidate_gate_follows_legacy_and_precedes_publication(self):
+        calls = self.run_fake_transaction('build', '--map')
+        legacy = next(i for i, c in enumerate(calls) if 'VerifyLegacyJass' in c)
+        active = next(i for i, c in enumerate(calls) if '--map' in c)
+        patch_name = next(i for i, c in enumerate(calls) if 'PatchMapDisplayName' in c)
+        self.assertLess(patch_name, legacy)
+        self.assertLess(legacy, active)
+        self.assertEqual(Path(calls[active][-1]).name, 'new.w3x')
+
+    def test_active_cooldown_gate_cannot_mutate_candidate_or_publish_root(self):
+        self.run_fake_transaction('build', 'mutate-active-map')
 
 
 class JavaProbeTests(unittest.TestCase):

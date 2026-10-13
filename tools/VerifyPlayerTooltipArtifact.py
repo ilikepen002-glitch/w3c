@@ -48,7 +48,7 @@ def scalar(root, owner, name):
     return float(match[1])
 
 
-def verify_current_items(items, root=ROOT):
+def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
     """Every packed item numeric/aura line consumes the single current catalog."""
     from ReadEquipmentCatalog import catalog
     entries = catalog(root)
@@ -75,6 +75,8 @@ def verify_current_items(items, root=ROOT):
         'ARMOR_ON_HIT': (r'普攻主目标破甲([\d.]+)', 1),
         'ENEMY_SLOW': (r'敌方移动减速光环：标称减速([\d.]+)%', 100),
     }
+    if shared_active_cooldown:
+        aura_patterns['COOLDOWN'] = (r'冷却光环：主动技能冷却缩短([\d.]+)%（包括附身精灵的主动技能）', 100)
     for entry in entries:
         fields = items[entry.rawcode]
         text = fields.get('utub', '')
@@ -135,7 +137,7 @@ def verify_current_items(items, root=ROOT):
     return len(entries)
 
 
-def validate(abilities, units, items, *, profile='current40', source_root=None):
+def validate(abilities, units, items, *, profile='current40', source_root=None, shared_active_cooldown=False, current_pet_ui=False):
     require(profile in PROFILES, 'Unknown player tooltip profile')
     require(profile == 'current40' or source_root is not None,
             'Historical tooltip profile requires matching frozen source_root')
@@ -147,7 +149,9 @@ def validate(abilities, units, items, *, profile='current40', source_root=None):
                 profile + ': frozen item source identity mismatch')
         gear = [uid for uid, fields in items.items() if uid != 'Ibal' and '同塔第3件同名装备' in fields.get('utub', '')]
         require(len(gear) == 28, f'expected 28 gear texts, got {len(gear)}')
-    checked = verify_current_items(items, root) if current else 0
+    require(not shared_active_cooldown or current, 'Shared active cooldown requires current40 profile')
+    require(not current_pet_ui or current, 'Current pet UI requires current40 profile')
+    checked = verify_current_items(items, root, shared_active_cooldown=shared_active_cooldown) if current else 0
     for rawcode in ('A106', 'A114'):
         fields = abilities[rawcode][1]
         for level in range(1, 62):
@@ -312,8 +316,25 @@ def validate(abilities, units, items, *, profile='current40', source_root=None):
         number(text, r'(?:有)?([\d.]+)%概率', chance, rawcode)
         number(text, r'造成([\d.]+)倍伤害', multiplier, rawcode)
         number(text, r'(?:追加|附加)([\d.]+)(?:点)?伤害', bonus, rawcode)
-    cultivation = value(abilities['Pc06'][1], 'aub1', 1)
-    require(all(x in cultivation for x in ('不退石', '共鸣锁定', '永久删除', '不退球和已用材料', '1洗练石', '2%', '1开栏石', '先召回')), 'cultivation risk/cost missing')
+    if current_pet_ui:
+        # Current UI puts irreversible release and material costs on their own
+        # commands. Keep the historical combined Pc06 assertion below intact.
+        from VerifyPetUIArtifact import verify_cultivation_command, verify_manager_commands
+        verify_cultivation_command(abilities, current_manager=True)
+        verify_manager_commands(abilities)
+        for uid in ('Pm02', 'Pm03', 'Pm04', 'Pm05'):
+            text = value(abilities[uid][1], 'aub1', 1)
+            require(all(x in text for x in ('1洗练石', '保留旧技能也会消耗洗练石', '未解锁的技能也可洗练', '空栏须先开栏')), uid + ': current cultivation risk/cost missing')
+        require(all(x in value(abilities['Pm06'][1], 'aub1', 1) for x in ('1开栏石', '不重复技能', '最多4栏', '先完成当前洗练选择')), 'Pm06: current slot cost missing')
+        for uid in ('Pm07', 'Pm0B'):
+            text = value(abilities[uid][1], 'aub1', 1)
+            require(all(x in text for x in ('永久失去', '1洗练石', '紫色精灵必得1开栏石', '其他品质有2%概率获得1开栏石', '捕获球和已用材料不返还')), uid + ': current release risk/reward missing')
+        require('先解绑' in value(abilities['Pm07'][1], 'aub1', 1) and '再次确认' in value(abilities['Pm07'][1], 'aub1', 1), 'Pm07: current release prerequisites missing')
+        require('无法撤销' in value(abilities['Pm0B'][1], 'aub1', 1), 'Pm0B: current release irreversibility missing')
+        require('洗练石不返还' in value(abilities['Pm09'][1], 'aub1', 1), 'Pm09: current reroll refund risk missing')
+    else:
+        cultivation = value(abilities['Pc06'][1], 'aub1', 1)
+        require(all(x in cultivation for x in ('不退石', '共鸣锁定', '永久删除', '不退球和已用材料', '1洗练石', '2%', '1开栏石', '先召回')), 'cultivation risk/cost missing')
     descriptions = [value(abilities[f'Pc0{i}'][1], 'aub1', 1) for i in range(8)]
     require(len(set(descriptions)) == 8, 'collection commands reuse generic description')
     ground = value(abilities['Gupg'][1], 'aub1', 1)
@@ -339,9 +360,11 @@ def main():
     parser.add_argument('map', type=Path)
     parser.add_argument('--profile', choices=PROFILES, default='current40')
     parser.add_argument('--source-root', type=Path)
+    parser.add_argument('--shared-active-cooldown', action='store_true', help='Require the current generic active-CD wording; historical default retained')
+    parser.add_argument('--current-pet-ui', action='store_true', help='Require the current split cultivation/release UI; historical default retained')
     args = parser.parse_args()
     mpq = Mpq(args.map.read_bytes())
-    count = validate(ability_objects(mpq.extract('war3map.w3a')), unit_objects(mpq.extract('war3map.w3u')), unit_objects(mpq.extract('war3map.w3t')), profile=args.profile, source_root=args.source_root)
+    count = validate(ability_objects(mpq.extract('war3map.w3a')), unit_objects(mpq.extract('war3map.w3u')), unit_objects(mpq.extract('war3map.w3t')), profile=args.profile, source_root=args.source_root, shared_active_cooldown=args.shared_active_cooldown, current_pet_ui=args.current_pet_ui)
     print(f'PASS {args.profile}: {count} packaged player tooltip instances checked against numeric fields/rules; length and developer-language checks passed.')
 
 

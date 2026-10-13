@@ -232,7 +232,7 @@ function tdItemEffectText(int effectKind, real value) returns string
 	if effectKind == TD_ITEM_EFFECT_ATTACK_SPEED
 		return "攻速 +" + R2I(value * 100.0 + 0.5).toString() + "%"
 	if effectKind == TD_ITEM_EFFECT_COOLDOWN
-		return "嗜血、剑刃风暴冷却时间缩短" + R2I(value * 100.0 + 0.5).toString() + "%（与精灵灵感、有效冷却光环合计上限40%）"
+		return "主动技能冷却缩短" + R2I(value * 100.0 + 0.5).toString() + "%（包括附身精灵的主动技能；与精灵灵感、有效冷却光环合计上限40%）"
 	if effectKind == TD_ITEM_EFFECT_KILL_GOLD
 		return "本路非首领击杀金币 +" + R2I(value + 0.5).toString() + "\n每路每波额外金币上限：本波非Boss基础击杀金币总额。"
 	if effectKind == TD_ITEM_EFFECT_ARMOR_SHRED
@@ -273,7 +273,7 @@ public function tdItemTooltip(int itemId) returns string
 		else if auraKind == TD_ITEM_AURA_ATTACK_SPEED
 			auraText = "攻速光环：标称攻击速度 +" + R2I(value * 100.0 + 0.5) + "%（装备个人攻速与装备攻速光环汇总载体上限120%）。"
 		else if auraKind == TD_ITEM_AURA_COOLDOWN
-			auraText = "冷却光环：嗜血、剑刃风暴与精灵主动技能冷却缩短" + R2I(value * 100.0 + 0.5) + "%；与个人装备、灵感合计上限40%。不刷新已开始的冷却。"
+			auraText = "冷却光环：主动技能冷却缩短" + R2I(value * 100.0 + 0.5) + "%（包括附身精灵的主动技能）；与个人装备、灵感合计上限40%。不刷新已开始的冷却。"
 		else if auraKind == TD_ITEM_AURA_ARMOR_ON_HIT
 			auraText = "破甲光环：授予己方塔普攻主目标破甲" + R2I(value + 0.5) + "，持续3秒。自身装备破甲与授予值取最高，不扩散邻敌。"
 		else if auraKind == TD_ITEM_AURA_ENEMY_SLOW

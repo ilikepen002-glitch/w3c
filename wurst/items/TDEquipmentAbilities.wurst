@@ -1,17 +1,14 @@
 package TDEquipmentAbilities
+import TDActiveSkillData
+import TDActiveCooldownRuntime
 import TDEquipmentRules
-import TDAuraState
 import TDPetState
 import TDTowerData
-import ClosureTimers
-import GameTimer
-import LinkedList
 import TDConfig
 import TDState
-import TDTowerBloodlustAutocast
 
 public function tdEquipmentAbilityLaneEligible(boolean gameOver, boolean active, boolean defeated, boolean finished) returns boolean
-	return not gameOver and active and not defeated and not finished
+	return tdActiveCooldownLaneEligible(gameOver, active, defeated, finished)
 
 function tdEquipmentAbilityTowerEligible(unit tower) returns boolean
 	if tower == null or not tower.isAlive() or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
@@ -19,51 +16,11 @@ function tdEquipmentAbilityTowerEligible(unit tower) returns boolean
 	let lane = GetPlayerId(GetOwningPlayer(tower))
 	return tdIsLanePlayer(lane) and tdEquipmentAbilityLaneEligible(tdIsGameOver(), tdIsLaneActive(lane), tdIsLaneDefeated(lane), tdIsLaneFinished(lane))
 
-class TDEquipmentCooldown
-	unit tower
-	int abilityId
-	int desiredLevel = 1
-	real readyAt = 0.0
-	construct(unit tower, int abilityId)
-		this.tower = tower
-		this.abilityId = abilityId
-
-LinkedList<TDEquipmentCooldown> tdEquipmentCooldowns = new LinkedList<TDEquipmentCooldown>()
-boolean tdEquipmentAbilitiesReady = false
-trigger tdEquipmentSpellTrigger = CreateTrigger()
-
-function tdEquipmentCooldownFor(unit tower, int abilityId) returns TDEquipmentCooldown
-	for record in tdEquipmentCooldowns
-		if record.tower == tower and record.abilityId == abilityId
-			return record
-	let newRecord = new TDEquipmentCooldown(tower, abilityId)
-	tdEquipmentCooldowns.add(newRecord)
-	return newRecord
-
 public function tdEquipmentCooldownCanApply(real now, real readyAt) returns boolean
-	return now >= readyAt
+	return tdActiveCooldownCanApply(now, readyAt)
 
 public function tdForgetEquipmentAbilities(unit tower)
-	let iter = tdEquipmentCooldowns.iterator()
-	while iter.hasNext()
-		let record = iter.next()
-		if record.tower == tower
-			iter.remove()
-			destroy record
-	destroy iter
-
-function tdEquipmentSyncCooldown(unit tower, int abilityId, int desiredLevel)
-	if tower.getAbilityLevel(abilityId) == 0
-		return
-	let record = tdEquipmentCooldownFor(tower, abilityId)
-	record.desiredLevel = desiredLevel
-	if abilityId == TD_ORC_BLOODLUST_ABILITY_ID
-		if tower.getAbilityLevel(abilityId) == desiredLevel
-			return
-	if tdEquipmentCooldownCanApply(getElapsedGameTime(), record.readyAt)
-		tower.setAbilityLevel(abilityId, desiredLevel)
-		if abilityId == TD_ORC_BLOODLUST_ABILITY_ID
-			tdRestoreBloodlustAutocast(tower)
+	tdForgetNativeActiveCooldowns(tower)
 
 function tdEquipmentSyncControl(unit tower, int abilityId, int level)
 	if tower.getAbilityLevel(abilityId) > 0
@@ -73,9 +30,7 @@ public function tdRefreshEquipmentAbilities(unit tower, real cooldownReduction, 
 	if not tdEquipmentAbilityTowerEligible(tower)
 		tdForgetEquipmentAbilities(tower)
 		return
-	let cooldownLevel = tdEquipmentPercentLevel(tdFinalCooldownReduction(cooldownReduction, tdPetCooldownReduction(tower), tdAuraPower(tower, TD_AURA_EQUIPMENT_COOLDOWN)), 40)
-	tdEquipmentSyncCooldown(tower, TD_ORC_BLOODLUST_ABILITY_ID, cooldownLevel)
-	tdEquipmentSyncCooldown(tower, TD_ORC_BLADESTORM_ABILITY_ID, cooldownLevel)
+	tdRefreshNativeActiveCooldowns(tower, cooldownReduction)
 	let controlLevel = tdEquipmentPercentLevel(controlPower, 60)
 	tdEquipmentSyncControl(tower, TD_DRYAD_POISON_ABILITY_ID, controlLevel)
 	tdEquipmentSyncControl(tower, TD_DRYAD_PERFECT_POISON_ABILITY_ID, controlLevel)
@@ -88,37 +43,5 @@ public function tdRefreshEquipmentAbilities(unit tower, real cooldownReduction, 
 	tdEquipmentSyncControl(tower, TD_FOOT_BASH_ABILITY_ID, controlLevel)
 	tdEquipmentSyncControl(tower, TD_FOOT_PERFECT_BASH_ABILITY_ID, controlLevel)
 
-function tdEquipmentSpellCast()
-	let abilityId = GetSpellAbilityId()
-	if abilityId != TD_ORC_BLOODLUST_ABILITY_ID and abilityId != TD_ORC_BLADESTORM_ABILITY_ID
-		return
-	let tower = GetTriggerUnit()
-	if not tdEquipmentAbilityTowerEligible(tower)
-		return
-	let record = tdEquipmentCooldownFor(tower, abilityId)
-	let cooldown = abilityId == TD_ORC_BLOODLUST_ABILITY_ID ? tdOrcBloodlustCooldown() : tdOrcBladestormCooldown()
-	record.readyAt = getElapsedGameTime() + cooldown * (1.0 - (tower.getAbilityLevel(abilityId) - 1) / 100.0)
-
 public function tdSetupEquipmentAbilities()
-	if tdEquipmentAbilitiesReady
-		return
-	tdEquipmentAbilitiesReady = true
-	tdEquipmentSpellTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
-	tdEquipmentSpellTrigger.addAction(function tdEquipmentSpellCast)
-	doPeriodically(0.10) cb ->
-		let iter = tdEquipmentCooldowns.iterator()
-		while iter.hasNext()
-			let record = iter.next()
-			if not tdEquipmentAbilityTowerEligible(record.tower) or record.tower.getAbilityLevel(record.abilityId) == 0
-				iter.remove()
-				destroy record
-			else if tdEquipmentCooldownCanApply(getElapsedGameTime(), record.readyAt)
-				if record.tower.getAbilityLevel(record.abilityId) != record.desiredLevel
-					record.tower.setAbilityLevel(record.abilityId, record.desiredLevel)
-					if record.abilityId == TD_ORC_BLOODLUST_ABILITY_ID
-						tdRestoreBloodlustAutocast(record.tower)
-		destroy iter
-		if tdIsGameOver()
-			destroy cb
-
-
+	tdSetupNativeActiveCooldowns()

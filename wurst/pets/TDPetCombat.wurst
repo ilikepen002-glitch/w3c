@@ -1,4 +1,6 @@
 package TDPetCombat
+import TDActiveSkillData
+import TDActiveCooldownRuntime
 import TDItemCatalogSchema
 import TDPetData
 import TDPetRules
@@ -237,7 +239,7 @@ function onAttack()
 				nearby.destr()
 				if not found
 					return
-			pet.readyAt = getElapsedGameTime() + (skill <= 12 ? 14.0 : 10.0) * (1.0 - tdFinalCooldownReduction(tdEquipmentEffectForItems(tdEquipmentItemId(host, 0), tdEquipmentItemId(host, 1), tdEquipmentItemId(host, 2), TD_ITEM_EFFECT_COOLDOWN), pet.skillPower(3), tdAuraPower(host, TD_AURA_EQUIPMENT_COOLDOWN)))
+			pet.readyAt = tdStartScriptActiveCooldown(host, tdActiveSkillDefinitionForPetSkill(skill).key, getElapsedGameTime())
 			resolveActive(pet, host, generation, center, skill, strength, base, context)
 
 public function tdPetSetupCombat()

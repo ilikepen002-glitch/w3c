@@ -1,0 +1,17 @@
+package TDActiveCooldownObjectGen
+import TDActiveSkillData
+import AbilityObjEditing
+import ErrorHandling
+
+public function tdConfigureActiveNativeCooldown(AbilityDefinition definition, int activeKey)
+	let active = tdActiveSkillDefinitionForKey(activeKey)
+	if active.driver != TD_ACTIVE_DRIVER_NATIVE_ABILITY or active.baseCooldown <= 0.0 or active.abilityId != definition.getNewId()
+		error("Native active object does not match its shared definition.")
+		return
+	// A native gameplay level cannot silently become a CDR physical level.
+	if definition.getLevels() != 1
+		error("Multi-gameplay-level active abilities require an explicit CDR encoding.")
+		return
+	definition.setLevels(TD_ACTIVE_NATIVE_LEVEL_COUNT)
+	for level = 1 to TD_ACTIVE_NATIVE_LEVEL_COUNT
+		definition.setCooldown(level, tdActiveCooldownDuration(active.baseCooldown, tdActiveCooldownReductionAtNativeLevel(level)))

@@ -393,10 +393,27 @@ def _pet_rule_functions(script):
                  'ModuloInteger': lambda value, divisor: value % divisor}
     for name, helper in helpers.items():
         functions[name] = lambda *args, helper=helper: _run_scalar_helper(helper, args, functions=functions)
+    if re.search(r'^function tdActiveSkillDefinitionCount takes', script, re.M):
+        # The shared definition lookup contains a real compiled loop and tuple
+        # return globals. Use the existing bounded JASS runtime instead of a
+        # second Python active-skill list or the old scalar-only subset.
+        from VerifyActiveCooldownContract import ActiveJassRuntime
+        active_runtime = ActiveJassRuntime(script)
+        active_ids = set()
+        for index in range(active_runtime.invoke('tdActiveSkillDefinitionCount')):
+            active_runtime.invoke('tdActiveSkillDefinitionAt', index)
+            skill = active_runtime.globals['tdActiveSkillDefinitionAt_return_petSkillId']
+            if skill >= 0:
+                active_ids.add(skill)
+        functions['tdPetSkillIsActive'] = lambda skill: active_runtime.invoke('tdPetSkillIsActive', skill)
+    else:
+        # Legacy fixtures have the old current16 classifier. Their independent
+        # historical matrix remains intact, with no new-MPQ claim.
+        active_ids = set(range(11, 16))
     for skill in range(16):
         require(functions['tdPetSkillIsNumeric'](skill) is (skill <= 3),
                 f'Packaged numeric skill classification changed for {skill}')
-        require(functions['tdPetSkillIsActive'](skill) is (skill >= 11),
+        require(functions['tdPetSkillIsActive'](skill) is (skill in active_ids),
                 f'Packaged active skill classification changed for {skill}')
         require(functions['tdPetSkillIsUniversal'](skill) is (skill >= 4 and skill not in (9, 10)),
                 f'Packaged universal skill classification changed for {skill}')
@@ -414,7 +431,7 @@ def verify_skill_allowed(script):
         expected = (not bool(mask & (1 << skill)) and
                     (skill <= 3 if slot == 0 else
                      skill >= 4 and (slot != 1 or skill not in (9, 10)) and
-                     (not has_active or skill < 11)))
+                     (not has_active or not functions['tdPetSkillIsActive'](skill))))
         actual = _run_scalar_helper(helper, (skill, slot, mask, has_active), functions=functions)
         require(actual is expected,
                 f'Pet skill allowed skill={skill} slot={slot} active={has_active} mask={mask}: '

@@ -53,9 +53,21 @@ class EquipmentPhaseB(unittest.TestCase):
         ability = source('wurst/items/TDEquipmentAbilities.wurst')
         self.assertNotIn('tdPetGlobalAura',pet)
         self.assertNotIn('enumUnitsInRect',pet)
-        self.assertIn('tdFinalCooldownReduction(',pet)
-        self.assertIn('tdFinalCooldownReduction(cooldownReduction, tdPetCooldownReduction(tower), tdAuraPower(tower',ability)
-        self.assertIn('tower.getAbilityLevel(abilityId) - 1',ability)
+        runtime = source('wurst/abilities/TDActiveCooldownRuntime.wurst')
+        state = source('wurst/abilities/TDActiveSkillData.wurst')
+        self.assertIn('tdStartScriptActiveCooldown(host, tdActiveSkillDefinitionForPetSkill(skill).key, getElapsedGameTime())', pet)
+        self.assertIn('tdRefreshNativeActiveCooldowns(tower, cooldownReduction)', ability)
+        self.assertIn('tdFinalCooldownReduction(personalReduction, tdPetCooldownReduction(tower), tdAuraPower(tower', runtime)
+        self.assertIn('record.startCast(getElapsedGameTime(), active.baseCooldown, actualLevel)', runtime)
+        self.assertIn('tdActiveCooldownReductionAtNativeLevel(actualLevel)', state)
+        # Evaluate actual production aggregation, rather than duplicating its formula.
+        import sys
+        sys.path.insert(0, str(ROOT / 'tools'))
+        from VerifyActiveCooldownContract import SourceScalarEvaluator, read_sources
+        rules = SourceScalarEvaluator(read_sources())
+        self.assertAlmostEqual(rules.call('tdFinalCooldownReduction', [.10, .12, .18]), .40)
+        self.assertAlmostEqual(rules.call('tdFinalCooldownReduction', [0, .12, .18]), .30)
+        self.assertAlmostEqual(rules.call('tdFinalCooldownReduction', [-1, 0, .18]), .18)
     def test_native_only_movement_removed_and_percent_carriers_keep_parent_semantics(self):
         objects = source('wurst/items/TDEquipmentObjectGen.wurst')
         poison = objects[objects.index('public function tdConfigureEquipmentPoison'):objects.index('public function tdEquipmentSlowAuraReduction')]
@@ -87,9 +99,10 @@ class EquipmentPhaseB(unittest.TestCase):
                         offer.index('aggregate.offer(tdEquipmentAuraIdentity(kind)'))
         self.assertIn('tdPetBindingValid(pet, target, pet.generation)',runtime)
         self.assertIn('tdPetUnlockedSlots(pet.level)',runtime)
-        self.assertIn('skill >= 11 and skill <= 15 and tdPetSkillFitsHost(skill, target)',runtime)
-        self.assertIn('TD_ORC_BLOODLUST_ABILITY_ID',runtime)
-        self.assertIn('TD_ORC_BLADESTORM_ABILITY_ID',runtime)
+        self.assertIn('tdPetSkillIsActive(skill) and tdPetSkillFitsHost(skill, target)',runtime)
+        self.assertIn('tdAuraCooldownTargetSupported(tdHasNativeActiveCooldown(target), binding, activeUnlocked)',runtime)
+        self.assertNotIn('TD_ORC_BLOODLUST_ABILITY_ID',runtime)
+        self.assertNotIn('TD_ORC_BLADESTORM_ABILITY_ID',runtime)
     def test_native_percent_identity_has_only_one_buff_emitter(self):
         state = source('wurst/auras/TDAuraState.wurst')
         self.assertIn('identity <= TD_AURA_COMMANDER ? tdAuraCarrier(identity, rank) : stateBuff.abilId',state)

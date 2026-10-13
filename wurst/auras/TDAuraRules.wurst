@@ -83,8 +83,8 @@ public class TDAuraTimedContribution
 	function offerIfActive(TDAuraAggregate aggregate, real now)
 		aggregate.offer(identity, rank, power, now < expiresAt)
 
-public function tdAuraCooldownTargetSupported(boolean hasBloodlust, boolean hasBladestorm, boolean petBindingValid, boolean unlockedActiveSkill) returns boolean
-	if hasBloodlust or hasBladestorm
+public function tdAuraCooldownTargetSupported(boolean hasNativeActive, boolean petBindingValid, boolean unlockedActiveSkill) returns boolean
+	if hasNativeActive
 		return true
 	return petBindingValid and unlockedActiveSkill
 

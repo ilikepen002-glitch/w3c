@@ -111,6 +111,10 @@ class ControlledCurrentItemsTests(unittest.TestCase):
                 verify_current_items(items)
 
 
+def current_validate(*args):
+    return validate(*args, shared_active_cooldown=True, current_pet_ui=True)
+
+
 class ActualCurrentTooltipTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -121,7 +125,7 @@ class ActualCurrentTooltipTests(unittest.TestCase):
         cls.a = ability_objects(cls.map.extract('war3map.w3a'))
         cls.u = unit_objects(cls.map.extract('war3map.w3u'))
         cls.i = unit_objects(cls.map.extract('war3map.w3t'))
-        cls.count = validate(cls.a, cls.u, cls.i)
+        cls.count = current_validate(cls.a, cls.u, cls.i)
 
     def mutate_text(self, uid, level, old, new, reason):
         a = deepcopy(self.a)
@@ -129,7 +133,27 @@ class ActualCurrentTooltipTests(unittest.TestCase):
         self.assertEqual(text.count(old), 1, uid + ': nonunique/missing actual-MPQ mutation needle')
         a[uid][1]['aub1', level, 0] = 3, text.replace(old, new, 1)
         with self.assertRaisesRegex(ValueError, reason):
-            validate(a, self.u, self.i)
+            current_validate(a, self.u, self.i)
+
+    def test_actual_shared_active_text_rejects_retired_whitelist_and_omitted_pet(self):
+        items = deepcopy(self.i)
+        original = items['iP08']['utub']
+        self.assertIn('主动技能冷却缩短18%（包括附身精灵的主动技能）', original)
+        for changed in (original.replace('主动技能冷却缩短18%（包括附身精灵的主动技能）', '嗜血、剑刃风暴与精灵主动技能冷却缩短18%', 1),
+                        original.replace('（包括附身精灵的主动技能）', '', 1)):
+            items['iP08']['utub'] = changed
+            with self.subTest(text=changed), self.assertRaisesRegex(ValueError, 'iP08'):
+                current_validate(self.a, self.u, items)
+
+    def test_actual_split_ui_preserves_cost_risk_and_purple_release_rejects_mutation(self):
+        for uid, old in (('Pm02', '保留旧技能也会消耗洗练石'), ('Pm06', '1开栏石'),
+                         ('Pm07', '紫色精灵必得1开栏石'), ('Pm07', '先解绑'),
+                         ('Pm0B', '无法撤销'), ('Pm09', '洗练石不返还')):
+            self.mutate_text(uid, 1, old, '省略', uid)
+
+    def test_historical_default_still_requires_combined_cultivation_contract(self):
+        with self.assertRaisesRegex(ValueError, 'cultivation risk/cost missing'):
+            validate(self.a, self.u, self.i, shared_active_cooldown=True)
 
     def test_actual_packaged_current40_all_tooltips(self):
         self.assertGreater(self.count, 900)
@@ -137,13 +161,13 @@ class ActualCurrentTooltipTests(unittest.TestCase):
     def test_actual_last_control_poison_level_cannot_restore_native_move_or_stale_text(self):
         a = deepcopy(self.a); a['A106'][1]['Spo2', 61, 2] = 2, .352
         with self.assertRaisesRegex(ValueError, 'A106/61: native poison move double application'):
-            validate(a, self.u, self.i)
+            current_validate(a, self.u, self.i)
         self.mutate_text('A106', 61, '35.2%', '22%', 'A106/61')
 
     def test_actual_last_bash_proc_and_shared_window_remain_checked(self):
         a = deepcopy(self.a); a['A113'][1]['Hbh1', 61, 1] = 2, 26.4
         with self.assertRaisesRegex(ValueError, 'A113/61: disabled native bash Hbh1'):
-            validate(a, self.u, self.i)
+            current_validate(a, self.u, self.i)
         self.mutate_text('A113', 61, '26.4%', '22%', 'A113/61')
         self.mutate_text('A104', 61, '普通敌人眩晕0.9秒', '普通敌人眩晕1秒', 'A104/61')
         self.mutate_text('A104', 61, '不同塔共享每名敌人的盾击窗口', '独立窗口', 'shared shield window')
@@ -159,19 +183,19 @@ class ActualCurrentTooltipTests(unittest.TestCase):
     def test_actual_missing_current_item_and_wrong_trial_percent_are_checked(self):
         items = deepcopy(self.i); del items['iP10']
         with self.assertRaisesRegex(ValueError, 'equipment identity set mismatch'):
-            validate(self.a, self.u, items)
+            current_validate(self.a, self.u, items)
         items = deepcopy(self.i)
         old = '普攻命中首领或金币试炼主目标时，追加本次普攻伤害的25%'
         self.assertEqual(items['iP02']['utub'].count(old), 1)
         items['iP02']['utub'] = items['iP02']['utub'].replace(old, old.replace('25%', '45%'), 1)
         with self.assertRaisesRegex(ValueError, 'iP02'):
-            validate(self.a, self.u, items)
+            current_validate(self.a, self.u, items)
         items = deepcopy(self.i)
         old = '普攻命中生命值不高于50%的主目标时，追加本次普攻伤害的20%'
         self.assertEqual(items['iB02']['utub'].count(old), 1)
         items['iB02']['utub'] = items['iB02']['utub'].replace(old, '普攻命中首领或金币试炼主目标时，追加本次普攻伤害的25%', 1)
         with self.assertRaisesRegex(ValueError, 'iB02'):
-            validate(self.a, self.u, items)
+            current_validate(self.a, self.u, items)
 
     def test_actual_map_cannot_enter_legacy72_profile(self):
         from trial_formal72_fixture import Formal72SourceFixture

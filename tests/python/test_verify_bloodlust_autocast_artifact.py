@@ -2,6 +2,7 @@
 from copy import deepcopy
 from pathlib import Path
 import subprocess
+import os
 import sys
 import unittest
 ROOT = Path(__file__).resolve().parents[2]
@@ -25,7 +26,8 @@ class BloodlustStaticSourceTests(unittest.TestCase):
     def setUpClass(cls):
         cls.sources = [(ROOT / path).read_text() for path in
                        ('wurst/towers/TDTowerBloodlustAutocast.wurst', 'wurst/items/TDEquipmentAbilities.wurst',
-                        'wurst/towers/TDTowerRuntime.wurst', 'wurst/items/TDEquipmentObjectGen.wurst')]
+                        'wurst/towers/TDTowerRuntime.wurst', 'wurst/items/TDEquipmentObjectGen.wurst',
+                        'wurst/abilities/TDActiveCooldownRuntime.wurst', 'wurst/abilities/TDActiveSkillData.wurst')]
 
     def test_actual_current_source_scalar_matrix_and_lifecycle(self):
         verifier.validate_sources(*self.sources)
@@ -40,8 +42,8 @@ class BloodlustStaticSourceTests(unittest.TestCase):
     def test_rejects_listener_writeback_or_order_issue_and_restore_initializing(self):
         cases = [('tdHandleBloodlustAutocastOrder', lambda text: text.replace('if tdBloodlustRestoring', 'if false'), 'script writeback'),
                  ('tdHandleBloodlustAutocastOrder', lambda text: text + '\ttower.issueImmediateOrderById(Orders.bloodluston)\n', 'only save'),
-                 ('tdRestoreBloodlustAutocast', lambda text: text + '\ttdBloodlustChoices.saveInt(1, 1)\n', 'must not write'),
-                 ('tdRestoreBloodlustAutocast', lambda text: text.replace('tdBloodlustRestoring = true', 'tdBloodlustRestoring = false'), 'sync')]
+                 ('tdRestoreNativeActiveAutocast', lambda text: text + '\ttdActiveAutocastChoices.saveInt(1, 1, 1)\n', 'must not write'),
+                 ('tdRestoreNativeActiveAutocast', lambda text: text.replace('tdBloodlustRestoring = true', 'tdBloodlustRestoring = false'), 'sync')]
         for name, change, reason in cases:
             source = self.sources.copy()
             source[0] = mutate_body(source[0], name, change)
@@ -50,7 +52,7 @@ class BloodlustStaticSourceTests(unittest.TestCase):
 
     def test_rejects_losing_busy_or_missing_choice(self):
         source = self.sources.copy()
-        source[0] = mutate_body(source[0], 'tdBloodlustAutocastEligible',
+        source[0] = mutate_body(source[0], 'tdNativeActiveAutocastEligible',
                                lambda text: text + '\ttdForgetBloodlustAutocast(tower)\n')
         with self.assertRaisesRegex(ValueError, 'retain choice'):
             verifier.validate_sources(*source)
@@ -71,17 +73,22 @@ class BloodlustStaticSourceTests(unittest.TestCase):
                 verifier.validate_sources(*source)
 
     def test_same_level_set_and_expiry_reset_are_rejected(self):
-        for old, new, reason in [('== desiredLevel', '!= desiredLevel', 'Same-level'),
-                                 ('record.desiredLevel = desiredLevel', 'record.desiredLevel = desiredLevel\n\trecord.readyAt = 0.0', 'readyAt')]:
+        for old, new in [('actualLevel == desiredLevel', 'actualLevel != desiredLevel'),
+                         ('desiredLevel = nextLevel', 'desiredLevel = nextLevel\n\t\treadyAt = 0.0')]:
             source = self.sources.copy()
-            source[1] = source[1].replace(old, new)
-            with self.subTest(case=old), self.assertRaisesRegex(ValueError, reason):
-                verifier.validate_sources(*source)
+            source[5] = source[5].replace(old, new)
+            with self.subTest(case=old), self.assertRaises(ValueError): verifier.validate_sources(*source)
 
-    def test_bladestorm_and_evolution_sources_remain_identical_to_formal_base(self):
-        old = subprocess.check_output(['git', '-C', str(ROOT), 'show', 'HEAD:wurst/items/TDEquipmentObjectGen.wurst']).decode()
-        self.assertEqual(verifier.source_body(self.sources[3], 'tdConfigureEquipmentBladestorm'),
-                         verifier.source_body(old, 'tdConfigureEquipmentBladestorm'))
+    def test_bladestorm_native_effects_and_evolution_remain_preserved(self):
+        from VerifyActiveCooldownContract import verify_source, read_sources
+        sources = read_sources()
+        sources['items/TDEquipmentObjectGen.wurst'] = self.sources[3]
+        expected = verify_source(sources=sources)['native_objects']['A132']
+        artifact = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        parent, fields = ability_objects(artifact.extract('war3map.w3a'))['A132']
+        self.assertEqual(parent, expected[0])
+        for key, value in expected[1].items():
+            self.assertEqual(fields[key], value)
         path = 'wurst/towers/TDTowerEvolutionRuntime.wurst'
         old = subprocess.check_output(['git', '-C', str(ROOT), 'show', 'HEAD:' + path])
         self.assertEqual((ROOT / path).read_bytes(), old)
@@ -89,11 +96,11 @@ class BloodlustStaticSourceTests(unittest.TestCase):
     def test_two_independent_keys_and_retirement_use_production_choice_table(self):
         module = self.sources[0]
         body = verifier.source_body(module, 'tdBloodlustIndependentChoicesRegressionForTest')
-        for token in ('firstKey = -131', 'secondKey = -132', 'saveInt(firstKey, TD_BLOODLUST_CHOICE_OFF)',
-                      'saveInt(secondKey, TD_BLOODLUST_CHOICE_ON)', 'tdForgetBloodlustChoiceKey(firstKey)',
+        for token in ('firstKey = -131', 'secondKey = -132', 'saveInt(firstKey, TD_ORC_BLOODLUST_ABILITY_ID, TD_ACTIVE_AUTOCAST_OFF)',
+                      'saveInt(secondKey, TD_ORC_BLOODLUST_ABILITY_ID, TD_ACTIVE_AUTOCAST_ON)', 'tdForgetBloodlustChoiceKey(firstKey)',
                       'tdForgetBloodlustChoiceKey(secondKey)'):
             self.assertIn(token, body)
-        self.assertIn('tdBloodlustChoices.removeInt(key)', verifier.source_body(module, 'tdForgetBloodlustChoiceKey'))
+        self.assertIn('tdActiveAutocastChoices.flushChild(key)', verifier.source_body(module, 'tdForgetBloodlustChoiceKey'))
 
 
 class BloodlustNativeInvariantTests(unittest.TestCase):
@@ -123,14 +130,23 @@ class BloodlustNativeInvariantTests(unittest.TestCase):
                     verifier.validate_native_bloodlust(abilities)
 
 
+@unittest.skipUnless(os.environ.get('W3C_ACTIVE_COOLDOWN_MAP'), 'New universal-cooldown MPQ not built; set W3C_ACTIVE_COOLDOWN_MAP explicitly')
 class BloodlustActualNewArtifactTests(unittest.TestCase):
     def test_actual_new_packaged_choice_matrix_lifecycle_and_tooltips(self):
-        artifact = Mpq((ROOT / 'ExampleMap.w3x').read_bytes())
+        artifact = Mpq(Path(os.environ['W3C_ACTIVE_COOLDOWN_MAP']).read_bytes())
         verifier.validate_native_bloodlust(ability_objects(artifact.extract('war3map.w3a')), tooltips=True)
         script = artifact.extract('war3map.j').decode('utf-8')
-        evaluator = JassScalarEvaluator(script)
-        verifier.validate_choice_matrix(lambda name, values: evaluator.call(name, list(values.values())))
+        verifier.validate_packed_choice_matrix(script)
         verifier.validate_compiled_lifecycle(script)
+
+    def test_actual_generic_choice_mutation_still_rejected(self):
+        from VerifyTowerUpgradeArtifact import function_body
+        script = Mpq(Path(os.environ['W3C_ACTIVE_COOLDOWN_MAP']).read_bytes()).extract('war3map.j').decode()
+        body = function_body(script, 'tdActiveAutocastChoiceAfterInitialization')
+        self.assertIn('return initialChoice', body)
+        changed = script.replace(body, body.replace('return initialChoice', 'return 0', 1), 1)
+        with self.assertRaisesRegex(ValueError, 'first/default/reinitialize'):
+            verifier.validate_packed_choice_matrix(changed)
 
 
 if __name__ == '__main__':

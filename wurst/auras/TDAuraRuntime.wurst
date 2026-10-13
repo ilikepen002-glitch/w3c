@@ -1,4 +1,5 @@
 package TDAuraRuntime
+import TDActiveCooldownRuntime
 import TDAuraState
 import TDEnemySlowState
 import TDItemData
@@ -73,9 +74,9 @@ function tdAuraCooldownTargetEligible(unit target) returns boolean
 		binding = tdPetBindingValid(pet, target, pet.generation)
 		for slot = 0 to IMinBJ(pet.skillCount, tdPetUnlockedSlots(pet.level)) - 1
 			let skill = pet.skillAt(slot)
-			if skill >= 11 and skill <= 15 and tdPetSkillFitsHost(skill, target)
+			if tdPetSkillIsActive(skill) and tdPetSkillFitsHost(skill, target)
 				activeUnlocked = true
-	return tdAuraCooldownTargetSupported(target.getAbilityLevel(TD_ORC_BLOODLUST_ABILITY_ID) > 0, target.getAbilityLevel(TD_ORC_BLADESTORM_ABILITY_ID) > 0, binding, activeUnlocked)
+	return tdAuraCooldownTargetSupported(tdHasNativeActiveCooldown(target), binding, activeUnlocked)
 
 function tdEquipmentAuraIdentity(int kind) returns int
 	if kind == TD_ITEM_AURA_ATTACK

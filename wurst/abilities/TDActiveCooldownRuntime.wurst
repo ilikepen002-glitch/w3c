@@ -1,0 +1,135 @@
+package TDActiveCooldownRuntime
+import TDActiveSkillData
+import TDItemData
+import TDEquipmentRules
+import TDAuraState
+import TDPetState
+import TDTowerCatalogData
+import TDTowerBloodlustAutocast
+import TDConfig
+import TDState
+import ClosureTimers
+import GameTimer
+import LinkedList
+import ErrorHandling
+
+public function tdActiveCooldownLaneEligible(boolean gameOver, boolean active, boolean defeated, boolean finished) returns boolean
+	return not gameOver and active and not defeated and not finished
+
+function tdActiveCooldownHostEligible(unit tower) returns boolean
+	if tower == null or not tower.isAlive() or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return false
+	let lane = GetPlayerId(GetOwningPlayer(tower))
+	return tdIsLanePlayer(lane) and tdActiveCooldownLaneEligible(tdIsGameOver(), tdIsLaneActive(lane), tdIsLaneDefeated(lane), tdIsLaneFinished(lane))
+
+public function tdHostActiveCooldownReduction(unit tower) returns real
+	let personal = tdEquipmentEffectForItems(tdEquipmentItemId(tower, 0), tdEquipmentItemId(tower, 1), tdEquipmentItemId(tower, 2), TD_ITEM_EFFECT_COOLDOWN)
+	return tdFinalCooldownReduction(personal, tdPetCooldownReduction(tower), tdAuraPower(tower, TD_AURA_EQUIPMENT_COOLDOWN))
+
+public function tdStartScriptActiveCooldown(unit host, int activeKey, real now) returns real
+	let active = tdActiveSkillDefinitionForKey(activeKey)
+	if active.driver != TD_ACTIVE_DRIVER_PET_PROC or active.baseCooldown <= 0.0
+		error("Script active cooldown requires a defined script driver.")
+		return now
+	return tdActiveCooldownReadyAt(now, active.baseCooldown, tdHostActiveCooldownReduction(host))
+
+class TDNativeActiveCooldown extends TDActiveNativeCooldownState
+	unit tower
+	int abilityId
+	construct(unit tower, int abilityId)
+		super(tower.getAbilityLevel(abilityId))
+		this.tower = tower
+		this.abilityId = abilityId
+
+LinkedList<TDNativeActiveCooldown> tdNativeActiveCooldowns = new LinkedList<TDNativeActiveCooldown>()
+boolean tdActiveCooldownReady = false
+trigger tdActiveCooldownSpellTrigger = CreateTrigger()
+
+function tdNativeActiveCooldownFor(unit tower, int abilityId) returns TDNativeActiveCooldown
+	for record in tdNativeActiveCooldowns
+		if record.tower == tower and record.abilityId == abilityId
+			return record
+	let newRecord = new TDNativeActiveCooldown(tower, abilityId)
+	tdNativeActiveCooldowns.add(newRecord)
+	return newRecord
+
+public function tdForgetNativeActiveCooldowns(unit tower)
+	let iter = tdNativeActiveCooldowns.iterator()
+	while iter.hasNext()
+		let record = iter.next()
+		if record.tower == tower
+			iter.remove()
+			destroy record
+	destroy iter
+
+public function tdHasNativeActiveCooldown(unit tower) returns boolean
+	if tower == null
+		return false
+	for index = 0 to tdActiveSkillDefinitionCount() - 1
+		let active = tdActiveSkillDefinitionAt(index)
+		if active.driver == TD_ACTIVE_DRIVER_NATIVE_ABILITY and tower.getAbilityLevel(active.abilityId) > 0
+			return true
+	return false
+
+function tdApplyNativeActiveCooldownLevel(TDNativeActiveCooldown record, real now)
+	let tower = record.tower
+	let actualLevel = tower.getAbilityLevel(record.abilityId)
+	let busy = tdPetBusyTowers.hasBoolean(tower.getHandleId())
+	if not record.needsLevel(now, actualLevel, busy)
+		return
+	if not tdActiveCooldownNativeLevelValid(actualLevel) or not tdActiveCooldownNativeLevelValid(record.desiredLevel)
+		error("Native active gameplay levels must not be treated as cooldown levels.")
+		return
+	tower.setAbilityLevel(record.abilityId, record.desiredLevel)
+	tdRestoreNativeActiveAutocast(tower, record.abilityId)
+
+public function tdRefreshNativeActiveCooldowns(unit tower, real personalReduction)
+	if not tdActiveCooldownHostEligible(tower)
+		tdForgetNativeActiveCooldowns(tower)
+		return
+	// Caller owns personalReduction, including the inventory excludedItem snapshot.
+	let reduction = tdFinalCooldownReduction(personalReduction, tdPetCooldownReduction(tower), tdAuraPower(tower, TD_AURA_EQUIPMENT_COOLDOWN))
+	let desiredLevel = tdActiveCooldownNativeLevel(reduction)
+	let now = getElapsedGameTime()
+	for index = 0 to tdActiveSkillDefinitionCount() - 1
+		let active = tdActiveSkillDefinitionAt(index)
+		if active.driver != TD_ACTIVE_DRIVER_NATIVE_ABILITY or tower.getAbilityLevel(active.abilityId) <= 0
+			continue
+		let record = tdNativeActiveCooldownFor(tower, active.abilityId)
+		record.requestLevel(desiredLevel)
+		tdApplyNativeActiveCooldownLevel(record, now)
+
+function tdNativeActiveSpellCast()
+	let active = tdActiveSkillDefinitionForAbility(GetSpellAbilityId())
+	if active.driver != TD_ACTIVE_DRIVER_NATIVE_ABILITY
+		return
+	let tower = GetTriggerUnit()
+	if not tdActiveCooldownHostEligible(tower) or tdPetBusyTowers.hasBoolean(tower.getHandleId())
+		return
+	let actualLevel = tower.getAbilityLevel(active.abilityId)
+	let record = tdNativeActiveCooldownFor(tower, active.abilityId)
+	// Only a successful native cast owns readyAt; desiredLevel is for the next cast.
+	record.startCast(getElapsedGameTime(), active.baseCooldown, actualLevel)
+
+public function tdSetupNativeActiveCooldowns()
+	if tdActiveCooldownReady
+		return
+	tdActiveCooldownReady = true
+	tdActiveCooldownSpellTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+	tdActiveCooldownSpellTrigger.addAction(function tdNativeActiveSpellCast)
+	doPeriodically(0.10) cb ->
+		let now = getElapsedGameTime()
+		let iter = tdNativeActiveCooldowns.iterator()
+		while iter.hasNext()
+			let record = iter.next()
+			if not tdActiveCooldownHostEligible(record.tower)
+				iter.remove()
+				destroy record
+			else
+				// Work/temporary absence must retain unexpired records and choices.
+				// Removing/re-adding a cooling native is unsupported on 1.27a; the
+				// source/artifact contract rejects rawcode replacement paths.
+				tdApplyNativeActiveCooldownLevel(record, now)
+		destroy iter
+		if tdIsGameOver()
+			destroy cb

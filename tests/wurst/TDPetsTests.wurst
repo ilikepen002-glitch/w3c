@@ -293,3 +293,9 @@ import TDState
 		(tdPetWildHoldPosition(lane).distanceTo(tdLaneExitPosition(lane)) >= 599.0).assertTrue()
 
 
+
+@Test function inspirationDescribesAllHostActivesWithoutSkillNameWhitelist()
+	let description = tdPetSkillDescriptionById(3, 4)
+	description.contains("全部主动技能冷却缩短").assertTrue()
+	description.contains("包括精灵主动技能").assertTrue()
+	description.contains("上限40%").assertTrue()

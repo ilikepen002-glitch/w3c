@@ -1,4 +1,6 @@
 package TDEquipmentObjectGen
+import TDActiveSkillData
+import TDActiveCooldownObjectGen
 import TDTooltipText
 import TDEquipmentRules
 import TDShieldRules
@@ -7,32 +9,30 @@ import TDTowerData
 import ChannelAbilityPreset
 
 public function tdConfigureEquipmentBloodlust(AbilityDefinitionBloodlust definition)
-	definition.setLevels(41)
-	for level = 1 to 41
+	tdConfigureActiveNativeCooldown(definition, TD_ACTIVE_BLOODLUST)
+	for level = 1 to TD_ACTIVE_NATIVE_LEVEL_COUNT
 		definition.setTooltipNormal(level, "嗜血")
-		definition.setTooltipNormalExtended(level, "自身攻击速度提高" + tdBonusPercentString(tdOrcBloodlustAttackSpeedBonus()) + "，持续" + tdTooltipNumber(tdOrcBloodlustDuration()) + "秒。|n冷却" + tdTooltipNumber((tdOrcBloodlustCooldown() * (1.0 - (level - 1) / 100.0))) + "秒；可自动施放，获得时默认开启，可手动关闭。")
+		definition.setTooltipNormalExtended(level, "自身攻击速度提高" + tdBonusPercentString(tdOrcBloodlustAttackSpeedBonus()) + "，持续" + tdTooltipNumber(tdOrcBloodlustDuration()) + "秒。|n冷却" + tdTooltipNumber(tdActiveCooldownDuration(tdOrcBloodlustCooldown(), tdActiveCooldownReductionAtNativeLevel(level))) + "秒；可自动施放，获得时默认开启，可手动关闭。")
 		definition.setMovementSpeedIncrease(level, tdOrcBloodlustMoveSpeedBonus())
 		definition.setAttackSpeedIncrease(level, tdOrcBloodlustAttackSpeedBonus())
 		definition.setScalingFactor(level, 1.0)
 		definition.setDurationNormal(level, tdOrcBloodlustDuration())
 		definition.setDurationHero(level, tdOrcBloodlustDuration())
-		definition.setCooldown(level, tdOrcBloodlustCooldown() * (1.0 - (level - 1) / 100.0))
 		definition.setManaCost(level, 0)
 		definition.setCastRange(level, 0.0)
 		definition.setTargetsAllowed(level, tdTowerBloodlustTargetsAllowed())
 		definition.setBuffs(level, "Bblo")
 
 public function tdConfigureEquipmentBladestorm(AbilityDefinitionSlow definition)
-	definition.setLevels(41)
-	for level = 1 to 41
+	tdConfigureActiveNativeCooldown(definition, TD_ACTIVE_BLADESTORM)
+	for level = 1 to TD_ACTIVE_NATIVE_LEVEL_COUNT
 		definition.setTooltipNormal(level, "剑刃风暴")
-		definition.setTooltipNormalExtended(level, "原地旋转" + tdTooltipNumber(tdOrcBladestormDuration()) + "秒，对自身" + tdOrcBladestormRadius().toInt().toString() + "范围内敌人每秒造成" + tdOrcBladestormDamagePerSecond().toInt().toString() + "伤害。|n冷却" + tdTooltipNumber((tdOrcBladestormCooldown() * (1.0 - (level - 1) / 100.0))) + "秒；可自动施放。范围不受装备射程影响。")
+		definition.setTooltipNormalExtended(level, "原地旋转" + tdTooltipNumber(tdOrcBladestormDuration()) + "秒，对自身" + tdOrcBladestormRadius().toInt().toString() + "范围内敌人每秒造成" + tdOrcBladestormDamagePerSecond().toInt().toString() + "伤害。|n冷却" + tdTooltipNumber(tdActiveCooldownDuration(tdOrcBladestormCooldown(), tdActiveCooldownReductionAtNativeLevel(level))) + "秒；可自动施放。范围不受装备射程影响。")
 		definition.setTooltipTurnOff(level, "剑刃风暴")
 		definition.setTooltipTurnOffExtended(level, "关闭自动施放，改为手动释放剑刃风暴。")
 		definition.setMovementSpeedFactor(level, 0.0)
 		definition.setAttackSpeedFactor(level, 0.0)
 		definition.setAlwaysAutocast(level, true)
-		definition.setCooldown(level, tdOrcBladestormCooldown() * (1.0 - (level - 1) / 100.0))
 		definition.setManaCost(level, 0)
 		definition.setCastRange(level, tdOrcBladestormRadius())
 		definition.setTargetsAllowed(level, "enemy,ground,air,organic")
