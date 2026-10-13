@@ -301,6 +301,21 @@ function installManagerSession(int lane, int mode, int key, TDPet pet, int nonce
 	session.admitCommand(0, 102, abilityId, 1).assertEquals(TD_PET_COMMAND_INVALID)
 	tdPetCloseManager(0)
 
+@Test function managerSharedListenerIgnoresUnrelatedSpellsWithoutConsumingSession()
+	let pet = managerPet(0)
+	let session = installManagerSession(0, TD_PET_UI_CULTIVATE, 101, pet, 0)
+	// A shared spell listener also sees farmer, combat and unmounted UI spells.
+	session.admitCommand(0, 101, TD_PET_CAPTURE_ABILITY_ID, 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 101, TD_PET_COLLECTION_ABILITY_ID, 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 101, tdPetListAbilityId(0, 1, 2, 2), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 101, 0, 0).assertEquals(TD_PET_COMMAND_INVALID)
+	session.active.assertTrue()
+	session.currentKey.assertEquals(101)
+	session.epoch.assertEquals(1)
+	session.admitCommand(0, 101, tdPetManagerCommandId(TD_PET_ACTION_REROLL_FIRST), 1).assertEquals(TD_PET_ACTION_REROLL_FIRST)
+	session.active.assertFalse()
+	tdPetCloseManager(0)
+
 @Test function managerProductionStableRefreshEmptyAndPollKeepIdentity()
 	let pet = managerPet(0)
 	tdPetRerollStones[0] = 1

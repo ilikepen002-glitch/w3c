@@ -115,6 +115,17 @@ if errorlevel 1 (
 	echo Active cooldown artifact gate failed. Map was not published or deployed.
 	exit /b 1
 )
+rem Prevent per-button registration from exhausting gameplay bootstrap again.
+python tools\VerifyPetStartupArtifact.py "%SOURCE_MAP%"
+if errorlevel 1 (
+	echo Pet startup artifact gate failed. Map was not published or deployed.
+	exit /b 1
+)
+python tools\VerifyStartupArtifact.py "%SOURCE_MAP%"
+if errorlevel 1 (
+	echo Gameplay startup artifact gate failed. Map was not published or deployed.
+	exit /b 1
+)
 copy /y "%SOURCE_MAP%" "ExampleMap.w3x" >nul
 if errorlevel 1 (
 	echo Failed to publish the built map to ExampleMap.w3x.

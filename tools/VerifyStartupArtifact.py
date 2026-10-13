@@ -51,9 +51,7 @@ class StartupRuntime(PetStartupRuntime):
         return super().native(name, args)
 
 
-def verify(script, expected_pet_registrations=153):
-    # Historical fixtures retain 153; the collection manager contract is 515.
-    require(expected_pet_registrations in (153, 515), 'Unknown pet UI startup contract')
+def verify(script, expected_pet_registrations=2):
     packaged = functions(script)
     setup = packaged['tdSetupHud'][4]
     require('call tdRequestHudRefresh(' in setup and 'call tdRefreshStatusBoard(' not in setup,
@@ -113,7 +111,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('map')
     parser.add_argument('--current-pet-ui', action='store_true',
-                        help='Require the current manager\'s exact 515 registrations (historical default: 153)')
+                        help='Compatibility flag; current shared-listener contract is always required')
     args = parser.parse_args()
     print(verify(Mpq(Path(args.map).read_bytes()).extract('war3map.j').decode(),
-                 expected_pet_registrations=515 if args.current_pet_ui else 153))
+                 expected_pet_registrations=2))

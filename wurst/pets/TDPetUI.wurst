@@ -13,6 +13,7 @@ import Table
 
 trigger selectionTrigger = CreateTrigger()
 trigger deselectionTrigger = CreateTrigger()
+trigger commandTrigger = CreateTrigger()
 boolean ready = false
 
 function showPage(int lane, int mode, int page, int slot, int nonce)
@@ -205,14 +206,11 @@ public function tdPetSetupUI()
 		tdPetSelectedSlot[lane] = -1
 	registerSpellEffectEvent(TD_PET_COLLECTION_ABILITY_ID, function onCollection)
 	registerSpellEffectEvent(TD_PET_DEPLOY_ABILITY_ID, function onDeploy)
-	for action = 0 to TD_PET_ACTION_PREVIEW_DETAIL
-		registerSpellEffectEvent(tdPetManagerCommandId(action), function onCommand)
-	for cell = 0 to 9
-		registerSpellEffectEvent(tdPetListAbilityId(cell, 0, 0, 0), function onCommand)
-		for species = 1 to 3
-			for quality = 1 to 4
-				for ownedCount = 1 to 4
-					registerSpellEffectEvent(tdPetListAbilityId(cell, species, quality, ownedCount), function onCommand)
+	// Every manager button shares the same admission path. Register it once:
+	// hundreds of per-rawcode triggers exhaust the legacy JASS startup budget.
+	// onCommand checks display identity and the exact mounted session ability.
+	commandTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+	commandTrigger.addCondition(Filter(function onCommand))
 	selectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SELECTED)
 	deselectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DESELECTED)
 	selectionTrigger.addAction(function onSelected)

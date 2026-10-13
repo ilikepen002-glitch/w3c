@@ -449,6 +449,10 @@ def execute(args):
                 runner.run([sys.executable, project / 'tools/VerifyActiveCooldownContract.py', '--map', candidate], project)
                 require(sha(candidate) == final_sha, 'Active cooldown gate changed candidate')
                 report['activeCooldownArtifactGate'] = 'real MPQ/JASS PASS'
+                runner.run([sys.executable, project / 'tools/VerifyPetStartupArtifact.py', candidate], project)
+                runner.run([sys.executable, project / 'tools/VerifyStartupArtifact.py', candidate], project)
+                require(sha(candidate) == final_sha, 'Startup gates changed candidate')
+                report['startupArtifactGate'] = 'pet registration/routing and gameplay bootstrap PASS'
                 report['artifact'] = python_map_gate(project, candidate, '契灵守卫战 ' + stamp)
                 require(report['artifact']['sha256'] == final_sha, 'Candidate changed between gates')
                 report['artifact']['candidate'] = str(candidate)

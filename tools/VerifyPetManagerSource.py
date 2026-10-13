@@ -346,8 +346,12 @@ def verify_ui_workflow():
         require('SubString' not in body and '.fromRawCode' not in body, 'Startup helper performs runtime string work: ' + helper)
     setup = function_body(ui, 'tdPetSetupUI')[1]
     require(setup.index('if ready') < setup.index('ready = true') < setup.index('registerSpellEffectEvent'), 'Setup must guard repeated registration')
-    for text in ('for action = 0 to TD_PET_ACTION_PREVIEW_DETAIL', 'tdPetListAbilityId(cell, 0, 0, 0)', 'for ownedCount = 1 to 4', 'tdPetListAbilityId(cell, species, quality, ownedCount)'):
-        require(text in setup, 'Incomplete 515 startup registration partition: ' + text)
+    require(setup.count('registerSpellEffectEvent(') == 2 and
+            setup.count('commandTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)') == 1 and
+            setup.count('commandTrigger.addCondition(Filter(function onCommand))') == 1,
+            'Manager must share one listener; only farmer entrances use per-rawcode registration')
+    require('tdPetListAbilityId(' not in setup and 'tdPetManagerCommandId(' not in setup,
+            'Manager startup must not enumerate button variants')
     opened = function_body(session, 'open')[1]
     require('if abilityId == 0\n\t\t\tclose()\n\t\t\treturn false' in opened, 'Malformed occupied portrait must reject, never mount an empty fallback')
     require('current.skillCount == ownedCount' in function_body(session, 'matchesPet')[1] and 'current.skillCount == listOwnedCounts[cell]' in function_body(session, 'matchesListCell')[1], 'Count changes must stale both list and detail snapshots')
@@ -372,7 +376,7 @@ def verify_ui_workflow():
     require('tdPetBeginRelease(lane, slot)' in release and 'showDetailOrList(lane, slot div 10, slot, expected)' in release, 'Release entrance must reuse the existing guarded ticket and safe return')
     require('TD_PET_UI_RELEASE' not in function_body(ui, 'refreshStale')[1], 'Stale release must not route back into cultivation')
     require('label = "保留原技能"' in objects and 'label = "换成新技能"' in objects, 'Choice tooltips must name the actual operation')
-    print('PASS UI WORKFLOW: 515 exact registrations/guard; integer startup; count snapshots; complete shared Channels; eight-cell preview; atomic continue; safe release return')
+    print('PASS UI WORKFLOW: single manager listener/guard; integer startup; count snapshots; complete shared Channels; eight-cell preview; atomic continue; safe release return')
 
 
 def main():

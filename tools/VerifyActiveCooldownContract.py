@@ -905,7 +905,14 @@ def verify_inventory(evaluator):
                 require(not calls(body, method), 'Unknown spell registration mechanism: ' + path + ':' + method)
         for arguments in calls(source, 'registerAnyUnitEvent'):
             if any('EVENT_PLAYER_UNIT_SPELL_' in arg for arg in arguments):
-                require(path == RUNTIME and arguments == [['EVENT_PLAYER_UNIT_SPELL_EFFECT']][0], 'Unknown generic combat spell registration: ' + path)
+                manager = path == 'pets/TDPetUI.wurst'
+                if manager:
+                    setup = owners['tdPetSetupUI', 0][1]
+                    require(canonical('commandTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)') in canonical(setup)
+                            and canonical('commandTrigger.addCondition(Filter(function onCommand))') in canonical(setup)
+                            and sum('EVENT_PLAYER_UNIT_SPELL_' in arg for args in calls(source, 'registerAnyUnitEvent') for arg in args) == 1,
+                            'Manager shared listener must remain bound only to session admission')
+                require((path == RUNTIME or manager) and arguments == ['EVENT_PLAYER_UNIT_SPELL_EFFECT'], 'Unknown generic combat spell registration: ' + path)
         # Methods in classes are outside source_functions. Inspect those exact
         # support owners separately; adding a new call elsewhere fails closed.
         total = sum(len(calls(body, method)) for _, body in owners.values() for method in ('addAbility', 'addPermanentAbility', 'UnitAddAbility'))
