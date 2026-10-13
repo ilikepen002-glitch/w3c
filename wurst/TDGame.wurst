@@ -21,6 +21,7 @@ import public TDBossTransitionHook
 import GameTimer
 import TDBossRewardRules
 import TDBossRewardRuntime
+import TDDifficultyDialog
 
 rect array tdLaneEndRects
 trigger tdEnemyDeathTrigger = CreateTrigger()
@@ -160,6 +161,7 @@ public function tdHandleLanePlayerLeft(int playerId)
 	tdRefreshHud()
 	tdHandleGameResolved()
 	tdTryScheduleNextWave(tdGetGlobalWave())
+	tdRefreshDifficultyDialog()
 
 function tdBossCanSettle(unit enemy, int playerId, int wave) returns boolean
 	return tdBossUnits[playerId] == enemy and tdFlowBossResult(playerId, wave) == TD_BOSS_RESULT_ACTIVE
@@ -251,7 +253,7 @@ public function tdWaveEquipmentGoldBudget(int wave) returns int
 		return 0
 	// First balance limit: extra gold cannot exceed this wave's non-boss kill gold.
 	// Boss guards count as non-boss units, consistently with kill eligibility.
-	return (tdWaveEnemyCount(wave) - tdWaveBossEnemyCount(wave)) * tdWaveKillGold(wave)
+	return tdWaveNormalEnemyCount(wave) * tdWaveKillGold(wave) div 2 + (tdWaveEliteEnemyCount(wave) + tdWaveBossGuardEnemyCount(wave)) * tdWaveKillGold(wave)
 
 public function tdClaimEnemyKill(unit enemy) returns boolean
 	if enemy == null or not tdEnemyBelongsToCurrentMatch(enemy) or tdEnemyDeathWasSettled(enemy)
@@ -285,8 +287,8 @@ function tdHandleEnemyDeath()
 	let isBoss = tdIsBossUnitTypeId(GetUnitTypeId(enemy))
 	let bonuses = tdEquipmentKillRewardsFor(GetKillingUnit(), playerId, isBoss)
 	tdForgetEquipmentEnemy(enemy)
-	let extraGold = tdTakeLaneWaveEquipmentGold(playerId, wave, bonuses.gold, tdWaveEquipmentGoldBudget(wave))
-	tdGainGold(playerId, tdWaveKillGold(wave) + extraGold + (isBoss ? tdBossKillCompensation(wave) : 0))
+	let extraGold = tdTakeLaneWaveEquipmentGold(playerId, wave, tdEnemyEconomyValue(bonuses.gold, GetUnitTypeId(enemy)), tdWaveEquipmentGoldBudget(wave))
+	tdGainGold(playerId, tdWaveKillGoldForUnitTypeId(wave, GetUnitTypeId(enemy)) + extraGold + (isBoss ? tdBossKillCompensation(wave) : 0))
 	tdEvolutionRecordKill(GetKillingUnit(), playerId)
 	tdAddScore(playerId, tdWaveScoreValue(wave))
 	if isBoss
@@ -469,6 +471,9 @@ function tdPrepareBossRound(int wave)
 public function tdStartGlobalWave(int wave)
 	if tdIsGameOver() or wave < 1 or wave > tdWaveCount() or wave <= tdGetGlobalWave() or tdFlowIsPreparing() or tdFlowIsBossActive() or tdFlowTransitionBlocksAdvance()
 		return
+	if wave == 1
+		tdLockDifficulty()
+		tdCloseDifficultyDialog()
 	if tdIsPureBossWave(wave)
 		tdPrepareBossRound(wave)
 		return
@@ -522,6 +527,7 @@ public function tdHandleWaveFinished(int playerId, int wave)
 
 
 public function tdShutdownGameFlow()
+	tdCloseDifficultyDialog()
 	let held = tdFlowHeldTransitionToken()
 	if held != 0
 		tdFlowReleaseTransition(held, TD_TRANSITION_ABORTED)

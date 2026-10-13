@@ -160,15 +160,15 @@ public function tdTowerDisplayNameForBranch(int towerChoice, int level, int bran
 
 public function tdTowerCost(int towerChoice) returns int
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
-		return 50
+		return 500
 	if towerChoice == TD_TOWER_CHOICE_ORC
-		return 60
+		return 600
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
-		return 55
+		return 550
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
-		return 60
+		return 600
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
-		return 50
+		return 500
 	return 0
 
 public function tdTowerUpgradeCost(int towerChoice, int currentLevel) returns int
@@ -178,67 +178,67 @@ public function tdTowerUpgradeCost(int towerChoice, int currentLevel) returns in
 		return tdTowerUltimateUpgradeCost(towerChoice, TD_TOWER_BRANCH_A)
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		if currentLevel == 1
-			return 45
+			return 450
 		if currentLevel == 2
-			return 65
+			return 650
 		if currentLevel == 3
-			return 90
-		return 140
+			return 900
+		return 1400
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if currentLevel == 1
-			return 55
+			return 550
 		if currentLevel == 2
-			return 75
+			return 750
 		if currentLevel == 3
-			return 100
-		return 120
+			return 1000
+		return 1200
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if currentLevel == 1
-			return 50
+			return 500
 		if currentLevel == 2
-			return 65
+			return 650
 		if currentLevel == 3
-			return 90
-		return 125
+			return 900
+		return 1250
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if currentLevel == 1
-			return 55
+			return 550
 		if currentLevel == 2
-			return 75
+			return 750
 		if currentLevel == 3
-			return 90
-		return 120
+			return 900
+		return 1200
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if currentLevel == 1
-			return 45
+			return 450
 		if currentLevel == 2
-			return 60
+			return 600
 		if currentLevel == 3
-			return 85
-		return 130
+			return 850
+		return 1300
 	return 0
 
 public function tdTowerUltimateUpgradeCost(int towerChoice, int branch) returns int
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		if branch == TD_TOWER_BRANCH_B
-			return 600
-		return 580
+			return 6000
+		return 5800
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
-			return 590
-		return 640
+			return 5900
+		return 6400
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
-			return 540
-		return 525
+			return 5400
+		return 5250
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if branch == TD_TOWER_BRANCH_B
-			return 545
-		return 550
+			return 5450
+		return 5500
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if branch == TD_TOWER_BRANCH_B
-			return 570
-		return 520
+			return 5700
+		return 5200
 	return 0
 
 public function tdTowerGoldCostForLevel(int towerChoice, int level) returns int
@@ -277,64 +277,64 @@ public function tdTowerSellRefund(int unitTypeId) returns int
 function tdTowerBaseDamageCore(int towerChoice, int level) returns int
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		if level >= TD_MAX_TOWER_LEVEL
-			return 150
+			return 750
 		if level == 1
-			return 24
+			return 120
 		if level == 2
-			return 36
+			return 180
 		if level == 3
-			return 52
+			return 260
 		if level == 4
-			return 74
-		return 102
+			return 370
+		return 510
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if level >= TD_MAX_TOWER_LEVEL
-			return 215
+			return 1075
 		if level == 1
-			return 32
+			return 160
 		if level == 2
-			return 48
+			return 240
 		if level == 3
-			return 70
+			return 350
 		if level == 4
-			return 98
-		return 138
+			return 490
+		return 690
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if level >= TD_MAX_TOWER_LEVEL
-			return 138
+			return 690
 		if level == 1
-			return 22
+			return 110
 		if level == 2
-			return 34
+			return 170
 		if level == 3
-			return 49
+			return 245
 		if level == 4
-			return 70
-		return 96
+			return 350
+		return 480
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if level >= TD_MAX_TOWER_LEVEL
-			return 126
+			return 630
 		if level == 1
-			return 18
+			return 90
 		if level == 2
-			return 28
+			return 140
 		if level == 3
-			return 40
+			return 200
 		if level == 4
-			return 57
-		return 88
+			return 285
+		return 440
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if level >= TD_MAX_TOWER_LEVEL
-			return 124
+			return 620
 		if level == 1
-			return 20
+			return 100
 		if level == 2
-			return 31
+			return 155
 		if level == 3
-			return 45
+			return 225
 		if level == 4
-			return 63
-		return 86
+			return 315
+		return 430
 	return 0
 
 public function tdTowerBaseDamageForBranch(int towerChoice, int level, int branch) returns int
@@ -342,24 +342,24 @@ public function tdTowerBaseDamageForBranch(int towerChoice, int level, int branc
 		return tdTowerBaseDamageCore(towerChoice, level)
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		if branch == TD_TOWER_BRANCH_B
-			return 125
-		return 175
+			return 625
+		return 875
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
-			return 185
-		return 260
+			return 925
+		return 1300
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
-			return 120
-		return 165
+			return 600
+		return 825
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if branch == TD_TOWER_BRANCH_B
-			return 100
-		return 150
+			return 500
+		return 750
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if branch == TD_TOWER_BRANCH_B
-			return 105
-		return 150
+			return 525
+		return 750
 	return tdTowerBaseDamageCore(towerChoice, level)
 
 public function tdTowerBaseDamage(int towerChoice, int level) returns int
@@ -577,7 +577,7 @@ public function tdTowerTalentSummary(int towerChoice, int level) returns string
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if level >= 5
 			return "普攻25%概率暴击；剑舞使攻击速度提高30%。"
-		return "普攻25%概率暴击，造成2.2倍伤害并追加18伤害。"
+		return "普攻25%概率暴击，造成2.2倍伤害并追加90伤害。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if level >= 5
 			return "普攻22%概率盾击；统帅光环使900范围内友塔攻击力提高16%。"
@@ -585,7 +585,7 @@ public function tdTowerTalentSummary(int towerChoice, int level) returns string
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if level >= 5
 			return "普攻附毒并减速；缓速藤蔓使225范围内敌人移动速度降低18%。"
-		return "普攻附毒，每秒12伤害并使移动速度降低22%，持续5秒（英雄1秒）。"
+		return "普攻附毒，每秒60伤害并使移动速度降低22%，持续5秒（英雄1秒）。"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		return "狂热使攻击速度提高42%；普攻击杀低血量敌人可触发180范围尸爆。"
 	return "天赋: 无"
@@ -599,20 +599,20 @@ public function tdTowerTalentSummaryForBranch(int towerChoice, int level, int br
 		return "分支: 分裂压制，总计7目标；保留18%战吼。进化后仅额外箭伤害+20%，主箭不变。"
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
-			return "剑刃风暴：780范围内每秒70伤害，持续2.5秒。保留25%暴击与30%剑舞攻速。|n进化：暴击伤害2.64倍，追加21.6伤害。"
-		return "嗜血：攻击速度提高35%，持续5秒。保留25%暴击与30%剑舞攻速。|n进化：暴击伤害2.64倍，追加21.6伤害。"
+			return "剑刃风暴：780范围内每秒350伤害，持续2.5秒。保留25%暴击与30%剑舞攻速。|n进化：暴击伤害2.64倍，追加108伤害。"
+		return "嗜血：攻击速度提高35%，持续5秒。保留25%暴击与30%剑舞攻速。|n进化：暴击伤害2.64倍，追加108伤害。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
 			return "分支: 统帅支援；保留22%盾击与16%统帅光环。进化后仅光环16%→19.2%。"
 		return "分支: 盾击审判；保留16%统帅光环。进化后盾击概率" + tdPreciseBonusPercentString(tdFootmanBashChance()) + "→" + tdPreciseBonusPercentString(tdFootmanBashChance() * tdEvolutionSkillMultiplier()) + "，无额外伤害；眩晕与保护时间不变。"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 宽域藤蔓；保留毒伤12/秒和单体减速。藤蔓范围265、减速18%；进化后仅藤蔓减速21.6%。"
-		return "分支: 剧毒镖击；保留225范围18%藤蔓减速。毒伤12/秒；进化后仅毒伤14.4/秒。"
+			return "分支: 宽域藤蔓；保留毒伤60/秒和单体减速。藤蔓范围265、减速18%；进化后仅藤蔓减速21.6%。"
+		return "分支: 剧毒镖击；保留225范围18%藤蔓减速。毒伤60/秒；进化后仅毒伤72/秒。"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 血疫尸爆；保留42%狂热。尸爆36伤害；进化后仅尸爆43.2伤害。"
-		return "分支: 疾猎狂热；保留36伤害尸爆。攻速+42%；进化后仅狂热+50.4%。"
+			return "分支: 血疫尸爆；保留42%狂热。尸爆180伤害；进化后仅尸爆216伤害。"
+		return "分支: 疾猎狂热；保留180伤害尸爆。攻速+42%；进化后仅狂热+50.4%。"
 	return tdTowerTalentSummary(towerChoice, level)
 
 public function tdTowerModelPath(int towerChoice, int level) returns string

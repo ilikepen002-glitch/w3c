@@ -2,6 +2,9 @@
 /wurst/towers/TDTowerTerrainMask.wurst text eol=lf
 /maps/tower-terrain-mask.json text eol=lf
 
+# The compiler lock hashes this reviewed patch byte for byte.
+/tools/compiler/legacy-jass-array-capacity.patch text eol=lf
+
 # Pet UI source assets and the preserved renderer have byte-exact contracts.
 /assets/source/pet-ui/*.svg text eol=lf
 /wurst/pets/TDPetUIView.wurst text eol=lf

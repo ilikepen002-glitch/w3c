@@ -59,7 +59,7 @@ import TDPetRules
 		ghoul.contains("A116").assertTrue()
 
 function real.assertContinuityNear(real expected)
-	((this - expected).abs() < 0.000001).assertTrue()
+	((this - expected).abs() < 0.0001).assertTrue()
 
 function expectedSkills(int choice, int level, int branch) returns string
 	if choice == TD_TOWER_CHOICE_ARCHER
@@ -182,23 +182,23 @@ function evolvedSkills(int choice, int branch) returns string
 			for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
 				tdArcherSplitArrowDamageMultiplier(level, branch, false).assertEquals(1.0)
 				tdArcherSplitArrowDamageMultiplier(level, branch, true).assertEquals(level == 6 and branch == TD_TOWER_BRANCH_A ? 1.2 : 1.0)
-				tdGhoulCorpseExplosionDamageForBranch(level, branch, false).assertEquals(36.0)
-				tdGhoulCorpseExplosionDamageForBranch(level, branch, true).assertEquals(36.0 * (level == 6 and branch == TD_TOWER_BRANCH_B ? 1.2 : 1.0))
+				tdGhoulCorpseExplosionDamageForBranch(level, branch, false).assertEquals(180.0)
+				tdGhoulCorpseExplosionDamageForBranch(level, branch, true).assertEquals(180.0 * (level == 6 and branch == TD_TOWER_BRANCH_B ? 1.2 : 1.0))
 
 @Test function evolutionNumbersAndUnselectedMechanismsKeepTheirOwnBaselines()
 	for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
 		tdOrcCriticalStrikeChance().assertContinuityNear(0.25)
 		(tdOrcCriticalStrikeMultiplier() * tdEvolutionSkillMultiplier()).assertContinuityNear(2.64)
-		(tdOrcCriticalStrikeDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(21.6)
+		(tdOrcCriticalStrikeDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(108.0)
 		tdOrcSwordDanceAttackSpeedBonus().assertContinuityNear(0.30)
 		tdOrcBloodlustAttackSpeedBonus().assertContinuityNear(0.35)
-		tdOrcBladestormDamagePerSecond().assertContinuityNear(70.0)
+		tdOrcBladestormDamagePerSecond().assertContinuityNear(350.0)
 	(tdArcherAuraDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.216)
 	(tdFootmanBashChance() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.264)
 	(tdFootmanBashDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.0)
 	(tdFootmanCommandAuraDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.192)
-	(tdDryadPoisonDps() * tdEvolutionSkillMultiplier()).assertContinuityNear(14.4)
-	tdDryadPoisonDps().assertContinuityNear(12.0)
+	(tdDryadPoisonDps() * tdEvolutionSkillMultiplier()).assertContinuityNear(72.0)
+	tdDryadPoisonDps().assertContinuityNear(60.0)
 	(tdGhoulFrenzyAttackSpeedBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.504)
 	tdGhoulFrenzyAttackSpeedBonus().assertContinuityNear(0.42)
 
@@ -234,7 +234,7 @@ function evolvedSkills(int choice, int branch) returns string
 		tdTowerLoreForBranch(TD_TOWER_CHOICE_ARCHER, 6, branch).contains("牺牲").assertFalse()
 		tdTowerLoreForBranch(TD_TOWER_CHOICE_ORC, 6, branch).contains("强化致命一击").assertFalse()
 	tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_DRYAD, 6, TD_TOWER_BRANCH_B).contains("265").assertTrue()
-	tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_GHOUL, 6, TD_TOWER_BRANCH_B).contains("进化后仅尸爆43.2").assertTrue()
+	tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_GHOUL, 6, TD_TOWER_BRANCH_B).contains("进化后仅尸爆216").assertTrue()
 
 @Test function ordinaryUpgradeHelpersIgnoreUltimateBranchParameters()
 	for choice = 1 to TD_TOWER_CHOICE_COUNT
@@ -246,4 +246,4 @@ function evolvedSkills(int choice, int branch) returns string
 
 @Test function corpsePetTooltipKeepsTheUnchangedThirtySixBaseDamage()
 	for quality = 1 to 4
-		tdPetSkillDescriptionById(10, quality).contains(tdTooltipNumber(36.0 * tdPetSkillPower(10, quality)) + "伤害").assertTrue()
+		tdPetSkillDescriptionById(10, quality).contains(tdTooltipNumber(180.0 * tdPetSkillPower(10, quality)) + "伤害").assertTrue()

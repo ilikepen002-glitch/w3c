@@ -86,7 +86,7 @@ def verify_current_equipment_abilities(objects):
     for index in range(120, 128):
         require(f'A{index}' not in objects, f'A{index}: retired fixed-quality item passive remains')
     check_ability(objects, 'A129', 'AIsx', 120, 'Isx1', 2, lambda level: level/100.0)
-    check_ability(objects, 'A128', 'AIat', 128, 'Iatt', 0, lambda level: level)
+    check_ability(objects, 'A128', 'AIat', 128, 'Iatt', 0, lambda level: level * 5)
     check_ability(objects, 'A134', 'AId1', 30, 'Idef', 0, lambda level: -level)
     require('A131' in objects, 'A131: missing Bloodlust')
     parent, fields = objects['A131']

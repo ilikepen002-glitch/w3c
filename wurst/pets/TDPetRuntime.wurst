@@ -112,7 +112,7 @@ function tdPetHandleCapture() returns boolean
 public function tdPetHandleEnemyBallDrop(unit enemy, int lane, int wave)
 	if tdPetIsWild(enemy) or enemy == null or GetKillingUnit() == null or not tdPetLaneCanAct(lane) or tdIsBossUnitTypeId(GetUnitTypeId(enemy)) or tdEnemyWasLeaked(enemy)
 		return
-	if wave > 25 or GetRandomInt(1, 100) > 2 or not tdPetTakeDropBudget(lane, wave)
+	if wave > 25 or GetRandomInt(1, 100) > (tdIsEliteUnitTypeId(GetUnitTypeId(enemy)) ? 2 : 1) or not tdPetTakeDropBudget(lane, wave)
 		return
 	let ball = createItem(TD_PET_BALL_ITEM_ID, enemy.getPos())
 	tdPetBallOwners.saveInt(ball.getHandleId(), lane + 1)

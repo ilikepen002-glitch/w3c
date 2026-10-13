@@ -1,6 +1,6 @@
 package TDTowerEvolutionState
 
-public constant int TD_EVOLUTION_KILL_REQUIREMENT = 220
+public constant int TD_EVOLUTION_KILL_REQUIREMENT = 440
 
 public function tdEvolutionProgressLevel(int kills) returns int
 	return kills + 1

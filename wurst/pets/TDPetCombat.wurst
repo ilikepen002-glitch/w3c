@@ -119,7 +119,7 @@ public function tdPetRefreshHost(unit tower, real _aura)
 				speed += pet.buffPower
 			else if pet.buffSkill == 12
 				attack += base * pet.buffPower
-	setBonus(tower, TD_PET_ATTACK_BONUS_ID, (attack + 0.5).toInt())
+	setBonus(tower, TD_PET_ATTACK_BONUS_ID, (attack / 5.0 + 0.5).toInt())
 	setBonus(tower, TD_PET_SPEED_BONUS_ID, (speed * 100.0 + 0.5).toInt())
 	// Existing inventory entry owns native equipment + pet cooldown aggregation.
 	tdRefreshTowerEquipmentBonuses(tower)

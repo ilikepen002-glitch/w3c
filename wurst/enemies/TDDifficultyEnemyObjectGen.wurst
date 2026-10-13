@@ -1,0 +1,18 @@
+package TDDifficultyEnemyObjectGen
+import TDDifficultyEnemyData
+import TDDifficultyRules
+import TDWaves
+import AbilityObjEditing
+
+@compiletime function tdGenerateDifficultyEnemyObjects()
+	for wave = 1 to tdWaveCount()
+		for role = 0 to 2
+			let baseHP = tdDifficultyEnemyBaseHitPoints(wave, role)
+			if baseHP > 0
+				for difficulty = 2 to TD_DIFFICULTY_COUNT
+					new AbilityDefinitionMaxLifeBonusGreater(tdDifficultyHealthAbilityId(wave, role, difficulty))
+					..setName("敌军生命强化")
+					..setLevels(1)
+					..setItemAbility(true)
+					..setCheckDependencies(false)
+					..setMaxLifeGained(1, tdDifficultyHitPoints(baseHP, difficulty) - baseHP)

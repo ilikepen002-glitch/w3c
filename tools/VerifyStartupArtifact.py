@@ -14,10 +14,49 @@ from VerifyDamageRankingJass import functions
 class StartupRuntime(PetStartupRuntime):
     def __init__(self, script):
         self.events = []
+        self.dialogs = {}
+        self.dialog_events = {}
+        self.dialog_actions = {}
+        self.clicked_dialog = self.clicked_button = None
+        self.click_player = 0
         super().__init__(script)
+        self.invoke('init_TDDifficultyDialog')
         self.globals['ALLIANCE_PASSIVE'] = 'passive'
 
     def native(self, name, args):
+        if name in {'DialogCreate', 'DialogAddButton'}:
+            self.trigger_serial += 1
+            handle = self.trigger_serial
+            if name == 'DialogCreate':
+                self.dialogs[handle] = {'buttons': {}, 'visible': set(), 'destroyed': False}
+            else:
+                self.dialogs[args[0]]['buttons'][handle] = args[1]
+            return True, handle
+        if name == 'DialogSetMessage':
+            self.dialogs[args[0]]['message'] = args[1]
+            return True, None
+        if name == 'DialogDisplay':
+            visible = self.dialogs[args[1]]['visible']
+            (visible.add if args[2] else visible.discard)(args[0])
+            return True, None
+        if name == 'DialogClear':
+            self.dialogs[args[0]]['buttons'].clear()
+            return True, None
+        if name == 'DialogDestroy':
+            self.dialogs[args[0]]['destroyed'] = True
+            return True, None
+        if name == 'TriggerRegisterDialogEvent':
+            self.dialog_events[args[1]] = args[0]
+            return True, None
+        if name == 'TriggerAddAction' and args[0] in self.dialog_events.values():
+            self.dialog_actions[args[0]] = args[1]
+            return True, None
+        if name == 'DestroyTrigger':
+            self.dialog_actions.pop(args[0], None)
+            return True, None
+        if name in {'GetClickedDialog', 'GetClickedButton', 'GetTriggerPlayer'}:
+            return True, {'GetClickedDialog': self.clicked_dialog, 'GetClickedButton': self.clicked_button,
+                          'GetTriggerPlayer': self.click_player}[name]
         if name == 'DisplayTimedTextToPlayer':
             self.events.append(('text', args[4]))
             return True, None
@@ -51,6 +90,52 @@ class StartupRuntime(PetStartupRuntime):
         return super().native(name, args)
 
 
+def verify_difficulty_dialog(script):
+    r = StartupRuntime(script)
+    r.invoke('tdResetState')
+    for lane in (1, 3):
+        r.invoke('tdSetLaneActive', lane, True)
+    r.invoke('tdRefreshDifficultyDialog')
+    dialog = r.globals['TDDifficultyDialog_tdDifficultyDialog']
+    view = r.dialogs[dialog]
+    buttons = list(view['buttons'])
+    require(len(buttons) == 4 and view['visible'] == {1}, 'Only the current selector should see four buttons')
+    require(list(view['buttons'].values()) == ['普通 · 生命×1', '困难 · 生命×1.3', '噩梦 · 生命×1.7', '传奇 · 生命×2.2'],
+            'Buttons must explain the actual health multipliers')
+    callback = r.dialog_actions[r.dialog_events[dialog]]
+    def click(player, button, source=dialog):
+        r.click_player, r.clicked_button, r.clicked_dialog = player, button, source
+        r.invoke(callback)
+    click(3, buttons[3])
+    click(1, -1)
+    click(1, buttons[3], -1)
+    require(r.invoke('tdGetDifficulty') == 1, 'Unauthorized/unknown/stale dialog clicks changed difficulty')
+    for index, button in enumerate(buttons, 1):
+        click(1, button)
+        require(r.invoke('tdGetDifficulty') == index and not view['visible'], 'Button did not select and dismiss')
+    r.invoke('tdRefreshDifficultyDialog')
+    require(not view['visible'], 'Unchanged selector should not be prompted again after selection')
+    r.invoke('tdSetLaneActive', 1, False)
+    r.invoke('tdRefreshDifficultyDialog')
+    require(view['visible'] == {3}, 'Departed selector did not transfer the dialog')
+    click(1, buttons[0])
+    require(r.invoke('tdGetDifficulty') == 4, 'Departed selector changed difficulty')
+    click(3, buttons[1])
+    require(r.invoke('tdGetDifficulty') == 2, 'Replacement selector could not choose')
+    r.invoke('tdStartGlobalWave', 1)
+    require(r.invoke('tdIsDifficultyLocked') and view['destroyed'] and not view['visible'], 'First wave left dialog open')
+    require(not r.dialog_actions, 'First wave leaked the dialog trigger')
+    click(3, buttons[0])
+    require(r.invoke('tdGetDifficulty') == 2, 'Late click changed locked difficulty')
+    r.invoke('tdResetState')
+    r.invoke('tdSetLaneActive', 0, True)
+    r.invoke('tdRefreshDifficultyDialog')
+    new_dialog = r.globals['TDDifficultyDialog_tdDifficultyDialog']
+    require(new_dialog != dialog and r.dialogs[new_dialog]['visible'] == {0}, 'Reset did not show a fresh dialog')
+    r.invoke('tdShutdownGameFlow')
+    require(r.dialogs[new_dialog]['destroyed'] and not r.dialog_actions, 'Shutdown leaked dialog/trigger')
+
+
 def verify(script, expected_pet_registrations=2):
     packaged = functions(script)
     setup = packaged['tdSetupHud'][4]
@@ -74,12 +159,16 @@ def verify(script, expected_pet_registrations=2):
     require(not any(event[0] in {'setup', 'render'} for event in runtime.events), 'Startup synchronously performs HUD work')
     wave_callback, setup_callback = runtime.scheduled[0][1], runtime.scheduled[1][1]
     runtime.run_timer(setup_callback)
+    opening_dialog = runtime.globals['TDDifficultyDialog_tdDifficultyDialog']
+    require(runtime.dialogs[opening_dialog]['visible'] == {0}, 'Deferred startup did not show the selector dialog')
     refresh_callback = runtime.scheduled[-1][1]
     scheduled = len(runtime.scheduled)
     for _ in range(5):
         runtime.invoke('tdRefreshHud')
     require(len(runtime.scheduled) == scheduled, 'Repeated requests must coalesce')
     runtime.run_timer(wave_callback)
+    require(runtime.invoke('tdGetDifficulty') == 1 and runtime.dialogs[opening_dialog]['destroyed'],
+            'Unanswered dialog must close with default difficulty on first wave')
     require(runtime.globals['TDState_tdGlobalWave'] == 1 and runtime.spawn_requests == [(0, 1)], 'First wave did not advance/spawn')
     require(not any(event[0] == 'render' for event in runtime.events), 'Wave callback synchronously rendered HUD')
     runtime.run_timer(refresh_callback)
@@ -104,7 +193,8 @@ def verify(script, expected_pet_registrations=2):
     diagnostics.invoke('tdFinalizeGameplayBootstrap')
     require(diagnostics.globals['TDInit_tdStartupWatchdog'] is None and diagnostics.timers[current_timer]['destroyed'],
             'Successful startup did not cancel its watchdog')
-    return 'PASS: real pet UI setup, startup/camera separation, first-wave epoch, HUD coalescing, latest-state refresh and watchdog lifecycle'
+    verify_difficulty_dialog(script)
+    return 'PASS: pet UI/startup/camera, first-wave epoch, HUD/watchdog lifecycle; difficulty buttons, authority, transfer, lock and dialog cleanup (engine natives modeled)'
 
 
 if __name__ == '__main__':

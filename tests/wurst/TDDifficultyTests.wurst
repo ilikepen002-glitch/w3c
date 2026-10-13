@@ -1,0 +1,109 @@
+package TDDifficultyTests
+import TDState
+import TDDifficultyEnemyData
+import TDWaves
+import TDGame
+import TDDropLogic
+import TDInventory
+import TDItemData
+import TDPetRules
+import TDTowerData
+import TDBossRewardRules
+
+@Test function difficultySelectionRejectsInvalidButtonsAndEndedMatch()
+	tdResetState()
+	tdSetLaneActive(0, true)
+	tdTrySetDifficulty(0, 0).assertFalse()
+	tdTrySetDifficulty(0, 5).assertFalse()
+	for difficulty = 1 to TD_DIFFICULTY_COUNT
+		tdTrySetDifficulty(0, difficulty).assertTrue()
+		tdGetDifficulty().assertEquals(difficulty)
+	tdSetGameOver(true)
+	tdTrySetDifficulty(0, 1).assertFalse()
+	tdResetState()
+
+@Test function difficultySelectorTransfersAndFirstWaveLocksThenResetClears()
+	tdResetState()
+	tdDifficultySelectorPlayerId().assertEquals(-1)
+	tdTrySetDifficulty(-1, 2).assertFalse()
+	tdSetLaneActive(1, true)
+	tdSetLaneActive(3, true)
+	tdTrySetDifficulty(3, 2).assertFalse()
+	tdTrySetDifficulty(1, 4).assertTrue()
+	tdGetDifficulty().assertEquals(4)
+	tdSetLaneActive(1, false)
+	tdDifficultySelectorPlayerId().assertEquals(3)
+	tdTrySetDifficulty(3, 3).assertTrue()
+	tdLockDifficulty()
+	tdTrySetDifficulty(3, 1).assertFalse()
+	tdResetState()
+	tdGetDifficulty().assertEquals(1)
+	tdIsDifficultyLocked().assertFalse()
+
+@Test function difficultyHitPointsAndRawcodesAreDistinctForEveryWaveAndRole()
+	for wave = 1 to tdWaveCount()
+		for role = 0 to 2
+			let baseHP = tdDifficultyEnemyBaseHitPoints(wave, role)
+			for difficulty = 1 to 4
+				tdDifficultyHitPoints(baseHP, difficulty).assertEquals(baseHP + R2I(baseHP * (tdDifficultyHealthMultiplier(difficulty) - 1.0) + 0.5))
+			for difficulty = 2 to 4
+				let id = tdDifficultyHealthAbilityId(wave, role, difficulty)
+				(id != 0).assertTrue()
+				for priorWave = 1 to wave
+					for priorRole = 0 to 2
+						for priorDifficulty = 2 to 4
+							if priorWave != wave or priorRole != role or priorDifficulty != difficulty
+								(id != tdDifficultyHealthAbilityId(priorWave, priorRole, priorDifficulty)).assertTrue()
+	tdDifficultyHitPoints(tdWaveBossHitPoints(32), 4).assertEquals(396000)
+
+@Test function denseWavesRetainEconomyAndSpawnWithinOldWindow()
+	var normals = 0
+	for wave = 1 to tdWaveCount()
+		let normalCount = tdWaveNormalEnemyCount(wave)
+		normals += normalCount
+		(normalCount mod 2 == 0).assertTrue()
+		(normalCount * tdWaveSpawnInterval(wave) < tdWaveForceStartDelay(wave)).assertTrue()
+		tdWaveEquipmentGoldBudget(wave).assertEquals(normalCount * tdWaveKillGold(wave) div 2 + tdWaveEliteEnemyCount(wave) * tdWaveKillGold(wave))
+		tdWaveKillGoldForUnitTypeId(wave, tdWaveUnitId(wave)).assertEquals(tdWaveKillGold(wave) div 2)
+		tdEnemyEconomyValue(30, tdWaveUnitId(wave)).assertEquals(15)
+		(normalCount * tdNormalDropChanceBasisPointsForWave(wave)).assertEquals(normalCount div 2 * tdOriginalDropChanceBasisPointsForWave(wave))
+		if tdWaveSpecialUnitId(wave) != 0
+			tdWaveKillGoldForUnitTypeId(wave, tdWaveSpecialUnitId(wave)).assertEquals(tdWaveKillGold(wave))
+	normals.assertEquals(920)
+	tdMatchEnemyCountPerLane().assertEquals(934)
+
+@Test function cumulativeBaseEconomyMatchesScaledPurchasingPower()
+	var gold = 1000
+	for wave = 1 to tdWaveCount()
+		gold += tdWaveEquipmentGoldBudget(wave) + tdWaveBossEnemyCount(wave) * tdWaveKillGold(wave) + tdBossKillCompensation(wave) + tdWaveReward(wave)
+		if wave == 1
+			gold.assertEquals(1340)
+		if wave == 8
+			gold.assertEquals(5630)
+		if wave == 16
+			gold.assertEquals(14640)
+		if wave == 24
+			gold.assertEquals(31680)
+		if wave == 32
+			gold.assertEquals(54090)
+
+@Test function scaledEquipmentAndPetAttackFitNativeAbilityCapacity()
+	let attack = tdEquipmentAttackBonusForItems(TD_ITEM_PURPLE_WAR_AXE_ID, TD_ITEM_BLUE_WAR_AXE_ID, TD_ITEM_PURPLE_SHIELD_ID)
+	attack.assertEquals(430.0)
+	tdTowerAttackBonusAbilityLevelForItems(TD_ITEM_PURPLE_WAR_AXE_ID, TD_ITEM_BLUE_WAR_AXE_ID, TD_ITEM_PURPLE_SHIELD_ID).assertEquals(86)
+	(attack <= TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL * 5).assertTrue()
+	tdTowerAttackBonusAbilityLevel(40.0).assertEquals(8)
+	tdTowerAttackBonusAbilityLevel(430.0 + 1300.0 * 0.12).assertEquals(117)
+	tdTowerAttackBonusAbilityLevel(640.0).assertEquals(128)
+	tdTowerAttackBonusAbilityLevel(0.0).assertEquals(0)
+	tdPetSkillPower(0, 4).assertEquals(160.0)
+	// Largest base attack with purple percent + active percent and fixed attack.
+	let petAttack = 1300.0 * (tdPetSkillPower(1, 4) + tdPetSkillPower(12, 4)) + tdPetSkillPower(0, 4)
+	(petAttack < 512.0 * 5.0).assertTrue()
+
+@Test function actionableWaveHintsFollowActualThreatStats()
+	tdWaveStrategyHint(9).contains("密集").assertTrue()
+	tdWaveStrategyHint(6).contains("疾行").assertTrue()
+	tdWaveStrategyHint(14).contains("高甲").assertTrue()
+	tdWaveStrategyHint(4).contains("精英").assertTrue()
+	tdWaveStrategyHint(8).contains("首领单体").assertTrue()

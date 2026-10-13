@@ -41,7 +41,7 @@ function creditTrial(TDTrialState state, int lane, int slot, real amount, real n
 		state.takeReward(lane, 100, state.getGeneration()).assertEquals(0)
 		paid += state.takeReward(lane, state.getToken(), state.getGeneration())
 		state.takeReward(lane, state.getToken(), state.getGeneration()).assertEquals(0)
-	paid.assertEquals(84)
+	paid.assertEquals(840)
 	state.averageDps(0, 999.0).assertEquals(400.0 / 120.0)
 	destroy state
 
@@ -61,8 +61,8 @@ function creditTrial(TDTrialState state, int lane, int slot, real amount, real n
 	state.rank(1).assertEquals(0)
 	state.rank(2).assertEquals(2)
 	state.reward(0).assertEquals(0)
-	state.reward(1).assertEquals(27)
-	state.reward(2).assertEquals(18)
+	state.reward(1).assertEquals(270)
+	state.reward(2).assertEquals(180)
 	state.reward(3).assertEquals(0)
 	destroy state
 
@@ -71,7 +71,7 @@ function creditTrial(TDTrialState state, int lane, int slot, real amount, real n
 	prepareTrial(state, 24, 9, 5.0, false, false, true, false)
 	creditTrial(state, 2, 0, 0.125, 6.0).assertEquals(0.125)
 	state.seal(9, state.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 125.0)
-	state.reward(2).assertEquals(60)
+	state.reward(2).assertEquals(600)
 	state.rank(0).assertEquals(-1)
 	destroy state
 
@@ -117,7 +117,7 @@ function creditTrial(TDTrialState state, int lane, int slot, real amount, real n
 	state.seal(5, state.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 120.0)
 	state.targetCount().assertEquals(0)
 	for lane = 0 to 3
-		state.reward(lane).assertEquals(21)
+		state.reward(lane).assertEquals(210)
 	destroy state
 
 @Test function trialNestedTicketsDoNotOverwriteEachOther()
@@ -179,7 +179,7 @@ function creditTrial(TDTrialState state, int lane, int slot, real amount, real n
 	timerFirst.getPhase().assertEquals(TD_TRIAL_ACTIVE)
 	timerFirst.seal(5, timerFirst.getGeneration(), TD_TRIAL_RELEASE_COMPLETED, 120.0).assertTrue()
 	timerFirst.seal(5, timerFirst.getGeneration(), TD_TRIAL_RELEASE_TIME_LIMIT, 120.0).assertFalse()
-	timerFirst.reward(0).assertEquals(30)
+	timerFirst.reward(0).assertEquals(300)
 	let watchdogFirst = new TDTrialState()
 	prepareTrial(watchdogFirst, 8, 5, 0.0, true, false, false, false)
 	creditTrial(watchdogFirst, 0, 0, 20.0, 1.0)
@@ -187,7 +187,7 @@ function creditTrial(TDTrialState state, int lane, int slot, real amount, real n
 	watchdogFirst.shouldResume(5, watchdogFirst.getGeneration(), 120.0).assertFalse()
 	watchdogFirst.noteResumeAccepted(5, watchdogFirst.getGeneration()).assertFalse()
 	watchdogFirst.seal(5, watchdogFirst.getGeneration(), TD_TRIAL_RELEASE_COMPLETED, 120.0).assertFalse()
-	watchdogFirst.reward(0).assertEquals(30)
+	watchdogFirst.reward(0).assertEquals(300)
 	destroy timerFirst
 	destroy watchdogFirst
 
@@ -260,5 +260,5 @@ function creditTrial(TDTrialState state, int lane, int slot, real amount, real n
 	state.rank(0).assertEquals(0)
 	state.rank(1).assertEquals(0)
 	state.reward(0).assertEquals(0)
-	state.reward(1).assertEquals(27)
+	state.reward(1).assertEquals(270)
 	destroy state

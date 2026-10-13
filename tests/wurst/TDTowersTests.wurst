@@ -8,11 +8,11 @@ import ObjectIds
 import ObjEditingCommons
 
 @Test function towerChoiceMapsToExpectedCost()
-	tdTowerCost(TD_TOWER_CHOICE_ARCHER).assertEquals(50)
-	tdTowerCost(TD_TOWER_CHOICE_ORC).assertEquals(60)
-	tdTowerCost(TD_TOWER_CHOICE_FOOTMAN).assertEquals(55)
-	tdTowerCost(TD_TOWER_CHOICE_DRYAD).assertEquals(60)
-	tdTowerCost(TD_TOWER_CHOICE_GHOUL).assertEquals(50)
+	tdTowerCost(TD_TOWER_CHOICE_ARCHER).assertEquals(500)
+	tdTowerCost(TD_TOWER_CHOICE_ORC).assertEquals(600)
+	tdTowerCost(TD_TOWER_CHOICE_FOOTMAN).assertEquals(550)
+	tdTowerCost(TD_TOWER_CHOICE_DRYAD).assertEquals(600)
+	tdTowerCost(TD_TOWER_CHOICE_GHOUL).assertEquals(500)
 
 @Test function playerCanAffordTwoCheapTowersAtStart()
 	tdResetState()
@@ -64,22 +64,22 @@ import ObjEditingCommons
 	(tdTowerUpgradeCost(5, 4) > tdTowerUpgradeCost(5, 1)).assertTrue()
 
 @Test function towerFamiliesStayNearTargetTotalInvestment()
-	tdTowerTotalGoldCost(TD_TOWER_CHOICE_ARCHER).assertEquals(970)
-	tdTowerTotalGoldCost(TD_TOWER_CHOICE_ORC).assertEquals(1050)
-	tdTowerTotalGoldCost(TD_TOWER_CHOICE_FOOTMAN).assertEquals(910)
-	tdTowerTotalGoldCost(TD_TOWER_CHOICE_DRYAD).assertEquals(950)
-	tdTowerTotalGoldCost(TD_TOWER_CHOICE_GHOUL).assertEquals(890)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_ARCHER).assertEquals(9700)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_ORC).assertEquals(10500)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_FOOTMAN).assertEquals(9100)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_DRYAD).assertEquals(9500)
+	tdTowerTotalGoldCost(TD_TOWER_CHOICE_GHOUL).assertEquals(8900)
 
 @Test function towerProgressionKeepsEarlyLevelsAffordable()
-	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 1).assertEquals(45)
-	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 2).assertEquals(65)
-	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 3).assertEquals(90)
-	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 4).assertEquals(140)
+	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 1).assertEquals(450)
+	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 2).assertEquals(650)
+	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 3).assertEquals(900)
+	tdTowerUpgradeCost(TD_TOWER_CHOICE_ARCHER, 4).assertEquals(1400)
 
 @Test function evolutionAndGhoulSplashExposeTuningKnobs()
 	tdEvolutionSkillMultiplier().assertEquals(1.20)
 	tdGhoulCorpseExplosionLifeThreshold().assertEquals(0.25)
-	tdGhoulCorpseExplosionDamage().assertEquals(36.0)
+	tdGhoulCorpseExplosionDamage().assertEquals(180.0)
 	tdGhoulCorpseExplosionRadius().assertEquals(180.0)
 
 @Test function roleDefiningSkillValuesMatchBalancePlan()
@@ -88,10 +88,10 @@ import ObjEditingCommons
 	tdOrcCriticalStrikeMultiplier().assertEquals(2.20)
 	tdOrcSwordDanceAttackSpeedBonus().assertEquals(0.30)
 	tdOrcBloodlustAttackSpeedBonus().assertEquals(0.35)
-	tdOrcBladestormDamagePerSecond().assertEquals(70.0)
+	tdOrcBladestormDamagePerSecond().assertEquals(350.0)
 	tdFootmanBashChance().assertEquals(0.22)
 	tdFootmanCommandAuraDamageBonus().assertEquals(0.16)
-	tdDryadPoisonDps().assertEquals(12.0)
+	tdDryadPoisonDps().assertEquals(60.0)
 	tdDryadSlowFactor().assertEquals(0.78)
 	tdGhoulFrenzyAttackSpeedBonus().assertEquals(0.42)
 
@@ -130,10 +130,10 @@ import ObjEditingCommons
 	(tdFarmerWageIconPath() != tdFarmerCraftIconPath()).assertTrue()
 
 @Test function wageFormulaUsesGlobalWaveAndRandomBonusBounds()
-	tdFarmerWageGoldForWaveAndBonus(0, 1).assertEquals(4)
-	tdFarmerWageGoldForWaveAndBonus(2, 3).assertEquals(8)
-	tdFarmerWageMinimumGold(4).assertEquals(8)
-	tdFarmerWageMaximumGold(4).assertEquals(10)
+	tdFarmerWageGoldForWaveAndBonus(0, 1).assertEquals(40)
+	tdFarmerWageGoldForWaveAndBonus(2, 3).assertEquals(80)
+	tdFarmerWageMinimumGold(4).assertEquals(80)
+	tdFarmerWageMaximumGold(4).assertEquals(100)
 
 @Test function towerTooltipsStayChineseAndDoNotAdvertiseExtraRequirements()
 	tdTowerTooltipExtended(TD_TOWER_CHOICE_ORC, 1).contains("25%概率暴击").assertTrue()
@@ -188,9 +188,9 @@ import ObjEditingCommons
 
 @Test function dryadFinalFormUsesJungleGuardianIdentityAndTuning()
 	tdTowerDisplayName(TD_TOWER_CHOICE_DRYAD, 5).assertEquals("丛林守护者")
-	tdTowerBaseDamage(TD_TOWER_CHOICE_DRYAD, 5).assertEquals(88)
+	tdTowerBaseDamage(TD_TOWER_CHOICE_DRYAD, 5).assertEquals(440)
 	tdTowerBaseRange(TD_TOWER_CHOICE_DRYAD, 5).assertEquals(800)
-	tdTowerTooltipExtended(TD_TOWER_CHOICE_DRYAD, 5).contains("攻击：89至99（基础88）；射程：800").assertTrue()
+	tdTowerTooltipExtended(TD_TOWER_CHOICE_DRYAD, 5).contains("攻击：441至451（基础440）；射程：800").assertTrue()
 
 @Test function footmanFinalFormUsesPaladinIdentity()
 	tdTowerDisplayName(TD_TOWER_CHOICE_FOOTMAN, 5).assertEquals("圣骑士")
@@ -224,7 +224,7 @@ import ObjEditingCommons
 	tdOrcBladestormTickInterval().assertEquals(0.5)
 	tdOrcBladestormRadius().assertEquals(780.0)
 	(tdOrcBladestormDuration() / tdOrcBladestormTickInterval()).assertEquals(5.0)
-	(tdOrcBladestormDuration() * tdOrcBladestormDamagePerSecond()).assertEquals(175.0)
+	(tdOrcBladestormDuration() * tdOrcBladestormDamagePerSecond()).assertEquals(875.0)
 
 @Test function towerDamageAurasCanBuffStructures()
 	tdTowerAuraTargetsAllowed().contains("structure").assertTrue()
@@ -330,8 +330,8 @@ import ObjEditingCommons
 @Test function ultimateUpgradeCostsUseHighGoldGate()
 	for towerChoice = 1 to TD_TOWER_CHOICE_COUNT
 		for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
-			(tdTowerUltimateUpgradeCost(towerChoice, branch) >= 500).assertTrue()
-			(tdTowerUltimateUpgradeCost(towerChoice, branch) <= 650).assertTrue()
+			(tdTowerUltimateUpgradeCost(towerChoice, branch) >= 5000).assertTrue()
+			(tdTowerUltimateUpgradeCost(towerChoice, branch) <= 6500).assertTrue()
 
 @Test function allTowersCostOnePopulationButFarmerDoesNot()
 	tdTowerFoodCostForObjectGen().assertEquals(1)

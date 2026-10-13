@@ -9,9 +9,9 @@ import TDWaves
 import TDPetState
 
 @Test function removedEnemyCompensationAndRealKillTotalsAreExact()
-	(tdBossKillCompensation(8) + tdBossKillCompensation(16) + tdBossKillCompensation(24) + tdBossKillCompensation(32)).assertEquals(489)
-	tdMatchEnemyCountPerLane().assertEquals(474)
-	(538 - tdMatchEnemyCountPerLane()).assertEquals(64)
+	(tdBossKillCompensation(8) + tdBossKillCompensation(16) + tdBossKillCompensation(24) + tdBossKillCompensation(32)).assertEquals(4890)
+	tdMatchEnemyCountPerLane().assertEquals(934)
+	(tdMatchEnemyCountPerLane() - 920).assertEquals(14)
 	(tdBossNormalDropAttempts(8) + tdBossNormalDropAttempts(16) + tdBossNormalDropAttempts(24) + tdBossNormalDropAttempts(32)).assertEquals(58)
 	tdBossKillCompensation(7).assertEquals(0)
 	tdBossBallDropAttempts(32).assertEquals(0)
@@ -36,7 +36,7 @@ import TDPetState
 	for chapter = 1 to 4
 		let wave = chapter * 8
 		let plan = new TDBossLootPlan(wave, 0, TD_ITEM_QUALITY_BLUE, false, false)
-		let chance = tdNormalDropChanceBasisPointsForWave(wave)
+		let chance = tdOriginalDropChanceBasisPointsForWave(wave)
 		plan.tryNormal(chance + 1, 1).assertFalse()
 		plan.tryNormal(chance, 1).assertTrue()
 		(plan.qualities[1] <= TD_ITEM_QUALITY_BLUE).assertTrue()

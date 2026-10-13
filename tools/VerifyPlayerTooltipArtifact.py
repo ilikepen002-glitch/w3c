@@ -95,6 +95,9 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
                 continue
             pattern, multiplier = patterns[kind]
             number(text, pattern, int(amount * multiplier + .5), label)
+            if kind == 'KILL_GOLD':
+                number(text, r'普通 \+([\d.]+)', int(amount / 2), label)
+                require('首领无效' in text, label + ': Boss excluded from bonus gold')
             if kind == 'RANGE':
                 require('上限500' in text, label + ': range cap')
             elif kind == 'CONTROL_POWER':
@@ -134,7 +137,7 @@ def verify_current_items(items, root=ROOT, *, shared_active_cooldown=False):
                 number(text, r'每([\d.]+)次普攻命中', count, label)
                 number(text, r'本次普攻伤害的([\d.]+)%', 50, label)
                 number(text, r'目标周围([\d.]+)范围', radius, label)
-                require('最多4名敌人' in text and '副箭、毒伤不计次' in text,
+                require('最多4名敌人' in text and '副箭、毒伤不计' in text,
                         label + ': burst eligibility/cap')
                 if entry.specialization == 'POISON_BURST':
                     require(('须同一目标' in text or '同目标；换目标' in text) and '换目标' in text, label + ': poison target reset')
@@ -215,7 +218,7 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
             number(text, r'冷却([\d.]+)秒', value(fields, 'acdn', level), label)
             require('可自动施放' in text, label)
             if rawcode == 'A132':
-                require(all(x in text for x in ('780范围', '每秒造成70伤害', '不受装备射程影响')), label)
+                require(all(x in text for x in ('780范围', '每秒造成350伤害', '不受装备射程影响')), label)
             checked += 1
     # 16 skills x 4 qualities; also check all four display slots and locked copies.
     pet_tokens = ('攻击力', '基础攻击', '攻击速度', '冷却缩短', '全队所有塔', '600范围', '护甲降低',
@@ -225,7 +228,7 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
     for skill in range(16):
         for quality in range(1, 5):
             variant = skill * 4 + quality - 1
-            power = (8 * quality if skill == 0 else .06 * quality if skill in (1, 2, 3, 4)
+            power = (40 * quality if skill == 0 else .06 * quality if skill in (1, 2, 3, 4)
                      else .08 + .04 * quality if skill in (5, 9) else 2 * quality if skill == 6 else .25 + .15 * quality)
             for slot in range(4):
                 for locked in (0, 64):
@@ -234,7 +237,7 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
                     text_check(text, rawcode)
                     require(pet_tokens[skill] in text, f'{rawcode}: wrong skill text')
                     if skill == 10:
-                        number(text, r'造成([\d.]+)伤害', 36 * power, rawcode)
+                        number(text, r'造成([\d.]+)伤害', 180 * power, rawcode)
                         require('最多12名' in text and '持续3秒' in text and '不随尸爆进化增伤' in text, rawcode)
                     elif skill == 0:
                         number(text, r'攻击力\+([\d.]+)', power, rawcode)
@@ -322,7 +325,7 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
         for (field, level, _), (_, text) in abilities[rawcode][1].items():
             if field == 'aub1':
                 text_check(text, f'{rawcode}/{level}')
-    for rawcode, chance, multiplier, bonus in (('A102', 25, 2.2, 18), ('A112', 25, 2.64, 21.6)):
+    for rawcode, chance, multiplier, bonus in (('A102', 25, 2.2, 90), ('A112', 25, 2.64, 108)):
         text = value(abilities[rawcode][1], 'aub1', 1)
         number(text, r'(?:有)?([\d.]+)%概率', chance, rawcode)
         number(text, r'造成([\d.]+)倍伤害', multiplier, rawcode)

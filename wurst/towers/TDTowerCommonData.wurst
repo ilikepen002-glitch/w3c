@@ -109,7 +109,7 @@ public function tdFarmerWageIconPath() returns string
 	return Icons.bTNChestOfGold
 
 public function tdFarmerWageGoldForWaveAndBonus(int wave, int bonus) returns int
-	return 3 + wave + bonus
+	return (3 + wave + bonus) * 10
 
 public function tdFarmerWageMinimumGold(int wave) returns int
 	return tdFarmerWageGoldForWaveAndBonus(wave, 1)
@@ -133,7 +133,7 @@ public function tdGhoulCorpseExplosionLifeThreshold() returns real
 	return 0.25
 
 public function tdGhoulCorpseExplosionDamage() returns real
-	return 36.0
+	return 180.0
 
 public function tdGhoulCorpseExplosionRadius() returns real
 	return 180.0
@@ -228,7 +228,7 @@ public function tdOrcCriticalStrikeMultiplier() returns real
 	return 2.20
 
 public function tdOrcCriticalStrikeDamageBonus() returns real
-	return 18
+	return 90
 
 public function tdOrcSwordDanceAttackSpeedBonus() returns real
 	return 0.30
@@ -267,7 +267,7 @@ public function tdOrcBladestormTickInterval() returns real
 	return 0.5
 
 public function tdOrcBladestormDamagePerSecond() returns real
-	return 70.0
+	return 350.0
 
 public function tdOrcBladestormRadius() returns real
 	// Fixed spell range shared by native targeting and runtime damage, independent of attack range bonuses.
@@ -290,7 +290,7 @@ public function tdTowerAuraTargetsAllowed() returns string
 	return "friend,ground,air,structure,mechanical,organic,vulnerable,invulnerable"
 
 public function tdDryadPoisonDps() returns real
-	return 12.0
+	return 60.0
 
 public function tdDryadSlowFactor() returns real
 	return 0.78

@@ -92,7 +92,7 @@ public function tdRefreshStatusBoard()
 			tdStatusBoard.setItemValue(row, 2, tdHudLaneStatus(true, tdIsLaneFinished(playerId), tdIsLaneDefeated(playerId), tdGetGlobalWave(), tdWaveCount()))
 			row += 1
 	let phase = tdHudPhaseText(tdIsGameOver(), anyFinished, tdGetGlobalWave(), tdIsNextWaveQueued(), tdGetQueuedWave(), tdWaveCount())
-	tdStatusBoard.setTitle(tdHudChapter(tdGetGlobalWave()) + " · " + phase)
+	tdStatusBoard.setTitle(tdDifficultyLabel(tdGetDifficulty()) + " · " + phase + (tdIsDifficultyLocked() ? "" : " · 首波锁定"))
 	let nextWave = tdIsNextWaveQueued() ? tdGetQueuedWave() : tdGetGlobalWave() + 1
 	tdStatusBoard.setItemValue(row, 0, "预告")
 	tdStatusBoard.setItemValue(row, 1, "")
@@ -107,7 +107,7 @@ public function tdRefreshStatusBoard()
 	tdHudSetBossIcon(row, nextWave)
 	tdStatusBoard.setItemValue(row, 0, "下波")
 	tdStatusBoard.setItemValue(row, 1, "")
-	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() or nextWave > tdWaveCount() ? "无后续机制" : tdEnemyMechanicHint(nextWave))
+	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() or nextWave > tdWaveCount() ? "无后续机制" : tdWaveStrategyHint(nextWave) + " · " + tdEnemyMechanicHint(nextWave))
 	row += 1
 	// Compute every lane on all clients before selecting only display text locally.
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1

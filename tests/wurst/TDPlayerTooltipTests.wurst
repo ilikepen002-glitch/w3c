@@ -35,9 +35,9 @@ import TDInit
 	if not tdItemTooltip(TD_ITEM_GREEN_SCOPE_ID).contains("上限500")
 		("scope: " + tdItemTooltip(TD_ITEM_GREEN_SCOPE_ID)).assertEquals("scope cap present")
 	tdItemTooltip(TD_ITEM_GREEN_SCOPE_ID).contains("上限500").assertTrue()
-	if not tdItemTooltip(TD_ITEM_WHITE_POISON_ID).contains("每秒6伤害，持续3秒")
+	if not tdItemTooltip(TD_ITEM_WHITE_POISON_ID).contains("每秒30伤害，持续3秒")
 		("poison: " + tdItemTooltip(TD_ITEM_WHITE_POISON_ID)).assertEquals("poison numeric text present")
-	tdItemTooltip(TD_ITEM_WHITE_POISON_ID).contains("每秒6伤害，持续3秒").assertTrue()
+	tdItemTooltip(TD_ITEM_WHITE_POISON_ID).contains("每秒30伤害，持续3秒").assertTrue()
 
 @Test function playerPetTooltipsPreserveTriggerThresholdAndDamageBasis()
 	for quality = 1 to 4

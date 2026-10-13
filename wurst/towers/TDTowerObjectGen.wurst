@@ -351,9 +351,9 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	..setCheckDependencies(false)
 
 	let corpseExplosion = tdGeneratePassiveDisplay(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID, "尸爆", tdTowerSupportSkillIconPath(TD_TOWER_CHOICE_GHOUL), 1, 2)
-	corpseExplosion.setTooltipNormalExtended(1, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围180范围内其他敌人造成36伤害。")
+	corpseExplosion.setTooltipNormalExtended(1, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围180范围内其他敌人造成180伤害。")
 	corpseExplosion.setTooltipNormal(2, "进化尸爆")
-	corpseExplosion.setTooltipNormalExtended(2, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围180范围内其他敌人造成43.2伤害。")
+	corpseExplosion.setTooltipNormalExtended(2, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围180范围内其他敌人造成216伤害。")
 
 	new AbilityDefinitionMoonPriestessTrueshotAura(TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID)
 	..setName("进化白虎战吼")
@@ -380,7 +380,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	new AbilityDefinitionBladeMasterCriticalStrike(TD_ORC_PERFECT_CRIT_ABILITY_ID)
 	..setName("进化致命一击")
 	..setTooltipNormal(1, "进化致命一击")
-	..setTooltipNormalExtended(1, "普攻有25%概率造成2.64倍伤害，并追加21.6伤害。")
+	..setTooltipNormalExtended(1, "普攻有25%概率造成2.64倍伤害，并追加" + tdTooltipNumber(tdOrcCriticalStrikeDamageBonus() * tdEvolutionSkillMultiplier()) + "伤害。")
 	..setIconNormal(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_ORC))
 	..setIconResearch(tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_ORC))
 	..presetButtonPosNormal(0, 1)
@@ -441,7 +441,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	wageAbility
 	..setName("工资")
 	..setTooltipNormal(1, "工资")
-	..setTooltipNormalExtended(1, "领取当前波次+随机4至6金币。|n第1波开始后可用，冷却180秒。")
+	..setTooltipNormalExtended(1, "领取10×当前波次 + 随机40、50或60金币。|n第1波开始后可用，冷却180秒。")
 	..setIconNormal(tdFarmerWageIconPath())
 	..setIconResearch(tdFarmerWageIconPath())
 	..presetHotkey("G")

@@ -8,6 +8,7 @@ import TDItems
 import TDInventory
 import TDTowers
 import TDDrops
+import TDBossRewardRules
 import ClosureTimers
 import ObjectIds
 
@@ -93,8 +94,8 @@ function killAndCheck(unit killer, int wave, int typeId, int bonus)
         UnitDamageTarget(killer, enemy, 10000000.0, false, false, ATTACK_TYPE_CHAOS, DAMAGE_TYPE_UNIVERSAL, WEAPON_TYPE_WHOKNOWS)
     if enemy.isAlive()
         fail("native lethal damage did not kill enemy")
-    else if tdGetGold(0) != before + tdWaveKillGold(wave) + bonus or tdGetGold(1) != otherBefore
-        fail("gold delta=" + (tdGetGold(0) - before).toString() + " expected=" + (tdWaveKillGold(wave) + bonus).toString())
+    else if tdGetGold(0) != before + tdWaveKillGoldForUnitTypeId(wave, typeId) + bonus or tdGetGold(1) != otherBefore
+        fail("gold delta=" + (tdGetGold(0) - before).toString() + " expected=" + (tdWaveKillGoldForUnitTypeId(wave, typeId) + bonus).toString())
     RemoveUnit(enemy)
 
 function findDropSeed()
@@ -157,7 +158,7 @@ function checkBossDrops(boolean equipped)
     if not equipped
         bossNextRandom = nextRandom
     collectDrops()
-    if tdGetGold(0) != before + tdWaveKillGold(8)
+    if tdGetGold(0) != before + tdWaveKillGold(8) + tdBossKillCompensation(8)
         fail("boss received equipment gold")
     if foundItems < 1 or foundItems > 3
         fail("boss guaranteed drop missing or extra items")
@@ -197,7 +198,7 @@ function advance()
         killAndCheck(ownTower, 29, tdWaveUnitId(29), 0)
     else if phase == 1
         equip(ownTower, TD_ITEM_WHITE_GOLD_ID)
-        killAndCheck(ownTower, 29, tdWaveUnitId(29), 1)
+        killAndCheck(ownTower, 29, tdWaveUnitId(29), 5)
     else if phase == 2
         equip(otherTower, TD_ITEM_WHITE_GOLD_ID)
         killAndCheck(otherTower, 29, tdWaveUnitId(29), 0)
@@ -210,7 +211,7 @@ function advance()
     else if phase == 5
         for _copy = 1 to 3
             equip(ownTower, TD_ITEM_BLUE_GOLD_ID)
-        // Arrange a nearly spent budget; the real death handler must clip the +7 to +3.
+        // Arrange a nearly spent budget; the real death handler must clip the +15 to +3.
         let budget = tdWaveEquipmentGoldBudget(30)
         tdTakeLaneWaveEquipmentGold(0, 30, budget - 3, budget)
         killAndCheck(ownTower, 30, tdWaveUnitId(30), 3)

@@ -1,4 +1,5 @@
 package TDNativeWaveProbe
+import TDGame
 import TDSpawn
 import TDState
 import TDWaves
@@ -53,10 +54,10 @@ function scan()
     DestroyGroup(g)
 
 function expectedOldGold() returns int
-    return baselineGold + tdWaveEnemyCount(OLD_WAVE) * tdWaveKillGold(OLD_WAVE) + tdWaveReward(OLD_WAVE)
+    return baselineGold + tdWaveEquipmentGoldBudget(OLD_WAVE) + tdWaveReward(OLD_WAVE)
 
 function expectedFinalGold() returns int
-    return expectedOldGold() + tdWaveEnemyCount(NEW_WAVE) * tdWaveKillGold(NEW_WAVE) + tdWaveReward(NEW_WAVE)
+    return expectedOldGold() + tdWaveEquipmentGoldBudget(NEW_WAVE) + tdWaveReward(NEW_WAVE)
 
 function verifyOld() returns boolean
     if tdLaneHasLivingEnemies(0, OLD_WAVE) or not tdLaneHasLivingEnemies(0, NEW_WAVE) or tdLaneHasLivingEnemies(1, NEW_WAVE)

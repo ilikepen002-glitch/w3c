@@ -41,7 +41,7 @@ public function tdTrialPrepareHud(TDTrialState state, real now)
 				status = "异常 · 0金"
 			tdTrialSetHudCell(row, 3, status)
 	tdTrialSetHudCell(5, 0, "名次奖励")
-	tdTrialSetHudCell(5, 2, state.getRound() == 1 ? "30/24/18/12 · 同分均分" : "60/48/36/24 · 同分均分")
+	tdTrialSetHudCell(5, 2, state.getRound() == 1 ? "300/240/180/120 · 同分均分" : "600/480/360/240 · 同分均分")
 
 public function tdTrialRefreshHud(multiboard board, int firstRow)
 	tdTrialPrepareHud(tdTrialState, getElapsedGameTime())

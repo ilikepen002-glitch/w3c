@@ -1,0 +1,31 @@
+package TDDifficultyEnemyData
+import TDDifficultyRules
+import TDWaves
+import TDEnemyMechanicData
+
+// Same two-hex-digit allocation convention as pet objects; dedicated D namespace.
+public function tdDifficultyHealthAbilityId(int wave, int role, int difficulty) returns int
+	if wave < 1 or wave > tdWaveCount() or role < 0 or role > 2 or difficulty < 2 or difficulty > 4
+		return 0
+	let index = (wave - 1) * 3 + difficulty - 2
+	var high = index div 16
+	var low = index mod 16
+	if high >= 10
+		high += 7
+	if low >= 10
+		low += 7
+	return 'Dh00' + role * 65536 + high * 256 + low
+
+public function tdDifficultyEnemyRole(int unitTypeId) returns int
+	if tdIsBossUnitTypeId(unitTypeId) or tdIsEliteUnitTypeId(unitTypeId)
+		return 1
+	if tdIsBossGuardUnitTypeId(unitTypeId)
+		return 2
+	return 0
+
+public function tdDifficultyEnemyBaseHitPoints(int wave, int role) returns int
+	if role == 1
+		return tdIsPureBossWave(wave) ? tdWaveBossHitPoints(wave) : tdWaveEliteHitPoints(wave)
+	if role == 2
+		return tdWaveBossGuardHitPoints(wave)
+	return tdWaveBaseHitPoints(wave)

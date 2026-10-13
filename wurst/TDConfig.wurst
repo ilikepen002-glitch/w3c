@@ -3,14 +3,14 @@ import public TDTowerPlacementRules
 
 public constant int TD_ACTIVE_PLAYER_COUNT = 4
 public constant int TD_STARTING_LIVES = 20
-public constant int TD_STARTING_GOLD = 100
+public constant int TD_STARTING_GOLD = 1000
 public constant int TD_TOWER_CHOICE_COUNT = 5
 public constant int TD_MAX_TOWER_LEVEL = 6
 public constant real TD_FIRST_WAVE_DELAY = 30.00
 public constant real TD_TIME_BETWEEN_WAVES = 20.00
 
 public function tdEnemyHealthMultiplier() returns real
-	return 1.0
+	return 4.0
 
 public function tdEnemyArmorMultiplier() returns real
 	return 1.0
@@ -19,7 +19,7 @@ public function tdEnemySpeedMultiplier() returns real
 	return 1.0
 
 public function tdEconomyMultiplier() returns real
-	return 1.0
+	return 10.0
 
 public constant int TD_TOWER_CHOICE_ARCHER = 1
 public constant int TD_TOWER_CHOICE_ORC = 2

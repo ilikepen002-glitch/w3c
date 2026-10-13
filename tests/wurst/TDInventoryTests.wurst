@@ -6,7 +6,7 @@ import TDTowers
 
 @Test function towersKeepThreeSlotsAndRawcodeCopiesAreDefensivelyIgnored()
 	tdTowerEquipmentSlotCount().assertEquals(3)
-	tdEquipmentAttackBonusForItems(TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_WHITE_WAR_AXE_ID).assertEquals(8.0)
+	tdEquipmentAttackBonusForItems(TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_WHITE_WAR_AXE_ID).assertEquals(40.0)
 	tdTowerAttackBonusAbilityLevelForItems(TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_WHITE_WAR_AXE_ID).assertEquals(8)
 
 @Test function cooldownAndRangeBonusesRespectSingleCatalogAndCaps()
@@ -19,9 +19,9 @@ import TDTowers
 	tdTowerAttackSpeedAbilityLevelForItems(TD_ITEM_WHITE_SWIFT_ID, TD_ITEM_GREEN_SWIFT_ID, TD_ITEM_PURPLE_SWIFT_ID).assertEquals(80)
 
 @Test function economicAndDropBonusesUseHighestKindAndPurpleHasNoEconomy()
-	tdEquipmentKillGoldBonusForItems(TD_ITEM_WHITE_GOLD_ID, TD_ITEM_GREEN_GOLD_ID, 0).assertEquals(2)
+	tdEquipmentKillGoldBonusForItems(TD_ITEM_WHITE_GOLD_ID, TD_ITEM_GREEN_GOLD_ID, 0).assertEquals(20)
 	tdEquipmentDropBonusRollsForItems(TD_ITEM_GREEN_GOLD_ID, TD_ITEM_BLUE_GOLD_ID, 0).assertEquals(2)
-	tdEquipmentKillGoldBonusForItems(TD_ITEM_BLUE_GOLD_ID, TD_ITEM_BLUE_GOLD_ID, TD_ITEM_BLUE_GOLD_ID).assertEquals(3)
+	tdEquipmentKillGoldBonusForItems(TD_ITEM_BLUE_GOLD_ID, TD_ITEM_BLUE_GOLD_ID, TD_ITEM_BLUE_GOLD_ID).assertEquals(30)
 	tdEquipmentDropBonusRollsForItems(TD_ITEM_BLUE_GOLD_ID, TD_ITEM_BLUE_GOLD_ID, TD_ITEM_BLUE_GOLD_ID).assertEquals(2)
 	tdEquipmentKillGoldBonusForItems(TD_ITEM_PURPLE_GOLD_ID, 0, 0).assertEquals(0)
 	tdEquipmentDropBonusRollsForItems(TD_ITEM_PURPLE_GOLD_ID, 0, 0).assertEquals(0)
@@ -34,11 +34,11 @@ import TDTowers
 	tdCanUseEquipmentKillRewards(-1, -1, TD_ARCHER_LEVEL_1_ID, false).assertFalse()
 
 @Test function poisonBonusesUseHighestTierWithoutDuplicateCopies()
-	tdEquipmentPoisonBonusForItems(TD_ITEM_WHITE_POISON_ID, TD_ITEM_GREEN_POISON_ID, TD_ITEM_PURPLE_POISON_ID).assertEquals(24.0)
-	tdEquipmentPoisonBonusForItems(TD_ITEM_PURPLE_POISON_ID, TD_ITEM_PURPLE_POISON_ID, TD_ITEM_PURPLE_POISON_ID).assertEquals(24.0)
+	tdEquipmentPoisonBonusForItems(TD_ITEM_WHITE_POISON_ID, TD_ITEM_GREEN_POISON_ID, TD_ITEM_PURPLE_POISON_ID).assertEquals(120.0)
+	tdEquipmentPoisonBonusForItems(TD_ITEM_PURPLE_POISON_ID, TD_ITEM_PURPLE_POISON_ID, TD_ITEM_PURPLE_POISON_ID).assertEquals(120.0)
 
 @Test function distinctRawcodesDoNotShareDuplicatePenaltyBuckets()
-	tdEquipmentAttackBonusForItems(TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_GREEN_WAR_AXE_ID, TD_ITEM_PURPLE_WAR_AXE_ID).assertEquals(58.0)
+	tdEquipmentAttackBonusForItems(TD_ITEM_WHITE_WAR_AXE_ID, TD_ITEM_GREEN_WAR_AXE_ID, TD_ITEM_PURPLE_WAR_AXE_ID).assertEquals(290.0)
 
 @Test function towerEffectiveRangeAddsEquipmentBonusOnTopOfBaseRange()
 	let baseRange = tdTowerBaseRangeForBranch(TD_TOWER_CHOICE_ARCHER, 5, TD_TOWER_BRANCH_A).toReal()

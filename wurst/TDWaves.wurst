@@ -119,69 +119,69 @@ public function tdWaveNormalEnemyCount(int wave) returns int
 	if tdIsPureBossWave(wave)
 		return 0
 	if wave == 1
-		return 8
+		return 16
 	if wave == 2
-		return 10
+		return 20
 	if wave == 3
-		return 12
-	if wave == 4
-		return 9
-	if wave == 5
-		return 14
-	if wave == 6
-		return 10
-	if wave == 7
-		return 12
-	if wave == 8
-		return 10
-	if wave == 9
-		return 21
-	if wave == 10
-		return 15
-	if wave == 11
-		return 12
-	if wave == 12
-		return 10
-	if wave == 13
-		return 20
-	if wave == 14
-		return 14
-	if wave == 15
-		return 17
-	if wave == 16
-		return 14
-	if wave == 17
-		return 20
-	if wave == 18
-		return 17
-	if wave == 19
-		return 15
-	if wave == 20
-		return 16
-	if wave == 21
-		return 16
-	if wave == 22
-		return 22
-	if wave == 23
-		return 18
-	if wave == 24
-		return 16
-	if wave == 25
-		return 26
-	if wave == 26
-		return 19
-	if wave == 27
-		return 17
-	if wave == 28
-		return 18
-	if wave == 29
 		return 24
-	if wave == 30
-		return 26
-	if wave == 31
-		return 22
-	if wave == 32
+	if wave == 4
 		return 18
+	if wave == 5
+		return 28
+	if wave == 6
+		return 20
+	if wave == 7
+		return 24
+	if wave == 8
+		return 20
+	if wave == 9
+		return 42
+	if wave == 10
+		return 30
+	if wave == 11
+		return 24
+	if wave == 12
+		return 20
+	if wave == 13
+		return 40
+	if wave == 14
+		return 28
+	if wave == 15
+		return 34
+	if wave == 16
+		return 28
+	if wave == 17
+		return 40
+	if wave == 18
+		return 34
+	if wave == 19
+		return 30
+	if wave == 20
+		return 32
+	if wave == 21
+		return 32
+	if wave == 22
+		return 44
+	if wave == 23
+		return 36
+	if wave == 24
+		return 32
+	if wave == 25
+		return 52
+	if wave == 26
+		return 38
+	if wave == 27
+		return 34
+	if wave == 28
+		return 36
+	if wave == 29
+		return 48
+	if wave == 30
+		return 52
+	if wave == 31
+		return 44
+	if wave == 32
+		return 36
 	return 0
 
 public function tdWaveEliteEnemyCount(int wave) returns int
@@ -415,13 +415,13 @@ public function tdWaveBaseSpeed(int wave) returns int
 
 public function tdWaveEliteHitPoints(int wave) returns int
 	if wave == 4
-		return tdScaledEnemyStat(760, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(760, 5.0)
 	if wave == 12
-		return tdScaledEnemyStat(1400, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(1400, 5.0)
 	if wave == 20
-		return tdScaledEnemyStat(2700, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(2700, 5.0)
 	if wave == 28
-		return tdScaledEnemyStat(5200, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(5200, 5.0)
 	return 0
 
 public function tdWaveEliteArmor(int wave) returns int
@@ -448,13 +448,13 @@ public function tdWaveEliteSpeed(int wave) returns int
 
 public function tdWaveBossGuardHitPoints(int wave) returns int
 	if wave == 8
-		return tdScaledEnemyStat(850, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(850, 5.0)
 	if wave == 16
-		return tdScaledEnemyStat(1900, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(1900, 5.0)
 	if wave == 24
-		return tdScaledEnemyStat(3600, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(3600, 5.0)
 	if wave == 32
-		return tdScaledEnemyStat(6600, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(6600, 5.0)
 	return 0
 
 public function tdWaveBossGuardArmor(int wave) returns int
@@ -481,13 +481,13 @@ public function tdWaveBossGuardSpeed(int wave) returns int
 
 public function tdWaveBossHitPoints(int wave) returns int
 	if wave == 8
-		return tdScaledEnemyStat(3200, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(3200, 5.0)
 	if wave == 16
-		return tdScaledEnemyStat(6800, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(6800, 5.0)
 	if wave == 24
-		return tdScaledEnemyStat(19000, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(19000, 5.0)
 	if wave == 32
-		return tdScaledEnemyStat(36000, tdEnemyHealthMultiplier())
+		return tdScaledEnemyStat(36000, 5.0)
 	return 0
 
 public function tdWaveBossArmor(int wave) returns int
@@ -724,24 +724,24 @@ public function tdWaveSpawnUnitId(int wave, int remainingCount) returns int
 
 public function tdWaveSpawnInterval(int wave) returns real
 	if wave <= 1
-		return 1.05
+		return 0.7875000000000001
 	if wave <= 3
-		return 0.98
+		return 0.735
 	if wave <= 5
-		return 0.88
+		return 0.66
 	if wave <= 8
-		return 0.78
+		return 0.585
 	if wave <= 12
-		return 0.70
+		return 0.5249999999999999
 	if wave <= 16
-		return 0.64
+		return 0.48
 	if wave <= 20
-		return 0.58
+		return 0.43499999999999994
 	if wave <= 24
-		return 0.54
+		return 0.405
 	if wave <= 28
-		return 0.50
-	return 0.46
+		return 0.375
+	return 0.34500000000000003
 
 public function tdWaveReward(int wave) returns int
 	if wave == 1
@@ -824,6 +824,15 @@ public function tdWaveKillGold(int wave) returns int
 	if wave <= 28
 		return tdScaledEconomyValue(9)
 	return tdScaledEconomyValue(10)
+
+// Normal enemies doubled: split their kill income across both copies.
+public function tdEnemyEconomyValue(int fullValue, int unitTypeId) returns int
+	if tdIsEliteUnitTypeId(unitTypeId) or tdIsBossGuardUnitTypeId(unitTypeId) or tdIsBossUnitTypeId(unitTypeId)
+		return fullValue
+	return fullValue div 2
+
+public function tdWaveKillGoldForUnitTypeId(int wave, int unitTypeId) returns int
+	return tdEnemyEconomyValue(tdWaveKillGold(wave), unitTypeId)
 
 public function tdWaveScoreValue(int wave) returns int
 	if wave <= 0
@@ -919,3 +928,19 @@ function tdWaveObjectParentId(int wave) returns int
 	..setSpeedMaximum(tdEnemyMechanicMaxSpeed(32, TD_ENEMY_ROLE_BOSS, tdWaveBossSpeed(32)))
 	..setIconGameInterface(tdBossIconPath(32))
 
+
+public function tdWaveStrategyHint(int wave) returns string
+	if wave < 1 or wave > tdWaveCount()
+		return ""
+	if tdIsPureBossWave(wave)
+		return "首领单体战：集中火力，配合破甲与减速"
+	var hint = ""
+	if tdWaveNormalEnemyCount(wave) >= 36
+		hint = "密集：分裂箭、尸爆或风暴清群"
+	if tdWaveBaseSpeed(wave) >= 285
+		hint += (hint == "" ? "" : "；") + "疾行：毒伤减速延长输出"
+	if tdWaveBaseArmor(wave) >= 5
+		hint += (hint == "" ? "" : "；") + "高甲：破甲装备或精灵辅助"
+	if tdWaveEliteEnemyCount(wave) > 0
+		hint += (hint == "" ? "" : "；") + "精英：保留单体火力"
+	return hint == "" ? "稳住火力，兼顾群攻与减速" : hint

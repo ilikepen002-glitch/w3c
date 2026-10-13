@@ -31,7 +31,7 @@ class TrialJassRuntime(PureBossJassRuntime):
         self.timer_starts, self.timer_destroys, self.trigger_events = [], [], []
         self.periodics = []
         self.hud_refreshes = 0
-        self.player_resources = {(lane, "gold"):100 for lane in range(4)}
+        self.player_resources = {(lane, "gold"):1000 for lane in range(4)}
         self.execute_lane_state, self.capture_wave_production = True, True
         self.tables[610].clear()
         self.table.clear(); self.lists[700].clear()
@@ -41,7 +41,9 @@ class TrialJassRuntime(PureBossJassRuntime):
             self.globals[field] = code
         self.invoke('CreateRegions')
         # Only relevant production package initialization, not main/UI/game boot.
-        for name in ('init_TDBossDarkTideRuntime', 'init_TDTowerEvolutionRuntime', 'init_TDPetWild', 'init_TDDamageState', 'init_TDDamageRuntime', 'init_TDEquipmentCombat',
+        # The packaged min/max helpers use Real_REAL_MAX/MIN initialized here.
+        # Replaying match startup alone omits the engine's earlier package init.
+        for name in ('init_Real', 'init_TDBossDarkTideRuntime', 'init_TDTowerEvolutionRuntime', 'init_TDPetWild', 'init_TDDamageState', 'init_TDDamageRuntime', 'init_TDEquipmentCombat',
                      'init_TDPetState', 'init_TDPetCombat', 'init_TDTrialIdentity',
                      'init_TDTrialRuntime', 'init_TDTrialHook', 'init_TDTrialHud',
                      'init_TDAuraObjectIds', 'init_TDEquipmentSpecialObjectIds',
@@ -151,7 +153,7 @@ class TrialJassRuntime(PureBossJassRuntime):
             attempt=len(self.creations)+1
             if self.fail_creation_at == attempt: self.creations.append(None); return True,None
             self.unit_serial+=1; handle=self.unit_serial
-            self.units[handle]={'alive':True,'owner':args[0],'type':args[1],'life':1000000.0,'maxLife':1000000.0,
+            self.units[handle]={'alive':True,'owner':args[0],'type':args[1],'life':5000000.0,'maxLife':5000000.0,
                                 'userdata':0,'speed':260.0,'defaultSpeed':260.0,'x':args[2],'y':args[3],'order':0,
                                 'lane':0,'wave':0,'leaked':False,'abilities':{}}
             self.creations.append(handle); self.native_events.append(('create',handle)); return True,handle
@@ -248,7 +250,7 @@ def verify_damage_chain(script):
     for amount in (0.25, 0.25, 0.25, 123.0):
         r.units[target]['life'] = 15.0
         event = r.emit(amount, source=101, target=target)
-        require(event['life'] == 1000000.0 - amount and ('engineLife', target, 1000000.0) in r.events[-2:], 'Priority0 did not refill fixed 1m before native hit')
+        require(event['life'] == 5000000.0 - amount and ('engineLife', target, 5000000.0) in r.events[-2:], 'Priority0 did not refill fixed 5m before native hit')
     require(r.state_call('totalText', 0) == '124', 'Every real positive segment must aggregate before final rounding')
     total = r.state_call('total', 0)
     for source in (103, 104): r.emit(99.0, source=source, target=target)
@@ -286,7 +288,7 @@ def verify_lifecycle(script):
         created = [unit for unit in r.creations if unit is not None]
         require(len(created) == fail_at - 1 and set(r.removals) == set(created), 'Partial prepare failure leaked native target')
         require(all(r.slots[i] == 0 for i in range(20)) and r.state_call('getPhase') == 0, 'Failed prepare became ACTIVE or retained slots')
-        require(all(r.invoke('tdGetGold',lane) == 100 for lane in range(4)), 'False onReady Game COMPLETED release awarded gold')
+        require(all(r.invoke('tdGetGold',lane) == 1000 for lane in range(4)), 'False onReady Game COMPLETED release awarded gold')
         require(len(r.scheduled) == 1 and r.scheduled[0][0] == 30.0, 'False onReady lost ordinary 30 second fallback')
         r.run_timer(r.scheduled[0][1]); require(r.globals['TDState_tdGlobalWave'] == 9, 'False prepare fallback could not advance')
         records.append({'prepare_failure_at':fail_at,'created_removed':len(created),'reward':0})
@@ -300,7 +302,7 @@ def verify_lifecycle(script):
     require(r.slots[0] == 0 and len(r.removals) == 1, 'Death did not invalidate/remove old target before scheduling')
     r.initialize_match()
     require(r.state_call('getGeneration') > generation and r.calls['tdResetAndRegisterTrialHook'] == 2, 'Second real TDInit did not reset generation and re-register')
-    require(len(r.removals) == 20 and all(r.invoke('tdGetGold',lane)==100 for lane in range(4)), 'ABORTED reset did not clear all old units zero reward')
+    require(len(r.removals) == 20 and all(r.invoke('tdGetGold',lane)==1000 for lane in range(4)), 'ABORTED reset did not clear all old units zero reward')
     r.enter(8); fresh_slots=[r.slots[i] for i in range(20)]; fresh_count=len(r.creations)
     r.now=r.state_call('getDeadline')
     r.fire_native_timer(old_deadline_timer); r.fire_native_timer(old_route_timer)
@@ -318,10 +320,10 @@ def verify_lifecycle(script):
         r.now=r.state_call('getDeadline')
         if release=='trialTimerFirst':r.fire_native_timer(r.globals['TDTrialHook_tdTrialResumeTimer'])
         else:r.run_timer(r.scheduled[-1][1])
-        require(r.state_call('isWithdrawn',0) and r.invoke('tdGetGold',0)==100 and r.invoke('tdGetGold',1)==124,
+        require(r.state_call('isWithdrawn',0) and r.invoke('tdGetGold',0)==1000 and r.invoke('tdGetGold',1)==1240,
                 'Final-tick departed leader gained gold or redistributed its frozen ranking place')
         require(r.state_call('rank',0)==0 and r.state_call('rank',1)==1, 'Withdrawn score did not keep ranking occupancy')
-        records.append({'release_order':release,'last_tick_departed_leader_gold':0,'remaining_second_place_gold':24})
+        records.append({'release_order':release,'last_tick_departed_leader_gold':0,'remaining_second_place_gold':240})
     return {'cases':records}
 
 
@@ -426,7 +428,7 @@ def verify_exact_hud(script):
     r.invoke('tdTrialPrepareHud',r.state,r.now)
     require(r.invoke('tdTrialHudCell',1,1)=='2148000001' and r.invoke('tdTrialHudCell',2,1)=='2148000000','HUD and actual ranking keys differ')
     r.now=r.state_call('getDeadline');r.fire_native_timer(r.globals['TDTrialHook_tdTrialResumeTimer'])
-    require(r.invoke('tdGetGold',0)==160 and r.invoke('tdGetGold',1)==148,'Above2^31 distinct ranks failed fixed round2 prizes')
+    require(r.invoke('tdGetGold',0)==1600 and r.invoke('tdGetGold',1)==1480,'Above2^31 distinct ranks failed fixed round2 prizes')
     return {'actual_score_additions':4297,'exact_totals':['2148000001','2148000000'],'hud_rank_reward_consistent':True,
             'native_precision_boundary':'Accumulation operands stay below2^21; arbitrary fractional float32 behavior is not emulated by this scalar interpreter'}
 
@@ -504,7 +506,7 @@ def verify_replay(script):
             else: r.run_timer(watchdog); r.fire_native_timer(native_timer)
             require(r.state_call('getPhase')==3 and r.state_call('targetCount')==0 and all(r.slots[i]==0 for i in range(20)),'Release failed state/native cleanup')
             require(len(r.removals)==20 and len(set(r.removals))==20,'Release did not remove every target exactly once')
-            require(r.invoke('tdGetGold',0)==(r.globals['TDConfig_TD_STARTING_GOLD'] if 'TDConfig_TD_STARTING_GOLD' in r.globals else 100)+30*(1 if wave==8 else 2),'Release prize not applied exactly once')
+            require(r.invoke('tdGetGold',0)==(r.globals['TDConfig_TD_STARTING_GOLD'] if 'TDConfig_TD_STARTING_GOLD' in r.globals else 1000)+300*(1 if wave==8 else 2),'Release prize not applied exactly once')
             require(r.globals['TDState_tdGlobalWave']==wave+1 and r.spawn_requests==[(lane,wave+1) for lane in range(4)],'Real synchronous resume/release did not open 9/25 once')
             r.fire_native_timer(native_timer); r.run_timer(watchdog)
             require(len(r.removals)==20 and len(r.spawn_requests)==4,'Repeated native/watchdog callback affected sealed trial')

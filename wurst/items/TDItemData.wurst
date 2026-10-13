@@ -234,7 +234,7 @@ function tdItemEffectText(int effectKind, real value) returns string
 	if effectKind == TD_ITEM_EFFECT_COOLDOWN
 		return "主动技能冷却缩短" + R2I(value * 100.0 + 0.5).toString() + "%（包括附身精灵的主动技能；与精灵灵感、有效冷却光环合计上限40%）"
 	if effectKind == TD_ITEM_EFFECT_KILL_GOLD
-		return "本路非首领击杀金币 +" + R2I(value + 0.5).toString() + "；同类取最高。每波额外金币不超过本波非首领基础击杀金币。"
+		return "击杀金币：普通 +" + R2I(value / 2.0 + 0.5).toString() + "，精英击杀金币 +" + R2I(value + 0.5).toString() + "；取最高，首领无效。每波上限：非首领基础击杀收入。"
 	if effectKind == TD_ITEM_EFFECT_ARMOR_SHRED
 		return "普攻使目标护甲降低" + R2I(value + 0.5).toString() + "，持续3秒；装备破甲取最强，最多降低30护甲。"
 	if effectKind == TD_ITEM_EFFECT_EXECUTE
@@ -288,7 +288,7 @@ public function tdItemTooltip(int itemId) returns string
 		tooltip += "|n剑圣同目标" + tdItemSpecialCount(itemId) + "次普攻：攻速 +" + R2I(tdItemWarAttackSpeed() * 100.0 + 0.5) + "%持续" + R2I(tdItemWarDuration()) + "秒，不叠层不续时；换目标或停攻" + R2I(tdConfiguredWarInactivity()) + "秒清层。"
 	else if special == TD_ITEM_SPECIAL_CORPSE_BURST or special == TD_ITEM_SPECIAL_POISON_BURST
 		let title = special == TD_ITEM_SPECIAL_CORPSE_BURST ? "食尸鬼" : "树妖"
-		tooltip += "|n" + title + "：每" + tdItemSpecialCount(itemId) + "次普攻命中，目标周围" + R2I(tdItemSpecialRadius(itemId)) + "范围最多" + tdItemSpecialTargetCap(itemId) + "名敌人，本次普攻伤害的" + R2I(tdItemSpecialDamageFactor(itemId) * 100.0) + "%。副箭、毒伤不计次。"
+		tooltip += "|n" + title + "：每" + tdItemSpecialCount(itemId) + "次普攻命中，目标周围" + R2I(tdItemSpecialRadius(itemId)) + "范围最多" + tdItemSpecialTargetCap(itemId) + "名敌人，本次普攻伤害的" + R2I(tdItemSpecialDamageFactor(itemId) * 100.0) + "%。副箭、毒伤不计。"
 		if special == TD_ITEM_SPECIAL_POISON_BURST
 			tooltip += "同目标；换目标或停攻" + R2I(tdConfiguredPoisonBurstInactivity()) + "秒清零。"
 	else if special == TD_ITEM_SPECIAL_SHIELD_SPREAD

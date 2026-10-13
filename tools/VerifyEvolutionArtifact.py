@@ -24,8 +24,8 @@ def validate_branch_displays(units, abilities):
     split = abilities['A100'][1]
     require('7' in split[('aub1', 1, 0)][1], 'Normal split display must describe six-tier seven targets')
     require(all(word in split[('aub1', 2, 0)][1] for word in ['7', '20%', '额外', '主箭', '不变']), 'Evolved split display does not match extra-arrow-only gain')
-    require('36' in abilities['A116'][1][('aub1', 1, 0)][1], 'Normal corpse display must describe 36 damage')
-    require('43.2' in abilities['A116'][1][('aub1', 2, 0)][1], 'Evolved corpse display must describe 43.2 damage')
+    require('180' in abilities['A116'][1][('aub1', 1, 0)][1], 'Normal corpse display must describe 180 damage')
+    require('216' in abilities['A116'][1][('aub1', 2, 0)][1], 'Evolved corpse display must describe 216 damage')
     for uid in ['uA6A', 'uA6B']:
         require('7' in units[uid].get('utub', '') + units[uid].get('uube', ''), f'{uid}: final split tooltip does not describe seven targets')
 
@@ -41,7 +41,7 @@ def validate_evolution_artifact(units, abilities, artifact):
         require(attached.count('A130') == 1, f'{uid}: evolution progress must be attached once')
         require('A133' in attached, f'{uid}: sale missing')
     # Wave table provides the exact theoretical upper bound (no extra summons).
-    max_kills = 474
+    max_kills = 934
     for aid, levels, icon, x in [
         ('A130', max_kills + 1, 'BTNMarkOfFire', 2),
         ('AeEV', 3, 'BTNMetamorphosis', 3),
@@ -56,10 +56,10 @@ def validate_evolution_artifact(units, abilities, artifact):
             for field, column, expected in [('Ocr1',1,0.0),('Ocr2',2,1.0),('Ocr3',3,0.0),('Ocr5',5,0)]:
                 require(fields[(field,level,column)][1] == expected, f'{aid}/{level}: passive carrier has combat effect')
     progress = abilities['A130'][1]
-    for kills in [0,219,220,221,max_kills]:
+    for kills in [0,439,440,441,max_kills]:
         require(progress[('atp1',kills+1,0)][1] == f'累计击杀：{kills}', f'Exact count missing: {kills}')
         require(f'本塔累计击杀：{kills}。' in progress[('aub1',kills+1,0)][1], f'Exact hover count missing: {kills}')
-        require('达到220击杀' in progress[('aub1',kills+1,0)][1], 'Wrong evolution threshold')
+        require('达到440击杀' in progress[('aub1',kills+1,0)][1], 'Wrong evolution threshold')
     status = abilities['AeEV'][1]
     require('等待完成6阶' in status[('atp1',1,0)][1], 'Waiting state missing')
     require('已进化' in status[('atp1',2,0)][1], 'Evolved state missing')
@@ -80,7 +80,7 @@ def validate_evolution_artifact(units, abilities, artifact):
         require(math.isclose(value,expected,rel_tol=1e-5), f'{aid}: wrong aura damage {value}')
     crit = abilities['A112'][1]
     require(math.isclose(crit[('Ocr2',1,2)][1],2.64,rel_tol=1e-5), 'Evolved crit multiplier not +20%')
-    require(math.isclose(crit[('Ocr3',1,3)][1],21.6,rel_tol=1e-5), 'Evolved crit bonus not +20%')
+    require(math.isclose(crit[('Ocr3',1,3)][1],108.0,rel_tol=1e-5), 'Evolved crit bonus not +20%')
     require(math.isclose(abilities['A115'][1][('Isx1',1,1)][1],.504,rel_tol=1e-5), 'Evolved frenzy not +20%')
     require('AeSL' in abilities, 'Missing evolved slow branch')
     for level in range(1,62):

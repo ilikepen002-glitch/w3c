@@ -18,7 +18,7 @@ public function tdLaneDropBudgetForWave(int wave) returns int
 		return 6
 	return 8
 
-public function tdNormalDropChanceBasisPointsForWave(int wave) returns int
+public function tdOriginalDropChanceBasisPointsForWave(int wave) returns int
 	if wave <= 1
 		return 1000
 	if wave == 2
@@ -154,3 +154,6 @@ public function tdHandleEnemyDrop(unit enemy, int playerId, int wave, int bonusR
 
 public function tdHandleEnemyDrop(unit enemy, int playerId, int wave)
 	tdHandleEnemyDrop(enemy, playerId, wave, 0)
+
+public function tdNormalDropChanceBasisPointsForWave(int wave) returns int
+	return tdOriginalDropChanceBasisPointsForWave(wave) div 2

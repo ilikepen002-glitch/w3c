@@ -16,6 +16,7 @@ import TDEnemyMechanicRuntime
 import TDDamageRuntime
 import TDTrialHook
 import RegisterEvents
+import TDDifficultyDialog
 
 trigger tdChatCommandTrigger = CreateTrigger()
 boolean tdGameplayStartupCompleted = false
@@ -90,7 +91,7 @@ public function tdClampCameraTargetDistance(real distance) returns real
 	return distance
 
 public function tdStartupGuideMessage() returns string
-	return "守住起点到终点的路线，在高台建塔。B 建造 / U 范围升级 / C 背包合成 / G 工资；Q 捕获 / W 收藏 / E 上阵。发起建造后建筑自行施工。滚轮调整镜头；精灵与装备都可强化塔。|n每漏过1名敌人扣除生命：普通1、精英和近卫队长2、首领3。首领关每路1名，入场后90秒限时。"
+	return "守住起点到终点的路线，在高台建塔。B 建造 / U 范围升级 / C 背包合成 / G 工资；Q 捕获 / W 收藏 / E 上阵。发起建造后建筑自行施工。滚轮调整镜头；精灵与装备都可强化塔。|n每漏过1名敌人扣除生命：普通1、精英和近卫队长2、首领3。首领关每路1名，入场后90秒限时。|n开局由编号最小的当前玩家在居中弹窗选择难度：普通/困难/噩梦/传奇，敌军生命×1/1.3/1.7/2.2；首波开始后锁定，默认普通。"
 function tdInactiveLaneNoticePlayerActiveForTest(int playerId, boolean lane0Active, boolean lane1Active, boolean lane2Active, boolean lane3Active) returns boolean
 	if playerId == 0
 		return lane0Active
@@ -283,6 +284,7 @@ function tdRunGameplayStartup()
 	// Finish gameplay and camera startup before creating or refreshing the HUD.
 	doAfter(0.0) ->
 		tdSetupHud()
+		tdRefreshDifficultyDialog()
 
 function tdFinalizeGameplayBootstrap()
 	// 镜头先落到稳定距离，再启动玩法，最后重新聚焦工人，减少开局镜头被初始化覆盖。

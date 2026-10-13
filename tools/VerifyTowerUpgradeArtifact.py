@@ -376,7 +376,7 @@ def validate_evolution_jass(script, units, abilities):
                 split = evaluator.call('tdArcherSplitArrowDamageMultiplier', [level, branch, evolved])
                 corpse = evaluator.call('tdGhoulCorpseExplosionDamageForBranch', [level, branch, evolved])
                 require(math.isclose(split, 1.2 if level == 6 and branch == 1 and evolved else 1.0), f'Jass split multiplier leaks: level={level}, branch={branch}, evolved={evolved}')
-                require(math.isclose(corpse, 43.2 if level == 6 and branch == 2 and evolved else 36.0), f'Jass corpse damage leaks: level={level}, branch={branch}, evolved={evolved}')
+                require(math.isclose(corpse, 216.0 if level == 6 and branch == 2 and evolved else 180.0), f'Jass corpse damage leaks: level={level}, branch={branch}, evolved={evolved}')
     require(evaluator.call('tdArcherSplitArrowTargetCount', [6]) == 7, 'Jass six-tier split arrow must have seven total targets')
     refresh = function_body(script, 'tdEvolutionRefresh')
     for fragment in ['tdEvolutionSkillReplacement(choice, branch)', 'tdEvolutionSkillOriginal(choice, branch)',

@@ -23,7 +23,7 @@ ICONS = {ICON: '5095926333d0e730aa9195cc25a5ee13800abb885ca96c0a8eb0a2813cc2be4f
          DISABLED: '5acaa9f091a83f87b91e83b6b101191955167f1b7de3b39d9b2497c07e43f911'}
 # Object editor setters supply all inherited gameplay-sensitive overrides.
 EXPECTED = {'unam': '金币试炼魔像', 'umdl': MODEL, 'uico': ICON, 'ussi': ICON,
-            'uclr': 255, 'uclg': 220, 'uclb': 120, 'uhpm': 1000000,
+            'uclr': 255, 'uclg': 220, 'uclb': 120, 'uhpm': 5000000,
             'udef': 0, 'udup': 0, 'udty': 'normal', 'uabi': '', 'udaa': '',
             'utyp': '', 'utar': 'ground', 'upgr': '', 'umvs': 260,
             'umis': 1, 'umas': 260, 'umvt': 'foot', 'uaen': 0,

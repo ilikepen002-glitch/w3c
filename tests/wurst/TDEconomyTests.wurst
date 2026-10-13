@@ -24,8 +24,8 @@ import TDWaves
 
 @Test function wageFormulaStaysMinorComparedToWaveRewards()
 	tdFarmerWageCooldown().assertEquals(180.0)
-	tdFarmerWageGoldForWaveAndBonus(0, 1).assertEquals(4)
-	tdFarmerWageGoldForWaveAndBonus(4, 3).assertEquals(10)
-	tdFarmerWageMinimumGold(8).assertEquals(12)
-	tdFarmerWageMaximumGold(8).assertEquals(14)
+	tdFarmerWageGoldForWaveAndBonus(0, 1).assertEquals(40)
+	tdFarmerWageGoldForWaveAndBonus(4, 3).assertEquals(100)
+	tdFarmerWageMinimumGold(8).assertEquals(120)
+	tdFarmerWageMaximumGold(8).assertEquals(140)
 	(tdFarmerWageMaximumGold(8) < tdWaveReward(8)).assertTrue()

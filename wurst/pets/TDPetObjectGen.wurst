@@ -192,7 +192,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 	let attack = new AbilityDefinitionAttackBonus(TD_PET_ATTACK_BONUS_ID)
 	attack..setLevels(512)..setItemAbility(true)..setCheckDependencies(false)
 	for level = 1 to 512
-		attack.setAttackBonus(level, level)
+		attack.setAttackBonus(level, level * 5)
 	let speed = new AbilityDefinitionAttackSpeedIncrease(TD_PET_SPEED_BONUS_ID)
 	speed..setLevels(150)..setItemAbility(true)..setCheckDependencies(false)
 	for level = 1 to 150

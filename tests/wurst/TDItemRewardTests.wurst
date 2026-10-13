@@ -29,7 +29,7 @@ import TDWaves
     tdTakeLaneWaveEquipmentGold(0, 1, 10, 10).assertEquals(10)
 
 @Test function equipmentGoldBudgetExcludesBossButIncludesGuards()
-    tdWaveEquipmentGoldBudget(1).assertEquals(tdWaveEnemyCount(1) * tdWaveKillGold(1))
+    tdWaveEquipmentGoldBudget(1).assertEquals(tdWaveEnemyCount(1) * tdWaveKillGold(1) div 2)
     tdWaveEquipmentGoldBudget(8).assertEquals((tdWaveEnemyCount(8) - 1) * tdWaveKillGold(8))
     tdWaveEquipmentGoldBudget(32).assertEquals((tdWaveEnemyCount(32) - 1) * tdWaveKillGold(32))
     tdWaveEquipmentGoldBudget(0).assertEquals(0)

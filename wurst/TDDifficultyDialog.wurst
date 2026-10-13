@@ -1,0 +1,62 @@
+package TDDifficultyDialog
+import TDState
+import TDConfig
+import TDHud
+import Dialog
+
+// Presentation only: selection authority and the first-wave lock remain in TDState.
+dialog tdDifficultyDialog = null
+trigger tdDifficultyDialogTrigger = null
+button array tdDifficultyButtons
+int tdDifficultyDialogPlayer = -1
+
+public function tdCloseDifficultyDialog()
+	if tdDifficultyDialog == null
+		return
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdDifficultyDialog.display(Player(playerId), false)
+	DestroyTrigger(tdDifficultyDialogTrigger)
+	tdDifficultyDialogTrigger = null
+	tdDifficultyDialog.clear()
+	tdDifficultyDialog.destr()
+	tdDifficultyDialog = null
+	tdDifficultyDialogPlayer = -1
+	for difficulty = 1 to TD_DIFFICULTY_COUNT
+		tdDifficultyButtons[difficulty] = null
+
+function tdHandleDifficultyButton()
+	if GetClickedDialog() != tdDifficultyDialog
+		return
+	let playerId = GetPlayerId(GetTriggerPlayer())
+	for difficulty = 1 to TD_DIFFICULTY_COUNT
+		if GetClickedButton() == tdDifficultyButtons[difficulty]
+			if tdTrySetDifficulty(playerId, difficulty)
+				tdDifficultyDialog.display(Player(playerId), false)
+				for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+					if tdIsLaneActive(lane)
+						DisplayTimedTextToPlayer(Player(lane), 0, 0, 6.0, "全局难度：" + tdDifficultyLabel(difficulty))
+				tdRequestHudRefresh()
+			return
+
+// Called after bootstrap (never at map init), and when a lane player leaves.
+public function tdRefreshDifficultyDialog()
+	if compiletime
+		return
+	let selector = tdDifficultySelectorPlayerId()
+	if tdIsDifficultyLocked() or tdIsGameOver() or selector < 0
+		tdCloseDifficultyDialog()
+		return
+	if tdDifficultyDialog == null
+		tdDifficultyDialog = createDialog()
+		tdDifficultyDialogTrigger = CreateTrigger()
+		for difficulty = 1 to TD_DIFFICULTY_COUNT
+			tdDifficultyButtons[difficulty] = tdDifficultyDialog.addButton(tdDifficultyLabel(difficulty))
+		TriggerRegisterDialogEvent(tdDifficultyDialogTrigger, tdDifficultyDialog)
+		TriggerAddAction(tdDifficultyDialogTrigger, function tdHandleDifficultyButton)
+	if selector == tdDifficultyDialogPlayer
+		return
+	if tdDifficultyDialogPlayer >= 0
+		tdDifficultyDialog.display(Player(tdDifficultyDialogPlayer), false)
+	tdDifficultyDialogPlayer = selector
+	tdDifficultyDialog.setMessage("选择全局难度|n首波开始后锁定；未选择则沿用当前难度|n当前：" + tdDifficultyName(tdGetDifficulty()))
+	tdDifficultyDialog.display(Player(selector), true)

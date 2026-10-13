@@ -1,6 +1,7 @@
 package TDState
 import TDConfig
 import TDWaveFlowState
+import public TDDifficultyRules
 
 int array tdLives
 int array tdGold
@@ -13,6 +14,8 @@ boolean array tdLaneFinished
 boolean tdGameOver = false
 int tdTeamScore = 0
 int tdGlobalWave = 0
+int tdDifficulty = TD_DIFFICULTY_NORMAL
+boolean tdDifficultyLocked = false
 boolean tdNextWaveQueued = false
 int tdQueuedWave = 0
 boolean array tdWaveResolvedFlags
@@ -60,6 +63,8 @@ function tdSyncPlayerResources(int playerId)
 // 重置本局里所有会变化的状态，避免一次测试的结果污染下一次测试。
 public function tdResetState()
 	tdResetWaveFlowState()
+	tdDifficulty = TD_DIFFICULTY_NORMAL
+	tdDifficultyLocked = false
 	tdTeamScore = 0
 	tdGameOver = false
 	tdGlobalWave = 0
@@ -268,3 +273,24 @@ public function tdIsGameOver() returns boolean
 
 public function tdSetGameOver(boolean value)
 	tdGameOver = value
+
+public function tdGetDifficulty() returns int
+	return tdDifficulty
+
+public function tdIsDifficultyLocked() returns boolean
+	return tdDifficultyLocked
+
+public function tdLockDifficulty()
+	tdDifficultyLocked = true
+
+public function tdDifficultySelectorPlayerId() returns int
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane)
+			return lane
+	return -1
+
+public function tdTrySetDifficulty(int playerId, int difficulty) returns boolean
+	if tdDifficultyLocked or tdIsGameOver() or not tdDifficultyValid(difficulty) or playerId != tdDifficultySelectorPlayerId() or not tdIsLanePlayer(playerId)
+		return false
+	tdDifficulty = difficulty
+	return true

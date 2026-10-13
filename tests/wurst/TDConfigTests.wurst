@@ -4,15 +4,15 @@ import TerrainUtils
 
 @Test function startingValuesArePositive()
 	TD_STARTING_LIVES.assertGreaterThan(0)
-	TD_STARTING_GOLD.assertEquals(100)
+	TD_STARTING_GOLD.assertEquals(1000)
 	TD_FIRST_WAVE_DELAY.assertEquals(30.0)
 	TD_TIME_BETWEEN_WAVES.assertEquals(20.0)
 
 @Test function balanceMultipliersDefaultToNeutralValues()
-	tdEnemyHealthMultiplier().assertEquals(1.0)
+	tdEnemyHealthMultiplier().assertEquals(4.0)
 	tdEnemyArmorMultiplier().assertEquals(1.0)
 	tdEnemySpeedMultiplier().assertEquals(1.0)
-	tdEconomyMultiplier().assertEquals(1.0)
+	tdEconomyMultiplier().assertEquals(10.0)
 
 @Test function activePlayerCountIsFour()
 	TD_ACTIVE_PLAYER_COUNT.assertEquals(4)

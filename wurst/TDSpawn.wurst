@@ -1,4 +1,6 @@
 package TDSpawn
+import TDDifficultyEnemyData
+import TDDifficultyEnemyObjectGen
 import TDConfig
 import TDAuraState
 import TDState
@@ -126,6 +128,9 @@ public function tdOrderEnemyAlongLane(unit enemy)
 // 为指定路线生成一个敌人，并立刻把路线元数据绑定到它身上。
 public function tdCreateEnemy(int playerId, int wave, int unitId) returns unit
 	let enemy = createUnit(Player(TD_ENEMY_PLAYER_ID), unitId, tdLaneSpawnPosition(playerId), 0 .fromDeg())
+	if tdGetDifficulty() != TD_DIFFICULTY_NORMAL
+		enemy.addAbility(tdDifficultyHealthAbilityId(wave, tdDifficultyEnemyRole(unitId), tdGetDifficulty()))
+		enemy.setLife(enemy.getMaxHP())
 	SetUnitCreepGuard(enemy, tdEnemyUsesCreepGuard())
 	enemy.setPathing(tdEnemyRuntimePathingEnabled())
 	if tdEnemyRemovesGuardPosition()

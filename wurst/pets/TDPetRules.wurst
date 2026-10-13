@@ -88,7 +88,7 @@ public function tdPetQualityName(int quality) returns string
 
 public function tdPetSkillPower(int skill, int quality) returns real
 	if skill == 0
-		return 8.0 * quality
+		return 40.0 * quality
 	if skill == 1 or skill == 2 or skill == 3 or skill == 4
 		return 0.06 * quality
 	if skill == 5 or skill == 9
@@ -120,7 +120,7 @@ public function tdPetSkillDescriptionById(int skill, int quality) returns string
 	if skill == 9
 		return "分裂箭命中后，敌人移动速度降低" + (power * 100.0 + 0.5).toInt().toString() + "%，持续3秒；同名取最高等级，其他减速可叠加，总上限75%。|n仅对拥有分裂箭的附身塔生效。"
 	if skill == 10
-		return "尸爆在原地留下180范围毒域，持续3秒，每秒对最多12名本路敌人造成" + tdTooltipNumber(36.0 * power) + "伤害。|n仅对拥有尸爆的附身塔生效；不随尸爆进化增伤。"
+		return "尸爆在原地留下180范围毒域，持续3秒，每秒对最多12名本路敌人造成" + tdTooltipNumber(180.0 * power) + "伤害。|n仅对拥有尸爆的附身塔生效；不随尸爆进化增伤。"
 	if skill == 11
 		return "普攻自动触发：附身塔攻击速度 +" + (power * 100.0 + 0.5).toInt().toString() + "%，持续6秒；基础冷却" + tdTooltipNumber(tdActiveSkillDefinitionForPetSkill(skill).baseCooldown) + "秒，可被装备、灵感及光环缩短，合计上限40%"
 	if skill == 12

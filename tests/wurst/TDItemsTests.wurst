@@ -19,7 +19,7 @@ import TDItems
 	tdItemName(TD_ITEM_WHITE_WAR_AXE_ID).assertEquals("战斧")
 	tdItemQuality(TD_ITEM_WHITE_WAR_AXE_ID).assertEquals(TD_ITEM_QUALITY_WHITE)
 	tdItemPrimaryEffectKind(TD_ITEM_WHITE_WAR_AXE_ID).assertEquals(TD_ITEM_EFFECT_ATTACK)
-	tdItemPrimaryEffectValue(TD_ITEM_WHITE_WAR_AXE_ID).assertEquals(8.0)
+	tdItemPrimaryEffectValue(TD_ITEM_WHITE_WAR_AXE_ID).assertEquals(40.0)
 	tdItemName(TD_ITEM_BLUE_GOLD_ID).assertEquals("赏金契约")
 	tdItemQuality(TD_ITEM_BLUE_GOLD_ID).assertEquals(TD_ITEM_QUALITY_BLUE)
 

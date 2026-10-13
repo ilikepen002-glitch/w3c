@@ -34,7 +34,7 @@ function tdGenerateTowerAttackBonusSyncAbility()
 	bonusAbility.setItemAbility(true)
 	bonusAbility.setCheckDependencies(false)
 	for level = 1 to TD_TOWER_EQUIPMENT_ATTACK_BONUS_MAX_LEVEL
-		bonusAbility.setAttackBonus(level, level)
+		bonusAbility.setAttackBonus(level, level * 5)
 
 function tdGenerateTowerAttackSpeedSyncAbility()
 	let speedAbility = new AbilityDefinitionAttackSpeedIncrease(TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID)

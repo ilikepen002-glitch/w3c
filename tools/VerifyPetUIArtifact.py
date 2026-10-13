@@ -641,7 +641,7 @@ def verify_pet_core(abilities, units):
     for rawcode, levels in [('Pbat', 512), ('Pbsp', 150), ('Pbar', 8)]:
         require(field_value(abilities[rawcode][1], 'alev') == levels,
                 f'{rawcode}: incorrect synchronized level count')
-    check_ability(abilities, 'Pbat', 'AIat', 512, 'Iatt', 0, lambda level: level)
+    check_ability(abilities, 'Pbat', 'AIat', 512, 'Iatt', 0, lambda level: level * 5)
     check_ability(abilities, 'Pbsp', 'AIsx', 150, 'Isx1', 2, lambda level: level / 100.0)
     check_ability(abilities, 'Pbar', 'AId1', 8, 'Idef', 0, lambda level: -level)
     print('PASS PET CORE OBJECTS: 96 wild, 3 selectable displays, 3 decorations; '
@@ -904,7 +904,7 @@ def verify_manager_core(abilities, units):
             wild = units[rawcode]
             require(wild.get('umdl') == model and wild.get('uaen') == 0 and wild.get('ubba') == 0,
                     f'{rawcode}: wild model/noncombat/zero bounty changed')
-    check_ability(abilities, 'Pbat', 'AIat', 512, 'Iatt', 0, lambda level: level)
+    check_ability(abilities, 'Pbat', 'AIat', 512, 'Iatt', 0, lambda level: level * 5)
     check_ability(abilities, 'Pbsp', 'AIsx', 150, 'Isx1', 2, lambda level: level / 100.0)
     check_ability(abilities, 'Pbar', 'AId1', 8, 'Idef', 0, lambda level: -level)
 

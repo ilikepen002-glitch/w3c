@@ -4,7 +4,7 @@ public constant int TD_TRIAL_LANE_COUNT = 4
 public constant int TD_TRIAL_TARGETS_PER_LANE = 5
 public constant int TD_TRIAL_MAX_TARGETS = 20
 public constant real TD_TRIAL_DURATION = 120.0
-public constant int TD_TRIAL_TARGET_HP = 1000000
+public constant int TD_TRIAL_TARGET_HP = 5000000
 public constant int TD_TRIAL_TARGET_SPEED = 260
 public constant int TD_TRIAL_TARGET_UNIT_ID = 'uTrG'
 public constant int TD_TRIAL_RELEASE_COMPLETED = 1
@@ -33,7 +33,7 @@ public function tdTrialRoundForWave(int completedWave) returns int
 public function tdTrialPrize(int round, int rank) returns int
 	if round < 1 or round > 2 or rank < 0 or rank >= TD_TRIAL_LANE_COUNT
 		return 0
-	return (30 - rank * 6) * round
+	return (30 - rank * 6) * round * 10
 
 public function tdTrialTiePrize(int round, int firstRank, int tiedCount) returns int
 	if tiedCount <= 0 or firstRank < 0 or firstRank + tiedCount > TD_TRIAL_LANE_COUNT

@@ -30,7 +30,7 @@ public class TDBossLootPlan
 		if normalAttempts >= tdBossNormalDropAttempts(wave) or remainingNormalBudget <= 0
 			return false
 		normalAttempts += 1
-		if chanceRoll < 1 or chanceRoll > tdNormalDropChanceBasisPointsForWave(wave)
+		if chanceRoll < 1 or chanceRoll > tdOriginalDropChanceBasisPointsForWave(wave)
 			return false
 		qualities[sharedCount] = tdDropQualityForRoll(wave, false, false, qualityRoll)
 		sharedCount += 1

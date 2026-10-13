@@ -836,6 +836,7 @@ def verify_inventory(evaluator):
     # Dynamic support mounts only, with the exact data source preserved. A new
     # arbitrary ability in one of these owners is still rejected.
     dynamic_roles = {
+        ('TDSpawn.wurst', 'tdCreateEnemy'): {'tdDifficultyHealthAbilityId ( wave , tdDifficultyEnemyRole ( unitId ) , tdGetDifficulty ( ) )'},
         ('towers/TDTowerEvolutionRuntime.wurst', 'tdEvolutionRefresh'): {'replacement , 1', 'tdEvolutionDisplayReplacement ( choice , branch ) , 1', 'TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID , 1', 'TD_TOWER_EVOLUTION_STATUS_ABILITY_ID , 1'},
         ('items/TDInventoryRuntime.wurst', 'tdSetTowerEquipmentAbilityLevel'): {'abilityId , level'},
         ('pets/TDPetCombat.wurst', 'setBonus'): {'abilityId , clamped'},
