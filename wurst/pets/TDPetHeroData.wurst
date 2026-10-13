@@ -1,5 +1,6 @@
 package TDPetHeroData
 import TDPetHeroRules
+import TDTowerCommonData
 import TDTooltipText
 
 // Existing native command-button resources already used by the pet UI.
@@ -47,5 +48,5 @@ public function tdPetHeroDescription(int skill, int quality) returns string
 	if skill == TD_PET_HERO_HUNT
 		return "普攻直接击杀敌人后获得一次3秒余势。下一次普攻消耗余势，追加附身塔基础攻击的" + percent + "伤害；最多1次。" + host
 	if skill == TD_PET_HERO_EPIDEMIC
-		return "尸爆结算后给180范围内最多3名存活敌人种2秒疫种，最多1组。首个组员死亡时整组消耗，在其位置180范围内引发一次弱疫爆，最多6名敌人，各受" + tdTooltipNumber(36.0 * power) + "法术伤害。弱疫爆不种新疫。" + host
+		return "尸爆结算后给180范围内最多3名存活敌人种2秒疫种，最多1组。首个组员死亡时整组消耗，在其位置180范围内引发一次弱疫爆，最多6名敌人，各受" + tdTooltipNumber(tdGhoulCorpseExplosionDamage() * power) + "法术伤害。弱疫爆不种新疫。" + host
 	return ""

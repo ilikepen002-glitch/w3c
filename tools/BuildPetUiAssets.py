@@ -1,4 +1,4 @@
-"""Render the 78 pet-menu SVGs, then encode opaque BTN/DISBTN BLP1.
+"""Render the 15 active pet-menu SVGs, then encode opaque BTN/DISBTN BLP1.
 
 Requires Inkscape 1.4 and Pillow 12.3.0 for the recorded deterministic output.
 Reuse the project's existing BLP1 palette/alpha8/mipmap encoder without invoking
@@ -24,9 +24,9 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "assets/source/pet-ui/manifest.json"
 FILE_KEYS = ("source_svg", "normal_blp", "disabled_blp")
 SIZE = 64
-BASE_NAMES = {"TDPetMenuTools", "TDPetCollection", "TDPetPrevious", "TDPetNext", "TDPetReturnBuilder", "TDPetDeploy", "TDPetRecall", "TDPetCultivate", "TDPetInfo", "TDPetEmptySlot", "TDPetFlamePhoenix", "TDPetStormFaerieDragon", "TDPetGhostWisp"}
-EXPECTED_NAMES = BASE_NAMES | {stem + "Q" + str(q) for stem in ("TDPetFlamePhoenix", "TDPetStormFaerieDragon", "TDPetGhostWisp") for q in range(1, 5)} | {"TDPetRelease", "TDPetKeep", "TDPetAdopt"}
-EXPECTED_NAMES |= {stem + f"Q{q}N{n}" for stem in ("TDPetFlamePhoenix", "TDPetStormFaerieDragon", "TDPetGhostWisp") for q in range(1, 5) for n in range(1, 5)} | {"TDPetKeepOld", "TDPetUseNew"}
+EXPECTED_NAMES = {"TDPetMenuTools", "TDPetCollection", "TDPetPrevious", "TDPetNext", "TDPetReturnBuilder", "TDPetDeploy", "TDPetRecall", "TDPetCultivate", "TDPetInfo", "TDPetEmptySlot", "TDPetRelease", "TDPetKeep", "TDPetAdopt", "TDPetKeepOld", "TDPetUseNew"}
+ARCHIVED_NAMES = {stem + suffix for stem in ("TDPetFlamePhoenix", "TDPetStormFaerieDragon", "TDPetGhostWisp")
+                  for suffix in ("", *(f"Q{q}" for q in range(1, 5)), *(f"Q{q}N{n}" for q in range(1, 5) for n in range(1, 5)))}
 
 
 def sha256(path: Path) -> str:
@@ -119,8 +119,17 @@ def contact_sheet(manifest: dict) -> None:
 
 
 def verify_manifest(manifest: dict, require_hashes: bool) -> None:
-    if len(manifest["assets"]) != 78 or {asset["name"] for asset in manifest["assets"]} != EXPECTED_NAMES:
-        raise ValueError("Expected exact 78 icon names: 28 preserved + 48 owned-count portraits + 2 readable choice buttons")
+    if len(manifest["assets"]) != 15 or {asset["name"] for asset in manifest["assets"]} != EXPECTED_NAMES:
+        raise ValueError("Expected exact 15 active menu icons")
+    archived = manifest.get("archived_assets", [])
+    if len(archived) != 63 or {asset["name"] for asset in archived} != ARCHIVED_NAMES:
+        raise ValueError("Expected exact 63 archived species SVG inputs")
+    for asset in archived:
+        check_svg(local_path(asset["source_svg"]))
+        if sha256(local_path(asset["source_svg"])) != asset["sha256"]["source_svg"]:
+            raise ValueError("Archived SVG source changed: " + asset["name"])
+        if any(local_path(asset[key]).exists() for key in ("normal_blp", "disabled_blp")):
+            raise ValueError("Retired portrait was reintroduced into imports: " + asset["name"])
     names, normal_pixels_seen, disabled_pixels_seen = set(), set(), set()
     for asset in manifest["assets"]:
         name = asset["name"]

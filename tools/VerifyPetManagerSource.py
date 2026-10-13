@@ -346,16 +346,16 @@ def verify_assets():
     verify_manifest(manifest, require_hashes=True)
     original = json.loads(subprocess.run(['git', 'show', ASSET_BASELINE + ':assets/source/pet-ui/manifest.json'], cwd=ROOT, check=True, capture_output=True, text=True).stdout)
     current = {asset['name']: asset for asset in manifest['assets']}
-    require(set(current) == EXPECTED_NAMES, 'Exact seventy-eight source assets required')
-    for asset in original['assets']:
-        for key in ('source_svg', 'normal_blp', 'disabled_blp'):
-            require(hashlib.sha256((ROOT / current[asset['name']][key]).read_bytes()).hexdigest() == asset['sha256'][key], 'Original pet artwork changed: ' + asset['name'])
-    # Preserve all 28 predecessor artworks, not only the first 13 originals.
+    archived = {asset['name']: asset for asset in manifest['archived_assets']}
+    require(set(current) == EXPECTED_NAMES, 'Exact fifteen active source assets required')
+    # All historical SVG sources survive; only active generated BLPs are bundled.
     before = json.loads(subprocess.check_output(['git', 'show', '28f16681bc07b58066f10d51e8aed7ba626fb768:assets/source/pet-ui/manifest.json'], cwd=ROOT))
-    for asset in before['assets']:
-        for key in ('source_svg', 'normal_blp', 'disabled_blp'):
-            require(hashlib.sha256((ROOT / current[asset['name']][key]).read_bytes()).hexdigest() == asset['sha256'][key], 'Predecessor pet artwork changed: ' + asset['name'])
-    print('PASS ASSET PRESERVATION: all 28 predecessor SVG/BTN/DIS inputs byte-locked; exact 48 count portraits + 2 readable choices')
+    for asset in original['assets'] + before['assets']:
+        actual = (current | archived)[asset['name']]
+        keys = ('source_svg', 'normal_blp', 'disabled_blp') if asset['name'] in current else ('source_svg',)
+        for key in keys:
+            require(hashlib.sha256((ROOT / actual[key]).read_bytes()).hexdigest() == asset['sha256'][key], 'Predecessor pet artwork changed: ' + asset['name'])
+    print('PASS ASSET PRESERVATION: 15 active pairs byte-locked; 63 retired SVG inputs archived without imported BLPs')
 
 
 def verify_ui_workflow():

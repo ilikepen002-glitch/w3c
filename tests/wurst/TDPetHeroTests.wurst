@@ -1,5 +1,7 @@
 package TDPetHeroTests
 import TDPetHeroRules
+import TDPetHeroData
+import TDTowerCommonData
 
 @Test function heroIdentitiesAreReservedDistinctAndExactFinalBranches()
 	TD_PET_HERO_FIRST.assertEquals(39)
@@ -134,3 +136,12 @@ import TDPetHeroRules
 	tdPetHeroGrantCanCommit(2, 2).assertTrue()
 	tdPetHeroLaterHit(2, 2).assertFalse()
 	tdPetHeroLaterHit(2, 3).assertTrue()
+
+@Test function epidemicTooltipUsesCurrentCorpseExplosionDamage()
+	for quality = 1 to 4
+		let expected = tdGhoulCorpseExplosionDamage() * tdPetHeroPower(TD_PET_HERO_EPIDEMIC, quality)
+		((expected - (18.0 + 27.0 * quality)).abs() < 0.0001).assertTrue()
+	tdPetHeroDescription(TD_PET_HERO_EPIDEMIC, 1).contains("各受45法术伤害").assertTrue()
+	tdPetHeroDescription(TD_PET_HERO_EPIDEMIC, 2).contains("各受72法术伤害").assertTrue()
+	tdPetHeroDescription(TD_PET_HERO_EPIDEMIC, 3).contains("各受99法术伤害").assertTrue()
+	tdPetHeroDescription(TD_PET_HERO_EPIDEMIC, 4).contains("各受126法术伤害").assertTrue()

@@ -9,7 +9,7 @@
   "build_command": "python tools/BuildPetUiAssets.py",
   "manifest": "assets/source/pet-ui/manifest.json",
   "preview": "assets/source/pet-ui/pet-ui-contactsheet.png",
-  "preview_scope": "Offline BLP1-decoded 64px normal/disabled texture contact sheet. Not an in-game screenshot.",
+  "preview_scope": "Historical 78-icon contact sheet, retained for source archive reference; only the 15 assets in assets are bundled. Not an in-game screenshot.",
   "assets": [
     {
       "name": "TDPetMenuTools",
@@ -151,6 +151,98 @@
         "disabled_blp": "b0e74a437464908098dbd5f6824980a8c95a9b3ee37952234f041d472a39ffc5"
       }
     },
+    {
+      "name": "TDPetRelease",
+      "purpose": "永久释放 / 敞开笼门",
+      "source_svg": "assets/source/pet-ui/TDPetRelease.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetRelease.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetRelease.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetRelease.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetRelease.blp",
+      "sha256": {
+        "source_svg": "94fd6cd387b6b2a3f9299a800783aabfca02575df06e953c687b145ef4908476",
+        "normal_blp": "8195085b7326afc4473a7f8967fba0a1411e181fcdde570439813a84e8d6beeb",
+        "disabled_blp": "e88edd6e42625a263b721488d74663f7642bd035490588eac3f0ae1a269e8c9c"
+      }
+    },
+    {
+      "name": "TDPetKeep",
+      "purpose": "保留旧技能 / 盾与回转箭",
+      "source_svg": "assets/source/pet-ui/TDPetKeep.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetKeep.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetKeep.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetKeep.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetKeep.blp",
+      "sha256": {
+        "source_svg": "6ce92224a9bce23ca771935321be8d564cb728b8be5cc30d0cb1e9b96997fc1f",
+        "normal_blp": "9b85b5a583cd86c0f7b58264047746b169b87781327979db554ae8367105d3cf",
+        "disabled_blp": "659ef5461263cf97057253c00c3b9c561b9ff34618c1abb239ff368f2a6e19f0"
+      }
+    },
+    {
+      "name": "TDPetAdopt",
+      "purpose": "采用新技能 / 双层确认箭",
+      "source_svg": "assets/source/pet-ui/TDPetAdopt.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetAdopt.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetAdopt.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetAdopt.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetAdopt.blp",
+      "sha256": {
+        "source_svg": "52f8dbd3684a3cab3cb7a6d5f291a548fb9775f9a113ad8b2e45c8966682baf1",
+        "normal_blp": "672f919b4057791a4104d560ff2dc302747c98a83d9e47e81d951335f07a566c",
+        "disabled_blp": "29ee88d4de9c8103a27aafecaefd805dca5bf271d24306b5ab8dece6117abc81"
+      }
+    },
+    {
+      "name": "TDPetKeepOld",
+      "purpose": "留旧；保留原技能",
+      "source_svg": "assets/source/pet-ui/TDPetKeepOld.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetKeepOld.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetKeepOld.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetKeepOld.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetKeepOld.blp",
+      "sha256": {
+        "source_svg": "122e659b4a645fcd92856d2c0ddb22940c9958764aff08d99ec3eacbc05e5c05",
+        "normal_blp": "a437a6b0b0064cd8c99d0f2806b47bb1148d000e18f724fedb04f2e78a4173a3",
+        "disabled_blp": "aa17d03e1c2587086c623357aa841d7af55b14bd427e3c8714d8620639806d9f"
+      }
+    },
+    {
+      "name": "TDPetUseNew",
+      "purpose": "换新；换成新技能",
+      "source_svg": "assets/source/pet-ui/TDPetUseNew.svg",
+      "normal_blp": "imports/war3mapImported/BTNTDPetUseNew.blp",
+      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetUseNew.blp",
+      "warcraft_normal_path": "war3mapImported\\BTNTDPetUseNew.blp",
+      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetUseNew.blp",
+      "sha256": {
+        "source_svg": "d449eeb2a73e789203df45d48cbea5773ff34dde2788fe60558a5f0550e9b64e",
+        "normal_blp": "2d17bf255b89c590115e0e4c50195f20d3d47ff6cfa1556a1e6f001b73effa6e",
+        "disabled_blp": "2d1cd675ead2e8c4fdbae1033be682b848bbdb690f30f669f5e8eb9c921e4e0c"
+      }
+    }
+  ],
+  "rationale": "The native BTNSelectHeroOn is a red question mark; using it for an empty pet slot was a semantic selection error, not proof of a missing native texture. Dedicated imported SVG artwork removes this native selection dependency.",
+  "tool_versions": {
+    "inkscape": "Inkscape 1.4 (e7c3feb100, 2024-10-09)",
+    "pillow": "12.3.0",
+    "blp_encoder": "tools/BuildEvolutionAssets.py:blp (import only)"
+  },
+  "rendering": {
+    "svg_export_size": [
+      256,
+      256
+    ],
+    "button_size": [
+      64,
+      64
+    ],
+    "resampler": "Pillow LANCZOS",
+    "disabled_brightness": 0.45,
+    "blp": "BLP1 paletted, alpha8, 7 mip levels"
+  },
+  "preview_sha256": "6b16c2de8e0b2433fe2a721925cfb143aa39480a9bc349b2a8b98078ab87fd60",
+  "archived_assets": [
     {
       "name": "TDPetFlamePhoenix",
       "purpose": "炎灵 / 凤凰",
@@ -359,48 +451,6 @@
         "source_svg": "66d3eeab619d8b69041bb1fff03a7f7935bd75fe1691c29ea3ae0c2c0e09236f",
         "normal_blp": "61e955069d648a3590dfb10ddd6898b9522f798dd52ccd82cc92a312c4374ac0",
         "disabled_blp": "fa821e666f151bd49b9d46ef54547fe95ea700fe373e10f391adddc49f2b6c2c"
-      }
-    },
-    {
-      "name": "TDPetRelease",
-      "purpose": "永久释放 / 敞开笼门",
-      "source_svg": "assets/source/pet-ui/TDPetRelease.svg",
-      "normal_blp": "imports/war3mapImported/BTNTDPetRelease.blp",
-      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetRelease.blp",
-      "warcraft_normal_path": "war3mapImported\\BTNTDPetRelease.blp",
-      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetRelease.blp",
-      "sha256": {
-        "source_svg": "94fd6cd387b6b2a3f9299a800783aabfca02575df06e953c687b145ef4908476",
-        "normal_blp": "8195085b7326afc4473a7f8967fba0a1411e181fcdde570439813a84e8d6beeb",
-        "disabled_blp": "e88edd6e42625a263b721488d74663f7642bd035490588eac3f0ae1a269e8c9c"
-      }
-    },
-    {
-      "name": "TDPetKeep",
-      "purpose": "保留旧技能 / 盾与回转箭",
-      "source_svg": "assets/source/pet-ui/TDPetKeep.svg",
-      "normal_blp": "imports/war3mapImported/BTNTDPetKeep.blp",
-      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetKeep.blp",
-      "warcraft_normal_path": "war3mapImported\\BTNTDPetKeep.blp",
-      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetKeep.blp",
-      "sha256": {
-        "source_svg": "6ce92224a9bce23ca771935321be8d564cb728b8be5cc30d0cb1e9b96997fc1f",
-        "normal_blp": "9b85b5a583cd86c0f7b58264047746b169b87781327979db554ae8367105d3cf",
-        "disabled_blp": "659ef5461263cf97057253c00c3b9c561b9ff34618c1abb239ff368f2a6e19f0"
-      }
-    },
-    {
-      "name": "TDPetAdopt",
-      "purpose": "采用新技能 / 双层确认箭",
-      "source_svg": "assets/source/pet-ui/TDPetAdopt.svg",
-      "normal_blp": "imports/war3mapImported/BTNTDPetAdopt.blp",
-      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetAdopt.blp",
-      "warcraft_normal_path": "war3mapImported\\BTNTDPetAdopt.blp",
-      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetAdopt.blp",
-      "sha256": {
-        "source_svg": "52f8dbd3684a3cab3cb7a6d5f291a548fb9775f9a113ad8b2e45c8966682baf1",
-        "normal_blp": "672f919b4057791a4104d560ff2dc302747c98a83d9e47e81d951335f07a566c",
-        "disabled_blp": "29ee88d4de9c8103a27aafecaefd805dca5bf271d24306b5ab8dece6117abc81"
       }
     },
     {
@@ -1074,54 +1124,7 @@
         "normal_blp": "bb41993057fa79e7a29889a2d9799157a8348f4b4c0e8ebe6e94ea6f5b90d640",
         "disabled_blp": "8486031f2a8098d5ba7e985cb19ca0a9ed8e348a7679adb95c171b4d4249a5d8"
       }
-    },
-    {
-      "name": "TDPetKeepOld",
-      "purpose": "留旧；保留原技能",
-      "source_svg": "assets/source/pet-ui/TDPetKeepOld.svg",
-      "normal_blp": "imports/war3mapImported/BTNTDPetKeepOld.blp",
-      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetKeepOld.blp",
-      "warcraft_normal_path": "war3mapImported\\BTNTDPetKeepOld.blp",
-      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetKeepOld.blp",
-      "sha256": {
-        "source_svg": "122e659b4a645fcd92856d2c0ddb22940c9958764aff08d99ec3eacbc05e5c05",
-        "normal_blp": "a437a6b0b0064cd8c99d0f2806b47bb1148d000e18f724fedb04f2e78a4173a3",
-        "disabled_blp": "aa17d03e1c2587086c623357aa841d7af55b14bd427e3c8714d8620639806d9f"
-      }
-    },
-    {
-      "name": "TDPetUseNew",
-      "purpose": "换新；换成新技能",
-      "source_svg": "assets/source/pet-ui/TDPetUseNew.svg",
-      "normal_blp": "imports/war3mapImported/BTNTDPetUseNew.blp",
-      "disabled_blp": "imports/ReplaceableTextures/CommandButtonsDisabled/DISBTNTDPetUseNew.blp",
-      "warcraft_normal_path": "war3mapImported\\BTNTDPetUseNew.blp",
-      "warcraft_disabled_path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDPetUseNew.blp",
-      "sha256": {
-        "source_svg": "d449eeb2a73e789203df45d48cbea5773ff34dde2788fe60558a5f0550e9b64e",
-        "normal_blp": "2d17bf255b89c590115e0e4c50195f20d3d47ff6cfa1556a1e6f001b73effa6e",
-        "disabled_blp": "2d1cd675ead2e8c4fdbae1033be682b848bbdb690f30f669f5e8eb9c921e4e0c"
-      }
     }
   ],
-  "rationale": "The native BTNSelectHeroOn is a red question mark; using it for an empty pet slot was a semantic selection error, not proof of a missing native texture. Dedicated imported SVG artwork removes this native selection dependency.",
-  "tool_versions": {
-    "inkscape": "Inkscape 1.4 (e7c3feb100, 2024-10-09)",
-    "pillow": "12.3.0",
-    "blp_encoder": "tools/BuildEvolutionAssets.py:blp (import only)"
-  },
-  "rendering": {
-    "svg_export_size": [
-      256,
-      256
-    ],
-    "button_size": [
-      64,
-      64
-    ],
-    "resampler": "Pillow LANCZOS",
-    "disabled_brightness": 0.45,
-    "blp": "BLP1 paletted, alpha8, 7 mip levels"
-  },
-  "preview_sha256": "6b16c2de8e0b2433fe2a721925cfb143aa39480a9bc349b2a8b98078ab87fd60"
+  "archive_note": "63 retired species portraits retained as editable SVG source and historical hashes only; 126 generated BLPs are intentionally excluded from imports and default rebuilds."
 }

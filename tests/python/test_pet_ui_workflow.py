@@ -51,7 +51,7 @@ class CurrentSourceWorkflowTests(unittest.TestCase):
         self.assertIn('宿主已有自带暴击', source.function_body(current, 'tdPetSkillRestriction')[1])
         self.assertNotIn('tdPetShowPageSummary', source.function_body(source.source('TDPetUI'), 'showPage')[1])
 
-    def test_all_28_existing_icons_remain_exact_and_78_complete(self):
+    def test_active_icons_and_archived_species_sources_remain_exact(self):
         quiet(source.verify_assets)
 
     def test_execute_real_failure_and_stale_release_routes(self):

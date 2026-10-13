@@ -25,14 +25,14 @@ ROOT = Path(__file__).resolve().parents[1]
 NORMAL_PREFIX = "ReplaceableTextures\\CommandButtons\\"
 DISABLED_PREFIX = "ReplaceableTextures\\CommandButtonsDisabled\\DIS"
 IMPORTED_PREFIX = "war3mapImported\\BTN"
+# Current menu icons only. Old species SVGs remain archived, never bundled.
 ICON_STEMS = (
     'TDPetMenuTools', 'TDPetCollection', 'TDPetPrevious', 'TDPetNext',
     'TDPetReturnBuilder', 'TDPetDeploy', 'TDPetRecall', 'TDPetCultivate',
-    'TDPetInfo', 'TDPetEmptySlot', 'TDPetFlamePhoenix',
-    'TDPetStormFaerieDragon', 'TDPetGhostWisp',
-) + tuple(stem + 'Q' + str(quality) for _, stem in (
-    ('', 'TDPetFlamePhoenix'), ('', 'TDPetStormFaerieDragon'), ('', 'TDPetGhostWisp'))
-    for quality in range(1, 5)) + ('TDPetRelease', 'TDPetKeep', 'TDPetAdopt') + tuple(stem + f'Q{q}N{n}' for stem in ('TDPetFlamePhoenix', 'TDPetStormFaerieDragon', 'TDPetGhostWisp') for q in range(1, 5) for n in range(1, 5)) + ('TDPetKeepOld', 'TDPetUseNew')
+    'TDPetInfo', 'TDPetEmptySlot', 'TDPetRelease', 'TDPetKeep', 'TDPetAdopt',
+    'TDPetKeepOld', 'TDPetUseNew',
+)
+
 EXPECTED = {
     'Geqb': (3, 0, 'C', 'Aspb'),
     'Gupg': (1, 1, 'U', 'ANcl'),
