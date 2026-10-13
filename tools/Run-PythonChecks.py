@@ -61,6 +61,7 @@ CLASS_GROUPS = {
         test_verify_pet_ui_artifact.PetUISourceTests
     '''.split(),
     'regression': '''
+        test_building_status_constants.BuildingStatusConstantsTests
         test_flower_full_roster_source.FlowerFullRosterSourceTests
         test_boss_pair_artifact.BossPairDeltaTests
         test_boss_pair_artifact.BossPairFrozenFormatTests

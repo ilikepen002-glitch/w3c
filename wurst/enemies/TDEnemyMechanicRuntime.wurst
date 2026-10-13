@@ -217,4 +217,6 @@ public function tdRefreshEnemyMoveSpeed(unit enemy)
 function tdRefreshEnemyMoveSpeed(unit enemy, real base)
 	if enemy == null or GetUnitTypeId(enemy) == 0 or not enemy.isAlive()
 		return
-	SetUnitMoveSpeed(enemy, tdAuraSpeedForBaseAndFactor(base, tdAuraEnemySpeedFactor(enemy)))
+	let desiredSpeed = tdAuraSpeedForBaseAndFactor(base, tdAuraEnemySpeedFactor(enemy))
+	if GetUnitMoveSpeed(enemy) != desiredSpeed
+		SetUnitMoveSpeed(enemy, desiredSpeed)

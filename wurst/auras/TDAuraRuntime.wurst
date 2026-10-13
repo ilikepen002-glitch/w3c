@@ -63,16 +63,16 @@ function tdAuraForget(TDAuraTarget record)
 	destroy record
 
 function tdAuraCooldownTargetEligible(unit target) returns boolean
+	if tdHasNativeActiveCooldown(target)
+		return true
 	let pet = tdPetForHost(target)
-	var activeUnlocked = false
-	var binding = false
-	if pet != null
-		binding = tdPetBindingValid(pet, target, pet.generation)
-		for slot = 0 to IMinBJ(pet.skillCount, tdPetUnlockedSlots(pet.level)) - 1
-			let skill = pet.skillAt(slot)
-			if tdPetSkillIsActive(skill) and tdPetSkillFitsHost(skill, target)
-				activeUnlocked = true
-	return tdAuraCooldownTargetSupported(tdHasNativeActiveCooldown(target), binding, activeUnlocked)
+	if pet == null or not tdPetBindingValid(pet, target, pet.generation)
+		return false
+	for slot = 0 to IMinBJ(pet.skillCount, tdPetUnlockedSlots(pet.level)) - 1
+		let skill = pet.skillAt(slot)
+		if tdPetSkillIsActive(skill) and tdPetSkillFitsHost(skill, target)
+			return true
+	return false
 
 function tdEquipmentAuraIdentity(int kind) returns int
 	if kind == TD_ITEM_AURA_ATTACK

@@ -1,0 +1,19 @@
+{
+  "baseline_sha256": "5d6701cf84d4910fdcae6c2eaf299ae76e640577640e416564ba8ab38fac69d5",
+  "candidate_sha256": "a20d063f1e6d7bd484213483d939d545c9bd6429b336243f95d5f7fe64abd8df",
+  "byte_identical": {
+    "war3map.w3u": "ab385d274ad34f32ac4fae181b7dafbe99c6cfebb38898bd8e8e0ebc384f32f9",
+    "war3map.w3a": "e42a748e72a7a807ae8b92293fb3126e8c01421add1613ac743c5ba4b741a3d3",
+    "war3map.w3h": "623092faa363f71423684ae1c97e2a3c2404c8021e7b931e88b6c3389653bb1e",
+    "war3map.w3t": "873889a0ac9d6a205d7495ee3cf8a004801c5d22371414cacc6f4981c60988c4",
+    "war3map.w3e": "997468b2761ae013507a2696cdb1deb1644b8fd1c1e4cecb4d5da26ffee1f087",
+    "war3map.wpm": "ccf038827375e48340242356958f897440191ccb5dbb684160e83c759e8c48cd",
+    "war3map.doo": "3cad755ed7f21214130ec5d7ed553e6c740309a1b053c22fd230f8996fad9382",
+    "war3mapUnits.doo": "0ad30f729507c0a2f58a3b904c7cdac663cd4062f96f488d8ef7c2dcd7c267a7"
+  },
+  "absent_both": [
+    "war3map.w3b",
+    "war3map.w3d",
+    "war3map.w3q"
+  ]
+}

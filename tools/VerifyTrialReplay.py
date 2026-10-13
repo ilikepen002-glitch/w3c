@@ -194,6 +194,8 @@ class TrialJassRuntime(PureBossJassRuntime):
             self.removals.append(args[0]); self.native_events.append(('remove',args[0])); return True,None
         if name in ('SetUnitCreepGuard','RemoveGuardPosition','SetUnitPathing'): return True,None
         if name == 'GetUnitDefaultMoveSpeed': return True,self.units.get(args[0],{}).get('defaultSpeed',0.0)
+        if name == 'GetUnitMoveSpeed': return True,self.units.get(args[0],{}).get('speed',0.0)
+        if name == 'GetUnitAcquireRange': return True,self.units.get(args[0],{}).get('acquireRange',0.0)
         if name == 'GetUnitX': return True,self.units.get(args[0],{}).get('x',0.0)
         if name == 'GetUnitY': return True,self.units.get(args[0],{}).get('y',0.0)
         if name == 'GetUnitCurrentOrder': return True,self.units.get(args[0],{}).get('order',0)

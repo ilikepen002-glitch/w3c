@@ -1,0 +1,23 @@
+SELECTED source=2
+TEST 0.000275s PASS [source] test_equipment_phase_b.EquipmentPhaseB.test_one_speed_writer_preserves_saved_base_and_wild_branch
+TEST 0.000076s PASS [source] test_equipment_phase_b.EquipmentPhaseB.test_cooldown_coverage_has_actual_supported_target_guard
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK
+MAP COVERAGE passed=0 selected=0; NOT REQUESTED
+PREP 0.000000s candidate input
+PREP 0.001691s import/discovery test_equipment_phase_b
+PREP 0.000013s import/discovery test_equipment_phase_b
+FIXTURE 0.000001s test_equipment_phase_b.EquipmentPhaseB.setUpClass
+FIXTURE 0.000001s test_equipment_phase_b.EquipmentPhaseB.tearDownClass
+SLOWEST 10 (tests and preparation/fixtures):
+  0.001691s import/discovery test_equipment_phase_b
+  0.000275s test_equipment_phase_b.EquipmentPhaseB.test_one_speed_writer_preserves_saved_base_and_wild_branch
+  0.000076s test_equipment_phase_b.EquipmentPhaseB.test_cooldown_coverage_has_actual_supported_target_guard
+  0.000013s import/discovery test_equipment_phase_b
+  0.000001s test_equipment_phase_b.EquipmentPhaseB.setUpClass
+  0.000001s test_equipment_phase_b.EquipmentPhaseB.tearDownClass
+  0.000000s candidate input
+SUMMARY selected=2 run=2 passed=2 failures=0 errors=0 skipped=0 expected_failures=0 unexpected_successes=0 not_covered=0 total=0.002534s
+STATUS PASSED_SELECTED (no build or gameplay claim)

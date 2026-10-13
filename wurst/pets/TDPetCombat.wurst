@@ -68,9 +68,10 @@ function setBonus(unit tower, int abilityId, int level)
 	if clamped <= 0
 		tower.removeAbility(abilityId)
 	else
-		if tower.getAbilityLevel(abilityId) == 0
+		let currentLevel = tower.getAbilityLevel(abilityId)
+		if currentLevel == 0
 			tower.addPermanentAbility(abilityId, clamped)
-		else if tower.getAbilityLevel(abilityId) != clamped
+		else if currentLevel != clamped
 			tower.setAbilityLevel(abilityId, clamped)
 
 public function tdPetRefreshHost(unit tower, real _aura)

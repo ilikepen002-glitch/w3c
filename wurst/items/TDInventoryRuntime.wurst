@@ -174,21 +174,29 @@ function tdLoadoutHasSpecial(int item1, int item2, int item3, int specialization
 	return tdItemSpecialization(item1) == specialization or tdItemSpecialization(item2) == specialization or tdItemSpecialization(item3) == specialization
 
 function tdRefreshTowerEquipmentBonuses(unit tower, item excludedItem)
-	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+	if tower == null
 		return
+	let towerType = GetUnitTypeId(tower)
+	let choice = tdTowerChoiceForUnitTypeId(towerType)
+	if choice == 0
+		return
+	let level = tdTowerLevelForUnitTypeId(towerType)
+	let branch = tdTowerBranchForUnitTypeId(towerType)
 	let item1 = tdTowerEquipmentItemId(tower, 0, excludedItem)
 	let item2 = tdTowerEquipmentItemId(tower, 1, excludedItem)
 	let item3 = tdTowerEquipmentItemId(tower, 2, excludedItem)
-	tdCombatVisualRefreshGear(tower, tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), item1, item2, item3)
+	tdCombatVisualRefreshGear(tower, choice, item1, item2, item3)
 	tdEquipmentSpecialLoadoutChanged(tower, tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_WAR_INTENT), tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_POISON_BURST), tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_CORPSE_BURST), getElapsedGameTime())
 	tdAuraRegisterTarget(tower, true)
-	let base = tdTowerBaseDamageForBranch(tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)), tdTowerBranchForUnitTypeId(GetUnitTypeId(tower)))
+	let base = tdTowerBaseDamageForBranch(choice, level, branch)
 	let attack = tdEquipmentAttackBonusForItems(item1, item2, item3) + base * tdAuraPower(tower, TD_AURA_EQUIPMENT_ATTACK)
 	let speed = tdEquipmentAttackSpeedBonusForItems(item1, item2, item3) + tdAuraPower(tower, TD_AURA_EQUIPMENT_SPEED)
 	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID, tdTowerAttackBonusAbilityLevel(attack))
 	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID, tdClampEquipmentAbilityLevel(R2I(speed * 100.0 + 0.5), TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL))
 	tdRefreshEquipmentAbilities(tower, tdEquipmentCooldownReductionForItems(item1, item2, item3), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_CONTROL_POWER))
-	SetUnitAcquireRange(tower, tdTargetPriorityProjectedAcquireRange(tower, tdTowerEffectiveRangeForLoadout(tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)), tdTowerBranchForUnitTypeId(GetUnitTypeId(tower)), item1, item2, item3)))
+	let projectedRange = tdTargetPriorityProjectedAcquireRange(tower, tdTowerEffectiveRangeForLoadout(choice, level, branch, item1, item2, item3))
+	if GetUnitAcquireRange(tower) != projectedRange
+		SetUnitAcquireRange(tower, projectedRange)
 
 function tdOtherEquipmentType(unit tower, int slot, item excludedItem) returns int
 	let other = UnitItemInSlot(tower, slot)
