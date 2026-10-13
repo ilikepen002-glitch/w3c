@@ -1,0 +1,45 @@
+package TDPetControlObjectGen
+import TDPetCastContext
+import AbilityObjEditing
+import BuffObjEditing
+import Annotations
+import ObjectIds
+
+// Explicit zero-damage instant native carriers. Hero/normal durations are equal;
+// Boss uses its own fixed .25s carrier, avoiding another native hero reduction.
+function controlCarrier(int abilityId, int buffId, string name, boolean boss)
+	let definition = new AbilityDefinitionMountainKingThunderBolt(abilityId)
+	definition..setName(name)..setLevels(boss ? 1 : 75)..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setMissileArt("")..setMissileSpeed(100000)..setArtTarget("")
+	for level = 1 to (boss ? 1 : 75)
+		let duration = boss ? 0.25 : level / 100.0
+		definition.setDamage(level, 0.0)
+		definition.setDurationNormal(level, duration)
+		definition.setDurationHero(level, duration)
+		definition.setManaCost(level, 0)
+		definition.setCooldown(level, 0.0)
+		definition.setCastRange(level, 99999.0)
+		definition.setCastingTime(level, 0.0)
+		definition.setTargetsAllowed(level, "enemy,ground,air,organic,mechanical")
+		definition.setBuffs(level, buffId.toRawCode())
+
+@compiletime function tdGeneratePetControlObjects()
+	let rootBuff = new BuffDefinition(TD_PET_ROOT_BUFF_ID, 'BEer')
+	rootBuff.setName("青藤束缚")
+	new BuffDefinition(TD_PET_FREEZE_BUFF_ID, 'BPSE')..setName("霜华冻结")
+	new BuffDefinition(TD_PET_STAGGER_BUFF_ID, 'BPSE')..setName("裂岩硬直")
+	new BuffDefinition(TD_PET_BOSS_BUFF_ID, 'BPSE')..setName("首领精灵短控")
+	let roots = new AbilityDefinitionKeeperoftheGroveEntanglingRoots(TD_PET_ROOT_CONTROL_ID)
+	roots..setName("青藤束缚")..setLevels(75)..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setArtTarget("")
+	for level = 1 to 75
+		roots.setDamageperSecond(level, 0.0)
+		roots.setDurationNormal(level, level / 100.0)
+		roots.setDurationHero(level, level / 100.0)
+		roots.setManaCost(level, 0)
+		roots.setCooldown(level, 0.0)
+		roots.setCastRange(level, 99999.0)
+		roots.setCastingTime(level, 0.0)
+		roots.setTargetsAllowed(level, "enemy,ground,air,organic,mechanical")
+		roots.setBuffs(level, TD_PET_ROOT_BUFF_ID.toRawCode())
+	controlCarrier(TD_PET_FREEZE_CONTROL_ID, TD_PET_FREEZE_BUFF_ID, "霜华冻结", false)
+	controlCarrier(TD_PET_STAGGER_CONTROL_ID, TD_PET_STAGGER_BUFF_ID, "裂岩硬直", false)
+	controlCarrier(TD_PET_BOSS_CONTROL_ID, TD_PET_BOSS_BUFF_ID, "首领精灵短控", true)

@@ -1,5 +1,6 @@
 package TDShieldRuntime
 import TDShieldRules
+import TDEnemyControlRuntime
 import TDEquipmentSpecialObjectIds
 import TDEquipmentCombat
 import TDItemData
@@ -13,48 +14,15 @@ import GameTimer
 import ClosureTimers
 import LinkedList
 import Table
-
-class TDShieldEnemyWindow
-	unit enemy
-	TDShieldWindow window = new TDShieldWindow()
-	construct(unit enemy)
-		this.enemy = enemy
-	ondestroy
-		destroy window
-
-constant Table tdShieldByHandle = new Table()
-LinkedList<TDShieldEnemyWindow> tdShieldWindows = new LinkedList<TDShieldEnemyWindow>()
-boolean tdShieldRuntimeReady = false
-
-function tdShieldWindowFor(unit enemy) returns TDShieldEnemyWindow
-	if tdShieldByHandle.hasInt(enemy.getHandleId())
-		return tdShieldByHandle.loadInt(enemy.getHandleId()) castTo TDShieldEnemyWindow
-	let record = new TDShieldEnemyWindow(enemy)
-	tdShieldByHandle.saveInt(enemy.getHandleId(), record castTo int)
-	tdShieldWindows.add(record)
-	return record
+import DamageEvent
+import TDPetHeroRuntime
 
 function tdTryShieldStun(unit source, unit enemy, int lane, int controlLevel) returns boolean
 	if not tdEquipmentEnemyValid(enemy, lane) or not tdEquipmentSourceValid(source, lane)
 		return false
 	let boss = tdIsBossUnitTypeId(GetUnitTypeId(enemy))
-	let record = tdShieldWindowFor(enemy)
-	let now = getElapsedGameTime()
 	let control = (controlLevel - 1) / 100.0
-	// Shared enemy window is reserved BEFORE issuing the potentially reentrant order.
-	let previous = record.window.reserve(now, boss, control)
-	if previous < 0.0
-		return false
-	let caster = new DummyCaster()
-	caster.origin(enemy.getPos())
-	caster.owner(GetOwningPlayer(source))
-	caster.delay(tdShieldStunDuration(boss, control) + tdConfiguredShieldCastMargin() + 0.25)
-	let dummy = caster.castTarget(boss ? TD_SHIELD_BOSS_STUN_ID : TD_SHIELD_NORMAL_STUN_ID, boss ? 1 : controlLevel, Orders.thunderbolt, enemy)
-	if dummy == null
-		record.window.rollback(previous)
-		return false
-	// Accepted order is the transaction success boundary, not observed native stun.
-	return true
+	return tdTryEnemyControl(source, enemy, lane, tdShieldStunDuration(boss, control), boss ? TD_SHIELD_BOSS_STUN_ID : TD_SHIELD_NORMAL_STUN_ID, boss ? 1 : controlLevel, Orders.thunderbolt)
 
 public function tdEquipmentHasSpecial(unit tower, int specialization) returns boolean
 	for slot = 0 to 2
@@ -71,6 +39,7 @@ public function tdTryEquipmentShieldProc(unit source, unit target, int lane)
 		return
 	if not tdTryShieldStun(source, target, lane, level)
 		return
+	tdPetHeroOnShieldAccepted(source, target, DamageEvent.getUnreducedOriginalAmount(), tdPetHeroCurrentOriginalSerial())
 	if not tdEquipmentHasSpecial(source, TD_ITEM_SPECIAL_SHIELD_SPREAD)
 		return
 	if tdIsBossUnitTypeId(GetUnitTypeId(target))
@@ -94,26 +63,7 @@ public function tdTryEquipmentShieldProc(unit source, unit target, int lane)
 	targets.destr()
 
 public function tdForgetEquipmentShieldEnemy(unit enemy)
-	if enemy == null or not tdShieldByHandle.hasInt(enemy.getHandleId())
-		return
-	let record = tdShieldByHandle.loadInt(enemy.getHandleId()) castTo TDShieldEnemyWindow
-	tdShieldByHandle.removeInt(enemy.getHandleId())
-	tdShieldWindows.remove(record)
-	destroy record
+	tdForgetEnemyControl(enemy)
 
 public function tdSetupShieldRuntime()
-	if tdShieldRuntimeReady
-		return
-	tdShieldRuntimeReady = true
-	doPeriodically(0.10) cb ->
-		let now = getElapsedGameTime()
-		let iter = tdShieldWindows.iterator()
-		while iter.hasNext()
-			let record = iter.next()
-			if GetUnitTypeId(record.enemy) == 0 or not record.enemy.isAlive() or now >= record.window.readyAt or tdIsGameOver()
-				tdShieldByHandle.removeInt(record.enemy.getHandleId())
-				iter.remove()
-				destroy record
-		destroy iter
-		if tdIsGameOver() and tdShieldWindows.isEmpty()
-			destroy cb
+	tdSetupEnemyControl()

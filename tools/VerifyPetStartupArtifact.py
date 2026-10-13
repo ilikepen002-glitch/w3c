@@ -115,14 +115,22 @@ def verify_routing(script):
     runtime.tables[owners][display] = 0
     runtime.event_target = display
     codes = [f'Pc{a:02X}' if a < 8 else f'Pm{a-8:02X}' for a in range(23)]
-    codes += [f'L{index:03X}' for index in range(490)]
+    last = runtime.invoke('tdPetListAbilityId', 9, 15, 4, 4)
+    if last == int.from_bytes(b'L969', 'big'):
+        variants = 2410
+    else:
+        require(runtime.invoke('tdPetListAbilityId', 9, 3, 4, 4) == int.from_bytes(b'L1E9', 'big'),
+                'Unrecognized or incomplete collection rawcode family')
+        variants = 490
+    codes += [f'L{index:03X}' for index in range(variants)]
+    expected_admissions = 23 + variants
     for code in codes:
         runtime.spell = int.from_bytes(code.encode('ascii'), 'big')
         runtime.units[display]['abilities'][runtime.spell] = 1
         runtime.invoke(callback)
         require(runtime.admitted[-1] == (runtime.globals['TDPetUIView_tdPetUISessions'][0],
                                         0, display, runtime.spell, 1), 'Shared callback lost the exact command identity')
-    require(len(runtime.admitted) == 513, 'Shared callback must reach admission exactly once per command')
+    require(len(runtime.admitted) == expected_admissions, 'Shared callback must reach admission exactly once per command')
     for caster, owner in ((90002, 0), (90003, 1), (90004, 4)):
         runtime.units[caster] = {'owner': owner}
         runtime.event_target = caster
@@ -132,8 +140,8 @@ def verify_routing(script):
     runtime.event_target = display
     runtime.tables[owners].clear()
     runtime.invoke(callback)
-    require(len(runtime.admitted) == 513, 'Foreign/null/revoked caster reached manager admission')
-    return '513 button IDs reach exact session admission; foreign/null/revoked casters are ignored'
+    require(len(runtime.admitted) == expected_admissions, 'Foreign/null/revoked caster reached manager admission')
+    return f'{expected_admissions} button IDs reach exact session admission; foreign/null/revoked casters are ignored'
 
 
 def measure(script, legacy=False):

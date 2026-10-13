@@ -1,5 +1,7 @@
 package TDPetUIData
 import TDPetData
+import TDPetHeroData
+import TDPetHeroRules
 
 // Full imported paths must use explicit object setters, never presetIcon.
 function importedIcon(string name) returns string
@@ -34,20 +36,17 @@ public function tdPetUICommandIconPath(int command) returns string
 		return importedIcon("TDPetCultivate")
 	return importedIcon("TDPetInfo")
 
+function tdPetSpeciesIconStem(int species) returns string
+	return "TDPetSpecies" + (species < 10 ? "0" : "") + species.toString()
+
 public function tdPetSpeciesIconPath(int species) returns string
-	if species == 1
-		return importedIcon("TDPetFlamePhoenix")
-	if species == 2
-		return importedIcon("TDPetStormFaerieDragon")
-	return importedIcon("TDPetGhostWisp")
+	return importedIcon(tdPetSpeciesIconStem(species))
 
 public function tdPetSpeciesQualityIconPath(int species, int quality) returns string
-	let stem = species == 1 ? "TDPetFlamePhoenix" : (species == 2 ? "TDPetStormFaerieDragon" : "TDPetGhostWisp")
-	return importedIcon(stem + "Q" + quality)
+	return importedIcon(tdPetSpeciesIconStem(species) + "Q" + quality)
 
 public function tdPetSpeciesCountIconPath(int species, int quality, int ownedCount) returns string
-	let stem = species == 1 ? "TDPetFlamePhoenix" : (species == 2 ? "TDPetStormFaerieDragon" : "TDPetGhostWisp")
-	return importedIcon(stem + "Q" + quality + "N" + ownedCount)
+	return importedIcon(tdPetSpeciesIconStem(species) + "Q" + quality + "N" + ownedCount)
 
 public function tdPetManagerCommandIconPath(int action) returns string
 	if action <= 7
@@ -73,6 +72,48 @@ public function tdPetManagerCommandIconPath(int action) returns string
 	return importedIcon("TDPetAdopt")
 
 public function tdPetSkillIconName(int skill) returns string
+	if tdPetHeroDefined(skill)
+		return tdPetHeroIconName(skill)
+	if skill == 19
+		return "BTNImpalingBolt"
+	if skill == 20
+		return "BTNFaerieFire"
+	if skill == 21
+		return "BTNCriticalStrike"
+	if skill == 22
+		return "BTNSteelMelee"
+	if skill == 23
+		return "BTNEntanglingRoots"
+	if skill == 24
+		return "BTNEnvenomedSpear"
+	if skill == 25
+		return "BTNDeathAndDecay"
+	if skill == 26
+		return "BTNEntanglingRoots"
+	if skill == 27
+		return "BTNColdArrows"
+	if skill == 28
+		return "BTNOrbOfFrost"
+	if skill == 29
+		return "BTNFrostNova"
+	if skill == 30
+		return "BTNTornado"
+	if skill == 31
+		return "BTNImmolationOn"
+	if skill == 32
+		return "BTNImmolationOn"
+	if skill == 33
+		return "BTNInfernal"
+	if skill == 34
+		return "BTNImmolationOn"
+	if skill == 35
+		return "BTNThunderClap"
+	if skill == 36
+		return "BTNThunderClap"
+	if skill == 37
+		return "BTNDevotion"
+	if skill == 38
+		return "BTNThunderClap"
 	if skill == 0
 		return "BTNGauntletsOfOgrePower"
 	if skill == 1

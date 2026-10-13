@@ -47,7 +47,7 @@ function assertActiveNear(real actual, real expected)
 	assertActiveNear(tdActiveCooldownDuration(tdActiveSkillDefinitionForKey(TD_ACTIVE_BLOODLUST).baseCooldown, 0.40), 7.2)
 	assertActiveNear(tdActiveCooldownDuration(tdActiveSkillDefinitionForKey(TD_ACTIVE_BLADESTORM).baseCooldown, 0.40), 5.4)
 	assertActiveNear(tdActiveCooldownDuration(tdActiveSkillDefinitionForPetSkill(11).baseCooldown, 0.40), 8.4)
-	assertActiveNear(tdActiveCooldownDuration(tdActiveSkillDefinitionForPetSkill(13).baseCooldown, 0.40), 6.0)
+	assertActiveNear(tdActiveCooldownDuration(tdActiveSkillDefinitionForPetSkill(19).baseCooldown, 0.40), 6.0)
 
 @Test function physicalCooldownLevelsRoundAndDecodeAllFortyOneSlots()
 	tdActiveCooldownNativeLevel(-1.0).assertEquals(1)

@@ -33,13 +33,13 @@ class PetAttackPhaseOneSourceTests(unittest.TestCase):
 
     def test_full_integer_owned_ids_and_defined_stage_one_pool(self):
         n=phase_one_catalog()
-        self.assertEqual([i for i in range(n['TD_PET_SKILL_COUNT']) if n['tdPetSkillDefined'](i)], [*range(4),*range(5,19)])
+        self.assertEqual([i for i in range(n['TD_PET_SKILL_COUNT']) if n['tdPetSkillDefined'](i)], [*range(4),*range(5,9),11,12,*range(16,49)])
         for skill,values in [(32,[0,16,32,40]),(40,[0,16,32,40]),(0,[32,33,34,35])]:
             self.assertEqual(n['tdPetSkillOwned'](skill,*values),skill in values)
         for skill in range(-1,45):
             for slot in range(-1,5):
                 self.assertFalse(n['tdPetSkillAllowed'](skill,slot,True,False))
-                if slot==0:self.assertEqual(n['tdPetSkillAllowed'](skill,slot,False,False),0<=skill<=3)
+                if slot==0:self.assertEqual(n['tdPetSkillAllowed'](skill,slot,False,False),n['tdPetSkillDefined'](skill) and n['tdPetSkillIsActive'](skill))
         state=source('TDPetState')
         self.assertNotIn('BitSet',state)
         self.assertNotIn('usedSkills',state)
@@ -49,8 +49,8 @@ class PetAttackPhaseOneSourceTests(unittest.TestCase):
     def test_compact_legal_ui_count_derived_from_production_definitions(self):
         n=phase_one_catalog();count=n['TD_PET_SKILL_COUNT'];empty=n['TD_PET_SLOT_EMPTY']
         slots=[(slot,variant) for slot in range(4) for variant in range(empty+1) if variant==empty or (n['tdPetSkillAllowed'](variant%count,slot,False,False) and (variant<count or slot>=2))]
-        self.assertEqual(len(slots),76)
-        self.assertEqual(len([i for i in range(count) if n['tdPetSkillDefined'](i)])*2,36)
+        self.assertEqual(len(slots),131)
+        self.assertEqual(len([i for i in range(count) if n['tdPetSkillDefined'](i)])*2,86)
         objects=source('TDPetObjectGen')
         self.assertIn('setLevels(empty ? 1 : 4)',objects)
         self.assertIn('tdPetSkillAllowed(skill, slot, false, false)',objects)
@@ -79,8 +79,8 @@ class PetAttackPhaseOneSourceTests(unittest.TestCase):
         tower=(ROOT/'wurst/towers/TDTowerRuntime.wurst').read_text()
         self.assertIn('let attackDamage = DamageEvent.getUnreducedOriginalAmount()',tower)
         self.assertNotIn('let attackDamage = DamageEvent.getUnreducedAmount()',tower)
-        self.assertIn('setNextDamageFromCode()',combat)
-        self.assertIn('setNextDamageId(TD_PET_DAMAGE_ID)',combat)
+        self.assertIn('setNextDamageFromCode()',source('TDPetCombatSource'))
+        self.assertIn('setNextDamageId(TD_PET_DAMAGE_ID)',source('TDPetCombatSource'))
 
     def test_original_phase_fence_and_gate_models_actual_library_timer(self):
         combat=source('TDPetCombat')
@@ -147,5 +147,83 @@ class PetAttackPhaseOneSourceTests(unittest.TestCase):
         broken=script+'\nfunction DamageEvent_getUnreducedAmount takes nothing returns real\nreturn 0.\nendfunction\n'
         with self.assertRaisesRegex(ValueError,'Live unreduced getter'):
             PetAttackRuntime(broken).emit(100.)
+
+class FinalPetAttackArtifactTests(unittest.TestCase):
+    """Explicit final-map fixtures and fail-closed adapter negatives.
+
+    The full damage/fence/trial gate remains VerifyPetAttackArtifact.py; these
+    tests isolate the changed fixture and packed-DCE boundaries.
+    """
+    @classmethod
+    def setUpClass(cls):
+        cls.artifact=Mpq(candidate_map().read_bytes())
+        cls.script=cls.artifact.extract('war3map.j').decode()
+        cls.abilities=ability_objects(cls.artifact.extract('war3map.w3a'))
+
+    def test_actual_one_active_three_passives_and_exact_element_quality(self):
+        from VerifyPetAttackArtifact import PetAttackRuntime
+        r=PetAttackRuntime(self.script)
+        self.assertTrue(r.final_catalog,'Supply the final 49-bound/43-defined candidate')
+        pet=r.pet([(16,4),(7,4),(17,4)])
+        self.assertEqual([r.invoke('TDPet_skillAt',pet,i) for i in range(4)],[11,16,7,17])
+        self.assertEqual([r.invoke('TDPet_qualityAt',pet,i) for i in range(4)],[1,4,4,4])
+        elemental=r.pet([(38,4)],host=101)
+        self.assertEqual(r.globals['TDPet_species'][elemental],13)
+        self.assertEqual(r.invoke('TDPet_skillAt',elemental,0),38)
+        for invalid in ([(14,4)],[(4,1)],[(38,1)],[(16,1),(7,1),(17,1),(8,1)]):
+            with self.subTest(invalid=invalid),self.assertRaisesRegex(ValueError,'fixture|Fixture'):
+                PetAttackRuntime(self.script).pet(invalid)
+
+    def test_actual_math_init_and_missing_live_DCE_field_fail_closed(self):
+        from VerifyPetAttackArtifact import PetAttackRuntime
+        r=PetAttackRuntime(self.script)
+        self.assertEqual(r.invoke('tdEffectiveDamage',40.,10000.),40.)
+        r.globals['Real_REAL_MAX']=0.
+        self.assertEqual(r.invoke('tdEffectiveDamage',40.,10000.),0.)
+        self.assertNotIn('DamageInstance_unreducedAmount',r.globals)
+        self.assertNotIn('DamageEvent_getUnreducedAmount',r.functions)
+        broken=self.script+'\nfunction DamageEvent_getUnreducedAmount takes nothing returns real\nreturn 0.\nendfunction\n'
+        with self.assertRaisesRegex(ValueError,'Live unreduced getter'):
+            PetAttackRuntime(broken).emit(100.)
+
+    def test_final_corpse_settlement_requires_actual_packed_owner(self):
+        from VerifyPetAttackArtifact import verify_post_timer_order
+        self.assertIn('function tdPetHeroOnCorpseExplosionSettled takes',self.script)
+        broken,count=re.subn(r'(?m)^function tdPetHeroOnCorpseExplosionSettled takes[^\n]*\n.*?^endfunction\n','',self.script,flags=re.S)
+        self.assertEqual(count,1)
+        with self.assertRaisesRegex(ValueError,'Neither reviewed corpse-settlement'):
+            verify_post_timer_order(broken)
+        broken=self.script.replace('call tdPetHeroOnCorpseExplosionSettled(', 'call missingPetSettlement(')
+        with self.assertRaisesRegex(ValueError,'actual production post branch'):
+            verify_post_timer_order(broken)
+
+    def test_actual_split_rejects_mutated_current_D_basis(self):
+        from VerifyDamageRankingJass import functions
+        from VerifyPetAttackArtifact import verify_split_original_basis
+        bodies=[v[4] for v in functions(self.script).values()
+                if 'DamageEvent_getUnreducedOriginalAmount()' in v[4] and 'TDArcherSplitArrowVolley' in v[4]]
+        self.assertEqual(len(bodies),1)
+        body=bodies[0]
+        self.assertEqual(body.count('DamageEvent_getUnreducedOriginalAmount()'),1)
+        broken=self.script.replace(body,body.replace('DamageEvent_getUnreducedOriginalAmount()','DamageEvent_getAmount()'),1)
+        with self.assertRaisesRegex(ValueError,'Split immutable originalD'):
+            verify_split_original_basis(broken)
+
+    def test_exact_final_slot_titles_and_native_critical_mutation(self):
+        from VerifyPetUIArtifact import verify_phase_one_slots
+        self.assertEqual(verify_phase_one_slots(self.abilities),131)
+        changed=deepcopy(self.abilities)
+        key=next(k for k in changed['s00B'][1] if k[0]=='atp1' and k[1]==1)
+        changed['s00B'][1][key]=(3,'|cffffffff白|r 疾风祝福')
+        with self.assertRaisesRegex(ValueError,'quality/identity tooltip'):
+            verify_phase_one_slots(changed)
+        units=unit_objects(self.artifact.extract('war3map.w3u'))
+        self.assertEqual(verify_native_critical_catalog(self.abilities,units,self.abilities),['A102','A112'])
+        changed=deepcopy(self.abilities)
+        key=next(k for k in changed['s110'][1] if k[0]=='Ocr1' and k[1]==1)
+        changed['s110'][1][key]=(1,1.)
+        units=deepcopy(units);units['uG6B']['uabi']+=',s110'
+        with self.assertRaisesRegex(ValueError,'Unclassified mounted native critical'):
+            verify_native_critical_catalog(changed,units)
 
 if __name__=='__main__':unittest.main()

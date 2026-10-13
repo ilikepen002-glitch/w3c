@@ -1,0 +1,58 @@
+{
+  "sha256": "611ee1b735c56dc8b2a27cbe1db7e17469d1e536f1000f278a5bf3ea2f65a3e3",
+  "twenty": [],
+  "negative": {
+    "seed_main_lethal": {
+      "original_ticks": 0,
+      "neighbour_ticks": 6,
+      "generations": 1
+    },
+    "full_control_identity_table": {
+      "protected": 12,
+      "orphan_controls": 0,
+      "other_source_preserved": 12
+    },
+    "native_control_rejection": {
+      "rolled_back": true,
+      "next_control_accepted": true
+    },
+    "trial_replacement_new_handle": {
+      "old_hits": 16,
+      "replacement_hits": 0
+    },
+    "trial_replacement_reused": {
+      "old_hits": 16,
+      "replacement_hits": 0
+    },
+    "visual_native_rejection": {
+      "damage": 140.0,
+      "visual_handles": 0
+    },
+    "source_invalidation": {
+      "tasks": 0,
+      "visuals": 0,
+      "damage": 0
+    },
+    "gameover_cancellation": {
+      "tasks": 0,
+      "visuals": 0,
+      "damage": 0
+    },
+    "two_stage_seal_sources_boss_once": {
+      "with_two": 66.4,
+      "with_one": 66.4,
+      "with_none": 58.0,
+      "tagged_hit": 66.4
+    },
+    "existing_terminal_retry": {
+      "in_packet_busy": true,
+      "records_preserved_on_stack": true,
+      "after_return_destroy_allowed": true,
+      "retry_records_destroyed": true,
+      "watcher_timer_released": true,
+      "scheduler_timer_released": true,
+      "cooldown_unchanged_before_record_destruction": 1000.0
+    }
+  },
+  "boundary": "Replay final-map elemental spells with explicit clock/handle/region/native-order boundaries.\nPacked original-hit fence, cast creation, CD write, scheduler, geometry, target identity,\ndamage, controls, slow ownership and destruction execute. Native Buff acceptance and\nvisual handles are recorded models; this is not Warcraft timing or visual observation.\n"
+}

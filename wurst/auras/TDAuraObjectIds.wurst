@@ -36,7 +36,17 @@ constant buffTuple tdAuraBuff13_4 = compiletime(createDummyBuffObject(tdAuraName
 
 constant buffTuple tdAuraBuff14_1 = compiletime(createDummyBuffObject(tdAuraName(14) + " 1", tdAuraStateTooltip(14, 1), tdAuraIcon(14)))
 
+constant buffTuple tdAuraBuff15_1 = compiletime(createDummyBuffObject(tdAuraName(15), tdAuraStateTooltip(15, 1), tdAuraIcon(15)))
+constant buffTuple tdAuraBuff16_1 = compiletime(createDummyBuffObject(tdAuraName(16), tdAuraStateTooltip(16, 1), tdAuraIcon(16)))
+constant buffTuple tdAuraBuff17_1 = compiletime(createDummyBuffObject(tdAuraName(17), tdAuraStateTooltip(17, 1), tdAuraIcon(17)))
+
 public function tdAuraBuff(int identity, int rank) returns buffTuple
+	if identity == 15 and rank == 1
+		return tdAuraBuff15_1
+	if identity == 16 and rank == 1
+		return tdAuraBuff16_1
+	if identity == 17 and rank == 1
+		return tdAuraBuff17_1
 	if identity == 1 and rank == 1
 		return tdAuraBuff1_1
 	if identity == 1 and rank == 2

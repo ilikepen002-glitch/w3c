@@ -2,6 +2,7 @@ package TDPetRuntime
 import TDPetData
 import TDPetState
 import TDPetAttackQueue
+import TDPetEffectScheduler
 import TDPetWild
 import TDState
 import TDConfig
@@ -154,6 +155,10 @@ public function tdPetInitializeFarmer(int lane, unit farmer)
 	tdPetCaptureReadyAt[lane] = 0.0
 	tdPetSyncBallAbility(lane)
 
+// Destruction waits for explicit ownership/fence completion, never a delay guess.
+public function tdPetCanDestroyMatchRecords() returns boolean
+	return tdPetEffectTaskCount() == 0 and tdPetPendingOriginal == 0 and not tdPetAttackQueueBusy()
+
 public function tdPetSetupRuntime()
 	if tdPetRuntimeReady
 		return
@@ -177,18 +182,19 @@ public function tdPetSetupRuntime()
 			tdPetClearAttackQueue()
 			for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 				tdPetCancelRelease(lane)
-			// Captured attack packets are already cancelled, regardless of in-flight posts.
-			// Existing three one-second poison ticks finish before record reclamation.
-			doAfter(4.0) ->
-				tdPetClearAttackQueue()
-				for pet in tdPetMatchRecords
-					pet.recall()
-					destroy pet
-				destroy tdPetMatchRecords
-				tdPetMatchRecords = null
-				for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-					for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
-						tdPets[lane * TD_PET_COLLECTION_LIMIT + slot] = null
+			tdPetShutdownEffects()
+			// No magic delay: executing callbacks are cancelled, then reclaimed at
+			// their same-tick exit. Records can be destroyed only after count is zero.
+			if not tdPetCanDestroyMatchRecords()
+				return
+			for pet in tdPetMatchRecords
+				pet.recall()
+				destroy pet
+			destroy tdPetMatchRecords
+			tdPetMatchRecords = null
+			for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+				for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+					tdPets[lane * TD_PET_COLLECTION_LIMIT + slot] = null
 			destroy cb
 
 

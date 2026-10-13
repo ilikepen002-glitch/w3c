@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay the exact packed phase-one pet/native damage chain, with explicit natives.
+"""Replay the exact packed spirit-passive/native damage chain, with explicit natives.
 
 No formula-only Python substitute, Warcraft launch, FPS or native armor simulation.
 D=40/100/160 are native post-armor event inputs; engine callbacks/life deduction,
@@ -26,6 +26,16 @@ def near(actual, expected, label):
 
 
 class PetAttackRuntime(EquipmentTrialRuntime):
+    def initialize_match(self):
+        # Final elemental/hero owners must initialize their real collections
+        # before TDInit clears them. Earlier phase-one maps have no such owners.
+        for name in ('init_TDPetEffectScheduler', 'init_TDPetHeroState', 'init_TDPetHeroEffects',
+                     'init_TDPetCastContext', 'init_TDPetEffectTargetState', 'init_TDEnemyControlRuntime',
+                     'init_TDPetRuntime'):
+            if name in self.functions:
+                self.invoke(name)
+        super().initialize_match()
+
     def __init__(self, script):
         super().__init__(script)
         self.roll = .99
@@ -34,6 +44,9 @@ class PetAttackRuntime(EquipmentTrialRuntime):
         self.timer_trace = []
         self.pumping_zero = False
         self.auto_post = True
+        self.final_catalog = self.globals.get('TDPetData_TD_PET_SKILL_COUNT') == 49
+        self.visual_handles = {}
+        self.visual_serial = 100000
         self.initialize_match()
         self.timer_trace.clear()
         self.invoke('tdSetupDamageStatistics')
@@ -82,6 +95,21 @@ class PetAttackRuntime(EquipmentTrialRuntime):
             require(args[0] in self.lists, 'Destroying unknown modeled list')
             del self.lists[args[0]]
             return True, None
+        if name == 'dispatch_LinkedList_LinkedList_add_1':
+            signature = self.functions[name][0]
+            require(len(args) == len(signature) and len(args) in (2, 3), 'Packed list-add signature changed')
+            require(len(args) == 2 or signature[1] in ('w__wurst_stackPos', 'stackPos'),
+                    'Unknown packed generic list-add parameter')
+            self.lists[args[0]].append(args[-1]); return True, None
+        if name == 'AddSpecialEffect':
+            self.visual_serial += 1
+            self.visual_handles[self.visual_serial] = tuple(args[:3])
+            return True, self.visual_serial
+        if name == 'DestroyEffect':
+            require(args[0] in self.visual_handles, 'Unknown/double-owned visual destruction')
+            del self.visual_handles[args[0]]; return True, None
+        if name == 'SetUnitAcquireRange':
+            self.units[args[0]]['acquireRange'] = args[1]; return True, None
         if name in ('tdPetOnSplitArrowImpact', 'tdPetOnCorpseExplosion'):
             return False, None
         return super().native(name, args)
@@ -146,17 +174,35 @@ class PetAttackRuntime(EquipmentTrialRuntime):
         return result
 
     def pet(self, skills, host=101, slot=0, level=3):
-        pet = self.invoke('new_TDPet', 0, 1, 1)
+        if self.final_catalog:
+            active = [(skill, quality) for skill, quality in skills if self.invoke('tdPetSkillIsActive', skill)]
+            passive = [(skill, quality) for skill, quality in skills if not self.invoke('tdPetSkillIsActive', skill)]
+            require(len(active) <= 1 and len(passive) <= 3, 'Fixture exceeds one active/three passive contract')
+            chosen = active[0] if active else (11, 1)
+            element = self.invoke('tdPetSkillElement', chosen[0])
+            species = (element - 1) * 3 + 1 if element else 1
+            ordered = [chosen, *passive]
+        else:
+            species = 1
+            ordered = [(0, 1), *skills]
+        pet = self.invoke('new_TDPet', 0, species, 1)
         require(self.invoke('tdPetStore', 0, pet), 'Actual pet store fixture failed')
-        self.invoke('TDPet_setSkill', pet, 0, 0, 1)
-        for index, (skill, quality) in enumerate(skills, 1):
+        for index, (skill, quality) in enumerate(ordered):
             self.invoke('TDPet_setSkill', pet, index, skill, quality)
             require(self.invoke('TDPet_skillAt', pet, index) == skill, 'Illegal fixture skill/slot')
+            require(self.invoke('TDPet_qualityAt', pet, index) == quality, 'Illegal fixture quality')
         self.globals['TDPet_level'][pet] = level
         self.globals['TDPet_host'][pet] = host
         self.globals['TDPet_generation'][pet] = 1
         require(self.invoke('tdPetBindingValid', pet, host, 1), 'Actual pet binding gate rejected fixture')
         return pet
+
+    def tick_effects(self, elapsed=.05):
+        self.now += elapsed
+        callbacks = [cb for interval, cb in self.periodics if interval == .05]
+        require(len(callbacks) == 1, 'Final catalog must use one shared effect scheduler')
+        self.invoke('call_doPeriodically_TDPetEffectScheduler', callbacks[0], callbacks[0])
+        self.drain_zero()
 
     def score(self):
         return self.invoke('TDDamageLedger_playerTotal', self.ledger, 0)
@@ -248,17 +294,22 @@ def verify_resolve(script):
         near(r.emit(100.)['amount'],210.,'Boss physical main must bypass spell resistance')
         near(r.units[102]['life'],9790.,'Boss physical resolve HP')
         boss_physical.append({'wave':wave,'physical_D':100.,'final_main':210.})
-    # Old active14 is a spell wrapper but uses code-classified physical delivery:
-    # its registered Boss scaling is applied once, not again by native-spell early2.
-    r=PetAttackRuntime(script);r.pet([(14,4)])
+    # Final earth-rift's first85%D segment replaces retired active14's85%D case.
+    # The same spell-wrapper/code-physical boundary must scale registered Boss once.
+    r=PetAttackRuntime(script);pet=r.pet([(38 if r.final_catalog else 14,4)])
     r.units[102].update(type=rawcode('uB32'),life=10000.,maxLife=10000.,wave=32,userdata=3200)
     r.invoke('tdSetupEnemyMechanics');r.invoke('tdEnemyMechanicRegister',102,0,32,3)
     r.visible_units=[102];r.emit(100.);r.flush()
-    require(len(r.native_damage)==1,'Actual old active14 lost one spell segment')
-    near(r.native_damage[0][2],49.3,'Old active85%D times Boss32 factor0.58 once')
+    if r.final_catalog:r.tick_effects()
+    require(len(r.native_damage)==1,'Actual ground active lost its first spell segment')
+    near(r.native_damage[0][2],49.3,'Active85%D times Boss32 factor0.58 once')
     near(r.units[102]['life'],9850.7,'Original100 plus once-scaled active49.3 HP')
+    if r.final_catalog:
+        r.invoke('TDPet_invalidateCombat',pet)
+        require(r.invoke('tdPetEffectTaskCount')==0 and not r.visual_handles,'Boss first-stage fixture leaked later stages/visuals')
     return {'native_inputs':records,'native_critical_exclusions':2,'paused_unbound_locked':3,
-            'overkill_cap':150.,'registered_Boss_physical_main':boss_physical,'registered_Boss_active_once':49.3}
+            'overkill_cap':150.,'registered_Boss_physical_main':boss_physical,'registered_Boss_active_once':49.3,
+            'spell_fixture':'Final skill38 first85%D stage; later stages explicitly cancelled' if r.final_catalog else 'Legacy skill14 single85%D stage'}
 
 
 def verify_passives_and_sampling(script):
@@ -371,6 +422,12 @@ def verify_phase_fence_source(sources=None):
             'else if tdPetPendingOriginal == 0 and not queuedAttacks.isEmpty() and dispatchTimer == null' in queue and
             'while tdPetPendingOriginal == 0 and not queuedAttacks.isEmpty() and not tdIsGameOver()' in queue,
             'Queue dispatch lacks causal post wake or execution fence')
+    if 'public function tdPetWakeIdleAttackQueue()' in queue:
+        require(queue.count('tdPetWakeIdleAttackQueue()') == 3 and
+                queue.index('queuedAttacks.add(new TDPetQueuedAttack(owner, callback))') <
+                queue.index('tdPetWakeIdleAttackQueue()', queue.index('public function tdPetQueueAttack')) and
+                'tdPetWakeIdleAttackQueue()' in queue[queue.index('public function tdPetEndOriginalPhase'):],
+                'Queue idle/post wake ownership changed')
     require(queue.index('dispatchTimer = null', queue.index('function dispatchQueuedAttacks')) <
             queue.index('packet.callback.call()') and
             queue.index('queuedAttacks.remove(packet)', queue.index('function dispatchQueuedAttacks')) <
@@ -378,10 +435,20 @@ def verify_phase_fence_source(sources=None):
     require('tdPetPendingOriginal = 0' not in queue[queue.index('function tdPetClearAttackQueue'):],
             'Cleanup erased in-flight original phases')
     runtime = uncomment(sources['pets/TDPetRuntime.wurst'])
-    require(runtime.count('tdPetClearAttackQueue()') == 2 and
-            runtime.index('tdPetClearAttackQueue()', runtime.index('doAfter(4.0)')) <
-            runtime.index('destroy pet', runtime.index('doAfter(4.0)')),
-            'Match record destruction can retain queued pet references')
+    if 'tdPetShutdownEffects()' in runtime:
+        require('doAfter(4.0)' not in runtime and
+                runtime.index('tdPetClearAttackQueue()') < runtime.index('tdPetShutdownEffects()') <
+                runtime.index('if not tdPetCanDestroyMatchRecords()') < runtime.index('destroy pet', runtime.index('tdPetShutdownEffects()')),
+                'Match record destruction precedes explicit pending/effect cleanup')
+        require('return tdPetEffectTaskCount() == 0 and tdPetPendingOriginal == 0 and not tdPetAttackQueueBusy()' in runtime and
+                'dispatching = true' in queue and 'dispatching = false' in queue and
+                queue.index('dispatching = true') < queue.index('packet.callback.call()') < queue.index('dispatching = false', queue.index('packet.callback.call()')),
+                'Match destruction lost effect/original/current-packet idle proof')
+    else:
+        require(runtime.count('tdPetClearAttackQueue()') == 2 and
+                runtime.index('tdPetClearAttackQueue()', runtime.index('doAfter(4.0)')) <
+                runtime.index('destroy pet', runtime.index('doAfter(4.0)')),
+                'Match record destruction can retain queued pet references')
     state = uncomment(sources['pets/TDPetState.wurst'])
     require(state.count('tdPetCancelQueuedAttacks(this castTo int)') == 2,
             'Pet invalidation/destruction lost owner queue cleanup')
@@ -410,6 +477,17 @@ def verify_phase_fence_compiled(script):
 def verify_post_timer_order(script):
     key = 'TDPetAttackQueue_tdPetPendingOriginal'
     queue_key = 'TDPetAttackQueue_queuedAttacks'
+    if 'function tdPetHeroOnCorpseExplosionSettled takes' in script:
+        require('function tdPetOnCorpseExplosion takes' not in script and
+                not re.search(r'\btdPetOnCorpseExplosion\(', script),
+                'Final retired corpse-pet helper still has a packed owner/caller')
+        require('tdPetHeroOnCorpseExplosionSettled(' in functions(script)['tdHandleGhoulCorpseExplosionDamage'][4],
+                'Final corpse settlement lost its actual production post branch')
+        settled = 'tdPetHeroOnCorpseExplosionSettled'
+    else:
+        require('function tdPetOnCorpseExplosion takes' in script,
+                'Neither reviewed corpse-settlement callback is packed')
+        settled = 'tdPetOnCorpseExplosion'
     def pending(r): return r.globals[key]
     def queued(r): return len(r.lists[r.globals[queue_key]])
     def runtime(skills=((16,4),(7,4))):
@@ -437,7 +515,7 @@ def verify_post_timer_order(script):
             'Post3 failed to release a deferred consumed queue')
     r.flush()
     near(r.units[102]['life'],0.,'Combo100 and charge85 subsequently kill')
-    require(r.calls['tdPetOnCorpseExplosion']==0 and not any(hit[1]==106 for hit in r.native_damage),
+    require(r.calls[settled]==0 and not any(hit[1]==106 for hit in r.native_damage),
             'Pet additions made original corpse listener misattribute the kill')
     # Explicitly attempt dispatch before original post, independent of timer
     # deadlines/FIFO. The real fence must preserve the entire unconsumed queue.
@@ -449,7 +527,7 @@ def verify_post_timer_order(script):
     changed,count=re.subn(r'\b'+key+r' == 0\b','true',body)
     require(count==1,'No unique packed dispatch execution fence')
     broken=corpse(script.replace(body,changed,1));broken.invoke('dispatchQueuedAttacks');broken.flush()
-    require(broken.calls['tdPetOnCorpseExplosion']>0 and any(hit[1]==106 for hit in broken.native_damage),
+    require(broken.calls[settled]>0 and any(hit[1]==106 for hit in broken.native_damage),
             'Removing the compiled execution fence failed to expose corpse regression')
     # Two identical source/target/D native hits can post in reverse order. There
     # is no source/target/D matching, and no job executes after only one post.
@@ -598,21 +676,42 @@ def verify_trial(script):
     near(r.units[target]['life'],1000000.-210.,'Priority0 refill before priority3 resolve')
     near(r.state_call('total',0),210.,'Priority4 trial final amount')
     near(r.score(),0.,'Trial never enters ordinary ledger')
-    # A primary death may leave an old ground AoE; replacement is excluded by value snapshot.
-    r=PetAttackRuntime(script);r.auto_post=False;r.enter(8);target=r.target(0);pet=r.pet([(14,4)])
-    original=[r.target(i) for i in range(5)]
-    for unit in original:r.units[unit].update(x=0.,y=0.)
-    r.visible_units=original[:]
-    r.emit(100.,target=target)
-    original_post=r.scheduled[-1][1];r.run_timer(original_post)
-    require(not r.native_damage,'Ground proc ran inline before target replacement fixture')
-    r.units[target]['alive']=False;r.event_target=target;r.invoke('tdTrialOnTargetDeath')
-    death=r.scheduled[-1][1];r.run_timer(death)
-    replacement=r.target(0);r.visible_units=[replacement,*original[1:]]
-    r.flush()
-    require(len(r.native_damage)==4 and all(hit[1]!=replacement for hit in r.native_damage),'Old ground proc hit replacement identity or lost live old neighbours')
-    for hit in r.native_damage:near(hit[2],85.,'Ground proc immutable originalD')
-    return {'refilled_HP':999790.,'trial_final_credit':210.,'old_snapshot_neighbour_hits':4,'replacement_hits':0}
+    # The native allocator can replace a dead trial target with a new handle OR
+    # reuse its exact handle. Both must reject the newly issued binding revision.
+    def ground(candidate, reused):
+        r=PetAttackRuntime(candidate);r.auto_post=False;r.enter(8);target=r.target(0);pet=r.pet([(38 if r.final_catalog else 14,4)])
+        original=[r.target(i) for i in range(5)]
+        for unit in original:r.units[unit].update(x=0.,y=0.)
+        r.visible_units=original[:]
+        old_revision=r.globals['TDTrialBinding_revision'][r.binding(0)]
+        r.emit(100.,target=target)
+        original_post=r.scheduled[-1][1];r.run_timer(original_post)
+        require(not r.native_damage,'Ground proc ran inline before target replacement fixture')
+        r.units[target]['alive']=False;r.event_target=target;r.invoke('tdTrialOnTargetDeath')
+        if reused:r.unit_serial=target-1
+        death=r.scheduled[-1][1];r.run_timer(death)
+        replacement=r.target(0)
+        new_revision=r.globals['TDTrialBinding_revision'][r.binding(0)]
+        require((replacement==target) is reused and new_revision>old_revision,'Trial replacement fixture did not issue expected handle/revision')
+        r.units[replacement].update(x=0.,y=0.);r.visible_units=[replacement,*original[1:]]
+        r.flush()
+        if r.final_catalog:r.tick_effects()
+        require(len(r.native_damage)==4 and all(hit[1]!=replacement for hit in r.native_damage),'Old ground proc hit replacement identity or lost live old neighbours')
+        for hit in r.native_damage:near(hit[2],85.,'Ground proc immutable originalD')
+        if r.final_catalog:
+            r.invoke('TDPet_invalidateCombat',pet)
+            require(r.invoke('tdPetEffectTaskCount')==0 and not r.visual_handles,'Trial first-stage fixture leaked later stages/visuals')
+        return {'same_handle':reused,'new_revision':new_revision,'old_snapshot_neighbour_hits':4,'replacement_hits':0}
+    replacements=[ground(script,False),ground(script,True)]
+    guard=functions(script)['tdEquipmentTrialAoeVictimValid'][4]
+    broken=script.replace(guard,'\treturn true\n',1)
+    try:ground(broken,True)
+    except ValueError as error:
+        require('Old ground proc hit replacement identity' in str(error),'Unrelated trial identity mutation failure: '+str(error))
+    else:raise ValueError('Removing the actual trial identity guard survived reused-handle replay')
+    return {'refilled_HP':999790.,'trial_final_credit':210.,'old_snapshot_neighbour_hits':4,'replacement_hits':0,
+            'replacement_cases':replacements,'identity_guard_removal_rejected':True,
+            'spell_fixture':'Final skill38 first85%D stage; later stages explicitly cancelled' if r.final_catalog else 'Legacy skill14 single85%D stage'}
 
 
 def main():
@@ -621,7 +720,7 @@ def main():
     parser.add_argument('--baseline',type=Path)
     args=parser.parse_args()
     artifact=Mpq(args.map.read_bytes());script=artifact.extract('war3map.j').decode('utf-8')
-    require('function tdPetSkillDefined takes' in script,'This gate requires the compiled phase-one map')
+    require('function tdPetSkillDefined takes' in script,'This gate requires the packed integer spirit catalog')
     abilities=ability_objects(artifact.extract('war3map.w3a'));units=unit_objects(artifact.extract('war3map.w3u'))
     before=ability_objects(Mpq(args.baseline.read_bytes()).extract('war3map.w3a')) if args.baseline else None
     verify_phase_fence_source();verify_skill_allowed(script); slots=verify_phase_one_slots(abilities);verify_phase_one_preview(abilities)

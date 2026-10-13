@@ -1,0 +1,33 @@
+package TDPetCombatSource
+import TDPetData
+import TDPetState
+import TDPetRuntime
+import TDTowerData
+import DamageEvent
+import TDEnemyMechanicRuntime
+import TDTrialIdentity
+import TDEquipmentTrialAoe
+
+public function tdPetBindingValid(TDPet pet, unit host, int generation) returns boolean
+	return pet != null and not pet.released and pet.host == host and pet.generation == generation and not pet.paused and host != null and host.isAlive() and tdTowerChoiceForUnitTypeId(GetUnitTypeId(host)) != 0 and GetPlayerId(GetOwningPlayer(host)) == pet.lane and tdPetLaneCanAct(pet.lane)
+
+public function tdPetDamage(TDPet pet, unit host, int generation, unit target, real amount)
+	if not tdPetBindingValid(pet, host, generation) or not tdPetEnemyIsValid(target, pet.lane) or amount <= 0.0
+		return
+	DamageEvent.setNextDamageFromCode()
+	DamageEvent.setNextDamageId(TD_PET_DAMAGE_ID)
+	host.damageTarget(target, amount)
+
+// Exactly one extra stage-resistance consumption; code damage skips native spell listener.
+public function tdPetSpellDamage(TDPet pet, unit host, int generation, unit target, real amount)
+	tdPetDamage(pet, host, generation, target, tdEnemyMechanicScaleSpellDamage(target, amount))
+
+public function tdPetAoeVictimValid(unit target, int lane, tdTrialCombatContext context, tdEquipmentTrialAoeSnapshot snapshot) returns boolean
+	if not tdPetEnemyIsValid(target, lane)
+		return false
+	if not context.fromTrial
+		return tdTrialAoeTargetContextValid(target, lane, context)
+	for slot = 0 to 4
+		if snapshot.targetAt(slot) == target
+			return tdEquipmentTrialAoeVictimValid(target, lane, context, snapshot.revisionAt(slot))
+	return false

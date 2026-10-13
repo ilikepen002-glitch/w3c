@@ -1,0 +1,327 @@
+package TDPetHeroState
+import TDPetHeroRules
+import TDPetState
+import TDPetRules
+import TDPetRuntime
+import TDPetCombatSource
+import TDPetEffectScheduler
+import TDPetAttackQueue
+import TDTrialIdentity
+import TDEquipmentTrialAoe
+import TDTowerData
+import TDState
+import TDEnemySlowState
+import TDAuraRules
+import GameTimer
+import LinkedList
+import Table
+import ErrorHandling
+
+constant Table ownerTickets = new Table()
+constant Table pendingJudgements = new Table()
+constant Table targetBuckets = new Table()
+constant Table relayRecipients = new Table()
+constant Table towerRevisions = new Table()
+constant Table counters = new Table()
+int secondaryDepth = 0
+
+public function tdPetHeroSecondaryDeathBlocked() returns boolean
+	return secondaryDepth > 0
+
+// A death caused by secondary poison/epidemic damage may only retire tickets.
+// The narrow guard surrounds the actual synchronous damage call, never enqueue.
+public function tdPetHeroWeakSpellDamage(TDPet pet, unit host, int generation, unit target, real amount)
+	if not tdPetBindingValid(pet, host, generation) or not tdPetEnemyIsValid(target, pet.lane) or amount <= 0.0
+		return
+	if secondaryDepth >= 2147483647
+		error("Pet secondary-damage depth exhausted.")
+		return
+	secondaryDepth += 1
+	tdPetSpellDamage(pet, host, generation, target, amount)
+	secondaryDepth -= 1
+
+public function tdPetHeroQuality(TDPet pet, int skill) returns int
+	if pet == null or pet.paused or pet.released or pet.host == null
+		return 0
+	if not tdPetHeroFitsRawcode(skill, GetUnitTypeId(pet.host))
+		return 0
+	for slot = 0 to IMinBJ(pet.skillCount, tdPetUnlockedSlots(pet.level)) - 1
+		if pet.skillAt(slot) == skill
+			return pet.qualityAt(slot)
+	return 0
+
+public function tdPetHeroTowerRevision(unit tower) returns int
+	return tower == null ? -1 : towerRevisions.loadInt(tower.getHandleId())
+
+public function tdPetHeroTowerValid(unit tower, int lane, int revision) returns boolean
+	if tower == null or not tower.isAlive() or GetPlayerId(GetOwningPlayer(tower)) != lane
+		return false
+	if tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0 or tdPetBusyTowers.hasBoolean(tower.getHandleId())
+		return false
+	return tdPetHeroTowerRevision(tower) == revision and tdPetLaneCanAct(lane)
+
+public class TDPetHeroTargetBucket
+	unit target
+	boolean processing = false
+	LinkedList<TDPetHeroTicket> entries = new LinkedList<TDPetHeroTicket>()
+	construct(unit target)
+		this.target = target
+	ondestroy
+		destroy entries
+
+public function tdPetHeroTargetBucketFor(unit target, boolean create) returns TDPetHeroTargetBucket
+	if target == null
+		return null
+	let key = target.getHandleId()
+	if targetBuckets.hasInt(key)
+		return targetBuckets.loadInt(key) castTo TDPetHeroTargetBucket
+	if not create
+		return null
+	let bucket = new TDPetHeroTargetBucket(target)
+	targetBuckets.saveInt(key, bucket castTo int)
+	return bucket
+
+public function tdPetHeroRetireBucket(TDPetHeroTargetBucket bucket)
+	if bucket == null or bucket.processing or not bucket.entries.isEmpty()
+		return
+	let key = bucket.target.getHandleId()
+	if targetBuckets.loadInt(key) == bucket castTo int
+		targetBuckets.removeInt(key)
+	destroy bucket
+
+// Small one-shot records share the elemental scheduler and source cancellation.
+// They do not have a second timer, native Buff carrier, or full-map death scan.
+public class TDPetHeroTicket extends TDPetEffectTask
+	TDPet pet
+	unit host
+	int generation
+	int revision
+	int skill
+	int quality
+	real amount
+	real expiry
+	int grantSerial
+	boolean consumed = false
+	boolean secondary = false
+	boolean indexedOwner = true
+	boolean pendingJudgement = false
+	tdTrialCombatContext context
+	tdEquipmentTrialAoeSnapshot snapshot
+	unit recipient = null
+	int recipientRevision = -1
+	int targetCount = 0
+	unit array[3] targets
+	int array[3] targetRevisions
+
+	construct(TDPet pet, int skill, int quality, real amount, tdTrialCombatContext context, int grantSerial)
+		super(pet castTo int)
+		this.pet = pet
+		host = pet.host
+		generation = pet.generation
+		revision = pet.revision
+		this.skill = skill
+		this.quality = quality
+		this.amount = amount
+		this.context = context
+		this.grantSerial = grantSerial
+		// AoE identities are captured at the ORIGINAL hit/cast, never here.
+		snapshot = tdEquipmentTrialAoeSnapshot(null, 0, null, 0, null, 0, null, 0, null, 0)
+		expiry = getElapsedGameTime() + tdPetHeroLifetime(skill)
+		indexedOwner = skill != TD_PET_HERO_FROST
+
+	function sourceValid() returns boolean
+		if cancelled or not tdPetBindingValid(pet, host, generation) or pet.revision != revision
+			return false
+		return tdPetHeroFitsRawcode(skill, GetUnitTypeId(host)) and tdTrialContextValid(context)
+
+	function live(real now) returns boolean
+		if not sourceValid() or not tdPetHeroOneShotLive(consumed, expiry, now)
+			return false
+		if recipient != null and not tdPetHeroTowerValid(recipient, pet.lane, recipientRevision)
+			return false
+		return true
+
+	function attachTarget(unit target)
+		if target == null or targetCount >= 3
+			return
+		for index = 0 to targetCount - 1
+			if targets[index] == target
+				return
+		targets[targetCount] = target
+		let binding = tdTrialBindingFor(target)
+		targetRevisions[targetCount] = binding == null ? 0 : binding.revision
+		targetCount += 1
+		tdPetHeroTargetBucketFor(target, true).entries.add(this)
+
+	function attachRecipient(unit tower)
+		recipient = tower
+		recipientRevision = tdPetHeroTowerRevision(tower)
+		if skill == TD_PET_HERO_RELAY
+			relayRecipients.saveInt(tower.getHandleId(), this castTo int)
+
+	function detach()
+		let key = ownerKey * 10 + skill - TD_PET_HERO_FIRST
+		if indexedOwner and ownerTickets.loadInt(key) == this castTo int
+			ownerTickets.removeInt(key)
+		if pendingJudgement and pendingJudgements.loadInt(ownerKey) == this castTo int
+			pendingJudgements.removeInt(ownerKey)
+		if recipient != null and skill == TD_PET_HERO_RELAY and relayRecipients.loadInt(recipient.getHandleId()) == this castTo int
+			relayRecipients.removeInt(recipient.getHandleId())
+		for index = 0 to targetCount - 1
+			let bucket = tdPetHeroTargetBucketFor(targets[index], false)
+			if bucket != null
+				bucket.entries.remove(this)
+				tdPetHeroRetireBucket(bucket)
+
+	function consume()
+		// Entire group detaches before any follow-up can synchronously kill another member.
+		consumed = true
+		detach()
+
+	override function runEffect(real now) returns boolean
+		if not live(now)
+			return false
+		if targetCount == 1
+			if not tdPetEnemyIsValid(targets[0], pet.lane) or not tdTrialTargetContextValid(targets[0], pet.lane, context, targetRevisions[0])
+				return false
+		return true
+
+	ondestroy
+		if skill == TD_PET_HERO_FROST
+			for index = 0 to targetCount - 1
+				let bucket = tdPetHeroTargetBucketFor(targets[index], false)
+				var successor = false
+				if bucket != null
+					for entry in bucket.entries
+						if entry != this and entry.host == host and entry.skill == TD_PET_HERO_FROST and entry.live(getElapsedGameTime())
+							successor = true
+				// An expired task may be retired after a new binding already offered
+				// the same host/identity. Never delete the successor's timed slow.
+				if not successor
+					tdEnemySlowRemoveTimed(targets[index], host, TD_AURA_PET_FROST_ARROW)
+		detach()
+
+public function tdPetHeroOwnerTicket(TDPet pet, int skill) returns TDPetHeroTicket
+	if pet == null
+		return null
+	return ownerTickets.loadInt((pet castTo int) * 10 + skill - TD_PET_HERO_FIRST) castTo TDPetHeroTicket
+
+public function tdPetHeroRecipientSeal(unit tower) returns TDPetHeroTicket
+	return tower == null ? null : relayRecipients.loadInt(tower.getHandleId()) castTo TDPetHeroTicket
+
+public function tdPetHeroStoreTicket(TDPetHeroTicket ticket) returns boolean
+	if ticket.indexedOwner
+		let previous = tdPetHeroOwnerTicket(ticket.pet, ticket.skill)
+		if previous != null
+			previous.consume()
+		ownerTickets.saveInt(ticket.ownerKey * 10 + ticket.skill - TD_PET_HERO_FIRST, ticket castTo int)
+	return tdPetRegisterEffectTask(ticket)
+
+public function tdPetHeroStorePendingJudgement(TDPetHeroTicket ticket) returns boolean
+	let previous = pendingJudgements.loadInt(ticket.ownerKey) castTo TDPetHeroTicket
+	let active = tdPetHeroOwnerTicket(ticket.pet, TD_PET_HERO_JUDGEMENT)
+	if previous != null and not tdPetHeroGrantNewer(ticket.grantSerial, previous.grantSerial)
+		destroy ticket
+		return false
+	if active != null and not tdPetHeroGrantNewer(ticket.grantSerial, active.grantSerial)
+		destroy ticket
+		return false
+	if previous != null
+		previous.consume()
+	ticket.indexedOwner = false
+	ticket.pendingJudgement = true
+	pendingJudgements.saveInt(ticket.ownerKey, ticket castTo int)
+	return tdPetRegisterEffectTask(ticket)
+
+public function tdPetHeroCommitPendingJudgement(TDPet pet, int serial)
+	let ticket = pendingJudgements.loadInt(pet castTo int) castTo TDPetHeroTicket
+	if ticket == null
+		return
+	if not ticket.live(getElapsedGameTime()) or ticket.grantSerial < serial
+		ticket.consume()
+		return
+	if not tdPetHeroGrantCanCommit(ticket.grantSerial, serial)
+		return
+	let active = tdPetHeroOwnerTicket(pet, TD_PET_HERO_JUDGEMENT)
+	if active != null
+		if not tdPetHeroGrantNewer(ticket.grantSerial, active.grantSerial)
+			ticket.consume()
+			return
+		active.consume()
+	// The task was already registered at early1. Move identity, keep its expiry.
+	pendingJudgements.removeInt(pet castTo int)
+	ticket.pendingJudgement = false
+	ticket.indexedOwner = true
+	ownerTickets.saveInt(ticket.ownerKey * 10 + TD_PET_HERO_JUDGEMENT - TD_PET_HERO_FIRST, ticket castTo int)
+
+public function tdPetHeroTargetTicket(unit target, int skill) returns TDPetHeroTicket
+	let bucket = tdPetHeroTargetBucketFor(target, false)
+	if bucket != null
+		for entry in bucket.entries
+			if entry.skill == skill and not entry.secondary and entry.live(getElapsedGameTime())
+				return entry
+	return null
+
+public function tdPetHeroSourceTargetTicket(unit target, int skill, TDPet pet) returns TDPetHeroTicket
+	let bucket = tdPetHeroTargetBucketFor(target, false)
+	if bucket != null
+		for entry in bucket.entries
+			if entry.pet == pet and entry.skill == skill and entry.live(getElapsedGameTime())
+				return entry
+	return null
+
+public function tdPetHeroTargetInfected(unit target) returns boolean
+	let bucket = tdPetHeroTargetBucketFor(target, false)
+	if bucket != null
+		for entry in bucket.entries
+			if entry.skill == TD_PET_HERO_POISON and entry.live(getElapsedGameTime())
+				return true
+	return false
+
+public function tdPetHeroTowerInvalidated(unit tower)
+	if tower == null
+		return
+	let key = tower.getHandleId()
+	towerRevisions.saveInt(key, towerRevisions.loadInt(key) + 1)
+	let seal = tdPetHeroRecipientSeal(tower)
+	if seal != null
+		seal.consume()
+
+class TDPetHeroCounter extends TDPetEffectTask
+	TDPet pet
+	unit host
+	int generation
+	int revision
+	int skill
+	int count = 0
+	construct(TDPet pet, int skill)
+		super(pet castTo int)
+		this.pet = pet
+		host = pet.host
+		generation = pet.generation
+		revision = pet.revision
+		this.skill = skill
+	override function runEffect(real _now) returns boolean
+		return not cancelled and tdPetBindingValid(pet, host, generation) and pet.revision == revision
+	ondestroy
+		if counters.loadInt(ownerKey) == this castTo int
+			counters.removeInt(ownerKey)
+
+public function tdPetHeroCountPrimary(TDPet pet, int skill) returns boolean
+	let period = tdPetHeroPrimaryPeriod(skill)
+	if period <= 0
+		return false
+	let key = pet castTo int
+	var counter = counters.loadInt(key) castTo TDPetHeroCounter
+	if counter != null
+		if counter.generation != pet.generation or counter.revision != pet.revision or counter.skill != skill
+			counter.cancelled = true
+			counters.removeInt(key)
+			counter = null
+	if counter == null
+		counter = new TDPetHeroCounter(pet, skill)
+		counters.saveInt(key, counter castTo int)
+		if not tdPetRegisterEffectTask(counter)
+			return false
+	counter.count = (counter.count + 1) mod period
+	return counter.count == 0

@@ -18,6 +18,10 @@ class TDPetQueuedAttack
 public int tdPetPendingOriginal = 0
 constant LinkedList<TDPetQueuedAttack> queuedAttacks = new LinkedList<TDPetQueuedAttack>()
 CallbackSingle dispatchTimer = null
+boolean dispatching = false
+
+public function tdPetAttackQueueBusy() returns boolean
+	return dispatching
 
 public function tdPetCancelQueuedAttacks(int owner)
 	let iter = queuedAttacks.iterator()
@@ -50,16 +54,27 @@ function dispatchQueuedAttacks()
 		let packet = queuedAttacks.get(0)
 		queuedAttacks.remove(packet)
 		// Consume before damage/re-entrant lifecycle operations touch the queue.
+		dispatching = true
 		packet.callback.call()
+		dispatching = false
 		destroy packet
 	if tdIsGameOver()
 		tdPetClearAttackQueue()
+
+public function tdPetWakeIdleAttackQueue()
+	if tdIsGameOver()
+		tdPetClearAttackQueue()
+	else if tdPetPendingOriginal == 0 and not queuedAttacks.isEmpty() and dispatchTimer == null
+		// Asynchronous only: any later early listener may still raise the fence.
+		dispatchTimer = doAfter(0.0) ->
+			dispatchQueuedAttacks()
 
 public function tdPetQueueAttack(int owner, Callback callback)
 	if tdIsGameOver()
 		destroy callback
 		return
 	queuedAttacks.add(new TDPetQueuedAttack(owner, callback))
+	tdPetWakeIdleAttackQueue()
 
 public function tdPetBeginOriginalPhase()
 	if tdPetPendingOriginal >= 2147483647
@@ -72,9 +87,4 @@ public function tdPetEndOriginalPhase()
 		error("Pet original-hit phase underflow.")
 		return
 	tdPetPendingOriginal -= 1
-	if tdIsGameOver()
-		tdPetClearAttackQueue()
-	else if tdPetPendingOriginal == 0 and not queuedAttacks.isEmpty() and dispatchTimer == null
-		// This is a post-completion handoff, never an early damage timer.
-		dispatchTimer = doAfter(0.0) ->
-			dispatchQueuedAttacks()
+	tdPetWakeIdleAttackQueue()

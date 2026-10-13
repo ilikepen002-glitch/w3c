@@ -31,9 +31,11 @@ def field(fields, name, value, level=0, column=0):
     fields[(name, level, column)] = (3 if isinstance(value, str) else 2 if isinstance(value, float) else 0, value)
 
 
-def current_manager_fixture():
+def current_manager_fixture(elemental=False):
     """Controlled future object shape tests the verifier, never claims packaging."""
     abilities, units = {}, {}
+    species_models = artifact.elemental_species() if elemental else artifact.SPECIES
+    variants = 1 + 16 * len(species_models)
     for rawcode, (x, y, key, target, stem) in artifact.MANAGER_COMMANDS.items():
         fields = {}
         for name, value in [('alev', 1), ('abpx', x), ('abpy', y), ('ahky', key), ('aart', artifact.icon_path(stem)), ('arar', artifact.icon_path(stem))]:
@@ -50,9 +52,9 @@ def current_manager_fixture():
     field(abilities['Pm09'][1], 'anam', '保留原技能')
     field(abilities['Pm0A'][1], 'anam', '换成新技能')
     for cell in range(10):
-        for variant in range(49):
-            rawcode, fields = f'L{cell * 49 + variant:03X}', {}
-            stem = 'TDPetEmptySlot' if variant == 0 else artifact.SPECIES[(variant - 1) // 16][1] + f'Q{((variant - 1) % 16) // 4 + 1}N{(variant - 1) % 4 + 1}'
+        for variant in range(variants):
+            rawcode, fields = f'L{cell * variants + variant:03X}', {}
+            stem = 'TDPetEmptySlot' if variant == 0 else species_models[(variant - 1) // 16][1] + f'Q{((variant - 1) % 16) // 4 + 1}N{(variant - 1) % 4 + 1}'
             for name, value in [('alev', 2), ('abpx', cell % 4), ('abpy', cell // 4), ('ahky', artifact.LIST_KEYS[cell]), ('aart', artifact.icon_path(stem)), ('arar', artifact.icon_path(stem))]:
                 field(fields, name, value)
             for name in ('aher', 'aite'):
@@ -86,8 +88,8 @@ def current_manager_fixture():
         field(fields, 'Ocr1', 0.0, 1, 1)
         field(fields, 'Ocr2', 1.0, 1, 2)
         abilities[f'Pa{position:02X}'] = ('AOcr', fields)
-    for index in range(13):
-        model, stem = (artifact.SPECIES[2][0], 'TDPetCollection') if index == 0 else (artifact.SPECIES[(index - 1) // 4][0], artifact.SPECIES[(index - 1) // 4][1] + f'Q{(index - 1) % 4 + 1}')
+    for index in range(1 + len(species_models) * 4):
+        model, stem = (species_models[2][0], 'TDPetCollection') if index == 0 else (species_models[(index - 1) // 4][0], species_models[(index - 1) // 4][1] + f'Q{(index - 1) % 4 + 1}')
         units[f'pd{index:02X}'] = {'umdl': model, 'uico': artifact.icon_path(stem), 'ussi': artifact.icon_path(stem), 'uabi': 'Avul', 'ubdg': 1, 'uaen': 0, 'umvs': 0, 'ufoo': 0, 'ubui': '', 'utra': '', 'uupt': '', 'upat': ''}
     return abilities, units
 

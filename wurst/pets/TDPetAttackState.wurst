@@ -1,5 +1,8 @@
 package TDPetAttackState
 import TDPetAttackRules
+import TDPetEffectTargetState
+import TDPetHeroRuntime
+import TDEnemyControlRuntime
 import TDPetData
 import TDPetState
 import TDPetRuntime
@@ -20,6 +23,8 @@ class TDPetAttackContribution
 	int generation
 	real armor = 0.0
 	real armorUntil = 0.0
+	real bladeUntil = 0.0
+	int bladeToken = 0
 	int stacks = 0
 	real slowUntil = 0.0
 	construct(TDPet pet, unit source)
@@ -48,17 +53,22 @@ class TDPetAttackTarget
 
 	function refresh(real now)
 		var armor = 0.0
+		var blade = 0.0
 		let iter = sources.iterator()
 		while iter.hasNext()
 			let entry = iter.next()
-			let expired = now >= entry.armorUntil and now >= entry.slowUntil
+			let expired = now >= entry.armorUntil and now >= entry.slowUntil and now >= entry.bladeUntil
 			if not entry.valid() or expired
 				tdEnemySlowRemoveTimed(target, entry.source, TD_AURA_PET_REDUCE)
 				iter.remove()
 				destroy entry
-			else if now < entry.armorUntil
-				armor = RMaxBJ(armor, entry.armor)
+			else
+				if now < entry.armorUntil
+					armor = RMaxBJ(armor, entry.armor)
+				if now < entry.bladeUntil
+					blade = 4.0
 		iter.close()
+		armor = RMinBJ(10.0, armor + blade)
 		if armor <= 0.0
 			target.removeAbility(TD_PET_ARMOR_ID)
 		else
@@ -84,6 +94,10 @@ function forget(TDPetAttackTarget entry)
 	destroy entry
 
 public function tdPetForgetEnemy(unit target)
+	tdPetHeroForgetEnemy(target, false)
+	tdPetRetireEffectTarget(target)
+	tdForgetEnemyControl(target)
+	tdEnemySlowRetireTarget(target)
 	if target == null or not targetIndex.hasInt(target.getHandleId())
 		return
 	forget(targetIndex.loadInt(target.getHandleId()) castTo TDPetAttackTarget)
@@ -136,3 +150,32 @@ public function tdPetExpireAttackDebuffs()
 			iter.remove()
 			destroy record
 	iter.close()
+
+public function tdPetApplyBladeArmor(TDPet pet, unit source, unit target, int token)
+	// Reuse the existing target/source ownership, without adding another debuff timer.
+	tdPetApplyAttackDebuffs(pet, source, target, 0.0, 0)
+	var record = targetIndex.loadInt(target.getHandleId()) castTo TDPetAttackTarget
+	if record == null
+		record = new TDPetAttackTarget(target, pet.lane)
+		targets.add(record)
+		targetIndex.saveInt(target.getHandleId(), record castTo int)
+	TDPetAttackContribution entry = null
+	for candidate in record.sources
+		if candidate.source == source and candidate.generation == pet.generation
+			entry = candidate
+	if entry == null
+		entry = new TDPetAttackContribution(pet, source)
+		record.sources.add(entry)
+	entry.bladeToken = token
+	entry.bladeUntil = getElapsedGameTime() + 4.0
+	record.refresh(getElapsedGameTime())
+
+public function tdPetRemoveBladeArmor(unit target, unit source, int token)
+	let record = targetIndex.loadInt(target.getHandleId()) castTo TDPetAttackTarget
+	if record == null
+		return
+	for entry in record.sources
+		if entry.source == source and entry.bladeToken == token
+			entry.bladeUntil = 0.0
+			entry.bladeToken = 0
+	record.refresh(getElapsedGameTime())

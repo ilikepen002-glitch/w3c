@@ -96,7 +96,7 @@ public function tdPetWildHoldPosition(int lane) returns vec2
 	let exit = tdLaneExitPosition(lane)
 	return exit + (origin - exit).norm() * RMinBJ(600.0, origin.distanceTo(exit))
 public function tdPetSpawnWild(int lane, int wave, int species) returns TDPetWildRecord
-	if not tdIsLanePlayer(lane) or wave < 1 or wave > 25 or tdWaveBossEnemyCount(wave) > 0 or species < 1 or species > 3
+	if not tdIsLanePlayer(lane) or wave < 1 or wave > 25 or tdWaveBossEnemyCount(wave) > 0 or species < 1 or species > TD_PET_SPECIES_COUNT
 		return null
 	let creature = createUnit(Player(PLAYER_NEUTRAL_PASSIVE), tdPetWildUnitId(wave, species), tdLaneSpawnPosition(lane), 0 .fromDeg())
 	creature.setUserData(lane * 10000 + wave * 100)
@@ -134,7 +134,7 @@ public function tdPetWildOnWave(int lane, int wave)
 	if not tdPetClaimWildSpawn(lane, wave)
 		return
 	for _index = 1 to tdPetEncounterCount(lane, wave)
-		tdPetSpawnWild(lane, wave, GetRandomInt(1, 3))
+		tdPetSpawnWild(lane, wave, GetRandomInt(1, TD_PET_SPECIES_COUNT))
 
 function onDeath()
 	let record = tdPetWildFor(GetTriggerUnit())

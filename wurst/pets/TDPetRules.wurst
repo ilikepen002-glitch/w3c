@@ -1,6 +1,9 @@
 package TDPetRules
 import TDActiveSkillData
 import TDPetData
+import public TDPetElementData
+import public TDPetHeroRules
+import TDPetHeroData
 import TDTooltipText
 
 public function tdPetSkillCountForRoll(int roll) returns int
@@ -34,31 +37,46 @@ public function tdPetSkillIsActive(int skill) returns boolean
 	return tdActiveSkillDefinitionForPetSkill(skill).driver == TD_ACTIVE_DRIVER_PET_PROC
 
 public function tdPetSkillIsUniversal(int skill) returns boolean
-	return tdPetSkillDefined(skill) and skill >= 5 and skill != 9 and skill != 10
+	return tdPetSkillDefined(skill) and not tdPetSkillIsActive(skill) and not tdPetHeroDefined(skill)
 
 public function tdPetSkillDefined(int skill) returns boolean
+	if skill == 9 or skill == 10
+		return false
+	if skill >= 13 and skill <= 15
+		return false
 	return skill >= 0 and skill < TD_PET_SKILL_COUNT and skill != 4
 
 // Values, not bits: all stable IDs (including >=32) compare without truncation.
 public function tdPetSkillOwned(int skill, int first, int second, int third, int fourth) returns boolean
 	return skill == first or skill == second or skill == third or skill == fourth
 
-// Phase 1 preserves the original numeric first slot and at-most-one active.
-public function tdPetSkillAllowed(int skill, int slot, boolean duplicate, boolean hasActive) returns boolean
+// One active slot; every later owned slot is passive, including locked slots.
+public function tdPetSkillAllowed(int skill, int slot, boolean duplicate, boolean _hasActive) returns boolean
 	if not tdPetSkillDefined(skill) or slot < 0 or slot > 3 or duplicate
 		return false
-	if slot == 0
-		return tdPetSkillIsNumeric(skill)
-	// Use explicit short-circuit branches: the fixed JASS printer misgroups mixed and/or.
-	if tdPetSkillIsNumeric(skill)
+	return slot == 0 ? tdPetSkillIsActive(skill) : not tdPetSkillIsActive(skill)
+
+public function tdPetSkillAllowedForSpecies(int skill, int slot, int species, boolean duplicate) returns boolean
+	if not tdPetSkillAllowed(skill, slot, duplicate, false)
 		return false
-	if slot == 1 and not tdPetSkillIsUniversal(skill)
-		return false
-	if hasActive and tdPetSkillIsActive(skill)
-		return false
-	return true
+	let element = tdPetSkillElement(skill)
+	return element == 0 or element == tdPetSpeciesElement(species)
+
+public function tdPetSkillDefinitionCount() returns int
+	var count = 0
+	for skill = 0 to TD_PET_SKILL_COUNT - 1
+		if tdPetSkillDefined(skill)
+			count += 1
+	return count
+
+public function tdPetSlotName(int slot) returns string
+	return slot == 0 ? "主动栏" : "被动栏" + slot.toString()
 
 public function tdPetSkillNameById(int skill) returns string
+	if tdPetHeroDefined(skill)
+		return tdPetHeroName(skill)
+	if tdPetSkillElement(skill) != 0
+		return tdPetElementSkillName(skill)
 	if skill == 0
 		return "坚韧之力"
 	if skill == 1
@@ -103,6 +121,8 @@ public function tdPetQualityName(int quality) returns string
 	return quality == 1 ? "|cffffffff白|r" : (quality == 2 ? "|cff40dd40绿|r" : (quality == 3 ? "|cff4090ff蓝|r" : "|cffc060ff紫|r"))
 
 public function tdPetSkillPower(int skill, int quality) returns real
+	if tdPetHeroDefined(skill)
+		return tdPetHeroPower(skill, quality)
 	if skill == 0
 		return 8.0 * quality
 	if skill == 1 or skill == 2 or skill == 3
@@ -124,6 +144,10 @@ public function tdPetSkillPower(int skill, int quality) returns real
 	return 0.25 + quality * 0.15
 
 public function tdPetSkillDescriptionById(int skill, int quality) returns string
+	if tdPetHeroDefined(skill)
+		return tdPetHeroDescription(skill, quality)
+	if tdPetSkillElement(skill) != 0
+		return tdPetElementSkillDescription(skill)
 	let power = tdPetSkillPower(skill, quality)
 	if skill == 0
 		return "附身塔攻击力+" + power.toInt().toString() + "。"

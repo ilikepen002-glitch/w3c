@@ -1,0 +1,50 @@
+package TDPetRouteSnapshot
+import TDPetActiveRules
+import TDConfig
+import TDSpawn
+import TDTrialIdentity
+
+public tuple tdPetRoadSnapshot(vec2 first, vec2 second, vec2 third, vec2 fourth)
+
+public function tdPetRoadSnapshot.pointAt(int index) returns vec2
+	if index == 0
+		return this.first
+	if index == 1
+		return this.second
+	return index == 2 ? this.third : this.fourth
+
+// Capture before the native main hit settles. Death may later replace enemy
+// userData with98/99; deferred casts must not infer a new road from that marker.
+public function tdPetCaptureRoad(unit target, int lane, vec2 center, vec2 fallback) returns tdPetRoadSnapshot
+	let binding = tdTrialBindingFor(target)
+	var waypoint = binding == null ? tdEnemyWaypointIndex(target) : binding.waypoint
+	var point = center
+	vec2 array points
+	points[0] = center
+	for segment = 1 to 3
+		var remaining = 150.0
+		for _guard = 0 to 5
+			let destination = tdLaneWaypointPosition(lane, waypoint)
+			let distance = point.distanceTo(destination)
+			if distance >= remaining and distance > 0.001
+				point += tdPetDirection(point, destination) * remaining
+				remaining = 0.0
+				break
+			point = destination
+			remaining -= distance
+			if waypoint < tdLaneWaypointCount(lane)
+				waypoint += 1
+			else
+				point += fallback * remaining
+				remaining = 0.0
+				break
+		points[segment] = point
+	return tdPetRoadSnapshot(points[0], points[1], points[2], points[3])
+
+// Only road-geometry procs need waypoint walking; cold/common attacks keep an
+// immutable center tuple without traversing route points on their hot path.
+public function tdPetCaptureActiveRoad(unit target, int lane, vec2 center, vec2 direction, boolean proc, int skill) returns tdPetRoadSnapshot
+	if proc
+		if skill == 25 or skill == 26 or skill == 38
+			return tdPetCaptureRoad(target, lane, center, direction)
+	return tdPetRoadSnapshot(center, center, center, center)

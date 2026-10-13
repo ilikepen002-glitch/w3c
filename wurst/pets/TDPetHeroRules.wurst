@@ -1,0 +1,199 @@
+package TDPetHeroRules
+
+// Reserved phase-three identities. This package does not publish a skill pool.
+public constant int TD_PET_HERO_FIRST = 39
+public constant int TD_PET_HERO_LAST = 48
+public constant int TD_PET_HERO_FROST = 39
+public constant int TD_PET_HERO_MOON = 40
+public constant int TD_PET_HERO_BOSS = 41
+public constant int TD_PET_HERO_STORM = 42
+public constant int TD_PET_HERO_JUDGEMENT = 43
+public constant int TD_PET_HERO_RELAY = 44
+public constant int TD_PET_HERO_POISON = 45
+public constant int TD_PET_HERO_ROOT = 46
+public constant int TD_PET_HERO_HUNT = 47
+public constant int TD_PET_HERO_EPIDEMIC = 48
+
+public function tdPetHeroDefined(int skill) returns boolean
+	return skill >= TD_PET_HERO_FIRST and skill <= TD_PET_HERO_LAST
+
+public function tdPetHeroHostTypeId(int skill) returns int
+	if skill == TD_PET_HERO_FROST
+		return 'uA6A'
+	if skill == TD_PET_HERO_MOON
+		return 'uA6B'
+	if skill == TD_PET_HERO_BOSS
+		return 'uO6A'
+	if skill == TD_PET_HERO_STORM
+		return 'uO6B'
+	if skill == TD_PET_HERO_JUDGEMENT
+		return 'uH6A'
+	if skill == TD_PET_HERO_RELAY
+		return 'uH6B'
+	if skill == TD_PET_HERO_POISON
+		return 'uD6A'
+	if skill == TD_PET_HERO_ROOT
+		return 'uD6B'
+	if skill == TD_PET_HERO_HUNT
+		return 'uG6A'
+	if skill == TD_PET_HERO_EPIDEMIC
+		return 'uG6B'
+	return 0
+
+public function tdPetHeroFitsRawcode(int skill, int hostTypeId) returns boolean
+	if not tdPetHeroDefined(skill)
+		return false
+	return tdPetHeroHostTypeId(skill) == hostTypeId
+
+public function tdPetHeroHostName(int skill) returns string
+	if skill == TD_PET_HERO_FROST
+		return "星界白虎"
+	if skill == TD_PET_HERO_MOON
+		return "月神号令"
+	if skill == TD_PET_HERO_BOSS
+		return "屠王剑圣"
+	if skill == TD_PET_HERO_STORM
+		return "碎阵剑圣"
+	if skill == TD_PET_HERO_JUDGEMENT
+		return "审判圣骑士"
+	if skill == TD_PET_HERO_RELAY
+		return "圣佑统帅"
+	if skill == TD_PET_HERO_POISON
+		return "剧毒守护者"
+	if skill == TD_PET_HERO_ROOT
+		return "缠根守护者"
+	if skill == TD_PET_HERO_HUNT
+		return "疾猎憎恶"
+	if skill == TD_PET_HERO_EPIDEMIC
+		return "血疫憎恶"
+	return ""
+
+public function tdPetHeroName(int skill) returns string
+	if skill == TD_PET_HERO_FROST
+		return "星轨霜箭"
+	if skill == TD_PET_HERO_MOON
+		return "月光信标"
+	if skill == TD_PET_HERO_BOSS
+		return "屠王血契"
+	if skill == TD_PET_HERO_STORM
+		return "断后风刃"
+	if skill == TD_PET_HERO_JUDGEMENT
+		return "迟临审判"
+	if skill == TD_PET_HERO_RELAY
+		return "圣印接力"
+	if skill == TD_PET_HERO_POISON
+		return "寄生毒芽"
+	if skill == TD_PET_HERO_ROOT
+		return "伏根刺"
+	if skill == TD_PET_HERO_HUNT
+		return "嗜猎余势"
+	if skill == TD_PET_HERO_EPIDEMIC
+		return "疫爆接力"
+	return ""
+
+// All multipliers are snapshots. D is the original native primary amount;
+// B is TDTowerData's current-type base attack, not a panel/armor reconstruction.
+public function tdPetHeroPower(int skill, int quality) returns real
+	if quality < 1 or quality > 4
+		return 0.0
+	if skill == TD_PET_HERO_FROST
+		return 0.04 + 0.04 * quality
+	if skill == TD_PET_HERO_MOON
+		return 0.20 + 0.20 * quality
+	if skill == TD_PET_HERO_BOSS
+		return 0.03 + 0.03 * quality
+	if skill == TD_PET_HERO_STORM
+		return 0.50 + 0.50 * quality
+	if skill == TD_PET_HERO_JUDGEMENT or skill == TD_PET_HERO_RELAY
+		return 0.125 + 0.125 * quality
+	if skill == TD_PET_HERO_POISON
+		return 0.05 + 0.05 * quality
+	if skill == TD_PET_HERO_ROOT
+		return 0.10 + 0.10 * quality
+	if skill == TD_PET_HERO_HUNT
+		return 0.10 + 0.10 * quality
+	if skill == TD_PET_HERO_EPIDEMIC
+		return 0.10 + 0.15 * quality
+	return 0.0
+
+public function tdPetHeroUsesBaseAttack(int skill) returns boolean
+	return skill == TD_PET_HERO_RELAY or skill == TD_PET_HERO_POISON or skill == TD_PET_HERO_ROOT or skill == TD_PET_HERO_HUNT
+
+public function tdPetHeroIsSpellDamage(int skill) returns boolean
+	return skill == TD_PET_HERO_MOON or skill == TD_PET_HERO_STORM or skill == TD_PET_HERO_RELAY or skill == TD_PET_HERO_POISON or skill == TD_PET_HERO_ROOT or skill == TD_PET_HERO_EPIDEMIC
+
+public function tdPetHeroPrimaryPeriod(int skill) returns int
+	if skill == TD_PET_HERO_POISON
+		return 4
+	if skill == TD_PET_HERO_MOON or skill == TD_PET_HERO_ROOT
+		return 5
+	return 0
+
+public function tdPetHeroLifetime(int skill) returns real
+	if skill == TD_PET_HERO_FROST or skill == TD_PET_HERO_JUDGEMENT or skill == TD_PET_HERO_EPIDEMIC
+		return 2.0
+	if skill == TD_PET_HERO_MOON or skill == TD_PET_HERO_RELAY or skill == TD_PET_HERO_POISON or skill == TD_PET_HERO_HUNT
+		return 3.0
+	return 0.0
+
+public function tdPetHeroRadius(int skill) returns real
+	if skill == TD_PET_HERO_RELAY
+		return 450.0
+	if skill == TD_PET_HERO_POISON
+		return 240.0
+	if skill == TD_PET_HERO_ROOT
+		return 120.0
+	if skill == TD_PET_HERO_EPIDEMIC
+		return 180.0
+	return 0.0
+
+public function tdPetHeroTargetCap(int skill) returns int
+	if skill == TD_PET_HERO_POISON
+		return 2
+	if skill == TD_PET_HERO_ROOT
+		return 3
+	if skill == TD_PET_HERO_STORM or skill == TD_PET_HERO_EPIDEMIC
+		return 6
+	return 1
+
+// Equal strength may replace/refresh; a weaker source never renews a stronger one.
+public function tdPetHeroOfferWins(real incomingPower, real power, real expiry, real now) returns boolean
+	if incomingPower <= 0.0
+		return false
+	if now >= expiry
+		return true
+	return incomingPower >= power
+
+public function tdPetHeroOneShotLive(boolean consumed, real expiry, real now) returns boolean
+	return not consumed and now < expiry
+
+// Global original-hit serial prevents a shield proc consuming its own grant hit.
+public function tdPetHeroLaterHit(int grantSerial, int hitSerial) returns boolean
+	return grantSerial >= 0 and hitSerial > grantSerial
+
+public function tdPetHeroGrantNewer(int incomingSerial, int existingSerial) returns boolean
+	return incomingSerial > 0 and incomingSerial > existingSerial
+
+public function tdPetHeroGrantCanCommit(int grantSerial, int hitSerial) returns boolean
+	return grantSerial > 0 and grantSerial == hitSerial
+
+public function tdPetHeroNextSerial(int current) returns int
+	if current < 0 or current >= 2147483647
+		return -1
+	return current + 1
+
+public function tdPetHeroSerialEligible(boolean codeDamage, boolean spellDamage, int eventId, real originalAmount) returns boolean
+	if codeDamage or spellDamage or eventId == 'Tspl' or eventId == 'Pdam'
+		return false
+	return originalAmount > 0.0
+
+public function tdPetHeroRelayEligible(int grantingHandle, int attackingHandle, boolean sameLane, boolean completed, boolean valid) returns boolean
+	if grantingHandle == 0 or attackingHandle == 0 or grantingHandle == attackingHandle
+		return false
+	return sameLane and completed and valid
+
+// Exit/replacement is cleanup, never a death proc. Secondary poison has no seed.
+public function tdPetHeroDeathCanPropagate(boolean realDeath, boolean trialTarget, boolean originalSeed, boolean consumed, real expiry, real now) returns boolean
+	if not realDeath or trialTarget or not originalSeed
+		return false
+	return tdPetHeroOneShotLive(consumed, expiry, now)

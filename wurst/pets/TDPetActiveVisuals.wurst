@@ -1,0 +1,83 @@
+package TDPetActiveVisuals
+import TDPetCastContext
+import TDPetRouteSnapshot
+
+// Native 1.27 resources from the locked stdlib Abilities catalogue. Each stage
+// owns <=8 handles and the shared context cap is 128; omitted art never gates
+// selection, damage, control or cooldown. All handles die with their context.
+public constant string TD_PET_VFX_BLADE = "Abilities\\Weapons\\GlaiveMissile\\GlaiveMissile.mdx"
+public constant string TD_PET_VFX_ARMOR = "Abilities\\Spells\\NightElf\\FaerieFire\\FaerieFireTarget.mdx"
+public constant string TD_PET_VFX_SWORD = "Abilities\\Spells\\Other\\Cleave\\CleaveDamageTarget.mdx"
+public constant string TD_PET_VFX_GOLD = "Abilities\\Spells\\Other\\Monsoon\\MonsoonBoltTarget.mdx"
+public constant string TD_PET_VFX_ROOT = "Abilities\\Spells\\NightElf\\EntanglingRoots\\EntanglingRootsTarget.mdx"
+public constant string TD_PET_VFX_SEED = "Abilities\\Spells\\NightElf\\Rejuvenation\\RejuvenationTarget.mdx"
+public constant string TD_PET_VFX_POISON = "Abilities\\Weapons\\PoisonSting\\PoisonStingTarget.mdx"
+public constant string TD_PET_VFX_FLOWER = "Abilities\\Spells\\NightElf\\Tranquility\\TranquilityTarget.mdx"
+public constant string TD_PET_VFX_THORN = "Abilities\\Spells\\Undead\\Impale\\ImpaleCaster.mdx"
+public constant string TD_PET_VFX_COLD = "Abilities\\Spells\\Other\\FrostArrows\\NagaColdArrowMissile.mdx"
+public constant string TD_PET_VFX_TIDE = "Abilities\\Spells\\Other\\BreathOfFrost\\BreathOfFrostMissile.mdx"
+public constant string TD_PET_VFX_RETURN = "Abilities\\Weapons\\FrostWyrmMissile\\FrostWyrmMissile.mdx"
+public constant string TD_PET_VFX_WARNING = "Abilities\\Spells\\Undead\\FrostArmor\\FrostArmorTarget.mdx"
+public constant string TD_PET_VFX_FREEZE = "Abilities\\Spells\\Human\\Blizzard\\BlizzardTarget.mdx"
+public constant string TD_PET_VFX_SHATTER = "Abilities\\Spells\\Undead\\FrostNova\\FrostNovaTarget.mdx"
+public constant string TD_PET_VFX_VORTEX = "Abilities\\Spells\\Other\\Tornado\\TornadoElementalSmall.mdl"
+public constant string TD_PET_VFX_BRAND = "Abilities\\Spells\\Human\\FlameStrike\\FlameStrikeDamageTarget.mdx"
+public constant string TD_PET_VFX_LOTUS = "Abilities\\Spells\\Human\\FlameStrike\\FlameStrike1.mdx"
+public constant string TD_PET_VFX_METEOR = "Abilities\\Spells\\Demon\\RainOfFire\\RainOfFireTarget.mdx"
+public constant string TD_PET_VFX_GROUND_FIRE = "Abilities\\Spells\\Human\\FlameStrike\\FlameStrikeEmbers.mdx"
+public constant string TD_PET_VFX_MARK = "Abilities\\Spells\\Human\\MarkOfChaos\\MarkOfChaosTarget.mdx"
+public constant string TD_PET_VFX_EXPLODE = "Abilities\\Spells\\Other\\Incinerate\\FireLordDeathExplode.mdl"
+public constant string TD_PET_VFX_ROCK = "Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdx"
+public constant string TD_PET_VFX_FAN = "Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdx"
+public constant string TD_PET_VFX_SEAL = "Abilities\\Spells\\Orc\\EarthQuake\\EarthquakeTarget.mdx"
+public constant string TD_PET_VFX_RIFT = "Abilities\\Spells\\Undead\\Impale\\ImpaleHitTarget.mdx"
+
+public function TDPetCastContext.visualRing(string model, vec2 point, real radius)
+	this.clearVisuals()
+	this.addVisual(model, point)
+	this.addVisual(model, point + vec2(radius, 0.0))
+	this.addVisual(model, point + vec2(-radius, 0.0))
+	this.addVisual(model, point + vec2(0.0, radius))
+	this.addVisual(model, point + vec2(0.0, -radius))
+
+public function TDPetCastContext.visualPoint(string model, vec2 point)
+	this.clearVisuals()
+	this.addVisual(model, point)
+
+public function TDPetCastContext.visualFlight(string model, real length, real progress)
+	this.clearVisuals()
+	for index = 0 to 2
+		this.addVisual(model, this.origin + this.direction * (length * RMaxBJ(0.0, RMinBJ(1.0, progress - index * 0.12))))
+
+public function TDPetCastContext.visualPrepare()
+	if this.skill == 24
+		this.visualPoint(TD_PET_VFX_SEED, this.center)
+	else if this.skill == 25
+		for flower = 0 to 2
+			this.addVisual(TD_PET_VFX_FLOWER, this.road.pointAt(flower))
+	else if this.skill == 29
+		this.visualRing(TD_PET_VFX_WARNING, this.center, 180.0)
+	else if this.skill == 30
+		this.visualRing(TD_PET_VFX_VORTEX, this.center, 200.0)
+	else if this.skill == 33
+		this.visualRing(TD_PET_VFX_MARK, this.center, 180.0)
+	else if this.skill == 34
+		for index = 0 to this.markCount - 1
+			this.addVisual(TD_PET_VFX_MARK, this.lastPosition(index))
+	else if this.skill == 37
+		this.visualRing(TD_PET_VFX_SEAL, this.center, 190.0)
+
+public function TDPetCastContext.visualTick(real now)
+	if this.skill == 19
+		this.visualFlight(TD_PET_VFX_BLADE, 650.0, (now - this.createdAt) / 0.25)
+	if this.skill == 27
+		if now < this.createdAt + 0.25
+			this.visualFlight(TD_PET_VFX_COLD, this.origin.distanceTo(this.center), (now - this.createdAt) / 0.25)
+		else if this.visualFrame != 1
+			this.visualPoint(TD_PET_VFX_WARNING, this.center)
+			this.visualFrame = 1
+	if this.skill == 28
+		if now < this.createdAt + 0.30
+			this.visualFlight(TD_PET_VFX_TIDE, 600.0, (now - this.createdAt) / 0.30)
+		else if now >= this.createdAt + 0.60
+			this.visualFlight(TD_PET_VFX_RETURN, 600.0, 1.0 - (now - this.createdAt - 0.60) / 0.30)

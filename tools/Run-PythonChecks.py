@@ -106,6 +106,7 @@ CLASS_GROUPS = {
         test_wurst_linux.JavaProbeTests
     '''.split(),
     'map': '''
+        test_pet_attack_phase_one.FinalPetAttackArtifactTests
         test_aura_target_artifact.AuraTargetArtifactTests
         test_combined_visual_text_artifact.ActualCombinedFieldTests
         test_equipment_combat_replay.EquipmentPackedReplayTests

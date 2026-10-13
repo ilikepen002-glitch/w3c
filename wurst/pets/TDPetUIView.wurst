@@ -1,5 +1,6 @@
 package TDPetUIView
 import TDPetData
+import TDPetHeroRules
 import TDPetRules
 import TDPetState
 import TDPetUIState
@@ -101,6 +102,8 @@ public function tdPetSkillRestriction(TDPet pet, int slot, int skill) returns st
 	if pet.host == null
 		return " [未绑定：需绑定塔]"
 	if not tdPetSkillFitsHost(skill, pet.host)
+		if tdPetHeroDefined(skill)
+			return " [不适配：需要" + tdPetHeroHostName(skill) + "]"
 		return skill == TD_PET_SKILL_RESOLVE ? " [不适配：宿主已有原生暴击]" : " [不适配：宿主需要" + (skill == 9 ? "分裂箭能力" : "尸爆能力") + "]"
 	return ""
 
@@ -121,7 +124,7 @@ public function tdPetPageSummary(int lane) returns string
 		if slot >= tdPetUnlockedSlots(pet.level) or activeHost
 			let restriction = tdPetSkillRestriction(pet, slot, pet.skillAt(slot))
 			if restriction != ""
-				text += "\n栏" + (slot + 1) + "：" + restriction
+				text += "\n" + tdPetSlotName(slot) + "：" + restriction
 	return text
 
 public function tdPetShowPageSummary(int lane)

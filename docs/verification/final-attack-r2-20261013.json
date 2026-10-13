@@ -1,0 +1,206 @@
+{
+  "sha256": "611ee1b735c56dc8b2a27cbe1db7e17469d1e536f1000f278a5bf3ea2f65a3e3",
+  "legal_slot_objects": 131,
+  "native_critical_catalog": [
+    "A102",
+    "A112"
+  ],
+  "resolve": {
+    "native_inputs": [
+      {
+        "quality": 1,
+        "native_D": 40.0,
+        "fifth_tenth": 60.0
+      },
+      {
+        "quality": 1,
+        "native_D": 100.0,
+        "fifth_tenth": 150.0
+      },
+      {
+        "quality": 1,
+        "native_D": 160.0,
+        "fifth_tenth": 240.0
+      },
+      {
+        "quality": 2,
+        "native_D": 40.0,
+        "fifth_tenth": 68.0
+      },
+      {
+        "quality": 2,
+        "native_D": 100.0,
+        "fifth_tenth": 170.00000000000003
+      },
+      {
+        "quality": 2,
+        "native_D": 160.0,
+        "fifth_tenth": 272.0
+      },
+      {
+        "quality": 3,
+        "native_D": 40.0,
+        "fifth_tenth": 76.0
+      },
+      {
+        "quality": 3,
+        "native_D": 100.0,
+        "fifth_tenth": 190.0
+      },
+      {
+        "quality": 3,
+        "native_D": 160.0,
+        "fifth_tenth": 304.0
+      },
+      {
+        "quality": 4,
+        "native_D": 40.0,
+        "fifth_tenth": 84.0
+      },
+      {
+        "quality": 4,
+        "native_D": 100.0,
+        "fifth_tenth": 210.0
+      },
+      {
+        "quality": 4,
+        "native_D": 160.0,
+        "fifth_tenth": 336.0
+      }
+    ],
+    "native_critical_exclusions": 2,
+    "paused_unbound_locked": 3,
+    "overkill_cap": 150.0,
+    "registered_Boss_physical_main": [
+      {
+        "wave": 8,
+        "physical_D": 100.0,
+        "final_main": 210.0
+      },
+      {
+        "wave": 16,
+        "physical_D": 100.0,
+        "final_main": 210.0
+      },
+      {
+        "wave": 24,
+        "physical_D": 100.0,
+        "final_main": 210.0
+      },
+      {
+        "wave": 32,
+        "physical_D": 100.0,
+        "final_main": 210.0
+      }
+    ],
+    "registered_Boss_active_once": 49.3,
+    "spell_fixture": "Final skill38 first85%D stage; later stages explicitly cancelled"
+  },
+  "additional_and_sampling": {
+    "twenty_hit_combo_segments": 20,
+    "charge_segments": 5,
+    "resolve_samples": 4,
+    "pre_hit_boundaries": [
+      {
+        "skill": 8,
+        "pre_life": 30.0,
+        "D": 10.0,
+        "extra": 5.0
+      },
+      {
+        "skill": 8,
+        "pre_life": 30.01,
+        "D": 10.0,
+        "extra": 0.0
+      },
+      {
+        "skill": 8,
+        "pre_life": 35.0,
+        "D": 10.0,
+        "extra": 0.0
+      },
+      {
+        "skill": 18,
+        "pre_life": 65.0,
+        "D": 10.0,
+        "extra": 0.0
+      },
+      {
+        "skill": 18,
+        "pre_life": 65.01,
+        "D": 10.0,
+        "extra": 3.0
+      },
+      {
+        "skill": 18,
+        "pre_life": 70.0,
+        "D": 10.0,
+        "extra": 3.0
+      }
+    ],
+    "equipment_priority1_extra": 25.0
+  },
+  "split_original_basis": {
+    "primary_final": 210.0,
+    "split_original_base": 100.0,
+    "tag": "Tspl",
+    "pending_volley_count": 0,
+    "fixture_boundary": "Native pre-created volley/shot handles, production constructors, callback allocator/dispatch, consumption and damage execution; visual launching is outside this basis test."
+  },
+  "phase_fence_contract": {
+    "production_abort_callers": 0,
+    "stable_listener_pair": true
+  },
+  "post_timer_order": {
+    "native_pre_HP": 250.0,
+    "native_D": 100.0,
+    "original_post_HP": 150.0,
+    "later_combo_charge": [
+      100.0,
+      85.0
+    ],
+    "original_corpse_neighbour_hits": 0,
+    "compiled_execution_fence_mutation_reproduced": true,
+    "same_source_target_D_reverse_posts": 2,
+    "new_no_pet_hit_before_dispatch": true,
+    "lifecycle_or_target_changes": 5,
+    "nested_code_excluded": true,
+    "terminal_late_post_closes": true,
+    "underflow_fail_closed": true,
+    "synchronous_extra_then_terminal_or_recall_blocks_old_active": 2,
+    "boundary": "Actual packed early/post/listener/queue/closure/destruction functions. Manual native timer deliveries explicitly reverse original posts and attempt dispatch before pending posts; these causal cases do not assume exact deadlines or FIFO. Default unrelated flush uses deadline/index order. No Warcraft timer observation."
+  },
+  "source_and_lifecycle": {
+    "non_original_or_zero": 5,
+    "counter_reset_actions": 3,
+    "cancelled_additional_segments": 0,
+    "miss_invulnerable_boundary": "Native miss/invulnerability may provide no damage event or a zero event; no-event input executes no sampler, and the actual zero-event path is replayed without counter/phase increments. Native miss/absorption behavior itself is not emulated."
+  },
+  "debuffs": {
+    "armor_fallback": [
+      8,
+      8,
+      2,
+      0
+    ],
+    "six_hit_slow_factors": [
+      0.94,
+      0.88,
+      0.8200000000000001,
+      0.76,
+      0.7,
+      0.7
+    ],
+    "boss_five_layer_factor": 0.85,
+    "same_name_max_other_name_sum_cap": 0.25,
+    "cleared_target_records": 0
+  },
+  "trial": {
+    "refilled_HP": 999790.0,
+    "trial_final_credit": 210.0,
+    "old_snapshot_neighbour_hits": 4,
+    "replacement_hits": 0,
+    "spell_fixture": "Final skill38 first85%D stage; later stages explicitly cancelled"
+  },
+  "boundary": "Exact packed DamageEvent early/onDamage chain and production pet/ledger/slow functions. Native post-armor D, engine clock/callbacks/life subtraction/handles/groups/random are explicit boundaries. No Warcraft/FPS/native visual claim."
+}

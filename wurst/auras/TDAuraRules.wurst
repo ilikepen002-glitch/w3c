@@ -15,7 +15,10 @@ public constant int TD_AURA_POISON_DART = 11
 public constant int TD_AURA_PET_FROST_ARROW = 12
 public constant int TD_AURA_PET_WIND = 13
 public constant int TD_AURA_PET_REDUCE = 14
-public constant int TD_AURA_ID_COUNT = 14
+public constant int TD_AURA_PET_COLD = 15
+public constant int TD_AURA_PET_VORTEX = 16
+public constant int TD_AURA_PET_SEAL = 17
+public constant int TD_AURA_ID_COUNT = 17
 public constant real TD_AURA_ENEMY_SLOW_CAP = 0.75
 public constant real TD_AURA_COOLDOWN_CAP = 0.40
 
@@ -38,8 +41,8 @@ public function tdCombinedEnemySlowFactor(real combined) returns real
 	return 1.0 - RMinBJ(TD_AURA_ENEMY_SLOW_CAP, RMaxBJ(0.0, combined))
 
 public class TDAuraAggregate
-	private int array[15] ranks
-	private real array[15] powers
+	private int array[18] ranks
+	private real array[18] powers
 
 	function clear()
 		for identity = 1 to TD_AURA_ID_COUNT
@@ -66,7 +69,7 @@ public class TDAuraAggregate
 		return identity >= 1 and identity <= TD_AURA_ID_COUNT ? powers[identity] : 0.0
 
 	function enemySlowPower() returns real
-		return powers[TD_AURA_EQUIPMENT_FROST] + powers[TD_AURA_VINES] + powers[TD_AURA_POISON_DART] + powers[TD_AURA_PET_FROST_ARROW] + powers[TD_AURA_PET_WIND] + powers[TD_AURA_PET_REDUCE]
+		return powers[TD_AURA_EQUIPMENT_FROST] + powers[TD_AURA_VINES] + powers[TD_AURA_POISON_DART] + powers[TD_AURA_PET_FROST_ARROW] + powers[TD_AURA_PET_WIND] + powers[TD_AURA_PET_REDUCE] + powers[TD_AURA_PET_COLD] + powers[TD_AURA_PET_VORTEX] + powers[TD_AURA_PET_SEAL]
 
 public class TDAuraTimedContribution
 	unit source

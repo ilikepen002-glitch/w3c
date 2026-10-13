@@ -450,6 +450,40 @@ class BossResistanceVerifierUnitTests(unittest.TestCase):
             runtime.expression('(true or false) and true', {})
         self.assertTrue(runtime.expression('true or unrecognized_external_mutation()', {}))
 
+    def test_cached_expression_rechecks_current_scope_and_actual_calls(self):
+        script = self.script + """
+function cacheScopeFixture takes nothing returns integer
+    set replayCacheCount = replayCacheCount + 1
+    return replayCacheCount
+endfunction
+"""
+        runtime = verifier.BossJassRuntime(script)
+        runtime.globals['replayCacheCount'] = 0
+        self.assertEqual(runtime.expression('value + 1', {'value': 2}), 3)
+        self.assertEqual(runtime.expression('value + 1', {'value': 9}), 10)
+        self.assertEqual(runtime.expression('cacheScopeFixture()', {}), 1)
+        self.assertEqual(runtime.expression('cacheScopeFixture()', {}), 2)
+
+    def test_local_jass_arrays_have_fresh_defaults_and_do_not_write_globals(self):
+        script = self.script + """
+function localArrayFixture takes real amount, integer index returns real
+    local real array scratch
+    local boolean array flags
+    set scratch[index] = amount
+    set flags[1] = true
+    return scratch[index] + scratch[2]
+endfunction
+"""
+        runtime = verifier.BossJassRuntime(script)
+        runtime.globals['scratch'] = {2: 999.}
+        self.assertEqual(runtime.invoke('localArrayFixture', 3., 1), 3.)
+        self.assertEqual(runtime.invoke('localArrayFixture', 4., 1), 4.)
+        self.assertEqual(runtime.globals['scratch'], {2: 999.})
+        with self.assertRaisesRegex(ValueError, 'outside native capacity'):
+            runtime.invoke('localArrayFixture', 3., 8192)
+        with self.assertRaisesRegex(ValueError, 'outside native capacity'):
+            runtime.invoke('localArrayFixture', 3., -1)
+
     def test_packaged_recursive_function_is_bounded_and_fail_closed(self):
         script = self.script + '\nfunction runawayFixture takes nothing returns nothing\ncall runawayFixture()\nendfunction\n'
         with self.assertRaisesRegex(ValueError, 'call depth exceeded'):

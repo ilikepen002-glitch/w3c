@@ -1,0 +1,125 @@
+package TDPetActiveDirect
+import TDPetCastContext
+import TDPetActiveRules
+import TDPetActiveVisuals
+import TDPetAttackState
+import TDEnemySlowState
+import TDAuraRules
+
+// Every native/group operation is local to this bounded cast. Geometry chooses
+// targets before visuals; cancelling during damage stops the next segment.
+function TDPetCastContext.circle(vec2 point, real radius, real power, int cap)
+	this.candidates.enumUnitsInRange(point, radius)
+	var hits = 0
+	for target in this.candidates
+		if not this.valid()
+			break
+		if hits < cap and this.aoeValid(target) and point.distanceTo(target.getPos()) <= radius
+			this.hit(target, power)
+			hits += 1
+
+function TDPetCastContext.line(boolean returning)
+	let length = this.skill == 19 ? 650.0 : 600.0
+	let halfWidth = this.skill == 19 ? 90.0 : 110.0
+	this.candidates.enumUnitsInRange(this.origin + this.direction * (length / 2.0), length / 2.0 + halfWidth)
+	// Near-to-far for the outward path, far-to-near for the return. Selection is
+	// deterministic for this set; target count and identity apply across both paths.
+	for _selection = 1 to tdPetElementTargetLimit(this.skill)
+		unit selected = null
+		var distance = returning ? -1.0 : 100000000.0
+		for target in this.candidates
+			if not this.aoeValid(target) or not tdPetLineContains(this.origin, this.direction, target.getPos(), length, halfWidth)
+				continue
+			let previousIndex = this.victimIndex(target)
+			let previous = previousIndex < 0 ? 0 : this.hitCounts[previousIndex]
+			if previous >= (returning ? 2 : 1)
+				continue
+			if previousIndex < 0 and this.victimCount >= tdPetElementTargetLimit(this.skill)
+				continue
+			let delta = target.getPos() - this.origin
+			let forward = delta.x * this.direction.x + delta.y * this.direction.y
+			if selected == null or (returning ? forward > distance : forward < distance)
+				selected = target
+				distance = forward
+		if selected == null or not this.valid()
+			break
+		let index = this.remember(selected)
+		if index < 0
+			break
+		this.hitCounts[index] = returning ? 2 : 1
+		this.hit(selected, this.skill == 19 ? 0.80 : 0.70)
+
+public function TDPetCastContext.stepDirect(real now) returns boolean
+	if this.skill == 19 or this.skill == 28
+		if this.stage == 0
+			this.line(false)
+			this.stage = 1
+		else if this.skill == 28 and this.stage == 1 and now >= this.createdAt + 0.60
+			this.line(true)
+			this.stage = 2
+		return now < this.expiresAt
+	if this.skill == 20
+		if this.stage == 0 and this.primaryValid()
+			this.visualPoint(TD_PET_VFX_ARMOR, this.primary.getPos())
+			this.hitPrimary(1.30)
+			if this.primaryValid()
+				tdPetApplyBladeArmor(this.pet, this.host, this.primary, this castTo int)
+			this.expiresAt = RMaxBJ(this.expiresAt, now + 4.0)
+			this.stage = 1
+		return now < this.expiresAt
+	if this.skill == 23 or this.skill == 27 or this.skill == 35
+		if this.stage == 0
+			this.remember(this.primary)
+			// Control/slow applies before the tagged hit can synchronously kill it.
+			if this.skill == 23
+				this.visualPoint(TD_PET_VFX_ROOT, this.primary.getPos())
+				this.control(this.primary, 1, 0.75)
+			else if this.skill == 27
+				this.slow(this.primary, TD_AURA_PET_COLD, 0.25, 2.0)
+			else
+				this.visualPoint(TD_PET_VFX_ROCK, this.primary.getPos())
+				this.control(this.primary, 3, 0.25)
+			this.hitPrimary(this.skill == 23 ? 0.65 : (this.skill == 27 ? 0.95 : 1.10))
+			this.stage = 1
+		return now < this.expiresAt
+	if this.skill == 32
+		if this.stage == 0
+			this.visualRing(TD_PET_VFX_LOTUS, this.center, 160.0)
+			this.circle(this.center, 230.0, 1.40, 12)
+			this.stage = 1
+		return now < this.expiresAt
+	if this.skill == 36
+		if this.stage == 0
+			this.clearVisuals()
+			let side = vec2(-this.direction.y, this.direction.x)
+			for index = -1 to 1
+				this.addVisual(TD_PET_VFX_FAN, this.origin + this.direction * 350.0 + side * (index * 200.0))
+			this.candidates.enumUnitsInRange(this.origin, 500.0)
+			var hits = 0
+			for target in this.candidates
+				if not this.valid()
+					break
+				if hits < 8 and this.aoeValid(target) and tdPetFanContains(this.origin, this.direction, target.getPos(), 500.0)
+					this.hit(target, 1.30)
+					hits += 1
+			this.stage = 1
+		return now < this.expiresAt
+	if this.skill == 29
+		if this.stage == 0 and now >= this.createdAt + 0.60
+			this.clearVisuals()
+			this.candidates.enumUnitsInRange(this.center, 240.0)
+			for target in this.candidates
+				if not this.valid()
+					break
+				if this.controlCount < 6 and this.aoeValid(target)
+					this.remember(target)
+					this.addVisual(TD_PET_VFX_FREEZE, target.getPos())
+					if this.control(target, 2, 0.60)
+						this.controlCount += 1
+			this.stage = 1
+		if this.stage == 1 and now >= this.createdAt + 0.95
+			this.visualRing(TD_PET_VFX_SHATTER, this.center, 180.0)
+			this.circle(this.center, 240.0, 1.40, 12)
+			this.stage = 2
+		return now < this.expiresAt
+	return false

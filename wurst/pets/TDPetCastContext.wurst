@@ -1,0 +1,209 @@
+package TDPetCastContext
+import TDPetEffectScheduler
+import TDPetEffectTargetState
+import TDPetCombatSource
+import TDPetState
+import TDPetRuntime
+import TDAuraRules
+import TDPetAttackState
+import TDPetData
+import TDPetActiveRules
+import TDPetRouteSnapshot
+import TDEnemySlowState
+import TDEnemyMechanicRuntime
+import TDTrialIdentity
+import TDEquipmentTrialAoe
+import TDConfig
+import TDSpawn
+import TDWaves
+import TDEnemyControlRuntime
+import GameTimer
+import Table
+import Orders
+
+public constant int TD_PET_ROOT_CONTROL_ID = 'Prt0'
+public constant int TD_PET_FREEZE_CONTROL_ID = 'Pfr0'
+public constant int TD_PET_STAGGER_CONTROL_ID = 'Pst0'
+public constant int TD_PET_ROOT_BUFF_ID = 'Bprt'
+public constant int TD_PET_FREEZE_BUFF_ID = 'Bpfr'
+public constant int TD_PET_STAGGER_BUFF_ID = 'Bpst'
+public constant int TD_PET_BOSS_BUFF_ID = 'Bpcc'
+public constant int TD_PET_BOSS_CONTROL_ID = 'Pcc0'
+int visualCount = 0
+public constant int TD_PET_EFFECT_VISUAL_LIMIT = 128
+public constant Table tdPetActiveCastIndex = new Table()
+
+// All retained trial identities are values; no TDTrialBinding object survives a call.
+public abstract class TDPetCastContext extends TDPetEffectTask
+	TDPet pet
+	unit host
+	int generation
+	int skillRevision
+	int skill
+	int quality
+	real damageBase
+	tdTrialCombatContext trial
+	tdEquipmentTrialAoeSnapshot trialTargets
+	unit primary
+	int primaryRevision
+	vec2 origin
+	vec2 center
+	vec2 direction
+	tdPetRoadSnapshot road
+	real createdAt
+	real nextAt
+	real expiresAt
+	int stage = 0
+	int victimCount = 0
+	unit array[12] victims
+	int array[12] revisions
+	int array[12] hitCounts
+	boolean array[12] controlled
+	TDPetEffectTargetPosition array[12] targetPositions
+	real array[12] lastPositionX
+	real array[12] lastPositionY
+	int controlCount = 0
+	int markCount = 0
+	group candidates = CreateGroup()
+	int visualFrame = -1
+	int visualSize = 0
+	effect array[8] visuals
+
+	construct(TDPet pet, unit host, int generation, int skill, int quality, real damageBase, unit primary, int primaryRevision, vec2 center, tdTrialCombatContext trial, tdEquipmentTrialAoeSnapshot trialTargets, vec2 roadSecond, vec2 roadThird, vec2 roadFourth)
+		super(pet castTo int)
+		this.pet = pet
+		this.host = host
+		this.generation = generation
+		skillRevision = pet.revision
+		this.skill = skill
+		this.quality = quality
+		this.damageBase = damageBase
+		this.primary = primary
+		this.primaryRevision = primaryRevision
+		this.center = center
+		this.trial = trial
+		this.trialTargets = trialTargets
+		origin = host.getPos()
+		direction = tdPetDirection(origin, center)
+		createdAt = getElapsedGameTime()
+		nextAt = createdAt
+		expiresAt = createdAt + tdPetElementDuration(skill)
+		// The first captured road point is already the immutable center.
+		road = tdPetRoadSnapshot(center, roadSecond, roadThird, roadFourth)
+
+	function valid() returns boolean
+		return not cancelled and pet.revision == skillRevision and tdTrialContextValid(trial) and tdPetBindingValid(pet, host, generation)
+
+	function targetValid(unit target, int revision) returns boolean
+		return valid() and tdPetEnemyIsValid(target, pet.lane) and tdTrialTargetContextValid(target, pet.lane, trial, revision)
+
+	function primaryValid() returns boolean
+		return targetValid(primary, primaryRevision)
+
+	function aoeValid(unit target) returns boolean
+		return valid() and tdPetAoeVictimValid(target, pet.lane, trial, trialTargets)
+
+	function revisionFor(unit target) returns int
+		let binding = tdTrialBindingFor(target)
+		return binding == null ? 0 : binding.revision
+
+	function victimIndex(unit target) returns int
+		for index = 0 to victimCount - 1
+			if victims[index] == target
+				return index
+		return -1
+
+	function remember(unit target) returns int
+		let found = victimIndex(target)
+		if found >= 0
+			return found
+		if victimCount >= 12
+			return -1
+		let index = victimCount
+		victimCount += 1
+		victims[index] = target
+		revisions[index] = revisionFor(target)
+		setLastPosition(index, target.getPos())
+		targetPositions[index] = tdPetCaptureEffectTarget(target, revisions[index])
+		return index
+
+	// Scalar component arrays avoid the locked compiler's tuple-array IR rewrite.
+	function setLastPosition(int index, vec2 point)
+		lastPositionX[index] = point.x
+		lastPositionY[index] = point.y
+
+	function lastPosition(int index) returns vec2
+		let position = targetPositions[index]
+		return position == null ? vec2(lastPositionX[index], lastPositionY[index]) : position.lastPosition()
+
+	function hit(unit target, real multiplier)
+		if aoeValid(target)
+			tdPetSpellDamage(pet, host, generation, target, damageBase * multiplier)
+
+	function hitPrimary(real multiplier)
+		if primaryValid()
+			tdPetSpellDamage(pet, host, generation, primary, damageBase * multiplier)
+
+	function slow(unit target, int identity, real power, real duration)
+		if not aoeValid(target)
+			return
+		if remember(target) < 0
+			return
+		let boss = tdIsBossUnitTypeId(GetUnitTypeId(target))
+		tdEnemySlowOfferTimed(target, host, identity, 1, power * (boss ? 0.5 : 1.0), duration)
+		if skill == 27
+			expiresAt = RMaxBJ(expiresAt, getElapsedGameTime() + duration)
+
+	function control(unit target, int kind, real duration) returns boolean
+		if not aoeValid(target)
+			return false
+		if remember(target) < 0
+			return false
+		let boss = tdIsBossUnitTypeId(GetUnitTypeId(target))
+		let abilityId = boss ? TD_PET_BOSS_CONTROL_ID : (kind == 1 ? TD_PET_ROOT_CONTROL_ID : (kind == 2 ? TD_PET_FREEZE_CONTROL_ID : TD_PET_STAGGER_CONTROL_ID))
+		let level = boss ? 1 : (duration * 100.0 + 0.5).toInt()
+		let buffId = boss ? TD_PET_BOSS_BUFF_ID : (kind == 1 ? TD_PET_ROOT_BUFF_ID : (kind == 2 ? TD_PET_FREEZE_BUFF_ID : TD_PET_STAGGER_BUFF_ID))
+		let accepted = tdTryEnemyControlToken(host, target, pet.lane, duration, abilityId, level, not boss and kind == 1 ? Orders.entanglingroots : Orders.thunderbolt, this castTo int, buffId)
+		if accepted
+			// Ownership must outlive the native duration measured at actual application,
+			// including the initial scheduler quantum; cancellation can still end it.
+			expiresAt = RMaxBJ(expiresAt, getElapsedGameTime() + (boss ? RMinBJ(0.25, duration) : duration))
+		return accepted
+
+	function clearVisuals()
+		for index = 0 to visualSize - 1
+			DestroyEffect(visuals[index])
+			visuals[index] = null
+			visualCount -= 1
+		visualSize = 0
+
+	function addVisual(string model, vec2 point)
+		if not valid() or visualSize >= 8 or visualCount >= TD_PET_EFFECT_VISUAL_LIMIT
+			return
+		let visual = AddSpecialEffect(model, point.x, point.y)
+		if visual != null
+			visuals[visualSize] = visual
+			visualSize += 1
+			visualCount += 1
+
+	ondestroy
+		if tdPetActiveCastIndex.loadInt(ownerKey) == this castTo int
+			tdPetActiveCastIndex.removeInt(ownerKey)
+		for index = 0 to victimCount - 1
+			let target = victims[index]
+			if skill == 27 or skill == 30 or skill == 37
+				tdEnemySlowRemoveTimed(target, host, skill == 27 ? TD_AURA_PET_COLD : (skill == 30 ? TD_AURA_PET_VORTEX : TD_AURA_PET_SEAL))
+			if skill == 37
+				tdEnemyMechanicRemoveStageWeakening(target, host, this castTo int)
+			tdCancelEnemyControl(target, host, this castTo int)
+			tdPetReleaseEffectTarget(targetPositions[index])
+		if skill == 20
+			tdPetRemoveBladeArmor(primary, host, this castTo int)
+		clearVisuals()
+		candidates.destr()
+		primary = null
+		host = null
+		pet = null
+
+public function tdPetLiveEffectVisualCount() returns int
+	return visualCount

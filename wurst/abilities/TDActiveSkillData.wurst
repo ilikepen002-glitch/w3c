@@ -21,7 +21,7 @@ public constant int TD_ACTIVE_NATIVE_LEVEL_COUNT = 41
 public tuple tdActiveSkillDefinition(int key, int driver, int abilityId, int petSkillId, real baseCooldown, int autocastOnOrder, int autocastOffOrder, int initialAutocastChoice)
 
 public function tdActiveSkillDefinitionCount() returns int
-	return 7
+	return 24
 
 public function tdActiveSkillDefinitionAt(int index) returns tdActiveSkillDefinition
 	if index == 0
@@ -33,11 +33,45 @@ public function tdActiveSkillDefinitionAt(int index) returns tdActiveSkillDefini
 	if index == 3
 		return tdActiveSkillDefinition(TD_ACTIVE_PET_CHARGE, TD_ACTIVE_DRIVER_PET_PROC, 0, 12, 14.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
 	if index == 4
-		return tdActiveSkillDefinition(TD_ACTIVE_PET_CHAIN, TD_ACTIVE_DRIVER_PET_PROC, 0, 13, 10.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+		return tdActiveSkillDefinition(8, TD_ACTIVE_DRIVER_PET_PROC, 0, 19, 10.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
 	if index == 5
-		return tdActiveSkillDefinition(TD_ACTIVE_PET_FIRE, TD_ACTIVE_DRIVER_PET_PROC, 0, 14, 10.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+		return tdActiveSkillDefinition(9, TD_ACTIVE_DRIVER_PET_PROC, 0, 20, 12.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
 	if index == 6
-		return tdActiveSkillDefinition(TD_ACTIVE_PET_WIND, TD_ACTIVE_DRIVER_PET_PROC, 0, 15, 10.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+		return tdActiveSkillDefinition(10, TD_ACTIVE_DRIVER_PET_PROC, 0, 21, 14.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 7
+		return tdActiveSkillDefinition(11, TD_ACTIVE_DRIVER_PET_PROC, 0, 22, 18.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 8
+		return tdActiveSkillDefinition(12, TD_ACTIVE_DRIVER_PET_PROC, 0, 23, 10.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 9
+		return tdActiveSkillDefinition(13, TD_ACTIVE_DRIVER_PET_PROC, 0, 24, 12.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 10
+		return tdActiveSkillDefinition(14, TD_ACTIVE_DRIVER_PET_PROC, 0, 25, 14.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 11
+		return tdActiveSkillDefinition(15, TD_ACTIVE_DRIVER_PET_PROC, 0, 26, 18.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 12
+		return tdActiveSkillDefinition(16, TD_ACTIVE_DRIVER_PET_PROC, 0, 27, 10.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 13
+		return tdActiveSkillDefinition(17, TD_ACTIVE_DRIVER_PET_PROC, 0, 28, 12.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 14
+		return tdActiveSkillDefinition(18, TD_ACTIVE_DRIVER_PET_PROC, 0, 29, 14.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 15
+		return tdActiveSkillDefinition(19, TD_ACTIVE_DRIVER_PET_PROC, 0, 30, 18.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 16
+		return tdActiveSkillDefinition(20, TD_ACTIVE_DRIVER_PET_PROC, 0, 31, 10.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 17
+		return tdActiveSkillDefinition(21, TD_ACTIVE_DRIVER_PET_PROC, 0, 32, 12.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 18
+		return tdActiveSkillDefinition(22, TD_ACTIVE_DRIVER_PET_PROC, 0, 33, 14.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 19
+		return tdActiveSkillDefinition(23, TD_ACTIVE_DRIVER_PET_PROC, 0, 34, 18.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 20
+		return tdActiveSkillDefinition(24, TD_ACTIVE_DRIVER_PET_PROC, 0, 35, 10.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 21
+		return tdActiveSkillDefinition(25, TD_ACTIVE_DRIVER_PET_PROC, 0, 36, 12.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 22
+		return tdActiveSkillDefinition(26, TD_ACTIVE_DRIVER_PET_PROC, 0, 37, 14.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
+	if index == 23
+		return tdActiveSkillDefinition(27, TD_ACTIVE_DRIVER_PET_PROC, 0, 38, 18.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
 	return tdActiveSkillDefinition(0, 0, 0, -1, 0.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
 
 public function tdActiveSkillDefinitionForKey(int key) returns tdActiveSkillDefinition

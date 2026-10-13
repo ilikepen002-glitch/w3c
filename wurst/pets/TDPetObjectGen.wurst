@@ -1,5 +1,6 @@
 package TDPetObjectGen
 import TDPetData
+import TDPetControlObjectGen
 import TDPetUIData
 import TDPetRules
 import TDPetUIState
@@ -107,7 +108,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 	for cell = 0 to 9
 		let anchor = new ChannelAbilityPreset(tdPetListAbilityId(cell, 0, 0, 0), 2, true)
 		let order = anchor.getOrderString()
-		for variant = 0 to 48
+		for variant = 0 to TD_PET_LIST_VARIANTS - 1
 			let species = variant == 0 ? 0 : (variant - 1) div 16 + 1
 			let quality = variant == 0 ? 0 : ((variant - 1) mod 16) div 4 + 1
 			let ownedCount = variant == 0 ? 0 : (variant - 1) mod 4 + 1
@@ -128,12 +129,12 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			description = "选中农民，继续建造。"
 		else if action >= TD_PET_ACTION_REROLL_FIRST and action < TD_PET_ACTION_OPEN
 			cell = tdPetActionCell(TD_PET_UI_CULTIVATE, action)
-			label = "洗练栏" + (action - TD_PET_ACTION_REROLL_FIRST + 1)
+			label = "洗练" + tdPetSlotName(action - TD_PET_ACTION_REROLL_FIRST)
 			description = "消耗1洗练石，随机获得一个新技能，再选择保留旧技能或采用新技能。保留旧技能也会消耗洗练石。|n未解锁的技能也可洗练；空栏须先开栏。"
 		else if action == TD_PET_ACTION_OPEN
 			cell = 8
 			label = "开栏"
-			description = "消耗1开栏石，随机新增1个不重复技能，最多4栏。请先完成当前洗练选择。"
+			description = "消耗1开栏石，随机新增1个不重复被动技能，最多4栏。请先完成当前洗练选择。"
 		else if action == TD_PET_ACTION_RELEASE
 			cell = 11
 			label = "释放精灵…"
@@ -194,8 +195,8 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			let displaySkill = new AbilityDefinitionBladeMasterCriticalStrike(tdPetSlotAbilityId(slot, variant))
 			displaySkill..setName(empty ? "空栏" : tdPetSkillNameById(skill))..setLevels(empty ? 1 : 4)..setIconNormal(tdPetSlotIconPath(variant))..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setRequirements("")..setButtonPositionNormalX(slot)..setButtonPositionNormalY(1)
 			for quality = 1 to (empty ? 1 : 4)
-				let label = empty ? "空栏" : tdPetQualityName(quality) + " " + tdPetSkillNameById(skill) + (locked ? " [共鸣锁定]" : "")
-				let description = empty ? "消耗1开栏石，随机新增1个不重复技能，最多4栏。新增第3/4栏仍需完成本路第4/8波才能生效。" : (locked ? "技能已获得；共鸣锁定，完成本路第" + (slot == 2 ? "4" : "8") + "波解锁。|n" + tdPetSkillDescriptionById(skill, quality) : tdPetSkillDescriptionById(skill, quality))
+				let label = empty ? "空" + tdPetSlotName(slot) : tdPetSlotName(slot) + " · " + tdPetQualityName(quality) + " " + tdPetSkillNameById(skill) + (locked ? " [共鸣锁定]" : "")
+				let description = empty ? "消耗1开栏石，随机新增1个不重复被动技能，最多4栏。新增第3/4栏仍需完成本路第4/8波才能生效。" : (locked ? "技能已获得；共鸣锁定，完成本路第" + (slot == 2 ? "4" : "8") + "波解锁。|n" + tdPetSkillDescriptionById(skill, quality) : tdPetSkillDescriptionById(skill, quality))
 				displaySkill.setTooltipNormal(quality, label)
 				displaySkill.setTooltipNormalExtended(quality, description)
 				displaySkill.setChancetoCriticalStrike(quality, 0.0)
@@ -209,10 +210,10 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 	for level = 1 to 150
 		speed.setAttackSpeedIncrease(level, level / 100.0)
 	let armor = new AbilityDefinitionDefenseBonusPlus1(TD_PET_ARMOR_ID)
-	armor..setLevels(8)..setItemAbility(true)..setCheckDependencies(false)
-	for level = 1 to 8
+	armor..setLevels(10)..setItemAbility(true)..setCheckDependencies(false)
+	for level = 1 to 10
 		armor.setDefenseBonus(level, -level)
-	for species = 1 to 3
+	for species = 1 to TD_PET_SPECIES_COUNT
 		new UnitDefinition(tdPetVisualUnitId(species), 'hpea')..setName(tdPetSpeciesName(species))..setModelFile(tdPetModel(species))..setScalingValue(0.45)..setNormalAbilities("Aloc,Avul")..setAttacksEnabled(0)..setAcquisitionRange(0.0)..setCollisionSize(0.0)..setMovementType(MovementType.None)..setSpeedBase(0)..setFoodCost(0)..setStructuresBuilt("")
 		for quality = 1 to 4
 			displayUnit(tdPetDisplayUnitId(species, quality), "精灵收藏 · " + tdPetQualityName(quality) + " " + tdPetSpeciesName(species), tdPetModel(species), tdPetSpeciesQualityIconPath(species, quality))

@@ -15,6 +15,13 @@ public function tdShieldWindowUntil(real now, boolean boss, real control) return
 
 public class TDShieldWindow
 	real readyAt = 0.0
+	function reserveDuration(real now, boolean boss, real duration) returns real
+		if now < readyAt or duration <= 0.0
+			return -1.0
+		let previous = readyAt
+		readyAt = now + (boss ? RMinBJ(0.25, duration) : duration) + (boss ? tdConfiguredShieldBossProtection() : tdConfiguredShieldNormalProtection()) + tdConfiguredShieldCastMargin()
+		return previous
+
 	function reserve(real now, boolean boss, real control) returns real
 		if now < readyAt
 			return -1.0

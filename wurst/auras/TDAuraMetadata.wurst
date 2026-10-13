@@ -35,6 +35,8 @@ public function tdAuraName(int identity) returns string
 		return "精灵风缚"
 	if identity == TD_AURA_PET_REDUCE
 		return "精灵减击"
+	if identity >= TD_AURA_PET_COLD and identity <= TD_AURA_PET_SEAL
+		return identity == TD_AURA_PET_COLD ? "寒星减速" : (identity == TD_AURA_PET_VORTEX ? "归墟减速" : "镇岳减速")
 	return "未知光环"
 
 public function tdAuraNominalPower(int identity, int rank) returns real
@@ -71,6 +73,8 @@ public function tdAuraNominalPower(int identity, int rank) returns real
 		return 0.0
 	if identity == TD_AURA_PET_STASIS
 		return 0.0
+	if identity >= TD_AURA_PET_COLD and identity <= TD_AURA_PET_SEAL
+		return identity == TD_AURA_PET_SEAL ? 0.15 : 0.25
 	if identity == TD_AURA_PET_REDUCE
 		return 0.30
 	if identity == TD_AURA_PET_FROST_ARROW
