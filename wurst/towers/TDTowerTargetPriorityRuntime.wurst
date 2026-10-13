@@ -1,0 +1,385 @@
+package TDTowerTargetPriorityRuntime
+import TDTowerTargetPriorityRules
+import TDTowerTargetPriorityState
+import TDTowerCatalogData
+import TDInventoryRuntime
+import TDConfig
+import TDState
+import TDSpawn
+import TDEnemyControlRuntime
+import TDTrialIdentity
+import TDWaveFlowState
+import TDPetState
+import ClosureTimers
+import GameTimer
+import RegisterEvents
+import Orders
+
+boolean tdTargetPriorityEventsReady = false
+boolean tdTargetPriorityRecoveryRunning = false
+trigger tdTargetPriorityOrderTrigger = CreateTrigger()
+trigger tdTargetPriorityOwnerTrigger = CreateTrigger()
+
+// Fixed 4 x 6 geometry slots, with no per-enemy state. Real regions only;
+// missing regions are retried on the next selection, not cached as fallbacks.
+int tdTargetPriorityGeometryEpoch = -1
+int array tdTargetPriorityWaypointCounts
+real array tdTargetPriorityWaypointX
+real array tdTargetPriorityWaypointY
+real array tdTargetPrioritySuffix
+real tdTargetPriorityExitMinX = 0.0
+real tdTargetPriorityExitMinY = 0.0
+real tdTargetPriorityExitMaxX = 0.0
+real tdTargetPriorityExitMaxY = 0.0
+
+function tdTargetPriorityPrepareGeometry() returns boolean
+	if tdTargetPriorityGeometryEpoch == tdFlowEpoch()
+		return true
+	if TD_ACTIVE_PLAYER_COUNT > TD_TARGET_PRIORITY_ROUTE_LANE_CAPACITY
+		return false
+	let exitRect = tdLaneExitRect()
+	if exitRect == null
+		return false
+	let minX = GetRectMinX(exitRect)
+	let minY = GetRectMinY(exitRect)
+	let maxX = GetRectMaxX(exitRect)
+	let maxY = GetRectMaxY(exitRect)
+	if not tdTargetPriorityExitBoundsValid(minX, minY, maxX, maxY)
+		return false
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		let count = tdLaneWaypointCount(lane)
+		if count < 0 or count >= TD_TARGET_PRIORITY_ROUTE_STAGE_CAPACITY
+			return false
+		tdTargetPriorityWaypointCounts[lane] = count
+		let base = lane * TD_TARGET_PRIORITY_ROUTE_STAGE_CAPACITY
+		for index = 0 to count - 1
+			let waypointRect = tdLaneWaypointRect(lane, index)
+			if waypointRect == null
+				return false
+			if not tdTargetPriorityExitBoundsValid(GetRectMinX(waypointRect), GetRectMinY(waypointRect), GetRectMaxX(waypointRect), GetRectMaxY(waypointRect))
+				return false
+			let point = tdLaneWaypointPosition(lane, index)
+			tdTargetPriorityWaypointX[base + index] = point.x
+			tdTargetPriorityWaypointY[base + index] = point.y
+		tdTargetPriorityWaypointX[base + count] = (minX + maxX) / 2.0
+		tdTargetPriorityWaypointY[base + count] = (minY + maxY) / 2.0
+		tdTargetPrioritySuffix[base + count] = 0.0
+		var tailIndex = count - 1
+		while tailIndex >= 0
+			let slot = base + tailIndex
+			let point = vec2(tdTargetPriorityWaypointX[slot], tdTargetPriorityWaypointY[slot])
+			if tailIndex == count - 1
+				tdTargetPrioritySuffix[slot] = tdTargetPriorityExitEntryDistance(point.x, point.y, minX, minY, maxX, maxY)
+			else
+				let next = vec2(tdTargetPriorityWaypointX[slot + 1], tdTargetPriorityWaypointY[slot + 1])
+				tdTargetPrioritySuffix[slot] = point.distanceTo(next) + tdTargetPrioritySuffix[slot + 1]
+			tailIndex -= 1
+	tdTargetPriorityExitMinX = minX
+	tdTargetPriorityExitMinY = minY
+	tdTargetPriorityExitMaxX = maxX
+	tdTargetPriorityExitMaxY = maxY
+	tdTargetPriorityGeometryEpoch = tdFlowEpoch()
+	return true
+
+function tdTargetPriorityEnemyEta(unit enemy, int lane, boolean geometryReady) returns real
+	if not geometryReady or tdTrialIsTargetType(enemy) or not tdIsLanePlayer(lane)
+		return -1.0
+	let position = enemy.getPos()
+	if not tdTargetPriorityCoordinateValid(position.x) or not tdTargetPriorityCoordinateValid(position.y)
+		return -1.0
+	// Leak settlement checks the rect even if the enemy is frozen or stopped.
+	if tdTargetPriorityInsideExit(position.x, position.y, tdTargetPriorityExitMinX, tdTargetPriorityExitMinY, tdTargetPriorityExitMaxX, tdTargetPriorityExitMaxY)
+		return 0.0
+	if IsUnitPaused(enemy) or IsUnitType(enemy, UNIT_TYPE_STUNNED) or IsUnitType(enemy, UNIT_TYPE_SNARED) or tdEnemyHasActiveMovementControl(enemy)
+		return -1.0
+	if enemy.getCurrentOrder() != tdEnemyLaneOrderIdForTest()
+		return -1.0
+	// This native already includes the project's sprint and slow composition.
+	let speed = GetUnitMoveSpeed(enemy)
+	if not tdTargetPrioritySpeedValid(speed)
+		return -1.0
+	let index = tdEnemyWaypointIndex(enemy)
+	let count = tdTargetPriorityWaypointCounts[lane]
+	if index < 0 or index > count
+		return -1.0
+	if index == count
+		return tdTargetPriorityDistanceEta(tdTargetPriorityExitEntryDistance(position.x, position.y, tdTargetPriorityExitMinX, tdTargetPriorityExitMinY, tdTargetPriorityExitMaxX, tdTargetPriorityExitMaxY), speed)
+	let slot = lane * TD_TARGET_PRIORITY_ROUTE_STAGE_CAPACITY + index
+	let suffix = tdTargetPrioritySuffix[slot]
+	// Lower bound of this polyline estimate only, not native pathfinding.
+	if suffix > speed * TD_TARGET_PRIORITY_EMERGENCY_SECONDS
+		return -1.0
+	let next = vec2(tdTargetPriorityWaypointX[slot], tdTargetPriorityWaypointY[slot])
+	return tdTargetPriorityDistanceEta(position.distanceTo(next) + suffix, speed)
+
+function tdTargetPrioritySourceValid(TDTowerTargetPriorityState record) returns boolean
+	let source = record.source
+	return source != null and GetUnitTypeId(source) != 0 and source.isAlive() and tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != 0 and GetPlayerId(GetOwningPlayer(source)) == record.owner and record.epoch == tdFlowEpoch() and tdTrialLaneContinues(record.owner)
+
+function tdTargetPriorityGet(unit source) returns TDTowerTargetPriorityState
+	if source == null or GetUnitTypeId(source) == 0 or tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) == 0
+		return null
+	var record = tdTargetPriorityStateFor(source)
+	let owner = GetPlayerId(GetOwningPlayer(source))
+	if record != null
+		if record.owner != owner or record.epoch != tdFlowEpoch()
+			tdTargetPriorityForget(source)
+			record = null
+	if record == null
+		record = tdTargetPriorityCreate(source, owner, tdFlowEpoch())
+	return record
+
+public function tdTargetPriorityTrackTower(unit source)
+	// Lifecycle events may precede the first attack/order. Publish work/cast
+	// exclusion even for a tower that has never selected a target.
+	tdTargetPriorityGet(source)
+
+public function tdTargetPriorityTargetValid(unit source, unit target, int lane, real range) returns boolean
+	if source == null or target == null or GetUnitTypeId(target) == 0 or not target.isAlive()
+		return false
+	if GetOwningPlayer(target) != Player(TD_ENEMY_PLAYER_ID) or not IsUnitEnemy(target, GetOwningPlayer(source)) or tdEnemyLaneId(target) != lane
+		return false
+	if IsUnitHidden(target) or not IsUnitVisible(target, GetOwningPlayer(source)) or IsUnitType(target, UNIT_TYPE_MECHANICAL) or IsUnitType(target, UNIT_TYPE_STRUCTURE)
+		return false
+	if not IsUnitType(target, UNIT_TYPE_GROUND) and not IsUnitType(target, UNIT_TYPE_FLYING)
+		return false
+	if source.getPos().distanceTo(target.getPos()) > range + 0.405
+		return false
+	if tdTrialIsTargetType(target)
+		return tdTrialTargetValid(target, lane)
+	return tdEnemyBelongsToCurrentMatch(target) and not tdEnemyWasLeaked(target)
+
+function tdTargetPriorityManualValid(TDTowerTargetPriorityState record, real range) returns boolean
+	if not tdTargetPriorityTargetValid(record.source, record.manualTarget, record.owner, range)
+		return false
+	let context = tdTrialCombatContext(record.manualEpoch, record.manualGeneration, record.manualToken, record.manualTrial)
+	if not record.manualTrial
+		return record.manualEpoch == tdFlowEpoch() and not tdTrialIsTargetType(record.manualTarget)
+	return tdTrialTargetContextValid(record.manualTarget, record.owner, context, record.manualRevision)
+
+function tdTargetPriorityAutomaticAllowed(TDTowerTargetPriorityState record) returns boolean
+	if record.working or record.casting or record.playerHold or tdPetBusyTowers.hasBoolean(record.sourceKey)
+		return false
+	let orderId = record.source.getCurrentOrder()
+	return orderId == 0 or orderId == Orders.attack or orderId == Orders.smart
+
+function tdTargetPriorityBest(TDTowerTargetPriorityState record, unit currentTarget, real range) returns unit
+	var best = currentTarget
+	let keepCurrent = tdTargetPriorityTargetValid(record.source, best, record.owner, range)
+	if not keepCurrent
+		best = null
+	let policy = tdTargetPriorityPolicy(tdTowerChoiceForUnitTypeId(GetUnitTypeId(record.source)))
+	var bestHp = best == null ? 0.0 : best.getLife()
+	var bestRank = best == null ? 0 : tdTargetPriorityRank(GetUnitTypeId(best))
+	var bestKey = best == null ? 0 : best.getHandleId()
+	let geometryReady = tdTargetPriorityPrepareGeometry()
+	let currentEta = best == null ? -1.0 : tdTargetPriorityEnemyEta(best, record.owner, geometryReady)
+	var bestEta = currentEta
+	let nearby = CreateGroup()
+	nearby.enumUnitsInRange(record.source.getPos(), range + 0.405)
+	for candidate in nearby
+		if not tdTargetPriorityTargetValid(record.source, candidate, record.owner, range)
+			continue
+		let hp = candidate.getLife()
+		let rank = tdTargetPriorityRank(GetUnitTypeId(candidate))
+		let key = candidate.getHandleId()
+		let eta = candidate == currentTarget and keepCurrent ? currentEta : tdTargetPriorityEnemyEta(candidate, record.owner, geometryReady)
+		if best == null or tdTargetPriorityEmergencyReplace(policy, hp, rank, key, eta, bestHp, bestRank, bestKey, bestEta, keepCurrent and best == currentTarget)
+			best = candidate
+			bestHp = hp
+			bestRank = rank
+			bestKey = key
+			bestEta = eta
+	nearby.destr()
+	return best
+
+// Pending is published before the native call, and checked by unique record
+// identity afterwards. A synchronous accepted ATTACKED can never make the outer
+// cancelled branch register a second volley, even if native returns false.
+function tdTargetPriorityRedirect(TDTowerTargetPriorityState record, unit candidate) returns boolean
+	let source = record.source
+	let serial = record.serial
+	let intent = record.intentRevision
+	let redirect = record.beginRedirect(candidate)
+	let previousOrder = record.scriptOrderId
+	let previousTarget = record.scriptOrderTarget
+	record.scriptOrderDepth += 1
+	record.scriptOrderId = Orders.attack
+	record.scriptOrderTarget = candidate
+	let issued = IssueTargetOrderById(source, Orders.attack, candidate)
+	let current = tdTargetPriorityStateFor(source)
+	if current == null or current.serial != serial
+		return true
+	current.scriptOrderDepth -= 1
+	current.scriptOrderId = previousOrder
+	current.scriptOrderTarget = previousTarget
+	if current.intentRevision != intent
+		return true
+	if issued or current.observedRedirectSerial == redirect
+		return true
+	if current.redirectSerial == redirect and current.hasPending()
+		current.cancelPending()
+	return false
+
+function tdTargetPriorityPark(TDTowerTargetPriorityState record)
+	if record.parked or record.manualTarget != null or not tdTargetPriorityAutomaticAllowed(record)
+		return
+	let source = record.source
+	let serial = record.serial
+	let intent = record.intentRevision
+	record.cancelPending()
+	record.parked = true
+	record.lastRecoveryQuery = getElapsedGameTime()
+	tdTargetPriorityParked.add(record)
+	SetUnitAcquireRange(source, 0.0)
+	let previousOrder = record.scriptOrderId
+	let previousTarget = record.scriptOrderTarget
+	record.scriptOrderDepth += 1
+	record.scriptOrderId = Orders.stop
+	record.scriptOrderTarget = null
+	IssueImmediateOrderById(source, Orders.stop)
+	let current = tdTargetPriorityStateFor(source)
+	if current == null or current.serial != serial
+		return
+	current.scriptOrderDepth -= 1
+	current.scriptOrderId = previousOrder
+	current.scriptOrderTarget = previousTarget
+	if current.intentRevision == intent
+		tdTargetPriorityStartRecovery()
+
+public function tdTargetPriorityAcceptAttack(unit source, unit target) returns boolean
+	let record = tdTargetPriorityGet(source)
+	if record == null
+		return true
+	if not tdTargetPrioritySourceValid(record)
+		tdTargetPriorityForget(source)
+		return false
+	if record.working or record.casting or tdPetBusyTowers.hasBoolean(record.sourceKey)
+		return false
+	let range = tdTowerEffectiveRangeForTower(source)
+	let valid = tdTargetPriorityTargetValid(source, target, record.owner, range)
+	// Confirm once without another HP query. Both synchronous and delayed native
+	// events take this path; a different legal native target is accepted for progress.
+	if record.consumePending()
+		if valid
+			return true
+		if not tdTargetPriorityManualValid(record, range)
+			record.manualTarget = null
+		tdTargetPriorityPark(record)
+		return false
+	if record.manualTarget != null
+		if tdTargetPriorityManualValid(record, range)
+			if target == record.manualTarget
+				return true
+			if tdTargetPriorityRedirect(record, record.manualTarget)
+				return false
+			return valid
+		record.manualTarget = null
+	if not tdTargetPriorityAutomaticAllowed(record)
+		return valid
+	if record.parked
+		return false
+	let best = tdTargetPriorityBest(record, target, range)
+	if best == target and valid
+		return true
+	if best != null
+		if tdTargetPriorityRedirect(record, best)
+			return false
+		return valid
+	tdTargetPriorityPark(record)
+	return false
+
+function tdTargetPriorityRecoveryTick()
+	let now = getElapsedGameTime()
+	let count = IMinBJ(TD_TARGET_PRIORITY_RECOVERY_BUDGET, tdTargetPriorityParked.size())
+	// Remove and append before any native call. No iterator survives callbacks;
+	// each tick visits at most four sources, including not-yet-due sources.
+	for i = 1 to count
+		if tdTargetPriorityParked.isEmpty()
+			break
+		let record = tdTargetPriorityParked.get(0)
+		tdTargetPriorityParked.remove(record)
+		if not tdTargetPrioritySourceValid(record)
+			tdTargetPriorityForget(record.source)
+			continue
+		tdTargetPriorityParked.add(record)
+		if not tdTargetPriorityRecoveryDue(now, record.lastRecoveryQuery)
+			continue
+		if record.working or record.casting or record.playerHold or record.manualTarget != null
+			continue
+		record.lastRecoveryQuery = now
+		let range = tdTowerEffectiveRangeForTower(record.source)
+		let best = tdTargetPriorityBest(record, null, range)
+		if best == null
+			continue
+		let source = record.source
+		tdTargetPriorityUnpark(record)
+		SetUnitAcquireRange(source, range)
+		if not tdTargetPriorityRedirect(record, best)
+			// Failed native orders are retried only after the recovery budget delay.
+			let current = tdTargetPriorityStateFor(source)
+			if current != null and tdTargetPrioritySourceValid(current)
+				current.cancelPending()
+				current.parked = true
+				current.lastRecoveryQuery = now
+				tdTargetPriorityParked.add(current)
+				SetUnitAcquireRange(source, 0.0)
+
+function tdTargetPriorityStartRecovery()
+	if tdTargetPriorityRecoveryRunning or tdTargetPriorityParked.isEmpty()
+		return
+	tdTargetPriorityRecoveryRunning = true
+	doPeriodically(TD_TARGET_PRIORITY_RECOVERY_TICK) cb ->
+		tdTargetPriorityRecoveryTick()
+		if tdTargetPriorityParked.isEmpty()
+			tdTargetPriorityRecoveryRunning = false
+			destroy cb
+
+function tdTargetPriorityHandleOrder()
+	let source = GetTriggerUnit()
+	let record = tdTargetPriorityGet(source)
+	if record == null
+		return
+	let orderId = GetIssuedOrderId()
+	let target = GetOrderTargetUnit()
+	if record.scriptOrderDepth > 0 and orderId == record.scriptOrderId and target == record.scriptOrderTarget
+		return
+	// Native bloodlust mode toggles, including initialization, do not replace an
+	// attack intent. These are the existing project's two autocast order IDs.
+	if orderId == Orders.bloodluston or orderId == Orders.bloodlustoff
+		return
+	record.newIntent()
+	tdTargetPriorityUnpark(record)
+	let range = tdTowerEffectiveRangeForTower(source)
+	SetUnitAcquireRange(source, range)
+	record.playerHold = orderId == Orders.stop or orderId == Orders.holdposition
+	if orderId == Orders.attack or orderId == Orders.smart
+		if not tdTargetPriorityTargetValid(source, target, record.owner, range)
+			return
+		record.manualTarget = target
+		let context = tdTrialCaptureContext(target)
+		record.manualEpoch = context.epoch
+		record.manualGeneration = context.generation
+		record.manualToken = context.token
+		record.manualTrial = context.fromTrial
+		let binding = tdTrialBindingFor(target)
+		record.manualRevision = binding == null ? 0 : binding.revision
+
+function tdTargetPriorityHandleOwnerChanged()
+	let source = GetTriggerUnit()
+	if tdTargetPriorityStateFor(source) == null
+		return
+	tdTargetPriorityForget(source)
+	if tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != 0
+		SetUnitAcquireRange(source, tdTowerEffectiveRangeForTower(source))
+
+public function tdSetupTargetPriorityOrders()
+	if tdTargetPriorityEventsReady
+		return
+	tdTargetPriorityEventsReady = true
+	tdTargetPriorityOrderTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_ISSUED_ORDER)
+	tdTargetPriorityOrderTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER)
+	tdTargetPriorityOrderTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
+	tdTargetPriorityOrderTrigger.addAction(function tdTargetPriorityHandleOrder)
+	tdTargetPriorityOwnerTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CHANGE_OWNER)
+	tdTargetPriorityOwnerTrigger.addAction(function tdTargetPriorityHandleOwnerChanged)

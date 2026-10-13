@@ -1,0 +1,128 @@
+package TDTowerTargetPriorityTests
+import TDTowerTargetPriorityRules
+import TDTowerTargetPriorityState
+import TDTowerCatalogData
+import TDConfig
+import TDWaves
+import TDTrialRules
+
+@Test function targetPriorityCoversAll35TowerTypesAndBothUltimateBranches()
+	var uniqueTypes = 0
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		for level = 1 to TD_MAX_TOWER_LEVEL
+			let typeId = tdTowerUnitIdForLevel(choice, level)
+			let policy = choice == TD_TOWER_CHOICE_ARCHER or choice == TD_TOWER_CHOICE_DRYAD ? TD_TARGET_PRIORITY_HP : TD_TARGET_PRIORITY_RANK
+			tdTargetPriorityPolicy(tdTowerChoiceForUnitTypeId(typeId)).assertEquals(policy)
+			uniqueTypes += 1
+		let ultimateB = tdTowerUnitIdForLevelBranch(choice, TD_MAX_TOWER_LEVEL, TD_TOWER_BRANCH_B)
+		tdTargetPriorityPolicy(tdTowerChoiceForUnitTypeId(ultimateB)).assertEquals(tdTargetPriorityPolicy(choice))
+		uniqueTypes += 1
+	uniqueTypes.assertEquals(35)
+	tdTargetPriorityPolicy(0).assertEquals(0)
+
+@Test function rangedPriorityReadsAbsoluteHpWithoutBossOrPercentOverride()
+	tdTargetPriorityStrictlyBetter(TD_TARGET_PRIORITY_HP, 90.0, 0, 100.0, 2).assertTrue()
+	tdTargetPriorityStrictlyBetter(TD_TARGET_PRIORITY_HP, 100.0, 2, 90.0, 0).assertFalse()
+	tdTargetPriorityStrictlyBetter(TD_TARGET_PRIORITY_HP, 90.0, 2, 90.0, 0).assertFalse()
+	tdTargetPriorityStrictlyBetter(TD_TARGET_PRIORITY_HP, 0.406, 0, 0.407, 2).assertTrue()
+
+@Test function meleePriorityPromotesBossThenGuardWithoutLowHpTieBreak()
+	for wave = 1 to tdWaveCount()
+		if tdIsBossUnitTypeId(tdWaveSpecialUnitId(wave))
+			tdTargetPriorityRank(tdWaveSpecialUnitId(wave)).assertEquals(2)
+			tdTargetPriorityRank(tdWaveBossGuardUnitId(wave)).assertEquals(1)
+		if tdIsEliteUnitTypeId(tdWaveSpecialUnitId(wave))
+			tdTargetPriorityRank(tdWaveSpecialUnitId(wave)).assertEquals(0)
+	tdTargetPriorityRank(TD_TRIAL_TARGET_UNIT_ID).assertEquals(0)
+	tdTargetPriorityStrictlyBetter(TD_TARGET_PRIORITY_RANK, 10000.0, 2, 1.0, 1).assertTrue()
+	tdTargetPriorityStrictlyBetter(TD_TARGET_PRIORITY_RANK, 10000.0, 1, 1.0, 0).assertTrue()
+	tdTargetPriorityStrictlyBetter(TD_TARGET_PRIORITY_RANK, 1.0, 1, 10000.0, 1).assertFalse()
+
+@Test function equalPriorityKeepsCurrentAndUsesStableHandleOnlyWithoutCurrent()
+	for policy = TD_TARGET_PRIORITY_HP to TD_TARGET_PRIORITY_RANK
+		tdTargetPriorityReplace(policy, 10.0, 1, 5, 10.0, 1, 10, true).assertFalse()
+		tdTargetPriorityReplace(policy, 10.0, 1, 5, 10.0, 1, 10, false).assertTrue()
+		tdTargetPriorityReplace(policy, 10.0, 1, 15, 10.0, 1, 10, false).assertFalse()
+
+@Test function pendingRedirectConfirmsExactlyOnceEvenWithNullSyntheticTarget()
+	let state = new TDTowerTargetPriorityState(null, 100, 0, 1)
+	state.hasPending().assertFalse()
+	let redirect = state.beginRedirect(null)
+	state.hasPending().assertTrue()
+	state.consumePending().assertTrue()
+	state.observedRedirectSerial.assertEquals(redirect)
+	state.consumePending().assertFalse()
+	state.hasPending().assertFalse()
+	destroy state
+
+@Test function newPlayerIntentCancelsPendingBeforeDelayedAttack()
+	let state = new TDTowerTargetPriorityState(null, 100, 0, 1)
+	let old = state.beginRedirect(null)
+	state.newIntent()
+	state.intentRevision.assertEquals(1)
+	state.consumePending().assertFalse()
+	let current = state.beginRedirect(null)
+	(current > old).assertTrue()
+	state.consumePending().assertTrue()
+	state.observedRedirectSerial.assertEquals(current)
+	destroy state
+
+@Test function sameSourceAndReusedClassReceiveDistinctSerials()
+	let old = new TDTowerTargetPriorityState(null, 100, 0, 1)
+	let serial = old.serial
+	destroy old
+	let newer = new TDTowerTargetPriorityState(null, 100, 0, 1)
+	(newer.serial > serial).assertTrue()
+	destroy newer
+
+@Test function recoveryHasHardBudgetAndHalfSecondPerSourceMinimum()
+	TD_TARGET_PRIORITY_RECOVERY_BUDGET.assertEquals(4)
+	TD_TARGET_PRIORITY_RECOVERY_TICK.assertEquals(0.10)
+	tdTargetPriorityRecoveryDue(1.49, 1.0).assertFalse()
+	tdTargetPriorityRecoveryDue(1.50, 1.0).assertTrue()
+	tdTargetPriorityRecoveryDue(1.60, 1.0).assertTrue()
+
+@Test function emergencyWindowOverridesBaseOnlyAtThreeSecondsOrLess()
+	tdTargetPriorityUrgent(2.999).assertTrue()
+	tdTargetPriorityUrgent(3.0).assertTrue()
+	tdTargetPriorityUrgent(3.001).assertFalse()
+	tdTargetPriorityUrgent(-1.0).assertFalse()
+	// A leaking ordinary can override a nonurgent Boss or a lower-HP target.
+	for policy = TD_TARGET_PRIORITY_HP to TD_TARGET_PRIORITY_RANK
+		tdTargetPriorityEmergencyReplace(policy, 1000.0, 0, 20, 3.0, 1.0, 2, 10, 3.001, true).assertTrue()
+		tdTargetPriorityEmergencyReplace(policy, 1.0, 2, 10, 3.001, 1000.0, 0, 20, 3.0, false).assertFalse()
+		tdTargetPriorityEmergencyReplace(policy, 1000.0, 0, 20, 1.0, 1.0, 2, 10, 2.0, true).assertTrue()
+		tdTargetPriorityEmergencyReplace(policy, 1.0, 2, 5, 2.0, 1000.0, 0, 20, 2.0, true).assertFalse()
+
+@Test function equalEmergencyWithoutCurrentFallsBackToFamilyThenStableHandle()
+	tdTargetPriorityEmergencyReplace(TD_TARGET_PRIORITY_HP, 9.0, 0, 20, 2.0, 10.0, 2, 10, 2.0, false).assertTrue()
+	tdTargetPriorityEmergencyReplace(TD_TARGET_PRIORITY_RANK, 1000.0, 2, 20, 2.0, 1.0, 1, 10, 2.0, false).assertTrue()
+	tdTargetPriorityEmergencyReplace(TD_TARGET_PRIORITY_HP, 10.0, 0, 5, 2.0, 10.0, 2, 10, 2.0, false).assertTrue()
+	// Nonurgent ETA values never become a permanent progress sort.
+	tdTargetPriorityEmergencyReplace(TD_TARGET_PRIORITY_HP, 11.0, 2, 5, 3.001, 10.0, 0, 20, 20.0, false).assertFalse()
+	tdTargetPriorityEmergencyReplace(TD_TARGET_PRIORITY_RANK, 1.0, 0, 5, 3.001, 1000.0, 2, 20, -1.0, false).assertFalse()
+
+@Test function exitEntryGeometryUsesClosedBoundsWithParallelAxesAndCorners()
+	tdTargetPriorityExitEntryDistance(-10.0, 0.0, -5.0, -5.0, 5.0, 5.0).assertEquals(5.0)
+	tdTargetPriorityExitEntryDistance(0.0, 10.0, -5.0, -5.0, 5.0, 5.0).assertEquals(5.0)
+	tdTargetPriorityExitEntryDistance(10.0, 10.0, -5.0, -5.0, 5.0, 5.0).assertEquals(SquareRoot(50.0), 0.00001)
+	tdTargetPriorityExitEntryDistance(5.0, -5.0, -5.0, -5.0, 5.0, 5.0).assertEquals(0.0)
+	tdTargetPriorityExitEntryDistance(0.0, 0.0, -5.0, -5.0, 5.0, 5.0).assertEquals(0.0)
+	tdTargetPriorityExitEntryDistance(10.0, 0.0, 5.0, -5.0, -5.0, 5.0).assertEquals(-1.0)
+
+@Test function actualExitBoundaryChangesTheThreeSecondDecision()
+	let entry = tdTargetPriorityExitEntryDistance(-1136.0, 304.0, -384.0, -448.0, 352.0, 64.0)
+	tdTargetPriorityUrgent(tdTargetPriorityDistanceEta(entry, 300.0)).assertTrue()
+	// Same segment to the center would wrongly miss this urgent target.
+	tdTargetPriorityUrgent(vec2(-1136.0, 304.0).distanceTo(vec2(-16.0, -192.0)) / 300.0).assertFalse()
+	(entry > 800.0 and entry < 850.0).assertTrue()
+
+@Test function invalidSpeedAndDistanceFailClosedWithoutDivisionOrClamping()
+	tdTargetPriorityDistanceEta(900.0, 300.0).assertEquals(3.0)
+	tdTargetPriorityDistanceEta(450.0, 150.0).assertEquals(3.0)
+	tdTargetPriorityDistanceEta(900.0, 0.0).assertEquals(-1.0)
+	tdTargetPriorityDistanceEta(900.0, -1.0).assertEquals(-1.0)
+	tdTargetPriorityDistanceEta(900.0, 10001.0).assertEquals(-1.0)
+	tdTargetPriorityDistanceEta(-1.0, 300.0).assertEquals(-1.0)
+	TD_TARGET_PRIORITY_ROUTE_STAGE_CAPACITY.assertEquals(6)
+	TD_TARGET_PRIORITY_ROUTE_LANE_CAPACITY.assertEquals(4)

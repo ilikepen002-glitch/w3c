@@ -62,21 +62,37 @@ def source_check():
     old_body = function_body(before, 'tdTowerEffectiveRangeForLoadout')[1]
     current_body = '\n'.join('\t' + line for line in current_body.splitlines())
     old_body = '\n'.join('\t' + line for line in old_body.splitlines())
-    require(text.replace(current_body, old_body, 1) == before, 'Range change modified another inventory rule')
+    normalized = text.replace(current_body, old_body, 1)
+    projected = 'tdTargetPriorityProjectedAcquireRange(tower, tdTowerEffectiveRangeForLoadout('
+    if projected in normalized:
+        # The reviewed targeting state may project parked acquisition to zero;
+        # exact normalization allows only that wrapper and its low-layer import.
+        require(normalized.count(projected) == 1, 'Multiple acquisition projections')
+        line = next(line for line in normalized.splitlines() if projected in line)
+        require(line.endswith('item1, item2, item3)))'), 'Unknown acquisition projection shape')
+        plain = line.replace(projected, 'tdTowerEffectiveRangeForLoadout(', 1)[:-1]
+        normalized = normalized.replace(line, plain, 1).replace('import TDTowerTargetPriorityState\n', '', 1)
+    require(normalized == before, 'Range change modified another inventory rule')
     require('tdTowerEffectiveRangeForLoadout(towerChoice, level, branch, item1, item2, item3)' in text, 'Tower query bypasses central rule')
-    require('SetUnitAcquireRange(tower, tdTowerEffectiveRangeForLoadout(' in text, 'Acquire range bypasses central rule')
+    require('SetUnitAcquireRange(tower, tdTowerEffectiveRangeForLoadout(' in text or
+            'SetUnitAcquireRange(tower, ' + projected in text, 'Acquire range bypasses central rule')
     runtime = (ROOT / 'wurst/towers/TDTowerRuntime.wurst').read_text()
     require('let diameter = tdTowerEffectiveRangeForTower(tower) * 2.0' in runtime and 'let searchRange = tdTowerEffectiveRangeForTower(source)' in runtime, 'Indicator/targeting bypasses central rule')
     require(runtime.count('tdRefreshTowerEquipmentBonuses(tower)') >= 3, 'Construct/upgrade paths lost equipment refresh')
     require('tdRefreshTowerEquipmentBonuses(tower)' in (ROOT / 'wurst/towers/TDTowerEvolutionRuntime.wurst').read_text(), 'Evolution path lost equipment refresh')
     require('tdRefreshTowerEquipmentBonuses(tower)' in (ROOT / 'wurst/pets/TDPetCombat.wurst').read_text(), 'Spirit refresh path lost equipment refresh')
-    print('PASS RANGE SOURCE: all 35 tower identities × 7 loadouts; ARCHER/DRYAD only; other inventory code byte-identical')
+    print('PASS RANGE SOURCE: all 35 tower identities × 7 loadouts; ARCHER/DRYAD only; exact parked-projection allowance; other inventory code byte-identical')
     return evaluator
 
 
 def replay(script, evaluator):
     from VerifyPetFourSlotArtifact import FourSlotRuntime
-    r = FourSlotRuntime(script)
+    priority = 'function tdTargetPriorityAcceptAttack takes ' in script
+    if priority:
+        from VerifyTowerTargetPriorityArtifact import TowerTargetRuntime
+        r = TowerTargetRuntime(script)
+    else:
+        r = FourSlotRuntime(script)
     ids = gear_ids()
     ranged = {evaluator.constant('TD_TOWER_CHOICE_ARCHER'), evaluator.constant('TD_TOWER_CHOICE_DRYAD')}
     methods = [name for name, (params, _) in r.functions.items() if name.startswith('tdRefreshTowerEquipmentBonuses') and len([x for x in params if x != 'w__wurst_stackPos']) == 1]
@@ -102,6 +118,17 @@ def replay(script, evaluator):
             expected_attack = r.invoke('tdTowerAttackBonusAbilityLevel', r.invoke('tdEquipmentAttackBonusForItems', *items))
             expected_speed = min(evaluator.constant('TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL'), max(0, int(r.invoke('tdEquipmentAttackSpeedBonusForItems', *items) * 100. + .5)))
             require(r.units[101]['abilities'].get(attack_ability, 0) == expected_attack and r.units[101]['abilities'].get(speed_ability, 0) == expected_speed, 'Range filtering removed another item attribute')
+            if priority:
+                record = r.invoke('tdTargetPriorityGet', 101)
+                r.globals['TDTowerTargetPriorityState_parked'][record] = True
+                r.invoke(refresh, 101)
+                require(r.units[101]['acquireRange'] == 0. and
+                        r.invoke('tdTowerEffectiveRangeForTower', 101) == expected,
+                        'Parked acquisition bypassed projection or lost current effective range')
+                r.globals['TDTowerTargetPriorityState_parked'][record] = False
+                r.invoke(refresh, 101)
+                require(r.units[101]['acquireRange'] == expected,
+                        'Unparked acquisition failed to recompute current equipment range')
     require(r.invoke('tdEquipmentAttackBonusForItems', ids[1], 0, 0) == 40. and r.invoke('tdEquipmentAttackBonusForItems', ids[2], 0, 0) == 80., 'Scope secondary attack changed')
     require(r.invoke('tdEquipmentAttackSpeedBonusForItems', ids[3], 0, 0) == .24, 'Scope secondary speed changed')
     print('PASS RANGE REPLAY: 245 real loadout/inventory/refresh cases, acquisition + other item attributes; identity changes recompute from current family')

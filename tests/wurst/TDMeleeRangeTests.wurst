@@ -1,0 +1,20 @@
+package TDMeleeRangeTests
+import TDTowers
+import TDConfig
+import TDInventoryRuntime
+
+@Test function allTwentyOneMeleeFormsCoverNearbyPlateauCorners()
+	var nodes = 0
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		if choice != TD_TOWER_CHOICE_ARCHER and choice != TD_TOWER_CHOICE_DRYAD
+			for level = 1 to TD_MAX_TOWER_LEVEL
+				let branches = level == TD_MAX_TOWER_LEVEL ? 2 : 1
+				for branch = TD_TOWER_BRANCH_A to branches
+					nodes += 1
+					let expected = choice == TD_TOWER_CHOICE_ORC and level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_B ? 780 : 720
+					tdTowerBaseRangeForBranch(choice, level, branch).assertEquals(expected)
+					tdTowerAcquisitionRangeForBranch(choice, level, branch).assertEquals(expected.toReal())
+					tdTowerRangeIndicatorDiameterForBranch(choice, level, branch).assertEquals(expected * 2.0)
+					tdTowerObjectAttackRangeForBranch(choice, level, branch).assertEquals(expected + 500)
+					tdTowerEffectiveRangeForLoadout(choice, level, branch, 0, 0, 0).assertEquals(expected.toReal())
+	nodes.assertEquals(21)

@@ -23,6 +23,7 @@ TEST_DIR = ROOT / 'tests/python'
 CLASS_GROUPS = {
     'source': '''
         test_resource_retirement.ResourceRetirementTests
+        test_tower_target_priority_artifact.TowerTargetPrioritySourceTests
         test_tower_pet_detail_source.TowerPetDetailTests
         test_background_music_source.BackgroundMusicSourceTests
         test_combined_visual_text_artifact.CombinedSourceTextTests
@@ -115,6 +116,7 @@ CLASS_GROUPS = {
         test_wurst_linux.JavaProbeTests
     '''.split(),
     'map': '''
+        test_tower_target_priority_artifact.TowerTargetPriorityPackedTests
         test_pet_attack_phase_one.FinalPetAttackArtifactTests
         test_aura_target_artifact.AuraTargetArtifactTests
         test_combined_visual_text_artifact.ActualCombinedFieldTests

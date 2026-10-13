@@ -15,6 +15,8 @@ import MapBounds
 import Fx
 import LinkedList
 import TDTowerSaleState
+import TDTowerTargetPriorityState
+import TDTowerTargetPriorityRuntime
 import TDPetState
 import TDPetCombat
 import TDPetHeroRuntime
@@ -83,6 +85,9 @@ function tdHandleTowerSellCast() returns boolean
 	let state = tdGetTowerSaleState(tower)
 	if not state.beginSale()
 		return false
+	// Block nested attack starts during inventory/drop callbacks before RemoveUnit.
+	tdTargetPriorityTrackTower(tower)
+	tdTargetPriorityWorkStarted(tower)
 	let refund = tdTowerSellRefund(GetUnitTypeId(tower))
 	let position = tower.getPos()
 	for slot = 0 to 5
@@ -101,6 +106,7 @@ function tdHandleTowerSellCast() returns boolean
 	tdForgetEquipmentAbilities(tower)
 	tdDarkTideForgetTower(tower)
 	tdForgetBloodlustAutocast(tower)
+	tdTargetPriorityForget(tower)
 	tower.remove()
 	tdGainGold(playerId, refund)
 	tdRefreshHud()
@@ -114,6 +120,8 @@ function tdHandleTowerUpgradeStarted()
 		tdDarkTideForgetTower(tower)
 		tdForgetEquipmentSpecial(tower)
 		tdGetTowerSaleState(tower).startWork()
+		tdTargetPriorityTrackTower(tower)
+		tdTargetPriorityWorkStarted(tower)
 		tdCombatVisualSuspendGear(tower)
 		tdEvolutionWorkStarted(tower)
 		tdPetHeroTowerInvalidated(tower)
@@ -258,6 +266,7 @@ function tdRejectTowerConstruction(unit tower, int playerId, int towerChoice, st
 	tdForgetEquipmentAbilities(tower)
 	tdDarkTideForgetTower(tower)
 	tdForgetBloodlustAutocast(tower)
+	tdTargetPriorityForget(tower)
 	tower.remove()
 	tdGainGold(playerId, tdTowerCost(towerChoice))
 	// The engine still updates food after CONSTRUCT_START returns.
@@ -353,6 +362,8 @@ function tdHandleTowerConstructionStarted()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	tdGetTowerSaleState(tower).startWork()
+	tdTargetPriorityTrackTower(tower)
+	tdTargetPriorityWorkStarted(tower)
 	tdCombatVisualSuspendGear(tower)
 	tdEvolutionWorkStarted(tower)
 	tdPetHeroTowerInvalidated(tower)
@@ -364,6 +375,8 @@ function tdHandleTowerConstructionFinished()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	tdGetTowerSaleState(tower).finishWork()
+	tdTargetPriorityTrackTower(tower)
+	tdTargetPriorityWorkFinished(tower)
 	tdCombatVisualResumeGear(tower)
 	tdPetTowerWorkFinished(tower)
 	tdEvolutionWorkFinished(tower)
@@ -391,6 +404,7 @@ function tdHandleTowerConstructionCancelled()
 	tdForgetEquipmentAbilities(tower)
 	tdDarkTideForgetTower(tower)
 	tdForgetBloodlustAutocast(tower)
+	tdTargetPriorityForget(tower)
 	tdClearTowerRangeIndicatorsForTower(tower)
 	doAfter(0.0) ->
 		tdAlignPlayerTowerPopulation(playerId)
@@ -411,6 +425,8 @@ function tdHandleTowerUpgradeCancelled()
 		let state = tdTowerSaleStates.loadInt(key) castTo TDTowerSaleState
 		if not state.finishWorkForGeneration(cancelledGeneration)
 			return
+		tdTargetPriorityTrackTower(tower)
+		tdTargetPriorityWorkFinished(tower)
 		tdCombatVisualResumeGear(tower)
 		tdPetTowerWorkFinished(tower)
 		tdEvolutionWorkFinished(tower)
@@ -428,6 +444,8 @@ function tdHandleTowerUpgradeFinished()
 		return
 	tdForgetEquipmentSpecial(tower)
 	tdGetTowerSaleState(tower).finishWork()
+	tdTargetPriorityTrackTower(tower)
+	tdTargetPriorityWorkFinished(tower)
 	tdCombatVisualResumeGear(tower)
 	tdPetTowerWorkFinished(tower)
 	tdEvolutionWorkFinished(tower)
@@ -454,6 +472,7 @@ function tdHandleTowerDeath()
 	tdForgetEquipmentAbilities(tower)
 	tdDarkTideForgetTower(tower)
 	tdForgetBloodlustAutocast(tower)
+	tdTargetPriorityForget(tower)
 	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
 
 function tdOrcBladestormStateKey(unit tower) returns int
@@ -466,6 +485,7 @@ function tdClearOrcBladestormState(unit tower)
 	if not tdOrcBladestormIsActive(tower)
 		return
 	tdOrcBladestormStates.removeBoolean(tdOrcBladestormStateKey(tower))
+	tdTargetPriorityCasting(tower, false)
 	tdPetHeroCancelStorm(tower)
 	tower.removeAnimationProperties("spin")
 	if tower.isAlive()
@@ -492,6 +512,8 @@ function tdHandleOrcBladestormCast() returns boolean
 	let key = tdOrcBladestormStateKey(tower)
 	let pulseCount = (tdOrcBladestormDuration() / tdOrcBladestormTickInterval() + 0.5).toInt()
 	tdOrcBladestormStates.saveBoolean(key, true)
+	tdTargetPriorityTrackTower(tower)
+	tdTargetPriorityCasting(tower, true)
 	// The classic Blademaster embeds its blade trail in Attack Walk Stand Spin.
 	tower.addAnimationProperties("spin")
 	tower.setAnimation("stand spin")
@@ -723,9 +745,7 @@ public function tdSplitArrowPendingVolleyCount() returns int
 public function tdSplitArrowVisualCount() returns int
 	return tdArcherArrowVisuals.size()
 
-function tdHandleArcherSplitArrowAttack()
-	let source = GetAttacker()
-	let target = GetTriggerUnit()
+function tdHandleArcherSplitArrowAttack(unit source, unit target)
 	if source == null or target == null
 		return
 	if tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) != TD_TOWER_CHOICE_ARCHER
@@ -735,6 +755,14 @@ function tdHandleArcherSplitArrowAttack()
 	if not target.isAlive() or GetOwningPlayer(target) != Player(TD_ENEMY_PLAYER_ID)
 		return
 	tdQueueArcherSplitArrowVolley(source, target)
+
+function tdHandleTowerAttackStarted()
+	let source = GetAttacker()
+	let target = GetTriggerUnit()
+	if not tdTargetPriorityAcceptAttack(source, target)
+		return
+	// Exactly one accepted native attack start owns its split-arrow registration.
+	tdHandleArcherSplitArrowAttack(source, target)
 
 function tdArcherSplitArrowNativeAttackType() returns attacktype
 	return ATTACK_TYPE_PIERCE
@@ -795,6 +823,7 @@ public function tdSetupDialogTrigger()
 		return
 	tdTowerGameplayEventsReady = true
 	tdSetupBloodlustAutocastOrders()
+	tdSetupTargetPriorityOrders()
 	registerSpellEffectEvent(TD_FARMER_WAGE_ABILITY_ID, function tdHandleFarmerWageCast)
 	registerSpellEffectEvent(TD_ORC_BLADESTORM_ABILITY_ID, function tdHandleOrcBladestormCast)
 	registerSpellEffectEvent(TD_TOWER_SELL_ABILITY_ID, function tdHandleTowerSellCast)
@@ -815,7 +844,7 @@ public function tdSetupDialogTrigger()
 	tdTowerUpgradeStartTrigger.addAction(function tdHandleTowerUpgradeStarted)
 	tdTowerUpgradeCancelTrigger.addAction(function tdHandleTowerUpgradeCancelled)
 	tdTowerDeathTrigger.addAction(function tdHandleTowerDeath)
-	tdTowerAttackTrigger.addAction(function tdHandleArcherSplitArrowAttack)
+	tdTowerAttackTrigger.addAction(function tdHandleTowerAttackStarted)
 	tdTowerItemPickupVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)
 	tdTowerItemDropVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)
 	DamageEvent.addListener(0) ->

@@ -1,5 +1,6 @@
 package TDInventoryRuntime
 import TDCombatVisualRuntime
+import TDTowerTargetPriorityState
 import TDItemData
 import TDAuraState
 import TDEquipmentSpecialState
@@ -187,7 +188,7 @@ function tdRefreshTowerEquipmentBonuses(unit tower, item excludedItem)
 	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_BONUS_ABILITY_ID, tdTowerAttackBonusAbilityLevel(attack))
 	tdSetTowerEquipmentAbilityLevel(tower, TD_TOWER_EQUIPMENT_ATTACK_SPEED_BONUS_ABILITY_ID, tdClampEquipmentAbilityLevel(R2I(speed * 100.0 + 0.5), TD_TOWER_EQUIPMENT_ATTACK_SPEED_MAX_LEVEL))
 	tdRefreshEquipmentAbilities(tower, tdEquipmentCooldownReductionForItems(item1, item2, item3), tdEquipmentEffectForItems(item1, item2, item3, TD_ITEM_EFFECT_CONTROL_POWER))
-	SetUnitAcquireRange(tower, tdTowerEffectiveRangeForLoadout(tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)), tdTowerBranchForUnitTypeId(GetUnitTypeId(tower)), item1, item2, item3))
+	SetUnitAcquireRange(tower, tdTargetPriorityProjectedAcquireRange(tower, tdTowerEffectiveRangeForLoadout(tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)), tdTowerBranchForUnitTypeId(GetUnitTypeId(tower)), item1, item2, item3)))
 
 function tdOtherEquipmentType(unit tower, int slot, item excludedItem) returns int
 	let other = UnitItemInSlot(tower, slot)

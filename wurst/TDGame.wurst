@@ -1,5 +1,6 @@
 package TDGame
 import TDCombatVisualRuntime
+import TDTowerTargetPriorityState
 import TDPetCombatSource
 import TDConfig
 import TDState
@@ -148,6 +149,7 @@ function tdClearLaneEnemies(int playerId)
 // Close a lane once before any synchronous death or external callback can run.
 function tdCloseDefeatedLane(int playerId)
 	tdSetLaneDefeated(playerId, true)
+	tdTargetPriorityClearLane(playerId)
 	tdCombatVisualClearLane(playerId)
 	tdFlowCancelLane(playerId)
 	tdPetLaneDefeated(playerId)
@@ -183,6 +185,7 @@ function tdSettleBossFailure(unit enemy, int playerId, int wave, int result)
 	let defeated = tdGetLives(playerId) <= 0 or wave == tdWaveCount()
 	if defeated
 		tdSetLaneDefeated(playerId, true)
+		tdTargetPriorityClearLane(playerId)
 		tdFlowCancelLane(playerId)
 	tdPetForgetEnemy(enemy)
 	tdEnemyMechanicUnregister(enemy)
@@ -220,6 +223,7 @@ public function tdHandleEnemyLeak(unit enemy)
 	if defeated
 		tdSetResolvedWave(playerId, wave)
 		tdSetLaneDefeated(playerId, true)
+		tdTargetPriorityClearLane(playerId)
 		tdFlowCancelLane(playerId)
 	DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, tdLeakLifeText(lifeCost, tdGetLives(playerId)))
 	tdForgetEquipmentEnemy(enemy)
@@ -533,6 +537,7 @@ public function tdHandleWaveFinished(int playerId, int wave)
 	tdTryUnlockPopulationAfterWave(wave)
 	if tdGetResolvedWave(playerId) >= tdWaveCount()
 		tdSetLaneFinished(playerId, true)
+		tdTargetPriorityClearLane(playerId)
 		tdCombatVisualClearLane(playerId)
 		tdRefreshHud()
 		DisplayTimedTextToPlayer(Player(playerId), 0, 0, 5.0, "你的路线已经守住了。")
@@ -544,6 +549,7 @@ public function tdHandleWaveFinished(int playerId, int wave)
 
 
 public function tdShutdownGameFlow()
+	tdTargetPriorityClearAll()
 	tdCloseDifficultyDialog()
 	tdCombatVisualShutdown()
 	let held = tdFlowHeldTransitionToken()
