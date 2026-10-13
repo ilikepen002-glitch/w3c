@@ -33,8 +33,24 @@ public function tdPetStageBallReward(int wave) returns int
 public function tdPetSkillIsNumeric(int skill) returns boolean
 	return skill >= 0 and skill <= 3
 
+// Derive the immutable classification from the same cooldown registry at build
+// time. Capture scans candidates repeatedly; rebuilding registry tuples there
+// can exhaust the native JASS thread budget after the ball was already spent.
+function tdPetBuildActiveFlags() returns string
+	var flags = ""
+	for skill = 0 to TD_PET_SKILL_COUNT - 1
+		flags += tdActiveSkillDefinitionForPetSkill(skill).driver == TD_ACTIVE_DRIVER_PET_PROC ? "1" : "0"
+	return flags
+
+constant string TD_PET_ACTIVE_FLAGS = compiletime(tdPetBuildActiveFlags())
+
 public function tdPetSkillIsActive(int skill) returns boolean
-	return tdActiveSkillDefinitionForPetSkill(skill).driver == TD_ACTIVE_DRIVER_PET_PROC
+	if skill < 0
+		return false
+	// Preserve registry-only extensions beyond today's capture catalog.
+	if skill >= TD_PET_SKILL_COUNT
+		return tdActiveSkillDefinitionForPetSkill(skill).driver == TD_ACTIVE_DRIVER_PET_PROC
+	return SubString(TD_PET_ACTIVE_FLAGS, skill, skill + 1) == "1"
 
 public function tdPetSkillIsUniversal(int skill) returns boolean
 	return tdPetSkillDefined(skill) and not tdPetSkillIsActive(skill) and not tdPetHeroDefined(skill)

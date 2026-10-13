@@ -8,6 +8,12 @@ import TDPetEffectState
 import TDConfig
 import TDWaves
 import TDState
+import TDActiveSkillData
+
+@Test function captureActiveClassificationMatchesEntireRegistry()
+	for skill = -1 to TD_PET_SKILL_COUNT
+		let expected = tdActiveSkillDefinitionForPetSkill(skill).driver == TD_ACTIVE_DRIVER_PET_PROC
+		tdPetSkillIsActive(skill).assertEquals(expected)
 
 @Test function ordinaryPetCaptureIsFixedSixtyPercent()
 	tdPetCaptureChance(100.0, 100.0).assertEquals(0.60)

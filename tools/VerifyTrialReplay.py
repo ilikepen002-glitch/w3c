@@ -43,7 +43,7 @@ class TrialJassRuntime(PureBossJassRuntime):
         # Only relevant production package initialization, not main/UI/game boot.
         # The packaged min/max helpers use Real_REAL_MAX/MIN initialized here.
         # Replaying match startup alone omits the engine's earlier package init.
-        for name in ('init_Real', 'init_TDCombatVisualRuntime', 'init_TDPetEffectScheduler', 'init_TDPetHeroState', 'init_TDPetHeroEffects',
+        for name in ('init_Real', 'init_TDPetRules', 'init_TDCombatVisualRuntime', 'init_TDPetEffectScheduler', 'init_TDPetHeroState', 'init_TDPetHeroEffects',
                      'init_TDPetCastContext', 'init_TDPetEffectTargetState', 'init_TDPetActiveVisuals',
                      'init_TDEnemyControlRuntime', 'init_TDPetRuntime',
                      'init_TDBossDarkTideRuntime', 'init_TDTowerEvolutionRuntime', 'init_TDPetWild', 'init_TDDamageState', 'init_TDDamageRuntime', 'init_TDEquipmentCombat',

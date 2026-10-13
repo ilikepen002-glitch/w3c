@@ -39,10 +39,16 @@ ORDERS = {'bloodluston': 852102, 'bloodlustoff': 852103,
 
 class ActiveJassRuntime(BossJassRuntime):
     """Existing bounded JASS interpreter, without unrelated Boss seed state."""
+    def __init__(self, script):
+        super().__init__(script)
+        if 'init_TDPetRules' in self.functions:
+            self.invoke('init_TDPetRules')
+
     def seed_record(self, *args, **kwargs):
         pass
 
     def native(self, name, args):
+        if name == 'SubString': return True, args[0][args[1]:args[2]]
         if name in ('RMinBJ', 'IMinBJ'): return True, min(args)
         if name in ('RMaxBJ', 'IMaxBJ'): return True, max(args)
         if name in ('R2I', 'real_toInt'): return True, int(args[0])
@@ -300,6 +306,10 @@ class SourceScalarEvaluator:
                 if name in ('RMaxBJ', 'IMaxBJ', 'max'): return max(args)
                 if name == 'R2I': return int(args[0])
                 if name == 'I2R': return float(args[0])
+                if name == 'compiletime':
+                    require(len(args) == 1, 'Invalid compiletime scalar expression')
+                    return args[0]
+                if name == 'SubString': return args[0][args[1]:args[2]]
                 if name == 'commaList': return ','.join(rawstring(a) for a in args)
                 return self.call(name, args)
             raise ValueError('Unsupported scalar node ' + repr(node))
@@ -733,7 +743,17 @@ def verify_runtime_sources(evaluator):
     for token in ('tdPetBindingValid(pet, target, pet.generation)', 'tdPetUnlockedSlots(pet.level)',
                   'pet.skillCount', 'tdPetSkillFitsHost(skill, target)', 'tdPetSkillIsActive(skill)', 'tdHasNativeActiveCooldown(target)'):
         require(token in aura, 'Aura active eligibility missing binding/slot/metadata guard: ' + token)
-    require('tdActiveSkillDefinitionForPetSkill(skill)' in evaluator.body('tdPetSkillIsActive'), 'Pet classifier must consume shared metadata, not old eligibility whitelist')
+    require(evaluator.constants.get('TD_PET_ACTIVE_FLAGS') == 'compiletime(tdPetBuildActiveFlags())',
+            'Pet classification must be built from metadata at compiletime')
+    require('tdActiveSkillDefinitionForPetSkill(skill)' in evaluator.body('tdPetBuildActiveFlags'),
+            'Pet classifier must consume shared metadata, not an eligibility whitelist')
+    flags = evaluator.constant('TD_PET_ACTIVE_FLAGS')
+    count = evaluator.constant('TD_PET_SKILL_COUNT')
+    require(len(flags) == count and set(flags) <= {'0', '1'}, 'Invalid compiled pet classification')
+    for skill in range(-1, count + 1):
+        expected = evaluator.call('tdActiveSkillDefinitionForPetSkill', [skill]).driver == evaluator.constant('TD_ACTIVE_DRIVER_PET_PROC')
+        require(evaluator.call('tdPetSkillIsActive', [skill]) is expected,
+                'Compiled pet classification diverged from registry: ' + str(skill))
     require('aggregate.offer(TD_AURA_PET_COMMAND' not in evaluator.body('tdAuraOfferSource') and 'aggregate.offer(TD_AURA_PET_STASIS' not in evaluator.body('tdAuraOfferSource'), 'Retired pet aura source scan remains')
     pet_attack = evaluator.body('onAttack')
     for token in ('tdPetBindingValid(pet, host, pet.generation)', 'tdPetUnlockedSlots(pet.level)',
