@@ -363,16 +363,16 @@ class SourceScalarEvaluator:
 
 def read_sources(root=ROOT):
     root = Path(root)
-    result = {p.relative_to(root / 'wurst').as_posix(): p.read_text()
+    result = {p.relative_to(root / 'wurst').as_posix(): p.read_text(encoding='utf-8')
               for p in (root / 'wurst').rglob('*.wurst') if '_tests' not in p.parts}
     lock = root / 'tools/stdlib/lock.json'
     candidates = [root / '_build/dependencies/WurstStdlib2-source']
-    if lock.is_file(): candidates.append(Path(json.loads(lock.read_text())['source']))
+    if lock.is_file(): candidates.append(Path(json.loads(lock.read_text(encoding='utf-8'))['source']))
     if os.environ.get('WURST_STDLIB_SOURCE'): candidates.insert(0, Path(os.environ['WURST_STDLIB_SOURCE']))
     for candidate in candidates:
         orders = candidate / 'wurst/_wurst/Orders.wurst'
         if orders.is_file():
-            result['__stdlib_orders__'] = orders.read_text()
+            result['__stdlib_orders__'] = orders.read_text(encoding='utf-8')
             break
     return result
 
