@@ -1,0 +1,41 @@
+{
+  "map_sha256": "0204a84e260d8095f9d240adcb50a4bc9fb1d005d1e3db2b5938e1b1c12883b3",
+  "semantic_mutations": [
+    {
+      "mutation": "native_candidate",
+      "rejected_by": "Native form missing"
+    },
+    {
+      "mutation": "working_guard",
+      "rejected_by": "Working source lost"
+    },
+    {
+      "mutation": "drop_excluded_handle",
+      "rejected_by": "Occupied drop handle retained"
+    },
+    {
+      "mutation": "third_item_slot",
+      "rejected_by": "Third aura slot missing"
+    },
+    {
+      "mutation": "detach_cleanup",
+      "rejected_by": "Detached source retained"
+    },
+    {
+      "mutation": "last_source_apply",
+      "rejected_by": "Last source did not Apply"
+    },
+    {
+      "mutation": "live_owner_filter",
+      "rejected_by": "Old owner aura remained"
+    },
+    {
+      "mutation": "carrier_repair",
+      "rejected_by": "Receiver carrier not repaired"
+    },
+    {
+      "mutation": "partial_aggregate_publication",
+      "rejected_by": "Partial aggregate published"
+    }
+  ]
+}

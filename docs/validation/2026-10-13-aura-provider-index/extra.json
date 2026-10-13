@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "results": {
+    "empty_provider_timed_expiry": [
+      239.20000000000002,
+      260.0
+    ],
+    "equal_rank_power_order": true,
+    "actual_class_id_reused": true,
+    "synthetic41_speeds": [
+      208.0,
+      244.39999999999998
+    ],
+    "synthetic_cleanup_empty": true,
+    "trial_timed_speed": 239.20000000000002
+  }
+}

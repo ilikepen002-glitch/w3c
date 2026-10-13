@@ -1,0 +1,16 @@
+{
+  "map_sha256": "0204a84e260d8095f9d240adcb50a4bc9fb1d005d1e3db2b5938e1b1c12883b3",
+  "members_identical": 411,
+  "protected_payloads_identical": 390,
+  "objects_terrain_payloads_identical": [
+    "war3map.w3u",
+    "war3map.w3a",
+    "war3map.w3h",
+    "war3map.w3t",
+    "war3map.w3e",
+    "war3map.wpm",
+    "war3map.doo",
+    "war3mapUnits.doo"
+  ],
+  "root_misc_identical": true
+}

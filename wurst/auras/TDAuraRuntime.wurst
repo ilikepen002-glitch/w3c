@@ -138,7 +138,7 @@ function tdAuraRefresh(TDAuraTarget record)
 		let targetPos = target.getPos()
 		let mechanical = not record.tower and IsUnitType(target, UNIT_TYPE_MECHANICAL)
 		let cooldownEligible = record.tower and tdAuraCooldownTargetEligible(target)
-		for source in tdAuraTowers
+		for source in tdAuraProviders
 			tdAuraOfferSource(record, source.target, prepared, targetLane, targetPos, mechanical, cooldownEligible)
 		if not record.tower
 			tdEnemySlowCollectTimed(record.target, prepared)

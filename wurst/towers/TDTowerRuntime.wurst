@@ -10,6 +10,7 @@ import DamageEvent
 import Table
 import TDTowerData
 import TDInventory
+import TDAuraState
 import ClosureTimers
 import MapBounds
 import Fx
@@ -122,6 +123,7 @@ function tdHandleTowerUpgradeStarted()
 		tdGetTowerSaleState(tower).startWork()
 		tdTargetPriorityTrackTower(tower)
 		tdTargetPriorityWorkStarted(tower)
+		tdAuraSetProviderCandidate(tower, true)
 		tdCombatVisualSuspendGear(tower)
 		tdEvolutionWorkStarted(tower)
 		tdPetHeroTowerInvalidated(tower)
@@ -364,6 +366,7 @@ function tdHandleTowerConstructionStarted()
 	tdGetTowerSaleState(tower).startWork()
 	tdTargetPriorityTrackTower(tower)
 	tdTargetPriorityWorkStarted(tower)
+	tdAuraSetProviderCandidate(tower, true)
 	tdCombatVisualSuspendGear(tower)
 	tdEvolutionWorkStarted(tower)
 	tdPetHeroTowerInvalidated(tower)

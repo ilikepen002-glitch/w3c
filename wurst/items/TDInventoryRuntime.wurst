@@ -173,6 +173,14 @@ function tdSetTowerEquipmentAbilityLevel(unit tower, int abilityId, int level)
 function tdLoadoutHasSpecial(int item1, int item2, int item3, int specialization) returns boolean
 	return tdItemSpecialization(item1) == specialization or tdItemSpecialization(item2) == specialization or tdItemSpecialization(item3) == specialization
 
+public function tdTowerAuraProviderInput(int choice, int level, int item1, int item2, int item3, boolean working) returns boolean
+	if working
+		return true
+	if level >= 5
+		if choice == TD_TOWER_CHOICE_ARCHER or choice == TD_TOWER_CHOICE_FOOTMAN or choice == TD_TOWER_CHOICE_DRYAD
+			return true
+	return (item1 != 0 and tdItemAuraKind(item1) != TD_ITEM_AURA_NONE) or (item2 != 0 and tdItemAuraKind(item2) != TD_ITEM_AURA_NONE) or (item3 != 0 and tdItemAuraKind(item3) != TD_ITEM_AURA_NONE)
+
 function tdRefreshTowerEquipmentBonuses(unit tower, item excludedItem)
 	if tower == null
 		return
@@ -185,9 +193,11 @@ function tdRefreshTowerEquipmentBonuses(unit tower, item excludedItem)
 	let item1 = tdTowerEquipmentItemId(tower, 0, excludedItem)
 	let item2 = tdTowerEquipmentItemId(tower, 1, excludedItem)
 	let item3 = tdTowerEquipmentItemId(tower, 2, excludedItem)
+	tdAuraRegisterTarget(tower, true)
+	let targetState = tdTargetPriorityStateFor(tower)
+	tdAuraSetProviderCandidate(tower, tdTowerAuraProviderInput(choice, level, item1, item2, item3, targetState != null and targetState.working))
 	tdCombatVisualRefreshGear(tower, choice, item1, item2, item3)
 	tdEquipmentSpecialLoadoutChanged(tower, tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_WAR_INTENT), tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_POISON_BURST), tdLoadoutHasSpecial(item1, item2, item3, TD_ITEM_SPECIAL_CORPSE_BURST), getElapsedGameTime())
-	tdAuraRegisterTarget(tower, true)
 	let base = tdTowerBaseDamageForBranch(choice, level, branch)
 	let attack = tdEquipmentAttackBonusForItems(item1, item2, item3) + base * tdAuraPower(tower, TD_AURA_EQUIPMENT_ATTACK)
 	let speed = tdEquipmentAttackSpeedBonusForItems(item1, item2, item3) + tdAuraPower(tower, TD_AURA_EQUIPMENT_SPEED)
