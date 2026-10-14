@@ -8,10 +8,10 @@
       "element": "金",
       "name": "银鬃灵兽",
       "modelImportPath": "war3mapImported\\SilverManeBeast.mdx",
-      "modelSha256": "18ef15ad7f1fcaff207a013a5b5a6f4a4e3c593f95488fed0e2fd8aa108282b0",
-      "modelBytes": 371326,
+      "modelSha256": "7967acb75baacba9f14f71264dc11256674840927dd93134dd1d56983b89dbe4",
+      "modelBytes": 421506,
       "requiredTextureImportPath": "Textures\\SilverManeAtlas.blp",
-      "textureSha256": "96088005c896f854701aaca87f1484143389898ee4bc0fd973d1d4249699085f",
+      "textureSha256": "af713ae301a3dd2b5c83e2b9a128101e901119901301978d8f10e8f04f4084b2",
       "textureBytes": 88561,
       "triangles": 3038,
       "bones": 11

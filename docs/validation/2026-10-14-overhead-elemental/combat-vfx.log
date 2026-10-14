@@ -1,0 +1,511 @@
+RUN hits
+PASS hits 4.159s
+RUN gear
+PASS gear 0.942s
+RUN budgets_cleanup
+PASS budgets_cleanup 1.715s
+RUN tower_work
+PASS tower_work 0.846s
+RUN rejection
+PASS rejection 3.312s
+RUN finisher
+PASS finisher 4.421s
+RUN gameplay_trajectory
+PASS gameplay_trajectory 128.480s
+{
+  "sha256": "076d12c7769474eae8b6de74f5d77ea58a5edc57cacb2c8d9ed91217a48743da",
+  "hits": [
+    {
+      "element": 1,
+      "models": [
+        "war3mapImported\\TDPetHitGoldCrescent.mdx"
+      ],
+      "pieces": 2
+    },
+    {
+      "element": 2,
+      "models": [
+        "war3mapImported\\TDPetHitWoodThorns.mdx",
+        "war3mapImported\\TDPetHitWoodThorns.mdx"
+      ],
+      "pieces": 2
+    },
+    {
+      "element": 3,
+      "models": [
+        "war3mapImported\\TDPetHitWaterShards.mdx"
+      ],
+      "pieces": 1
+    },
+    {
+      "element": 4,
+      "models": [
+        "war3mapImported\\TDPetHitFireCrown.mdx"
+      ],
+      "pieces": 1
+    },
+    {
+      "element": 5,
+      "models": [
+        "war3mapImported\\TDPetHitEarthFault.mdx"
+      ],
+      "pieces": 1
+    }
+  ],
+  "gear": {
+    "actual_35x40x3_matrix": 4200,
+    "five_profession_attachment_cases": 5,
+    "repeat_refresh_no_rebuild": true,
+    "drop_excluded_snapshot": true
+  },
+  "budgets_cleanup": {
+    "forty_sources_peak": 32,
+    "single_source_gate": true,
+    "expiry": true,
+    "lane_clear": true,
+    "handle_reuse": true
+  },
+  "tower_work": {
+    "start_refresh_hidden": true,
+    "cleanup_preserves_pause": true,
+    "stale_cancel_rejected": true,
+    "cancel_restore": 1,
+    "finish_restore": 1,
+    "death_clean": true
+  },
+  "rejection": [
+    "Tspl",
+    "Pdam",
+    "Eadd",
+    "code",
+    "spell",
+    "paused",
+    "purple_without_pet"
+  ],
+  "finisher": {
+    "actual_game_claim": true,
+    "duplicate_death": 0,
+    "leak": 0,
+    "trial": 0,
+    "element_preserved": true,
+    "deadline_unchanged": true,
+    "additional_effects": 0
+  },
+  "gameplay_trajectory": [
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          38,
+          4
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 3
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          38,
+          4
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 3
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          38,
+          4
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 3
+    }
+  ],
+  "boundary": "Actual packed JASS. Effects/lightning/rendering, native terrain, engine timers/armor are explicit boundaries; no game/FPS claim. Moving API is DCE only in the A baseline; when live, this gate uses the reviewed elemental Fx native boundary. Global8/per-cast2/dummy1s stress belongs to the elemental VFX gate."
+}

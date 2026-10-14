@@ -89,6 +89,11 @@ def verify_hits(script):
         require(r.visual_history and r.count()[0] in (1,2),'Bound true primary did not draw element '+str(element))
         require(result['amount']==100. and r.score()==100.,'Visual changed physical event or score')
         models=[args[0] for _,name,args in r.visual_history if name=='AddSpecialEffect']
+        expected=['GoldCrescent','WoodThorns','WaterShards','FireCrown','EarthFault'][element-1]
+        require(models[0]=='war3mapImported'+chr(92)+'TDPetHit'+expected+'.mdx','Primary did not use exact elemental mesh')
+        lifetime=[.18,.28,.26,.23,.28][element-1]
+        r.tick_visuals(lifetime-.01)
+        require(r.count()[0]>0 and r.visual_handles,'Hit budget released before complete mesh fade')
         r.tick_visuals(.30)
         require(r.count()==(0,0) and not r.visual_handles and not r.lightning_handles,'Expired hit visual leaked')
         require(r.globals['TDCombatVisualRuntime_cleanup']==0,'Idle visual timer did not stop')
@@ -180,17 +185,22 @@ def verify_rejection(script):
     return results
 
 def verify_finisher(script):
-    r=VisualRuntime(script);r.pet([]);r.units[102].update(life=200.,maxLife=200.)
-    r.emit(100.)
-    epoch=r.invoke('tdFlowEpoch');r.tables[r.globals['TDSpawn_tdEnemyMatchEpochs']][102]=epoch
-    r.units[102].update(life=0.,alive=False);r.native_trigger=102;r.native_killer=101
-    before=len(r.visual_history);r.invoke('tdHandleEnemyDeath')
-    added=r.visual_history[before:]
-    require(len(added)==1 and added[0][2][0].endswith('RifleImpact.mdx'),'Confirmed Game kill did not add one finisher core')
-    before=len(r.visual_history);r.invoke('tdHandleEnemyDeath')
-    require(len(r.visual_history)==before,'Repeated death replay added a second finisher')
-    r.tick_visuals(.35);require(not r.visual_handles and not r.lightning_handles,'Finisher failed .30 lifetime cleanup')
-    r.clear()
+    for element in range(1,6):
+        r=VisualRuntime(script);pet=r.pet([]);r.globals['TDPet_species'][pet]=(element-1)*3+1;r.units[102].update(life=200.,maxLife=200.)
+        r.emit(100.)
+        epoch=r.invoke('tdFlowEpoch');r.tables[r.globals['TDSpawn_tdEnemyMatchEpochs']][102]=epoch
+        r.units[102].update(life=0.,alive=False);r.native_trigger=102;r.native_killer=101
+        before=len(r.visual_history);handles=dict(r.visual_handles);count=r.count()
+        hit_ids=list(r.lists[r.globals['TDCombatVisualRuntime_hits']])
+        deadlines={i:r.globals['TDVisualHit_expiresAt'][i] for i in hit_ids}
+        r.invoke('tdHandleEnemyDeath')
+        require(len(r.visual_history)==before,'Confirmed kill added a replacement/accent')
+        require(r.visual_handles==handles and r.count()==count,'Confirmed kill erased elemental core')
+        require({i:r.globals['TDVisualHit_expiresAt'][i] for i in hit_ids}==deadlines,'Confirmed kill extended elemental deadline')
+        before=len(r.visual_history);r.invoke('tdHandleEnemyDeath')
+        require(len(r.visual_history)==before,'Repeated death replay added a second finisher')
+        r.tick_visuals(.35);require(not r.visual_handles and not r.lightning_handles,'Preserved elemental core failed bounded cleanup')
+        r.clear()
     r=VisualRuntime(script);r.pet([]);r.units[102].update(life=200.,maxLife=200.)
     r.emit(100.);r.invoke('tdMarkEnemyLeaked',102);r.native_trigger=102;r.native_killer=101
     before=len(r.visual_history);r.invoke('tdHandleEnemyDeath');require(len(r.visual_history)==before,'Leak settlement added a finisher')
@@ -199,7 +209,7 @@ def verify_finisher(script):
     r.emit(100.,target=target);r.native_trigger=target;r.native_killer=101
     before=len(r.visual_history);r.invoke('tdHandleEnemyDeath');require(len(r.visual_history)==before,'Trial target added a Game finisher')
     r.clear()
-    return {'actual_game_claim':True,'duplicate_death':0,'leak':0,'trial':0,'lifetime':.30}
+    return {'actual_game_claim':True,'duplicate_death':0,'leak':0,'trial':0,'element_preserved':True,'deadline_unchanged':True,'additional_effects':0}
 
 def verify_budget_cleanup(script):
     r=VisualRuntime(script)
@@ -277,6 +287,12 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('map',type=Path);p.add_argument('--baseline',type=Path,required=True);a=p.parse_args()
     mpq=Mpq(a.map.read_bytes());script=mpq.extract('war3map.j').decode('utf-8');prior=Mpq(a.baseline.read_bytes()).extract('war3map.j').decode('utf-8')
     require('function init_TDCombatVisualRuntime takes' in script,'Missing actual visual initialization')
+    expected=['GoldCrescent','WoodThorns','WaterShards','FireCrown','EarthFault']
+    root=Path(__file__).resolve().parents[1]
+    for suffix in expected:
+        relative='war3mapImported/TDPetHit'+suffix+'.mdx'
+        require(mpq.extract(relative.replace('/',chr(92)))==(root/'imports'/relative).read_bytes(),'Packed hit mesh differs: '+relative)
+    require(mpq.extract('Textures'+chr(92)+'TDPetVfxAtlas.blp')==(root/'imports/Textures/TDPetVfxAtlas.blp').read_bytes(),'Packed hit atlas differs')
     report={'sha256':hashlib.sha256(a.map.read_bytes()).hexdigest()}
     for key,run in (('hits',lambda:verify_hits(script)),
                     ('gear',lambda:verify_gear(script,unit_objects(mpq.extract('war3map.w3u')))),

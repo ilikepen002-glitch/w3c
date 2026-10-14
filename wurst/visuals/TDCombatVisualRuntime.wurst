@@ -429,22 +429,10 @@ public function tdCombatVisualHit(unit source, vec2 origin, vec2 point, int elem
 			hits.add(entry)
 	wake()
 
-// A kill replaces an already admitted hit's core; it is not a second attack/group.
+// Preserve the admitted elemental core and its original deadline on kills.
+// No replacement or extra accent: the kill settlement never spends VFX budget.
 public function tdCombatVisualFinisher(unit source, vec2 point)
-	if source == null or not creationAvailable()
-		return
-	let owner = sourceForKey(source.getHandleId())
-	if owner == null or not sourceValid(owner)
-		return
-	for entry in hits
-		if entry.sourceKey == owner.key and entry.ownerSerial == owner.serial and entry.petSerial == owner.petSerial and entry.art != null
-			creationCount += 1
-			let art = AddSpecialEffect("Abilities\\Weapons\\Rifle\\RifleImpact.mdx", point.x, point.y)
-			if art != null
-				DestroyEffect(entry.art)
-				entry.art = art
-				entry.expiresAt = getElapsedGameTime() + 0.30
-			return
+	return
 
 public function tdCombatVisualRefreshGear(unit source, int choice, int item1, int item2, int item3)
 	if source == null

@@ -15,13 +15,13 @@ import TDTowerData
 	tdCombatVisualGearProfile(0, 'iP01', 'iP02', 'iP03').assertEquals(0)
 	tdCombatVisualGearProfile(6, 'iP04', 'iP05', 'iP01').assertEquals(0)
 
-@Test function combatVisualFiveElementsHaveDifferentClassicHitProfiles()
+@Test function combatVisualFiveElementsHaveDifferentMeshHitProfiles()
 	for element = 1 to 5
 		(tdCombatVisualHitModel(element) != "").assertTrue()
 		for other = element + 1 to 5
 			(tdCombatVisualHitModel(element) != tdCombatVisualHitModel(other)).assertTrue()
 		(tdCombatVisualHitDuration(element) >= 0.10).assertTrue()
-		(tdCombatVisualHitDuration(element) <= 0.25).assertTrue()
+		(tdCombatVisualHitDuration(element) <= 0.28).assertTrue()
 	tdCombatVisualHitModel(0).assertEquals("")
 	tdCombatVisualHitModel(6).assertEquals("")
 
@@ -39,3 +39,10 @@ import TDTowerData
 	TD_VISUAL_NEW_PER_SECOND.assertEquals(120)
 	TD_VISUAL_MOVING_LIMIT.assertEquals(8)
 	TD_VISUAL_HIT_LIMIT.assertEquals(32)
+
+@Test function combatVisualMeshLifetimeIncludesTheCompleteFade()
+	tdCombatVisualHitDuration(1).assertEquals(0.18)
+	tdCombatVisualHitDuration(2).assertEquals(0.28)
+	tdCombatVisualHitDuration(3).assertEquals(0.26)
+	tdCombatVisualHitDuration(4).assertEquals(0.23)
+	tdCombatVisualHitDuration(5).assertEquals(0.28)

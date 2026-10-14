@@ -157,3 +157,8 @@ function assertAuraNear(real actual, real expected)
 	tdAuraCarrierRepairNeeded(4, 4, true).assertFalse()
 	tdAuraCarrierRepairNeeded(0, 4, false).assertTrue()
 	tdAuraConfirmedAppliedRank(0, false).assertEquals(0)
+
+@Test function petReduceSharedBuffDescribesQualityDependentStacks()
+	let tooltip = tdAuraStateTooltip(TD_AURA_PET_REDUCE, 1)
+	tooltip.contains("每层3%/4%/5%/6%（随品质），最多5层").assertTrue()
+	tooltip.contains("最多5层30%").assertFalse()

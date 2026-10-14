@@ -18,6 +18,7 @@ import public TDPetAttackState
 import TDAuraState
 import TDEnemySlowState
 import TDPetState
+import TDPetDisplayRuntime
 import TDPetRuntime
 import TDTowerData
 import TDInventory
@@ -228,6 +229,7 @@ function onAttack()
 				pet.readyAt = tdStartScriptActiveCooldown(host, tdActiveSkillDefinitionForPetSkill(activeSkill).key, getElapsedGameTime())
 				if activeSkill == 11 or activeSkill == 12
 					tdCombatVisualStartPetBuff(host, pet.lane, activeSkill, pet.buffUntil)
+				tdPetDisplayCast(pet, host, generation, getElapsedGameTime())
 
 public function tdPetSetupCombat()
 	if tdPetCombatReady

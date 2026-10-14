@@ -1,6 +1,7 @@
 package TDPetRuntime
 import TDPetData
 import TDPetState
+import TDPetDisplayRuntime
 import TDPetAttackQueue
 import TDPetEffectScheduler
 import TDPetWild
@@ -114,7 +115,7 @@ public function tdPetDeploy(TDPet pet, unit tower) returns boolean
 	let towerType = GetUnitTypeId(tower)
 	let visualType = tdPetVisualUnitId(species)
 	// No binding, tasks, old native handles or cooldowns change before creation.
-	let prepared = createUnit(Player(lane), visualType, tower.getPos() + vec2(100.0, 50.0), 0 .fromDeg())
+	let prepared = createUnit(Player(lane), visualType, tower.getPos(), 0 .fromDeg())
 	if prepared == null
 		return false
 	prepared.setPathing(false)
@@ -131,6 +132,7 @@ public function tdPetDeploy(TDPet pet, unit tower) returns boolean
 	pet.recall()
 	pet.host = tower
 	pet.visual = prepared
+	tdPetDisplayInitialize(pet, slot, getElapsedGameTime())
 	return true
 
 function tdPetHandleCapture() returns boolean
@@ -258,10 +260,8 @@ public function tdPetSetupRuntime()
 				if pet != null and pet.host != null
 					if not pet.host.isAlive() or tdTowerChoiceForUnitTypeId(GetUnitTypeId(pet.host)) == 0 or GetPlayerId(GetOwningPlayer(pet.host)) != lane or not tdPetLaneCanAct(lane)
 						pet.recall()
-					else if pet.visual != null
-						let desired = pet.host.getPos() + vec2(100.0, 50.0)
-						if pet.visual.getPos().distanceTo(desired) > 1.0
-							pet.visual.setPos(desired)
+					else
+						tdPetDisplayTick(pet, slot, getElapsedGameTime())
 		if tdIsGameOver()
 			tdPetClearAttackQueue()
 			for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1

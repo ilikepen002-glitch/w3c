@@ -216,7 +216,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 	for level = 1 to 10
 		armor.setDefenseBonus(level, -level)
 	for species = 1 to TD_PET_SPECIES_COUNT
-		new UnitDefinition(tdPetVisualUnitId(species), 'hpea')..setName(tdPetSpeciesName(species))..setModelFile(tdPetModel(species))..setScalingValue(0.45)..setNormalAbilities("Aloc,Avul")..setAttacksEnabled(0)..setAcquisitionRange(0.0)..setCollisionSize(0.0)..setMovementType(MovementType.None)..setSpeedBase(0)..setFoodCost(0)..setStructuresBuilt("")
+		new UnitDefinition(tdPetVisualUnitId(species), 'hpea')..setName(tdPetSpeciesName(species))..setModelFile(tdPetModel(species))..setScalingValue(0.45)..setMovementHeight(160.0)..setMovementHeightMinimum(0.0)..setNormalAbilities("Aloc,Avul")..setAttacksEnabled(0)..setAcquisitionRange(0.0)..setCollisionSize(0.0)..setMovementType(MovementType.Fly)..setSpeedBase(0)..setFoodCost(0)..setStructuresBuilt("")
 		for quality = 1 to 4
 			displayUnit(tdPetDisplayUnitId(species, quality), "精灵收藏 · " + tdPetQualityName(quality) + " " + tdPetSpeciesName(species), tdPetModel(species), tdPetSpeciesQualityIconPath(species, quality))
 		for wave = 1 to tdWaveCount()

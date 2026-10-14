@@ -1,0 +1,46 @@
+package TDPetDisplayRules
+import TDTowerCatalogData
+import TDConfig
+
+public constant int TD_PET_DISPLAY_FLOAT = 5
+public constant int TD_PET_DISPLAY_JUMP = 6
+public constant int TD_PET_DISPLAY_SPIN = 7
+public constant int TD_PET_DISPLAY_SLEEP = 8
+public constant int TD_PET_DISPLAY_CAST = 9
+
+public function tdPetDisplaySupported(int species) returns boolean
+	return species == 1
+
+public function tdPetDisplayIdleGap(int lane, int slot, int species) returns real
+	return 8.0 + 0.5 * ((lane * 20 + slot + species * 3) mod 17)
+
+public function tdPetDisplayIdleAction(int cycle) returns int
+	return TD_PET_DISPLAY_JUMP + cycle mod 3
+
+public function tdPetDisplayDuration(int action) returns real
+	if action == TD_PET_DISPLAY_JUMP
+		return 0.8
+	if action == TD_PET_DISPLAY_SLEEP
+		return 3.0
+	return 1.2
+
+// Conservative art-placement profiles, not measured native head coordinates.
+public function tdPetDisplayModelHeight(int choice, int level) returns real
+	if choice == TD_TOWER_CHOICE_ARCHER
+		return level <= 4 ? 110.0 : 160.0
+	if choice == TD_TOWER_CHOICE_ORC
+		return level <= 4 ? 135.0 : 145.0
+	if choice == TD_TOWER_CHOICE_FOOTMAN
+		return level <= 4 ? 115.0 : 145.0
+	if choice == TD_TOWER_CHOICE_DRYAD
+		return level <= 4 ? 155.0 : 180.0
+	if choice == TD_TOWER_CHOICE_GHOUL
+		return level <= 4 ? 105.0 : 185.0
+	return 160.0
+
+public function tdPetDisplayHeight(int towerType) returns real
+	let choice = tdTowerChoiceForUnitTypeId(towerType)
+	let level = tdTowerLevelForUnitTypeId(towerType)
+	if choice == 0 or level < 1 or level > 6
+		return 160.0
+	return tdPetDisplayModelHeight(choice, level) * (0.95 + 0.03 * level) + 24.0

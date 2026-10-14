@@ -132,7 +132,7 @@ public function tdAuraStateTooltip(int identity, int rank) returns string
 	if radius > 0.0 and identity != TD_AURA_VINES
 		description += "范围" + R2I(radius) + "。"
 	if identity == TD_AURA_PET_REDUCE
-		description = "每次普攻命中叠加6%移动减速，最多5层30%；不同精灵各自叠层，同类取最强，Boss减半。"
+		description = "每次普攻命中叠加移动减速，每层3%/4%/5%/6%（随品质），最多5层；不同精灵各自叠层，同类取最强，Boss减半。"
 	if identity == TD_AURA_VINES
 		description += "范围：普通" + R2I(tdDryadAuraSlowRadius()) + "，宽域" + R2I(tdDryadWideAuraSlowRadius()) + "；减速受装备控制强化影响。"
 	if identity == TD_AURA_POISON_DART

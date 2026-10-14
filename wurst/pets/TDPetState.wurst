@@ -29,6 +29,9 @@ public class TDPet
 	int pendingSerial = 0
 	unit host = null
 	unit visual = null
+	int visualAction = -1
+	real visualNextAt = 0.0
+	int visualCycle = 0
 	int generation = 0
 	boolean paused = false
 	boolean released = false
@@ -118,6 +121,9 @@ public class TDPet
 
 	function invalidateCombat()
 		tdCombatVisualClearPet(host)
+		visualAction = -1
+		visualNextAt = 0.0
+		visualCycle = 0
 		generation += 1
 		pendingSkill = false
 		pendingSerial += 1

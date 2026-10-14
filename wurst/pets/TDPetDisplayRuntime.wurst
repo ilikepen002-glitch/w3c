@@ -1,0 +1,63 @@
+package TDPetDisplayRuntime
+import TDPetState
+import TDPetData
+import TDPetDisplayRules
+import TDTowerCatalogData
+
+// Deliberately does not depend on CombatSource/Runtime or perform another census.
+// Callers already own the collection traversal or captured combat binding.
+public function tdPetDisplayOwnerValid(TDPet pet, unit host, int generation) returns boolean
+	return pet != null and not pet.released and pet.species >= 1 and pet.species <= TD_PET_SPECIES_COUNT and pet.host == host and pet.generation == generation and tdPetLaneCanManage(pet.lane) and host != null and host.isAlive() and GetOwningPlayer(host) == Player(pet.lane) and tdTowerChoiceForUnitTypeId(GetUnitTypeId(host)) != 0 and pet.visual != null and pet.visual.isAlive() and GetUnitTypeId(pet.visual) == tdPetVisualUnitId(pet.species) and GetOwningPlayer(pet.visual) == Player(pet.lane)
+
+function tdPetDisplayPosition(TDPet pet)
+	let desired = pet.host.getPos()
+	if pet.visual.getPos().distanceTo(desired) > 1.0
+		pet.visual.setPos(desired)
+	let height = tdPetDisplayHeight(GetUnitTypeId(pet.host))
+	if RAbsBJ(GetUnitFlyHeight(pet.visual) - height) > 1.0
+		SetUnitFlyHeight(pet.visual, height, 0.0)
+
+function tdPetDisplayAction(TDPet pet, int action, real deadline)
+	if pet.visualAction != action
+		if tdPetDisplaySupported(pet.species)
+			SetUnitAnimationByIndex(pet.visual, action)
+		else
+			SetUnitAnimation(pet.visual, "stand")
+	pet.visualAction = action
+	pet.visualNextAt = deadline
+
+public function tdPetDisplayInitialize(TDPet pet, int slot, real now)
+	if not tdPetDisplayOwnerValid(pet, pet == null ? null : pet.host, pet == null ? -1 : pet.generation)
+		return
+	tdPetDisplayPosition(pet)
+	pet.visualCycle = 0
+	tdPetDisplayAction(pet, tdPetDisplaySupported(pet.species) ? TD_PET_DISPLAY_FLOAT : 0, now + tdPetDisplayIdleGap(pet.lane, slot, pet.species))
+
+public function tdPetDisplayTick(TDPet pet, int slot, real now)
+	if not tdPetDisplayOwnerValid(pet, pet == null ? null : pet.host, pet == null ? -1 : pet.generation)
+		return
+	tdPetDisplayPosition(pet)
+	if pet.visualAction < 0
+		tdPetDisplayInitialize(pet, slot, now)
+		return
+	if not tdPetDisplaySupported(pet.species)
+		return
+	if pet.paused
+		tdPetDisplayAction(pet, TD_PET_DISPLAY_FLOAT, now + tdPetDisplayIdleGap(pet.lane, slot, pet.species))
+		return
+	if now < pet.visualNextAt
+		return
+	if pet.visualAction == TD_PET_DISPLAY_FLOAT
+		let action = tdPetDisplayIdleAction(pet.visualCycle)
+		pet.visualCycle = (pet.visualCycle + 1) mod 3
+		tdPetDisplayAction(pet, action, now + tdPetDisplayDuration(action))
+	else
+		tdPetDisplayAction(pet, TD_PET_DISPLAY_FLOAT, now + tdPetDisplayIdleGap(pet.lane, slot, pet.species))
+
+public function tdPetDisplayCast(TDPet pet, unit host, int generation, real now)
+	if not tdPetDisplayOwnerValid(pet, host, generation) or pet.paused or not tdPetDisplaySupported(pet.species)
+		return
+	// A genuinely successful activation always restarts the cosmetic gesture.
+	SetUnitAnimationByIndex(pet.visual, TD_PET_DISPLAY_CAST)
+	pet.visualAction = TD_PET_DISPLAY_CAST
+	pet.visualNextAt = now + tdPetDisplayDuration(TD_PET_DISPLAY_CAST)

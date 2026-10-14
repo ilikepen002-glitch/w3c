@@ -17,3 +17,5 @@
 来源：所有艺术资产均由本次任务原创构建，未含第三方模型、暴雪模型抽取、商业素材或下载模型。程序构建脚本依赖已安装的标准工具（Blender4.3.2、Python/Pillow/numpy、mdx-m3-viewer5.7.9、TypeScript4.9.5、gl-matrix3.4.4）；工具自身许可证与本包原创资产分开。没有第三方艺术再分发约束；不保证AI产出版权可登记性。
 
 复现：Sources每个模型包含生成器、导出/验证/预览脚本、源JSON、MDL、PNG atlas源和单项检查报告。解析器脚本当前引用本次云工作目录的已安装依赖，移机需从可信官方包源安装上述依赖并调整路径；本包不含可执行安装程序。
+2026-10-13 银鬃鲜彩样板：该只贴图改用内置 imagegen 基于用户认可的本作概念图生成独立4×4材质图集；精确提示与来源见 models/SilverManeBeast/cartoon-texture-provenance.json。模型沿用原创几何作有限轮廓调整，骨骼动画与拓扑不变。其余14种资产不变。样板尚未构图或实机验证。
+Silver Mane display animation extension: the approved b24e6c19 model appends indices 5–9 and two unused origin/head reference attachments to the fb47e968 cartoon sample, preserving original rig/0–4 keys and 3038-triangle budget. Runtime uses bound-unit animation indices only; no attachment effects are created. Matching atlas is imported from fb47e968.

@@ -62,6 +62,15 @@ class ElementRuntime(PetAttackRuntime):
             self.lists[args[0]].append(args[1]);return True,None
         if name=='dispatch_LinkedList_LinkedList_dequeue':
             require(self.lists[args[0]],'Actual dummy queue underflow');return True,self.lists[args[0]].pop(0)
+        # Bound pv visuals are existing owned units, distinct from Fx recyclers.
+        if name in ('SetUnitFlyHeight', 'SetUnitAnimation', 'SetUnitAnimationByIndex'):
+            unit = self.units[args[0]]
+            visual_types = {self.invoke('tdPetVisualUnitId', species) for species in range(1, 16)}
+            if unit['type'] in visual_types:
+                if name == 'SetUnitFlyHeight': unit['z'] = args[1]
+                else: unit['animation'] = args[1]
+                return True, None
+            require(name == 'SetUnitFlyHeight', 'Animation touched a non-bound visual')
         if name in ('SetUnitX','SetUnitY','SetUnitFlyHeight','SetUnitFacing','SetUnitScale','SetUnitVertexColor','PauseUnit','SetUnitOwner'):
             unit=self.units[args[0]]
             require(unit['type']==self.globals['DummyRecycler_DUMMY_UNIT_ID'],'Cosmetic setter touched a non-Fx unit')
