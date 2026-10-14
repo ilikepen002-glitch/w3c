@@ -451,20 +451,38 @@ public function tdPetNextOccupied(int lane, int slot, int direction) returns int
 public function tdPetCreditWave(int lane, int wave)
 	if not tdIsLanePlayer(lane) or wave < 1 or wave > 32
 		return
+	if not tdPetLaneCanManage(lane) or tdIsLaneFinished(lane) or not tdIsWaveResolved(lane, wave)
+		return
 	let key = lane * 40 + wave
 	if tdPetWaveCredited[key]
 		return
 	tdPetWaveCredited[key] = true
 	tdPetResonance[lane] = IMaxBJ(tdPetResonance[lane], tdPetResonanceForWave(wave))
 	let reward = tdPetStageBallReward(wave)
+	var ballsAdded = 0
 	for _ball = 1 to reward
-		tdPetAddBall(lane)
+		if tdPetAddBall(lane)
+			ballsAdded += 1
+	let slotsAdded = tdPetMaterialRewardDelta(tdPetSlotStones[lane], tdPetStageSlotStoneReward(wave))
+	let rerollsAdded = tdPetMaterialRewardDelta(tdPetRerollStones[lane], tdPetStageRerollStoneReward(wave))
+	tdPetSlotStones[lane] += slotsAdded
+	tdPetRerollStones[lane] += rerollsAdded
 	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
 		let pet = tdPetAt(lane, slot)
 		if pet != null
 			pet.level = tdPetResonance[lane]
-	if not compiletime and reward > 0
-		DisplayTimedTextToPlayer(Player(lane), 0, 0, 5.0, "精灵补给：普通球 +6 · 共鸣Lv" + tdPetResonance[lane].toString())
+	if not compiletime
+		var message = ""
+		if ballsAdded > 0
+			message += "普通球 +" + ballsAdded.toString() + "  "
+		if slotsAdded > 0
+			message += "开栏石 +" + slotsAdded.toString() + "  "
+		if rerollsAdded > 0
+			message += "洗练石 +" + rerollsAdded.toString() + "  "
+		if wave == 4 or wave == 8
+			message += "第" + tdPetUnlockedSlots(tdPetResonanceForWave(wave)).toString() + "技能共鸣已解锁"
+		if message != ""
+			DisplayTimedTextToPlayer(Player(lane), 0, 0, 5.0, "精灵补给：" + message)
 public function tdPetTakeDropBudget(int lane, int wave) returns boolean
 	if not tdIsLanePlayer(lane) or wave < 1 or wave > 32
 		return false

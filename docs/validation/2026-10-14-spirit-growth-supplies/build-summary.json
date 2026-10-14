@@ -1,0 +1,48 @@
+{
+  "checks": {
+    "status": "PASS",
+    "transaction": "/workspace/shared/spirit-growth-supplies-20261014/_build/linux-i1alddnu",
+    "mode": "checks",
+    "parentCommit": "3aefc083dc79de9c66a11f0e09535fd97d359e59",
+    "compilerSha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+    "grillSha256": "c5afe67aa5eeabfb98f0ec2f3f0831d8ffc2f4199c26b89eb7418f14319f9f87",
+    "stdlibTree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+    "jdkRuntime": "27+35-2325",
+    "activeCooldownSourceGate": "PASS",
+    "nativeMapScript": {
+      "sourceTemplateSha256": "ad702b6b5faa154f9416a9a3650303abfbbad4f7ff64794cecbeb51082f42304",
+      "scriptSha256": "95cb24509ca5210908221ac0edf0614529fb8d1fb681578fbcc0b4e8689ab75e",
+      "origin": "read-only war3map.j from exact source template, not a stub or inherited built map"
+    },
+    "inputCount": 1582,
+    "inputsSHA256": "56b13fefcbc9ba3f0f721bd3f1c7c4dd926b4cf0bbede148a188b6da6c6fda07"
+  },
+  "build": {
+    "status": "PASS",
+    "transaction": "/workspace/shared/spirit-growth-supplies-20261014/_build/linux-ki8d7bma",
+    "mode": "build",
+    "parentCommit": "3aefc083dc79de9c66a11f0e09535fd97d359e59",
+    "compilerSha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+    "grillSha256": "c5afe67aa5eeabfb98f0ec2f3f0831d8ffc2f4199c26b89eb7418f14319f9f87",
+    "stdlibTree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+    "jdkRuntime": "27+35-2325",
+    "activeCooldownSourceGate": "PASS",
+    "nativeMapScript": {
+      "sourceTemplateSha256": "ad702b6b5faa154f9416a9a3650303abfbbad4f7ff64794cecbeb51082f42304",
+      "scriptSha256": "95cb24509ca5210908221ac0edf0614529fb8d1fb681578fbcc0b4e8689ab75e",
+      "origin": "read-only war3map.j from exact source template, not a stub or inherited built map"
+    },
+    "activeCooldownArtifactGate": "real MPQ/JASS PASS",
+    "startupArtifactGate": "pet registration/routing and gameplay bootstrap PASS",
+    "artifact": {
+      "sha256": "657c55c619d03eacec6fdfe116fdefbfd9c0b952558fcd2966daee0dcae8c50d",
+      "importsChecked": 407,
+      "displayName": "\u5951\u7075\u5b88\u536b\u6218 20261014-1058-UTC+8",
+      "gate": "real read-only Python MPQ/JASS/object tables/import bytes",
+      "candidate": "/workspace/shared/spirit-growth-supplies-20261014/_build/linux-ki8d7bma/project/_build/MyFirstWurstMap.w3x.w3x",
+      "output": "/workspace/shared/spirit-growth-supplies-20261014/ExampleMap.w3x"
+    },
+    "inputCount": 1582,
+    "inputsSHA256": "56b13fefcbc9ba3f0f721bd3f1c7c4dd926b4cf0bbede148a188b6da6c6fda07"
+  }
+}

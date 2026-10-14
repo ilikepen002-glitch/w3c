@@ -1,0 +1,110 @@
+package TDPetGrowthRewardTests
+import TDPetRules
+import TDPetState
+import TDPetData
+import TDState
+
+function growthLane(int lane)
+	tdResetState()
+	tdPetInitializeLane(lane)
+	tdSetLaneActive(lane, true)
+
+function growthCredit(int lane, int wave)
+	tdMarkWaveResolved(lane, wave)
+	tdPetCreditWave(lane, wave)
+
+@Test function growthRewardSchedulePreservesCaptureBudget()
+	growthLane(0)
+	var slots = 0
+	var rerolls = 0
+	var balls = 0
+	for wave = 1 to 32
+		slots += tdPetStageSlotStoneReward(wave)
+		rerolls += tdPetStageRerollStoneReward(wave)
+		balls += tdPetStageBallReward(wave)
+		growthCredit(0, wave)
+		tdPetCreditWave(0, wave)
+		tdPetSlotStones[0].assertEquals(slots)
+		tdPetRerollStones[0].assertEquals(rerolls)
+		tdPetBallsForLane(0).assertEquals(3 + balls)
+	slots.assertEquals(2)
+	rerolls.assertEquals(8)
+	balls.assertEquals(24)
+	tdPetStageSlotStoneReward(0).assertEquals(0)
+	tdPetStageSlotStoneReward(33).assertEquals(0)
+	tdPetStageRerollStoneReward(-1).assertEquals(0)
+
+@Test function growthRewardUsesResolvedWaveAndIndependentLanes()
+	growthLane(0)
+	tdPetInitializeLane(1)
+	tdSetLaneActive(1, true)
+	tdSetGlobalWave(25)
+	tdPetCreditWave(0, 4)
+	tdPetSlotStones[0].assertEquals(0)
+	growthCredit(0, 12)
+	growthCredit(0, 4)
+	tdPetSlotStones[0].assertEquals(2)
+	tdPetRerollStones[0].assertEquals(4)
+	tdPetSlotStones[1].assertEquals(0)
+	growthCredit(1, 4)
+	tdPetSlotStones[1].assertEquals(1)
+	tdPetRerollStones[1].assertEquals(2)
+	tdPetSlotStones[0] = 0
+	tdPetCreditWave(0, 4)
+	tdPetSlotStones[0].assertEquals(0)
+	tdPetCreditWave(-1, 4)
+	tdPetCreditWave(4, 4)
+	tdPetCreditWave(0, 0)
+	tdPetCreditWave(0, 33)
+	tdPetRerollStones[0].assertEquals(4)
+
+@Test function growthRewardRejectsClosedOrUnresolvedLanes()
+	for mode = 0 to 4
+		growthLane(0)
+		tdMarkWaveResolved(0, 4)
+		if mode == 0
+			tdSetLaneActive(0, false)
+		else if mode == 1
+			tdSetLaneDefeated(0, true)
+		else if mode == 2
+			tdSetLaneFinished(0, true)
+		else if mode == 3
+			tdSetGameOver(true)
+		else
+			tdPetMarkPlayerLeft(0)
+		tdPetCreditWave(0, 4)
+		tdPetSlotStones[0].assertEquals(0)
+		tdPetRerollStones[0].assertEquals(0)
+		tdPetBallsForLane(0).assertEquals(3)
+
+@Test function growthRewardSaturatesEachMaterialWithoutOverflow()
+	growthLane(0)
+	tdPetSlotStones[0] = TD_PET_MATERIAL_LIMIT
+	tdPetRerollStones[0] = TD_PET_MATERIAL_LIMIT - 1
+	growthCredit(0, 4)
+	tdPetSlotStones[0].assertEquals(TD_PET_MATERIAL_LIMIT)
+	tdPetRerollStones[0].assertEquals(TD_PET_MATERIAL_LIMIT)
+	tdPetBallsForLane(0).assertEquals(9)
+	tdPetSlotStones[0] = 0
+	tdPetRerollStones[0] = 0
+	tdPetCreditWave(0, 4)
+	tdPetSlotStones[0].assertEquals(0)
+	tdPetRerollStones[0].assertEquals(0)
+	tdPetMaterialRewardDelta(-1, 2).assertEquals(0)
+	tdPetMaterialRewardDelta(TD_PET_MATERIAL_LIMIT, 2).assertEquals(0)
+	tdPetMaterialRewardDelta(TD_PET_MATERIAL_LIMIT - 1, 2).assertEquals(1)
+
+@Test function growthRewardIndependentOfCollectionAndBallCapacity()
+	growthLane(0)
+	for index = 1 to TD_PET_BALL_LIMIT
+		tdPetAddBall(0)
+	for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+		let pet = new TDPet(0, 1, 1)
+		tdPetStore(0, pet).assertTrue()
+	growthCredit(0, 4)
+	tdPetBallsForLane(0).assertEquals(TD_PET_BALL_LIMIT)
+	tdPetSlotStones[0].assertEquals(1)
+	tdPetRerollStones[0].assertEquals(2)
+	growthCredit(0, 12)
+	tdPetSlotStones[0].assertEquals(2)
+	tdPetRerollStones[0].assertEquals(4)

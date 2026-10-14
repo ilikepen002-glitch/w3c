@@ -30,6 +30,18 @@ public function tdPetStageEnd(int stage) returns int
 public function tdPetStageBallReward(int wave) returns int
 	return wave == 4 or wave == 8 or wave == 13 or wave == 19 ? 6 : 0
 
+public function tdPetStageSlotStoneReward(int wave) returns int
+	return wave == 4 or wave == 12 ? 1 : 0
+
+public function tdPetStageRerollStoneReward(int wave) returns int
+	return wave == 4 or wave == 12 or wave == 20 or wave == 28 ? 2 : 0
+
+public function tdPetMaterialRewardDelta(int stock, int reward) returns int
+	if stock < 0 or reward <= 0
+		return 0
+	// Subtract before adding; stocks may already be at the signed-int limit.
+	return IMinBJ(reward, 2147483647 - stock)
+
 public function tdPetSkillIsNumeric(int skill) returns boolean
 	return skill >= 0 and skill <= 3
 

@@ -541,7 +541,9 @@ public function tdStartWaveSchedule()
 			tdStartGlobalWave(1)
 
 public function tdHandleWaveFinished(int playerId, int wave)
-	if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId)
+	if not tdIsLanePlayer(playerId) or wave < 1 or wave > tdWaveCount()
+		return
+	if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId)
 		return
 	if tdIsWaveResolved(playerId, wave)
 		return
