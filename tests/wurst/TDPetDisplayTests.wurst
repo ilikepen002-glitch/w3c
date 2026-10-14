@@ -72,3 +72,13 @@ import TDConfig
 	pet.readyAt.assertEquals(99.0)
 	pet.generation.assertEquals(1)
 	destroy pet
+
+@Test function displayScaleIsBoundedAndSpeciesSpecific()
+	for species = 1 to 15
+		let scale = tdPetDisplayScale(species)
+		(scale >= 0.75 and scale <= 1.50).assertTrue()
+	tdPetDisplayScale(1).assertEquals(0.83)
+	tdPetDisplayScale(2).assertEquals(0.78)
+	tdPetDisplayScale(14).assertEquals(1.50)
+	tdPetDisplayScale(0).assertEquals(1.0)
+	tdPetDisplayScale(16).assertEquals(1.0)

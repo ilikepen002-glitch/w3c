@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "sha256": "b632d51143397128e623203b1f73017902b35cdcd86acf8d647434142883e28e",
+  "nodes": [
+    {
+      "unit": "uG11",
+      "final_display": 1
+    },
+    {
+      "unit": "uG12",
+      "final_display": 1
+    },
+    {
+      "unit": "uG13",
+      "final_display": 1
+    },
+    {
+      "unit": "uG14",
+      "final_display": 1
+    },
+    {
+      "unit": "uG15",
+      "final_display": 1
+    },
+    {
+      "unit": "uG6A",
+      "final_display": 1
+    },
+    {
+      "unit": "uG6B",
+      "final_display": 2
+    }
+  ],
+  "upgrade_edges": 3,
+  "native_display_levels": 3,
+  "combat_sources_unchanged": true,
+  "damage_matrix": "tiers 1–5 and A:180; B:270; evolved B:324",
+  "not_tested": "Warcraft native rendering/input"
+}

@@ -156,7 +156,7 @@ public function tdEvolutionSplitArrowDisplayLevel(int choice, int branch, boolea
 	return choice == TD_TOWER_CHOICE_ARCHER and branch == TD_TOWER_BRANCH_A and evolved ? 2 : 1
 
 public function tdEvolutionCorpseDisplayLevel(int choice, int branch, boolean evolved) returns int
-	return choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_B and evolved ? 2 : 1
+	return choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_B ? (evolved ? 2 : 3) : 1
 
 // The sole effect-application path. Caller has already spent the lane token.
 function tdEvolutionApplyChosenBranch(TDEvolutionTower record)
@@ -193,6 +193,13 @@ public function tdEvolutionRefresh(unit tower)
 	let lane = GetPlayerId(GetOwningPlayer(tower))
 	if not tdIsLanePlayer(lane)
 		return
+	// A116 is a zero-effect display carrier; level 3 describes unevolved blood plague.
+	// Use the actual rawcode after upgrades/cancellations, without adding a missing skill.
+	if tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == TD_TOWER_CHOICE_GHOUL
+		let actualCorpseLevel = tower.getAbilityLevel(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID)
+		let corpseLevel = tdEvolutionCorpseDisplayLevel(TD_TOWER_CHOICE_GHOUL, tdTowerBranchForUnitTypeId(GetUnitTypeId(tower)), record.evolved)
+		if actualCorpseLevel > 0 and actualCorpseLevel != corpseLevel
+			tower.setAbilityLevel(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID, corpseLevel)
 	let progressLevel = tdEvolutionProgressLevel(record.kills)
 	var actualProgressLevel = tower.getAbilityLevel(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID)
 	if actualProgressLevel == 0

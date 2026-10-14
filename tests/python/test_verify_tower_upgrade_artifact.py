@@ -160,10 +160,10 @@ class TowerUpgradeArtifactTests(unittest.TestCase):
                 with self.subTest(ability=aid, field=field), self.assertRaisesRegex(ValueError, 'wrong visible skill cell'):
                     verifier.validate_command_ui(self.units, abilities)
 
-    def test_two_level_split_corpse_displays_must_be_zero_effect(self):
+    def test_all_split_corpse_display_levels_must_be_zero_effect(self):
         validate_branch_displays(self.units, self.abilities)
         for aid in ['A100', 'A116']:
-            for level in [1, 2]:
+            for level in range(1, 4 if aid == 'A116' else 3):
                 for field, column, bad in [('Ocr1', 1, 1.0), ('Ocr2', 2, 1.2), ('Ocr3', 3, 1.0), ('Ocr5', 5, 1)]:
                     abilities = self.copy_ability(aid)
                     self.change_field(abilities, aid, field, bad, level, column)

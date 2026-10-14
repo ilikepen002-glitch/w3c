@@ -209,7 +209,7 @@ function evolvedSkills(int choice, int branch) returns string
 	for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
 		tdEvolutionSplitArrowDisplayLevel(TD_TOWER_CHOICE_ARCHER, branch, false).assertEquals(1)
 		tdEvolutionSplitArrowDisplayLevel(TD_TOWER_CHOICE_ARCHER, branch, true).assertEquals(branch == TD_TOWER_BRANCH_A ? 2 : 1)
-		tdEvolutionCorpseDisplayLevel(TD_TOWER_CHOICE_GHOUL, branch, false).assertEquals(1)
+		tdEvolutionCorpseDisplayLevel(TD_TOWER_CHOICE_GHOUL, branch, false).assertEquals(branch == TD_TOWER_BRANCH_B ? 3 : 1)
 		tdEvolutionCorpseDisplayLevel(TD_TOWER_CHOICE_GHOUL, branch, true).assertEquals(branch == TD_TOWER_BRANCH_B ? 2 : 1)
 	for choice = 1 to TD_TOWER_CHOICE_COUNT
 		if choice != TD_TOWER_CHOICE_ARCHER
@@ -250,3 +250,14 @@ function evolvedSkills(int choice, int branch) returns string
 @Test function corpsePetTooltipKeepsTheUnchangedThirtySixBaseDamage()
 	for quality = 1 to 4
 		tdPetSkillDescriptionById(10, quality).contains(tdTooltipNumber(180.0 * tdPetSkillPower(10, quality)) + "伤害").assertTrue()
+
+@Test function corpseDisplayMatchesEveryActualTowerRawcode()
+	for level = 1 to TD_MAX_TOWER_LEVEL
+		for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+			let rawcode = tdTowerUnitIdForLevelBranch(TD_TOWER_CHOICE_GHOUL, level, branch)
+			let actualLevel = tdTowerLevelForUnitTypeId(rawcode)
+			let actualBranch = tdTowerBranchForUnitTypeId(rawcode)
+			for evolution = 0 to 1
+				let displayLevel = tdEvolutionCorpseDisplayLevel(TD_TOWER_CHOICE_GHOUL, actualBranch, evolution == 1)
+				let displayedDamage = displayLevel == 2 ? 324.0 : (displayLevel == 3 ? 270.0 : 180.0)
+				tdGhoulCorpseExplosionDamageForBranch(actualLevel, actualBranch, evolution == 1).assertContinuityNear(displayedDamage)

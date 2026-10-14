@@ -1,0 +1,76 @@
+{
+  "status": "PASS",
+  "members": 427,
+  "changed": [
+    "war3map.j",
+    "war3map.w3a",
+    "war3map.w3i",
+    "war3map.w3u"
+  ],
+  "ability_changes": "A116 current tooltips, neutral level3 only",
+  "unit_changes": [
+    {
+      "unit": "pv01",
+      "scale": 0.83
+    },
+    {
+      "unit": "pv02",
+      "scale": 0.78
+    },
+    {
+      "unit": "pv03",
+      "scale": 0.79
+    },
+    {
+      "unit": "pv04",
+      "scale": 1.07
+    },
+    {
+      "unit": "pv05",
+      "scale": 1.21
+    },
+    {
+      "unit": "pv06",
+      "scale": 1.46
+    },
+    {
+      "unit": "pv07",
+      "scale": 0.81
+    },
+    {
+      "unit": "pv08",
+      "scale": 0.88
+    },
+    {
+      "unit": "pv09",
+      "scale": 0.98
+    },
+    {
+      "unit": "pv0A",
+      "scale": 1.04
+    },
+    {
+      "unit": "pv0B",
+      "scale": 0.82
+    },
+    {
+      "unit": "pv0C",
+      "scale": 0.99
+    },
+    {
+      "unit": "pv0D",
+      "scale": 1.06
+    },
+    {
+      "unit": "pv0E",
+      "scale": 1.5
+    },
+    {
+      "unit": "pv0F",
+      "scale": 1.17
+    }
+  ],
+  "all_other_member_bytes_identical": true,
+  "baseline_sha256": "9b9846a111bf0cc701781ac5041b55c467c30a03b60abeb9da08a4ee28511fc8",
+  "candidate_sha256": "b632d51143397128e623203b1f73017902b35cdcd86acf8d647434142883e28e"
+}

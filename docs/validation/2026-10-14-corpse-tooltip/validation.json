@@ -1,0 +1,10 @@
+{
+  "checks": "PASS",
+  "build": "PASS",
+  "source_tests": 11,
+  "attached_scale_tests": 5,
+  "current_map_upgrade_mutation_tests": 31,
+  "current_map_sha256": "b632d51143397128e623203b1f73017902b35cdcd86acf8d647434142883e28e",
+  "not_tested": "Warcraft native rendering/input; other mixed-upgrade skill tooltips are out of this narrow batch",
+  "full_evolution_replay": "PASS: 4 lanes, 17 stale lifecycle cases, 935 kill-only cases, 10 terminal branches, nonce bypass negative"
+}

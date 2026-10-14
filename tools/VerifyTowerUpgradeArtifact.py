@@ -416,7 +416,7 @@ def validate_evolution_jass(script, units, abilities):
                 split = evaluator.call('tdEvolutionSplitArrowDisplayLevel', [family_index, branch_index, evolved])
                 corpse = evaluator.call('tdEvolutionCorpseDisplayLevel', [family_index, branch_index, evolved])
                 require(split == (2 if family == 'A' and branch == 'A' and evolved else 1), f'{uid}: split display evolution leaks')
-                require(corpse == (2 if family == 'G' and branch == 'B' and evolved else 1), f'{uid}: corpse display evolution leaks')
+                require(corpse == ((2 if evolved else 3) if family == 'G' and branch == 'B' else 1), f'{uid}: corpse display evolution leaks')
     for level in range(1, 7):
         for branch in [0, 1, 2]:
             for evolved in [False, True]:

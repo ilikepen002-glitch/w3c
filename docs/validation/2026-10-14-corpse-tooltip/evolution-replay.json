@@ -1,0 +1,32 @@
+{
+  "sha256": "b632d51143397128e623203b1f73017902b35cdcd86acf8d647434142883e28e",
+  "settlement": {
+    "four_independent_lanes": true,
+    "real_boss_results": [
+      "kill",
+      "surviving_leak",
+      "surviving_timeout"
+    ],
+    "actual_boss_failure_routes": 4,
+    "closed_lanes": 5
+  },
+  "confirmations": {
+    "old_dialogs": 2,
+    "actor_nonce_checks": 3,
+    "cancel_duplicate_no_refund": true,
+    "native_deselection_bridges": 2
+  },
+  "lifecycle": {
+    "stale_lifecycle_cases": 17,
+    "kill_only_cases": 935
+  },
+  "branches": {
+    "ten_terminal_branches": 10,
+    "pet_binding_readyAt_preserved": true,
+    "single_wings_and_no_repeat": true
+  },
+  "mutation": {
+    "packed_nonce_bypass_detected": true
+  },
+  "not_tested": "Warcraft rendering, Dialog input, native aura projection, FPS or balance"
+}

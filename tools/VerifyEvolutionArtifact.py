@@ -17,8 +17,9 @@ def validate_branch_displays(units, abilities):
     for aid in ['A100', 'A116']:
         parent, fields = abilities[aid]
         require(parent == 'AOcr', f'{aid}: display carrier must inherit neutral critical strike')
-        require(fields.get(('alev', 0, 0)) == (0, 2), f'{aid}: expected normal/evolved display levels')
-        for level in [1, 2]:
+        levels = 3 if aid == 'A116' else 2
+        require(fields.get(('alev', 0, 0)) == (0, levels), f'{aid}: expected normal/evolved display levels')
+        for level in range(1, levels + 1):
             for field, column, expected in [('Ocr1', 1, 0.0), ('Ocr2', 2, 1.0), ('Ocr3', 3, 0.0), ('Ocr5', 5, 0)]:
                 require(fields.get((field, level, column), (None, None))[1] == expected, f'{aid}/{level}: display carrier has combat effect')
     split = abilities['A100'][1]
@@ -26,6 +27,11 @@ def validate_branch_displays(units, abilities):
     require(all(word in split[('aub1', 2, 0)][1] for word in ['7', '20%', '额外', '主箭', '不变']), 'Evolved split display does not match extra-arrow-only gain')
     require('180' in abilities['A116'][1][('aub1', 1, 0)][1], 'Normal corpse display must describe 180 damage')
     require('324' in abilities['A116'][1][('aub1', 2, 0)][1], 'Evolved corpse display must describe 324 damage')
+    require('270' in abilities['A116'][1][('aub1', 3, 0)][1], 'Blood corpse display must describe 270 damage')
+    for level, damage in [(1, '180'), (2, '324'), (3, '270')]:
+        text = abilities['A116'][1][('aub1', level, 0)][1]
+        require(text == '普攻击杀敌人时，若其攻击前生命值|n不高于25%，触发尸爆。|n对周围220范围内其他本路敌人|n造成' + damage + '伤害。',
+                f'A116/{level}: current corpse effect/condition/line breaks mismatch')
     for uid in ['uA6A', 'uA6B']:
         require('7' in units[uid].get('utub', '') + units[uid].get('uube', ''), f'{uid}: final split tooltip does not describe seven targets')
 

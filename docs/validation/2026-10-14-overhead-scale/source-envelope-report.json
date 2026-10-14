@@ -1,0 +1,235 @@
+{
+  "status": "PASS",
+  "baseline": "779151ec",
+  "models": [
+    {
+      "species": 1,
+      "name": "银鬃灵兽",
+      "oldScale": 0.45,
+      "newScale": 0.83,
+      "floatAxes": [
+        157.47439575195312,
+        49.43575668334961,
+        64.39719700813293
+      ],
+      "oldLongest": 70.86347808837891,
+      "newLongest": 130.70374847412108,
+      "maxGestureLongest": 143.5650186920166,
+      "minimumPoseZ": 0.24899996042251585
+    },
+    {
+      "species": 2,
+      "name": "锋翼隼",
+      "oldScale": 0.45,
+      "newScale": 0.78,
+      "floatAxes": [
+        103.7191390991211,
+        166.84146118164062,
+        64.38505935668945
+      ],
+      "oldLongest": 75.07865753173829,
+      "newLongest": 130.1363397216797,
+      "maxGestureLongest": 148.7904689025879,
+      "minimumPoseZ": 8.71305456161499
+    },
+    {
+      "species": 3,
+      "name": "铜甲穿山灵",
+      "oldScale": 0.45,
+      "newScale": 0.79,
+      "floatAxes": [
+        165.2147445678711,
+        48.660255432128906,
+        41.08455562591553
+      ],
+      "oldLongest": 74.346635055542,
+      "newLongest": 130.51964820861818,
+      "maxGestureLongest": 131.39451751708984,
+      "minimumPoseZ": -0.8414295291900635
+    },
+    {
+      "species": 4,
+      "name": "叶翼仙灵",
+      "oldScale": 0.45,
+      "newScale": 1.07,
+      "floatAxes": [
+        47.24836540222168,
+        121.10377502441406,
+        98.80023193359375
+      ],
+      "oldLongest": 54.49669876098633,
+      "newLongest": 129.58103927612305,
+      "maxGestureLongest": 138.19839569091798,
+      "minimumPoseZ": 22.192116088867188
+    },
+    {
+      "species": 5,
+      "name": "树芽鹿",
+      "oldScale": 0.45,
+      "newScale": 1.21,
+      "floatAxes": [
+        90.86702728271484,
+        56.0,
+        107.27901315689087
+      ],
+      "oldLongest": 48.275555920600894,
+      "newLongest": 129.80760591983795,
+      "maxGestureLongest": 135.1765229475498,
+      "minimumPoseZ": -0.726000028848648
+    },
+    {
+      "species": 6,
+      "name": "菌伞灵",
+      "oldScale": 0.45,
+      "newScale": 1.46,
+      "floatAxes": [
+        72.0,
+        65.5776252746582,
+        89.34890747070312
+      ],
+      "oldLongest": 40.207008361816406,
+      "newLongest": 130.44940490722655,
+      "maxGestureLongest": 135.8253956079483,
+      "minimumPoseZ": -0.2920000696182251
+    },
+    {
+      "species": 7,
+      "name": "潮尾灵蛟",
+      "oldScale": 0.45,
+      "newScale": 0.81,
+      "floatAxes": [
+        161.3467903137207,
+        70.98920440673828,
+        59.18930625915527
+      ],
+      "oldLongest": 72.60605564117432,
+      "newLongest": 130.6909001541138,
+      "maxGestureLongest": 132.73773960113527,
+      "minimumPoseZ": 14.317484779357912
+    },
+    {
+      "species": 8,
+      "name": "霜鳍灵鲼",
+      "oldScale": 0.45,
+      "newScale": 0.88,
+      "floatAxes": [
+        147.05229949951172,
+        129.00753784179688,
+        35.42033767700195
+      ],
+      "oldLongest": 66.17353477478028,
+      "newLongest": 129.40602355957031,
+      "maxGestureLongest": 130.14983276367187,
+      "minimumPoseZ": 13.652570037841796
+    },
+    {
+      "species": 9,
+      "name": "雪鬃水獭",
+      "oldScale": 0.45,
+      "newScale": 0.98,
+      "floatAxes": [
+        132.45983505249023,
+        47.620731353759766,
+        47.59460210800171
+      ],
+      "oldLongest": 59.60692577362061,
+      "newLongest": 129.81063835144042,
+      "maxGestureLongest": 130.36699127197267,
+      "minimumPoseZ": 0.587999906539917
+    },
+    {
+      "species": 10,
+      "name": "赤翎火鸟",
+      "oldScale": 0.45,
+      "newScale": 1.04,
+      "floatAxes": [
+        112.45561599731445,
+        125.18264770507812,
+        101.45436477661133
+      ],
+      "oldLongest": 56.332191467285156,
+      "newLongest": 130.18995361328126,
+      "maxGestureLongest": 148.41556640625,
+      "minimumPoseZ": 13.168202972412109
+    },
+    {
+      "species": 11,
+      "name": "熔角火蜥",
+      "oldScale": 0.45,
+      "newScale": 0.82,
+      "floatAxes": [
+        159.02761840820312,
+        77.8876953125,
+        50.58995819091797
+      ],
+      "oldLongest": 71.5624282836914,
+      "newLongest": 130.40264709472655,
+      "maxGestureLongest": 131.5025389099121,
+      "minimumPoseZ": 0.5840234899520874
+    },
+    {
+      "species": 12,
+      "name": "烬尾火狐",
+      "oldScale": 0.45,
+      "newScale": 0.99,
+      "floatAxes": [
+        131.3397216796875,
+        123.29924011230469,
+        84.09001731872559
+      ],
+      "oldLongest": 59.102874755859375,
+      "newLongest": 130.0263244628906,
+      "maxGestureLongest": 161.27318435668946,
+      "minimumPoseZ": 0.8910000944137573
+    },
+    {
+      "species": 13,
+      "name": "岩壳龟",
+      "oldScale": 0.45,
+      "newScale": 1.06,
+      "floatAxes": [
+        122.99323272705078,
+        82.0,
+        84.89999675750732
+      ],
+      "oldLongest": 55.34695472717285,
+      "newLongest": 130.37282669067383,
+      "maxGestureLongest": 132.8009959411621,
+      "minimumPoseZ": -0.53
+    },
+    {
+      "species": 14,
+      "name": "磐臂山魈",
+      "oldScale": 0.45,
+      "newScale": 1.5,
+      "floatAxes": [
+        55.37622833251953,
+        85.02113342285156,
+        86.4208083152771
+      ],
+      "oldLongest": 38.889363741874696,
+      "newLongest": 129.63121247291565,
+      "maxGestureLongest": 138.59127724170685,
+      "minimumPoseZ": 0.30000007152557373
+    },
+    {
+      "species": 15,
+      "name": "砂环灵螺",
+      "oldScale": 0.45,
+      "newScale": 1.17,
+      "floatAxes": [
+        111.14985656738281,
+        41.40071487426758,
+        69.50771689414978
+      ],
+      "oldLongest": 50.017435455322264,
+      "newLongest": 130.04533218383787,
+      "maxGestureLongest": 132.28820858001708,
+      "minimumPoseZ": -1.331595025062561
+    }
+  ],
+  "wildScaleUnchanged": 2.55,
+  "collectionScaleUnchanged": 0.65,
+  "heightFormulaUnchanged": true,
+  "boundary": "Offline MDX extents and source only. Not native rendering, health-bar occlusion or FPS verification."
+}
