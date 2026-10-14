@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 import VerifyInventoryRangeArtifact as gate
 
-VALID = b'[Misc]\nPickupItemRange=1200.0\nDropItemRange=1200.0\nGiveItemRange=1200.0\nDisplayBuildingStatus=1\n'
+VALID = b'[Misc]\nPickupItemRange=1200.0\nDropItemRange=1200.0\nGiveItemRange=1200.0\nDisplayBuildingStatus=1\nUpgradeRefundRate=1.0\n'
 
 
 class BuildingStatusConstantsTests(unittest.TestCase):
@@ -21,8 +21,14 @@ class BuildingStatusConstantsTests(unittest.TestCase):
         data = ('\r\n'.join([lines[0]] + list(reversed(lines[1:]))) + '\r\n').encode()
         self.assertEqual(gate.verify_constants(data), gate.EXPECTED)
 
+    def test_native_slash_comments_preserve_constants(self):
+        self.assertEqual(gate.verify_constants(VALID + b'// native upgrade refunds only\n'), gate.EXPECTED)
+
     def test_invalid_constants_rejected(self):
         cases = (
+            VALID.replace(b'UpgradeRefundRate=1.0\n', b''),
+            VALID.replace(b'UpgradeRefundRate=1.0', b'UpgradeRefundRate=0.8'),
+            VALID + b'ConstructionRefundRate=1.0\n',
             VALID.replace(b'DisplayBuildingStatus=1\n', b''),
             VALID.replace(b'DisplayBuildingStatus=1', b'DisplayBuildingStatus=0'),
             VALID.replace(b'DisplayBuildingStatus', b'BuildingStatusDisplay'),

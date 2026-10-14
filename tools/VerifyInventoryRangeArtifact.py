@@ -12,13 +12,14 @@ EXPECTED = {
     'DropItemRange': '1200.0',
     'GiveItemRange': '1200.0',
     'DisplayBuildingStatus': '1',
+    'UpgradeRefundRate': '1.0',
 }
 
 
 def verify_constants(data):
     # Strict/case-preserving parsing catches wrong section, typo and duplicates.
     # Compare the entire supported set so a display fix cannot reset other rules.
-    parser = configparser.ConfigParser(interpolation=None, strict=True)
+    parser = configparser.ConfigParser(interpolation=None, strict=True, comment_prefixes=('//', ';', '#'))
     parser.optionxform = str
     parser.read_file(io.StringIO(data.decode('utf-8-sig')))
     assert parser.sections() == ['Misc'] and not parser.defaults(), 'Unexpected gameplay constant sections'
