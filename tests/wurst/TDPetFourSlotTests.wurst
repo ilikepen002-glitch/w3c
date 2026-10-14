@@ -81,8 +81,8 @@ import TDState
 	destroy session
 
 @Test function buffVisualModelsAreDistinctAndUseClassicAssets()
-	tdCombatVisualPetBuffModel(11).contains("BloodLustTarget").assertTrue()
-	tdCombatVisualPetBuffModel(12).contains("InnerFireTarget").assertTrue()
+	tdCombatVisualPetBuffModel(11).contains("TDPetBuffFrenzyOrbit").assertTrue()
+	tdCombatVisualPetBuffModel(12).contains("TDPetBuffChargeSeal").assertTrue()
 	tdCombatVisualPetBuffStartModel(11).contains("BloodLustSpecial").assertTrue()
 	tdCombatVisualPetBuffStartModel(12).contains("RoarCaster").assertTrue()
 	tdCombatVisualPetBuffModel(35).assertEquals("")

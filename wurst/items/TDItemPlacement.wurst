@@ -1,6 +1,7 @@
 package TDItemPlacement
 import TDGroundItemRules
 import TDConfig
+import TDItemDropDiagnostic
 import TDGroundItemTerrainMask
 import TDItemPlacementRules
 
@@ -21,7 +22,9 @@ public function tdTryPlaceItemNear(item itm, int lane, vec2 origin, boolean towe
 		let radius = towerNearby ? 512.0 : TD_GROUND_UPGRADE_RADIUS
 		if not tdItemNearbyPointEligible(lane, origin, candidate, radius, tdGroundPointSafeForItem(candidate.x, candidate.y), not IsTerrainPathable(candidate.x, candidate.y, PATHING_TYPE_WALKABILITY))
 			continue
+		tdItemDropDiagnosticMove(itm, "附近退回或背包产物", true, candidate.x, candidate.y)
 		SetItemPosition(itm, candidate.x, candidate.y)
+		tdItemDropDiagnosticMove(itm, "附近退回或背包产物", false, candidate.x, candidate.y)
 		let actual = tdItemActualPosition(itm)
 		if not tdGroundItemHandleValid(itm)
 			return false
@@ -48,7 +51,9 @@ public function tdTryPlaceItemInPile(item itm, int lane, int quality, int firstI
 		if IsTerrainPathable(candidate.x, candidate.y, PATHING_TYPE_WALKABILITY)
 			continue
 		attempted = true
+		tdItemDropDiagnosticMove(itm, "品质收纳", true, candidate.x, candidate.y)
 		SetItemPosition(itm, candidate.x, candidate.y)
+		tdItemDropDiagnosticMove(itm, "品质收纳", false, candidate.x, candidate.y)
 		if tdItemActualInPile(itm, lane, quality)
 			return index
 	return attempted ? -1 : -2
@@ -60,6 +65,8 @@ public function tdRestoreSortedItem(item itm, int lane, vec2 original) returns b
 		return false
 	if (tdItemActualPosition(itm) - original).lengthSq() <= 0.25
 		return true
+	tdItemDropDiagnosticMove(itm, "整理归位", true, original.x, original.y)
 	SetItemPosition(itm, original.x, original.y)
+	tdItemDropDiagnosticMove(itm, "整理归位", false, original.x, original.y)
 	let actual = tdItemActualPosition(itm)
 	return tdGroundSortSourceLane(actual.x, actual.y) == lane and (actual - original).lengthSq() <= 0.25 and not IsTerrainPathable(actual.x, actual.y, PATHING_TYPE_WALKABILITY)

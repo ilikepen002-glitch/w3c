@@ -1,0 +1,51 @@
+{
+  "status": "PASS",
+  "classification": "aggregate exhaustive coverage; original full invocation remains FAIL",
+  "mapSHA256": "05746604cc6cc7108d95619cd6538fa508d97db18dabb4aed184d125ed56d504",
+  "registered": [
+    "lifetimes",
+    "aborts",
+    "deliveredTargetDeath",
+    "explicitCleanup",
+    "passiveCleanup",
+    "ownerReuse",
+    "serialExhaustion",
+    "partialTransfer",
+    "onStackCleanup",
+    "overlapStress",
+    "coreAdmission",
+    "buffAdmission",
+    "buffRetry",
+    "caps",
+    "compiledMutations"
+  ],
+  "originalPassedGroups": [
+    "lifetimes",
+    "aborts",
+    "deliveredTargetDeath",
+    "explicitCleanup",
+    "passiveCleanup",
+    "ownerReuse",
+    "serialExhaustion",
+    "partialTransfer",
+    "onStackCleanup",
+    "overlapStress",
+    "coreAdmission",
+    "buffAdmission"
+  ],
+  "admissionPassedGroups": [
+    "coreAdmission",
+    "buffAdmission",
+    "buffRetry",
+    "caps"
+  ],
+  "mutationPassedGroups": [
+    "compiledMutations"
+  ],
+  "changedGateFunctions": [
+    "reject_mutations",
+    "verify_buff_retry"
+  ],
+  "mutationCount": 19,
+  "allMutationsRejected": true
+}

@@ -8,6 +8,7 @@ import argparse,hashlib,json
 from GenerateTowerTerrainMask import Mpq
 from VerifyElementalPetArtifact import ElementRuntime,EXPECTED
 from VerifyEquipmentAbilityArtifact import require
+from SpiritVisualBudgetFixture import saturate, release
 
 class VfxRuntime(ElementRuntime):
     def __init__(self,script):
@@ -40,11 +41,11 @@ def run(script,skill,mode='normal'):
     r.enemy(116,lane=1);r.visible_units=list(range(102,117))
     if mode=='null':r.reject_visual=True
     if mode=='full':
-        # Saturate the actual shared budget via its production admission API.
-        accepted=sum(r.invoke('tdCombatVisualAcquireCast') for _ in range(128))
-        require(accepted==120,'First creation bucket must cap at120')
-        r.now=start+1.;accepted+=sum(r.invoke('tdCombatVisualAcquireCast') for _ in range(8))
-        require(accepted==128,'Shared visual saturation setup did not reach128')
+        # Preserve the true128 shared ceiling while filling the reserved
+        # core40/decoration88 composition through matching production APIs.
+        held=saturate(r,128)
+        require(r.invoke('tdCombatVisualShortCount')==128,'Shared visual saturation setup did not reach128')
+        r.now=start+1.
     else:
         # Keep styled, null/full and official baseline on the same clock.
         r.now=start+1.
@@ -52,7 +53,7 @@ def run(script,skill,mode='normal'):
     require(r.invoke('tdPetEffectTaskCount')==0 and not r.visual_handles and not r.lightning_handles,
             'VFX completion leaked an active effect/line/context')
     if mode=='full':
-        for _ in range(128):r.invoke('tdCombatVisualReleaseCast')
+        release(r,held)
     if 'tdCombatVisualShortCount' in r.functions:
         require(r.invoke('tdCombatVisualShortCount')==0 and moving(r)==0,'Shared VFX budget did not return to zero')
     return r,battle(r,pet)

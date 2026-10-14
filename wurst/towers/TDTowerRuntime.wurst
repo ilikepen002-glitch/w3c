@@ -2,6 +2,7 @@ package TDTowerRuntime
 import TDCombatVisualRuntime
 import TDBossDarkTideRuntime
 import TDConfig
+import TDItemDropDiagnostic
 import TDState
 import TDSpawn
 import RegisterEvents
@@ -95,7 +96,9 @@ function tdHandleTowerSellCast() returns boolean
 		let equipment = UnitItemInSlot(tower, slot)
 		if equipment != null
 			UnitRemoveItem(tower, equipment)
+			tdItemDropDiagnosticMove(equipment, "卖塔退装备", true, position.x, position.y)
 			SetItemPosition(equipment, position.x, position.y)
+			tdItemDropDiagnosticMove(equipment, "卖塔退装备", false, position.x, position.y)
 	tdClearTowerRangeIndicatorsForTower(tower)
 	tdClearOrcBladestormState(tower)
 	tdClearTowerSaleState(tower)

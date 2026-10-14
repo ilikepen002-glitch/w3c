@@ -18,6 +18,7 @@ from VerifyElementalVfxArtifact import VfxRuntime
 from VerifyPetAttackArtifact import PetAttackRuntime, near
 from VerifyEquipmentAbilityArtifact import require
 from VerifyTowerUpgradeArtifact import rawcode
+from SpiritVisualBudgetFixture import reserve, release, spend, saturate, core_count, buff_count
 
 TERMINAL = (21, 22, 24, 30, 31, 33, 34, 38)
 ORDERS = ('visual-first', 'battle-first')
@@ -204,8 +205,9 @@ class RetentionRuntime(VfxRuntime):
     def assert_counts(self, borrowed=0):
         counters = ('TDCombatVisualRuntime_castVisualCount', 'TDCombatVisualRuntime_hitVisualCount',
                     'TDCombatVisualRuntime_retainedPetPointCount', 'TDPetCastContext_visualCount',
-                    'TDCombatVisualRuntime_petBuffVisualCount')
+                    'TDCombatVisualRuntime_coreVisualCount')
         require(all(self.globals[n] >= 0 for n in counters), 'Negative actual visual ownership counter')
+        require(0 <= buff_count(self) <= core_count(self), 'Buff attachment lacks its classified core owner')
         tails = self.entries()
         require(self.invoke('tdCombatVisualRetainedPetPointCount') == sum(bool(e['art']) for e in tails),
                 'Retained-point diagnostic differs from actual expiry entries')
@@ -213,6 +215,13 @@ class RetentionRuntime(VfxRuntime):
                 'Transferred pet point vanished from live-total diagnostic')
         require(self.invoke('tdPetLiveEffectVisualCount') <= 128, 'Pet native-point cap expanded')
         require(self.invoke('tdCombatVisualShortCount') <= 128, 'Shared short cap expanded')
+        core = core_count(self)
+        require(core <= 40, 'Reserved core live cap expanded')
+        require(0 <= self.invoke('tdCombatVisualShortCount')-core <= 88, 'Decoration live cap expanded')
+        created = self.globals['TDCombatVisualRuntime_creationCount']
+        core_created = self.globals['TDCombatVisualRuntime_coreCreationCount']
+        require(0 <= core_created <= 40 and 0 <= created-core_created <= 80 and created <= 120,
+                'Classified native creation windows expanded')
         for source in self.lists[self.globals['TDCombatVisualRuntime_sources']]:
             serial = self.field('TDVisualSource_serial', source)
             count = sum(e['detached'] and e['ownerSerial'] == serial for e in tails)
@@ -246,6 +255,11 @@ def packed_contract(script):
                 'TDCombatVisualData_TD_VISUAL_HIT_LIMIT': 32,
                 'TDCombatVisualData_TD_VISUAL_NEW_PER_SECOND': 120,
                 'TDCombatVisualData_TD_VISUAL_MOVING_LIMIT': 8,
+                'TDCombatVisualData_TD_VISUAL_CORE_LIMIT': 40,
+                'TDCombatVisualData_TD_VISUAL_DECORATION_LIMIT': 88,
+                'TDCombatVisualData_TD_VISUAL_CORE_NEW_PER_SECOND': 40,
+                'TDCombatVisualData_TD_VISUAL_DECORATION_NEW_PER_SECOND': 80,
+                'TDCombatVisualData_TD_VISUAL_CORE_RETRY_INTERVAL': .25,
                 'TDPetCastContext_TD_PET_EFFECT_VISUAL_LIMIT': 128,
                 'TDPetActiveVisualData_TD_PET_VISUAL_TERMINAL_DWELL': .25}
     for name, value in expected.items():
@@ -520,7 +534,7 @@ def verify_owner_reuse(script):
         r.tick()
         require(not r.entries(detached=True), 'Old tail was accepted by reused source/class identity')
         require(r.field('TDVisualSource_detachedCount', owner) == 0, 'Old destructor decremented fresh owner count')
-        require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == 1, 'Stale owner cleanup removed new buff')
+        require(buff_count(r) == 1, 'Stale owner cleanup removed new buff')
         r.invoke('tdCombatVisualClearPet', 101); r.invoke('tdCombatVisualClearPet', 101)
         r.invoke('tdCombatVisualShutdown'); r.assert_counts(); r.flush_fx_recycle()
         results.append({'order': order, 'classIdReused': owner, 'oldSerial': old_serial,
@@ -583,17 +597,6 @@ def suppress_primary_optional(r):
     r.invoke('tdCombatVisualClearPet', 101)
 
 
-def saturate(r, count):
-    acquired = 0
-    while acquired < count:
-        if r.invoke('tdCombatVisualAcquireCast'):
-            acquired += 1
-        else:
-            require(r.invoke('tdCombatVisualShortCount') < 128, 'Saturation fixture exceeded desired shared count')
-            r.now = float(int(r.now)+1)
-    return acquired
-
-
 def moving_fixture(r, count, clear=False):
     r.units[201] = {**r.units[101], 'abilities': {}, 'inventory': {}}
     serials = [r.invoke('tdCombatVisualNewSerial') for _ in range((count+1)//2)]
@@ -616,7 +619,7 @@ def verify_core_admission(script):
             # one second earlier where required, through actual admission only.
             r.now -= 1.
             blockers = []
-            borrowed = 0
+            borrowed = []
             if mode in ('moving-live', 'moving-one'):
                 blockers = moving_fixture(r, 8 if mode == 'moving-live' else 7)
             r.now += 1.
@@ -655,7 +658,7 @@ def verify_core_admission(script):
             complete(r, p)
             r.expire()
             r.invoke('tdCombatVisualShutdown')
-            for _ in range(borrowed): r.invoke('tdCombatVisualReleaseCast')
+            release(r, borrowed)
             r.assert_counts = original_assert
             r.assert_counts(); r.flush_fx_recycle()
             rows.append({'skill': skill, 'mode': mode, 'nativeCore': len(native_core),
@@ -683,68 +686,189 @@ def buff_fixture(script, skill):
 
 def verify_buff_admission(script):
     rows = []
+    modes = ('normal', 'null', 'one-live', 'one-ticket', 'global-full', 'rate-full',
+             'core-full', 'core-rate', 'all-full', 'all-rate')
     for skill in (11, 12):
-        for mode in ('normal', 'null', 'one-live', 'one-ticket', 'global-full', 'rate-full'):
+        for mode in modes:
             r, p = buff_fixture(script, skill)
             r.now = 19.10
-            # Gear creates an independent persistent native handle before scarce
-            # cast admissions. It must remain throughout clear/replace/null tests.
             r.invoke('tdCombatVisualRefreshGear', 101, 1, rawcode('iP01'), 0, 0)
             gear_before = r.invoke('tdCombatVisualGearCount')
-            borrowed = 0
-            if mode in ('one-live', 'global-full'):
-                borrowed = saturate(r, 127 if mode == 'one-live' else 128)
+            borrowed = []
+            if mode in ('one-live', 'global-full', 'all-full'):
+                borrowed += reserve(r, 80)
+            if mode in ('one-live', 'core-full', 'all-full'):
+                borrowed += reserve(r, 39 if mode == 'one-live' else 40, core=True)
             r.now = 20.10
-            if mode in ('one-ticket', 'rate-full'):
-                for _ in range(119 if mode == 'one-ticket' else 120):
-                    require(r.invoke('tdCombatVisualAcquireCast'), 'Creation-ticket fixture failed actual admission')
-                    r.invoke('tdCombatVisualReleaseCast')
+            if mode in ('one-live', 'global-full', 'all-full'):
+                borrowed += reserve(r, 8)
+            if mode in ('one-ticket', 'rate-full', 'all-rate'):
+                spend(r, 80)
+            if mode in ('one-ticket', 'core-rate', 'all-rate'):
+                spend(r, 39 if mode == 'one-ticket' else 40, core=True)
             if mode == 'null': r.reject_visual = True
             gameplay_before = {'readyAt': r.globals['TDPet_readyAt'][p], 'until': r.globals['TDPet_buffUntil'][p],
                                'power': r.globals['TDPet_buffPower'][p], 'abilities': dict(r.units[101]['abilities']),
                                'score': r.score(), 'random': list(r.random_trace)}
-            # Direct public API isolates attachment-first admission from the
-            # separate optional ordinary-hit layer. No Python count/list override.
             r.invoke('tdCombatVisualStartPetBuff', 101, 0, skill, r.now+6.)
-            buff = r.globals['TDCombatVisualRuntime_petBuffVisualCount']
-            require(buff == (1 if mode in ('normal', 'one-live', 'one-ticket') else 0),
-                    'Attachment did not own scarce admission before optional burst')
+            buff = buff_count(r)
+            expected = mode in ('normal', 'one-live', 'one-ticket', 'global-full', 'rate-full')
+            require(buff == int(expected) and core_count(r) ==
+                    borrowed.count('tdCombatVisualReleaseCore')+buff,
+                    'Attachment did not own reserved core admission '+str((skill, mode)))
             events = [h for h in r.handles.values() if h['args'][0] == r.invoke('tdCombatVisualPetBuffModel', skill)]
+            owner = r.tables[r.globals['TDCombatVisualRuntime_sourceIndex']][101]
+            require(r.field('TDVisualSource_petBuffWantedSkill', owner) == skill,
+                    'Rejected buff lost its retryable expected skill')
+            near(r.field('TDVisualSource_petBuffWantedUntil', owner), 26.10, 'Expected buff deadline changed')
             if buff:
                 require(len(events) == 1 and events[0]['native'] == 'AddSpecialEffectTarget', 'Buff acquired wrong native attachment')
-                owner = r.tables[r.globals['TDCombatVisualRuntime_sourceIndex']][101]
                 near(r.field('TDVisualSource_petBuffUntil', owner), 26.10, 'Exact six-second visual attachment')
             gameplay_after = {'readyAt': r.globals['TDPet_readyAt'][p], 'until': r.globals['TDPet_buffUntil'][p],
                               'power': r.globals['TDPet_buffPower'][p], 'abilities': dict(r.units[101]['abilities']),
                               'score': r.score(), 'random': list(r.random_trace)}
             require(gameplay_after == gameplay_before, 'Direct cosmetic buff API altered CD/native bonuses/RNG')
             bursts = [h for h in r.handles.values() if h['args'][0] == r.invoke('tdCombatVisualPetBuffStartModel', skill)]
-            if mode in ('one-live', 'one-ticket'):
-                require(not bursts, 'Optional start burst stole scarce attachment ticket')
+            if mode in ('one-live', 'one-ticket', 'global-full', 'rate-full'):
+                require(not bursts, 'Decoration saturation admitted an optional buff burst')
             if mode == 'null':
-                require(r.globals['TDCombatVisualRuntime_castVisualCount'] == borrowed, 'Native-null attachment leaked acquired admission')
+                require(r.globals['TDCombatVisualRuntime_castVisualCount'] == len(borrowed)
+                        and core_count(r) == 0, 'Native-null attachment leaked acquired admission')
             r.reject_visual = False
             r.now = 21.10
             r.invoke('tdCombatVisualStartPetBuff', 101, 0, 12 if skill == 11 else 11, r.now+6.)
-            require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] <= 1, 'Replacement buff created a second source attachment')
+            require(buff_count(r) <= 1, 'Replacement buff created a second source attachment')
             r.invoke('tdCombatVisualClearPet', 101)
+            require(r.field('TDVisualSource_petBuffWantedSkill', owner) == 0
+                    and r.field('TDVisualSource_petBuffWantedUntil', owner) == 0., 'Pet clear retained expected buff')
             require(r.invoke('tdCombatVisualGearCount') == gear_before, 'Buff clearing erased independent gear')
             r.invoke('tdCombatVisualShutdown')
-            for _ in range(borrowed): r.invoke('tdCombatVisualReleaseCast')
+            release(r, borrowed)
             r.assert_counts()
             rows.append({'skill': skill, 'mode': mode, 'attachment': buff, 'startBurst': len(bursts),
                          'directPublicAPI': True, 'gearIndependent': True, 'gameplayUnchanged': True})
-    # Persistent cap and source replacement use actual guarded production calls.
+    # All40 attachments must succeed in the same integer window, without relying
+    # on destruction, clock advancement, or optional bursts consuming core tickets.
     r, _ = buff_fixture(script, 11)
     for i in range(41):
         host = 1000+i
         r.units[host] = {**r.units[101], 'abilities': {}, 'inventory': {}}
         r.invoke('tdCombatVisualStartPetBuff', host, 0, 11, 17.)
-    require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == 40, 'Persistent attachment cap40 changed')
+        require(buff_count(r) == min(i+1, 40),
+                'Positive same-second40 buff attachments were starved')
+    require(core_count(r) == 40, 'Persistent attachments lack40 classified core owners')
+    r.now += 1.
     r.invoke('tdCombatVisualStartPetBuff', 1000, 0, 12, 17.)
-    require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == 40, 'Replacement attachment bypassed global40')
+    require(buff_count(r) == 40, 'Replacement attachment bypassed global40')
     r.invoke('tdCombatVisualShutdown'); r.assert_counts()
-    return {'matrix': rows, 'globalCap': 40, 'onePerSource': True}
+    return {'matrix': rows, 'globalCap': 40, 'sameSecondPositive40': True, 'onePerSource': True,
+            'globalFullMeaning': 'decoration88', 'rateFullMeaning': 'decoration80perSecond'}
+
+
+def verify_buff_retry(script):
+    rows = []
+    for mode in ('null', 'core-live', 'core-rate', 'combined-sparse', 'combined-continuous'):
+        r, _ = buff_fixture(script, 11)
+        r.now = 19.10 if mode == 'core-live' else 20.10
+        held = reserve(r, 40, core=True) if mode in ('core-live', 'combined-sparse', 'combined-continuous') else []
+        if mode == 'core-rate': spend(r, 40, core=True)
+        r.now = 20.10
+        r.reject_visual = mode == 'null'
+        original_assert = r.assert_counts
+        if held: r.assert_counts = lambda: original_assert(borrowed=held)
+        r.invoke('tdCombatVisualStartPetBuff', 101, 0, 11, 26.10)
+        owner = r.tables[r.globals['TDCombatVisualRuntime_sourceIndex']][101]
+        require(not r.field('TDVisualSource_petBuff', owner), 'Retry fixture unexpectedly admitted its first attachment')
+        near(r.field('TDVisualSource_petBuffRetryAt', owner), 20.35, 'Buff retry interval is not exactly.25')
+        attempted = lambda: sum(e['native'] == 'AddSpecialEffectTarget' for e in r.visual_events)
+        before = attempted()
+        r.tick(.20)
+        require(attempted() == before and not r.field('TDVisualSource_petBuff', owner), 'Buff retried before its low-frequency deadline')
+        release(r, held); held.clear(); r.reject_visual = False
+        r.tick(.05)
+        if mode in ('core-rate', 'combined-sparse', 'combined-continuous'):
+            require(not r.field('TDVisualSource_petBuff', owner), 'Core rate rejection refunded creation tickets')
+            if mode == 'combined-continuous':
+                # Deliver every actual .05 turn. The failed20.85 retry schedules
+                # its next deadline21.10, independently of the21.00 bucket reset.
+                while r.now < 21.-EPS: r.tick()
+                require(not r.field('TDVisualSource_petBuff', owner), 'Integer-second reset bypassed the pending retry deadline')
+                due = r.field('TDVisualSource_petBuffRetryAt', owner)
+                near(due, 21.10, 'Continuous native retry cadence changed')
+                while not r.field('TDVisualSource_petBuff', owner) and r.now < due+.05-EPS:
+                    r.tick()
+                require(due-EPS <= r.now <= due+.05+EPS, 'Recovered buff missed its low-frequency timer upper bound')
+            else:
+                # This distinct delayed-native fixture delivers only one later
+                # callback, so its still-pending20.60 deadline is already due.
+                r.tick(.65)
+        require(r.field('TDVisualSource_petBuff', owner), 'Buff failed automatic retry after capacity/native recovery')
+        near(r.field('TDVisualSource_petBuffUntil', owner), 26.10, 'Retry moved the original expected buff deadline')
+        r.assert_counts = original_assert
+        r.invoke('tdCombatVisualShutdown'); r.assert_counts()
+        rows.append({'mode': mode, 'firstRejected': True, 'retryInterval': .25, 'automaticRecovery': True,
+                     'recoveredAt': r.now, 'callbackDelivery': 'every.05' if mode == 'combined-continuous' else 'controlled-delayed'})
+    # Renew the same model without a handle or ticket. A different actual skill
+    # immediately clears its invalid predecessor, even if new native art fails.
+    r, _ = buff_fixture(script, 11)
+    r.now = 20.10
+    r.invoke('tdCombatVisualStartPetBuff', 101, 0, 11, 26.10)
+    owner = r.tables[r.globals['TDCombatVisualRuntime_sourceIndex']][101]
+    old = r.field('TDVisualSource_petBuff', owner)
+    native_before = len(r.handles)
+    tickets_before = (r.globals['TDCombatVisualRuntime_creationCount'], r.globals['TDCombatVisualRuntime_coreCreationCount'])
+    r.invoke('tdCombatVisualStartPetBuff', 101, 0, 11, 27.10)
+    require(r.field('TDVisualSource_petBuff', owner) == old and len(r.handles) == native_before
+            and tickets_before == (r.globals['TDCombatVisualRuntime_creationCount'], r.globals['TDCombatVisualRuntime_coreCreationCount']),
+            'Same-model renewal created native art or consumed a creation ticket')
+    near(r.field('TDVisualSource_petBuffUntil', owner), 27.10, 'Renewal did not update the existing deadline')
+    r.tick(.25); r.reject_visual = True
+    r.invoke('tdCombatVisualStartPetBuff', 101, 0, 12, 27.10)
+    require(not r.field('TDVisualSource_petBuff', owner) and old not in r.visual_handles
+            and core_count(r) == 0
+            and r.field('TDVisualSource_petBuffWantedSkill', owner) == 12,
+            'Failed new-skill creation retained invalid old attachment or leaked core')
+    r.reject_visual = False; r.tick(.25)
+    require(r.field('TDVisualSource_petBuff', owner) != old and old not in r.visual_handles
+            and r.field('TDVisualSource_petBuffSkill', owner) == 12 and core_count(r) == 1,
+            'Recovered replacement failed its one-owner native handoff')
+    r.invoke('tdCombatVisualShutdown'); r.assert_counts()
+    cancellations = []
+    for action in ('clear-pet', 'forget-source', 'clear-lane', 'shutdown', 'host-death',
+                   'owner-transfer', 'lane-inactive', 'epoch', 'deadline'):
+        r, _ = buff_fixture(script, 11); r.now = 20.10; r.reject_visual = True
+        r.invoke('tdCombatVisualStartPetBuff', 101, 0, 11, 26.10)
+        owner = r.tables[r.globals['TDCombatVisualRuntime_sourceIndex']][101]
+        if action == 'clear-pet': r.invoke('tdCombatVisualClearPet', 101)
+        elif action == 'forget-source': r.invoke('tdCombatVisualForgetSource', 101)
+        elif action == 'clear-lane': r.invoke('tdCombatVisualClearLane', 0)
+        elif action == 'shutdown': r.invoke('tdCombatVisualShutdown')
+        elif action == 'host-death': r.units[101].update(alive=False, life=0.)
+        elif action == 'owner-transfer': r.units[101]['owner'] = 1
+        elif action == 'lane-inactive': r.invoke('tdSetLaneActive', 0, False)
+        elif action == 'epoch': r.invoke('tdResetWaveFlowState')
+        elif action == 'deadline': r.now = 26.10
+        r.reject_visual = False; r.tick(.30)
+        require(buff_count(r) == 0 and core_count(r) == 0,
+                'Invalidated expected buff resurrected its native attachment '+action)
+        index = r.tables[r.globals['TDCombatVisualRuntime_sourceIndex']]
+        if index.get(101, 0) == owner:
+            require(r.field('TDVisualSource_petBuffWantedSkill', owner) == 0, 'Cancellation retained retry state '+action)
+        r.invoke('tdCombatVisualShutdown'); r.assert_counts()
+        cancellations.append(action)
+    # Clearing a pending source fences its old request even after the same native
+    # source handle is rebound and a fresh expected model is registered.
+    r, _ = buff_fixture(script, 11); r.now = 20.10; r.reject_visual = True
+    r.invoke('tdCombatVisualStartPetBuff', 101, 0, 11, 26.10)
+    r.invoke('tdCombatVisualClearPet', 101)
+    r.reject_visual = False; r.invoke('tdCombatVisualStartPetBuff', 101, 0, 12, 27.10)
+    r.tick(.30)
+    owner = r.tables[r.globals['TDCombatVisualRuntime_sourceIndex']][101]
+    require(r.field('TDVisualSource_petBuffWantedSkill', owner) == 12 and r.field('TDVisualSource_petBuffSkill', owner) == 12,
+            'Rebinding resurrected a stale expected buff')
+    r.invoke('tdCombatVisualShutdown'); r.assert_counts()
+    return {'recovery': rows, 'renewalWithoutCreation': True, 'failedNewSkillClearedInvalidOldCore': True,
+            'replacementOneOwner': True, 'cancelledExpectedStates': cancellations, 'rebindFenced': True}
 
 
 def verify_on_stack_cleanup(script):
@@ -839,21 +963,36 @@ def verify_overlap_stress(script):
 def verify_caps(script):
     r = RetentionRuntime(script)
     start = r.now
-    accepted = sum(r.invoke('tdCombatVisualAcquireCast') for _ in range(121))
-    require(accepted == 120, 'Actual creation bucket cap120 expanded')
-    r.now = start+1.
-    accepted += sum(r.invoke('tdCombatVisualAcquireCast') for _ in range(9))
-    require(accepted == 128 and not r.invoke('tdCombatVisualAcquireCast'), 'Actual shared short cap128 expanded')
-    for _ in range(accepted): r.invoke('tdCombatVisualReleaseCast')
+    decoration = sum(r.invoke('tdCombatVisualAcquireCast') for _ in range(81))
+    require(decoration == 80, 'Actual decoration creation bucket cap80 expanded')
+    for _ in range(decoration): r.invoke('tdCombatVisualReleaseCast')
+    core = sum(r.invoke('tdCombatVisualAcquireCore') for _ in range(41))
+    require(core == 40, 'Actual core creation bucket cap40 expanded')
+    require(r.globals['TDCombatVisualRuntime_creationCount'] == 120
+            and not r.invoke('tdCombatVisualAcquireCast') and not r.invoke('tdCombatVisualAcquireCore'),
+            'Actual classified creation bucket total120 expanded')
+    for _ in range(core): r.invoke('tdCombatVisualReleaseCore')
     r.assert_counts()
-    # Per-cast native bound is exercised through the actual legal context helper.
+    # Separate live ceilings after the rate reset: decoration cannot borrow a
+    # reserved core, and cores remain available despite all88 decoration owners.
+    r.now = start+1.
+    held = reserve(r, 80)
+    r.now = start+2.
+    held += reserve(r, 8)
+    require(not r.invoke('tdCombatVisualAcquireCast'), 'Actual decoration live cap88 expanded')
+    held += reserve(r, 40, core=True)
+    require(r.invoke('tdCombatVisualShortCount') == 128 and core_count(r) == 40
+            and not r.invoke('tdCombatVisualAcquireCore') and not r.invoke('tdCombatVisualAcquireCast'),
+            'Actual shared short cap128 or core live cap40 expanded')
+    release(r, held); r.assert_counts()
     r, p, target = fixture(script, 31)
     c, _ = begin(r, p, target)
     r.invoke('TDPetCastContext_clearVisuals', c)
     for _ in range(9): r.invoke('TDPetCastContext_addVisual', c, 'Abilities\\Weapons\\Rifle\\RifleImpact.mdx', 100., 0.)
     require(r.field('TDPetCastContext_visualSize', c) == 8, 'Actual per-cast eight-handle cap expanded')
     r.invoke('TDPet_recall', p); r.invoke('tdCombatVisualShutdown'); r.flush_fx_recycle(); r.assert_counts()
-    return {'creation': 120, 'shared': 128, 'petNative': 128, 'perCast': 8, 'moving': 8}
+    return {'creation': 120, 'coreCreation': 40, 'decorationCreation': 80,
+            'shared': 128, 'coreLive': 40, 'decorationLive': 88, 'petNative': 128, 'perCast': 8, 'hit': 32, 'moving': 8}
 
 
 def reject_mutations(script):
@@ -888,28 +1027,23 @@ def reject_mutations(script):
          verify_explicit_cleanup, 'Explicit cleanup returned with detached tail')
     test('stale-owner-acceptance', replace_body(script, 'TDVisualCastLine_valid', lambda b: re.sub(r' and TDVisualSource_serial\[([^\]]+)\] == TDVisualCastLine_ownerSerial\[([^\]]+)\]', '', b, count=1)),
          verify_owner_reuse, 'Old tail was accepted')
-    # Move the exact optional burst call before the persistent attachment's
-    # admission. No other statements or numeric rules are touched.
-    def reverse_buff(body):
-        lines = body.splitlines(True)
-        call = next((i for i, line in enumerate(lines) if line.strip().startswith('call addHitArt(')), None)
-        require(call is not None, 'Buff-order mutation root changed')
-        start = call
-        while start > 0 and lines[start-1].strip().startswith('set tuple_argument'):
-            start -= 1
-        block = ''.join(lines[start:call+1])
-        body = ''.join(lines[:start]+lines[call+1:])
-        admission = re.search(r'^\s*if TDCombatVisualRuntime_petBuffVisualCount', body, re.M)
-        require(admission is not None, 'Buff admission mutation root changed')
-        return body[:admission.start()]+block+body[admission.start():]
-    test('burst-before-attachment', replace_body(script, 'tdCombatVisualStartPetBuff', reverse_buff),
-         verify_buff_admission, 'Attachment did not own scarce admission')
-    for name, value, check, fragment in (
-            ('TDCombatVisualData_TD_VISUAL_SHORT_LIMIT', 128, verify_caps, 'Actual shared short cap128'),
-            ('TDCombatVisualData_TD_VISUAL_NEW_PER_SECOND', 120, verify_caps, 'Actual creation bucket cap120')):
+    # A buff's core must never be routed through the decoration class. Unlike
+    # the old shared-ticket ordering mutation, classification is observable even
+    # when all decoration tickets/live slots are already consumed.
+    test('buff-uses-decoration-admission', replace_body(script, 'retryPetBuff',
+         lambda b: b.replace('tdCombatVisualAcquireCore(', 'tdCombatVisualAcquireCast(', 1)),
+         verify_buff_admission, 'Attachment did not own reserved core admission')
+    for name, value in (
+            ('TDCombatVisualData_TD_VISUAL_SHORT_LIMIT', 128),
+            ('TDCombatVisualData_TD_VISUAL_NEW_PER_SECOND', 120),
+            ('TDCombatVisualData_TD_VISUAL_CORE_LIMIT', 40),
+            ('TDCombatVisualData_TD_VISUAL_DECORATION_LIMIT', 88),
+            ('TDCombatVisualData_TD_VISUAL_CORE_NEW_PER_SECOND', 40),
+            ('TDCombatVisualData_TD_VISUAL_DECORATION_NEW_PER_SECOND', 80)):
         anchor = 'set '+name+' = '+str(value)
         require(script.count(anchor) == 1, 'Cap mutation root changed '+name)
-        test('raised-'+name, script.replace(anchor, anchor.replace(str(value), str(value+1)), 1), check, fragment)
+        test('raised-'+name, script.replace(anchor, anchor.replace('= '+str(value), '= '+str(value+1)), 1),
+             packed_contract, 'Packed bound '+name)
     test('raised-per-cast-native-limit', replace_body(script, 'TDPetCastContext_addVisual',
          lambda b: b.replace(' >= 8', ' >= 9', 1)), verify_caps,
          ('Actual per-cast eight-handle cap expanded', 'Packaged JASS error: Index out of Bounds'))
@@ -942,7 +1076,7 @@ def main():
         'lifecycle': [('explicitCleanup', verify_explicit_cleanup), ('passiveCleanup', verify_passive_cleanup),
                       ('ownerReuse', verify_owner_reuse), ('serialExhaustion', verify_serial_exhaustion),
                       ('partialTransfer', verify_partial_transfer), ('onStackCleanup', verify_on_stack_cleanup), ('overlapStress', verify_overlap_stress)],
-        'admission': [('coreAdmission', verify_core_admission), ('buffAdmission', verify_buff_admission), ('caps', verify_caps)],
+        'admission': [('coreAdmission', verify_core_admission), ('buffAdmission', verify_buff_admission), ('buffRetry', verify_buff_retry), ('caps', verify_caps)],
         'mutations': [('compiledMutations', reject_mutations)]}
     for group, checks in suites.items():
         if args.only and args.only != group: continue

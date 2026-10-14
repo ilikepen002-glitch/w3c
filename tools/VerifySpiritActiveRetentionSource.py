@@ -47,7 +47,7 @@ def verify(sources, baseline):
     require('owner.detachedCount == 0' in owner and 'owner.serial == ownerSerial' in owner and
             'owner.petSerial == petSerial' in owner and 'tdTrialContextValid(trial)' in owner,
             'Detached owner lost immutable source/trial identity or retention count')
-    buff = owner[owner.index('public function tdCombatVisualStartPetBuff'):owner.index('public function tdCombatVisualHit(')]
+    buff = owner[owner.index('function retryPetBuff('):owner.index('public function tdCombatVisualPetBuffCount(')]
     require(buff.index('owner.petBuff = art') < buff.index('addHitArt('), 'Optional burst precedes persistent buff ownership')
     context = uncomment(sources[CONTEXT])
     require('return visualCount + tdCombatVisualRetainedPetPointCount()' in context, 'Public live-point count hides retained ownership')

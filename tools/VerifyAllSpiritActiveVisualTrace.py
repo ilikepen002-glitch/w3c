@@ -12,30 +12,39 @@ from GenerateTowerTerrainMask import Mpq
 from VerifyElementalVfxArtifact import VfxRuntime, moving
 from VerifyPetAttackArtifact import PetAttackRuntime
 from VerifyEquipmentAbilityArtifact import require
+from SpiritVisualBudgetFixture import reserve, release, spend
 
 SKILLS = (11, 12, *range(19, 39))
-MODES = ('normal', 'null', 'full', 'moving-live', 'moving-rate', 'one-live', 'one-rate')
-
-
-def reserve(r, count):
-    accepted = sum(r.invoke('tdCombatVisualAcquireCast') for _ in range(count))
-    require(accepted == count, 'Actual visual reservation failed '+str((count, accepted)))
-    return accepted
+MODES = ('normal', 'null', 'full', 'full-rate', 'decor-live', 'decor-rate',
+         'core-live', 'core-rate', 'moving-live', 'moving-rate', 'one-live', 'one-rate')
 
 
 def setup_mode(r, mode):
-    held = 0
+    held = []
     # Identical 20.10 cast clock for every baseline/candidate/quota fixture.
     r.now = 19.10
     if mode in ('full', 'one-live'):
-        held += reserve(r, 120)
+        held += reserve(r, 80)
+        held += reserve(r, 40 if mode == 'full' else 39, core=True)
+    elif mode == 'decor-live':
+        held += reserve(r, 80)
+    elif mode == 'core-live':
+        held += reserve(r, 40, core=True)
     r.now = 20.10
     if mode == 'null':
         r.reject_visual = True
     elif mode in ('full', 'one-live'):
-        held += reserve(r, 8 if mode == 'full' else 7)
+        held += reserve(r, 8)
+    elif mode == 'decor-live':
+        held += reserve(r, 8)
     elif mode == 'one-rate':
-        held += reserve(r, 119)
+        spend(r, 80)
+        spend(r, 39, core=True)
+    elif mode in ('decor-rate', 'full-rate'):
+        spend(r, 80)
+        if mode == 'full-rate': spend(r, 40, core=True)
+    elif mode == 'core-rate':
+        spend(r, 40, core=True)
     elif mode in ('moving-live', 'moving-rate'):
         serials = [r.invoke('tdCombatVisualNewSerial') for _ in range(4)]
         for serial in serials:
@@ -104,8 +113,7 @@ def run(script, skill, mode):
     require(r.invoke('tdPetEffectTaskCount') == 0, 'Active battle ownership did not finish')
     for serial in moving:
         r.invoke('tdCombatVisualClearMoving', serial)
-    for _ in range(held):
-        r.invoke('tdCombatVisualReleaseCast')
+    release(r, held)
     r.invoke('tdCombatVisualShutdown')
     r.flush_fx_recycle()
     require(not r.visual_handles and not r.lightning_handles and r.invoke('tdCombatVisualShortCount') == 0,

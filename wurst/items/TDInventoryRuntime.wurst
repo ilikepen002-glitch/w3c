@@ -16,6 +16,7 @@ import ErrorHandling
 import TDEquipmentAdmissionRules
 import TDGroundItemRules
 import TDItemPlacement
+import TDItemDropDiagnostic
 import TDCraftingRuntime
 
 trigger tdTowerItemPickupTrigger = CreateTrigger()
@@ -287,6 +288,7 @@ function tdHandleFarmerCraftCast() returns boolean
 	return false
 
 function tdHandleTowerInventoryChanged()
+	tdItemDropDiagnosticPickedUp(GetManipulatedItem())
 	let tower = GetManipulatingUnit()
 	let itm = GetManipulatedItem()
 	if tdTowerEquipmentAdmissionBusy
@@ -306,6 +308,7 @@ function tdHandleTowerInventoryChanged()
 				break
 
 function tdHandleTowerItemDropped()
+	tdItemDropDiagnosticDropped(GetManipulatingUnit(), GetManipulatedItem())
 	if tdTowerEquipmentAdmissionBusy
 		return
 	// Warcraft 1.27 raises DROP_ITEM while the item can still occupy its slot.
@@ -316,6 +319,7 @@ public function tdSetupInventoryRuntime()
 	if tdInventoryRuntimeReady
 		return
 	tdInventoryRuntimeReady = true
+	tdSetupItemDropDiagnostic()
 	tdSetupCraftingRuntime()
 	tdSetupEquipmentCombat()
 	tdSetupEquipmentAbilities()

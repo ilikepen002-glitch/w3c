@@ -1,0 +1,311 @@
+{
+  "sha256": "05746604cc6cc7108d95619cd6538fa508d97db18dabb4aed184d125ed56d504",
+  "capture": {
+    "boundary_cases": 256,
+    "draws_by_count": {
+      "2": 5,
+      "3": 8,
+      "4": 10
+    },
+    "invalid_zero_rng": true,
+    "mid_generation_refund": true
+  },
+  "detail": {
+    "ceil_deadline": true,
+    "buff_plus_cd": true,
+    "pending": true,
+    "locked": true,
+    "unbound": true,
+    "paused": true,
+    "stale_close_release": true
+  },
+  "resonance": [
+    {
+      "level": 1,
+      "skill": 11,
+      "ready": 0.0
+    },
+    {
+      "level": 1,
+      "skill": 12,
+      "ready": 0.0
+    },
+    {
+      "level": 2,
+      "skill": 11,
+      "ready": 0.0
+    },
+    {
+      "level": 2,
+      "skill": 12,
+      "ready": 0.0
+    },
+    {
+      "level": 3,
+      "skill": 11,
+      "ready": 14.0
+    },
+    {
+      "level": 3,
+      "skill": 12,
+      "ready": 14.0
+    },
+    {
+      "hero_level": 1,
+      "counter": false
+    },
+    {
+      "hero_level": 2,
+      "counter": true
+    }
+  ],
+  "buffs": {
+    "named_modes": [
+      {
+        "skill": 11,
+        "cdr": 0.0,
+        "mode": "normal",
+        "gameplay": {
+          "ready": 14.0,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {
+            "1348624756": 8
+          },
+          "buffed": {
+            "1348624756": 8,
+            "1348629360": 40
+          }
+        },
+        "expired": true
+      },
+      {
+        "skill": 11,
+        "cdr": 0.0,
+        "mode": "null",
+        "gameplay": {
+          "ready": 14.0,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {
+            "1348624756": 8
+          },
+          "buffed": {
+            "1348624756": 8,
+            "1348629360": 40
+          }
+        },
+        "expired": true
+      },
+      {
+        "skill": 11,
+        "cdr": 0.0,
+        "mode": "exhausted",
+        "gameplay": {
+          "ready": 14.0,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {
+            "1348624756": 8
+          },
+          "buffed": {
+            "1348624756": 8,
+            "1348629360": 40
+          }
+        },
+        "expired": true
+      },
+      {
+        "skill": 11,
+        "cdr": 0.4,
+        "mode": "normal",
+        "gameplay": {
+          "ready": 8.4,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {},
+          "buffed": {
+            "1348629360": 40
+          }
+        },
+        "expired": true
+      },
+      {
+        "skill": 11,
+        "cdr": 0.4,
+        "mode": "null",
+        "gameplay": {
+          "ready": 8.4,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {},
+          "buffed": {
+            "1348629360": 40
+          }
+        },
+        "expired": true
+      },
+      {
+        "skill": 11,
+        "cdr": 0.4,
+        "mode": "exhausted",
+        "gameplay": {
+          "ready": 8.4,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {},
+          "buffed": {
+            "1348629360": 40
+          }
+        },
+        "expired": true
+      },
+      {
+        "skill": 12,
+        "cdr": 0.0,
+        "mode": "normal",
+        "gameplay": {
+          "ready": 14.0,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {
+            "1348624756": 8
+          },
+          "buffed": {
+            "1348624756": 50
+          }
+        },
+        "expired": true
+      },
+      {
+        "skill": 12,
+        "cdr": 0.0,
+        "mode": "null",
+        "gameplay": {
+          "ready": 14.0,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {
+            "1348624756": 8
+          },
+          "buffed": {
+            "1348624756": 50
+          }
+        },
+        "expired": true
+      },
+      {
+        "skill": 12,
+        "cdr": 0.0,
+        "mode": "exhausted",
+        "gameplay": {
+          "ready": 14.0,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {
+            "1348624756": 8
+          },
+          "buffed": {
+            "1348624756": 50
+          }
+        },
+        "expired": true
+      },
+      {
+        "skill": 12,
+        "cdr": 0.4,
+        "mode": "normal",
+        "gameplay": {
+          "ready": 8.4,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {},
+          "buffed": {
+            "1348624756": 42
+          }
+        },
+        "expired": true
+      },
+      {
+        "skill": 12,
+        "cdr": 0.4,
+        "mode": "null",
+        "gameplay": {
+          "ready": 8.4,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {},
+          "buffed": {
+            "1348624756": 42
+          }
+        },
+        "expired": true
+      },
+      {
+        "skill": 12,
+        "cdr": 0.4,
+        "mode": "exhausted",
+        "gameplay": {
+          "ready": 8.4,
+          "until": 6.0,
+          "power": 0.4,
+          "score": 100.0,
+          "rng": [],
+          "baseline": {},
+          "buffed": {
+            "1348624756": 42
+          }
+        },
+        "expired": true
+      }
+    ],
+    "one_per_host": true,
+    "global_cap": 40,
+    "gear_independent": true,
+    "lifecycle": true
+  },
+  "rock": [
+    {
+      "cdr": 0.0,
+      "deadline": 20.0,
+      "hits": [
+        1,
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "cdr": 0.4,
+      "deadline": 12.0,
+      "hits": [
+        1,
+        1,
+        1,
+        2
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+package TDItemDropDiagnosticTests
+import TDItemDropDiagnosticRules
+
+@Test function dropTraceIsExplicitBoundedAndGroundOnly()
+	tdItemDropTraceAllowed(true, true, false, true, false, 0.0).assertTrue()
+	tdItemDropTraceAllowed(true, true, false, true, false, 9.99).assertTrue()
+	tdItemDropTraceAllowed(false, true, false, true, false, 0.0).assertFalse()
+	tdItemDropTraceAllowed(true, false, false, true, false, 0.0).assertFalse()
+	tdItemDropTraceAllowed(true, true, true, true, false, 0.0).assertFalse()
+	tdItemDropTraceAllowed(true, true, false, false, false, 0.0).assertFalse()
+	tdItemDropTraceAllowed(true, true, false, true, true, 0.0).assertFalse()
+	tdItemDropTraceAllowed(true, true, false, true, false, -0.01).assertFalse()
+	tdItemDropTraceAllowed(true, true, false, true, false, TD_ITEM_DROP_TRACE_SECONDS).assertFalse()
