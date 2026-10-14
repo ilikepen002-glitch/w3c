@@ -74,6 +74,18 @@ public function tdActiveSkillDefinitionAt(int index) returns tdActiveSkillDefini
 		return tdActiveSkillDefinition(27, TD_ACTIVE_DRIVER_PET_PROC, 0, 38, 18.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
 	return tdActiveSkillDefinition(0, 0, 0, -1, 0.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
 
+// Native refreshes use the ordered native subset, sharing the full definitions.
+// Membership tests require every native entry exactly once in catalog order.
+public function tdNativeActiveSkillDefinitionCount() returns int
+	return 2
+
+public function tdNativeActiveSkillDefinitionAt(int index) returns tdActiveSkillDefinition
+	if index == 0
+		return tdActiveSkillDefinitionAt(0)
+	if index == 1
+		return tdActiveSkillDefinitionAt(1)
+	return tdActiveSkillDefinitionAt(-1)
+
 public function tdActiveSkillDefinitionForKey(int key) returns tdActiveSkillDefinition
 	for index = 0 to tdActiveSkillDefinitionCount() - 1
 		let definition = tdActiveSkillDefinitionAt(index)

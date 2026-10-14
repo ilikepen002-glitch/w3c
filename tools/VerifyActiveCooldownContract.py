@@ -436,6 +436,17 @@ def definitions(evaluator):
         require(evaluator.call(lookup, [identity]) == value, 'Active driver lookup omitted definition')
     for name in ('tdActiveSkillDefinitionForKey', 'tdActiveSkillDefinitionForAbility', 'tdActiveSkillDefinitionForPetSkill'):
         require(evaluator.call(name, [-987654]).key == 0, 'Unknown active identity must be invalid')
+    # The hot native subset is an ordered projection of the authoritative full
+    # catalog, not a second cooldown/ability whitelist. Missing future natives,
+    # duplicate/reordered entries and altered tuple fields fail before build.
+    native_values = [value for value in values if value.driver == native]
+    native_count = evaluator.call('tdNativeActiveSkillDefinitionCount', [])
+    require(native_count == len(native_values), 'Native subset count differs from full catalog')
+    require([evaluator.call('tdNativeActiveSkillDefinitionAt', [i]) for i in range(native_count)] == native_values,
+            'Native subset membership/order differs from full catalog')
+    for index in (-1, native_count, native_count + 1):
+        require(evaluator.call('tdNativeActiveSkillDefinitionAt', [index]) == evaluator.call('tdActiveSkillDefinitionAt', [-1]),
+                'Native subset invalid-index fallback changed')
     return values
 
 
@@ -729,7 +740,7 @@ def verify_runtime_sources(evaluator):
     require(identity_writes == ['TDNativeActiveCooldown.construct'], 'Native record identity initialization contract changed')
     for name in ('tdHasNativeActiveCooldown', 'tdRefreshNativeActiveCooldowns'):
         body = evaluator.body(name)
-        for token in ('tdActiveSkillDefinitionCount()', 'tdActiveSkillDefinitionAt(', 'TD_ACTIVE_DRIVER_NATIVE_ABILITY', 'getAbilityLevel('):
+        for token in ('tdNativeActiveSkillDefinitionCount()', 'tdNativeActiveSkillDefinitionAt(', 'TD_ACTIVE_DRIVER_NATIVE_ABILITY', 'getAbilityLevel('):
             require(token in body, name + ': missing metadata-driven native consumer ' + token)
     for path, names in [(RUNTIME, ('tdHasNativeActiveCooldown', 'tdRefreshNativeActiveCooldowns')),
                         ('auras/TDAuraRuntime.wurst', ('tdAuraCooldownTargetEligible',))]:
@@ -1163,6 +1174,24 @@ def verify_compiled_core(contract, script):
             require(actual == getattr(definition, field), 'Packaged active tuple differs: ' + field)
         if definition.petSkillId >= 0:
             require(runtime.invoke('tdPetSkillIsActive', definition.petSkillId), 'Packaged pet definition excluded by classifier')
+    native = contract['evaluator'].constant('TD_ACTIVE_DRIVER_NATIVE_ABILITY')
+    native_values = [definition for definition in contract['definitions'] if definition.driver == native]
+    require(runtime.invoke('tdNativeActiveSkillDefinitionCount') == len(native_values), 'Packaged native subset count differs')
+    # Wurst eliminates tuple fields unused by this facade's consumers. The
+    # authoritative full catalog above still has every field checked. Require
+    # both consumed fields here, plus validate every additional emitted field.
+    for field in ('driver', 'abilityId'):
+        require('tdNativeActiveSkillDefinitionAt_return_' + field in runtime.globals,
+                'Packaged native subset missing consumed tuple field: ' + field)
+    projected_fields = {'key', 'driver', 'abilityId'} | {
+        field for field in contract['definitions'][0]._fields
+        if 'tdNativeActiveSkillDefinitionAt_return_' + field in runtime.globals}
+    for index in range(-1, len(native_values) + 1):
+        definition = native_values[index] if 0 <= index < len(native_values) else contract['evaluator'].call('tdActiveSkillDefinitionAt', [-1])
+        primary = runtime.invoke('tdNativeActiveSkillDefinitionAt', index)
+        for field in projected_fields:
+            actual = primary if field == 'key' else runtime.globals.get('tdNativeActiveSkillDefinitionAt_return_' + field)
+            require(actual == getattr(definition, field), 'Packaged native subset tuple differs: ' + field)
     for definition in contract['definitions']:
         for reduction in (-.1, 0, .18, .40, .8):
             expected = contract['evaluator'].call('tdActiveCooldownDuration', [definition.baseCooldown, reduction])
@@ -1170,7 +1199,7 @@ def verify_compiled_core(contract, script):
             require(math.isclose(runtime.invoke('tdActiveCooldownReadyAt', 20, definition.baseCooldown, reduction), 20 + expected), 'Packaged readyAt differs')
     for name in ('tdHasNativeActiveCooldown', 'tdRefreshNativeActiveCooldowns'):
         body = function_body(script, name)
-        for token in ('tdActiveSkillDefinitionCount', 'tdActiveSkillDefinitionAt', 'unit_getAbilityLevel'):
+        for token in ('tdNativeActiveSkillDefinitionCount', 'tdNativeActiveSkillDefinitionAt', 'unit_getAbilityLevel'):
             require(token in body, 'Packaged generic native consumer missing ' + token)
         require('TD_ORC_BLOODLUST_ABILITY_ID' not in body and 'TD_ORC_BLADESTORM_ABILITY_ID' not in body, 'Packaged legacy native whitelist')
     host = function_body(script, 'tdHostActiveCooldownReduction')

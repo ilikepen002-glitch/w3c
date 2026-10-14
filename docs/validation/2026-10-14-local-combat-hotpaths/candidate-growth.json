@@ -1,0 +1,70 @@
+{
+  "status": "PASS",
+  "mapSHA256": "d84f03d19c4e026c85968e4de9a9cf3057d0ff7ad4471aa4f1155a6bad450d43",
+  "coverage": {
+    "milestones": [
+      {
+        "wave": 4,
+        "perLane": [
+          1,
+          2,
+          9
+        ]
+      },
+      {
+        "wave": 12,
+        "perLane": [
+          2,
+          4,
+          15
+        ]
+      },
+      {
+        "wave": 20,
+        "perLane": [
+          2,
+          6,
+          27
+        ]
+      },
+      {
+        "wave": 28,
+        "perLane": [
+          2,
+          8,
+          27
+        ]
+      }
+    ],
+    "lanes": 4,
+    "all32Waves": true,
+    "idempotent": true,
+    "delayedResolution": true,
+    "closedStates": 6,
+    "saturation": true,
+    "independentResources": true,
+    "invalidEvents": 5
+  },
+  "mutations": [
+    {
+      "name": "wrong-reroll-count",
+      "rejected": true,
+      "reason": "Milestone schedule or duplicate credit mismatch"
+    },
+    {
+      "name": "duplicate-award",
+      "rejected": true,
+      "reason": "Milestone schedule or duplicate credit mismatch"
+    },
+    {
+      "name": "unresolved-award",
+      "rejected": true,
+      "reason": "Closed/unresolved lane received supplies: unresolved"
+    }
+  ],
+  "changedMembers": [
+    "war3map.j",
+    "war3map.w3i"
+  ],
+  "boundary": "Actual packed JASS, controlled native handles/UI. Native play timing, renderer and FPS untested."
+}

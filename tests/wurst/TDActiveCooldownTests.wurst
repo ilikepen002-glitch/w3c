@@ -34,6 +34,17 @@ function assertActiveNear(real actual, real expected)
 	tdPetSkillIsActive(10).assertFalse()
 	tdPetSkillIsActive(99).assertFalse()
 
+@Test function nativeSubsetMatchesEveryFullDefinitionInOrder()
+	var nativeIndex = 0
+	for index = 0 to tdActiveSkillDefinitionCount() - 1
+		let active = tdActiveSkillDefinitionAt(index)
+		if active.driver == TD_ACTIVE_DRIVER_NATIVE_ABILITY
+			(tdNativeActiveSkillDefinitionAt(nativeIndex) == active).assertTrue()
+			nativeIndex += 1
+	tdNativeActiveSkillDefinitionCount().assertEquals(nativeIndex)
+	tdNativeActiveSkillDefinitionAt(-1).key.assertEquals(0)
+	tdNativeActiveSkillDefinitionAt(nativeIndex).key.assertEquals(0)
+
 @Test function allActiveCooldownsClampAndApplyEveryContributionOnce()
 	for index = 0 to tdActiveSkillDefinitionCount() - 1
 		let base = tdActiveSkillDefinitionAt(index).baseCooldown

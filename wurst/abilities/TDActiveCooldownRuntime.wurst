@@ -65,8 +65,8 @@ public function tdForgetNativeActiveCooldowns(unit tower)
 public function tdHasNativeActiveCooldown(unit tower) returns boolean
 	if tower == null
 		return false
-	for index = 0 to tdActiveSkillDefinitionCount() - 1
-		let active = tdActiveSkillDefinitionAt(index)
+	for index = 0 to tdNativeActiveSkillDefinitionCount() - 1
+		let active = tdNativeActiveSkillDefinitionAt(index)
 		if active.driver == TD_ACTIVE_DRIVER_NATIVE_ABILITY and tower.getAbilityLevel(active.abilityId) > 0
 			return true
 	return false
@@ -91,8 +91,8 @@ public function tdRefreshNativeActiveCooldowns(unit tower, real personalReductio
 	let reduction = tdFinalCooldownReduction(personalReduction, tdPetCooldownReduction(tower), tdAuraPower(tower, TD_AURA_EQUIPMENT_COOLDOWN))
 	let desiredLevel = tdActiveCooldownNativeLevel(reduction)
 	let now = getElapsedGameTime()
-	for index = 0 to tdActiveSkillDefinitionCount() - 1
-		let active = tdActiveSkillDefinitionAt(index)
+	for index = 0 to tdNativeActiveSkillDefinitionCount() - 1
+		let active = tdNativeActiveSkillDefinitionAt(index)
 		if active.driver != TD_ACTIVE_DRIVER_NATIVE_ABILITY or tower.getAbilityLevel(active.abilityId) <= 0
 			continue
 		let record = tdNativeActiveCooldownFor(tower, active.abilityId)

@@ -470,13 +470,35 @@ class TowerTargetRuntime(PetAttackRuntime):
             self.acquisition.append(tuple(args[:2]))
         if name == 'group_enumUnitsInRange' and self.priority_ready:
             self.group_queries.append((self.event_source, self.now, tuple(args)))
+        # Execute packed group helpers for both copied for-in iteration and
+        # direct consuming iteration. The older cursor fixture only supported
+        # groups first passed through group_iterator; native members suffice
+        # for both forms and also exercise real copying/destruction ownership.
+        if name in ('group_iterator', 'group_next', 'group_hasNext', 'group_close', 'group_destr', 'group_clear'):
+            return False, None
+        if name == 'IsUnitInGroup': return True, args[0] in self.groups[args[1]]
+        if name == 'GroupAddUnit':
+            if args[1] not in self.groups[args[0]]: self.groups[args[0]].append(args[1])
+            return True, True
+        if name == 'FirstOfGroup': return True, self.groups[args[0]][0] if self.groups[args[0]] else None
+        if name == 'GroupRemoveUnit':
+            if args[1] in self.groups[args[0]]: self.groups[args[0]].remove(args[1])
+            return True, None
+        if name == 'GroupClear': self.groups[args[0]].clear(); return True, None
+        if name == 'ForGroup':
+            previous = getattr(self, 'enum_unit', None)
+            for unit in self.groups[args[0]][:]:
+                self.enum_unit = unit; self.invoke(args[1])
+            self.enum_unit = previous
+            return True, None
         if name == 'CreateGroup':
             handled, handle = super().native(name, args)
             self.live_groups.add(handle)
             return handled, handle
-        if name in ('group_destr', 'DestroyGroup'):
+        if name == 'DestroyGroup':
             require(args[0] in self.live_groups, 'Unknown/double-destroyed selector group')
             self.live_groups.remove(args[0])
+            return True, None
         # These must execute current packed production helpers, never older Boss
         # harness gameplay substitutes. Native catalog/identity uses real JASS.
         if name in ('tdTowerChoiceForUnitTypeId', 'tdTowerLevelForUnitTypeId',

@@ -43,6 +43,10 @@ def extended_sources():
              '\t\treturn tdActiveSkillDefinition(102, TD_ACTIVE_DRIVER_PET_PROC, 0, 77, 31.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)\n')
     replace_once(sources, v.DATA, '\treturn 24\n', '\treturn 26\n')
     replace_once(sources, v.DATA, marker, extra + marker)
+    replace_once(sources, v.DATA, 'tdNativeActiveSkillDefinitionCount() returns int\n\treturn 2',
+                 'tdNativeActiveSkillDefinitionCount() returns int\n\treturn 3')
+    replace_once(sources, v.DATA, '\t\treturn tdActiveSkillDefinitionAt(1)\n\treturn tdActiveSkillDefinitionAt(-1)',
+                 '\t\treturn tdActiveSkillDefinitionAt(1)\n\tif index == 2\n\t\treturn tdActiveSkillDefinitionAt(24)\n\treturn tdActiveSkillDefinitionAt(-1)')
     evaluator = v.SourceScalarEvaluator(sources)
     body = evaluator.body('tdConfigureEquipmentBloodlust')
     body = body.replace('TD_ACTIVE_BLOODLUST', '101')
@@ -99,6 +103,7 @@ def compiled_fixture(contract):
     globals_ = ['integer ' + name + ' = ' + str(evaluator.constant(name))
                 for name in evaluator.constants if name.startswith('TD_ACTIVE_')]
     globals_ += [('real' if field == 'baseCooldown' else 'integer') + ' tdActiveSkillDefinitionAt_return_' + field for field in fields if field != 'key']
+    globals_ += [('real' if field == 'baseCooldown' else 'integer') + ' tdNativeActiveSkillDefinitionAt_return_' + field for field in fields if field != 'key']
     globals_ += ['integer array TDActiveNativeCooldownState_desiredLevel', 'real array TDActiveNativeCooldownState_readyAt']
     functions = []
     def add(name, signature, result, body):
@@ -112,6 +117,15 @@ def compiled_fixture(contract):
     branches.extend('\tset tdActiveSkillDefinitionAt_return_' + field + ' = ' + str(-1 if field == 'petSkillId' else 0) for field in fields if field != 'key')
     branches.append('\treturn 0')
     add('tdActiveSkillDefinitionAt', 'integer index', 'integer', '\n'.join(branches))
+    native_indices = [i for i, definition in enumerate(definitions) if definition.driver == evaluator.constant('TD_ACTIVE_DRIVER_NATIVE_ABILITY')]
+    add('tdNativeActiveSkillDefinitionCount', 'nothing', 'integer', '\treturn ' + str(len(native_indices)))
+    native_body = ['\tlocal integer key', '\tlocal integer fullIndex = -1']
+    for index, full_index in enumerate(native_indices):
+        native_body += ['\tif index == ' + str(index) + ' then', '\t\tset fullIndex = ' + str(full_index), '\tendif']
+    native_body.append('\tset key = tdActiveSkillDefinitionAt(fullIndex)')
+    native_body += ['\tset tdNativeActiveSkillDefinitionAt_return_' + field + ' = tdActiveSkillDefinitionAt_return_' + field for field in fields if field != 'key']
+    native_body.append('\treturn key')
+    add('tdNativeActiveSkillDefinitionAt', 'integer index', 'integer', '\n'.join(native_body))
     add('tdPetSkillIsActive', 'integer skill', 'boolean',
         '\tlocal integer index = 0\n\tloop\n\t\texitwhen index >= tdActiveSkillDefinitionCount()\n'
         '\t\tcall tdActiveSkillDefinitionAt(index)\n'
@@ -148,8 +162,8 @@ def compiled_fixture(contract):
         if not body.startswith('return '): body = 'set ' + body
         add('TDActiveNativeCooldownState_' + method, signature, result, '\t' + body)
     add('new_TDNativeActiveCooldown', 'unit tower, integer abilityId', 'integer', '\tset TDActiveNativeCooldownState_desiredLevel[1] = unit_getAbilityLevel(tower, abilityId)\n\tset TDActiveNativeCooldownState_readyAt[1] = 0.0\n\treturn 1')
-    add('tdHasNativeActiveCooldown', 'unit tower', 'boolean', '\tlocal integer count = tdActiveSkillDefinitionCount()\n\treturn unit_getAbilityLevel(tower, tdActiveSkillDefinitionAt(0)) > 0')
-    add('tdRefreshNativeActiveCooldowns', 'unit tower, real personalReduction', 'nothing', '\tlocal integer count = tdActiveSkillDefinitionCount()\n\tlocal integer active = tdActiveSkillDefinitionAt(0)\n\tlocal integer actual = unit_getAbilityLevel(tower, active)\n\tcall tdApplyNativeActiveCooldownLevel(1, 0.0)')
+    add('tdHasNativeActiveCooldown', 'unit tower', 'boolean', '\tlocal integer count = tdNativeActiveSkillDefinitionCount()\n\treturn unit_getAbilityLevel(tower, tdNativeActiveSkillDefinitionAt(0)) > 0')
+    add('tdRefreshNativeActiveCooldowns', 'unit tower, real personalReduction', 'nothing', '\tlocal integer count = tdNativeActiveSkillDefinitionCount()\n\tlocal integer active = tdNativeActiveSkillDefinitionAt(0)\n\tlocal integer actual = unit_getAbilityLevel(tower, active)\n\tcall tdApplyNativeActiveCooldownLevel(1, 0.0)')
     add('tdHostActiveCooldownReduction', 'unit tower', 'real', '\treturn tdFinalCooldownReduction(0.0, tdPetCooldownReduction(tower), tdAuraPower(tower, 5))')
     add('tdAuraCooldownTargetEligible', 'unit target', 'boolean', '\treturn tdPetBindingValid(1, target, 1) and tdPetUnlockedSlots(1) > 0 and tdPetSkillFitsHost(77, target) and tdPetSkillIsActive(77) and tdHasNativeActiveCooldown(target)')
     add('tdSetupEquipmentAbilities', 'nothing', 'nothing', '\tcall tdSetupNativeActiveCooldowns()')
@@ -177,6 +191,20 @@ class ActiveSourceContractTests(unittest.TestCase):
     def test_current_source_uses_real_definitions_and_consumers(self):
         self.assertEqual(len(self.contract['definitions']), self.contract['evaluator'].call('tdActiveSkillDefinitionCount', []))
         self.assertEqual(len(self.contract['towers']), 35)
+
+    def test_native_subset_omission_duplicate_reordering_and_invalid_fallback_fail(self):
+        self.reject(v.DATA, 'tdNativeActiveSkillDefinitionCount() returns int\n\treturn 2',
+                    'tdNativeActiveSkillDefinitionCount() returns int\n\treturn 1', 'Native subset count')
+        self.reject(v.DATA, '\t\treturn tdActiveSkillDefinitionAt(1)\n\treturn tdActiveSkillDefinitionAt(-1)',
+                    '\t\treturn tdActiveSkillDefinitionAt(0)\n\treturn tdActiveSkillDefinitionAt(-1)', 'membership/order')
+        self.reject(v.DATA, '\t\treturn tdActiveSkillDefinitionAt(0)\n\tif index == 1\n\t\treturn tdActiveSkillDefinitionAt(1)',
+                    '\t\treturn tdActiveSkillDefinitionAt(1)\n\tif index == 1\n\t\treturn tdActiveSkillDefinitionAt(0)', 'membership/order')
+        self.reject(v.DATA, '\t\treturn tdActiveSkillDefinitionAt(1)\n\treturn tdActiveSkillDefinitionAt(-1)',
+                    '\t\treturn tdActiveSkillDefinitionAt(1)\n\treturn tdActiveSkillDefinitionAt(0)', 'invalid-index')
+        sources = extended_sources()
+        replace_once(sources, v.DATA, 'tdNativeActiveSkillDefinitionCount() returns int\n\treturn 3',
+                     'tdNativeActiveSkillDefinitionCount() returns int\n\treturn 2')
+        with self.assertRaisesRegex(ValueError, 'Native subset count'): v.verify_source(sources=sources)
 
     def test_manager_list_zero_cd_role_rejects_positive_cd_or_receiver_rebinding(self):
         self.reject('pets/TDPetObjectGen.wurst', 'presetCooldown(lvl -> 0.0)',
@@ -582,6 +610,31 @@ class SyntheticCompiledMutationTests(unittest.TestCase):
             with self.subTest(mutation=old), self.assertRaisesRegex(ValueError, reason):
                 v.verify_compiled_core(self.contract, self.script.replace(old, new, 1))
 
+    def test_compiled_native_subset_count_order_tuple_and_fallback_mutations_fail(self):
+        for old, new, reason in [
+            ('function tdNativeActiveSkillDefinitionCount takes nothing returns integer\n\treturn 3',
+             'function tdNativeActiveSkillDefinitionCount takes nothing returns integer\n\treturn 2', 'native subset count'),
+            ('set fullIndex = 24', 'set fullIndex = 1', 'native subset tuple'),
+            ('local integer fullIndex = -1', 'local integer fullIndex = 0', 'native subset tuple'),
+            ('set tdNativeActiveSkillDefinitionAt_return_baseCooldown = tdActiveSkillDefinitionAt_return_baseCooldown',
+             'set tdNativeActiveSkillDefinitionAt_return_baseCooldown = 100.0', 'native subset tuple')]:
+            self.assertIn(old, self.script)
+            with self.subTest(mutation=old), self.assertRaisesRegex(ValueError, reason):
+                v.verify_compiled_core(self.contract, self.script.replace(old, new, 1))
+
+    def test_compiler_pruned_native_tuple_requires_every_consumed_field(self):
+        # Actual compiler output retains key/driver/abilityId for the native
+        # facade and removes unused fields; full catalog tuples remain complete.
+        unused = set(self.contract['definitions'][0]._fields) - {'key', 'driver', 'abilityId'}
+        pruned = '\n'.join(line for line in self.script.splitlines()
+                           if not any('tdNativeActiveSkillDefinitionAt_return_' + field in line for field in unused))
+        v.verify_compiled_core(self.contract, pruned)
+        for field in ('driver', 'abilityId'):
+            declaration = 'integer tdNativeActiveSkillDefinitionAt_return_' + field + '\n'
+            self.assertIn(declaration, pruned)
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'missing consumed tuple field'):
+                v.verify_compiled_core(self.contract, pruned.replace(declaration, '', 1))
+
     def test_compiled_actuallevel_refresh_busy_init_timer_restore_mutations_fail(self):
         cases = [('tdActiveCooldownReductionAtNativeLevel(actualLevel)', 'tdActiveCooldownReductionAtNativeLevel(TDActiveNativeCooldownState_desiredLevel[this])', 'actual level'),
                  ('set TDActiveNativeCooldownState_desiredLevel[this] = nextLevel', 'set TDActiveNativeCooldownState_desiredLevel[this] = nextLevel\n\tset TDActiveNativeCooldownState_readyAt[this] = 0.0', 'refresh reset'),
@@ -598,7 +651,7 @@ class SyntheticCompiledMutationTests(unittest.TestCase):
     def test_compiled_legacy_aura_whitelist_and_missing_binding_fail(self):
         for old, new, reason in [('tdPetBindingValid(1, target, 1)', 'true', 'aura guard'),
                                  ('tdPetUnlockedSlots(1)', '1', 'aura guard'),
-                                 ('return unit_getAbilityLevel(tower, tdActiveSkillDefinitionAt(0)) > 0', 'return unit_getAbilityLevel(tower, TD_ORC_BLOODLUST_ABILITY_ID) > 0', 'generic native|whitelist')]:
+                                 ('return unit_getAbilityLevel(tower, tdNativeActiveSkillDefinitionAt(0)) > 0', 'return unit_getAbilityLevel(tower, TD_ORC_BLOODLUST_ABILITY_ID) > 0', 'generic native|whitelist')]:
             with self.subTest(mutation=old), self.assertRaisesRegex(ValueError, reason):
                 v.verify_compiled_core(self.contract, self.script.replace(old, new, 1))
 

@@ -1,0 +1,128 @@
+Traceback (most recent call last):
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 1148, in <module>
+    main()
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 1138, in main
+    report = verify_artifact(args.map, args.source, args.source_only, not args.skip_mutations, args.compiled_script, args.baseline_map)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 1101, in verify_artifact
+    report['base_policy_without_route_override'] = verify_base_policy_independent_of_route(script)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 1059, in verify_base_policy_independent_of_route
+    r.attack(102)
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 413, in attack
+    self.invoke('tdHandleTowerAttackStarted' if self.priority_available else
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTrialReplay.py", line 63, in invoke
+    return self.call(name, list(arguments))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 207, in call
+    return self.execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 495, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyPureBossArtifact.py", line 991, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 230, in execute_call
+    selected = active and bool(self.expression(line[3:-5], scope))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 428, in expression
+    return super().expression(jass_boolean_expression(text), scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTrialReplay.py", line 110, in expression
+    return super().expression(text, scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 201, in expression
+    return read(node)
+           ^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 180, in read
+    value = read(part.operand)
+            ^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 178, in read
+    return self.call(part.func.id, [read(arg) for arg in part.args])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 207, in call
+    return self.execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 495, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyPureBossArtifact.py", line 991, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 290, in execute_call
+    self.assign(key, self.expression(value, scope), scope)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 428, in expression
+    return super().expression(jass_boolean_expression(text), scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTrialReplay.py", line 110, in expression
+    return super().expression(text, scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 201, in expression
+    return read(node)
+           ^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 178, in read
+    return self.call(part.func.id, [read(arg) for arg in part.args])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 207, in call
+    return self.execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 495, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyPureBossArtifact.py", line 991, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 262, in execute_call
+    if self.expression(line[9:], scope):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 428, in expression
+    return super().expression(jass_boolean_expression(text), scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTrialReplay.py", line 110, in expression
+    return super().expression(text, scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 201, in expression
+    return read(node)
+           ^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 180, in read
+    value = read(part.operand)
+            ^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 178, in read
+    return self.call(part.func.id, [read(arg) for arg in part.args])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 207, in call
+    return self.execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 495, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyPureBossArtifact.py", line 991, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 215, in execute_call
+    native, result = self.native(name, args)
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTowerTargetPriorityArtifact.py", line 490, in native
+    return super().native(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyPetAttackArtifact.py", line 134, in native
+    return super().native(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyEquipmentCombatReplay.py", line 30, in native
+    return super().native(name,args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyEquipmentCombatReplay.py", line 21, in native
+    return super().native(name,args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyTrialReplay.py", line 233, in native
+    return super().native(name,args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyPureBossArtifact.py", line 986, in native
+    return super().native(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 372, in native
+    if name == 'group_hasNext': return True, self.group_cursor[args[0]] < len(self.groups[args[0]])
+                                             ~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 1004

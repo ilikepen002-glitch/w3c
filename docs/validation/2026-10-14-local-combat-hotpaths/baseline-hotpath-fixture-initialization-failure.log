@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyLocalCombatHotpathArtifact.py", line 238, in <module>
+    if __name__ == '__main__': main()
+                               ^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyLocalCombatHotpathArtifact.py", line 229, in main
+    args = p.parse_args(); current = snapshot(args.map)
+                                     ^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyLocalCombatHotpathArtifact.py", line 198, in snapshot
+    attacks=attack_costs(script), selection=selection_traces(script), splits=split_traces(script), auras=aura_costs(script))
+                                                                                                         ^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/equivalent-performance-base-20261014/tools/VerifyLocalCombatHotpathArtifact.py", line 191, in aura_costs
+    native_records=list(r.lists[r.globals['TDActiveCooldownRuntime_tdNativeActiveCooldowns']])))
+                        ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 0

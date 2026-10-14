@@ -660,10 +660,11 @@ function tdFindFarthestArcherSplitArrowShot(LinkedList<TDArcherSplitArrowShot> s
 			farthestFlightTime = shot.flightTime
 	return farthestShot
 
-function tdTryAddArcherSplitArrowShot(LinkedList<TDArcherSplitArrowShot> shots, unit source, unit victim, int maxTargetCount)
+function tdTryAddArcherSplitArrowShot(LinkedList<TDArcherSplitArrowShot> shots, unit source, unit victim, int maxTargetCount, real distance)
 	if shots == null or source == null or victim == null or maxTargetCount <= 0
 		return
-	let flightTime = tdArcherSplitArrowFlightTime(source, victim)
+	let projectileSpeed = tdTowerProjectileSpeed(TD_TOWER_CHOICE_ARCHER).toReal()
+	let flightTime = projectileSpeed <= 0.405 ? 0.0 : distance / projectileSpeed
 	if shots.size() < maxTargetCount
 		shots.add(new TDArcherSplitArrowShot(victim, flightTime))
 		return
@@ -700,8 +701,10 @@ function tdCreateArcherSplitArrowVolley(unit source, unit primaryTarget) returns
 	let extraShots = new LinkedList<TDArcherSplitArrowShot>()
 	g.enumUnitsInRange(sourcePos, searchRange)
 	for victim in g
-		if victim != primaryTarget and victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == laneId and sourcePos.distanceTo(victim.getPos()) <= searchRange + 0.405
-			tdTryAddArcherSplitArrowShot(extraShots, source, victim, remainingTargets)
+		if victim != primaryTarget and victim.isAlive() and GetOwningPlayer(victim) == Player(TD_ENEMY_PLAYER_ID) and tdEnemyLaneId(victim) == laneId
+			let distance = sourcePos.distanceTo(victim.getPos())
+			if distance <= searchRange + 0.405
+				tdTryAddArcherSplitArrowShot(extraShots, source, victim, remainingTargets, distance)
 	g.destr()
 	if extraShots.isEmpty()
 		destroy extraShots

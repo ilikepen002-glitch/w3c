@@ -81,7 +81,10 @@ function tdTargetPriorityBest(TDTowerTargetPriorityState record, unit currentTar
 	var bestKey = best == null ? 0 : best.getHandleId()
 	let nearby = CreateGroup()
 	nearby.enumUnitsInRange(record.source.getPos(), range + 0.405)
-	for candidate in nearby
+	// This private read-only scan needs no group copy. Current-target stability
+	// and handle-id tie-breaking make the winner independent of enumeration order.
+	while nearby.hasNext()
+		let candidate = nearby.next()
 		if not tdTargetPriorityTargetValid(record.source, candidate, record.owner, range)
 			continue
 		let hp = candidate.getLife()

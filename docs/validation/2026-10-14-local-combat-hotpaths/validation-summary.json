@@ -1,0 +1,30 @@
+{
+  "base_commit": "1949bc25e0c31aca8e9c6148d5c5b8e8bb4d902e",
+  "checks": {
+    "status": "PASS",
+    "transaction": "/workspace/shared/equivalent-performance-base-20261014/_build/linux-fb8lw_jv",
+    "all_production_wurst_match_final": true
+  },
+  "build": {
+    "status": "PASS",
+    "transaction": "/workspace/shared/equivalent-performance-base-20261014/_build/linux-fhm2689f",
+    "all_production_wurst_match_final": true,
+    "artifact": {
+      "sha256": "d84f03d19c4e026c85968e4de9a9cf3057d0ff7ad4471aa4f1155a6bad450d43",
+      "importsChecked": 407,
+      "displayName": "契灵守卫战 20261014-1836-UTC+8",
+      "gate": "real read-only Python MPQ/JASS/object tables/import bytes",
+      "candidate": "/workspace/shared/equivalent-performance-base-20261014/_build/linux-fhm2689f/project/_build/MyFirstWurstMap.w3x.w3x",
+      "output": "/workspace/shared/equivalent-performance-base-20261014/ExampleMap.w3x"
+    },
+    "compiler_sha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+    "grill_sha256": "c5afe67aa5eeabfb98f0ec2f3f0831d8ffc2f4199c26b89eb7418f14319f9f87",
+    "stdlib_tree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+    "jdk": "27+35-2325"
+  },
+  "baseline_map_sha256": "cd662ef1454356687cd7e9383b702d5c33f2614e863b2bbdb059659ddf5ee651",
+  "map_sha256": "d84f03d19c4e026c85968e4de9a9cf3057d0ff7ad4471aa4f1155a6bad450d43",
+  "jass_sha256": "fd03a61e318de78bbcfa85c1d92e7c4c489f3815bd782c79d79c8b03fd5f607d",
+  "imports_toolchain_config_unchanged_from_base": true,
+  "failed_build_retained": "_build/linux-vx12a2mb/manifest.json"
+}
