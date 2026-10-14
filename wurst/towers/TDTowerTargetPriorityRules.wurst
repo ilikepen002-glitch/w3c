@@ -1,0 +1,42 @@
+package TDTowerTargetPriorityRules
+import TDTowerCatalogData
+import TDConfig
+import TDWaves
+
+public constant int TD_TARGET_PRIORITY_HP = 1
+public constant int TD_TARGET_PRIORITY_RANK = 2
+public constant real TD_TARGET_PRIORITY_RECOVERY_TICK = 0.10
+public constant real TD_TARGET_PRIORITY_RECOVERY_INTERVAL = 0.50
+public constant int TD_TARGET_PRIORITY_RECOVERY_BUDGET = 4
+
+public function tdTargetPriorityPolicy(int towerChoice) returns int
+	if towerChoice == TD_TOWER_CHOICE_ARCHER or towerChoice == TD_TOWER_CHOICE_DRYAD
+		return TD_TARGET_PRIORITY_HP
+	if towerChoice == TD_TOWER_CHOICE_ORC or towerChoice == TD_TOWER_CHOICE_FOOTMAN or towerChoice == TD_TOWER_CHOICE_GHOUL
+		return TD_TARGET_PRIORITY_RANK
+	return 0
+
+public function tdTargetPriorityRank(int unitTypeId) returns int
+	if tdIsBossUnitTypeId(unitTypeId)
+		return 2
+	if tdIsBossGuardUnitTypeId(unitTypeId)
+		return 1
+	return 0
+
+// Only strict improvement can replace a legal current target. No RNG, HP
+// percentage, predicted damage or secondary HP tie-break for melee towers.
+public function tdTargetPriorityStrictlyBetter(int policy, real hp, int rank, real bestHp, int bestRank) returns boolean
+	if policy == TD_TARGET_PRIORITY_HP
+		return hp < bestHp
+	return policy == TD_TARGET_PRIORITY_RANK and rank > bestRank
+
+public function tdTargetPriorityEqual(int policy, real hp, int rank, real bestHp, int bestRank) returns boolean
+	return policy == TD_TARGET_PRIORITY_HP ? hp == bestHp : rank == bestRank
+
+public function tdTargetPriorityReplace(int policy, real hp, int rank, int key, real bestHp, int bestRank, int bestKey, boolean keepCurrent) returns boolean
+	if tdTargetPriorityStrictlyBetter(policy, hp, rank, bestHp, bestRank)
+		return true
+	return not keepCurrent and tdTargetPriorityEqual(policy, hp, rank, bestHp, bestRank) and key < bestKey
+
+public function tdTargetPriorityRecoveryDue(real now, real lastQuery) returns boolean
+	return now - lastQuery + 0.00001 >= TD_TARGET_PRIORITY_RECOVERY_INTERVAL

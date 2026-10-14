@@ -1,0 +1,220 @@
+{
+  "status": "PASS",
+  "lifecycle": {
+    "parked_equipment_range": [
+      1020.0,
+      0,
+      1170.0,
+      1020.0
+    ],
+    "boss_burst": 390.0,
+    "retirement_saved_base": 300.0,
+    "trial_base": 260.0
+  },
+  "costs": [
+    [
+      {
+        "label": "warm_enemy",
+        "calls": 836,
+        "expressions": 2372,
+        "counts": {
+          "tdAuraOfferSource": 40,
+          "tdPetForHost": 0,
+          "tdPetAt": 0,
+          "tdRefreshTowerEquipmentBonuses": 0,
+          "tdCombatVisualRefreshGear": 0,
+          "unit_getAbilityLevel": 30,
+          "GetUnitTypeId": 23,
+          "GetUnitAcquireRange": 0,
+          "SetUnitAcquireRange": 0,
+          "GetUnitMoveSpeed": 0,
+          "SetUnitMoveSpeed": 1,
+          "SetUnitAbilityLevel": 0,
+          "CreateGroup": 0,
+          "IssueTargetOrderById": 0,
+          "GetRandomInt": 0,
+          "GetRandomReal": 0,
+          "doPeriodically": 0,
+          "doAfter": 0
+        }
+      },
+      {
+        "label": "warm_16_targets",
+        "calls": 17822,
+        "expressions": 63970,
+        "counts": {
+          "tdAuraOfferSource": 640,
+          "tdPetForHost": 30,
+          "tdPetAt": 600,
+          "tdRefreshTowerEquipmentBonuses": 10,
+          "tdCombatVisualRefreshGear": 10,
+          "unit_getAbilityLevel": 740,
+          "GetUnitTypeId": 490,
+          "GetUnitAcquireRange": 0,
+          "SetUnitAcquireRange": 10,
+          "GetUnitMoveSpeed": 0,
+          "SetUnitMoveSpeed": 6,
+          "SetUnitAbilityLevel": 0,
+          "CreateGroup": 0,
+          "IssueTargetOrderById": 0,
+          "GetRandomInt": 0,
+          "GetRandomReal": 0,
+          "doPeriodically": 0,
+          "doAfter": 0
+        }
+      },
+      {
+        "label": "warm_equipment_pet_tower",
+        "calls": 1438,
+        "expressions": 5372,
+        "counts": {
+          "tdAuraOfferSource": 40,
+          "tdPetForHost": 3,
+          "tdPetAt": 3,
+          "tdRefreshTowerEquipmentBonuses": 1,
+          "tdCombatVisualRefreshGear": 1,
+          "unit_getAbilityLevel": 62,
+          "GetUnitTypeId": 37,
+          "GetUnitAcquireRange": 0,
+          "SetUnitAcquireRange": 1,
+          "GetUnitMoveSpeed": 0,
+          "SetUnitMoveSpeed": 0,
+          "SetUnitAbilityLevel": 0,
+          "CreateGroup": 0,
+          "IssueTargetOrderById": 0,
+          "GetRandomInt": 0,
+          "GetRandomReal": 0,
+          "doPeriodically": 0,
+          "doAfter": 0
+        }
+      },
+      {
+        "label": "warm_native_active_pet_tower",
+        "calls": 1428,
+        "expressions": 4702,
+        "counts": {
+          "tdAuraOfferSource": 40,
+          "tdPetForHost": 3,
+          "tdPetAt": 3,
+          "tdRefreshTowerEquipmentBonuses": 1,
+          "tdCombatVisualRefreshGear": 1,
+          "unit_getAbilityLevel": 62,
+          "GetUnitTypeId": 37,
+          "GetUnitAcquireRange": 0,
+          "SetUnitAcquireRange": 1,
+          "GetUnitMoveSpeed": 0,
+          "SetUnitMoveSpeed": 0,
+          "SetUnitAbilityLevel": 0,
+          "CreateGroup": 0,
+          "IssueTargetOrderById": 0,
+          "GetRandomInt": 0,
+          "GetRandomReal": 0,
+          "doPeriodically": 0,
+          "doAfter": 0
+        }
+      }
+    ],
+    [
+      {
+        "label": "warm_enemy",
+        "calls": 836,
+        "expressions": 2373,
+        "counts": {
+          "tdAuraOfferSource": 40,
+          "tdPetForHost": 0,
+          "tdPetAt": 0,
+          "tdRefreshTowerEquipmentBonuses": 0,
+          "tdCombatVisualRefreshGear": 0,
+          "unit_getAbilityLevel": 30,
+          "GetUnitTypeId": 23,
+          "GetUnitAcquireRange": 0,
+          "SetUnitAcquireRange": 0,
+          "GetUnitMoveSpeed": 1,
+          "SetUnitMoveSpeed": 0,
+          "SetUnitAbilityLevel": 0,
+          "CreateGroup": 0,
+          "IssueTargetOrderById": 0,
+          "GetRandomInt": 0,
+          "GetRandomReal": 0,
+          "doPeriodically": 0,
+          "doAfter": 0
+        }
+      },
+      {
+        "label": "warm_16_targets",
+        "calls": 17692,
+        "expressions": 64036,
+        "counts": {
+          "tdAuraOfferSource": 640,
+          "tdPetForHost": 30,
+          "tdPetAt": 600,
+          "tdRefreshTowerEquipmentBonuses": 10,
+          "tdCombatVisualRefreshGear": 10,
+          "unit_getAbilityLevel": 740,
+          "GetUnitTypeId": 420,
+          "GetUnitAcquireRange": 10,
+          "SetUnitAcquireRange": 0,
+          "GetUnitMoveSpeed": 6,
+          "SetUnitMoveSpeed": 0,
+          "SetUnitAbilityLevel": 0,
+          "CreateGroup": 0,
+          "IssueTargetOrderById": 0,
+          "GetRandomInt": 0,
+          "GetRandomReal": 0,
+          "doPeriodically": 0,
+          "doAfter": 0
+        }
+      },
+      {
+        "label": "warm_equipment_pet_tower",
+        "calls": 1424,
+        "expressions": 5375,
+        "counts": {
+          "tdAuraOfferSource": 40,
+          "tdPetForHost": 3,
+          "tdPetAt": 3,
+          "tdRefreshTowerEquipmentBonuses": 1,
+          "tdCombatVisualRefreshGear": 1,
+          "unit_getAbilityLevel": 61,
+          "GetUnitTypeId": 30,
+          "GetUnitAcquireRange": 1,
+          "SetUnitAcquireRange": 0,
+          "GetUnitMoveSpeed": 0,
+          "SetUnitMoveSpeed": 0,
+          "SetUnitAbilityLevel": 0,
+          "CreateGroup": 0,
+          "IssueTargetOrderById": 0,
+          "GetRandomInt": 0,
+          "GetRandomReal": 0,
+          "doPeriodically": 0,
+          "doAfter": 0
+        }
+      },
+      {
+        "label": "warm_native_active_pet_tower",
+        "calls": 1369,
+        "expressions": 4600,
+        "counts": {
+          "tdAuraOfferSource": 40,
+          "tdPetForHost": 2,
+          "tdPetAt": 2,
+          "tdRefreshTowerEquipmentBonuses": 1,
+          "tdCombatVisualRefreshGear": 1,
+          "unit_getAbilityLevel": 59,
+          "GetUnitTypeId": 29,
+          "GetUnitAcquireRange": 1,
+          "SetUnitAcquireRange": 0,
+          "GetUnitMoveSpeed": 0,
+          "SetUnitMoveSpeed": 0,
+          "SetUnitAbilityLevel": 0,
+          "CreateGroup": 0,
+          "IssueTargetOrderById": 0,
+          "GetRandomInt": 0,
+          "GetRandomReal": 0,
+          "doPeriodically": 0,
+          "doAfter": 0
+        }
+      }
+    ]
+  ]
+}

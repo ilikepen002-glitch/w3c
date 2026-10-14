@@ -18,6 +18,7 @@ import TDTrialHook
 import RegisterEvents
 import TDDifficultyDialog
 import TDMusic
+import TDAmbientCritters
 
 trigger tdChatCommandTrigger = CreateTrigger()
 boolean tdGameplayStartupCompleted = false
@@ -240,6 +241,7 @@ function tdRunGameplayStartup()
 	if tdGameplayStartupCompleted
 		return
 	tdGameplayStartupCompleted = true
+	tdSetupAmbientCritterOwnership()
 	let enemyPlayer = Player(TD_ENEMY_PLAYER_ID)
 	RemoveAllGuardPositions(enemyPlayer)
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1

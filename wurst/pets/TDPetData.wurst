@@ -123,7 +123,7 @@ public function tdPetCaptureChance(real _currentLife, real _maxLife) returns rea
 	return 0.65
 
 public function tdPetCaptureTooltip(int balls) returns string
-	return "消耗1普通球捕获本路野生精灵，成功率65%；首只教学精灵首次投普通球必成。|n现有普通球" + balls.toString() + "/60；收藏已满不扣球。野生精灵出现60秒后消失。"
+	return "消耗1普通球捕获本路野生精灵，成功率65%；首只教学精灵首次投普通球必成。|n现有普通球" + balls.toString() + "/60；收藏已满不扣球。野生精灵出现180秒后消失。"
 
 public constant int TD_PET_ATTACK_BONUS_ID = 'Pbat'
 public constant int TD_PET_SPEED_BONUS_ID = 'Pbsp'

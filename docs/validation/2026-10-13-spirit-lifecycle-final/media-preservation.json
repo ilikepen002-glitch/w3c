@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "baseline_map_sha256": "e770a0151f846c8fc6cf9bc7bdb456ea1207eb230e8d946431e63108e481980e",
+  "map_sha256": "5d6701cf84d4910fdcae6c2eaf299ae76e640577640e416564ba8ab38fac69d5",
+  "protected_media_model_names_byte_identical": 390,
+  "media_names_byte_identical": 360,
+  "names_added": [
+    "war3mapMisc.txt"
+  ],
+  "names_removed": [],
+  "leoric_member_sha256": {
+    "war3mapImported\\Leoric.mdx": "f68cc2971589fac2518d934a8f445e8667812ecd5f1a7d26fb295bf26a1e5245",
+    "war3mapImported\\Leoric_Portrait.mdx": "1c9a56c3025369a5eb5eb00481b7b7a7239a68c730f7b0fb2dae03830fce143f",
+    "Leoric.blp": "c7b229e3ddae7cda6ea632e9fbabfe6f1c8863d37d6fef7c97b51318c600ed2c",
+    "KingLeoric-original-readme.html": "0e6547dac6b9c642e3ca7805fa56235dd66f716a851ae089d151192e15e99be3"
+  },
+  "root_misc_bytes": 72
+}

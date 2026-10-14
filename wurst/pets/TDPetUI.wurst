@@ -3,6 +3,7 @@ import TDPetData
 import TDPetState
 import TDPetRules
 import TDPetRuntime
+import TDPetCombat
 import TDPetUIState
 import public TDPetUIView
 import TDTowerCatalogData
@@ -125,8 +126,8 @@ function onCommand() returns boolean
 		tdPetSelectFarmer(lane)
 	else if action == 4
 		// Target cursor/ESC has no effect event. Actual click validates before recall.
-		if not tdPetDeploy(pet, GetSpellTargetUnit())
-			tdPetNotice(lane, "请选择本路已完工、尚未上阵精灵的塔。")
+		if not tdPetDeployAndRefresh(pet, GetSpellTargetUnit())
+			tdPetNotice(lane, "请选择本路已完工的塔；已有精灵会解绑并留在收藏中。")
 		showPage(lane, TD_PET_UI_DETAIL, page, slot, 0)
 	else if action == 5
 		pet.recall()

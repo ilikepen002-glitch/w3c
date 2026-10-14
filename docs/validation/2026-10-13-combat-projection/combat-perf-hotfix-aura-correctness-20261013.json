@@ -1,0 +1,31 @@
+{
+  "sha256": "a20d063f1e6d7bd484213483d939d545c9bd6429b336243f95d5f7fe64abd8df",
+  "checks": {
+    "routing": {
+      "equipment_target_cases": 112,
+      "tower_target_cases": 35,
+      "pet_target_cases": 6,
+      "wind_application": {
+        "own_towers_A129_level": 4,
+        "ally_and_enemy_A129_level": 0,
+        "status_carrier": 1095577701,
+        "out_of_range_removal": true
+      }
+    },
+    "reuse": {
+      "same_id_reused": true,
+      "all_17_identities_empty": true,
+      "weak_power": 0.06
+    },
+    "transitions": {
+      "strong_to_weak": true,
+      "all_removed": true,
+      "tower_enemy_cross_lane_rotation": true,
+      "dead_strong_source": true,
+      "out_of_range": true
+    },
+    "constructor_negative": {
+      "clear_removal_reproduces_reuse_and_weak_fallback": true
+    }
+  }
+}

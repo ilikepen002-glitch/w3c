@@ -1,0 +1,16 @@
+{
+  "sha256": "0204a84e260d8095f9d240adcb50a4bc9fb1d005d1e3db2b5938e1b1c12883b3",
+  "entries": [
+    "pickup_0_to_1",
+    "drop_1_to_0_before_native_slot_clear",
+    "duplicate_rejection",
+    "script_give",
+    "script_transfer_drop_callback",
+    "failed_native_add_no_pickup",
+    "upgrade_start_conservative",
+    "stale_cancel_generation_ignored",
+    "cancel_narrows",
+    "upgrade4_to5_finish",
+    "registration_before_failure"
+  ]
+}

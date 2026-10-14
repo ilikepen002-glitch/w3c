@@ -1,0 +1,15 @@
+test_farmer_and_tower_inventory_capacities_and_native_flags_unchanged (test_inventory_range_source.InventoryRangeSourceTests.test_farmer_and_tower_inventory_capacities_and_native_flags_unchanged) ... ok
+test_only_three_native_inventory_constants_are_overridden (test_inventory_range_source.InventoryRangeSourceTests.test_only_three_native_inventory_constants_are_overridden) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.001s
+
+OK
+test_editor_source_has_exactly_the_expected_player_zero_critters (test_ambient_critter_source.AmbientCritterTests.test_editor_source_has_exactly_the_expected_player_zero_critters) ... ok
+test_precise_once_only_ownership_and_group_cleanup (test_ambient_critter_source.AmbientCritterTests.test_precise_once_only_ownership_and_group_cleanup) ... ok
+test_startup_runs_before_gameplay_and_never_on_reset (test_ambient_critter_source.AmbientCritterTests.test_startup_runs_before_gameplay_and_never_on_reset) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.005s
+
+OK

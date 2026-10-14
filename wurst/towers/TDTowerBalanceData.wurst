@@ -446,15 +446,16 @@ public function tdTowerBaseCooldownForBranch(int towerChoice, int level, int bra
 public function tdTowerBaseCooldown(int towerChoice, int level) returns real
 	return tdTowerBaseCooldownForBranch(towerChoice, level, TD_TOWER_BRANCH_A)
 
+// Melee families cover nearby plateau corners without gaining ranged equipment bonuses.
 function tdTowerBaseRangeCore(int towerChoice, int level) returns int
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if level >= TD_MAX_TOWER_LEVEL
 			return 720
-		return 520 + level * 30
+		return 720
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if level >= TD_MAX_TOWER_LEVEL
-			return 660
-		return 480 + level * 25
+			return 720
+		return 720
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if level >= TD_MAX_TOWER_LEVEL
 			return 860
@@ -463,8 +464,8 @@ function tdTowerBaseRangeCore(int towerChoice, int level) returns int
 		return 620 + level * 30
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if level >= TD_MAX_TOWER_LEVEL
-			return 610
-		return 450 + level * 25
+			return 720
+		return 720
 	if level >= TD_MAX_TOWER_LEVEL
 		return 940
 	return 700 + level * 35
@@ -479,19 +480,19 @@ public function tdTowerBaseRangeForBranch(int towerChoice, int level, int branch
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
 			return 780
-		return 670
+		return 720
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
 			return 720
-		return 640
+		return 720
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if branch == TD_TOWER_BRANCH_B
 			return 940
 		return 820
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if branch == TD_TOWER_BRANCH_B
-			return 650
-		return 600
+			return 720
+		return 720
 	return tdTowerBaseRangeCore(towerChoice, level)
 
 public function tdTowerBaseRange(int towerChoice, int level) returns int

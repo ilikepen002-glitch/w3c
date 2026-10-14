@@ -3,24 +3,28 @@ import TDPetHeroRules
 import TDTowerCommonData
 import TDTooltipText
 
-// Existing native command-button resources already used by the pet UI.
+// Distinct hero reinforcement artwork; this changes presentation only.
 public function tdPetHeroIconName(int skill) returns string
 	if skill == TD_PET_HERO_FROST
-		return "BTNColdArrows"
+		return "BTNTDPetSkillStarFrostArrows"
 	if skill == TD_PET_HERO_MOON
-		return "BTNBrilliance"
+		return "BTNTDPetSkillMoonBeacon"
 	if skill == TD_PET_HERO_BOSS
-		return "BTNCriticalStrike"
+		return "BTNTDPetSkillKingslayerPact"
 	if skill == TD_PET_HERO_STORM
 		return "BTNCyclone"
-	if skill == TD_PET_HERO_JUDGEMENT or skill == TD_PET_HERO_RELAY
-		return "BTNInnerFire"
-	if skill == TD_PET_HERO_POISON or skill == TD_PET_HERO_EPIDEMIC
-		return "BTNDeathAndDecay"
+	if skill == TD_PET_HERO_JUDGEMENT
+		return "BTNTDPetSkillDelayedJudgement"
+	if skill == TD_PET_HERO_RELAY
+		return "BTNTDPetSkillHolySealRelay"
+	if skill == TD_PET_HERO_POISON
+		return "BTNTDPetSkillPoisonSprout"
 	if skill == TD_PET_HERO_ROOT
-		return "BTNFaerieFire"
+		return "BTNTDPetSkillRootAmbush"
 	if skill == TD_PET_HERO_HUNT
-		return "BTNGlove"
+		return "BTNTDPetSkillHuntMomentum"
+	if skill == TD_PET_HERO_EPIDEMIC
+		return "BTNTDPetSkillEpidemicRelay"
 	return ""
 
 public function tdPetHeroDescription(int skill, int quality) returns string

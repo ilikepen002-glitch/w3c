@@ -1,0 +1,24 @@
+{
+  "map_sha256": "a20d063f1e6d7bd484213483d939d545c9bd6429b336243f95d5f7fe64abd8df",
+  "checks": {
+    "control": [
+      "stable no write",
+      "external rank repaired",
+      "missing stays missing",
+      "re-added repaired"
+    ],
+    "acquisition": [
+      "stable no write",
+      "external value repaired",
+      "full projected range recomputed"
+    ],
+    "speed": [
+      "stable no write",
+      "external value repaired",
+      "source added",
+      "stable slow no write",
+      "source removed"
+    ]
+  },
+  "boundary": "Production JASS executed; native actual values modeled. No engine/FPS claim."
+}

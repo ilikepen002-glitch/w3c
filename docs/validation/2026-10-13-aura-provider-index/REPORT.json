@@ -1,0 +1,413 @@
+{
+  "status": "PASS",
+  "provenance": [
+    {
+      "path": "/workspace/scratch/2106c0ab1fac/combat-perf-hotfix-20261013/ExampleMap.w3x",
+      "map_sha256": "a20d063f1e6d7bd484213483d939d545c9bd6429b336243f95d5f7fe64abd8df",
+      "jass_sha256": "79b8ecd22dc4d71f4b26002cdd9f5b23a31f0a5e32cccb5398de1c210581d34e"
+    },
+    {
+      "path": "/workspace/scratch/2106c0ab1fac/aura-provider-index-20261013/ExampleMap.w3x",
+      "map_sha256": "0204a84e260d8095f9d240adcb50a4bc9fb1d005d1e3db2b5938e1b1c12883b3",
+      "jass_sha256": "2fbac85cd4315c98e0597256094b0d56455b1bf9e81f852f07c4bf9b95c7ed4a"
+    }
+  ],
+  "matrix_cases": 87,
+  "transition_cases": 20,
+  "cooldown_non_vacuity": "Real uO6A W3U abilities; native-active true; every cooldown item slot case asserts nonzero power and rank==quality",
+  "extra": {
+    "status": "PASS",
+    "results": {
+      "empty_provider_timed_expiry": [
+        239.20000000000002,
+        260.0
+      ],
+      "equal_rank_power_order": true,
+      "actual_class_id_reused": true,
+      "synthetic41_speeds": [
+        208.0,
+        244.39999999999998
+      ],
+      "synthetic_cleanup_empty": true,
+      "trial_timed_speed": 239.20000000000002
+    }
+  },
+  "costs": [
+    {
+      "source_kind": "native",
+      "sources": 0,
+      "calls": [
+        20100,
+        10196
+      ],
+      "expressions": [
+        79638,
+        60806
+      ],
+      "source_visits": [
+        640,
+        0
+      ],
+      "call_delta_percent": -49.273631840796014,
+      "expression_delta_percent": -23.64700268715939,
+      "counts_before": {
+        "tdAuraOfferSource": 640,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 0,
+        "tdAuraSetProviderRecord": 0,
+        "UnitItemInSlot": 624,
+        "unit_getAbilityLevel": 896,
+        "GetUnitTypeId": 432,
+        "GetOwningPlayer": 928,
+        "tdItemAuraKind": 0,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      },
+      "counts_after": {
+        "tdAuraOfferSource": 0,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 16,
+        "tdAuraSetProviderRecord": 16,
+        "UnitItemInSlot": 144,
+        "unit_getAbilityLevel": 256,
+        "GetUnitTypeId": 112,
+        "GetOwningPlayer": 128,
+        "tdItemAuraKind": 0,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      }
+    },
+    {
+      "source_kind": "native",
+      "sources": 4,
+      "calls": [
+        20290,
+        12426
+      ],
+      "expressions": [
+        80856,
+        66208
+      ],
+      "source_visits": [
+        640,
+        64
+      ],
+      "call_delta_percent": -38.7580088713652,
+      "expression_delta_percent": -18.116157118828536,
+      "counts_before": {
+        "tdAuraOfferSource": 640,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 0,
+        "tdAuraSetProviderRecord": 0,
+        "UnitItemInSlot": 624,
+        "unit_getAbilityLevel": 906,
+        "GetUnitTypeId": 432,
+        "GetOwningPlayer": 928,
+        "tdItemAuraKind": 0,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      },
+      "counts_after": {
+        "tdAuraOfferSource": 64,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 16,
+        "tdAuraSetProviderRecord": 16,
+        "UnitItemInSlot": 264,
+        "unit_getAbilityLevel": 426,
+        "GetUnitTypeId": 192,
+        "GetOwningPlayer": 232,
+        "tdItemAuraKind": 0,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      }
+    },
+    {
+      "source_kind": "native",
+      "sources": 10,
+      "calls": [
+        20470,
+        15666
+      ],
+      "expressions": [
+        82038,
+        73666
+      ],
+      "source_visits": [
+        640,
+        160
+      ],
+      "call_delta_percent": -23.46849047386419,
+      "expression_delta_percent": -10.205026938735706,
+      "counts_before": {
+        "tdAuraOfferSource": 640,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 0,
+        "tdAuraSetProviderRecord": 0,
+        "UnitItemInSlot": 624,
+        "unit_getAbilityLevel": 906,
+        "GetUnitTypeId": 432,
+        "GetOwningPlayer": 928,
+        "tdItemAuraKind": 0,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      },
+      "counts_after": {
+        "tdAuraOfferSource": 160,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 16,
+        "tdAuraSetProviderRecord": 16,
+        "UnitItemInSlot": 444,
+        "unit_getAbilityLevel": 666,
+        "GetUnitTypeId": 312,
+        "GetOwningPlayer": 388,
+        "tdItemAuraKind": 0,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      }
+    },
+    {
+      "source_kind": "native",
+      "sources": 40,
+      "calls": [
+        20692,
+        20868
+      ],
+      "expressions": [
+        83478,
+        83686
+      ],
+      "source_visits": [
+        640,
+        640
+      ],
+      "call_delta_percent": 0.8505702687028771,
+      "expression_delta_percent": 0.24916744531493507,
+      "counts_before": {
+        "tdAuraOfferSource": 640,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 0,
+        "tdAuraSetProviderRecord": 0,
+        "UnitItemInSlot": 624,
+        "unit_getAbilityLevel": 912,
+        "GetUnitTypeId": 432,
+        "GetOwningPlayer": 928,
+        "tdItemAuraKind": 0,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      },
+      "counts_after": {
+        "tdAuraOfferSource": 640,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 16,
+        "tdAuraSetProviderRecord": 16,
+        "UnitItemInSlot": 624,
+        "unit_getAbilityLevel": 912,
+        "GetUnitTypeId": 432,
+        "GetOwningPlayer": 928,
+        "tdItemAuraKind": 0,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      }
+    },
+    {
+      "source_kind": "item",
+      "sources": 4,
+      "calls": [
+        21496,
+        13680
+      ],
+      "expressions": [
+        84070,
+        69506
+      ],
+      "source_visits": [
+        640,
+        64
+      ],
+      "call_delta_percent": -36.360253070338665,
+      "expression_delta_percent": -17.323658855715472,
+      "counts_before": {
+        "tdAuraOfferSource": 640,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 0,
+        "tdAuraSetProviderRecord": 0,
+        "UnitItemInSlot": 636,
+        "unit_getAbilityLevel": 896,
+        "GetUnitTypeId": 432,
+        "GetOwningPlayer": 928,
+        "tdItemAuraKind": 0,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      },
+      "counts_after": {
+        "tdAuraOfferSource": 64,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 16,
+        "tdAuraSetProviderRecord": 16,
+        "UnitItemInSlot": 276,
+        "unit_getAbilityLevel": 416,
+        "GetUnitTypeId": 192,
+        "GetOwningPlayer": 232,
+        "tdItemAuraKind": 12,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      }
+    },
+    {
+      "source_kind": "item",
+      "sources": 40,
+      "calls": [
+        25684,
+        26052
+      ],
+      "expressions": [
+        97366,
+        97910
+      ],
+      "source_visits": [
+        640,
+        640
+      ],
+      "call_delta_percent": 1.4327986294969675,
+      "expression_delta_percent": 0.5587165951153272,
+      "counts_before": {
+        "tdAuraOfferSource": 640,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 0,
+        "tdAuraSetProviderRecord": 0,
+        "UnitItemInSlot": 672,
+        "unit_getAbilityLevel": 896,
+        "GetUnitTypeId": 432,
+        "GetOwningPlayer": 928,
+        "tdItemAuraKind": 0,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      },
+      "counts_after": {
+        "tdAuraOfferSource": 640,
+        "tdRefreshTowerEquipmentBonuses": 16,
+        "tdAuraSetProviderCandidate": 16,
+        "tdAuraSetProviderRecord": 16,
+        "UnitItemInSlot": 672,
+        "unit_getAbilityLevel": 896,
+        "GetUnitTypeId": 432,
+        "GetOwningPlayer": 928,
+        "tdItemAuraKind": 48,
+        "SetUnitMoveSpeed": 0,
+        "SetUnitAcquireRange": 0,
+        "SetUnitAbilityLevel": 0,
+        "CreateGroup": 0,
+        "CreateUnit": 0,
+        "IssueTargetOrderById": 0,
+        "GetRandomInt": 0,
+        "GetRandomReal": 0,
+        "doPeriodically": 0,
+        "doAfter": 0
+      }
+    }
+  ],
+  "files": {
+    "provider_compare.py": "912f7959b2ea0d2de629ea3e30a4cc7c8b350354e152532c727316ef581136b2",
+    "provider_extra.py": "340dc427f999677373da741deab81a24c6482a105ecbaa8bea479e78076a7a0a",
+    "run_stage.py": "79e3eba06afe68d88960536f43416d7e24fe5b5bae1373ecaefe88cc62711bbc",
+    "aggregate.py": "4c52011c47c670d148bf16565092ce3e1530a3e90d0d83adc1d5fa5a9ca82564",
+    "baseline.json": "2a138f959b6e8f5397d6a7948192392c87de1c930705669f1f3a377ad8835fb2",
+    "baseline-matrix.json": "bb77c2b7104f66f57820d5d2582535538aeb32f033904757c1ebecd93ea915bd",
+    "candidate-matrix.json": "796bae1c0ee8051bcb6cd5cc529608c445e2804ad3fc6746fd4d6d0af521a504",
+    "baseline-transitions.json": "05d9fc1389c06d97cfd60ef936ed904066814e158d6cf69edb32f04e4d153dfd",
+    "candidate-transitions.json": "b1720346494d6a861d369fb922fb094260655b04f452c3af655676d1a27f24d1",
+    "candidate-costs.json": "b2c5583ff131a7590025fc268fcd24725eb41032e93c744de7eb338b61cd771b",
+    "baseline-item-costs.json": "d0267a453ec80cad5f3f287bafb8c920e159ef777518550668b4d014f234f486",
+    "candidate-item-costs.json": "84135d9c53c9407dd44790439b0463907ae9b54a55446f57b784da4c088989fe",
+    "extra.json": "f5e627c9e1c91e76e23d485a6c3f016c8329bd732f4b303c30df23f6bf49fdf7"
+  },
+  "boundary": "Independent ActualAura executes true packed catalog helpers (no level6/branch2 stubs). Native units/abilities/inventory/hashtable/clock are controlled. Real Inventory builds membership. Costs include full 16 tower-recipient callback; not FPS/CPU/opcode measurements. Production damage/upgrade-entry/mutations are validated separately by implementer. Old 587ee map is not accepted."
+}

@@ -1,6 +1,7 @@
 package TDAuraRuntime
 import TDActiveCooldownRuntime
 import TDAuraState
+import TDTowerTargetPriorityState
 import TDEnemySlowState
 import TDItemData
 import TDEquipmentRules
@@ -46,6 +47,9 @@ function tdAuraApply(TDAuraTarget record)
 		tdRefreshEnemyMoveSpeed(record.target)
 
 function tdAuraForget(TDAuraTarget record)
+	if record.tower
+		// Reuse the existing bounded aura cleanup for external native RemoveUnit.
+		tdTargetPriorityForget(record.target)
 	for identity = 1 to TD_AURA_ID_COUNT
 		tdAuraSyncDisplayedRank(record, identity, 0)
 	record.effective.clear()
@@ -59,16 +63,16 @@ function tdAuraForget(TDAuraTarget record)
 	destroy record
 
 function tdAuraCooldownTargetEligible(unit target) returns boolean
+	if tdHasNativeActiveCooldown(target)
+		return true
 	let pet = tdPetForHost(target)
-	var activeUnlocked = false
-	var binding = false
-	if pet != null
-		binding = tdPetBindingValid(pet, target, pet.generation)
-		for slot = 0 to IMinBJ(pet.skillCount, tdPetUnlockedSlots(pet.level)) - 1
-			let skill = pet.skillAt(slot)
-			if tdPetSkillIsActive(skill) and tdPetSkillFitsHost(skill, target)
-				activeUnlocked = true
-	return tdAuraCooldownTargetSupported(tdHasNativeActiveCooldown(target), binding, activeUnlocked)
+	if pet == null or not tdPetBindingValid(pet, target, pet.generation)
+		return false
+	for slot = 0 to IMinBJ(pet.skillCount, tdPetUnlockedSlots(pet.level)) - 1
+		let skill = pet.skillAt(slot)
+		if tdPetSkillIsActive(skill) and tdPetSkillFitsHost(skill, target)
+			return true
+	return false
 
 function tdEquipmentAuraIdentity(int kind) returns int
 	if kind == TD_ITEM_AURA_ATTACK
@@ -134,7 +138,7 @@ function tdAuraRefresh(TDAuraTarget record)
 		let targetPos = target.getPos()
 		let mechanical = not record.tower and IsUnitType(target, UNIT_TYPE_MECHANICAL)
 		let cooldownEligible = record.tower and tdAuraCooldownTargetEligible(target)
-		for source in tdAuraTowers
+		for source in tdAuraProviders
 			tdAuraOfferSource(record, source.target, prepared, targetLane, targetPos, mechanical, cooldownEligible)
 		if not record.tower
 			tdEnemySlowCollectTimed(record.target, prepared)

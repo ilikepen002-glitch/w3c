@@ -41,22 +41,96 @@ public function tdPetEnemyIsValid(unit enemy, int lane) returns boolean
 public function tdPetLaneCanAct(int lane) returns boolean
 	return tdPetLaneCanManage(lane)
 
+// Bounded identity census: public lane/host fields alone are not ownership.
+public function tdPetOwnedSlot(TDPet pet) returns int
+	if pet == null or pet.released or not tdIsLanePlayer(pet.lane) or pet.species < 1 or pet.species > TD_PET_SPECIES_COUNT
+		return -1
+	var found = -1
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+			if tdPetAt(lane, slot) == pet
+				if lane != pet.lane or found >= 0
+					return -1
+				found = slot
+	return found
+
+function tdPetDeployTowerValid(unit tower, int lane, boolean target) returns boolean
+	if tower == null or not tower.isAlive() or GetPlayerId(GetOwningPlayer(tower)) != lane or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return false
+	return not target or not tdPetBusyTowers.hasBoolean(tower.getHandleId())
+
+function tdPetDeployTouchesHost(TDPet owned, unit tower, unit source) returns boolean
+	if owned == null
+		return false
+	if owned.host == tower
+		return true
+	return source != null and owned.host == source
+
+// Host lookup is owner-local. Check all 4x20 slots before touching either host,
+// so a stale external owner cannot recall later and clear the new pet's bonuses.
+function tdPetDeployCensusValid(TDPet pet, unit tower) returns boolean
+	var targetCount = 0
+	var sourceCount = 0
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		for slot = 0 to TD_PET_COLLECTION_LIMIT - 1
+			let owned = tdPetAt(lane, slot)
+			if tdPetDeployTouchesHost(owned, tower, pet.host)
+				if lane != pet.lane or owned.lane != lane or owned.released or owned.species < 1 or owned.species > TD_PET_SPECIES_COUNT
+					return false
+				if owned.host == tower
+					targetCount += 1
+				if pet.host != null and owned.host == pet.host
+					sourceCount += 1
+	return targetCount <= 1 and sourceCount <= 1
+
 public function tdPetCanDeploy(TDPet pet, unit tower) returns boolean
-	if pet == null or pet.released or tower == null or not tower.isAlive() or not tdPetLaneCanAct(pet.lane)
+	if tdPetOwnedSlot(pet) < 0 or not tdPetLaneCanAct(pet.lane) or not tdPetDeployTowerValid(tower, pet.lane, true)
 		return false
-	if GetPlayerId(GetOwningPlayer(tower)) != pet.lane or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0 or tdPetBusyTowers.hasBoolean(tower.getHandleId())
+	if pet.host != null and not tdPetDeployTowerValid(pet.host, pet.lane, false)
 		return false
-	if tdPetForHost(tower) != null
+	if not tdPetDeployCensusValid(pet, tower)
 		return false
 	return true
 
 public function tdPetDeploy(TDPet pet, unit tower) returns boolean
 	if not tdPetCanDeploy(pet, tower)
 		return false
+	if pet.host == tower
+		// Legal same-pet/same-host is a true no-op, including active buffs/tasks.
+		return true
+	let lane = pet.lane
+	let slot = tdPetOwnedSlot(pet)
+	let epoch = tdFlowEpoch()
+	let source = pet.host
+	let oldVisual = pet.visual
+	let generation = pet.generation
+	let revision = pet.revision
+	let species = pet.species
+	let occupant = tdPetForHost(tower)
+	let occupantSlot = tdPetOwnedSlot(occupant)
+	let occupantGeneration = occupant == null ? 0 : occupant.generation
+	let occupantRevision = occupant == null ? 0 : occupant.revision
+	let occupantVisual = occupant == null ? null : occupant.visual
+	let towerType = GetUnitTypeId(tower)
+	let visualType = tdPetVisualUnitId(species)
+	// No binding, tasks, old native handles or cooldowns change before creation.
+	let prepared = createUnit(Player(lane), visualType, tower.getPos() + vec2(100.0, 50.0), 0 .fromDeg())
+	if prepared == null
+		return false
+	prepared.setPathing(false)
+	// CreateUnit is a native boundary. Never restore snapshots over newer events.
+	var unchanged = epoch == tdFlowEpoch() and pet.lane == lane and tdPetAt(lane, slot) == pet and pet.host == source and pet.visual == oldVisual and pet.generation == generation and pet.revision == revision and pet.species == species and GetUnitTypeId(tower) == towerType
+	if occupant != null
+		unchanged = unchanged and tdPetAt(lane, occupantSlot) == occupant and occupant.host == tower and occupant.visual == occupantVisual and occupant.generation == occupantGeneration and occupant.revision == occupantRevision
+	if not unchanged or not tdPetCanDeploy(pet, tower) or tdPetForHost(tower) != occupant or GetUnitTypeId(prepared) != visualType or GetOwningPlayer(prepared) != Player(lane) or not prepared.isAlive()
+		prepared.remove()
+		return false
+	// Commit has no yield, new allocation or failure return after the first recall.
+	if occupant != null
+		occupant.recall()
 	pet.recall()
 	pet.host = tower
-	pet.visual = createUnit(Player(pet.lane), tdPetVisualUnitId(pet.species), tower.getPos() + vec2(100.0, 50.0), 0 .fromDeg())
-	pet.visual.setPathing(false)
+	pet.visual = prepared
 	return true
 
 function tdPetHandleCapture() returns boolean

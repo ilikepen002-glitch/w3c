@@ -33,7 +33,7 @@ function tdPetCommandDescription(int command) returns string
 	if command == 3
 		return "重新选中本路工人。"
 	if command == 4
-		return "将当前精灵附身到本路已完工、未绑定精灵的塔。|n每座塔可上阵1只精灵；换塔保留主动技能冷却。"
+		return "将当前精灵绑定到本路已完工的塔；原精灵解绑并保留在收藏中。|n每座塔可上阵1只精灵；换塔保留双方主动技能冷却。"
 	if command == 5
 		return "召回当前精灵，解除与塔的绑定，停止提供加成。|n精灵保留在收藏中，主动技能冷却不重置。"
 	if command == 6
@@ -173,7 +173,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			if not tdPetSkillDefined(skill)
 				continue
 			let displaySkill = new AbilityDefinitionBladeMasterCriticalStrike(tdPetPreviewAbilityId(position, skill))
-			displaySkill..setName((position == 0 ? "旧技能 · " : "新技能 · ") + tdPetSkillNameById(skill))..setLevels(4)..setIconNormal("ReplaceableTextures\\CommandButtons\\" + tdPetSkillIconName(skill) + ".blp")..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setRequirements("")..setButtonPositionNormalX(position == 0 ? 0 : 3)..setButtonPositionNormalY(0)
+			displaySkill..setName((position == 0 ? "旧技能 · " : "新技能 · ") + tdPetSkillNameById(skill))..setLevels(4)..setIconNormal(tdPetSkillIconPath(skill, false))..setHeroAbility(false)..setItemAbility(false)..setCheckDependencies(false)..setRequirements("")..setButtonPositionNormalX(position == 0 ? 0 : 3)..setButtonPositionNormalY(0)
 			for quality = 1 to 4
 				displaySkill.setTooltipNormal(quality, (position == 0 ? "旧：" : "新：") + tdPetQualityName(quality) + " " + tdPetSkillNameById(skill))
 				displaySkill.setTooltipNormalExtended(quality, tdPetSkillDescriptionById(skill, quality))
@@ -224,7 +224,7 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			..setName("[野生精灵] " + tdPetSpeciesName(species))
 			..setIconGameInterface(tdPetSpeciesIconPath(species))
 			..setIconScoreScreen(tdPetSpeciesIconPath(species))
-			..setDescription("本路中立无敌停留60秒，仅可捕获。")
+			..setDescription("本路中立无敌停留180秒，仅可捕获。")
 			..setModelFile(tdPetModel(species))
 			..setScalingValue(2.55)
 			// Calibrate the one-second Walk cycle for the large model at 120–150 move speed.

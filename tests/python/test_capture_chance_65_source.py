@@ -44,7 +44,10 @@ class CaptureChance65SourceTests(unittest.TestCase):
     def test_runtime_diff_is_only_threshold_preserving_spend_rng_and_result_order(self):
         before = subprocess.check_output(['git', 'show', f'{BASE}:{RUNTIME}'], cwd=ROOT, text=True)
         self.assertEqual(before.count('GetRandomInt(1, 100) > 60'), 1)
-        self.assertEqual(self.runtime, before.replace('GetRandomInt(1, 100) > 60', 'GetRandomInt(1, 100) > 65'))
+        # Deployment has an independent lifecycle contract; keep capture itself closed.
+        def capture(source):
+            return source.split('function tdPetHandleCapture()', 1)[1].split('// A successful roll owns one reward:', 1)[0]
+        self.assertEqual(capture(self.runtime), capture(before).replace('GetRandomInt(1, 100) > 60', 'GetRandomInt(1, 100) > 65'))
 
     def test_chance_helper_and_player_tooltip(self):
         evaluator = SourceScalarEvaluator(read_sources(ROOT))
@@ -52,7 +55,7 @@ class CaptureChance65SourceTests(unittest.TestCase):
             self.assertEqual(evaluator.call('tdPetCaptureChance', [life, maximum]), .65)
         data = (ROOT / 'wurst/pets/TDPetData.wurst').read_text()
         self.assertIn('成功率65%；首只教学精灵首次投普通球必成', data)
-        self.assertIn('/60；收藏已满不扣球。野生精灵出现60秒后消失。', data)
+        self.assertIn('/60；收藏已满不扣球。野生精灵出现180秒后消失。', data)
         self.assertNotIn('成功率60%', data)
 
 

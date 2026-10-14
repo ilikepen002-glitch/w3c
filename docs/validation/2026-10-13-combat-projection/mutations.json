@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "semantic_mutations": [
+    {
+      "mutation": "control_guard",
+      "rejected_by": "Stable control level rewrote the native"
+    },
+    {
+      "mutation": "acquire_guard",
+      "rejected_by": "Stable acquisition rewrote the native"
+    },
+    {
+      "mutation": "speed_guard",
+      "rejected_by": "Stable enemy speed rewrote the native"
+    },
+    {
+      "mutation": "projected_range",
+      "rejected_by": "Projected range changed"
+    },
+    {
+      "mutation": "saved_base",
+      "rejected_by": "Supplied original base replaced"
+    },
+    {
+      "mutation": "binding_guard",
+      "rejected_by": "Invalid binding admitted"
+    },
+    {
+      "mutation": "unlock_guard",
+      "rejected_by": "Locked pet admitted"
+    }
+  ]
+}

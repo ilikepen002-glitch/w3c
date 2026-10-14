@@ -1,0 +1,5 @@
+[Misc]
+PickupItemRange=1200.0
+DropItemRange=1200.0
+GiveItemRange=1200.0
+DisplayBuildingStatus=1

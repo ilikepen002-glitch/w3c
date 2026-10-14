@@ -1,0 +1,16 @@
+package TDAuraProviderInputTests
+import TDInventoryRuntime
+import TDConfig
+
+@Test function nativeAuraFormsRemainConservativeWithoutAbilities()
+	for choice = TD_TOWER_CHOICE_ARCHER to TD_TOWER_CHOICE_GHOUL
+		for level = 1 to 6
+			var nativeProvider = false
+			if level >= 5
+				nativeProvider = choice == TD_TOWER_CHOICE_ARCHER or choice == TD_TOWER_CHOICE_FOOTMAN or choice == TD_TOWER_CHOICE_DRYAD
+			tdTowerAuraProviderInput(choice, level, 0, 0, 0, false).assertEquals(nativeProvider)
+
+@Test function workingTowersStayConservativeAndEmptyNormalTowersDoNotProvide()
+	for choice = TD_TOWER_CHOICE_ARCHER to TD_TOWER_CHOICE_GHOUL
+		tdTowerAuraProviderInput(choice, 1, 0, 0, 0, true).assertTrue()
+		tdTowerAuraProviderInput(choice, 1, 0, 0, 0, false).assertFalse()

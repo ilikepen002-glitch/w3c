@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "results": {
+    "elite_sprint": 350.0,
+    "elite_saved_original": 250.0,
+    "script_ready_at": 24.0,
+    "aura_and_paused_refresh_preserve_ready_at": true
+  }
+}

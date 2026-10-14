@@ -1,0 +1,144 @@
+package TDTowerTargetPriorityState
+import Table
+import LinkedList
+
+// Low layer deliberately has no inventory, game, trial or tower-runtime imports.
+int tdTargetPriorityNextSerial = 0
+public constant LinkedList<TDTowerTargetPriorityState> tdTargetPriorityRecords = new LinkedList<TDTowerTargetPriorityState>()
+public constant LinkedList<TDTowerTargetPriorityState> tdTargetPriorityParked = new LinkedList<TDTowerTargetPriorityState>()
+constant Table tdTargetPriorityByHandle = new Table()
+
+public class TDTowerTargetPriorityState
+	unit source
+	int sourceKey
+	int serial
+	int owner
+	int epoch
+	int intentRevision = 0
+	int scriptOrderDepth = 0
+	int scriptOrderId = 0
+	unit scriptOrderTarget = null
+	boolean working = false
+	boolean casting = false
+	boolean playerHold = false
+	unit manualTarget = null
+	int manualEpoch = 0
+	int manualGeneration = 0
+	int manualToken = 0
+	int manualRevision = 0
+	boolean manualTrial = false
+	unit pendingRedirectTarget = null
+	int pendingRevision = -1
+	int redirectSerial = 0
+	int observedRedirectSerial = 0
+	boolean parked = false
+	real lastRecoveryQuery = -100.0
+	real effectiveRange = 0.0
+
+	construct(unit source, int sourceKey, int owner, int epoch)
+		this.source = source
+		this.sourceKey = sourceKey
+		this.owner = owner
+		this.epoch = epoch
+		tdTargetPriorityNextSerial += 1
+		serial = tdTargetPriorityNextSerial
+
+	function cancelPending()
+		pendingRedirectTarget = null
+		pendingRevision = -1
+
+	function newIntent()
+		intentRevision += 1
+		cancelPending()
+		manualTarget = null
+
+	function beginRedirect(unit target) returns int
+		redirectSerial += 1
+		pendingRedirectTarget = target
+		pendingRevision = intentRevision
+		return redirectSerial
+
+	function hasPending() returns boolean
+		return pendingRevision == intentRevision and pendingRevision >= 0
+
+	function consumePending() returns boolean
+		if not hasPending()
+			return false
+		observedRedirectSerial = redirectSerial
+		cancelPending()
+		return true
+
+public function tdTargetPriorityStateFor(unit source) returns TDTowerTargetPriorityState
+	if source == null or not tdTargetPriorityByHandle.hasInt(source.getHandleId())
+		return null
+	let record = tdTargetPriorityByHandle.loadInt(source.getHandleId()) castTo TDTowerTargetPriorityState
+	return record.source == source ? record : null
+
+public function tdTargetPriorityStateMatches(unit source, int serial, int intent) returns boolean
+	let record = tdTargetPriorityStateFor(source)
+	return record != null and record.serial == serial and record.intentRevision == intent
+
+public function tdTargetPriorityUnpark(TDTowerTargetPriorityState record)
+	if record == null or not record.parked
+		return
+	record.parked = false
+	tdTargetPriorityParked.remove(record)
+
+public function tdTargetPriorityForget(unit source)
+	let record = tdTargetPriorityStateFor(source)
+	if record == null
+		return
+	tdTargetPriorityByHandle.removeInt(record.sourceKey)
+	tdTargetPriorityUnpark(record)
+	tdTargetPriorityRecords.remove(record)
+	destroy record
+
+public function tdTargetPriorityCreate(unit source, int owner, int epoch) returns TDTowerTargetPriorityState
+	let record = new TDTowerTargetPriorityState(source, source.getHandleId(), owner, epoch)
+	tdTargetPriorityByHandle.saveInt(record.sourceKey, record castTo int)
+	tdTargetPriorityRecords.add(record)
+	return record
+
+public function tdTargetPriorityClearLane(int lane)
+	let itr = tdTargetPriorityRecords.iterator()
+	while itr.hasNext()
+		let record = itr.next()
+		if record.owner == lane
+			itr.remove()
+			tdTargetPriorityByHandle.removeInt(record.sourceKey)
+			tdTargetPriorityUnpark(record)
+			destroy record
+	itr.close()
+
+public function tdTargetPriorityClearAll()
+	while not tdTargetPriorityRecords.isEmpty()
+		tdTargetPriorityForget(tdTargetPriorityRecords.get(0).source)
+
+public function tdTargetPriorityProjectedAcquireRange(unit source, real currentRange) returns real
+	let record = tdTargetPriorityStateFor(source)
+	if record == null
+		return currentRange
+	record.effectiveRange = currentRange
+	return record.parked ? 0.0 : currentRange
+
+public function tdTargetPriorityWorkStarted(unit source)
+	let record = tdTargetPriorityStateFor(source)
+	if record == null
+		return
+	record.intentRevision += 1
+	record.cancelPending()
+	tdTargetPriorityUnpark(record)
+	record.working = true
+
+public function tdTargetPriorityWorkFinished(unit source)
+	let record = tdTargetPriorityStateFor(source)
+	if record != null
+		record.working = false
+
+public function tdTargetPriorityCasting(unit source, boolean active)
+	let record = tdTargetPriorityStateFor(source)
+	if record != null
+		record.casting = active
+		if active
+			record.intentRevision += 1
+			record.cancelPending()

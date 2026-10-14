@@ -1,0 +1,22 @@
+package TDAmbientCritters
+
+// The editor map places these 21 decorative critters under Player 0. Correct
+// their ownership once, before gameplay creates any player-controlled units.
+boolean tdAmbientCritterOwnershipReady = false
+
+public function tdShouldNeutralizeAmbientCritter(int ownerId, int unitTypeId) returns boolean
+	return ownerId == 0 and (unitTypeId == 'nech' or unitTypeId == 'nshe' or unitTypeId == 'nfro' or unitTypeId == 'npig')
+
+public function tdSetupAmbientCritterOwnership()
+	if tdAmbientCritterOwnershipReady
+		return
+	tdAmbientCritterOwnershipReady = true
+	let critters = CreateGroup()
+	GroupEnumUnitsOfPlayer(critters, Player(0), null)
+	var candidate = FirstOfGroup(critters)
+	while candidate != null
+		GroupRemoveUnit(critters, candidate)
+		if tdShouldNeutralizeAmbientCritter(GetPlayerId(GetOwningPlayer(candidate)), GetUnitTypeId(candidate))
+			SetUnitOwner(candidate, Player(PLAYER_NEUTRAL_PASSIVE), true)
+		candidate = FirstOfGroup(critters)
+	DestroyGroup(critters)

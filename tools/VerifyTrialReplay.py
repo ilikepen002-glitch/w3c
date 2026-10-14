@@ -43,7 +43,8 @@ class TrialJassRuntime(PureBossJassRuntime):
         # Only relevant production package initialization, not main/UI/game boot.
         # The packaged min/max helpers use Real_REAL_MAX/MIN initialized here.
         # Replaying match startup alone omits the engine's earlier package init.
-        for name in ('init_Real', 'init_TDPetRules', 'init_TDCombatVisualRuntime', 'init_TDPetEffectScheduler', 'init_TDPetHeroState', 'init_TDPetHeroEffects',
+        for name in ('init_Real', 'init_TDTowerTargetPriorityRules', 'init_TDTowerTargetPriorityState',
+                     'init_TDPetRules', 'init_TDCombatVisualRuntime', 'init_TDPetEffectScheduler', 'init_TDPetHeroState', 'init_TDPetHeroEffects',
                      'init_TDPetCastContext', 'init_TDPetEffectTargetState', 'init_TDPetActiveVisualData', 'init_TDPetActiveVisuals',
                      'init_TDEnemyControlRuntime', 'init_TDPetRuntime',
                      'init_TDBossDarkTideRuntime', 'init_TDTowerEvolutionRuntime', 'init_TDPetWild', 'init_TDDamageState', 'init_TDDamageRuntime', 'init_TDItemData', 'init_TDEquipmentCombat',
@@ -193,6 +194,8 @@ class TrialJassRuntime(PureBossJassRuntime):
             self.removals.append(args[0]); self.native_events.append(('remove',args[0])); return True,None
         if name in ('SetUnitCreepGuard','RemoveGuardPosition','SetUnitPathing'): return True,None
         if name == 'GetUnitDefaultMoveSpeed': return True,self.units.get(args[0],{}).get('defaultSpeed',0.0)
+        if name == 'GetUnitMoveSpeed': return True,self.units.get(args[0],{}).get('speed',0.0)
+        if name == 'GetUnitAcquireRange': return True,self.units.get(args[0],{}).get('acquireRange',0.0)
         if name == 'GetUnitX': return True,self.units.get(args[0],{}).get('x',0.0)
         if name == 'GetUnitY': return True,self.units.get(args[0],{}).get('y',0.0)
         if name == 'GetUnitCurrentOrder': return True,self.units.get(args[0],{}).get('order',0)

@@ -1,0 +1,37 @@
+package TDPetDeploymentTests
+import TDPetRuntime
+import TDPetData
+import TDPetState
+import TDState
+import TDConfig
+
+@Test function deploymentRequiresExactlyOneOriginalCollectionIdentity()
+	tdResetState()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdPetInitializeLane(lane)
+	let pet = new TDPet(0, 1, 1)
+	tdPetOwnedSlot(null).assertEquals(-1)
+	tdPetOwnedSlot(pet).assertEquals(-1)
+	tdPetStore(0, pet).assertTrue()
+	tdPetOwnedSlot(pet).assertEquals(0)
+	tdPets[1] = pet
+	tdPetOwnedSlot(pet).assertEquals(-1)
+	tdPets[1] = null
+	tdPets[TD_PET_COLLECTION_LIMIT] = pet
+	tdPetOwnedSlot(pet).assertEquals(-1)
+	tdPets[TD_PET_COLLECTION_LIMIT] = null
+	pet.lane = 1
+	tdPetOwnedSlot(pet).assertEquals(-1)
+	pet.lane = 0
+	pet.released = true
+	tdPetOwnedSlot(pet).assertEquals(-1)
+	pet.released = false
+	pet.species = 0
+	tdPetOwnedSlot(pet).assertEquals(-1)
+	pet.species = 1
+	tdPetOwnedSlot(pet).assertEquals(0)
+	tdPetCanDeploy(pet, null).assertFalse()
+	pet.readyAt = 99.0
+	tdPetDeploy(pet, null).assertFalse()
+	pet.readyAt.assertEquals(99.0)
+	pet.generation.assertEquals(0)

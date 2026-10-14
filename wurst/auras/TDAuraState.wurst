@@ -9,6 +9,7 @@ import LinkedList
 public class TDAuraTarget
 	unit target
 	boolean tower
+	boolean providerCandidate = false
 	TDAuraAggregate effective = new TDAuraAggregate()
 	LinkedList<TDAuraTimedContribution> timed = new LinkedList<TDAuraTimedContribution>()
 	boolean array[18] pendingApplications
@@ -17,6 +18,7 @@ public class TDAuraTarget
 		this.target = target
 		this.tower = tower
 	ondestroy
+		tdAuraSetProviderRecord(this, false)
 		while not timed.isEmpty()
 			let entry = timed.get(0)
 			timed.remove(entry)
@@ -26,12 +28,26 @@ public class TDAuraTarget
 
 public constant LinkedList<TDAuraTarget> tdAuraTargets = new LinkedList<TDAuraTarget>()
 public constant LinkedList<TDAuraTarget> tdAuraTowers = new LinkedList<TDAuraTarget>()
+public constant LinkedList<TDAuraTarget> tdAuraProviders = new LinkedList<TDAuraTarget>()
 constant Table tdAuraByHandle = new Table()
 
 public function tdAuraTargetFor(unit target) returns TDAuraTarget
 	if target == null or not tdAuraByHandle.hasInt(target.getHandleId())
 		return null
 	return tdAuraByHandle.loadInt(target.getHandleId()) castTo TDAuraTarget
+
+function tdAuraSetProviderRecord(TDAuraTarget record, boolean candidate)
+	if record == null or not record.tower or record.providerCandidate == candidate
+		return
+	record.providerCandidate = candidate
+	if candidate
+		tdAuraProviders.add(record)
+	else
+		tdAuraProviders.remove(record)
+
+// Membership only: never create a recipient or keep an independently owned handle.
+public function tdAuraSetProviderCandidate(unit target, boolean candidate)
+	tdAuraSetProviderRecord(tdAuraTargetFor(target), candidate)
 
 public function tdAuraRegisterTarget(unit target, boolean tower)
 	if target == null or GetUnitTypeId(target) == 0 or tdAuraTargetFor(target) != null
@@ -41,8 +57,11 @@ public function tdAuraRegisterTarget(unit target, boolean tower)
 	tdAuraTargets.add(record)
 	if tower
 		tdAuraTowers.add(record)
+		// Conservatively present until the synchronous inventory snapshot narrows it.
+		tdAuraSetProviderRecord(record, true)
 
 public function tdAuraDetachRecord(TDAuraTarget record)
+	tdAuraSetProviderRecord(record, false)
 	tdAuraByHandle.removeInt(record.target.getHandleId())
 	if record.tower
 		tdAuraTowers.remove(record)

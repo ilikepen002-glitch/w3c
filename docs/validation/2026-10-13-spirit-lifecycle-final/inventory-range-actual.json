@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "map_sha256": "5d6701cf84d4910fdcae6c2eaf299ae76e640577640e416564ba8ab38fac69d5",
+  "member": "war3mapMisc.txt",
+  "bytes": 72,
+  "pickup_drop_give_range": 1200,
+  "boundary": "Packed native constants only; Warcraft 1.27a pickup/drop/give behavior not playtested"
+}

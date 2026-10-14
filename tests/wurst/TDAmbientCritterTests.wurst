@@ -1,0 +1,21 @@
+package TDAmbientCritterTests
+import TDConfig
+import TDAmbientCritters
+import TDTowers
+
+@Test function editorCritterWhitelistOnlyChangesPlayerZero()
+	tdShouldNeutralizeAmbientCritter(0, 'nech').assertTrue()
+	tdShouldNeutralizeAmbientCritter(0, 'nshe').assertTrue()
+	tdShouldNeutralizeAmbientCritter(0, 'nfro').assertTrue()
+	tdShouldNeutralizeAmbientCritter(0, 'npig').assertTrue()
+	for ownerId = 1 to 15
+		tdShouldNeutralizeAmbientCritter(ownerId, 'nech').assertFalse()
+		tdShouldNeutralizeAmbientCritter(ownerId, 'nshe').assertFalse()
+		tdShouldNeutralizeAmbientCritter(ownerId, 'nfro').assertFalse()
+		tdShouldNeutralizeAmbientCritter(ownerId, 'npig').assertFalse()
+
+@Test function editorCritterWhitelistKeepsGameplayUnitsUntouched()
+	tdShouldNeutralizeAmbientCritter(0, TD_FARMER_UNIT_ID).assertFalse()
+	tdShouldNeutralizeAmbientCritter(0, TD_ARCHER_LEVEL_1_ID).assertFalse()
+	tdShouldNeutralizeAmbientCritter(0, 'hfoo').assertFalse()
+	tdShouldNeutralizeAmbientCritter(0, 0).assertFalse()

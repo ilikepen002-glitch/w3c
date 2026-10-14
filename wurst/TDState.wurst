@@ -1,5 +1,6 @@
 package TDState
 import TDConfig
+import TDTowerTargetPriorityState
 import TDWaveFlowState
 import public TDDifficultyRules
 
@@ -62,6 +63,7 @@ function tdSyncPlayerResources(int playerId)
 
 // 重置本局里所有会变化的状态，避免一次测试的结果污染下一次测试。
 public function tdResetState()
+	tdTargetPriorityClearAll()
 	tdResetWaveFlowState()
 	tdDifficulty = TD_DIFFICULTY_NORMAL
 	tdDifficultyLocked = false

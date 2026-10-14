@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "generator": "image_gen.imagegen (built-in)",
+  "prompt": "assets/source/equipment-icon-refresh/prompt.txt",
+  "source_kind": "new original 2x3 atlas; sixth cell deliberately unused and not imported",
+  "normal_size": [
+    64,
+    64
+  ],
+  "disabled_transform": "grayscale, preserve alpha, brightness 0.45",
+  "format": "BLP1 palette256 alpha8 seven mipmaps",
+  "max_added_mpq_bytes": 61440,
+  "max_combined_added_mpq_bytes": 327680,
+  "assets": [
+    {
+      "name": "WindrunnerBanner",
+      "display_name": "风行旗",
+      "source": "assets/source/equipment-icon-refresh/atlas.png",
+      "source_sha256": "791363eb20e0dbd44bca0c8ab8274412fe81259a0b65071472c5257d804d5a89",
+      "crop": [
+        8,
+        8,
+        505,
+        468
+      ],
+      "normal": "war3mapImported\\BTNTDItemWindrunnerBanner.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemWindrunnerBanner.blp",
+      "normal_sha256": "03ba3e85ff23bb4e2f7b3ad2dcc46de96a186a93e27de256055093f59141273b",
+      "disabled_sha256": "0111762c302549b1b85dc9a7a21df5e2d455c0c86fa7e3a14b9642e04434e22b"
+    },
+    {
+      "name": "CommandHorn",
+      "display_name": "统御号角",
+      "source": "assets/source/equipment-icon-refresh/atlas.png",
+      "source_sha256": "791363eb20e0dbd44bca0c8ab8274412fe81259a0b65071472c5257d804d5a89",
+      "crop": [
+        520,
+        8,
+        1016,
+        468
+      ],
+      "normal": "war3mapImported\\BTNTDItemCommandHorn.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemCommandHorn.blp",
+      "normal_sha256": "03d1eec45729c85902590938f9ba7cf01a80e79225f8043aba9ae5d8c6499299",
+      "disabled_sha256": "789f09cd405bd5253cdb55708a2f0f26c8301d6eb12e71a8a0f4b7761f165407"
+    },
+    {
+      "name": "SunderingSeal",
+      "display_name": "碎甲战印",
+      "source": "assets/source/equipment-icon-refresh/atlas.png",
+      "source_sha256": "791363eb20e0dbd44bca0c8ab8274412fe81259a0b65071472c5257d804d5a89",
+      "crop": [
+        8,
+        488,
+        505,
+        969
+      ],
+      "normal": "war3mapImported\\BTNTDItemSunderingSeal.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemSunderingSeal.blp",
+      "normal_sha256": "c144bd4e7d08fcff395b5e0c1a70315420e72637c7c3209cdabad4671aee70c1",
+      "disabled_sha256": "20bdd17b4d2937baa23b2124b4cd7175089ad1788444c8c7151a45bb785bffb1"
+    },
+    {
+      "name": "WindDrum",
+      "display_name": "疾风鼓（全品质）",
+      "source": "assets/source/equipment-icon-refresh/atlas.png",
+      "source_sha256": "791363eb20e0dbd44bca0c8ab8274412fe81259a0b65071472c5257d804d5a89",
+      "crop": [
+        520,
+        488,
+        1016,
+        969
+      ],
+      "normal": "war3mapImported\\BTNTDItemWindDrum.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemWindDrum.blp",
+      "normal_sha256": "10aeb89a2ab515350f0964afffa0f989e8ae0377661d0c7ba162fc9290aec053",
+      "disabled_sha256": "4d6c086529e05134ce035e12055e08d8afcc3ec2c71af63fe42780cb62b91f8c"
+    },
+    {
+      "name": "ForestSeed",
+      "display_name": "森蚀之种",
+      "source": "assets/source/equipment-icon-refresh/atlas.png",
+      "source_sha256": "791363eb20e0dbd44bca0c8ab8274412fe81259a0b65071472c5257d804d5a89",
+      "crop": [
+        8,
+        993,
+        505,
+        1525
+      ],
+      "normal": "war3mapImported\\BTNTDItemForestSeed.blp",
+      "disabled": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNTDItemForestSeed.blp",
+      "normal_sha256": "668a1dc4e0d8368451c9eb2436ed1341bfc8250a703d123e8ba6f17488bfa48e",
+      "disabled_sha256": "b4942bcd2c64d7ae897352fa2e89b967e3deba18c8ee3686c967d670b21ad0be"
+    }
+  ]
+}

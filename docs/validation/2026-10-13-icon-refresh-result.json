@@ -1,0 +1,2619 @@
+{
+  "active_identities": 43,
+  "distinct_spirit_paths": 43,
+  "custom_pairs": 25,
+  "retained_native_paths": 18,
+  "spirit_equipment_branch_collisions": [],
+  "asset_build": {
+    "pairs": 25,
+    "raw_bytes": 605100,
+    "zlib_estimate_bytes": 236664,
+    "actual_mpq_measurement": "requires final map"
+  },
+  "equipment": {
+    "records": [
+      {
+        "rawcode": "iW02",
+        "name": "远望镜",
+        "line": 1,
+        "quality": 1,
+        "path": "war3mapImported\\BTNTDItemEagleScope.blp"
+      },
+      {
+        "rawcode": "iW01",
+        "name": "战斧",
+        "line": 2,
+        "quality": 1,
+        "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+      },
+      {
+        "rawcode": "iW03",
+        "name": "迅击手套",
+        "line": 3,
+        "quality": 1,
+        "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+      },
+      {
+        "rawcode": "iW09",
+        "name": "盾符",
+        "line": 4,
+        "quality": 1,
+        "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+      },
+      {
+        "rawcode": "iW08",
+        "name": "毒囊",
+        "line": 5,
+        "quality": 1,
+        "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+      },
+      {
+        "rawcode": "iW06",
+        "name": "破甲尖刺",
+        "line": 6,
+        "quality": 1,
+        "path": "war3mapImported\\BTNTDItemArmorSpike.blp"
+      },
+      {
+        "rawcode": "iW04",
+        "name": "行军旗",
+        "line": 7,
+        "quality": 1,
+        "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+      },
+      {
+        "rawcode": "iW05",
+        "name": "猎金指环",
+        "line": 8,
+        "quality": 1,
+        "path": "war3mapImported\\BTNTDItemGoldRing.blp"
+      },
+      {
+        "rawcode": "iW07",
+        "name": "疾风鼓",
+        "line": 9,
+        "quality": 1,
+        "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+      },
+      {
+        "rawcode": "iW10",
+        "name": "寒霜碎晶",
+        "line": 10,
+        "quality": 1,
+        "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+      },
+      {
+        "rawcode": "iG02",
+        "name": "精制远望镜",
+        "line": 1,
+        "quality": 2,
+        "path": "war3mapImported\\BTNTDItemHunterScope.blp"
+      },
+      {
+        "rawcode": "iG01",
+        "name": "精钢战斧",
+        "line": 2,
+        "quality": 2,
+        "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+      },
+      {
+        "rawcode": "iG05",
+        "name": "迅击护手",
+        "line": 3,
+        "quality": 2,
+        "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+      },
+      {
+        "rawcode": "iG04",
+        "name": "镇守盾符",
+        "line": 4,
+        "quality": 2,
+        "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+      },
+      {
+        "rawcode": "iG09",
+        "name": "淬毒藤囊",
+        "line": 5,
+        "quality": 2,
+        "path": "war3mapImported\\BTNTDItemToxicVine.blp"
+      },
+      {
+        "rawcode": "iG03",
+        "name": "裂甲骨刺",
+        "line": 6,
+        "quality": 2,
+        "path": "war3mapImported\\BTNTDItemLaceratingSpike.blp"
+      },
+      {
+        "rawcode": "iG07",
+        "name": "督军旗",
+        "line": 7,
+        "quality": 2,
+        "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+      },
+      {
+        "rawcode": "iG06",
+        "name": "佣兵钱袋",
+        "line": 8,
+        "quality": 2,
+        "path": "war3mapImported\\BTNTDItemMercenaryPurse.blp"
+      },
+      {
+        "rawcode": "iG08",
+        "name": "疾风军鼓",
+        "line": 9,
+        "quality": 2,
+        "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+      },
+      {
+        "rawcode": "iG10",
+        "name": "寒霜晶石",
+        "line": 10,
+        "quality": 2,
+        "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+      },
+      {
+        "rawcode": "iB01",
+        "name": "鹰眼望远镜",
+        "line": 1,
+        "quality": 3,
+        "path": "war3mapImported\\BTNTDItemHunterScope.blp"
+      },
+      {
+        "rawcode": "iB02",
+        "name": "狂战战斧",
+        "line": 2,
+        "quality": 3,
+        "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+      },
+      {
+        "rawcode": "iB07",
+        "name": "疾袭护腕",
+        "line": 3,
+        "quality": 3,
+        "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+      },
+      {
+        "rawcode": "iB04",
+        "name": "坚壁盾符",
+        "line": 4,
+        "quality": 3,
+        "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+      },
+      {
+        "rawcode": "iB08",
+        "name": "腐毒囊",
+        "line": 5,
+        "quality": 3,
+        "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+      },
+      {
+        "rawcode": "iB03",
+        "name": "碎甲战印",
+        "line": 6,
+        "quality": 3,
+        "path": "war3mapImported\\BTNTDItemSunderingSeal.blp"
+      },
+      {
+        "rawcode": "iB06",
+        "name": "统领旗",
+        "line": 7,
+        "quality": 3,
+        "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+      },
+      {
+        "rawcode": "iB05",
+        "name": "赏金契约",
+        "line": 8,
+        "quality": 3,
+        "path": "war3mapImported\\BTNTDItemBountyContract.blp"
+      },
+      {
+        "rawcode": "iB09",
+        "name": "劲风战鼓",
+        "line": 9,
+        "quality": 3,
+        "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+      },
+      {
+        "rawcode": "iB10",
+        "name": "寒霜晶核",
+        "line": 10,
+        "quality": 3,
+        "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+      },
+      {
+        "rawcode": "iP01",
+        "name": "风行旗",
+        "line": 1,
+        "quality": 4,
+        "path": "war3mapImported\\BTNTDItemWindrunnerBanner.blp"
+      },
+      {
+        "rawcode": "iP02",
+        "name": "剑圣印记",
+        "line": 2,
+        "quality": 4,
+        "path": "war3mapImported\\BTNTDItemBlademasterSigil.blp"
+      },
+      {
+        "rawcode": "iP04",
+        "name": "饥饿心核",
+        "line": 3,
+        "quality": 4,
+        "path": "war3mapImported\\BTNTDItemCorruptedHeart.blp"
+      },
+      {
+        "rawcode": "iP03",
+        "name": "镇军盾徽",
+        "line": 4,
+        "quality": 4,
+        "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+      },
+      {
+        "rawcode": "iP05",
+        "name": "森蚀之种",
+        "line": 5,
+        "quality": 4,
+        "path": "war3mapImported\\BTNTDItemForestSeed.blp"
+      },
+      {
+        "rawcode": "iP06",
+        "name": "裂甲战鼓",
+        "line": 6,
+        "quality": 4,
+        "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+      },
+      {
+        "rawcode": "iP07",
+        "name": "统御号角",
+        "line": 7,
+        "quality": 4,
+        "path": "war3mapImported\\BTNTDItemCommandHorn.blp"
+      },
+      {
+        "rawcode": "iP08",
+        "name": "灵感法典",
+        "line": 8,
+        "quality": 4,
+        "path": "war3mapImported\\BTNTDItemFrostTome.blp"
+      },
+      {
+        "rawcode": "iP09",
+        "name": "疾风战鼓",
+        "line": 9,
+        "quality": 4,
+        "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+      },
+      {
+        "rawcode": "iP10",
+        "name": "永霜核心",
+        "line": 10,
+        "quality": 4,
+        "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+      }
+    ],
+    "same_line_quality_reuse": [
+      {
+        "path": "replaceabletextures\\commandbuttons\\btnglove.blp",
+        "uses": [
+          {
+            "rawcode": "iW03",
+            "name": "迅击手套",
+            "line": 3,
+            "quality": 1,
+            "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+          },
+          {
+            "rawcode": "iG05",
+            "name": "迅击护手",
+            "line": 3,
+            "quality": 2,
+            "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+          },
+          {
+            "rawcode": "iB07",
+            "name": "疾袭护腕",
+            "line": 3,
+            "quality": 3,
+            "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+          }
+        ]
+      },
+      {
+        "path": "war3mapimported\\btntditemcommandseal.blp",
+        "uses": [
+          {
+            "rawcode": "iW09",
+            "name": "盾符",
+            "line": 4,
+            "quality": 1,
+            "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+          },
+          {
+            "rawcode": "iG04",
+            "name": "镇守盾符",
+            "line": 4,
+            "quality": 2,
+            "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+          },
+          {
+            "rawcode": "iB04",
+            "name": "坚壁盾符",
+            "line": 4,
+            "quality": 3,
+            "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+          },
+          {
+            "rawcode": "iP03",
+            "name": "镇军盾徽",
+            "line": 4,
+            "quality": 4,
+            "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+          }
+        ]
+      },
+      {
+        "path": "war3mapimported\\btntditemcoolingrune.blp",
+        "uses": [
+          {
+            "rawcode": "iW10",
+            "name": "寒霜碎晶",
+            "line": 10,
+            "quality": 1,
+            "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+          },
+          {
+            "rawcode": "iG10",
+            "name": "寒霜晶石",
+            "line": 10,
+            "quality": 2,
+            "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+          },
+          {
+            "rawcode": "iB10",
+            "name": "寒霜晶核",
+            "line": 10,
+            "quality": 3,
+            "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+          },
+          {
+            "rawcode": "iP10",
+            "name": "永霜核心",
+            "line": 10,
+            "quality": 4,
+            "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+          }
+        ]
+      },
+      {
+        "path": "war3mapimported\\btntditemhunterscope.blp",
+        "uses": [
+          {
+            "rawcode": "iG02",
+            "name": "精制远望镜",
+            "line": 1,
+            "quality": 2,
+            "path": "war3mapImported\\BTNTDItemHunterScope.blp"
+          },
+          {
+            "rawcode": "iB01",
+            "name": "鹰眼望远镜",
+            "line": 1,
+            "quality": 3,
+            "path": "war3mapImported\\BTNTDItemHunterScope.blp"
+          }
+        ]
+      },
+      {
+        "path": "war3mapimported\\btntditempoisonsac.blp",
+        "uses": [
+          {
+            "rawcode": "iW08",
+            "name": "毒囊",
+            "line": 5,
+            "quality": 1,
+            "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+          },
+          {
+            "rawcode": "iB08",
+            "name": "腐毒囊",
+            "line": 5,
+            "quality": 3,
+            "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+          }
+        ]
+      },
+      {
+        "path": "war3mapimported\\btntditemwaraxe.blp",
+        "uses": [
+          {
+            "rawcode": "iW01",
+            "name": "战斧",
+            "line": 2,
+            "quality": 1,
+            "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+          },
+          {
+            "rawcode": "iG01",
+            "name": "精钢战斧",
+            "line": 2,
+            "quality": 2,
+            "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+          },
+          {
+            "rawcode": "iB02",
+            "name": "狂战战斧",
+            "line": 2,
+            "quality": 3,
+            "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+          }
+        ]
+      },
+      {
+        "path": "war3mapimported\\btntditemwhitetigerbanner.blp",
+        "uses": [
+          {
+            "rawcode": "iW04",
+            "name": "行军旗",
+            "line": 7,
+            "quality": 1,
+            "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+          },
+          {
+            "rawcode": "iG07",
+            "name": "督军旗",
+            "line": 7,
+            "quality": 2,
+            "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+          },
+          {
+            "rawcode": "iB06",
+            "name": "统领旗",
+            "line": 7,
+            "quality": 3,
+            "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+          }
+        ]
+      },
+      {
+        "path": "war3mapimported\\btntditemwinddrum.blp",
+        "uses": [
+          {
+            "rawcode": "iW07",
+            "name": "疾风鼓",
+            "line": 9,
+            "quality": 1,
+            "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+          },
+          {
+            "rawcode": "iG08",
+            "name": "疾风军鼓",
+            "line": 9,
+            "quality": 2,
+            "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+          },
+          {
+            "rawcode": "iB09",
+            "name": "劲风战鼓",
+            "line": 9,
+            "quality": 3,
+            "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+          },
+          {
+            "rawcode": "iP09",
+            "name": "疾风战鼓",
+            "line": 9,
+            "quality": 4,
+            "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+          }
+        ]
+      }
+    ],
+    "cross_line_review_needed": []
+  },
+  "equipment_asset_build": {
+    "pairs": 5,
+    "raw_bytes": 121020,
+    "zlib_estimate_bytes": 49055,
+    "actual_mpq_measurement": "requires final map"
+  },
+  "baseline_audit": {
+    "spirit_duplicate_groups": [
+      {
+        "path": "replaceabletextures\\commandbuttons\\btnbrilliance.blp",
+        "uses": [
+          {
+            "skill": 3,
+            "name": "灵感",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNBrilliance.blp"
+          },
+          {
+            "skill": 40,
+            "name": "月光信标",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNBrilliance.blp"
+          }
+        ]
+      },
+      {
+        "path": "replaceabletextures\\commandbuttons\\btncoldarrows.blp",
+        "uses": [
+          {
+            "skill": 27,
+            "name": "寒星破",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNColdArrows.blp"
+          },
+          {
+            "skill": 39,
+            "name": "星轨霜箭",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNColdArrows.blp"
+          }
+        ]
+      },
+      {
+        "path": "replaceabletextures\\commandbuttons\\btncriticalstrike.blp",
+        "uses": [
+          {
+            "skill": 8,
+            "name": "追击",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNCriticalStrike.blp"
+          },
+          {
+            "skill": 17,
+            "name": "决意一击",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNCriticalStrike.blp"
+          },
+          {
+            "skill": 21,
+            "name": "万刃归宗",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNCriticalStrike.blp"
+          },
+          {
+            "skill": 41,
+            "name": "屠王血契",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNCriticalStrike.blp"
+          }
+        ]
+      },
+      {
+        "path": "replaceabletextures\\commandbuttons\\btndeathanddecay.blp",
+        "uses": [
+          {
+            "skill": 25,
+            "name": "繁花蚀骨",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNDeathAndDecay.blp"
+          },
+          {
+            "skill": 45,
+            "name": "寄生毒芽",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNDeathAndDecay.blp"
+          },
+          {
+            "skill": 48,
+            "name": "疫爆接力",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNDeathAndDecay.blp"
+          }
+        ]
+      },
+      {
+        "path": "replaceabletextures\\commandbuttons\\btnentanglingroots.blp",
+        "uses": [
+          {
+            "skill": 23,
+            "name": "青藤缚足",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNEntanglingRoots.blp"
+          },
+          {
+            "skill": 26,
+            "name": "万象森罗",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNEntanglingRoots.blp"
+          }
+        ]
+      },
+      {
+        "path": "replaceabletextures\\commandbuttons\\btnfaeriefire.blp",
+        "uses": [
+          {
+            "skill": 6,
+            "name": "破击",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNFaerieFire.blp"
+          },
+          {
+            "skill": 20,
+            "name": "裂甲天锋",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNFaerieFire.blp"
+          },
+          {
+            "skill": 46,
+            "name": "伏根刺",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNFaerieFire.blp"
+          }
+        ]
+      },
+      {
+        "path": "replaceabletextures\\commandbuttons\\btnglove.blp",
+        "uses": [
+          {
+            "skill": 2,
+            "name": "疾攻",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+          },
+          {
+            "skill": 16,
+            "name": "连击",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+          },
+          {
+            "skill": 47,
+            "name": "嗜猎余势",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+          }
+        ]
+      },
+      {
+        "path": "replaceabletextures\\commandbuttons\\btnimmolationon.blp",
+        "uses": [
+          {
+            "skill": 31,
+            "name": "烬火印",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNImmolationOn.blp"
+          },
+          {
+            "skill": 32,
+            "name": "赤莲绽",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNImmolationOn.blp"
+          },
+          {
+            "skill": 34,
+            "name": "业火连城",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNImmolationOn.blp"
+          }
+        ]
+      },
+      {
+        "path": "replaceabletextures\\commandbuttons\\btninnerfire.blp",
+        "uses": [
+          {
+            "skill": 12,
+            "name": "蓄力",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNInnerFire.blp"
+          },
+          {
+            "skill": 43,
+            "name": "迟临审判",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNInnerFire.blp"
+          },
+          {
+            "skill": 44,
+            "name": "圣印接力",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNInnerFire.blp"
+          }
+        ]
+      },
+      {
+        "path": "replaceabletextures\\commandbuttons\\btnsteelmelee.blp",
+        "uses": [
+          {
+            "skill": 1,
+            "name": "战意",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNSteelMelee.blp"
+          },
+          {
+            "skill": 18,
+            "name": "猛击",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNSteelMelee.blp"
+          },
+          {
+            "skill": 22,
+            "name": "天诛剑阵",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNSteelMelee.blp"
+          }
+        ]
+      },
+      {
+        "path": "replaceabletextures\\commandbuttons\\btnthunderclap.blp",
+        "uses": [
+          {
+            "skill": 35,
+            "name": "裂岩重击",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNThunderClap.blp"
+          },
+          {
+            "skill": 36,
+            "name": "崩山震",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNThunderClap.blp"
+          },
+          {
+            "skill": 38,
+            "name": "地脉天崩",
+            "path": "ReplaceableTextures\\CommandButtons\\BTNThunderClap.blp"
+          }
+        ]
+      }
+    ],
+    "tower_command_or_upgrade_duplicate_groups": [],
+    "bottom_buff_status_scope": "Native bottom-row aura/status carriers are distinct from command buttons; they are not relabeled by this icon-only change.",
+    "equipment": {
+      "records": [
+        {
+          "rawcode": "iW02",
+          "name": "远望镜",
+          "line": 1,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemEagleScope.blp"
+        },
+        {
+          "rawcode": "iW01",
+          "name": "战斧",
+          "line": 2,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+        },
+        {
+          "rawcode": "iW03",
+          "name": "迅击手套",
+          "line": 3,
+          "quality": 1,
+          "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+        },
+        {
+          "rawcode": "iW09",
+          "name": "盾符",
+          "line": 4,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+        },
+        {
+          "rawcode": "iW08",
+          "name": "毒囊",
+          "line": 5,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+        },
+        {
+          "rawcode": "iW06",
+          "name": "破甲尖刺",
+          "line": 6,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemArmorSpike.blp"
+        },
+        {
+          "rawcode": "iW04",
+          "name": "行军旗",
+          "line": 7,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+        },
+        {
+          "rawcode": "iW05",
+          "name": "猎金指环",
+          "line": 8,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemGoldRing.blp"
+        },
+        {
+          "rawcode": "iW07",
+          "name": "疾风鼓",
+          "line": 9,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+        },
+        {
+          "rawcode": "iW10",
+          "name": "寒霜碎晶",
+          "line": 10,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+        },
+        {
+          "rawcode": "iG02",
+          "name": "精制远望镜",
+          "line": 1,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemHunterScope.blp"
+        },
+        {
+          "rawcode": "iG01",
+          "name": "精钢战斧",
+          "line": 2,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+        },
+        {
+          "rawcode": "iG05",
+          "name": "迅击护手",
+          "line": 3,
+          "quality": 2,
+          "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+        },
+        {
+          "rawcode": "iG04",
+          "name": "镇守盾符",
+          "line": 4,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+        },
+        {
+          "rawcode": "iG09",
+          "name": "淬毒藤囊",
+          "line": 5,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemToxicVine.blp"
+        },
+        {
+          "rawcode": "iG03",
+          "name": "裂甲骨刺",
+          "line": 6,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemLaceratingSpike.blp"
+        },
+        {
+          "rawcode": "iG07",
+          "name": "督军旗",
+          "line": 7,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+        },
+        {
+          "rawcode": "iG06",
+          "name": "佣兵钱袋",
+          "line": 8,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemMercenaryPurse.blp"
+        },
+        {
+          "rawcode": "iG08",
+          "name": "疾风军鼓",
+          "line": 9,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+        },
+        {
+          "rawcode": "iG10",
+          "name": "寒霜晶石",
+          "line": 10,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+        },
+        {
+          "rawcode": "iB01",
+          "name": "鹰眼望远镜",
+          "line": 1,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemWindrunnerBow.blp"
+        },
+        {
+          "rawcode": "iB02",
+          "name": "狂战战斧",
+          "line": 2,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemBerserkerBadge.blp"
+        },
+        {
+          "rawcode": "iB07",
+          "name": "疾袭护腕",
+          "line": 3,
+          "quality": 3,
+          "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+        },
+        {
+          "rawcode": "iB04",
+          "name": "坚壁盾符",
+          "line": 4,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+        },
+        {
+          "rawcode": "iB08",
+          "name": "腐毒囊",
+          "line": 5,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+        },
+        {
+          "rawcode": "iB03",
+          "name": "碎甲战印",
+          "line": 6,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+        },
+        {
+          "rawcode": "iB06",
+          "name": "统领旗",
+          "line": 7,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+        },
+        {
+          "rawcode": "iB05",
+          "name": "赏金契约",
+          "line": 8,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemBountyContract.blp"
+        },
+        {
+          "rawcode": "iB09",
+          "name": "劲风战鼓",
+          "line": 9,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+        },
+        {
+          "rawcode": "iB10",
+          "name": "寒霜晶核",
+          "line": 10,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+        },
+        {
+          "rawcode": "iP01",
+          "name": "风行旗",
+          "line": 1,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+        },
+        {
+          "rawcode": "iP02",
+          "name": "剑圣印记",
+          "line": 2,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemBlademasterSigil.blp"
+        },
+        {
+          "rawcode": "iP04",
+          "name": "饥饿心核",
+          "line": 3,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemCorruptedHeart.blp"
+        },
+        {
+          "rawcode": "iP03",
+          "name": "镇军盾徽",
+          "line": 4,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+        },
+        {
+          "rawcode": "iP05",
+          "name": "森蚀之种",
+          "line": 5,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemCorruptedHeart.blp"
+        },
+        {
+          "rawcode": "iP06",
+          "name": "裂甲战鼓",
+          "line": 6,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+        },
+        {
+          "rawcode": "iP07",
+          "name": "统御号角",
+          "line": 7,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+        },
+        {
+          "rawcode": "iP08",
+          "name": "灵感法典",
+          "line": 8,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemFrostTome.blp"
+        },
+        {
+          "rawcode": "iP09",
+          "name": "疾风战鼓",
+          "line": 9,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+        },
+        {
+          "rawcode": "iP10",
+          "name": "永霜核心",
+          "line": 10,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+        }
+      ],
+      "same_line_quality_reuse": [
+        {
+          "path": "replaceabletextures\\commandbuttons\\btnglove.blp",
+          "uses": [
+            {
+              "rawcode": "iW03",
+              "name": "迅击手套",
+              "line": 3,
+              "quality": 1,
+              "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+            },
+            {
+              "rawcode": "iG05",
+              "name": "迅击护手",
+              "line": 3,
+              "quality": 2,
+              "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+            },
+            {
+              "rawcode": "iB07",
+              "name": "疾袭护腕",
+              "line": 3,
+              "quality": 3,
+              "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditemcommandseal.blp",
+          "uses": [
+            {
+              "rawcode": "iW09",
+              "name": "盾符",
+              "line": 4,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+            },
+            {
+              "rawcode": "iG04",
+              "name": "镇守盾符",
+              "line": 4,
+              "quality": 2,
+              "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+            },
+            {
+              "rawcode": "iB04",
+              "name": "坚壁盾符",
+              "line": 4,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+            },
+            {
+              "rawcode": "iP03",
+              "name": "镇军盾徽",
+              "line": 4,
+              "quality": 4,
+              "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditemcoolingrune.blp",
+          "uses": [
+            {
+              "rawcode": "iW10",
+              "name": "寒霜碎晶",
+              "line": 10,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+            },
+            {
+              "rawcode": "iG10",
+              "name": "寒霜晶石",
+              "line": 10,
+              "quality": 2,
+              "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+            },
+            {
+              "rawcode": "iB10",
+              "name": "寒霜晶核",
+              "line": 10,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+            },
+            {
+              "rawcode": "iP10",
+              "name": "永霜核心",
+              "line": 10,
+              "quality": 4,
+              "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditempoisonsac.blp",
+          "uses": [
+            {
+              "rawcode": "iW08",
+              "name": "毒囊",
+              "line": 5,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+            },
+            {
+              "rawcode": "iB08",
+              "name": "腐毒囊",
+              "line": 5,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditemwaraxe.blp",
+          "uses": [
+            {
+              "rawcode": "iW01",
+              "name": "战斧",
+              "line": 2,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+            },
+            {
+              "rawcode": "iG01",
+              "name": "精钢战斧",
+              "line": 2,
+              "quality": 2,
+              "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+            }
+          ]
+        }
+      ],
+      "cross_line_review_needed": [
+        {
+          "path": "war3mapimported\\btntditemarmordrum.blp",
+          "uses": [
+            {
+              "rawcode": "iW07",
+              "name": "疾风鼓",
+              "line": 9,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+            },
+            {
+              "rawcode": "iG08",
+              "name": "疾风军鼓",
+              "line": 9,
+              "quality": 2,
+              "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+            },
+            {
+              "rawcode": "iB03",
+              "name": "碎甲战印",
+              "line": 6,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+            },
+            {
+              "rawcode": "iB09",
+              "name": "劲风战鼓",
+              "line": 9,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+            },
+            {
+              "rawcode": "iP06",
+              "name": "裂甲战鼓",
+              "line": 6,
+              "quality": 4,
+              "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+            },
+            {
+              "rawcode": "iP09",
+              "name": "疾风战鼓",
+              "line": 9,
+              "quality": 4,
+              "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditemcorruptedheart.blp",
+          "uses": [
+            {
+              "rawcode": "iP04",
+              "name": "饥饿心核",
+              "line": 3,
+              "quality": 4,
+              "path": "war3mapImported\\BTNTDItemCorruptedHeart.blp"
+            },
+            {
+              "rawcode": "iP05",
+              "name": "森蚀之种",
+              "line": 5,
+              "quality": 4,
+              "path": "war3mapImported\\BTNTDItemCorruptedHeart.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditemwhitetigerbanner.blp",
+          "uses": [
+            {
+              "rawcode": "iW04",
+              "name": "行军旗",
+              "line": 7,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+            },
+            {
+              "rawcode": "iG07",
+              "name": "督军旗",
+              "line": 7,
+              "quality": 2,
+              "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+            },
+            {
+              "rawcode": "iB06",
+              "name": "统领旗",
+              "line": 7,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+            },
+            {
+              "rawcode": "iP01",
+              "name": "风行旗",
+              "line": 1,
+              "quality": 4,
+              "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+            },
+            {
+              "rawcode": "iP07",
+              "name": "统御号角",
+              "line": 7,
+              "quality": 4,
+              "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "packed": {
+    "ability_icon_bindings": 175,
+    "actual_added_icon_mpq_bytes": 239710,
+    "max_added_mpq_bytes": 262144,
+    "equipment_added_mpq_bytes": 49658,
+    "combined_added_mpq_bytes": 289368,
+    "combined_budget": 327680
+  },
+  "final_audit": {
+    "spirit_duplicate_groups": [],
+    "tower_command_or_upgrade_duplicate_groups": [],
+    "bottom_buff_status_scope": "Native bottom-row aura/status carriers are distinct from command buttons; they are not relabeled by this icon-only change.",
+    "equipment": {
+      "records": [
+        {
+          "rawcode": "iW02",
+          "name": "远望镜",
+          "line": 1,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemEagleScope.blp"
+        },
+        {
+          "rawcode": "iW01",
+          "name": "战斧",
+          "line": 2,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+        },
+        {
+          "rawcode": "iW03",
+          "name": "迅击手套",
+          "line": 3,
+          "quality": 1,
+          "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+        },
+        {
+          "rawcode": "iW09",
+          "name": "盾符",
+          "line": 4,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+        },
+        {
+          "rawcode": "iW08",
+          "name": "毒囊",
+          "line": 5,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+        },
+        {
+          "rawcode": "iW06",
+          "name": "破甲尖刺",
+          "line": 6,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemArmorSpike.blp"
+        },
+        {
+          "rawcode": "iW04",
+          "name": "行军旗",
+          "line": 7,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+        },
+        {
+          "rawcode": "iW05",
+          "name": "猎金指环",
+          "line": 8,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemGoldRing.blp"
+        },
+        {
+          "rawcode": "iW07",
+          "name": "疾风鼓",
+          "line": 9,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+        },
+        {
+          "rawcode": "iW10",
+          "name": "寒霜碎晶",
+          "line": 10,
+          "quality": 1,
+          "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+        },
+        {
+          "rawcode": "iG02",
+          "name": "精制远望镜",
+          "line": 1,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemHunterScope.blp"
+        },
+        {
+          "rawcode": "iG01",
+          "name": "精钢战斧",
+          "line": 2,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+        },
+        {
+          "rawcode": "iG05",
+          "name": "迅击护手",
+          "line": 3,
+          "quality": 2,
+          "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+        },
+        {
+          "rawcode": "iG04",
+          "name": "镇守盾符",
+          "line": 4,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+        },
+        {
+          "rawcode": "iG09",
+          "name": "淬毒藤囊",
+          "line": 5,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemToxicVine.blp"
+        },
+        {
+          "rawcode": "iG03",
+          "name": "裂甲骨刺",
+          "line": 6,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemLaceratingSpike.blp"
+        },
+        {
+          "rawcode": "iG07",
+          "name": "督军旗",
+          "line": 7,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+        },
+        {
+          "rawcode": "iG06",
+          "name": "佣兵钱袋",
+          "line": 8,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemMercenaryPurse.blp"
+        },
+        {
+          "rawcode": "iG08",
+          "name": "疾风军鼓",
+          "line": 9,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+        },
+        {
+          "rawcode": "iG10",
+          "name": "寒霜晶石",
+          "line": 10,
+          "quality": 2,
+          "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+        },
+        {
+          "rawcode": "iB01",
+          "name": "鹰眼望远镜",
+          "line": 1,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemHunterScope.blp"
+        },
+        {
+          "rawcode": "iB02",
+          "name": "狂战战斧",
+          "line": 2,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+        },
+        {
+          "rawcode": "iB07",
+          "name": "疾袭护腕",
+          "line": 3,
+          "quality": 3,
+          "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+        },
+        {
+          "rawcode": "iB04",
+          "name": "坚壁盾符",
+          "line": 4,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+        },
+        {
+          "rawcode": "iB08",
+          "name": "腐毒囊",
+          "line": 5,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+        },
+        {
+          "rawcode": "iB03",
+          "name": "碎甲战印",
+          "line": 6,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemSunderingSeal.blp"
+        },
+        {
+          "rawcode": "iB06",
+          "name": "统领旗",
+          "line": 7,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+        },
+        {
+          "rawcode": "iB05",
+          "name": "赏金契约",
+          "line": 8,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemBountyContract.blp"
+        },
+        {
+          "rawcode": "iB09",
+          "name": "劲风战鼓",
+          "line": 9,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+        },
+        {
+          "rawcode": "iB10",
+          "name": "寒霜晶核",
+          "line": 10,
+          "quality": 3,
+          "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+        },
+        {
+          "rawcode": "iP01",
+          "name": "风行旗",
+          "line": 1,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemWindrunnerBanner.blp"
+        },
+        {
+          "rawcode": "iP02",
+          "name": "剑圣印记",
+          "line": 2,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemBlademasterSigil.blp"
+        },
+        {
+          "rawcode": "iP04",
+          "name": "饥饿心核",
+          "line": 3,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemCorruptedHeart.blp"
+        },
+        {
+          "rawcode": "iP03",
+          "name": "镇军盾徽",
+          "line": 4,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+        },
+        {
+          "rawcode": "iP05",
+          "name": "森蚀之种",
+          "line": 5,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemForestSeed.blp"
+        },
+        {
+          "rawcode": "iP06",
+          "name": "裂甲战鼓",
+          "line": 6,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemArmorDrum.blp"
+        },
+        {
+          "rawcode": "iP07",
+          "name": "统御号角",
+          "line": 7,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemCommandHorn.blp"
+        },
+        {
+          "rawcode": "iP08",
+          "name": "灵感法典",
+          "line": 8,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemFrostTome.blp"
+        },
+        {
+          "rawcode": "iP09",
+          "name": "疾风战鼓",
+          "line": 9,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+        },
+        {
+          "rawcode": "iP10",
+          "name": "永霜核心",
+          "line": 10,
+          "quality": 4,
+          "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+        }
+      ],
+      "same_line_quality_reuse": [
+        {
+          "path": "replaceabletextures\\commandbuttons\\btnglove.blp",
+          "uses": [
+            {
+              "rawcode": "iW03",
+              "name": "迅击手套",
+              "line": 3,
+              "quality": 1,
+              "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+            },
+            {
+              "rawcode": "iG05",
+              "name": "迅击护手",
+              "line": 3,
+              "quality": 2,
+              "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+            },
+            {
+              "rawcode": "iB07",
+              "name": "疾袭护腕",
+              "line": 3,
+              "quality": 3,
+              "path": "ReplaceableTextures\\CommandButtons\\BTNGlove.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditemcommandseal.blp",
+          "uses": [
+            {
+              "rawcode": "iW09",
+              "name": "盾符",
+              "line": 4,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+            },
+            {
+              "rawcode": "iG04",
+              "name": "镇守盾符",
+              "line": 4,
+              "quality": 2,
+              "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+            },
+            {
+              "rawcode": "iB04",
+              "name": "坚壁盾符",
+              "line": 4,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+            },
+            {
+              "rawcode": "iP03",
+              "name": "镇军盾徽",
+              "line": 4,
+              "quality": 4,
+              "path": "war3mapImported\\BTNTDItemCommandSeal.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditemcoolingrune.blp",
+          "uses": [
+            {
+              "rawcode": "iW10",
+              "name": "寒霜碎晶",
+              "line": 10,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+            },
+            {
+              "rawcode": "iG10",
+              "name": "寒霜晶石",
+              "line": 10,
+              "quality": 2,
+              "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+            },
+            {
+              "rawcode": "iB10",
+              "name": "寒霜晶核",
+              "line": 10,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+            },
+            {
+              "rawcode": "iP10",
+              "name": "永霜核心",
+              "line": 10,
+              "quality": 4,
+              "path": "war3mapImported\\BTNTDItemCoolingRune.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditemhunterscope.blp",
+          "uses": [
+            {
+              "rawcode": "iG02",
+              "name": "精制远望镜",
+              "line": 1,
+              "quality": 2,
+              "path": "war3mapImported\\BTNTDItemHunterScope.blp"
+            },
+            {
+              "rawcode": "iB01",
+              "name": "鹰眼望远镜",
+              "line": 1,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemHunterScope.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditempoisonsac.blp",
+          "uses": [
+            {
+              "rawcode": "iW08",
+              "name": "毒囊",
+              "line": 5,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+            },
+            {
+              "rawcode": "iB08",
+              "name": "腐毒囊",
+              "line": 5,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemPoisonSac.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditemwaraxe.blp",
+          "uses": [
+            {
+              "rawcode": "iW01",
+              "name": "战斧",
+              "line": 2,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+            },
+            {
+              "rawcode": "iG01",
+              "name": "精钢战斧",
+              "line": 2,
+              "quality": 2,
+              "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+            },
+            {
+              "rawcode": "iB02",
+              "name": "狂战战斧",
+              "line": 2,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemWarAxe.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditemwhitetigerbanner.blp",
+          "uses": [
+            {
+              "rawcode": "iW04",
+              "name": "行军旗",
+              "line": 7,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+            },
+            {
+              "rawcode": "iG07",
+              "name": "督军旗",
+              "line": 7,
+              "quality": 2,
+              "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+            },
+            {
+              "rawcode": "iB06",
+              "name": "统领旗",
+              "line": 7,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemWhiteTigerBanner.blp"
+            }
+          ]
+        },
+        {
+          "path": "war3mapimported\\btntditemwinddrum.blp",
+          "uses": [
+            {
+              "rawcode": "iW07",
+              "name": "疾风鼓",
+              "line": 9,
+              "quality": 1,
+              "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+            },
+            {
+              "rawcode": "iG08",
+              "name": "疾风军鼓",
+              "line": 9,
+              "quality": 2,
+              "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+            },
+            {
+              "rawcode": "iB09",
+              "name": "劲风战鼓",
+              "line": 9,
+              "quality": 3,
+              "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+            },
+            {
+              "rawcode": "iP09",
+              "name": "疾风战鼓",
+              "line": 9,
+              "quality": 4,
+              "path": "war3mapImported\\BTNTDItemWindDrum.blp"
+            }
+          ]
+        }
+      ],
+      "cross_line_review_needed": []
+    }
+  },
+  "delta": {
+    "changed_icon_fields": 115,
+    "changed_fields": [
+      [
+        "abilities",
+        "Pm06",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Pm06",
+        "arar",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps02",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps07",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps10",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps11",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps12",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps14",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps15",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps16",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps17",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps18",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps19",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps1A",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps20",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps22",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps24",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps26",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps27",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps28",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps29",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps2B",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps2C",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps2D",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps2E",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps2F",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps30",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps33",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps38",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps41",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps42",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps43",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps45",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps46",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps47",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps48",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps49",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps4A",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps4B",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps51",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps53",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps55",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps57",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps58",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps59",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps5A",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps5C",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps5D",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps5E",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps5F",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps60",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "Ps61",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s002",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s107",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s110",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s111",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s112",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s207",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s210",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s211",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s212",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s227",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s228",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s229",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s22B",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s22C",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s22D",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s22E",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s22F",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s230",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s238",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s241",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s242",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s243",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s258",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s259",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s25A",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s25C",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s25D",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s25E",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s25F",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s260",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s261",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s314",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s315",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s316",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s317",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s318",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s319",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s31A",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s320",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s322",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s324",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s326",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s345",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s346",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s347",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s348",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s349",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s34A",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s34B",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s351",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s353",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s355",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "abilities",
+        "s357",
+        "aart",
+        0,
+        0
+      ],
+      [
+        "items",
+        "iW07",
+        "iico",
+        0,
+        0
+      ],
+      [
+        "items",
+        "iG08",
+        "iico",
+        0,
+        0
+      ],
+      [
+        "items",
+        "iB01",
+        "iico",
+        0,
+        0
+      ],
+      [
+        "items",
+        "iB02",
+        "iico",
+        0,
+        0
+      ],
+      [
+        "items",
+        "iB03",
+        "iico",
+        0,
+        0
+      ],
+      [
+        "items",
+        "iB09",
+        "iico",
+        0,
+        0
+      ],
+      [
+        "items",
+        "iP01",
+        "iico",
+        0,
+        0
+      ],
+      [
+        "items",
+        "iP05",
+        "iico",
+        0,
+        0
+      ],
+      [
+        "items",
+        "iP07",
+        "iico",
+        0,
+        0
+      ],
+      [
+        "items",
+        "iP09",
+        "iico",
+        0,
+        0
+      ]
+    ],
+    "added_icon_resources": 60,
+    "runtime_jass_byte_identical": true,
+    "object_ids_levels_gameplay_fields_unchanged": true,
+    "models_and_other_assets_byte_identical": true,
+    "w3i_only_expected_build_display_stamp_changed": true
+  },
+  "map_byte_delta": 295752,
+  "provenance": {
+    "production_base_commit": "ae364289d30a6ab733916641f4ea0eb1ca1fdc06",
+    "checks_transaction": "linux-ktvnn2ra",
+    "build_transaction": "linux-0a1i4t0w",
+    "baseline_map_sha256": "20a3f200c42734c020b4cef6469a828ecdbdcd306ba07b1039a5182e922dfd78",
+    "candidate_map_sha256": "e770a0151f846c8fc6cf9bc7bdb456ea1207eb230e8d946431e63108e481980e",
+    "baseline_map_bytes": 5450425,
+    "candidate_map_bytes": 5746177,
+    "runtime_jass_sha256": "2bbdf53d024fdfddafb7c3ef543d9dd4e9cd96a5128cd813c95d03b61a6ffc3a",
+    "final_publication_base_commit": "0cdd088c6bd0b7f4562db4f2e6d8b9e4dffebc79"
+  },
+  "retired_resource_gate": {
+    "retired_icon_members": 0,
+    "source": "AuditMapResourceReachability.py --require-retired-absent",
+    "ignored_king_leoric_assets": "4 original imports restored; author manifest and baseline bytes both identical; remain ignored, not standalone redistributed"
+  },
+  "additional_python_source_suite": {
+    "selected": 256,
+    "run": 210,
+    "passed": 196,
+    "failures": 10,
+    "errors": 9,
+    "unclassified_not_covered": 36,
+    "all_python_green": false,
+    "new_batch_test_passes": 13,
+    "failure_heading_set_matches_pre_icon_baseline": true
+  }
+}

@@ -23,7 +23,8 @@ public function tdForgetEquipmentAbilities(unit tower)
 	tdForgetNativeActiveCooldowns(tower)
 
 function tdEquipmentSyncControl(unit tower, int abilityId, int level)
-	if tower.getAbilityLevel(abilityId) > 0
+	let currentLevel = tower.getAbilityLevel(abilityId)
+	if currentLevel > 0 and currentLevel != level
 		tower.setAbilityLevel(abilityId, level)
 
 public function tdRefreshEquipmentAbilities(unit tower, real cooldownReduction, real controlPower)

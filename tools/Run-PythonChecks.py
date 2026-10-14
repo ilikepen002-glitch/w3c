@@ -22,7 +22,12 @@ TEST_DIR = ROOT / 'tests/python'
 # New classes are unclassified until their inputs have been reviewed.
 CLASS_GROUPS = {
     'source': '''
+        test_ambient_critter_source.AmbientCritterTests
+        test_inventory_range_source.InventoryRangeSourceTests
+        test_spirit_skill_icons.SpiritSkillIconTests
+        test_equipment_icon_refresh.EquipmentIconRefreshTests
         test_resource_retirement.ResourceRetirementTests
+        test_tower_target_priority_artifact.TowerTargetPrioritySourceTests
         test_tower_pet_detail_source.TowerPetDetailTests
         test_background_music_source.BackgroundMusicSourceTests
         test_combined_visual_text_artifact.CombinedSourceTextTests
@@ -56,6 +61,7 @@ CLASS_GROUPS = {
         test_verify_pet_ui_artifact.PetUISourceTests
     '''.split(),
     'regression': '''
+        test_building_status_constants.BuildingStatusConstantsTests
         test_flower_full_roster_source.FlowerFullRosterSourceTests
         test_boss_pair_artifact.BossPairDeltaTests
         test_boss_pair_artifact.BossPairFrozenFormatTests
@@ -115,6 +121,7 @@ CLASS_GROUPS = {
         test_wurst_linux.JavaProbeTests
     '''.split(),
     'map': '''
+        test_tower_target_priority_artifact.TowerTargetPriorityPackedTests
         test_pet_attack_phase_one.FinalPetAttackArtifactTests
         test_aura_target_artifact.AuraTargetArtifactTests
         test_combined_visual_text_artifact.ActualCombinedFieldTests
