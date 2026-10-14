@@ -11,6 +11,10 @@ import TDEnemyMechanicData
 import Table
 import LinkedList
 
+public constant int TD_PET_PROPOSAL_NONE = 0
+public constant int TD_PET_PROPOSAL_RANDOM = 1
+public constant int TD_PET_PROPOSAL_DIRECTED = 2
+
 public class TDPet
 	int lane
 	int species
@@ -36,6 +40,8 @@ public class TDPet
 	boolean paused = false
 	boolean released = false
 	int revision = 0
+	int proposalType = TD_PET_PROPOSAL_NONE
+	int proposalEpoch = 0
 	int proposalSlot = -1
 	int proposalSkill = -1
 	int proposalQuality = 0
@@ -43,6 +49,15 @@ public class TDPet
 	int proposalRevision = 0
 	int proposalOldSkill = -1
 	int proposalOldQuality = 0
+
+	function clearProposal()
+		proposalType = TD_PET_PROPOSAL_NONE
+		proposalEpoch = 0
+		proposalSlot = -1
+		proposalSkill = -1
+		proposalQuality = 0
+		proposalOldSkill = -1
+		proposalOldQuality = 0
 
 	construct(int lane, int species, int captureWave)
 		this.lane = lane
@@ -346,12 +361,14 @@ public function tdPetConfirmRelease(int lane, int nonce) returns boolean
 public int array tdPetResonance
 public int array tdPetRerollStones
 public int array tdPetSlotStones
+// Monotonic across real lane resets, so an old match cannot authorize a new one.
+public int array tdPetMatchEpoch
 public boolean array tdPetTutorialUsed
 public int array tdPetExtraEncounterWave
 
 public function tdPetBeginReroll(int lane, int slot, int skillSlot) returns boolean
 	let pet = tdPetAt(lane, slot)
-	if not tdPetLaneCanManage(lane) or pet == null or pet.released or skillSlot < 0 or skillSlot >= pet.skillCount or pet.proposalSlot >= 0 or tdPetRerollStones[lane] <= 0 or pet.proposalVersion >= 2147483647
+	if not tdPetLaneCanManage(lane) or tdIsLaneFinished(lane) or pet == null or pet.lane != lane or pet.released or skillSlot < 0 or skillSlot >= pet.skillCount or pet.proposalSlot >= 0 or tdPetRerollStones[lane] <= 0 or pet.proposalVersion >= 2147483647
 		return false
 	// rollSkill refuses an empty candidate set before invoking random natives.
 	if not pet.canRollSkill(skillSlot)
@@ -361,6 +378,8 @@ public function tdPetBeginReroll(int lane, int slot, int skillSlot) returns bool
 	if candidate < 0
 		return false
 	pet.proposalVersion += 1
+	pet.proposalType = TD_PET_PROPOSAL_RANDOM
+	pet.proposalEpoch = tdPetMatchEpoch[lane]
 	pet.proposalRevision = pet.revision
 	pet.proposalOldSkill = pet.skillAt(skillSlot)
 	pet.proposalOldQuality = pet.qualityAt(skillSlot)
@@ -373,7 +392,7 @@ public function tdPetBeginReroll(int lane, int slot, int skillSlot) returns bool
 // Validate the old candidate before drawing or charging; failure preserves it.
 public function tdPetContinueReroll(int lane, int slot, TDPet expected, int candidateVersion, int sourceRevision) returns boolean
 	let pet = tdPetAt(lane, slot)
-	if not tdPetLaneCanManage(lane) or pet == null or pet != expected or pet.released
+	if not tdPetLaneCanManage(lane) or tdIsLaneFinished(lane) or pet == null or pet != expected or pet.lane != lane or pet.released or pet.proposalType != TD_PET_PROPOSAL_RANDOM or pet.proposalEpoch != tdPetMatchEpoch[lane]
 		return false
 	if pet.proposalSlot < 0 or pet.proposalSlot >= pet.skillCount or pet.proposalSlot >= 4 or candidateVersion <= 0 or pet.proposalVersion != candidateVersion or pet.proposalVersion >= 2147483647
 		return false
@@ -396,7 +415,7 @@ public function tdPetContinueReroll(int lane, int slot, TDPet expected, int cand
 
 public function tdPetResolveRerollVersion(int lane, int slot, int candidateVersion, boolean replace) returns boolean
 	let pet = tdPetAt(lane, slot)
-	if not tdPetLaneCanManage(lane) or pet == null or pet.released or pet.proposalSlot < 0 or candidateVersion <= 0 or pet.proposalVersion != candidateVersion
+	if not tdPetLaneCanManage(lane) or tdIsLaneFinished(lane) or pet == null or pet.lane != lane or pet.released or pet.proposalType != TD_PET_PROPOSAL_RANDOM or pet.proposalEpoch != tdPetMatchEpoch[lane] or pet.proposalSlot < 0 or candidateVersion <= 0 or pet.proposalVersion != candidateVersion
 		return false
 	if replace
 		// An explicit keep may discard a stale candidate; adoption must match its source.
@@ -406,12 +425,9 @@ public function tdPetResolveRerollVersion(int lane, int slot, int candidateVersi
 		pet.setSkill(pet.proposalSlot, pet.proposalSkill, pet.proposalQuality)
 		if pet.revision == revision
 			return false
+	pet.clearProposal()
+	if replace
 		pet.invalidateCombat()
-	pet.proposalSlot = -1
-	pet.proposalSkill = -1
-	pet.proposalQuality = 0
-	pet.proposalOldSkill = -1
-	pet.proposalOldQuality = 0
 	return true
 
 public function tdPetResolveReroll(int lane, int slot, boolean replace) returns boolean
@@ -420,7 +436,7 @@ public function tdPetResolveReroll(int lane, int slot, boolean replace) returns 
 
 public function tdPetOpenSlot(int lane, int slot) returns boolean
 	let pet = tdPetAt(lane, slot)
-	if not tdPetLaneCanManage(lane) or pet == null or pet.released or pet.skillCount >= 4 or pet.proposalSlot >= 0 or tdPetSlotStones[lane] <= 0
+	if not tdPetLaneCanManage(lane) or tdIsLaneFinished(lane) or pet == null or pet.lane != lane or pet.released or pet.skillCount >= 4 or pet.proposalSlot >= 0 or tdPetSlotStones[lane] <= 0
 		return false
 	if not pet.canRollSkill(pet.skillCount)
 		return false
@@ -538,6 +554,8 @@ public function tdPetLaneDefeated(int lane)
 public function tdPetInitializeLane(int lane)
 	if not tdIsLanePlayer(lane)
 		return
+	if tdPetMatchEpoch[lane] < 2147483647
+		tdPetMatchEpoch[lane] += 1
 	tdPetCancelRelease(lane)
 	tdPetPlayerLeft[lane] = false
 	tdPetBalls[lane] = 3

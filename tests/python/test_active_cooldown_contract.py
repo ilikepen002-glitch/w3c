@@ -182,8 +182,8 @@ class ActiveSourceContractTests(unittest.TestCase):
         self.reject('pets/TDPetObjectGen.wurst', 'presetCooldown(lvl -> 0.0)',
                     'presetCooldown(lvl -> 1.0)', 'zero-CD')
         self.reject('pets/TDPetObjectGen.wurst',
-                    '\tlistAbility..setLevels(2)',
-                    '\tlistAbility = new AbilityDefinitionBloodlust(TD_ORC_BLOODLUST_ABILITY_ID)\n\tlistAbility..setLevels(2)',
+                    '\tlistAbility..setLevels(levels)',
+                    '\tlistAbility = new AbilityDefinitionBloodlust(TD_ORC_BLOODLUST_ABILITY_ID)\n\tlistAbility..setLevels(levels)',
                     'receiver rebound')
 
     def test_manager_list_cannot_configure_native_or_borrow_other_order(self):
@@ -197,7 +197,7 @@ class ActiveSourceContractTests(unittest.TestCase):
         sources = self.sources.copy()
         sources['abilities/TDUnreviewedListCaller.wurst'] = (
             'package TDUnreviewedListCaller\nfunction bypass()\n'
-            '\tlistCommand(new AbilityDefinitionBloodlust(TD_ORC_BLOODLUST_ABILITY_ID), 0, "bloodlust", "", "")\n')
+            '\tlistCommand(new AbilityDefinitionBloodlust(TD_ORC_BLOODLUST_ABILITY_ID), 0, "bloodlust", "", "", 2)\n')
         with self.assertRaisesRegex(ValueError, 'outside its exact UI role'):
             v.verify_source(sources=sources)
         self.reject('pets/TDPetData.wurst',

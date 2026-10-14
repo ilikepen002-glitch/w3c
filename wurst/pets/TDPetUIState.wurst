@@ -2,6 +2,7 @@ package TDPetUIState
 import TDPetData
 import TDPetRules
 import TDPetState
+import TDPetCultivation
 import TDConfig
 
 public constant int TD_PET_UI_CLOSED = -1
@@ -10,6 +11,9 @@ public constant int TD_PET_UI_DETAIL = 1
 public constant int TD_PET_UI_CULTIVATE = 2
 public constant int TD_PET_UI_PREVIEW = 3
 public constant int TD_PET_UI_RELEASE = 4
+public constant int TD_PET_UI_DIRECTED_SLOT = 5
+public constant int TD_PET_UI_DIRECTED_CHOICES = 6
+public constant int TD_PET_UI_DIRECTED_PREVIEW = 7
 public constant int TD_PET_ACTION_PAGE = 8
 public constant int TD_PET_ACTION_FARMER = 9
 public constant int TD_PET_ACTION_REROLL_FIRST = 10
@@ -22,6 +26,13 @@ public constant int TD_PET_ACTION_CONFIRM = 19
 public constant int TD_PET_ACTION_CANCEL = 20
 public constant int TD_PET_ACTION_CONTINUE = 21
 public constant int TD_PET_ACTION_PREVIEW_DETAIL = 22
+public constant int TD_PET_ACTION_DIRECTED = 23
+public constant int TD_PET_ACTION_DIRECTED_FIRST = 24
+public constant int TD_PET_ACTION_DIRECTED_BACK = 28
+public constant int TD_PET_ACTION_DIRECTED_NEXT = 29
+public constant int TD_PET_ACTION_DIRECTED_PREVIOUS = 30
+public constant int TD_PET_ACTION_DIRECTED_KEEP = 31
+public constant int TD_PET_ACTION_DIRECTED_ADOPT = 32
 public constant int TD_PET_COMMAND_INVALID = -1
 public constant int TD_PET_COMMAND_STALE = -2
 public constant int TD_PET_COMMAND_REFRESH = -3
@@ -46,6 +57,8 @@ public function tdPetActionCell(int mode, int action) returns int
 			return action - TD_PET_ACTION_REROLL_FIRST
 		if action == TD_PET_ACTION_OPEN or action == TD_PET_ACTION_DETAIL
 			return action - TD_PET_ACTION_OPEN + 8
+		if action == TD_PET_ACTION_DIRECTED
+			return 9
 		return action == TD_PET_ACTION_FARMER ? 11 : -1
 	if mode == TD_PET_UI_PREVIEW
 		if action == TD_PET_ACTION_KEEP
@@ -59,9 +72,39 @@ public function tdPetActionCell(int mode, int action) returns int
 		if action == TD_PET_ACTION_CONFIRM or action == TD_PET_ACTION_CANCEL
 			return action - TD_PET_ACTION_CONFIRM + 8
 		return action == TD_PET_ACTION_FARMER ? 11 : -1
+	if mode == TD_PET_UI_DIRECTED_SLOT
+		if action >= TD_PET_ACTION_DIRECTED_FIRST and action < TD_PET_ACTION_DIRECTED_BACK
+			return action - TD_PET_ACTION_DIRECTED_FIRST
+		return action == TD_PET_ACTION_DIRECTED_BACK ? 11 : -1
+	if mode == TD_PET_UI_DIRECTED_CHOICES
+		if action >= 200 and action < 208
+			return action - 200
+		if action == TD_PET_ACTION_DIRECTED_NEXT or action == TD_PET_ACTION_DIRECTED_PREVIOUS
+			return action - TD_PET_ACTION_DIRECTED_NEXT + 8
+		return action == TD_PET_ACTION_DIRECTED_BACK ? 11 : -1
+	if mode == TD_PET_UI_DIRECTED_PREVIEW
+		if action == TD_PET_ACTION_DIRECTED_KEEP
+			return 4
+		if action == TD_PET_ACTION_DIRECTED_ADOPT
+			return 7
+		return action == TD_PET_ACTION_PREVIEW_DETAIL ? 11 : -1
 	return -1
 
 public function tdPetActionHotkey(int action) returns string
+	if action == TD_PET_ACTION_DIRECTED
+		return "L"
+	if action >= TD_PET_ACTION_DIRECTED_FIRST and action < TD_PET_ACTION_DIRECTED_BACK
+		return SubString("QWET", action - TD_PET_ACTION_DIRECTED_FIRST, action - TD_PET_ACTION_DIRECTED_FIRST + 1)
+	if action == TD_PET_ACTION_DIRECTED_BACK
+		return "R"
+	if action == TD_PET_ACTION_DIRECTED_NEXT
+		return "N"
+	if action == TD_PET_ACTION_DIRECTED_PREVIOUS
+		return "P"
+	if action == TD_PET_ACTION_DIRECTED_KEEP
+		return "Q"
+	if action == TD_PET_ACTION_DIRECTED_ADOPT
+		return "E"
 	if action == 0
 		return "I"
 	if action == 1
@@ -90,6 +133,17 @@ public function tdPetListHotkey(int cell) returns string
 	let keys = "QWETASDFZX"
 	return cell >= 0 and cell < 10 ? SubString(keys, cell, cell + 1) : ""
 
+// Dynamic admission only removes entries from the physical page whitelist.
+public function tdPetPageActionAvailable(int mode, int action, int ownedCount, int skillSlot, int choicePage) returns boolean
+	if mode == TD_PET_UI_DIRECTED_SLOT and action >= TD_PET_ACTION_DIRECTED_FIRST and action < TD_PET_ACTION_DIRECTED_BACK
+		return action - TD_PET_ACTION_DIRECTED_FIRST < ownedCount
+	if mode == TD_PET_UI_DIRECTED_CHOICES
+		if action == TD_PET_ACTION_DIRECTED_PREVIOUS
+			return choicePage > 0
+		if action == TD_PET_ACTION_DIRECTED_NEXT
+			return (choicePage + 1) * TD_PET_DIRECTED_CELLS < tdPetDirectedCatalogSize(skillSlot)
+	return true
+
 // A real session used by the event bridge and regression tests. Native events do
 // not carry epoch: currentUnit identity in UI, not this serial, rejects old casts.
 public class TDPetUISession
@@ -111,10 +165,20 @@ public class TDPetUISession
 	int proposalVersion = 0
 	int proposalSlot = -1
 	int proposalRevision = 0
+	int proposalType = TD_PET_PROPOSAL_NONE
+	int proposalSkill = -1
+	int proposalQuality = 0
+	int proposalOldSkill = -1
+	int proposalOldQuality = 0
+	int species = 0
+	int matchEpoch = 0
+	int directedSlot = -1
+	int directedPage = 0
 	int releaseNonce = 0
 	int array[12] abilities
 	int array[12] levels
 	int array[12] actions
+	int array[8] directedSkills
 	TDPet array[10] listPets
 	int array[10] listRevisions
 	int array[10] listGenerations
@@ -140,13 +204,19 @@ public class TDPetUISession
 
 	function open(int mode, int page, int slot, TDPet pet, int nonce, int unitKey) returns boolean
 		close()
-		if epoch >= 2147483647 or unitKey <= 0 or mode < TD_PET_UI_LIST or mode > TD_PET_UI_RELEASE or page < 0 or page > 1
+		if epoch >= 2147483647 or unitKey <= 0 or mode < TD_PET_UI_LIST or mode > TD_PET_UI_DIRECTED_PREVIEW or page < 0 or page > 1
 			return false
 		if mode != TD_PET_UI_LIST
 			if pet == null or tdPetAt(lane, slot) != pet or pet.released or pet.lane != lane
 				return false
 		if mode == TD_PET_UI_RELEASE
 			if nonce <= 0 or nonce != tdPetReleaseNonce(lane) or pet.host != null or pet.proposalSlot >= 0
+				return false
+		if mode == TD_PET_UI_DIRECTED_SLOT or mode == TD_PET_UI_DIRECTED_CHOICES
+			if pet.proposalSlot >= 0
+				return false
+		if mode == TD_PET_UI_DIRECTED_CHOICES
+			if directedSlot < 0 or directedSlot >= pet.skillCount or directedSlot > 3 or directedPage < 0 or directedPage > 6 or directedPage * TD_PET_DIRECTED_CELLS >= tdPetDirectedCatalogSize(directedSlot)
 				return false
 		epoch += 1
 		this.mode = mode
@@ -155,7 +225,9 @@ public class TDPetUISession
 		this.pet = pet
 		currentKey = unitKey
 		releaseNonce = nonce
+		matchEpoch = tdPetMatchEpoch[lane]
 		if pet != null
+			species = pet.species
 			revision = pet.revision
 			generation = pet.generation
 			resonance = pet.level
@@ -164,11 +236,16 @@ public class TDPetUISession
 			proposalVersion = pet.proposalVersion
 			proposalSlot = pet.proposalSlot
 			proposalRevision = pet.proposalRevision
+			proposalType = pet.proposalType
+			proposalSkill = pet.proposalSkill
+			proposalQuality = pet.proposalQuality
+			proposalOldSkill = pet.proposalOldSkill
+			proposalOldQuality = pet.proposalOldQuality
 		for cell = 0 to 11
 			mount(cell, 0, 0, -1)
-		for action = 0 to TD_PET_ACTION_PREVIEW_DETAIL
+		for action = 0 to TD_PET_ACTION_DIRECTED_ADOPT
 			let cell = tdPetActionCell(mode, action)
-			if cell >= 0
+			if cell >= 0 and tdPetPageActionAvailable(mode, action, ownedCount, directedSlot, directedPage)
 				mount(cell, tdPetManagerCommandId(action), 1, action)
 		if mode == TD_PET_UI_LIST
 			for cell = 0 to 9
@@ -189,19 +266,28 @@ public class TDPetUISession
 				if skillSlot < pet.skillCount
 					variant = pet.skillAt(skillSlot) + (skillSlot >= tdPetUnlockedSlots(pet.level) ? TD_PET_SKILL_COUNT : 0)
 				mount(skillSlot + 4, tdPetSlotAbilityId(skillSlot, variant), variant == TD_PET_SLOT_EMPTY ? 1 : pet.qualityAt(skillSlot), -1)
-		else if mode == TD_PET_UI_PREVIEW
+		else if mode == TD_PET_UI_PREVIEW or mode == TD_PET_UI_DIRECTED_PREVIEW
 			if pet.proposalSlot < 0 or pet.proposalOldSkill < 0 or pet.proposalSkill < 0
+				close()
+				return false
+			if (mode == TD_PET_UI_PREVIEW and pet.proposalType != TD_PET_PROPOSAL_RANDOM) or (mode == TD_PET_UI_DIRECTED_PREVIEW and pet.proposalType != TD_PET_PROPOSAL_DIRECTED)
 				close()
 				return false
 			mount(0, tdPetPreviewAbilityId(0, pet.proposalOldSkill), pet.proposalOldQuality, -1)
 			mount(1, tdPetPreviewArrowAbilityId(0), 1, -1)
 			mount(2, tdPetPreviewArrowAbilityId(1), 1, -1)
 			mount(3, tdPetPreviewAbilityId(1, pet.proposalSkill), pet.proposalQuality, -1)
+		else if mode == TD_PET_UI_DIRECTED_CHOICES
+			for cell = 0 to TD_PET_DIRECTED_CELLS - 1
+				let skill = tdPetDirectedCandidateAt(pet, directedSlot, directedPage * TD_PET_DIRECTED_CELLS + cell)
+				directedSkills[cell] = skill
+				if skill >= 0
+					mount(cell, tdPetDirectedAbilityId(skill), 1, 200 + cell)
 		active = true
 		return true
 
 	function matchesPet(TDPet current) returns boolean
-		return current != null and current == pet and current.lane == lane and not current.released and current.revision == revision and current.generation == generation and current.level == resonance and current.skillCount == ownedCount and current.paused == paused and current.proposalVersion == proposalVersion and current.proposalSlot == proposalSlot and current.proposalRevision == proposalRevision
+		return current != null and current == pet and current.lane == lane and not current.released and current.species == species and current.revision == revision and current.generation == generation and current.level == resonance and current.skillCount == ownedCount and current.paused == paused and current.proposalVersion == proposalVersion and current.proposalSlot == proposalSlot and current.proposalRevision == proposalRevision and current.proposalType == proposalType and current.proposalSkill == proposalSkill and current.proposalQuality == proposalQuality and current.proposalOldSkill == proposalOldSkill and current.proposalOldQuality == proposalOldQuality and tdPetMatchEpoch[lane] == matchEpoch
 
 	function matchesListCell(int cell) returns boolean
 		if cell < 0 or cell >= 10
@@ -214,6 +300,8 @@ public class TDPetUISession
 		return not current.released and current.revision == listRevisions[cell] and current.generation == listGenerations[cell] and current.level == listResonances[cell] and current.skillCount == listOwnedCounts[cell]
 
 	function snapshotCurrent() returns boolean
+		if tdPetMatchEpoch[lane] != matchEpoch
+			return false
 		if mode == TD_PET_UI_LIST
 			for cell = 0 to 9
 				if not matchesListCell(cell)

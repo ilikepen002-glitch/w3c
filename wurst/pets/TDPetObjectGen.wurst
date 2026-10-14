@@ -4,6 +4,7 @@ import TDPetControlObjectGen
 import TDPetUIData
 import TDPetRules
 import TDPetUIState
+import TDPetCultivation
 import TDWaves
 import ItemObjEditing
 import ChannelAbilityPreset
@@ -37,7 +38,7 @@ function tdPetCommandDescription(int command) returns string
 	if command == 5
 		return "召回当前精灵，解除与塔的绑定，停止提供加成。|n精灵保留在收藏中，主动技能冷却不重置。"
 	if command == 6
-		return "打开养成面板，进行洗练或开栏。"
+		return "打开养成面板，进行随机洗练、定向学习绿色技能或开栏。"
 	return "查看当前精灵的共鸣等级、附身塔和技能未生效原因。"
 
 function displayUnit(int typeId, string name, string model, string icon)
@@ -61,8 +62,8 @@ function displayUnit(int typeId, string name, string model, string icon)
 	..setUpgradesTo("")
 
 // Only one variant per physical cell is mounted. Allocate its order once.
-function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, string order, string name, string icon)
-	listAbility..setLevels(2)..setName(name)..presetHotkey(tdPetListHotkey(cell))..presetButtonPosNormal(cell mod 4, cell div 4)
+function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, string order, string name, string icon, int levels)
+	listAbility..setLevels(levels)..setName(name)..presetHotkey(tdPetListHotkey(cell))..presetButtonPosNormal(cell mod 4, cell div 4)
 	..presetBaseOrderID(lvl -> order)..presetTargetType(lvl -> 0)..presetOptions(lvl -> 1)
 	..presetDisableOtherAbilities(lvl -> false)..presetFollowThroughTime(lvl -> 0.0)..presetArtDuration(lvl -> 0.0)
 	..setArtCaster("")..setArtEffect("")..setArtSpecial("")..setArtTarget("")
@@ -115,12 +116,12 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			let label = variant == 0 ? "空位" : tdPetQualityName(quality) + " " + tdPetSpeciesName(species)
 			let icon = variant == 0 ? tdPetSlotIconPath(TD_PET_SLOT_EMPTY) : tdPetSpeciesQualityIconPath(species, quality)
 			let listAbility = variant == 0 ? anchor : new AbilityDefinitionIllidanChannel(tdPetListAbilityId(cell, species, quality, ownedCount))
-			listCommand(listAbility, cell, order, label, icon)
+			listCommand(listAbility, cell, order, label, icon, 2)
 			for level = 1 to 2
 				let number = tdPetCollectionNumber(tdPetPageSlot(level - 1, cell))
 				listAbility.setTooltipNormal(level, number + " · " + label + " (" + tdPetListHotkey(cell) + ")")
 				listAbility.setTooltipNormalExtended(level, variant == 0 ? "捕获精灵后可在此查看。" : "查看技能数量、技能详情、上阵或培养。")
-	for action = 8 to TD_PET_ACTION_PREVIEW_DETAIL
+	for action = 8 to TD_PET_ACTION_DIRECTED_ADOPT
 		var label = "切换收藏页"
 		var description = "查看另一页精灵。"
 		var cell = tdPetActionCell(TD_PET_UI_LIST, action)
@@ -166,8 +167,44 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 		else if action == TD_PET_ACTION_PREVIEW_DETAIL
 			cell = 11
 			label = "返回详情"
-			description = "返回精灵详情，保留本次洗练结果。"
+			description = "返回精灵详情，保留本次培养候选。随机洗练已支付1石；定向学习尚未扣料，再打开须确认支付3石。"
+		else if action == TD_PET_ACTION_DIRECTED
+			cell = 9
+			label = "定向学习绿色技能"
+			description = "选择已有技能栏与合法绿色技能，预览时不扣料，确认采用才消耗3洗练石。取消不扣料；关闭面板保留候选。|n须先处理当前随机洗练候选。可提前培养共鸣锁定栏或终阶专属，宿主生效要求不变。"
+		else if action >= TD_PET_ACTION_DIRECTED_FIRST and action < TD_PET_ACTION_DIRECTED_BACK
+			cell = action - TD_PET_ACTION_DIRECTED_FIRST
+			label = "定向学习 · " + tdPetSlotName(cell)
+			description = "浏览本栏合法绿色技能。仅已拥有栏位可选；当前技能已是绿色时不列无变化选择。白升绿、蓝紫降绿会明确预览。|n最终确认消耗3洗练石。"
+		else if action == TD_PET_ACTION_DIRECTED_BACK
+			cell = 11
+			label = "返回培养"
+			description = "返回培养面板，本次浏览不消耗材料。"
+		else if action == TD_PET_ACTION_DIRECTED_NEXT or action == TD_PET_ACTION_DIRECTED_PREVIOUS
+			cell = action - TD_PET_ACTION_DIRECTED_NEXT + 8
+			label = action == TD_PET_ACTION_DIRECTED_NEXT ? "下一页技能" : "上一页技能"
+			description = "浏览本栏其他合法绿色技能；候选按稳定技能顺序分页，不消耗材料。"
+		else if action == TD_PET_ACTION_DIRECTED_KEEP
+			cell = 4
+			label = "取消定向学习"
+			description = "放弃本次定向候选，保留原技能与品质，不扣洗练石。过期候选也可明确取消。"
+		else if action == TD_PET_ACTION_DIRECTED_ADOPT
+			cell = 7
+			label = "确认学习 · 3洗练石"
+			description = "将本栏替换为预览的绿色技能，一次消耗3洗练石。请检查旧技能品质：蓝/紫会降为绿色。材料不足或候选过期不扣料。|n共鸣锁定与宿主要求不变，主动冷却不重置。"
 		command(tdPetManagerCommandId(action), label, tdPetActionHotkey(action), cell mod 4, cell div 4, Targettype.NONE, tdPetManagerCommandIconPath(action), description)
+	// Only 28 green identity objects, with one order per physical choice cell.
+	for cell = 0 to TD_PET_DIRECTED_CELLS - 1
+		let directedAnchorSkill = cell < 4 ? cell : (cell < 7 ? cell + 12 : 39)
+		let directedAnchor = new ChannelAbilityPreset(tdPetDirectedAbilityId(directedAnchorSkill), 1, true)
+		let directedOrder = directedAnchor.getOrderString()
+		for skill = 0 to TD_PET_SKILL_COUNT - 1
+			if not tdPetSkillDefined(skill) or not tdPetSkillQualityValid(skill, 2) or tdPetDirectedSkillCell(skill) != cell
+				continue
+			let choice = skill == directedAnchorSkill ? directedAnchor : new AbilityDefinitionIllidanChannel(tdPetDirectedAbilityId(skill))
+			listCommand(choice, cell, directedOrder, "绿色 · " + tdPetSkillNameById(skill), tdPetSkillIconPath(skill, false), 1)
+			choice.setTooltipNormal(1, tdPetQualityName(2) + " " + tdPetSkillNameById(skill) + " (" + tdPetListHotkey(cell) + ")")
+			choice.setTooltipNormalExtended(1, tdPetSkillDescriptionById(skill, 2) + "|n选择后先预览，不扣料；确认学习消耗3洗练石。同技能白升绿、蓝紫降绿以预览为准。")
 	for position = 0 to 1
 		for skill = 0 to TD_PET_SKILL_COUNT - 1
 			if not tdPetSkillDefined(skill)

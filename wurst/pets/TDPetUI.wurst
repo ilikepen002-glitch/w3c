@@ -1,6 +1,7 @@
 package TDPetUI
 import TDPetData
 import TDPetState
+import TDPetCultivation
 import TDPetRules
 import TDPetRuntime
 import TDPetCombat
@@ -33,7 +34,13 @@ function showCultivation(int lane)
 	if pet == null
 		showPage(lane, TD_PET_UI_LIST, 0, -1, 0)
 	else
-		showPage(lane, pet.proposalSlot >= 0 ? TD_PET_UI_PREVIEW : TD_PET_UI_CULTIVATE, tdPetSelectedSlot[lane] div 10, tdPetSelectedSlot[lane], 0)
+		var mode = TD_PET_UI_CULTIVATE
+		if pet.proposalSlot >= 0
+			mode = pet.proposalType == TD_PET_PROPOSAL_DIRECTED ? TD_PET_UI_DIRECTED_PREVIEW : TD_PET_UI_PREVIEW
+		showPage(lane, mode, tdPetSelectedSlot[lane] div 10, tdPetSelectedSlot[lane], 0)
+
+function showDirectedChoices(int lane, int skillSlot, int choicePage)
+	tdPetRenderDirectedPage(lane, TD_PET_UI_DIRECTED_CHOICES, tdPetSelectedSlot[lane] div 10, tdPetSelectedSlot[lane], skillSlot, choicePage)
 
 public function tdPetShowCollection(int lane)
 	if not tdIsLanePlayer(lane) or not tdPetLaneCanManage(lane)
@@ -52,7 +59,7 @@ function refreshStale(int lane, int previousMode)
 	tdPetCancelRelease(lane)
 	if previousMode == TD_PET_UI_LIST or current == null or current != session.pet
 		showPage(lane, TD_PET_UI_LIST, session.page, slot, 0)
-	else if previousMode == TD_PET_UI_CULTIVATE or previousMode == TD_PET_UI_PREVIEW
+	else if previousMode == TD_PET_UI_CULTIVATE or previousMode == TD_PET_UI_PREVIEW or previousMode == TD_PET_UI_DIRECTED_SLOT or previousMode == TD_PET_UI_DIRECTED_CHOICES or previousMode == TD_PET_UI_DIRECTED_PREVIEW
 		showCultivation(lane)
 	else
 		showPage(lane, TD_PET_UI_DETAIL, slot div 10, slot, 0)
@@ -94,6 +101,10 @@ function onCommand() returns boolean
 	let nonce = session.releaseNonce
 	let proposalVersion = session.proposalVersion
 	let proposalRevision = session.proposalRevision
+	let generation = session.generation
+	let matchEpoch = session.matchEpoch
+	let directedSlot = session.directedSlot
+	let directedPage = session.directedPage
 	let action = session.admitCommand(lane, caster.getHandleId(), abilityId, level)
 	if action == TD_PET_COMMAND_INVALID or action == TD_PET_COMMAND_EMPTY
 		return false
@@ -118,6 +129,11 @@ function onCommand() returns boolean
 		else
 			tdPetSelectFarmer(lane)
 		return false
+	if mode == TD_PET_UI_DIRECTED_CHOICES and action >= 200 and action < 208
+		if not tdPetBeginDirected(lane, slot, directedSlot, session.directedSkills[action - 200])
+			tdPetNotice(lane, "无法定向学习：请选择已有栏位的合法绿色技能，并先处理待选结果；未扣材料。")
+		showCultivation(lane)
+		return false
 	if action == 0
 		showPage(lane, TD_PET_UI_LIST, page, slot, 0)
 	else if action == 1 or action == 2
@@ -141,6 +157,29 @@ function onCommand() returns boolean
 	else if action == TD_PET_ACTION_OPEN
 		if not tdPetOpenSlot(lane, slot)
 			tdPetNotice(lane, "无法开栏：材料不足、已满4栏或待洗练；未扣材料。")
+		showCultivation(lane)
+	else if action == TD_PET_ACTION_DIRECTED
+		if pet.proposalSlot >= 0
+			tdPetNotice(lane, "请先保留或采用当前候选。")
+			showCultivation(lane)
+		else
+			showPage(lane, TD_PET_UI_DIRECTED_SLOT, page, slot, 0)
+	else if action >= TD_PET_ACTION_DIRECTED_FIRST and action < TD_PET_ACTION_DIRECTED_BACK
+		let skillSlot = action - TD_PET_ACTION_DIRECTED_FIRST
+		if tdPetDirectedCandidateCount(pet, skillSlot) > 0
+			showDirectedChoices(lane, skillSlot, 0)
+		else
+			tdPetNotice(lane, "本栏暂无可学习的绿色技能；未扣材料。")
+			showCultivation(lane)
+	else if action == TD_PET_ACTION_DIRECTED_NEXT or action == TD_PET_ACTION_DIRECTED_PREVIOUS
+		showDirectedChoices(lane, directedSlot, directedPage + (action == TD_PET_ACTION_DIRECTED_NEXT ? 1 : -1))
+	else if action == TD_PET_ACTION_DIRECTED_BACK
+		showCultivation(lane)
+	else if action == TD_PET_ACTION_DIRECTED_KEEP or action == TD_PET_ACTION_DIRECTED_ADOPT
+		if not tdPetResolveDirectedVersion(lane, slot, session.pet, proposalVersion, proposalRevision, generation, matchEpoch, action == TD_PET_ACTION_DIRECTED_ADOPT)
+			tdPetNotice(lane, "定向学习未提交：需3洗练石且候选仍有效。旧技能和材料保留；可取消过期候选。")
+		else if action == TD_PET_ACTION_DIRECTED_ADOPT and pet.host != null
+			tdPetRefreshHost(pet.host, 0.0)
 		showCultivation(lane)
 	else if action == TD_PET_ACTION_RELEASE
 		showReleaseConfirmation(lane)

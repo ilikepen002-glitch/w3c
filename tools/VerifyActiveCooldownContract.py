@@ -823,15 +823,15 @@ def verify_manager_list_zero_cooldown(evaluator):
     path = 'pets/TDPetObjectGen.wurst'
     source = evaluator.sources[path]
     owners = source_functions(source)
-    require(('listCommand', 5) in owners, 'Missing manager list zero-CD owner')
-    params, body = owners['listCommand', 5]
-    require(params == ['listAbility', 'cell', 'order', 'name', 'icon'] and
-            'function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, string order, string name, string icon)' in source,
+    require(('listCommand', 6) in owners, 'Missing manager list zero-CD owner')
+    params, body = owners['listCommand', 6]
+    require(params == ['listAbility', 'cell', 'order', 'name', 'icon', 'levels'] and
+            'function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, string order, string name, string icon, int levels)' in source,
             'Manager list zero-CD signature changed')
     lines = [line.strip() for line in body.splitlines() if line.strip()]
     require(lines and lines[0].startswith('listAbility..') and all(line.startswith('..') for line in lines[1:]),
             'Manager list zero-CD receiver rebound or independent code added')
-    require(calls(body, 'presetCooldown') == [[canonical('lvl -> 0.0')]] and
+    require(calls(body, 'setLevels') == [['levels']] and calls(body, 'presetCooldown') == [[canonical('lvl -> 0.0')]] and
             calls(body, 'presetManaCost') == [[canonical('lvl -> 0')]] and
             calls(body, 'presetBaseOrderID') == [[canonical('lvl -> order')]], 'Manager list must retain exact zero-CD shared-order role')
     generator = evaluator.body('tdGeneratePetObjects')
@@ -839,6 +839,10 @@ def verify_manager_list_zero_cooldown(evaluator):
         'anchor': 'new ChannelAbilityPreset(tdPetListAbilityId(cell, 0, 0, 0), 2, true)',
         'order': 'anchor.getOrderString()',
         'listAbility': 'variant == 0 ? anchor : new AbilityDefinitionIllidanChannel(tdPetListAbilityId(cell, species, quality, ownedCount))',
+        'directedAnchorSkill': 'cell < 4 ? cell : (cell < 7 ? cell + 12 : 39)',
+        'directedAnchor': 'new ChannelAbilityPreset(tdPetDirectedAbilityId(directedAnchorSkill), 1, true)',
+        'directedOrder': 'directedAnchor.getOrderString()',
+        'choice': 'skill == directedAnchorSkill ? directedAnchor : new AbilityDefinitionIllidanChannel(tdPetDirectedAbilityId(skill))',
     }
     for variable, expression in expected_bindings.items():
         values = re.findall(r'(?<![\w.])' + variable + r'\s*(?:=|\+=|-=)\s*([^\n]+)', generator)
@@ -846,14 +850,25 @@ def verify_manager_list_zero_cooldown(evaluator):
                 'Manager list rawcode/receiver/order binding changed: ' + variable)
     require('for cell = 0 to 9' in generator and 'for variant = 0 to TD_PET_LIST_VARIANTS - 1' in generator,
             'Manager list physical-cell/state family changed')
-    require(calls(generator, 'listCommand') == [['listAbility', 'cell', 'order', 'label', 'icon']],
+    directed_call = [canonical(part) for part in ('choice', 'cell', 'directedOrder', '"绿色 · " + tdPetSkillNameById(skill)', 'tdPetSkillIconPath(skill, false)', '1')]
+    require(calls(generator, 'listCommand') == [['listAbility', 'cell', 'order', 'label', 'icon', '2'], directed_call],
             'Manager list helper has unknown caller/arguments')
     expected_calls = [[canonical(part) for part in
-                       ('AbilityDefinitionIllidanChannel listAbility', 'int cell', 'string order', 'string name', 'string icon')],
-                      ['listAbility', 'cell', 'order', 'label', 'icon']]
+                       ('AbilityDefinitionIllidanChannel listAbility', 'int cell', 'string order', 'string name', 'string icon', 'int levels')],
+                      ['listAbility', 'cell', 'order', 'label', 'icon', '2'], directed_call]
     for owner_path, text in evaluator.sources.items():
         require(calls(text, 'listCommand') == (expected_calls if owner_path == path else []),
                 'Manager list helper used outside its exact UI role: ' + owner_path)
+    require('for cell = 0 to TD_PET_DIRECTED_CELLS - 1' in generator and
+            'if not tdPetSkillDefined(skill) or not tdPetSkillQualityValid(skill, 2) or tdPetDirectedSkillCell(skill) != cell' in generator and
+            'choice.setLevels(1)' not in generator, 'Directed fixed green/catalog filter changed')
+    green = [*range(4), *range(5, 9), 11, 12, *range(16, 19), 20, 24, 28, 32, 36, *range(39, 49)]
+    require(evaluator.constant('TD_PET_DIRECTED_CELLS') == 8, 'Directed physical cell budget changed')
+    require([skill for skill in range(49) if evaluator.call('tdPetSkillDefined', [skill]) and evaluator.call('tdPetSkillQualityValid', [skill, 2])] == sorted(green), 'Directed green identity budget changed')
+    for skill in green:
+        cell = skill if skill < 4 else skill-5 if 5 <= skill <= 8 else skill-12 if 16 <= skill <= 18 else (skill-32)%8 if skill >= 39 else skill-10 if skill in (11, 12) else 0
+        require(evaluator.call('tdPetDirectedAbilityId', [skill]) == rawcode(f'Pn{skill:02X}') and
+                evaluator.call('tdPetDirectedSkillCell', [skill]) == cell, 'Directed identity escaped its fixed UI position')
     variants = evaluator.constant('TD_PET_LIST_VARIANTS')
     species_count = evaluator.constant('TD_PET_SPECIES_COUNT')
     require(variants == 61 and species_count == 15, 'Manager list physical-cell/state family changed')

@@ -1,0 +1,93 @@
+package TDPetCultivation
+import TDPetState
+import TDPetData
+import TDPetRules
+import TDState
+
+public constant int TD_PET_DIRECTED_COST = 3
+public constant int TD_PET_DIRECTED_CELLS = 8
+
+// Enumeration and final submission use the same species/slot/quality authority.
+// Same identity may upgrade white or explicitly downgrade blue/purple to green.
+public function tdPetDirectedSkillAllowed(TDPet pet, int skillSlot, int skill) returns boolean
+	if pet == null or pet.released or skillSlot < 0 or skillSlot >= pet.skillCount or skillSlot > 3
+		return false
+	return pet.skillAllowed(skill, skillSlot) and tdPetSkillQualityValid(skill, 2) and not (pet.skillAt(skillSlot) == skill and pet.qualityAt(skillSlot) == 2)
+
+public function tdPetDirectedCandidateCount(TDPet pet, int skillSlot) returns int
+	var count = 0
+	for skill = 0 to TD_PET_SKILL_COUNT - 1
+		if tdPetDirectedSkillAllowed(pet, skillSlot, skill)
+			count += 1
+	return count
+
+// Fixed catalog order leaves excluded/duplicate identities as empty cells.
+// The layout table is not admission: every exposed choice still uses skillAllowed.
+public function tdPetDirectedCatalogSize(int skillSlot) returns int
+	if skillSlot == 0
+		return 4
+	if skillSlot == 1
+		return 7
+	if skillSlot == 2
+		return 17
+	return skillSlot == 3 ? 3 : 0
+
+public function tdPetDirectedCandidateAt(TDPet pet, int skillSlot, int index) returns int
+	if pet == null or index < 0 or index >= tdPetDirectedCatalogSize(skillSlot)
+		return -1
+	var skill = -1
+	if skillSlot == 0
+		skill = index
+	else if skillSlot == 1 or skillSlot == 2
+		skill = index < 4 ? index + 5 : (index < 7 ? index + 12 : index + 32)
+	else if skillSlot == 3
+		skill = index == 0 ? tdPetElementSkill(tdPetSpeciesElement(pet.species), 2) : index + 10
+	return tdPetDirectedSkillAllowed(pet, skillSlot, skill) ? skill : -1
+
+public function tdPetBeginDirected(int lane, int slot, int skillSlot, int skill) returns boolean
+	let pet = tdPetAt(lane, slot)
+	if not tdPetLaneCanManage(lane) or tdIsLaneFinished(lane) or pet == null or pet.lane != lane or pet.proposalSlot >= 0 or pet.proposalVersion >= 2147483647 or pet.revision >= 2147483647 or tdPetMatchEpoch[lane] <= 0 or tdPetMatchEpoch[lane] >= 2147483647
+		return false
+	if not tdPetDirectedSkillAllowed(pet, skillSlot, skill)
+		return false
+	pet.proposalVersion += 1
+	pet.proposalType = TD_PET_PROPOSAL_DIRECTED
+	pet.proposalEpoch = tdPetMatchEpoch[lane]
+	pet.proposalRevision = pet.revision
+	pet.proposalOldSkill = pet.skillAt(skillSlot)
+	pet.proposalOldQuality = pet.qualityAt(skillSlot)
+	pet.proposalSlot = skillSlot
+	pet.proposalSkill = skill
+	pet.proposalQuality = 2
+	return true
+
+// The bridge supplies a freshly admitted session's record, generation and epoch.
+// Reopening after recall keeps the candidate but needs new page authority.
+public function tdPetResolveDirectedVersion(int lane, int slot, TDPet expected, int candidateVersion, int sourceRevision, int currentGeneration, int matchEpoch, boolean replace) returns boolean
+	let pet = tdPetAt(lane, slot)
+	if not tdPetLaneCanManage(lane) or tdIsLaneFinished(lane) or pet == null or pet != expected or pet.lane != lane or pet.released
+		return false
+	if matchEpoch <= 0 or matchEpoch != tdPetMatchEpoch[lane] or pet.proposalEpoch != matchEpoch or pet.generation != currentGeneration
+		return false
+	if pet.proposalType != TD_PET_PROPOSAL_DIRECTED or candidateVersion <= 0 or pet.proposalVersion != candidateVersion or pet.proposalSlot < 0
+		return false
+	if not replace
+		// Expired source revisions may be explicitly discarded without a payment.
+		pet.clearProposal()
+		return true
+	if pet.proposalRevision != sourceRevision or pet.revision != sourceRevision or pet.revision >= 2147483647 or pet.proposalQuality != 2
+		return false
+	if pet.skillAt(pet.proposalSlot) != pet.proposalOldSkill or pet.qualityAt(pet.proposalSlot) != pet.proposalOldQuality or not tdPetDirectedSkillAllowed(pet, pet.proposalSlot, pet.proposalSkill)
+		return false
+	if tdPetRerollStones[lane] < TD_PET_DIRECTED_COST or tdPetRerollStones[lane] > TD_PET_MATERIAL_LIMIT
+		return false
+	// No native callback occurs in setSkill. Commit balance and candidate before
+	// invalidateCombat can refresh effects or any native presentation state.
+	let revision = pet.revision
+	pet.setSkill(pet.proposalSlot, pet.proposalSkill, 2)
+	if pet.revision == revision
+		return false
+	tdPetRerollStones[lane] -= TD_PET_DIRECTED_COST
+	pet.clearProposal()
+	pet.invalidateCombat()
+	return true

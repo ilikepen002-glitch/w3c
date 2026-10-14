@@ -1,0 +1,49 @@
+{
+  "status": "PASS",
+  "sha256": "769baeff14204aaae592224bac48423e950a70f8dbe4e0080200ab8ac4293c17",
+  "coverage": {
+    "milestones": [
+      {
+        "wave": 4,
+        "perLane": [
+          1,
+          2,
+          9
+        ]
+      },
+      {
+        "wave": 12,
+        "perLane": [
+          2,
+          4,
+          15
+        ]
+      },
+      {
+        "wave": 20,
+        "perLane": [
+          2,
+          6,
+          27
+        ]
+      },
+      {
+        "wave": 28,
+        "perLane": [
+          2,
+          8,
+          27
+        ]
+      }
+    ],
+    "lanes": 4,
+    "all32Waves": true,
+    "idempotent": true,
+    "delayedResolution": true,
+    "closedStates": 6,
+    "saturation": true,
+    "independentResources": true,
+    "invalidEvents": 5
+  },
+  "boundary": "Actual packed milestone compatibility replay; resource delta is covered separately by the exact directed +38 object gate, not the old supplies-only resource gate."
+}

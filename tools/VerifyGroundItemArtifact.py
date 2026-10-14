@@ -93,15 +93,41 @@ def unique_channel_order_count(abilities):
     return len({order for _, fields in abilities.values() for (key, _, _), (_, order) in fields.items() if key == 'Ncl6'})
 
 
+def verify_directed_channel_families(abilities):
+    """Exactly 28 green identities, fixed positions, one exclusive order per cell."""
+    actual = {raw for raw in abilities if re.fullmatch(r'Pn[0-9A-F]{2}', raw)}
+    if not actual:
+        return {}
+    green = [*range(4), *range(5, 9), 11, 12, *range(16, 19), 20, 24, 28, 32, 36, *range(39, 49)]
+    require(actual == {f'Pn{skill:02X}' for skill in green}, 'Directed shared-order whitelist must be its exact 28-identity family')
+    groups, cell_orders = {}, {}
+    for skill in green:
+        raw = f'Pn{skill:02X}'
+        parent, fields = abilities[raw]
+        cell = skill if skill < 4 else skill-5 if 5 <= skill <= 8 else skill-12 if 16 <= skill <= 18 else (skill-32)%8 if skill >= 39 else skill-10 if skill in (11, 12) else 0
+        require(parent == 'ANcl' and value(fields, 'alev', 0) == 1, raw + ': directed family must be one-level Channel')
+        require(all(level in (0, 1) for _, level, _ in fields), raw + ': directed family has residual level fields')
+        require((value(fields, 'abpx', 0), value(fields, 'abpy', 0)) == (cell % 4, cell // 4) and value(fields, 'ahky', 0) == 'QWETASDFZX'[cell], raw + ': directed fixed cell/hotkey changed')
+        require(value(fields, 'Ncl2', 1, 2) == 0 and value(fields, 'Ncl3', 1, 3) == 1 and value(fields, 'Ncl4', 1, 4) == 0 and value(fields, 'Ncl5', 1, 5) == 0 and value(fields, 'Ncl1', 1, 1) == 0.0, raw + ': directed command role changed')
+        require(value(fields, 'amcs') == 0 and value(fields, 'acdn') == 0.0 and value(fields, 'aher', 0) == 0 and value(fields, 'aite', 0) == 0, raw + ': directed commands must be zero-CD noncombat operations')
+        order = value(fields, 'Ncl6', 1, 6)
+        require(cell not in cell_orders or cell_orders[cell] == order, raw + ': same-cell directed order differs')
+        cell_orders[cell] = order
+        groups[raw] = ('directed-cell', cell)
+    require(len(cell_orders) == len(set(cell_orders.values())) == 8, 'Directed orders collide across physical cells')
+    return groups
+
+
 def verify_global_channel_orders(abilities):
     """Check every packaged Channel and every Ncl6 field, not just UI commands.
 
     One ability may reuse its own order across synchronization levels. Two
     different abilities cannot share an order, except the exact validated list
-    family whose variants are mutually exclusive within one physical cell.
+    and fixed green-choice families, exclusive within their physical cell.
     """
     owners = {}
     families = verify_list_channel_families(abilities)
+    families.update(verify_directed_channel_families(abilities))
     channel_count = 0
     for object_id, (parent, fields) in abilities.items():
         orders = [(level, column, kind, order)

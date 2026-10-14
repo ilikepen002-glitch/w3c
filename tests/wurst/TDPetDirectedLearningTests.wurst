@@ -1,0 +1,297 @@
+package TDPetDirectedLearningTests
+import TDPetData
+import TDPetRules
+import TDPetState
+import TDPetCultivation
+import TDPetUIState
+import TDPetUIView
+import TDState
+
+function directedPet(int lane, int species) returns TDPet
+	tdResetState()
+	tdSetLaneActive(lane, true)
+	tdPetInitializeLane(lane)
+	let pet = new TDPet(lane, species, 1)
+	pet.setSkill(0, 0, 1)
+	pet.setSkill(1, 5, 1)
+	pet.setSkill(2, 6, 1)
+	pet.setSkill(3, 11, 1)
+	tdPetStore(lane, pet).assertTrue()
+	pet.readyAt = 88.0
+	return pet
+
+function resolveDirected(int lane, int slot, TDPet pet, boolean replace) returns boolean
+	return tdPetResolveDirectedVersion(lane, slot, pet, pet.proposalVersion, pet.proposalRevision, pet.generation, tdPetMatchEpoch[lane], replace)
+
+@Test function directedGreenMatrixUsesExistingRoleSpeciesQualityAndDuplicateRules()
+	for species = 1 to 15
+		let pet = new TDPet(0, species, 1)
+		pet.setSkill(0, 0, 1)
+		pet.setSkill(1, 5, 1)
+		pet.setSkill(2, 6, 1)
+		pet.setSkill(3, 11, 1)
+		for slot = -1 to 4
+			for skill = -1 to TD_PET_SKILL_COUNT
+				var expected = false
+				if slot >= 0 and slot <= 3
+					expected = pet.skillAllowed(skill, slot) and tdPetSkillQualityValid(skill, 2)
+				tdPetDirectedSkillAllowed(pet, slot, skill).assertEquals(expected)
+			for quality = 0 to 5
+				for skill = 19 to 38
+					(tdPetSkillQualityValid(skill, quality) and quality == 2).assertEquals((skill - 19) mod 4 == 1 and quality == 2)
+		var elementalCount = 0
+		for skill = 19 to 38
+			if tdPetDirectedSkillAllowed(pet, 3, skill)
+				elementalCount += 1
+				skill.assertEquals(20 + (tdPetSpeciesElement(species) - 1) * 4)
+		elementalCount.assertEquals(1)
+		tdPetDirectedSkillAllowed(pet, 2, 5).assertFalse()
+		pet.species = 0
+		tdPetDirectedCandidateCount(pet, 3).assertEquals(0)
+		pet.species = 16
+		tdPetDirectedCandidateCount(pet, 3).assertEquals(0)
+		destroy pet
+
+@Test function directedPreviewCancelAndDoubleConfirmHaveExactAtomicCost()
+	let pet = directedPet(0, 1)
+	let revision = pet.revision
+	let generation = pet.generation
+	tdPetRerollStones[0] = 3
+	tdPetBeginDirected(0, 0, 0, 0).assertTrue()
+	pet.proposalType.assertEquals(TD_PET_PROPOSAL_DIRECTED)
+	pet.proposalQuality.assertEquals(2)
+	tdPetRerollStones[0].assertEquals(3)
+	resolveDirected(0, 0, pet, false).assertTrue()
+	pet.skillAt(0).assertEquals(0)
+	pet.qualityAt(0).assertEquals(1)
+	pet.revision.assertEquals(revision)
+	pet.generation.assertEquals(generation)
+	tdPetRerollStones[0].assertEquals(3)
+	tdPetBeginDirected(0, 0, 0, 0).assertTrue()
+	let candidateVersion = pet.proposalVersion
+	let epoch = tdPetMatchEpoch[0]
+	resolveDirected(0, 0, pet, true).assertTrue()
+	tdPetRerollStones[0].assertEquals(0)
+	pet.qualityAt(0).assertEquals(2)
+	pet.revision.assertEquals(revision + 1)
+	pet.generation.assertEquals(generation + 1)
+	pet.skillCount.assertEquals(4)
+	pet.level.assertEquals(1)
+	pet.readyAt.assertEquals(88.0)
+	pet.skillAt(1).assertEquals(5)
+	pet.skillAt(2).assertEquals(6)
+	pet.skillAt(3).assertEquals(11)
+	pet.proposalType.assertEquals(TD_PET_PROPOSAL_NONE)
+	tdPetResolveDirectedVersion(0, 0, pet, candidateVersion, revision, generation, epoch, true).assertFalse()
+	tdPetRerollStones[0].assertEquals(0)
+	tdPetBeginDirected(0, 0, 0, 0).assertFalse()
+
+@Test function directedMaterialsZeroTwoThreeFourAndSharedStockPreservePending()
+	for stock = 0 to 4
+		let pet = directedPet(0, 1)
+		tdPetRerollStones[0] = stock
+		tdPetBeginDirected(0, 0, 0, 1).assertTrue()
+		tdPetRerollStones[0].assertEquals(stock)
+		resolveDirected(0, 0, pet, true).assertEquals(stock >= 3)
+		tdPetRerollStones[0].assertEquals(stock >= 3 ? stock - 3 : stock)
+		if stock < 3
+			pet.skillAt(0).assertEquals(0)
+			pet.proposalSkill.assertEquals(1)
+			resolveDirected(0, 0, pet, false).assertTrue()
+	let first = directedPet(0, 1)
+	let second = new TDPet(0, 2, 1)
+	second.setSkill(0, 0, 1)
+	tdPetStore(0, second).assertTrue()
+	tdPetRerollStones[0] = 3
+	tdPetBeginDirected(0, 0, 0, 1).assertTrue()
+	tdPetBeginDirected(0, 1, 0, 2).assertTrue()
+	resolveDirected(0, 0, first, true).assertTrue()
+	resolveDirected(0, 1, second, true).assertFalse()
+	second.proposalSkill.assertEquals(2)
+	resolveDirected(0, 1, second, false).assertTrue()
+	tdPetRerollStones[0].assertEquals(0)
+
+@Test function directedCandidateCannotBeAdoptedOrOverwrittenByOldRandomEntrances()
+	let pet = directedPet(0, 1)
+	tdPetRerollStones[0] = 5
+	tdPetSlotStones[0] = 1
+	tdPetBeginReroll(0, 0, 0).assertTrue()
+	let randomVersion = pet.proposalVersion
+	let randomSkill = pet.proposalSkill
+	let randomQuality = pet.proposalQuality
+	tdPetBeginDirected(0, 0, 0, 1).assertFalse()
+	pet.proposalVersion.assertEquals(randomVersion)
+	pet.proposalSkill.assertEquals(randomSkill)
+	pet.proposalQuality.assertEquals(randomQuality)
+	tdPetRerollStones[0].assertEquals(4)
+	tdPetResolveRerollVersion(0, 0, randomVersion, false).assertTrue()
+	tdPetBeginDirected(0, 0, 0, 1).assertTrue()
+	let candidateVersion = pet.proposalVersion
+	tdPetBeginReroll(0, 0, 0).assertFalse()
+	tdPetContinueReroll(0, 0, pet, candidateVersion, pet.revision).assertFalse()
+	tdPetResolveReroll(0, 0, true).assertFalse()
+	tdPetResolveRerollVersion(0, 0, candidateVersion, false).assertFalse()
+	tdPetOpenSlot(0, 0).assertFalse()
+	tdPetBeginRelease(0, 0).assertEquals(0)
+	pet.proposalVersion.assertEquals(candidateVersion)
+	pet.skillAt(0).assertEquals(0)
+	tdPetRerollStones[0].assertEquals(4)
+	resolveDirected(0, 0, pet, false).assertTrue()
+	tdPetBeginReroll(0, 0, 0).assertTrue()
+	tdPetRerollStones[0].assertEquals(3)
+	tdPetResolveRerollVersion(0, 0, pet.proposalVersion, false).assertTrue()
+
+@Test function directedWhiteUpgradeHighQualityDowngradeAndLockedHeroPreCultivation()
+	for quality = 1 to 4
+		let pet = directedPet(0, 1)
+		pet.setSkill(0, 0, quality)
+		tdPetRerollStones[0] = 3
+		tdPetBeginDirected(0, 0, 0, 0).assertEquals(quality != 2)
+		if quality != 2
+			tdPetDirectedPreviewText(pet).contains("蓝/紫").assertEquals(quality > 2)
+			resolveDirected(0, 0, pet, true).assertTrue()
+			pet.qualityAt(0).assertEquals(2)
+	let lockedPet = directedPet(0, 1)
+	tdPetRerollStones[0] = 3
+	tdPetBeginDirected(0, 0, 2, 48).assertTrue()
+	tdPetDirectedPreviewText(lockedPet).contains("共鸣锁定").assertTrue()
+	tdPetDirectedPreviewText(lockedPet).contains("可提前培养").assertTrue()
+	resolveDirected(0, 0, lockedPet, true).assertTrue()
+	lockedPet.skillAt(2).assertEquals(48)
+	lockedPet.level.assertEquals(1)
+	lockedPet.skillPower(48).assertEquals(0.0)
+
+@Test function directedRevisionGenerationVersionIdentityAndMatchResetRejectOldAuthority()
+	let pet = directedPet(0, 1)
+	tdPetRerollStones[0] = 3
+	tdPetBeginDirected(0, 0, 0, 1).assertTrue()
+	let candidateVersion = pet.proposalVersion
+	let revision = pet.proposalRevision
+	let generation = pet.generation
+	let epoch = tdPetMatchEpoch[0]
+	tdPetResolveDirectedVersion(0, 0, pet, candidateVersion + 1, revision, generation, epoch, false).assertFalse()
+	tdPetResolveDirectedVersion(0, 0, pet, candidateVersion, revision + 1, generation, epoch, true).assertFalse()
+	tdPetResolveDirectedVersion(1, 0, pet, candidateVersion, revision, generation, epoch, true).assertFalse()
+	pet.recall()
+	tdPetResolveDirectedVersion(0, 0, pet, candidateVersion, revision, generation, epoch, true).assertFalse()
+	pet.proposalVersion.assertEquals(candidateVersion)
+	resolveDirected(0, 0, pet, true).assertTrue()
+	tdPetRerollStones[0] = 3
+	tdPetBeginDirected(0, 0, 0, 2).assertTrue()
+	pet.setSkill(1, 7, 1)
+	resolveDirected(0, 0, pet, true).assertFalse()
+	resolveDirected(0, 0, pet, false).assertTrue()
+	tdPetBeginDirected(0, 0, 0, 2).assertTrue()
+	let oldEpoch = tdPetMatchEpoch[0]
+	let oldVersion = pet.proposalVersion
+	tdPetDiscardOwned(0, 0).assertTrue()
+	let fresh = new TDPet(0, 1, 1)
+	fresh.setSkill(0, 0, 1)
+	tdPetStore(0, fresh).assertTrue()
+	tdPetResolveDirectedVersion(0, 0, pet, oldVersion, pet.proposalRevision, pet.generation, oldEpoch, true).assertFalse()
+	tdPetBeginDirected(0, 0, 0, 2).assertTrue()
+	tdPetInitializeLane(0)
+	tdPetStore(0, new TDPet(0, 1, 1)).assertTrue()
+	tdPetRerollStones[0] = 3
+	tdPetResolveDirectedVersion(0, 0, fresh, fresh.proposalVersion, fresh.proposalRevision, fresh.generation, oldEpoch, true).assertFalse()
+	tdPetRerollStones[0].assertEquals(3)
+
+@Test function directedClosedRoutesMalformedOwnedSlotAndReleasedRecordNeverCharge()
+	for mode = 0 to 4
+		let pet = directedPet(0, 1)
+		tdPetRerollStones[0] = 3
+		tdPetBeginDirected(0, 0, 0, 1).assertTrue()
+		if mode == 0
+			tdSetLaneActive(0, false)
+		else if mode == 1
+			tdSetLaneDefeated(0, true)
+		else if mode == 2
+			tdSetLaneFinished(0, true)
+		else if mode == 3
+			tdPetMarkPlayerLeft(0)
+		else
+			tdSetGameOver(true)
+		resolveDirected(0, 0, pet, true).assertFalse()
+		tdPetRerollStones[0].assertEquals(3)
+	let malformedPet = directedPet(0, 1)
+	tdPetRerollStones[0] = 3
+	for slot = -1 to 4
+		if slot < 0 or slot > 3
+			tdPetBeginDirected(0, 0, slot, 0).assertFalse()
+	malformedPet.skillCount = 2
+	tdPetBeginDirected(0, 0, 2, 39).assertFalse()
+	malformedPet.released = true
+	tdPetBeginDirected(0, 0, 0, 1).assertFalse()
+	tdPetRerollStones[0].assertEquals(3)
+
+@Test function directedPagesReachAllHeroesAndRejectEmptyOldAndUnownedButtons()
+	let pet = directedPet(0, 1)
+	let session = new TDPetUISession(0)
+	session.open(TD_PET_UI_DIRECTED_SLOT, 0, 0, pet, 0, 901).assertTrue()
+	session.admitCommand(0, 901, tdPetManagerCommandId(26), 1).assertEquals(26)
+	session.directedSlot = 2
+	let count = tdPetDirectedCandidateCount(pet, 2)
+	(count > 8).assertTrue()
+	var visited = 0
+	var previous = -1
+	for page = 0 to (tdPetDirectedCatalogSize(2) - 1) div TD_PET_DIRECTED_CELLS
+		session.directedPage = page
+		session.open(TD_PET_UI_DIRECTED_CHOICES, 0, 0, pet, 0, 902 + page).assertTrue()
+		for cell = 0 to 7
+			let skill = session.directedSkills[cell]
+			if skill >= 0
+				(skill > previous).assertTrue()
+				tdPetDirectedSkillAllowed(pet, 2, skill).assertTrue()
+				session.commandAction(0, 902 + page, tdPetDirectedAbilityId(skill), 1).assertEquals(200 + cell)
+				previous = skill
+				visited += 1
+			else
+				session.abilities[cell].assertEquals(0)
+				session.commandAction(0, 902 + page, tdPetDirectedAbilityId(0), 1).assertEquals(-1)
+	visited.assertEquals(count)
+	previous.assertEquals(48)
+	tdPetBeginDirected(0, 0, 2, 48).assertTrue()
+	session.open(TD_PET_UI_DIRECTED_PREVIEW, 0, 0, pet, 0, 910).assertTrue()
+	session.actions[8].assertEquals(-1)
+	session.admitCommand(0, 910, tdPetManagerCommandId(18), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 910, tdPetManagerCommandId(21), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.admitCommand(0, 909, tdPetManagerCommandId(32), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.close()
+	pet.proposalSkill.assertEquals(48)
+	session.open(TD_PET_UI_DETAIL, 0, 0, pet, 0, 911).assertTrue()
+	session.open(TD_PET_UI_DIRECTED_PREVIEW, 0, 0, pet, 0, 912).assertTrue()
+	pet.recall()
+	session.admitCommand(0, 912, tdPetManagerCommandId(32), 1).assertEquals(TD_PET_COMMAND_STALE)
+	pet.proposalSkill.assertEquals(48)
+	session.open(TD_PET_UI_DIRECTED_PREVIEW, 0, 0, pet, 0, 913).assertTrue()
+	session.admitCommand(0, 913, tdPetManagerCommandId(31), 1).assertEquals(31)
+	resolveDirected(0, 0, pet, false).assertTrue()
+	destroy session
+
+@Test function directedFourLaneCandidatesBalancesAndOwnedSlotButtonsStaySeparate()
+	tdResetState()
+	TDPet array records
+	for lane = 0 to 3
+		tdSetLaneActive(lane, true)
+		tdPetInitializeLane(lane)
+		let pet = new TDPet(lane, lane * 3 + 1, 1)
+		pet.setSkill(0, 0, 1)
+		pet.setSkill(1, 5, 1)
+		tdPetStore(lane, pet).assertTrue()
+		records[lane] = pet
+		tdPetRerollStones[lane] = 3
+		tdPetBeginDirected(lane, 0, 0, 1).assertTrue()
+	for lane = 0 to 3
+		resolveDirected(lane, 0, records[lane], true).assertTrue()
+		records[lane].skillCount.assertEquals(2)
+		tdPetRerollStones[lane].assertEquals(0)
+		records[lane].qualityAt(0).assertEquals(2)
+	let session = new TDPetUISession(0)
+	tdPetPageActionAvailable(TD_PET_UI_DIRECTED_SLOT, 26, 2, 0, 0).assertFalse()
+	session.open(TD_PET_UI_DIRECTED_SLOT, 0, 0, records[0], 0, 940).assertTrue()
+	session.abilities[2].assertEquals(0)
+	session.abilities[3].assertEquals(0)
+	session.admitCommand(0, 940, tdPetManagerCommandId(26), 1).assertEquals(TD_PET_COMMAND_INVALID)
+	session.directedSlot = 2
+	session.open(TD_PET_UI_DIRECTED_CHOICES, 0, 0, records[0], 0, 941).assertFalse()
+	destroy session

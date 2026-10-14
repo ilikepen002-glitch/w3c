@@ -1,0 +1,92 @@
+PASS SOURCE SCALARS: 2,110 page/action cases; definition-derived Channel identities; definition-sized passive rawcode capacity; exhaustive count inputs; 20 numbers; 1,280 quality cases; navigation and boundary guards
+PASS UI WORKFLOW: two farmer registrations + one constant manager bridge/guard; integer startup; count snapshots; complete shared Channels; eight-cell preview; atomic continue; safe release return
+PASS SOURCE WIRING: fresh caster authority, exact level/page whitelist, consume-before-transaction, dirty-only polling, synchronized mounts/local-only selection, proposal preservation, release cancellation, HUD board ownership; exact historical wild bytes plus approved species-only expansion
+{
+  "source": {
+    "scalar_page_cases": 2110,
+    "preview_cost": 0,
+    "commit_cost": 3,
+    "fixed_choice_identities": 28,
+    "additional_manager_commands": 10,
+    "unchanged_behavior_bodies": 7
+  },
+  "sha256": "769baeff14204aaae592224bac48423e950a70f8dbe4e0080200ab8ac4293c17",
+  "transactions": {
+    "stock_cases": [
+      {
+        "stock": 0,
+        "final": 0
+      },
+      {
+        "stock": 2,
+        "final": 2
+      },
+      {
+        "stock": 3,
+        "final": 0
+      },
+      {
+        "stock": 4,
+        "final": 1
+      }
+    ],
+    "legacy_random_free_adoption_rejected": true,
+    "double_confirm_rejected": true,
+    "two_pet_inventory_race": true,
+    "lifecycle_negatives": 11,
+    "directed_rng_draws": 0
+  },
+  "pages": {
+    "two_owned_slots_hide_third_fourth": true,
+    "first_last_page_boundaries": true,
+    "third_slot_pages": 3,
+    "legal_choices_reached": 16,
+    "heroes_reached": 10,
+    "empty_cells": 8,
+    "close_preserves_candidate": true,
+    "stale_generation_consumes_only_page_authority": true
+  },
+  "native_bridge": {
+    "actual_onCommand_navigation_preview_confirm": true,
+    "bound_host_generation_old_page_rejected": true,
+    "candidate_retained_and_new_page_commits": true,
+    "host_refresh": true,
+    "native_double_click_charged_once": true,
+    "preview_current_stock_and_cost": true
+  },
+  "delta": {
+    "additional_abilities": 38,
+    "fixed_green_choice_objects": 28,
+    "new_manager_commands": 10,
+    "per_cell_variant_library": 0,
+    "old_ability_field_changes": {
+      "Pc06": [
+        "aub1"
+      ],
+      "Pm0E": [
+        "aub1"
+      ]
+    },
+    "changed_members": [
+      "war3map.w3a",
+      "war3map.j",
+      "war3map.w3i"
+    ],
+    "all_other_members_identical": true
+  },
+  "mutations": [
+    {
+      "mutation": "random_free_adoption",
+      "rejected_by_same_transaction_oracle": "tdPetResolveRerollVersion: legacy entrance accepted directed candidate"
+    },
+    {
+      "mutation": "duplicate_payment",
+      "rejected_by_same_transaction_oracle": "Wrong exact payment"
+    },
+    {
+      "mutation": "residual_level_two",
+      "rejected_by_same_object_oracle": "Pn00: residual second-level fields are forbidden"
+    }
+  ],
+  "boundary": "Actual packed production transactions/pages run; engine native handles, input/timer/RNG delivery modeled; Warcraft rendering, load time and FPS not tested."
+}

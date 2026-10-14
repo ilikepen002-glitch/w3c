@@ -210,8 +210,8 @@ public function tdPetUICommandId(int command) returns int
 public function tdPetManagerCommandId(int action) returns int
 	if action >= 0 and action <= 7
 		return tdPetUICommandId(action)
-	return tdPetHexRawcode('Pm00', action - 8, 15)
+	return tdPetHexRawcode('Pm00', action - 8, 25)
 
-
-
-
+// A green identity has one fixed command-card position, shared between roles.
+public function tdPetDirectedAbilityId(int skill) returns int
+	return tdPetHexRawcode('Pn00', skill, TD_PET_SKILL_COUNT)
