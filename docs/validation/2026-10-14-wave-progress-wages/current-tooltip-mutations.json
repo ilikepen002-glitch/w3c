@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "positiveInstances": 1774,
+  "mutations": [
+    {
+      "mutation": "retired-wage",
+      "rejected": "Removed action A109 remains"
+    },
+    {
+      "mutation": "return-retention",
+      "rejected": "directed/random preview return preservation or payment disclosure missing"
+    },
+    {
+      "mutation": "random-paid",
+      "rejected": "directed/random preview return preservation or payment disclosure missing"
+    },
+    {
+      "mutation": "directed-unpaid",
+      "rejected": "directed/random preview return preservation or payment disclosure missing"
+    },
+    {
+      "mutation": "directed-payment",
+      "rejected": "directed/random preview return preservation or payment disclosure missing"
+    }
+  ]
+}

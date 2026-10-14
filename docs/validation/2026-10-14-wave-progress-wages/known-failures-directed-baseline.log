@@ -1,0 +1,187 @@
+EFEFF.F.FFFFF.F
+======================================================================
+ERROR: test_corrected_fixture_satisfies_all_object_contracts (test_verify_pet_ui_artifact.HistoricalPetUINegativeTests.test_corrected_fixture_satisfies_all_object_contracts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_verify_pet_ui_artifact.py", line 152, in test_corrected_fixture_satisfies_all_object_contracts
+    verifier.verify_pet_core(self.abilities, self.units)
+  File "/workspace/shared/spirit-directed-learning-20261014/tools/VerifyPetUIArtifact.py", line 824, in verify_pet_core
+    check_ability(abilities, 'Pbat', 'AIat', 512, 'Iatt', 0, lambda level: level * 5)
+  File "/workspace/shared/spirit-directed-learning-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 81, in check_ability
+    require(math.isfinite(value) and math.isclose(value, expected, rel_tol=1e-6, abs_tol=1e-7),
+  File "/workspace/shared/spirit-directed-learning-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: Pbat: level 1 value 1, expected 5
+
+======================================================================
+ERROR: test_all_packaged_tooltips_match_rules (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_all_packaged_tooltips_match_rules)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 38, in test_all_packaged_tooltips_match_rules
+    self.assertGreater(validate(self.a, self.u, self.i, profile='legacy72', source_root=self.frozen.root), 900)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-directed-learning-20261014/tools/VerifyPlayerTooltipArtifact.py", line 257, in validate
+    require(all(x in text for x in ('780范围', '每秒造成350伤害', '不受装备射程影响')), label)
+  File "/workspace/shared/spirit-directed-learning-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: A132/1
+
+======================================================================
+FAIL: test_evolution_accepts_complete_inherited_skill_bars (test_verify_map_artifacts.BaselineArtifactTests.test_evolution_accepts_complete_inherited_skill_bars)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_verify_map_artifacts.py", line 46, in test_evolution_accepts_complete_inherited_skill_bars
+    self.assert_verifier_passes("VerifyEvolutionArtifact.py")
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_verify_map_artifacts.py", line 42, in assert_verifier_passes
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tools/VerifyEvolutionArtifact.py", line 140, in <module>
+    main()
+  File "/workspace/shared/spirit-directed-learning-20261014/tools/VerifyEvolutionArtifact.py", line 135, in main
+    validate_evolution_artifact(units, abilities, artifact)
+  File "/workspace/shared/spirit-directed-learning-20261014/tools/VerifyEvolutionArtifact.py", line 34, in validate_evolution_artifact
+    validate_upgrade_artifact(units, abilities, artifact)
+  File "/workspace/shared/spirit-directed-learning-20261014/tools/VerifyTowerUpgradeArtifact.py", line 223, in validate_upgrade_artifact
+    validate_tower_identity(units)
+  File "/workspace/shared/spirit-directed-learning-20261014/tools/VerifyTowerUpgradeArtifact.py", line 130, in validate_tower_identity
+    require(fields.get('uacq') == RANGES[family][index], f'{uid}: effective range changed')
+  File "/workspace/shared/spirit-directed-learning-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: uO11: effective range changed
+
+
+======================================================================
+FAIL: test_rejects_charge_current_attack_instead_of_base (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_charge_current_attack_instead_of_base)
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 53, in test_rejects_charge_current_attack_instead_of_base
+    self.check_bad('s030', 1, lambda s: s.replace('基础攻击', '攻击'), 's030')
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "s030" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_execution_exclusive_threshold (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_execution_exclusive_threshold)
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 56, in test_rejects_execution_exclusive_threshold
+    self.check_bad('s020', 1, lambda s: s.replace('不高于30%', '低于30%'), 's020')
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "s020" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_float_truncation_pet_slow (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_float_truncation_pet_slow)
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 50, in test_rejects_float_truncation_pet_slow
+    self.check_bad('s016', 1, lambda s: s.replace('20%', '19%'), 's016')
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "s016" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_missing_cultivation_risk (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_missing_cultivation_risk) (phrase='不退石')
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 61, in test_rejects_missing_cultivation_risk
+    self.check_bad('Pc06', 1, lambda s, p=phrase: s.replace(p, ''), 'cultivation risk')
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "cultivation risk" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_missing_cultivation_risk (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_missing_cultivation_risk) (phrase='永久删除')
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 61, in test_rejects_missing_cultivation_risk
+    self.check_bad('Pc06', 1, lambda s, p=phrase: s.replace(p, ''), 'cultivation risk')
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "cultivation risk" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_missing_cultivation_risk (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_missing_cultivation_risk) (phrase='2%')
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 61, in test_rejects_missing_cultivation_risk
+    self.check_bad('Pc06', 1, lambda s, p=phrase: s.replace(p, ''), 'cultivation risk')
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "cultivation risk" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_missing_cultivation_risk (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_missing_cultivation_risk) (phrase='先召回')
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 61, in test_rejects_missing_cultivation_risk
+    self.check_bad('Pc06', 1, lambda s, p=phrase: s.replace(p, ''), 'cultivation risk')
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "cultivation risk" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_missing_required_action (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_missing_required_action)
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 66, in test_rejects_missing_required_action
+    with self.assertRaisesRegex(ValueError, 'Missing required action Pcap'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "Missing required action Pcap" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_wrong_base_damage_die (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_wrong_base_damage_die)
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-directed-learning-20261014/tests/python/test_player_tooltip_artifact.py", line 72, in test_rejects_wrong_base_damage_die
+    with self.assertRaisesRegex(ValueError, 'uO6B: base/die mismatch'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "uO6B: base/die mismatch" does not match "A132/1"
+
+----------------------------------------------------------------------
+Ran 12 tests in 1.145s
+
+FAILED (failures=10, errors=2)

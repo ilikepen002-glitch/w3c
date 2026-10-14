@@ -1,0 +1,190 @@
+{
+  "status": "PASS",
+  "mapSHA256": "c3a50d47b9a5c47677e52ca6cb5bd8081e2f4d792385f8f63a9ba3cef3cb85bc",
+  "gateSHA256": "ea441a8aa1729b50a7ed5f994e7bc1de714a5177da0666dd97e13bd915e62332",
+  "coverage": {
+    "targetCoreRetirement": [
+      {
+        "skill": 20,
+        "mode": "normal",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 20,
+        "mode": "null-before-death",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 20,
+        "mode": "null-after-death",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 23,
+        "mode": "normal",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 23,
+        "mode": "null-before-death",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 23,
+        "mode": "null-after-death",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 24,
+        "mode": "normal",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": true,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 24,
+        "mode": "null-before-death",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": true,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 24,
+        "mode": "null-after-death",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": true,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 27,
+        "mode": "normal",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 27,
+        "mode": "null-before-death",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 27,
+        "mode": "null-after-death",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 31,
+        "mode": "normal",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 31,
+        "mode": "null-before-death",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      },
+      {
+        "skill": 31,
+        "mode": "null-after-death",
+        "retiredTargetAttachmentDestroyed": true,
+        "continuedAtCapturedGround": false,
+        "unchangedCombatDeadline": true
+      }
+    ],
+    "coreTransferFailure": [
+      {
+        "skill": 21,
+        "failedAfterDemotion": true,
+        "immediateDestruction": true,
+        "matchingDecorationRelease": true
+      },
+      {
+        "skill": 31,
+        "failedAfterDemotion": true,
+        "immediateDestruction": true,
+        "matchingDecorationRelease": true
+      }
+    ],
+    "postMortemSeedCore": [
+      {
+        "mode": "normal",
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 0.0
+        },
+        "groundPosition": [
+          165.0,
+          25.0
+        ],
+        "deadTargetAttachmentAttempts": 0,
+        "successfulCoreCreations": 1
+      },
+      {
+        "mode": "null",
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 0.0
+        },
+        "groundPosition": [
+          165.0,
+          25.0
+        ],
+        "deadTargetAttachmentAttempts": 0,
+        "successfulCoreCreations": 1
+      }
+    ],
+    "lateTargetLoss": [
+      {
+        "skill": 21,
+        "point": "target-loss-after-stage",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 31,
+        "point": "target-loss-after-stage",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 21,
+        "point": "target-loss-after-stage",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 31,
+        "point": "target-loss-after-stage",
+        "order": "battle-first",
+        "detached": 0
+      }
+    ]
+  }
+}

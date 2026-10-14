@@ -1,0 +1,12 @@
+test_all_fifteen_models_and_unchanged_atlases (test_all_pet_display_assets.AllPetDisplayAssetsTests.test_all_fifteen_models_and_unchanged_atlases) ... ok
+test_missing_display_sequence_is_rejected (test_all_pet_display_assets.AllPetDisplayAssetsTests.test_missing_display_sequence_is_rejected) ... ok
+test_original_binary_key_mutation_is_rejected (test_all_pet_display_assets.AllPetDisplayAssetsTests.test_original_binary_key_mutation_is_rejected) ... ok
+test_revised_cast_uses_visible_limb_rotation_and_recovers (test_all_pet_display_assets.AllPetDisplayAssetsTests.test_revised_cast_uses_visible_limb_rotation_and_recovers) ... ok
+test_supported_range_is_only_runtime_rule_delta (test_all_pet_display_assets.AllPetDisplayAssetsTests.test_supported_range_is_only_runtime_rule_delta) ... ok
+test_texture_path_mutation_is_rejected (test_all_pet_display_assets.AllPetDisplayAssetsTests.test_texture_path_mutation_is_rejected) ... ok
+test_uv_geometry_mutation_is_rejected (test_all_pet_display_assets.AllPetDisplayAssetsTests.test_uv_geometry_mutation_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.464s
+
+OK

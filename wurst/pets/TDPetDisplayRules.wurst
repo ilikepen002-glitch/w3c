@@ -1,6 +1,7 @@
 package TDPetDisplayRules
 import TDTowerCatalogData
 import TDConfig
+import TDPetData
 
 public constant int TD_PET_DISPLAY_FLOAT = 5
 public constant int TD_PET_DISPLAY_JUMP = 6
@@ -9,7 +10,7 @@ public constant int TD_PET_DISPLAY_SLEEP = 8
 public constant int TD_PET_DISPLAY_CAST = 9
 
 public function tdPetDisplaySupported(int species) returns boolean
-	return species == 1
+	return species >= 1 and species <= TD_PET_SPECIES_COUNT
 
 public function tdPetDisplayIdleGap(int lane, int slot, int species) returns real
 	return 8.0 + 0.5 * ((lane * 20 + slot + species * 3) mod 17)

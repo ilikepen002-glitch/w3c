@@ -61,9 +61,9 @@ class BuilderControlNegativeTests(unittest.TestCase):
         cls.abilities = ability_objects(artifact.extract('war3map.w3a'))
         cls.units = unit_objects(artifact.extract('war3map.w3u'))
         # Local desired-interface fixture only, never used by raw positives.
-        for code in verifier.B_REMOVED + verifier.PREDECESSOR_REMOVED:
+        for code in verifier.B_REMOVED + verifier.PREDECESSOR_REMOVED + verifier.WAGE_REMOVED:
             cls.abilities.pop(code, None)
-        cls.units['uF01']['uabi'] = 'AUbu,A109,A117,Geqb,Gupg,Pcap,Pcol'
+        cls.units['uF01']['uabi'] = 'AUbu,A117,Geqb,Gupg,Pcap,Pcol'
         set_field(cls.abilities, 'Geqb', 'spb1', 'A119', 1, 1)
         set_field(cls.abilities, 'Geqb', 'spb3', 1, 1, 3)
         set_field(cls.abilities, 'Geqb', 'spb4', 1, 1, 4)
@@ -77,7 +77,7 @@ class BuilderControlNegativeTests(unittest.TestCase):
         verifier.verify_no_removed_controls(self.a, self.u)
         verifier.verify_builder_function_book(self.a, self.u)
         verify_farmer_grid(self.a, self.u)
-        verify_collection_commands(self.a)
+        verify_collection_commands(self.a, current_manager=True)
 
     def test_own_removed_ghost_objects_and_references_are_rejected(self):
         for code in verifier.B_REMOVED:
@@ -89,6 +89,16 @@ class BuilderControlNegativeTests(unittest.TestCase):
             units['uF01']['uabi'] += ',' + code
             with self.subTest(reference=code), self.assertRaisesRegex(ValueError, 'B blink/repair.*references removed'):
                 verifier.verify_no_removed_controls(self.a, units)
+
+    def test_retired_wage_object_and_worker_mount_are_rejected(self):
+        abilities = deepcopy(self.a)
+        abilities['A109'] = ('ANcl', {})
+        with self.assertRaisesRegex(ValueError, 'retired wage.*removed object'):
+            verifier.verify_no_removed_controls(abilities, self.u)
+        units = deepcopy(self.u)
+        units['uF01']['uabi'] += ',A109'
+        with self.assertRaisesRegex(ValueError, 'retired wage.*references removed'):
+            verifier.verify_no_removed_controls(self.a, units)
 
     def test_predecessor_removed_objects_are_checked_separately(self):
         for code in verifier.PREDECESSOR_REMOVED:
@@ -122,7 +132,7 @@ class BuilderControlNegativeTests(unittest.TestCase):
                 verifier.verify_builder_function_book(abilities, self.u)
 
     def test_missing_or_duplicate_main_upgrade_attachment_is_rejected(self):
-        for skills in ('AUbu,A109,A117,Geqb,Pcap,Pcol,Pdep', 'AUbu,A109,A117,Geqb,Gupg,Gupg,Pcap,Pcol,Pdep'):
+        for skills in ('AUbu,A117,Geqb,Pcap,Pcol,Pdep', 'AUbu,A117,Geqb,Gupg,Gupg,Pcap,Pcol,Pdep'):
             units = deepcopy(self.u)
             units['uF01']['uabi'] = skills
             with self.subTest(skills=skills), self.assertRaisesRegex(ValueError, 'exact command attachment'):
@@ -138,7 +148,7 @@ class BuilderControlNegativeTests(unittest.TestCase):
                 verify_farmer_grid(abilities, self.u)
         set_field(self.a, 'Gupg', 'abpx', 2)
         set_field(self.a, 'Gupg', 'abpy', 1)
-        with self.assertRaisesRegex(ValueError, 'ten cells'):
+        with self.assertRaisesRegex(ValueError, 'nine cells'):
             verify_farmer_grid(self.a, self.u)
 
     def test_reallocated_collection_orders_are_allowed_when_globally_unique(self):
@@ -146,11 +156,11 @@ class BuilderControlNegativeTests(unittest.TestCase):
         second = verifier.field(self.a, 'Pc01', 'Ncl6', 1, 6)
         set_field(self.a, 'Pc00', 'Ncl6', second, 1, 6)
         set_field(self.a, 'Pc01', 'Ncl6', first, 1, 6)
-        verify_collection_commands(self.a)
+        verify_collection_commands(self.a, current_manager=True)
         verifier.verify_global_channel_orders(self.a)
 
     def test_global_channel_collision_and_late_level_inconsistency_are_rejected(self):
-        order = verifier.field(self.a, 'A109', 'Ncl6', 1, 6)
+        order = verifier.field(self.a, 'A133', 'Ncl6', 1, 6)
         self.a['Xord'] = ('ANcl', {('Ncl6', 1, 6): (3, order)})
         with self.assertRaisesRegex(ValueError, 'collides'):
             verifier.verify_global_channel_orders(self.a)
@@ -165,12 +175,12 @@ class BuilderControlRawObjectNegativeTests(unittest.TestCase):
     def setUpClass(cls):
         cls.objects = load_objects(Mpq((ROOT / 'ExampleMap.w3x').read_bytes()))
         for entries in cls.objects.values():
-            for code in verifier.B_REMOVED + verifier.PREDECESSOR_REMOVED:
+            for code in verifier.B_REMOVED + verifier.PREDECESSOR_REMOVED + verifier.WAGE_REMOVED:
                 entries.pop(code, None)
         # Correct only this in-memory worker attachment from the formal A artifact.
         worker = cls.objects['units']['uF01']
         key = ('uabi', 0, 0)
-        worker.fields[key] = replace(worker.fields[key], value='AUbu,A109,A117,Geqb,Gupg,Pcap,Pcol')
+        worker.fields[key] = replace(worker.fields[key], value='AUbu,A117,Geqb,Gupg,Pcap,Pcol')
 
     def test_corrected_raw_fixture_accepts_every_object_table(self):
         for kind, entries in self.objects.items():
@@ -202,7 +212,7 @@ class BuilderControlActualNewArtifactTests(unittest.TestCase):
         verifier.verify_no_removed_controls(abilities, units)
         verifier.verify_builder_function_book(abilities, units)
         verify_farmer_grid(abilities, units)
-        verify_collection_commands(abilities)
+        verify_collection_commands(abilities, current_manager=True)
 
 
 if __name__ == '__main__':

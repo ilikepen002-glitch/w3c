@@ -1,17 +1,80 @@
 package TDTowerEvolutionTests
 import TDTowers
 import TDWaves
+import TDState
+import TDPetState
 
-@Test function evolutionClaimsOnlyOnceAfterKillsAndLevel()
-	let match = new TDTowerEvolutionMatch()
-	match.tryClaim(439, 6, true, false).assertFalse()
-	match.tryClaim(440, 5, true, false).assertFalse()
-	match.tryClaim(440, 6, false, false).assertFalse()
-	match.tryClaim(440, 6, true, false).assertTrue()
-	// Removing an evolved tower has no operation that resets claimed.
-	match.tryClaim(441, 6, true, false).assertFalse()
-	match.claimed.assertTrue()
-	destroy match
+@Test function evolutionEachLaneClaimsOnceAfterRealWave24()
+	for lane = 0 to 3
+		let state = new TDTowerEvolutionLane()
+		state.tryClaim(6, true, false, false).assertFalse()
+		for wave = 1 to 23
+			state.creditWave(wave, true, true).assertFalse()
+		state.creditWave(24, false, true).assertFalse()
+		state.creditWave(24, true, false).assertFalse()
+		state.creditWave(24, true, true).assertTrue()
+		state.creditWave(24, true, true).assertFalse()
+		state.tryClaim(5, true, false, false).assertFalse()
+		state.tryClaim(6, true, true, false).assertFalse()
+		state.tryClaim(6, false, false, false).assertFalse()
+		state.tryClaim(6, true, false, true).assertFalse()
+		state.isSpent().assertFalse()
+		state.tryClaim(6, true, false, false).assertTrue()
+		state.creditWave(24, true, true).assertFalse()
+		state.tryClaim(6, true, false, false).assertFalse()
+		state.isQualified().assertTrue()
+		state.isSpent().assertTrue()
+		destroy state
+
+function evolutionNewFixture()
+	tdResetState()
+	tdEvolutionResetForNewMatch()
+	for lane = 0 to 3
+		tdPetInitializeLane(lane)
+		tdSetLaneActive(lane, true)
+
+@Test function evolutionQualificationUsesOwnSettledWaveWithoutTower()
+	evolutionNewFixture()
+	tdSetGlobalWave(31)
+	for lane = 0 to 3
+		tdEvolutionCreditWave(lane, 24)
+		tdEvolutionLaneQualified(lane).assertFalse()
+		tdMarkWaveResolved(lane, 24)
+		tdEvolutionCreditWave(lane, 24)
+		tdEvolutionLaneQualified(lane).assertTrue()
+		tdEvolutionLaneSpent(lane).assertFalse()
+		if lane < 3
+			tdEvolutionLaneQualified(lane + 1).assertFalse()
+	tdEvolutionCreditWave(-1, 24)
+	tdEvolutionCreditWave(4, 24)
+	tdEvolutionLaneQualified(-1).assertFalse()
+	tdEvolutionLaneSpent(4).assertFalse()
+	tdEvolutionResetForNewMatch()
+	for lane = 0 to 3
+		tdEvolutionLaneQualified(lane).assertFalse()
+
+@Test function evolutionQualificationRejectsClosedLaneAndInvalidWaves()
+	for mode = 0 to 4
+		evolutionNewFixture()
+		tdMarkWaveResolved(0, 24)
+		if mode == 0
+			tdSetLaneActive(0, false)
+		else if mode == 1
+			tdSetLaneDefeated(0, true)
+		else if mode == 2
+			tdSetLaneFinished(0, true)
+		else if mode == 3
+			tdSetGameOver(true)
+		else
+			tdPetMarkPlayerLeft(0)
+		tdEvolutionCreditWave(0, 24)
+		tdEvolutionLaneQualified(0).assertFalse()
+	evolutionNewFixture()
+	for wave = -1 to 33
+		if wave != 24
+			tdMarkWaveResolved(0, wave)
+			tdEvolutionCreditWave(0, wave)
+			tdEvolutionLaneQualified(0).assertFalse()
 
 @Test function evolutionCreditsOnlyRealSameLaneTowerKills()
 	tdEvolutionKillEligible(true, false, true, 1, 0, 0).assertTrue()
@@ -30,13 +93,6 @@ import TDWaves
 	tdEvolutionSkillOriginal(3, 2).assertEquals(TD_FOOT_COMMAND_ABILITY_ID)
 	tdEvolutionSkillOriginal(4, 2).assertEquals(TD_DRYAD_WIDE_SLOW_ABILITY_ID)
 
-@Test function evolutionWaitsForCompletedUpgrade()
-	let match = new TDTowerEvolutionMatch()
-	match.tryClaim(440, 6, true, true).assertFalse()
-	match.tryClaim(440, 5, true, false).assertFalse()
-	match.tryClaim(440, 6, true, false).assertTrue()
-	destroy match
-
 @Test function evolutionStatisticsRemainExactBeyondThreshold()
 	tdEvolutionProgressLevel(0).assertEquals(1)
 	tdEvolutionProgressLevel(439).assertEquals(440)
@@ -45,10 +101,17 @@ import TDWaves
 	tdMatchEnemyCountPerLane().assertEquals(934)
 	tdEvolutionProgressLevel(tdMatchEnemyCountPerLane()).assertEquals(935)
 
-@Test function evolutionStatusAppearsOnlyAfterThreshold()
-	tdEvolutionStatusLevel(439, false, false).assertEquals(0)
-	tdEvolutionStatusLevel(439, false, true).assertEquals(0)
-	tdEvolutionStatusLevel(440, false, false).assertEquals(1)
-	tdEvolutionStatusLevel(440, true, true).assertEquals(2)
-	tdEvolutionStatusLevel(440, false, true).assertEquals(3)
-	tdEvolutionStatusLevel(441, true, true).assertEquals(2)
+@Test function evolutionStatusIsIndependentOfKillsAndLaneIsolation()
+	tdEvolutionStatusLevel(false, false, false).assertEquals(1)
+	tdEvolutionStatusLevel(true, false, false).assertEquals(2)
+	tdEvolutionStatusLevel(true, true, true).assertEquals(3)
+	tdEvolutionStatusLevel(true, false, true).assertEquals(4)
+	let a = new TDTowerEvolutionLane()
+	let b = new TDTowerEvolutionLane()
+	a.creditWave(24, true, true).assertTrue()
+	a.tryClaim(6, true, false, false).assertTrue()
+	b.isQualified().assertFalse()
+	b.creditWave(24, true, true).assertTrue()
+	b.tryClaim(6, true, false, false).assertTrue()
+	destroy a
+	destroy b

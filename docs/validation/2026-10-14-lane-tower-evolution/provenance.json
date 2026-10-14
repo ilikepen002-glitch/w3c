@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "implementationCommit": "194d0634008d445ba450bd980b005adcedfb4734",
+  "frozenBatch3Commit": "6cecf56e42eae2b273141b2ab51f02f37e215446",
+  "frozenBatch3MapSHA256": "962da70b23e122e08f7ef82f0b5016ebf1c7d99d3373d5a90c64c1b8dd26476e",
+  "evolutionImplementationHeadBeforeIntegration": "a92a00f34f695b2a0530b30bcf4d89e30e7e7ca0",
+  "originalImplementationBase": "0c5948832a5692733638cd7be2285eed52622e87",
+  "finalMapSHA256": "cd662ef1454356687cd7e9383b702d5c33f2614e863b2bbdb059659ddf5ee651",
+  "finalMapBytes": 6029830,
+  "gateRetuningScope": "Only test/tools alignment to unchanged frozen current production; never alter map or production source to satisfy legacy oracle",
+  "notTested": [
+    "Warcraft dialog interaction/rendering",
+    "native aura Buff projection/stacking",
+    "live command card selection/input",
+    "wings visual attachment/occlusion",
+    "gameplay duration",
+    "four-player FPS",
+    "balance/final lane fairness"
+  ],
+  "requiredStages": {
+    "plan": "Astra frozen PLAN",
+    "implementation": "designated GPT-6.1 Sol",
+    "review": "GPT-6 Astra: PASS WITH NOTES, bound to implementation 194d063 and map cd662ef"
+  }
+}

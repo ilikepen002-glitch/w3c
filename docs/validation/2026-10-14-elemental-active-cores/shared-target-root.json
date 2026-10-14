@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "mapSHA256": "c3a50d47b9a5c47677e52ca6cb5bd8081e2f4d792385f8f63a9ba3cef3cb85bc",
+  "cases": [
+    {
+      "contexts": 1,
+      "sharedRecord": true,
+      "exactRelease": true,
+      "finalReferences": 0
+    },
+    {
+      "contexts": 2,
+      "sharedRecord": true,
+      "exactRelease": true,
+      "finalReferences": 0
+    }
+  ]
+}

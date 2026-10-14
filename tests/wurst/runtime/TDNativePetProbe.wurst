@@ -104,7 +104,7 @@ function petProbeCommand()
 			for wave = pet.captureWave + 1 to pet.captureWave + 5
 				tdPetCreditWave(0, wave)
 			petProbeSnapshot()
-			petProbeReport("synthetic clear-credit only; actual wave watcher remains a separate validation")
+			petProbeReport("credits only already-resolved eligible waves; no synthetic wave completion")
 
 init
 	TriggerRegisterPlayerChatEvent(petProbeChat, Player(0), "-pets ", false)

@@ -743,6 +743,12 @@ public function tdWaveSpawnInterval(int wave) returns real
 		return 0.375
 	return 0.34500000000000003
 
+// 本路真实完成的进度工资；只由既有单次波次结算发放。
+public function tdWaveProgressWage(int wave) returns int
+	if wave < 1 or wave > tdWaveCount() or (wave - 1) mod 3 != 0
+		return 0
+	return (wave + 5) * 10
+
 public function tdWaveReward(int wave) returns int
 	if wave == 1
 		return tdScaledEconomyValue(10)

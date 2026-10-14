@@ -6,13 +6,22 @@ import TDConfig
 import Table
 import LinkedList
 import TDInventory
+import TDWaveFlowState
+import TDPetState
+import Dialog
 
 constant Table tdEvolutionRecords = new Table()
-TDTowerEvolutionMatch tdEvolutionMatch = new TDTowerEvolutionMatch()
+TDTowerEvolutionLane array tdEvolutionLanes
 LinkedList<TDEvolutionTower> tdEvolutionTowers = new LinkedList<TDEvolutionTower>()
+TDEvolutionTicket array tdEvolutionTickets
+int tdEvolutionIdentity = 0
+int tdEvolutionWorkGeneration = 0
+int tdEvolutionNonce = 0
 
 class TDEvolutionTower
 	unit tower
+	int identity
+	int workGeneration = 0
 	int kills = 0
 	boolean evolved = false
 	boolean working = false
@@ -20,21 +29,92 @@ class TDEvolutionTower
 
 	construct(unit tower)
 		this.tower = tower
+		tdEvolutionIdentity += 1
+		identity = tdEvolutionIdentity
 
 	ondestroy
 		if wings != null
 			DestroyEffect(wings)
+			wings = null
+
+class TDEvolutionTicket
+	int lane
+	unit tower
+	TDEvolutionTower record
+	int identity
+	int rawcode
+	int branch
+	int workGeneration
+	int epoch
+	int nonce
+	dialog preview = null
+	trigger listener = null
+	button confirm = null
+	button cancel = null
+
+	ondestroy
+		if preview != null
+			preview.display(Player(lane), false)
+			DestroyTrigger(listener)
+			preview.clear()
+			preview.destr()
+
+function tdEvolutionLane(int lane) returns TDTowerEvolutionLane
+	if not tdIsLanePlayer(lane)
+		return null
+	if tdEvolutionLanes[lane] == null
+		tdEvolutionLanes[lane] = new TDTowerEvolutionLane()
+	return tdEvolutionLanes[lane]
+
+function tdEvolutionLaneCanChoose(int lane) returns boolean
+	return tdPetLaneCanManage(lane) and not tdIsLaneFinished(lane)
+
+public function tdEvolutionLaneQualified(int lane) returns boolean
+	return tdIsLanePlayer(lane) and tdEvolutionLane(lane).isQualified()
+
+public function tdEvolutionLaneSpent(int lane) returns boolean
+	return tdIsLanePlayer(lane) and tdEvolutionLane(lane).isSpent()
+
+// A stale cancellation never closes a newer preview.
+public function tdEvolutionCancel(int lane, int nonce) returns boolean
+	if not tdIsLanePlayer(lane)
+		return false
+	let ticket = tdEvolutionTickets[lane]
+	if ticket == null or ticket.nonce != nonce
+		return false
+	tdEvolutionTickets[lane] = null
+	destroy ticket
+	return true
+
+function tdEvolutionCancelLane(int lane)
+	if tdIsLanePlayer(lane) and tdEvolutionTickets[lane] != null
+		tdEvolutionCancel(lane, tdEvolutionTickets[lane].nonce)
+
+function tdEvolutionCancelTower(unit tower)
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdEvolutionTickets[lane] != null and tdEvolutionTickets[lane].tower == tower
+			tdEvolutionCancelLane(lane)
 
 function tdEvolutionRecord(unit tower) returns TDEvolutionTower
 	let key = tower.getHandleId()
-	if not tdEvolutionRecords.hasInt(key)
-		let record = new TDEvolutionTower(tower)
-		tdEvolutionRecords.saveInt(key, record castTo int)
-		tdEvolutionTowers.add(record)
-	return tdEvolutionRecords.loadInt(key) castTo TDEvolutionTower
+	if tdEvolutionRecords.hasInt(key)
+		let existing = tdEvolutionRecords.loadInt(key) castTo TDEvolutionTower
+		if existing.tower == tower
+			return existing
+		// Defend against handle-id reuse without using the integer as authority.
+		tdEvolutionCancelTower(existing.tower)
+		tdEvolutionTowers.remove(existing)
+		destroy existing
+	let record = new TDEvolutionTower(tower)
+	tdEvolutionRecords.saveInt(key, record castTo int)
+	tdEvolutionTowers.add(record)
+	return record
 
 public function tdTowerIsEvolved(unit tower) returns boolean
-	return tower != null and tdEvolutionRecords.hasInt(tower.getHandleId()) and (tdEvolutionRecords.loadInt(tower.getHandleId()) castTo TDEvolutionTower).evolved
+	if tower == null or not tdEvolutionRecords.hasInt(tower.getHandleId())
+		return false
+	let record = tdEvolutionRecords.loadInt(tower.getHandleId()) castTo TDEvolutionTower
+	return record.tower == tower and record.evolved
 
 public function tdEvolutionSkillReplacement(int choice, int branch) returns int
 	if choice == TD_TOWER_CHOICE_ARCHER
@@ -78,53 +158,174 @@ public function tdEvolutionSplitArrowDisplayLevel(int choice, int branch, boolea
 public function tdEvolutionCorpseDisplayLevel(int choice, int branch, boolean evolved) returns int
 	return choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_B and evolved ? 2 : 1
 
+// The sole effect-application path. Caller has already spent the lane token.
+function tdEvolutionApplyChosenBranch(TDEvolutionTower record)
+	let tower = record.tower
+	let choice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
+	let branch = tdTowerBranchForUnitTypeId(GetUnitTypeId(tower))
+	let replacement = tdEvolutionSkillReplacement(choice, branch)
+	if replacement != 0
+		tower.removeAbility(tdEvolutionSkillOriginal(choice, branch))
+		tower.addPermanentAbility(replacement, 1)
+		let displayOriginal = tdEvolutionDisplayOriginal(choice, branch)
+		if displayOriginal != 0
+			tower.removeAbility(displayOriginal)
+			tower.addPermanentAbility(tdEvolutionDisplayReplacement(choice, branch), 1)
+	if choice == TD_TOWER_CHOICE_ARCHER
+		tower.setAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID, tdEvolutionSplitArrowDisplayLevel(choice, branch, record.evolved))
+	if choice == TD_TOWER_CHOICE_GHOUL
+		tower.setAbilityLevel(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID, tdEvolutionCorpseDisplayLevel(choice, branch, record.evolved))
+	tdRefreshTowerEquipmentBonuses(tower)
+	record.wings = AddSpecialEffectTarget("war3mapImported\\TDEvolutionWings" + choice.toString() + ".mdx", tower, "origin")
+
+function tdEvolutionTowerCanChoose(unit tower, int lane) returns boolean
+	if tower == null or not tower.isAlive() or GetPlayerId(GetOwningPlayer(tower)) != lane or not tdEvolutionLaneCanChoose(lane)
+		return false
+	if tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)) != 6 or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
+		return false
+	let record = tdEvolutionRecord(tower)
+	return not record.working and not record.evolved and tdEvolutionLane(lane).isQualified() and not tdEvolutionLane(lane).isSpent()
+
 public function tdEvolutionRefresh(unit tower)
 	if tower == null or not tower.isAlive() or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	let record = tdEvolutionRecord(tower)
 	let lane = GetPlayerId(GetOwningPlayer(tower))
-	let level = tdTowerLevelForUnitTypeId(GetUnitTypeId(tower))
-	let eligible = tdIsLaneActive(lane) and not tdIsLaneDefeated(lane) and not tdIsLaneFinished(lane) and not tdIsGameOver()
-	if not record.evolved and tdEvolutionMatch.tryClaim(record.kills, level, eligible, record.working)
-		// The global slot is claimed synchronously before abilities/effects change.
-		record.evolved = true
-		let choice = tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower))
-		let branch = tdTowerBranchForUnitTypeId(GetUnitTypeId(tower))
-		let replacement = tdEvolutionSkillReplacement(choice, branch)
-		if replacement != 0
-			tower.removeAbility(tdEvolutionSkillOriginal(choice, branch))
-			tower.addPermanentAbility(replacement, 1)
-			let displayOriginal = tdEvolutionDisplayOriginal(choice, branch)
-			if displayOriginal != 0
-				tower.removeAbility(displayOriginal)
-				tower.addPermanentAbility(tdEvolutionDisplayReplacement(choice, branch), 1)
-		// These display upgrades also belong to branches with no replaced effect.
-		if choice == TD_TOWER_CHOICE_ARCHER
-			tower.setAbilityLevel(TD_ARCHER_SPLIT_ARROW_ABILITY_ID, tdEvolutionSplitArrowDisplayLevel(choice, branch, record.evolved))
-		if choice == TD_TOWER_CHOICE_GHOUL
-			tower.setAbilityLevel(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID, tdEvolutionCorpseDisplayLevel(choice, branch, record.evolved))
-		tdRefreshTowerEquipmentBonuses(tower)
-		record.wings = AddSpecialEffectTarget("war3mapImported\\TDEvolutionWings" + choice.toString() + ".mdx", tower, "origin")
-		DisplayTimedTextToPlayer(GetOwningPlayer(tower), 0, 0, 8.0, "自动进化！击杀达到" + TD_EVOLUTION_KILL_REQUIREMENT.toString() + "，获得双翼与当前分支20%强化。全局进化名额已使用。")
-		for other in tdEvolutionTowers
-			if other != record
-				tdEvolutionRefresh(other.tower)
+	if not tdIsLanePlayer(lane)
+		return
 	if tower.getAbilityLevel(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID) == 0
 		tower.addPermanentAbility(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID, 1)
 	tower.setAbilityLevel(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID, tdEvolutionProgressLevel(record.kills))
-	let statusLevel = tdEvolutionStatusLevel(record.kills, record.evolved, tdEvolutionMatch.claimed)
-	if statusLevel > 0
+	// One physical command-card slot: action and state display are exclusive.
+	if tdEvolutionTowerCanChoose(tower, lane)
+		tower.removeAbility(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID)
+		if tower.getAbilityLevel(TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID) == 0
+			tower.addPermanentAbility(TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID, 1)
+	else
+		tower.removeAbility(TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID)
 		if tower.getAbilityLevel(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID) == 0
 			tower.addPermanentAbility(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID, 1)
-		tower.setAbilityLevel(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID, statusLevel)
+		tower.setAbilityLevel(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID, tdEvolutionStatusLevel(tdEvolutionLane(lane).isQualified(), record.evolved, tdEvolutionLane(lane).isSpent()))
+
+function tdEvolutionRefreshLane(int lane)
+	// Existing bounded tower registry only; no world enumeration or recursive claim.
+	for record in tdEvolutionTowers
+		if GetPlayerId(GetOwningPlayer(record.tower)) == lane
+			tdEvolutionRefresh(record.tower)
+
+public function tdEvolutionCreditWave(int lane, int wave)
+	if not tdIsLanePlayer(lane)
+		return
+	if tdEvolutionLane(lane).creditWave(wave, tdEvolutionLaneCanChoose(lane), tdIsWaveResolved(lane, wave))
+		tdEvolutionRefreshLane(lane)
+		if not compiletime
+			DisplayTimedTextToPlayer(Player(lane), 0, 0, 8.0, "本路已完成第24波，获得一次进化资格。选择一座已完工6阶终阶塔，点击进化并确认；尚无终阶塔可保留资格。")
+
+public function tdEvolutionConfirm(int lane, player actor, int nonce) returns boolean
+	if not tdIsLanePlayer(lane) or GetPlayerId(actor) != lane
+		return false
+	let ticket = tdEvolutionTickets[lane]
+	if ticket == null or ticket.nonce != nonce
+		return false
+	let tower = ticket.tower
+	let record = ticket.record
+	if ticket.epoch != tdFlowEpoch() or not tdEvolutionTowerCanChoose(tower, lane)
+		tdEvolutionCancel(lane, nonce)
+		return false
+	if not tdEvolutionRecords.hasInt(tower.getHandleId()) or (tdEvolutionRecords.loadInt(tower.getHandleId()) castTo TDEvolutionTower) != record
+		tdEvolutionCancel(lane, nonce)
+		return false
+	if record.tower != tower or record.identity != ticket.identity or record.workGeneration != ticket.workGeneration or GetUnitTypeId(tower) != ticket.rawcode or tdTowerBranchForUnitTypeId(GetUnitTypeId(tower)) != ticket.branch
+		tdEvolutionCancel(lane, nonce)
+		return false
+	// Consume authority and both state writes before any native/UI/equipment call.
+	tdEvolutionTickets[lane] = null
+	if not tdEvolutionLane(lane).tryClaim(tdTowerLevelForUnitTypeId(GetUnitTypeId(tower)), true, record.working, record.evolved)
+		destroy ticket
+		return false
+	record.evolved = true
+	destroy ticket
+	tdEvolutionApplyChosenBranch(record)
+	tdEvolutionRefreshLane(lane)
+	DisplayTimedTextToPlayer(actor, 0, 0, 8.0, "进化完成！获得双翼与当前分支20%强化。本路进化名额已使用；出售或死亡不返还。")
+	return true
+
+function tdEvolutionHandleButton()
+	let actor = GetTriggerPlayer()
+	let lane = GetPlayerId(actor)
+	if not tdIsLanePlayer(lane)
+		return
+	let ticket = tdEvolutionTickets[lane]
+	if ticket == null or ticket.preview != GetClickedDialog()
+		return
+	if GetClickedButton() == ticket.confirm
+		tdEvolutionConfirm(lane, actor, ticket.nonce)
+	else if GetClickedButton() == ticket.cancel
+		tdEvolutionCancel(lane, ticket.nonce)
+
+public function tdEvolutionRequest(unit tower, player actor) returns int
+	let lane = GetPlayerId(actor)
+	if not tdIsLanePlayer(lane) or not tdEvolutionTowerCanChoose(tower, lane)
+		return 0
+	tdEvolutionCancelLane(lane)
+	let record = tdEvolutionRecord(tower)
+	let ticket = new TDEvolutionTicket()
+	ticket.lane = lane
+	ticket.tower = tower
+	ticket.record = record
+	ticket.identity = record.identity
+	ticket.rawcode = GetUnitTypeId(tower)
+	ticket.branch = tdTowerBranchForUnitTypeId(ticket.rawcode)
+	ticket.workGeneration = record.workGeneration
+	ticket.epoch = tdFlowEpoch()
+	tdEvolutionNonce += 1
+	ticket.nonce = tdEvolutionNonce
+	tdEvolutionTickets[lane] = ticket
+	ticket.preview = createDialog()
+	ticket.listener = CreateTrigger()
+	let choice = tdTowerChoiceForUnitTypeId(ticket.rawcode)
+	ticket.preview.setMessage("进化：" + tdTowerDisplayNameForBranch(choice, 6, ticket.branch) + "|n" + tdTowerTalentSummaryForBranch(choice, 6, ticket.branch) + "|n本路仅一次。出售或死亡不返还；取消不消耗资格。")
+	ticket.confirm = ticket.preview.addButton("确认进化")
+	ticket.cancel = ticket.preview.addButton("取消")
+	TriggerRegisterDialogEvent(ticket.listener, ticket.preview)
+	TriggerAddAction(ticket.listener, function tdEvolutionHandleButton)
+	ticket.preview.display(actor, true)
+	return ticket.nonce
+
+public function tdEvolutionSelectionChanged(player actor, unit selected)
+	let lane = GetPlayerId(actor)
+	if tdIsLanePlayer(lane) and tdEvolutionTickets[lane] != null and tdEvolutionTickets[lane].tower != selected
+		tdEvolutionCancelLane(lane)
+
+public function tdEvolutionDeselected(player actor, unit deselected)
+	let lane = GetPlayerId(actor)
+	if tdIsLanePlayer(lane) and tdEvolutionTickets[lane] != null and tdEvolutionTickets[lane].tower == deselected
+		tdEvolutionCancelLane(lane)
 
 public function tdEvolutionWorkStarted(unit tower)
 	if tower != null
-		tdEvolutionRecord(tower).working = true
+		tdEvolutionCancelTower(tower)
+		let record = tdEvolutionRecord(tower)
+		tdEvolutionWorkGeneration += 1
+		record.workGeneration = tdEvolutionWorkGeneration
+		record.working = true
+		tdEvolutionRefresh(tower)
 
 public function tdEvolutionWorkFinished(unit tower)
 	if tower != null and tdEvolutionRecords.hasInt(tower.getHandleId())
-		(tdEvolutionRecords.loadInt(tower.getHandleId()) castTo TDEvolutionTower).working = false
+		let record = tdEvolutionRecords.loadInt(tower.getHandleId()) castTo TDEvolutionTower
+		if record.tower == tower
+			record.working = false
+
+public function tdEvolutionOwnershipChanged(unit tower)
+	if tower == null
+		return
+	tdEvolutionCancelTower(tower)
+	if tdEvolutionRecords.hasInt(tower.getHandleId())
+		let record = tdEvolutionRecords.loadInt(tower.getHandleId()) castTo TDEvolutionTower
+		tdEvolutionWorkGeneration += 1
+		record.workGeneration = tdEvolutionWorkGeneration
+	tdEvolutionRefresh(tower)
 
 public function tdEvolutionRecordKill(unit tower, int enemyLane)
 	if tower == null or not tdEvolutionKillEligible(true, false, tower.isAlive(), tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)), GetPlayerId(GetOwningPlayer(tower)), enemyLane)
@@ -134,21 +335,36 @@ public function tdEvolutionRecordKill(unit tower, int enemyLane)
 	tdEvolutionRefresh(tower)
 
 public function tdEvolutionForgetTower(unit tower)
+	tdEvolutionCancelTower(tower)
 	if tower == null or not tdEvolutionRecords.hasInt(tower.getHandleId())
 		return
 	let record = tdEvolutionRecords.loadInt(tower.getHandleId()) castTo TDEvolutionTower
+	if record.tower != tower
+		return
 	tdEvolutionRecords.removeInt(tower.getHandleId())
 	tdEvolutionTowers.remove(record)
 	destroy record
 
 public function tdEvolutionClearLaneEffects(int lane)
+	tdEvolutionCancelLane(lane)
 	for record in tdEvolutionTowers
 		if GetPlayerId(GetOwningPlayer(record.tower)) == lane and record.wings != null
 			DestroyEffect(record.wings)
 			record.wings = null
+	tdEvolutionRefreshLane(lane)
 
 public function tdEvolutionShutdown()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		tdEvolutionCancelLane(lane)
 	for record in tdEvolutionTowers
 		tdEvolutionRecords.removeInt(record.tower.getHandleId())
 		destroy record
 	tdEvolutionTowers.clear()
+
+// Only a real new match may reset spent. Monotonic identities/nonces stay unique.
+public function tdEvolutionResetForNewMatch()
+	tdEvolutionShutdown()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdEvolutionLanes[lane] != null
+			destroy tdEvolutionLanes[lane]
+		tdEvolutionLanes[lane] = new TDTowerEvolutionLane()

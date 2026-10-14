@@ -1,0 +1,5 @@
+/output/
+/validation-frames.json
+/previews/*
+!/previews/frame-contact-sheet.png
+__pycache__/

@@ -1,0 +1,14 @@
+PASS SOURCE SCALARS: 2,110 page/action cases; definition-derived Channel identities; definition-sized passive rawcode capacity; exhaustive count inputs; 20 numbers; 1,280 quality cases; navigation and boundary guards
+PASS UI WORKFLOW: two farmer registrations + one constant manager bridge/guard; integer startup; count snapshots; complete shared Channels; eight-cell preview; atomic continue; safe release return
+PASS SOURCE WIRING: fresh caster authority, exact level/page whitelist, consume-before-transaction, dirty-only polling, synchronized mounts/local-only selection, proposal preservation, release cancellation, HUD board ownership; exact historical wild bytes plus approved species-only expansion
+{
+  "source": {
+    "scalar_page_cases": 2110,
+    "preview_cost": 0,
+    "commit_cost": 3,
+    "fixed_choice_identities": 28,
+    "additional_manager_commands": 10,
+    "unchanged_behavior_bodies": 7
+  },
+  "boundary": "Actual packed production transactions/pages run; engine native handles, input/timer/RNG delivery modeled; Warcraft rendering, load time and FPS not tested."
+}

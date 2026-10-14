@@ -1,0 +1,29 @@
+F.................
+======================================================================
+FAIL: test_evolution_accepts_complete_inherited_skill_bars (test_verify_map_artifacts.BaselineArtifactTests.test_evolution_accepts_complete_inherited_skill_bars)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_verify_map_artifacts.py", line 46, in test_evolution_accepts_complete_inherited_skill_bars
+    self.assert_verifier_passes("VerifyEvolutionArtifact.py")
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_verify_map_artifacts.py", line 42, in assert_verifier_passes
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyEvolutionArtifact.py", line 140, in <module>
+    main()
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyEvolutionArtifact.py", line 135, in main
+    validate_evolution_artifact(units, abilities, artifact)
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyEvolutionArtifact.py", line 34, in validate_evolution_artifact
+    validate_upgrade_artifact(units, abilities, artifact)
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyTowerUpgradeArtifact.py", line 223, in validate_upgrade_artifact
+    validate_tower_identity(units)
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyTowerUpgradeArtifact.py", line 130, in validate_tower_identity
+    require(fields.get('uacq') == RANGES[family][index], f'{uid}: effective range changed')
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: uO11: effective range changed
+
+
+----------------------------------------------------------------------
+Ran 18 tests in 16.665s
+
+FAILED (failures=1)

@@ -1,0 +1,133 @@
+package TDItemDropDiagnostic
+import TDItemDropDiagnosticRules
+import TDItemData
+import TDGroundItemTerrainMask
+import TDConfig
+import TDState
+import GameTimer
+
+// Observation only. Native inventory drag/drop has no reliable point-order
+// event on old Warcraft clients. Never infer its target from a previous order.
+boolean array tdDropTraceEnabled
+item array tdDropTraceItem
+real array tdDropTraceStarted
+int array tdDropTraceMoves
+// Timers exist only for an explicitly enabled player's recent drop.
+timer array tdDropTraceNextTimer
+timer array tdDropTraceExpiryTimer
+boolean tdDropTraceReady = false
+
+function tdDropTraceClear(int lane)
+	tdDropTraceItem[lane] = null
+	tdDropTraceMoves[lane] = 0
+	if tdDropTraceNextTimer[lane] != null
+		DestroyTimer(tdDropTraceNextTimer[lane])
+		tdDropTraceNextTimer[lane] = null
+	if tdDropTraceExpiryTimer[lane] != null
+		DestroyTimer(tdDropTraceExpiryTimer[lane])
+		tdDropTraceExpiryTimer[lane] = null
+
+function tdDropTracePoint(real x, real y) returns string
+	let sourceLane = tdGroundSortSourceLane(x, y)
+	// Report only the generated source mask; this observer does not read WPM.
+	let sourceMask = sourceLane >= 0 ? "坑道掩码=路" + (sourceLane + 1) : "坑道掩码=非源区"
+	return "(" + R2I(x) + "," + R2I(y) + ") 层=" + GetTerrainCliffLevel(x, y) + " 行走阻挡=" + (IsTerrainPathable(x, y, PATHING_TYPE_WALKABILITY) ? "是" : "否") + " " + sourceMask
+
+function tdDropTracePrint(int lane, string message)
+	DisplayTimedTextToPlayer(Player(lane), 0, 0, 15.0, "[落点诊断 " + R2I(getElapsedGameTime()) + "] " + message)
+
+function tdDropTraceLive(int lane) returns boolean
+	let itm = tdDropTraceItem[lane]
+	return tdItemDropTraceAllowed(tdDropTraceEnabled[lane], tdIsLaneActive(lane), tdIsGameOver(), itm != null and GetItemTypeId(itm) != 0, itm != null and IsItemOwned(itm), getElapsedGameTime() - tdDropTraceStarted[lane])
+
+function tdDropTraceNext()
+	let expired = GetExpiredTimer()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdDropTraceNextTimer[lane] == expired
+			if tdDropTraceLive(lane)
+				let itm = tdDropTraceItem[lane]
+				tdDropTracePrint(lane, "下一帧 物品=" + GetHandleId(itm) + " " + tdDropTracePoint(GetItemX(itm), GetItemY(itm)) + " 目标未知")
+			else
+				tdDropTraceClear(lane)
+			return
+
+function tdDropTraceExpire()
+	let expired = GetExpiredTimer()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdDropTraceExpiryTimer[lane] == expired
+			tdDropTraceClear(lane)
+			return
+
+public function tdItemDropDiagnosticPickedUp(item itm)
+	if itm == null
+		return
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdDropTraceItem[lane] == itm
+			tdDropTraceClear(lane)
+
+public function tdItemDropDiagnosticDropped(unit carrier, item itm)
+	if carrier == null or itm == null
+		return
+	// A new carrier's drop invalidates an earlier player's watch of this handle.
+	tdItemDropDiagnosticPickedUp(itm)
+	let lane = GetPlayerId(GetOwningPlayer(carrier))
+	if lane < 0 or lane >= TD_ACTIVE_PLAYER_COUNT
+		return
+	if not tdDropTraceEnabled[lane] or not tdIsLaneActive(lane) or tdIsGameOver() or not tdItemIsEquipment(GetItemTypeId(itm))
+		return
+	tdDropTraceClear(lane)
+	tdDropTraceItem[lane] = itm
+	tdDropTraceStarted[lane] = getElapsedGameTime()
+	tdDropTracePrint(lane, "丢弃者=" + GetUnitName(carrier) + "#" + GetHandleId(carrier) + " " + tdDropTracePoint(GetUnitX(carrier), GetUnitY(carrier)))
+	tdDropTracePrint(lane, "事件时(非最终) 物品=" + GetHandleId(itm) + " " + tdDropTracePoint(GetItemX(itm), GetItemY(itm)) + " 目标未知")
+	tdDropTraceNextTimer[lane] = CreateTimer()
+	tdDropTraceExpiryTimer[lane] = CreateTimer()
+	TimerStart(tdDropTraceNextTimer[lane], 0.0, false, function tdDropTraceNext)
+	TimerStart(tdDropTraceExpiryTimer[lane], TD_ITEM_DROP_TRACE_SECONDS, false, function tdDropTraceExpire)
+
+public function tdItemDropDiagnosticMove(item itm, string source, boolean before, real requestedX, real requestedY)
+	if itm == null
+		return
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdDropTraceItem[lane] != itm
+			continue
+		if not tdDropTraceLive(lane)
+			tdDropTraceClear(lane)
+			continue
+		// Keep a pathological placement search from flooding the player's chat.
+		if tdDropTraceMoves[lane] >= 32
+			continue
+		tdDropTraceMoves[lane] += 1
+		let phase = before ? "调用前" : "调用后"
+		tdDropTracePrint(lane, source + " " + phase + " 物品=" + GetHandleId(itm) + " 实际=" + tdDropTracePoint(GetItemX(itm), GetItemY(itm)) + " 脚本请求=(" + R2I(requestedX) + "," + R2I(requestedY) + ")")
+		if tdDropTraceMoves[lane] == 32
+			tdDropTracePrint(lane, "本次脚本搬移记录已达32条；后续省略。")
+
+function tdDropTraceChat()
+	let lane = GetPlayerId(GetTriggerPlayer())
+	if lane < 0 or lane >= TD_ACTIVE_PLAYER_COUNT
+		return
+	tdDropTraceClear(lane)
+	tdDropTraceEnabled[lane] = not tdDropTraceEnabled[lane] and tdIsLaneActive(lane) and not tdIsGameOver()
+	if tdDropTraceEnabled[lane]
+		tdDropTracePrint(lane, "已开启。丢一次装备并截图；原生鼠标目标未知。再次输入 -dropdiag 关闭。")
+	else
+		tdDropTracePrint(lane, "已关闭。")
+
+function tdDropTraceLeave()
+	let lane = GetPlayerId(GetTriggerPlayer())
+	if lane >= 0 and lane < TD_ACTIVE_PLAYER_COUNT
+		tdDropTraceEnabled[lane] = false
+		tdDropTraceClear(lane)
+
+public function tdSetupItemDropDiagnostic()
+	if tdDropTraceReady
+		return
+	tdDropTraceReady = true
+	let chat = CreateTrigger()
+	let leave = CreateTrigger()
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		TriggerRegisterPlayerChatEvent(chat, Player(lane), "-dropdiag", true)
+		TriggerRegisterPlayerEvent(leave, Player(lane), EVENT_PLAYER_LEAVE)
+	TriggerAddAction(chat, function tdDropTraceChat)
+	TriggerAddAction(leave, function tdDropTraceLeave)

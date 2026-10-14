@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifySlowAbilityArtifact.py", line 107, in <module>
+    main()
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifySlowAbilityArtifact.py", line 100, in main
+    validate_enemy_speed(unit_objects(artifact.extract('war3map.w3u')), pure_boss=len(sys.argv) == 3)
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifySlowAbilityArtifact.py", line 42, in validate_enemy_speed
+    require((fields['umvs'], fields['umas']) == sprint_speeds[enemy],
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: uG32: expected base/max (260, 364)

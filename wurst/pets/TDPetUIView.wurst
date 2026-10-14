@@ -3,6 +3,7 @@ import TDPetData
 import TDPetHeroRules
 import TDPetRules
 import TDPetState
+import TDPetCultivation
 import TDPetUIState
 import TDPetRuntime
 import TDPetCombat
@@ -83,7 +84,16 @@ public function tdPetRenderPage(int lane, int mode, int page, int slot, int nonc
 		ClearSelection()
 		SelectUnit(fresh, true)
 	tdPetRefreshDisplay(lane)
+	if mode == TD_PET_UI_DIRECTED_PREVIEW
+		DisplayTimedTextToPlayer(Player(lane), 0, 0, 15.0, tdPetDirectedPreviewText(pet))
 	return true
+
+public function tdPetRenderDirectedPage(int lane, int mode, int page, int slot, int skillSlot, int choicePage) returns boolean
+	if not tdIsLanePlayer(lane) or tdPetUISessions[lane] == null
+		return false
+	tdPetUISessions[lane].directedSlot = skillSlot
+	tdPetUISessions[lane].directedPage = choicePage
+	return tdPetRenderPage(lane, mode, page, slot, 0)
 
 // Polling and external callers invalidate; they never rebuild or force selection.
 public function tdPetRefreshDisplay(int lane)
@@ -114,6 +124,22 @@ public function tdPetSkillRestriction(TDPet pet, int slot, int skill) returns st
 			return " [不适配：需要" + tdPetHeroHostName(skill) + "]"
 		return skill == TD_PET_SKILL_RESOLVE ? " [不适配：宿主已有自带暴击]" : " [不适配：宿主需要" + (skill == 9 ? "分裂箭能力" : "尸爆能力") + "]"
 	return ""
+
+public function tdPetDirectedPreviewText(TDPet pet) returns string
+	if pet == null or pet.proposalType != TD_PET_PROPOSAL_DIRECTED or pet.proposalSlot < 0
+		return ""
+	let skill = pet.proposalSkill
+	var text = "定向学习 · " + tdPetSlotName(pet.proposalSlot) + "\n旧：" + tdPetQualityName(pet.proposalOldQuality) + " " + tdPetSkillNameById(pet.proposalOldSkill) + "\n" + tdPetSkillDescriptionById(pet.proposalOldSkill, pet.proposalOldQuality)
+	text += "\n新：" + tdPetQualityName(2) + " " + tdPetSkillNameById(skill) + "\n" + tdPetSkillDescriptionById(skill, 2)
+	text += "\n确认消耗3洗练石；当前" + tdPetRerollStones[pet.lane].toString() + "。取消不扣材料，返回详情/关闭保留此候选。"
+	if pet.proposalOldQuality > 2
+		text += "\n注意：本次将蓝/紫品质降为绿色。"
+	text += tdPetSkillRestriction(pet, pet.proposalSlot, skill)
+	if tdPetHeroDefined(skill)
+		text += "\n可提前培养；生效仍需" + tdPetHeroHostName(skill) + "。"
+	if pet.revision != pet.proposalRevision
+		text += "\n候选已过期，请取消后重新选择。"
+	return text
 
 // Ceil avoids showing ready before the combat deadline, including its last
 // fractional second. Both remaining values come directly from the pet record.

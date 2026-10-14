@@ -1,0 +1,9 @@
+test_exact_table_invalid_values_and_totals (test_wave_progress_wages.WaveProgressWages.test_exact_table_invalid_values_and_totals) ... ok
+test_old_random_spell_button_watcher_and_diagnostic_orders_are_retired (test_wave_progress_wages.WaveProgressWages.test_old_random_spell_button_watcher_and_diagnostic_orders_are_retired) ... ok
+test_original_clear_rewards_remain_explicit (test_wave_progress_wages.WaveProgressWages.test_original_clear_rewards_remain_explicit) ... ok
+test_settlement_claims_before_side_effects_and_uses_original_wave (test_wave_progress_wages.WaveProgressWages.test_settlement_claims_before_side_effects_and_uses_original_wave) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.119s
+
+OK

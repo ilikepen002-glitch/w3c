@@ -16,6 +16,7 @@ from VerifyElementalPetArtifact import ElementRuntime
 from VerifyPetAttackArtifact import PetAttackRuntime, near
 from VerifyEquipmentAbilityArtifact import require
 from VerifyTowerUpgradeArtifact import rawcode
+from SpiritVisualBudgetFixture import reserve, release, buff_count
 
 
 class FourSlotRuntime(VisualRuntime):
@@ -212,8 +213,12 @@ def buffs(script):
                 r.invoke('tdPetRefreshHost', 101, 0.)
                 baseline = r.units[101]['abilities'].copy()
                 r.reject_visual = mode == 'null'
+                held = []
                 if mode == 'exhausted':
-                    r.globals['TDCombatVisualRuntime_castVisualCount'] = 128
+                    r.now = -1.
+                    held += reserve(r, 80)
+                    r.now = 0.
+                    held += reserve(r, 8)
                 r.emit(100.); r.tick_effects(0.)
                 cd = 14. * (1. - reduction)
                 near(r.globals['TDPet_readyAt'][p], cd, 'Named buff actual cooldown')
@@ -222,7 +227,8 @@ def buffs(script):
                 buffed = r.units[101]['abilities'].copy()
                 bonus = rawcode('Pbsp') if skill == 11 else rawcode('Pbat')
                 require(buffed.get(bonus, 0) > baseline.get(bonus, 0), 'Named buff did not install actual native bonus')
-                require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == (1 if mode == 'normal' else 0), 'Optional visual admission changed gameplay/ownership')
+                require(buff_count(r) == (0 if mode == 'null' else 1),
+                        'Decoration saturation starved the reserved buff core')
                 before = {'ready': r.globals['TDPet_readyAt'][p], 'until': r.globals['TDPet_buffUntil'][p], 'power': r.globals['TDPet_buffPower'][p], 'score': r.score(), 'rng': r.random_real_draws.copy(), 'baseline': baseline, 'buffed': buffed}
                 for now in (.1,):
                     r.now = now; r.emit(100.); r.tick_effects(0.)
@@ -231,44 +237,47 @@ def buffs(script):
                 require(r.units[101]['abilities'].get(bonus, 0) == buffed.get(bonus, 0), 'Native buff expired early')
                 r.now = 6.; r.invoke('tdPetRefreshHost', 101, 0.); r.tick_visuals(0.)
                 require(r.units[101]['abilities'].get(bonus, 0) == baseline.get(bonus, 0), 'Native bonus failed exact6second restoration')
-                require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == 0, 'Duration attachment did not expire')
+                require(buff_count(r) == 0, 'Duration attachment did not expire')
                 r.now = cd - .001; r.emit(100.); r.tick_effects(0.)
                 require(r.globals['TDPet_readyAt'][p] == cd and r.globals['TDPet_buffUntil'][p] == 6., 'Last fractional cooldown second restarted buff')
                 r.now = cd; r.emit(100.); r.tick_effects(0.)
                 near(r.globals['TDPet_readyAt'][p], cd * 2., 'Named buff missed exact CD boundary')
                 r.invoke('TDPet_recall', p)
-                require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == 0 and r.globals['TDPet_readyAt'][p] == cd * 2., 'Recall reset cooldown or leaked attachment')
+                require(buff_count(r) == 0 and r.globals['TDPet_readyAt'][p] == cd * 2., 'Recall reset cooldown or leaked attachment')
+                release(r, held); r.clear()
                 traces.append({'skill': skill, 'cdr': reduction, 'mode': mode, 'gameplay': before, 'expired': True})
     for skill in (11, 12):
         for reduction in (0., .4):
             rows = [row['gameplay'] for row in traces if row['skill'] == skill and row['cdr'] == reduction]
             require(rows[0] == rows[1] == rows[2], 'Visual success/null/budget changed numeric/CD/RNG path')
-    # One handle/source; shared global40 cap; gear cleanup is independent.
+    # One handle/source; all40 reserved cores succeed in one creation window.
     r = FourSlotRuntime(script)
     for i in range(41):
         host = 1000 + i
         r.units[host] = {**r.units[101], 'abilities': {}, 'inventory': {}, 'owner': 0, 'alive': True}
         r.invoke('tdCombatVisualStartPetBuff', host, 0, 11, 6.)
-        require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] <= 40, 'Global buff attachment cap exceeded')
-    require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == 40, 'Cap fixture did not reach40')
+        require(buff_count(r) == min(i+1, 40),
+                'Positive same-second40 buff attachments were starved')
+    require(buff_count(r) == 40, 'Cap fixture did not reach40')
+    r.now += 1.
     r.invoke('tdCombatVisualStartPetBuff', 1000, 0, 12, 6.)
-    require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == 40, 'Replacing source attachment exceeded cap')
+    require(buff_count(r) == 40, 'Replacing source attachment exceeded cap')
     r.invoke('tdCombatVisualRefreshGear', 1000, 1, rawcode('iP01'), 0, 0)
     require(r.invoke('tdCombatVisualGearCount') == 1, 'Independent gear fixture missing')
     r.invoke('tdCombatVisualClearPet', 1000)
-    require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == 39 and r.invoke('tdCombatVisualGearCount') == 1, 'Pet cleanup removed gear or retained buff')
+    require(buff_count(r) == 39 and r.invoke('tdCombatVisualGearCount') == 1, 'Pet cleanup removed gear or retained buff')
     r.invoke('tdCombatVisualClearLane', 0)
-    require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == 0 and not r.visual_handles, 'Lane clear leaked native handles')
+    require(buff_count(r) == 0 and not r.visual_handles, 'Lane clear leaked native handles')
     r.clear()
     for action in ('tdCombatVisualForgetSource', 'tdCombatVisualClearPet', 'tdCombatVisualShutdown'):
         r = FourSlotRuntime(script)
         r.invoke('tdCombatVisualStartPetBuff', 101, 0, 11, 6.)
         r.invoke(action, *([] if action.endswith('Shutdown') else [101]))
-        require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == 0, 'Lifecycle failed '+action)
+        require(buff_count(r) == 0, 'Lifecycle failed '+action)
     r = FourSlotRuntime(script)
     r.invoke('tdCombatVisualStartPetBuff', 101, 0, 11, 6.)
     r.invoke('tdResetWaveFlowState'); r.tick_visuals(.05)
-    require(r.globals['TDCombatVisualRuntime_petBuffVisualCount'] == 0, 'Epoch reset retained buff')
+    require(buff_count(r) == 0, 'Epoch reset retained buff')
     return {'named_modes': traces, 'one_per_host': True, 'global_cap': 40, 'gear_independent': True, 'lifecycle': True}
 
 

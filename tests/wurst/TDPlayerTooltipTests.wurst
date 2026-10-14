@@ -56,7 +56,8 @@ import TDInit
 
 @Test function playerSaleTooltipKeepsIrreversibleEvolutionCost()
 	tdTowerSellTooltip().contains("80%").assertTrue()
-	tdTowerSellTooltip().contains("进化名额不返还").assertTrue()
+	tdTowerSellTooltip().contains("本路进化名额不返还").assertTrue()
+	tdTowerSellTooltip().contains("全局").assertFalse()
 
 @Test function playerTooltipNumbersDropOnlyRedundantZeros()
 	tdTooltipNumber(0.0).assertEquals("0")

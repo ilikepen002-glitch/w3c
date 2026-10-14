@@ -1,0 +1,56 @@
+{
+  "status": "PASS",
+  "mapSHA256": "962da70b23e122e08f7ef82f0b5016ebf1c7d99d3373d5a90c64c1b8dd26476e",
+  "baselineCommit": "ece2ff5d4673f5a8445c2007786e680c0dd6704c",
+  "publishedBaselineCommit": "3b313b89b6d762d376b8a58e180f7082ded73e9a",
+  "baselineMapSHA256": "769baeff14204aaae592224bac48423e950a70f8dbe4e0080200ab8ac4293c17",
+  "archiveMembershipExact": true,
+  "memberCount": 427,
+  "changedMembers": [
+    "war3map.j",
+    "war3map.w3a",
+    "war3map.w3i",
+    "war3map.w3u"
+  ],
+  "normalizedMapSettingsExact": true,
+  "removedAbilityObjects": [
+    "A109"
+  ],
+  "addedAbilityObjects": [],
+  "allOtherAbilityFieldsExact": true,
+  "channelOrderFieldsShiftExactlyOneSlot": 1347,
+  "changedUnitObjects": [
+    "uF01"
+  ],
+  "onlyUnitChange": "Remove A109 from existing uabi lists; every other field is byte-equivalent parsed value",
+  "directed38ObjectsPreserved": true,
+  "directedObjectGate": null,
+  "originalWaveRewardBodyExact": true,
+  "restoredInputsMatchBothPackedMaps": [
+    {
+      "path": "imports/KingLeoric-original-readme.html",
+      "sha256": "0e6547dac6b9c642e3ca7805fa56235dd66f716a851ae089d151192e15e99be3",
+      "bytes": 1862,
+      "baselineMPQMember": "KingLeoric-original-readme.html"
+    },
+    {
+      "path": "imports/Leoric.blp",
+      "sha256": "c7b229e3ddae7cda6ea632e9fbabfe6f1c8863d37d6fef7c97b51318c600ed2c",
+      "bytes": 175942,
+      "baselineMPQMember": "Leoric.blp"
+    },
+    {
+      "path": "imports/war3mapImported/Leoric.mdx",
+      "sha256": "f68cc2971589fac2518d934a8f445e8667812ecd5f1a7d26fb295bf26a1e5245",
+      "bytes": 249337,
+      "baselineMPQMember": "war3mapImported\\Leoric.mdx"
+    },
+    {
+      "path": "imports/war3mapImported/Leoric_Portrait.mdx",
+      "sha256": "1c9a56c3025369a5eb5eb00481b7b7a7239a68c730f7b0fb2dae03830fce143f",
+      "bytes": 37130,
+      "baselineMPQMember": "war3mapImported\\Leoric_Portrait.mdx"
+    }
+  ],
+  "boundary": "MPQ members and parsed object fields; normalized w3i ignores only the build display stamp. No Warcraft execution."
+}

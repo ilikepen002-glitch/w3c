@@ -32,6 +32,10 @@ class TDVisualSource
 	effect gear = null
 	effect petBuff = null
 	real petBuffUntil = 0.0
+	int petBuffSkill = 0
+	int petBuffWantedSkill = 0
+	real petBuffWantedUntil = 0.0
+	real petBuffRetryAt = 0.0
 	construct(unit source, int lane, int serial)
 		this.source = source
 		key = source.getHandleId()
@@ -151,8 +155,10 @@ CallbackPeriodic cleanup = null
 boolean executing = false
 int serialCounter = 0
 int castVisualCount = 0
+int coreVisualCount = 0
 int creationWindow = -1
 int creationCount = 0
+int coreCreationCount = 0
 int movingCreationCount = 0
 int array[4] laneWindows
 int array[4] laneGroups
@@ -177,19 +183,49 @@ function creationAvailable() returns boolean
 	if creationWindow != window
 		creationWindow = window
 		creationCount = 0
+		coreCreationCount = 0
 		movingCreationCount = 0
 	return creationCount < TD_VISUAL_NEW_PER_SECOND
 
+function decorationAvailable() returns boolean
+	return creationAvailable() and tdCombatVisualDecorationBudget(coreVisualCount, tdCombatVisualShortCount(), creationCount, coreCreationCount)
+
 public function tdCombatVisualAcquireCast() returns boolean
-	if tdIsGameOver() or tdCombatVisualShortCount() >= TD_VISUAL_SHORT_LIMIT or not creationAvailable()
+	if tdIsGameOver() or not decorationAvailable()
 		return false
 	castVisualCount += 1
 	creationCount += 1
 	return true
 
+public function tdCombatVisualAcquireCore() returns boolean
+	if tdIsGameOver() or not creationAvailable() or not tdCombatVisualCoreBudget(coreVisualCount, tdCombatVisualShortCount(), creationCount, coreCreationCount)
+		return false
+	castVisualCount += 1
+	coreVisualCount += 1
+	creationCount += 1
+	coreCreationCount += 1
+	return true
+
 public function tdCombatVisualReleaseCast()
 	if castVisualCount > 0
 		castVisualCount -= 1
+
+public function tdCombatVisualReleaseCore()
+	if coreVisualCount > 0
+		coreVisualCount -= 1
+		tdCombatVisualReleaseCast()
+
+// Completion transfers an already-counted core into an available decorative
+// live slot. Creation tickets never move or refund; a full decoration class
+// returns false so its context destroys the core instead of keeping priority.
+public function tdCombatVisualDemoteCore() returns boolean
+	if coreVisualCount <= 0 or tdCombatVisualShortCount() - coreVisualCount >= TD_VISUAL_DECORATION_LIMIT
+		return false
+	coreVisualCount -= 1
+	return true
+
+public function tdCombatVisualCoreCount() returns int
+	return coreVisualCount
 
 public function tdCombatVisualShortCount() returns int
 	return castVisualCount + hitVisualCount + moving.size()
@@ -225,15 +261,45 @@ function clearDetached(int key, int serial)
 			destroy entry
 	li.close()
 
-// Buff attachments borrow the same short-effect/creation admission as casts.
+// Buff attachments own one reserved core within the shared short-effect limit.
 // Each source owns one, and clearing them never touches its equipment handle.
 function clearPetBuff(TDVisualSource owner)
 	if owner.petBuff != null
 		DestroyEffect(owner.petBuff)
 		owner.petBuff = null
 		owner.petBuffUntil = 0.0
+		owner.petBuffSkill = 0
 		petBuffVisualCount -= 1
-		tdCombatVisualReleaseCast()
+		tdCombatVisualReleaseCore()
+
+function cancelPetBuff(TDVisualSource owner)
+	owner.petBuffWantedSkill = 0
+	owner.petBuffWantedUntil = 0.0
+	owner.petBuffRetryAt = 0.0
+	clearPetBuff(owner)
+
+function retryPetBuff(TDVisualSource owner, real now)
+	owner.petBuffRetryAt = now + TD_VISUAL_CORE_RETRY_INTERVAL
+	let model = tdCombatVisualPetBuffModel(owner.petBuffWantedSkill)
+	if model == "" or owner.petBuffWantedUntil <= now
+		return
+	if owner.petBuff != null and tdCombatVisualPetBuffModel(owner.petBuffSkill) == model
+		owner.petBuffUntil = owner.petBuffWantedUntil
+		owner.petBuffSkill = owner.petBuffWantedSkill
+		return
+	// A different skill is a new real state, not renewal of the old buff.
+	clearPetBuff(owner)
+	if not tdCombatVisualAcquireCore()
+		return
+	let art = AddSpecialEffectTarget(model, owner.source, "origin")
+	if art == null
+		tdCombatVisualReleaseCore()
+		return
+	owner.petBuff = art
+	owner.petBuffSkill = owner.petBuffWantedSkill
+	owner.petBuffUntil = owner.petBuffWantedUntil
+	petBuffVisualCount += 1
+	addHitArt(owner, tdCombatVisualPetBuffStartModel(owner.petBuffSkill), owner.source.getPos(), 0.30)
 
 public function tdCombatVisualPetBuffCount() returns int
 	return petBuffVisualCount
@@ -246,7 +312,7 @@ public function tdCombatVisualClearPet(unit source)
 		owner.petSerial += 1
 		clearHits(owner.key, owner.serial)
 		clearDetached(owner.key, owner.serial)
-		clearPetBuff(owner)
+		cancelPetBuff(owner)
 
 public function tdCombatVisualClearGear(unit source)
 	if source == null
@@ -321,9 +387,16 @@ function tick()
 			si.remove()
 			destroy owner
 			continue
-		if owner.petBuff != null and now >= owner.petBuffUntil
-			clearPetBuff(owner)
-		if not owner.gearSuspended and owner.gear == null and owner.petBuff == null and owner.hitCount == 0 and owner.detachedCount == 0 and now >= owner.nextHitVisualAt
+		if owner.petBuffWantedUntil <= now
+			cancelPetBuff(owner)
+		else
+			if owner.petBuff != null and now >= owner.petBuffUntil
+				clearPetBuff(owner)
+			if now >= owner.petBuffRetryAt
+				// Keep admission-clock grouping explicit in the locked JASS lowering.
+				if owner.petBuff == null or owner.petBuffSkill != owner.petBuffWantedSkill
+					retryPetBuff(owner, now)
+		if not owner.gearSuspended and owner.gear == null and owner.petBuff == null and owner.petBuffWantedSkill == 0 and owner.hitCount == 0 and owner.detachedCount == 0 and now >= owner.nextHitVisualAt
 			si.remove()
 			destroy owner
 	si.close()
@@ -356,7 +429,7 @@ function sourceFor(unit source, int lane) returns TDVisualSource
 	return owner
 
 function addHitArt(TDVisualSource owner, string model, vec2 point, real duration) returns boolean
-	if owner.hitCount >= 2 or hitVisualCount >= TD_VISUAL_HIT_LIMIT or tdCombatVisualShortCount() >= TD_VISUAL_SHORT_LIMIT or not creationAvailable()
+	if owner.hitCount >= 2 or hitVisualCount >= TD_VISUAL_HIT_LIMIT or tdCombatVisualShortCount() >= TD_VISUAL_SHORT_LIMIT or not decorationAvailable()
 		return false
 	creationCount += 1
 	let art = AddSpecialEffect(model, point.x, point.y)
@@ -371,22 +444,23 @@ function addHitArt(TDVisualSource owner, string model, vec2 point, real duration
 
 public function tdCombatVisualStartPetBuff(unit source, int lane, int skill, real expiresAt)
 	let model = tdCombatVisualPetBuffModel(skill)
-	if source == null or not laneValid(lane) or model == "" or expiresAt <= getElapsedGameTime()
+	let now = getElapsedGameTime()
+	if source == null or not laneValid(lane) or model == "" or expiresAt <= now
 		return
 	let owner = sourceFor(source, lane)
 	if owner == null or not sourceValid(owner)
 		return
-	clearPetBuff(owner)
-	if petBuffVisualCount >= 40 or not tdCombatVisualAcquireCast()
-		return
-	let art = AddSpecialEffectTarget(model, source, "origin")
-	if art == null
-		tdCombatVisualReleaseCast()
-		return
-	owner.petBuff = art
-	owner.petBuffUntil = expiresAt
-	petBuffVisualCount += 1
-	addHitArt(owner, tdCombatVisualPetBuffStartModel(skill), source.getPos(), 0.30)
+	owner.petBuffWantedSkill = skill
+	owner.petBuffWantedUntil = expiresAt
+	if owner.petBuff != null and tdCombatVisualPetBuffModel(owner.petBuffSkill) == model
+		// Refresh never consumes another native handle or creation ticket.
+		owner.petBuffUntil = expiresAt
+		owner.petBuffSkill = skill
+	else
+		// Never carry an invalid old skill through a new state's failed creation.
+		clearPetBuff(owner)
+		if now >= owner.petBuffRetryAt
+			retryPetBuff(owner, now)
 	wake()
 
 public function tdCombatVisualHit(unit source, vec2 origin, vec2 point, int element, int lane, boolean decisive)
@@ -400,7 +474,7 @@ public function tdCombatVisualHit(unit source, vec2 origin, vec2 point, int elem
 	if laneWindows[lane] != window
 		laneWindows[lane] = window
 		laneGroups[lane] = 0
-	let available = creationAvailable()
+	let available = decorationAvailable()
 	if not available or not tdCombatVisualHitBudget(now, owner.nextHitVisualAt, owner.hitCount, laneGroups[lane], hitVisualCount, tdCombatVisualShortCount(), creationCount)
 		return
 	owner.nextHitVisualAt = now + 0.20
@@ -412,7 +486,7 @@ public function tdCombatVisualHit(unit source, vec2 origin, vec2 point, int elem
 		addHitArt(owner, "Abilities\\Weapons\\Rifle\\RifleImpact.mdx", point, 0.15)
 	else if element == 2
 		addHitArt(owner, tdCombatVisualHitModel(element), point - side, duration)
-	else if element == 1 and owner.hitCount < 2 and hitVisualCount < TD_VISUAL_HIT_LIMIT and tdCombatVisualShortCount() < TD_VISUAL_SHORT_LIMIT and creationAvailable()
+	else if element == 1 and owner.hitCount < 2 and hitVisualCount < TD_VISUAL_HIT_LIMIT and tdCombatVisualShortCount() < TD_VISUAL_SHORT_LIMIT and decorationAvailable()
 		let delta = point - origin
 		let distance = SquareRoot(delta.x * delta.x + delta.y * delta.y)
 		let start = distance > 320.0 ? point - delta * (320.0 / distance) : origin
@@ -534,6 +608,19 @@ public function tdCombatVisualAdoptPetPoint(int serial, unit source, int lane, e
 	wake()
 	return true
 
+// The caller has demoted its core token before this existing-handle handoff.
+public function tdCombatVisualAdoptPetCoreLine(int serial, unit source, int lane, lightning line, real expiresAt, tdTrialCombatContext trial) returns boolean
+	if serial <= 0 or source == null or line == null or not laneValid(lane) or expiresAt <= getElapsedGameTime() or not tdTrialContextValid(trial)
+		return false
+	let owner = sourceFor(source, lane)
+	if owner == null or not sourceValid(owner)
+		return false
+	let entry = new TDVisualCastLine(serial, source, lane, line, expiresAt)
+	entry.detach(owner, trial)
+	castLines.add(entry)
+	wake()
+	return true
+
 public function tdCombatVisualRetainPetLines(int serial, unit source, int lane, tdTrialCombatContext trial) returns boolean
 	if serial <= 0 or source == null or not laneValid(lane) or not tdTrialContextValid(trial)
 		return false
@@ -568,7 +655,7 @@ public function tdCombatVisualClearMoving(int serial)
 	mi.close()
 
 public function tdCombatVisualCreateMoving(int serial, int slot, unit source, int lane, string model, vec3 point, angle facing, real scale) returns boolean
-	if serial <= 0 or slot < 0 or slot > 1 or source == null or not laneValid(lane) or moving.size() >= TD_VISUAL_MOVING_LIMIT or tdCombatVisualShortCount() >= TD_VISUAL_SHORT_LIMIT or not creationAvailable() or movingCreationCount >= 8
+	if serial <= 0 or slot < 0 or slot > 1 or source == null or not laneValid(lane) or moving.size() >= TD_VISUAL_MOVING_LIMIT or tdCombatVisualShortCount() >= TD_VISUAL_SHORT_LIMIT or not decorationAvailable() or movingCreationCount >= 8
 		return false
 	if tdCombatVisualMovingOwnerCount(serial) >= 2
 		return false

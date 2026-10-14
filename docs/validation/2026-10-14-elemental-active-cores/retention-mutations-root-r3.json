@@ -1,0 +1,156 @@
+{
+  "status": "PASS",
+  "mapSHA256": "c3a50d47b9a5c47677e52ca6cb5bd8081e2f4d792385f8f63a9ba3cef3cb85bc",
+  "packedJassSHA256": "1f18e8034415ffca77f4b5741f0488fe2472a4be666c16d0e3ac29e9415a49c3",
+  "gateSHA256": "4e059f5246c2b97d8106fddd9d4ae357491810c25f0eea9be1275848e13ed28b",
+  "boundary": "Targeted actual-packed spirit terminal retention, cleanup and admission gate.\n\nAll ownership, admission, terminal decisions, cleanup and timer bodies execute the\nsupplied map's JASS through VerifyElementalVfxArtifact.VfxRuntime. Python observes\nproduction fields and delivers controlled native clocks/handles/collections only.\nNo Warcraft rendering, particle-tail, attachment-quality or FPS claim is made.\n",
+  "bounds": {
+    "TDCombatVisualData_TD_VISUAL_SHORT_LIMIT": 128,
+    "TDCombatVisualData_TD_VISUAL_HIT_LIMIT": 32,
+    "TDCombatVisualData_TD_VISUAL_NEW_PER_SECOND": 120,
+    "TDCombatVisualData_TD_VISUAL_MOVING_LIMIT": 8,
+    "TDCombatVisualData_TD_VISUAL_CORE_LIMIT": 40,
+    "TDCombatVisualData_TD_VISUAL_DECORATION_LIMIT": 88,
+    "TDCombatVisualData_TD_VISUAL_CORE_NEW_PER_SECOND": 40,
+    "TDCombatVisualData_TD_VISUAL_DECORATION_NEW_PER_SECOND": 80,
+    "TDCombatVisualData_TD_VISUAL_CORE_RETRY_INTERVAL": 0.25,
+    "TDPetCastContext_TD_PET_EFFECT_VISUAL_LIMIT": 128,
+    "TDPetActiveVisualData_TD_PET_VISUAL_TERMINAL_DWELL": 0.25
+  },
+  "coverage": {
+    "compiledMutations": [
+      {
+        "mutation": "disabled-adoption",
+        "rejected": true,
+        "reason": "Delivered terminal points were not adopted 31"
+      },
+      {
+        "mutation": "zero-dwell",
+        "rejected": true,
+        "reason": "Delivered terminal points were not adopted 31"
+      },
+      {
+        "mutation": "blanket-false-result-terminal",
+        "rejected": true,
+        "reason": "Abort path retained a combat task or detached terminal art (21, 'target-loss-after-stage', 'visual-first')"
+      },
+      {
+        "mutation": "extended-original-line-deadline",
+        "rejected": true,
+        "reason": "Detached final line deadline was extended: 15.25, expected 15.2"
+      },
+      {
+        "mutation": "missing-context-index-cleanup",
+        "rejected": true,
+        "reason": "Context destruction retained active index"
+      },
+      {
+        "mutation": "double-admission-release",
+        "rejected": true,
+        "reason": "Shared admission released twice or failed to follow live handles"
+      },
+      {
+        "mutation": "missing-explicit-detached-clear",
+        "rejected": true,
+        "reason": "Explicit cleanup returned with detached tail clear-pet"
+      },
+      {
+        "mutation": "stale-owner-acceptance",
+        "rejected": true,
+        "reason": "Old tail was accepted by reused source/class identity"
+      },
+      {
+        "mutation": "buff-uses-decoration-admission",
+        "rejected": true,
+        "reason": "Attachment did not own reserved core admission (11, 'normal')"
+      },
+      {
+        "mutation": "raised-TDCombatVisualData_TD_VISUAL_SHORT_LIMIT",
+        "rejected": true,
+        "reason": "Packed bound TDCombatVisualData_TD_VISUAL_SHORT_LIMIT: 129, expected 128"
+      },
+      {
+        "mutation": "raised-TDCombatVisualData_TD_VISUAL_NEW_PER_SECOND",
+        "rejected": true,
+        "reason": "Packed bound TDCombatVisualData_TD_VISUAL_NEW_PER_SECOND: 121, expected 120"
+      },
+      {
+        "mutation": "raised-TDCombatVisualData_TD_VISUAL_CORE_LIMIT",
+        "rejected": true,
+        "reason": "Packed bound TDCombatVisualData_TD_VISUAL_CORE_LIMIT: 41, expected 40"
+      },
+      {
+        "mutation": "raised-TDCombatVisualData_TD_VISUAL_DECORATION_LIMIT",
+        "rejected": true,
+        "reason": "Packed bound TDCombatVisualData_TD_VISUAL_DECORATION_LIMIT: 89, expected 88"
+      },
+      {
+        "mutation": "raised-TDCombatVisualData_TD_VISUAL_CORE_NEW_PER_SECOND",
+        "rejected": true,
+        "reason": "Packed bound TDCombatVisualData_TD_VISUAL_CORE_NEW_PER_SECOND: 41, expected 40"
+      },
+      {
+        "mutation": "raised-TDCombatVisualData_TD_VISUAL_DECORATION_NEW_PER_SECOND",
+        "rejected": true,
+        "reason": "Packed bound TDCombatVisualData_TD_VISUAL_DECORATION_NEW_PER_SECOND: 81, expected 80"
+      },
+      {
+        "mutation": "raised-per-cast-native-limit",
+        "rejected": true,
+        "reason": "Actual per-cast eight-handle cap expanded"
+      },
+      {
+        "mutation": "raised-TDCombatVisualData_TD_VISUAL_HIT_LIMIT",
+        "rejected": true,
+        "reason": "Packed bound TDCombatVisualData_TD_VISUAL_HIT_LIMIT: 33, expected 32"
+      },
+      {
+        "mutation": "raised-TDCombatVisualData_TD_VISUAL_MOVING_LIMIT",
+        "rejected": true,
+        "reason": "Packed bound TDCombatVisualData_TD_VISUAL_MOVING_LIMIT: 9, expected 8"
+      },
+      {
+        "mutation": "raised-TDPetCastContext_TD_PET_EFFECT_VISUAL_LIMIT",
+        "rejected": true,
+        "reason": "Packed bound TDPetCastContext_TD_PET_EFFECT_VISUAL_LIMIT: 129, expected 128"
+      },
+      {
+        "mutation": "zero-core-retry-interval",
+        "rejected": true,
+        "reason": "Packed bound TDCombatVisualData_TD_VISUAL_CORE_RETRY_INTERVAL: 0.0, expected 0.25"
+      },
+      {
+        "mutation": "cast-core-uses-decoration-admission",
+        "rejected": true,
+        "reason": "One cast exceeded its one-core/eight-native contract"
+      },
+      {
+        "mutation": "unbounded-core-tail-demotion",
+        "rejected": true,
+        "reason": "Core tail bypassed full88 decoration live cap"
+      },
+      {
+        "mutation": "core-demotion-spends-new-ticket",
+        "rejected": true,
+        "reason": "Rejected core demotion changed ownership or creation tickets"
+      },
+      {
+        "mutation": "wrong-class-release-after-demotion",
+        "rejected": true,
+        "reason": "Shared admission released twice or failed to follow live handles"
+      },
+      {
+        "mutation": "missing-target-release",
+        "rejected": true,
+        "reason": "Context destruction failed exact target-position release"
+      },
+      {
+        "mutation": "duplicate-target-release",
+        "rejected": true,
+        "reason": "Packaged JASS error: Called TDPetEffectTargetPosition.TDPetEffectTargetPosition on invalid object."
+      }
+    ]
+  },
+  "completeGate": false,
+  "legalFixtureBoundary": "All active battle fixtures use complete legal four-slot pets. Opening a fifth slot is impossible; the existing open-slot invalidation hook is source-fenced by the separate mechanics gate, not fabricated as an active-tail fixture."
+}

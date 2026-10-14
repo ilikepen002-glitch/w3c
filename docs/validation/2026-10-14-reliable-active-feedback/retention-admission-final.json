@@ -1,0 +1,606 @@
+{
+  "status": "PASS",
+  "mapSHA256": "05746604cc6cc7108d95619cd6538fa508d97db18dabb4aed184d125ed56d504",
+  "packedJassSHA256": "a87b49da4c08c2bd73c514a423e49ce41002e73c60d01c7b8757593532466186",
+  "gateSHA256": "a3944826c880947b920b937e721ec70800e7e607606eec294fe1e585dbf710ea",
+  "boundary": "Targeted actual-packed spirit terminal retention, cleanup and admission gate.\n\nAll ownership, admission, terminal decisions, cleanup and timer bodies execute the\nsupplied map's JASS through VerifyElementalVfxArtifact.VfxRuntime. Python observes\nproduction fields and delivers controlled native clocks/handles/collections only.\nNo Warcraft rendering, particle-tail, attachment-quality or FPS claim is made.\n",
+  "bounds": {
+    "TDCombatVisualData_TD_VISUAL_SHORT_LIMIT": 128,
+    "TDCombatVisualData_TD_VISUAL_HIT_LIMIT": 32,
+    "TDCombatVisualData_TD_VISUAL_NEW_PER_SECOND": 120,
+    "TDCombatVisualData_TD_VISUAL_MOVING_LIMIT": 8,
+    "TDCombatVisualData_TD_VISUAL_CORE_LIMIT": 40,
+    "TDCombatVisualData_TD_VISUAL_DECORATION_LIMIT": 88,
+    "TDCombatVisualData_TD_VISUAL_CORE_NEW_PER_SECOND": 40,
+    "TDCombatVisualData_TD_VISUAL_DECORATION_NEW_PER_SECOND": 80,
+    "TDCombatVisualData_TD_VISUAL_CORE_RETRY_INTERVAL": 0.25,
+    "TDPetCastContext_TD_PET_EFFECT_VISUAL_LIMIT": 128,
+    "TDPetActiveVisualData_TD_PET_VISUAL_TERMINAL_DWELL": 0.25
+  },
+  "coverage": {
+    "coreAdmission": [
+      {
+        "skill": 29,
+        "mode": "normal",
+        "nativeCore": 0,
+        "movingCore": 2,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 29,
+        "mode": "null",
+        "nativeCore": 0,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 29,
+        "mode": "moving-live",
+        "nativeCore": 1,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 29,
+        "mode": "moving-rate",
+        "nativeCore": 1,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 29,
+        "mode": "moving-one",
+        "nativeCore": 1,
+        "movingCore": 1,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 29,
+        "mode": "global-full",
+        "nativeCore": 0,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 29,
+        "mode": "partial-one",
+        "nativeCore": 0,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 29,
+        "mode": "empty-moving-denied",
+        "centralFreeze": 1
+      },
+      {
+        "skill": 33,
+        "mode": "normal",
+        "nativeCore": 0,
+        "movingCore": 1,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 33,
+        "mode": "null",
+        "nativeCore": 0,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 33,
+        "mode": "moving-live",
+        "nativeCore": 1,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 33,
+        "mode": "moving-rate",
+        "nativeCore": 1,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 33,
+        "mode": "moving-one",
+        "nativeCore": 0,
+        "movingCore": 1,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 33,
+        "mode": "global-full",
+        "nativeCore": 0,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 33,
+        "mode": "partial-one",
+        "nativeCore": 0,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 35,
+        "mode": "normal",
+        "nativeCore": 0,
+        "movingCore": 1,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 35,
+        "mode": "null",
+        "nativeCore": 0,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 35,
+        "mode": "moving-live",
+        "nativeCore": 1,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 35,
+        "mode": "moving-rate",
+        "nativeCore": 1,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 35,
+        "mode": "moving-one",
+        "nativeCore": 0,
+        "movingCore": 1,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 35,
+        "mode": "global-full",
+        "nativeCore": 0,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      },
+      {
+        "skill": 35,
+        "mode": "partial-one",
+        "nativeCore": 0,
+        "movingCore": 0,
+        "originalHit": {
+          "amount": 100.0,
+          "isCode": false,
+          "isSpell": false,
+          "id": 0,
+          "lastDamageHP": 0.0,
+          "life": 99900.0
+        },
+        "ordinaryAdmissionPreserved": true
+      }
+    ],
+    "buffAdmission": {
+      "matrix": [
+        {
+          "skill": 11,
+          "mode": "normal",
+          "attachment": 1,
+          "startBurst": 1,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 11,
+          "mode": "null",
+          "attachment": 0,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 11,
+          "mode": "one-live",
+          "attachment": 1,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 11,
+          "mode": "one-ticket",
+          "attachment": 1,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 11,
+          "mode": "global-full",
+          "attachment": 1,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 11,
+          "mode": "rate-full",
+          "attachment": 1,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 11,
+          "mode": "core-full",
+          "attachment": 0,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 11,
+          "mode": "core-rate",
+          "attachment": 0,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 11,
+          "mode": "all-full",
+          "attachment": 0,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 11,
+          "mode": "all-rate",
+          "attachment": 0,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 12,
+          "mode": "normal",
+          "attachment": 1,
+          "startBurst": 1,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 12,
+          "mode": "null",
+          "attachment": 0,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 12,
+          "mode": "one-live",
+          "attachment": 1,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 12,
+          "mode": "one-ticket",
+          "attachment": 1,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 12,
+          "mode": "global-full",
+          "attachment": 1,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 12,
+          "mode": "rate-full",
+          "attachment": 1,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 12,
+          "mode": "core-full",
+          "attachment": 0,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 12,
+          "mode": "core-rate",
+          "attachment": 0,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 12,
+          "mode": "all-full",
+          "attachment": 0,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        },
+        {
+          "skill": 12,
+          "mode": "all-rate",
+          "attachment": 0,
+          "startBurst": 0,
+          "directPublicAPI": true,
+          "gearIndependent": true,
+          "gameplayUnchanged": true
+        }
+      ],
+      "globalCap": 40,
+      "sameSecondPositive40": true,
+      "onePerSource": true,
+      "globalFullMeaning": "decoration88",
+      "rateFullMeaning": "decoration80perSecond"
+    },
+    "buffRetry": {
+      "recovery": [
+        {
+          "mode": "null",
+          "firstRejected": true,
+          "retryInterval": 0.25,
+          "automaticRecovery": true,
+          "recoveredAt": 20.35,
+          "callbackDelivery": "controlled-delayed"
+        },
+        {
+          "mode": "core-live",
+          "firstRejected": true,
+          "retryInterval": 0.25,
+          "automaticRecovery": true,
+          "recoveredAt": 20.35,
+          "callbackDelivery": "controlled-delayed"
+        },
+        {
+          "mode": "core-rate",
+          "firstRejected": true,
+          "retryInterval": 0.25,
+          "automaticRecovery": true,
+          "recoveredAt": 21.0,
+          "callbackDelivery": "controlled-delayed"
+        },
+        {
+          "mode": "combined-sparse",
+          "firstRejected": true,
+          "retryInterval": 0.25,
+          "automaticRecovery": true,
+          "recoveredAt": 21.0,
+          "callbackDelivery": "controlled-delayed"
+        },
+        {
+          "mode": "combined-continuous",
+          "firstRejected": true,
+          "retryInterval": 0.25,
+          "automaticRecovery": true,
+          "recoveredAt": 21.1,
+          "callbackDelivery": "every.05"
+        }
+      ],
+      "renewalWithoutCreation": true,
+      "failedNewSkillClearedInvalidOldCore": true,
+      "replacementOneOwner": true,
+      "cancelledExpectedStates": [
+        "clear-pet",
+        "forget-source",
+        "clear-lane",
+        "shutdown",
+        "host-death",
+        "owner-transfer",
+        "lane-inactive",
+        "epoch",
+        "deadline"
+      ],
+      "rebindFenced": true
+    },
+    "caps": {
+      "creation": 120,
+      "coreCreation": 40,
+      "decorationCreation": 80,
+      "shared": 128,
+      "coreLive": 40,
+      "decorationLive": 88,
+      "petNative": 128,
+      "perCast": 8,
+      "hit": 32,
+      "moving": 8
+    }
+  },
+  "completeGate": false,
+  "legalFixtureBoundary": "All active battle fixtures use complete legal four-slot pets. Opening a fifth slot is impossible; the existing open-slot invalidation hook is source-fenced by the separate mechanics gate, not fabricated as an active-tail fixture."
+}

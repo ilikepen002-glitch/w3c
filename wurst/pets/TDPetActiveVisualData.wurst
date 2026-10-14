@@ -41,6 +41,8 @@ public function tdPetVisualRoadFacing(vec2 previous, vec2 point, vec2 fallback) 
 public constant real TD_PET_VISUAL_TERMINAL_DWELL = 0.25
 
 public function tdPetVisualTerminal(int skill, int stage, int markCount, real now, real expiresAt, real pulseAt) returns boolean
+	if skill == 19 or skill == 32 or skill == 35 or skill == 36
+		return stage == 1
 	if skill == 21 or skill == 22 or skill == 31 or skill == 33
 		return stage == 4
 	if skill == 24

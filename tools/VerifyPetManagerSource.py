@@ -17,7 +17,7 @@ from VerifyTowerUpgradeArtifact import jass_boolean_groups_explicit
 ROOT = Path(__file__).resolve().parents[1]
 BASELINE = 'c9d59e6482d13c97bd205b7b55276f06e416cf46'
 ASSET_BASELINE = '0330fd12de4d66c4a1ca4980e10b771f0903fbfc'
-FILES = ('TDPetData', 'TDPetRules', 'TDPetState', 'TDPetUIState', 'TDPetUIView', 'TDPetUI', 'TDPetObjectGen')
+FILES = ('TDPetData', 'TDPetRules', 'TDPetState', 'TDPetUIState', 'TDPetUIView', 'TDPetUI', 'TDPetObjectGen', 'TDPetCultivation')
 
 
 def require(condition, message):
@@ -192,7 +192,7 @@ def scalar_helpers():
         namespace[name] = int(value)
     namespace['TD_PET_SLOT_EMPTY'] = namespace['TD_PET_SKILL_COUNT'] * 2
     targets = {
-        'TDPetData': [('tdPetHexRawcode', 3), ('tdPetHex3Rawcode', 3), ('tdPetDisplayUnitId', 2), ('tdPetListAbilityId', 4), ('tdPetPreviewAbilityId', 2), ('tdPetPreviewArrowAbilityId', 1), ('tdPetUICommandId', 1), ('tdPetManagerCommandId', 1), ('tdPetSlotAbilityId', 2)],
+        'TDPetData': [('tdPetHexRawcode', 3), ('tdPetHex3Rawcode', 3), ('tdPetDisplayUnitId', 2), ('tdPetListAbilityId', 4), ('tdPetPreviewAbilityId', 2), ('tdPetPreviewArrowAbilityId', 1), ('tdPetUICommandId', 1), ('tdPetManagerCommandId', 1), ('tdPetDirectedAbilityId', 1), ('tdPetSlotAbilityId', 2)],
         'TDPetHeroRules': [('tdPetHeroDefined', 1), ('tdPetHeroName', 1), ('tdPetHeroHostName', 1), ('tdPetHeroHostTypeId', 1), ('tdPetHeroFitsRawcode', 2)],
         'TDPetHeroData': [('tdPetHeroIconName', 1)],
         'TDPetElementData': [('tdPetSkillElement', 1), ('tdPetSkillFixedQuality', 1), ('tdPetElementSkillName', 1)],
@@ -211,21 +211,22 @@ def scalar_helpers():
 def verify_scalar_contracts(namespace=None):
     from VerifyPetUIArtifact import MANAGER_COMMANDS, PAGE_ACTIONS, expected_action_cell, manager_rawcode
     n = namespace or scalar_helpers()
-    for mode, action in itertools.product(range(-1, 6), range(-1, 122)):
+    for mode, action in itertools.product(range(-1, 9), range(-1, 210)):
         require(n['tdPetActionCell'](mode, action) == expected_action_cell(mode, action), f'Source page whitelist {mode}/{action}')
-    for action in range(23):
+    for action in range(33):
         require(n['tdPetActionHotkey'](action) == MANAGER_COMMANDS[manager_rawcode(action)][2], f'Source hotkey {action}')
-    channels = {n['tdPetManagerCommandId'](action) for action in range(23)}
+    channels = {n['tdPetManagerCommandId'](action) for action in range(33)}
     for cell, variant in itertools.product(range(10), range(n['TD_PET_LIST_VARIANTS'])):
         species, quality, count = (0, 0, 0) if variant == 0 else ((variant - 1) // 4 + 1, (variant - 1) % 4 + 1, 1)
         identifier = n['tdPetListAbilityId'](cell, species, quality, count)
         require(identifier == int.from_bytes(f'L{cell * 241 + (0 if variant == 0 else 1 + (variant - 1) * 4):03X}'.encode(), 'big'), 'Source list rawcode mismatch')
         require(identifier not in channels, 'Source manager Channel collision')
         channels.add(identifier)
+    channels.update(n['tdPetDirectedAbilityId'](skill) for skill in range(49))
     passives = {n['tdPetSlotAbilityId'](slot, variant) for slot, variant in itertools.product(range(4), range(n['TD_PET_SLOT_EMPTY'] + 1))}
     passives.update(n['tdPetPreviewAbilityId'](position, skill) for position, skill in itertools.product(range(2), range(n['TD_PET_SKILL_COUNT'])))
     passives.update(n['tdPetPreviewArrowAbilityId'](position) for position in range(2))
-    require(len(channels) == 23 + 10 * n['TD_PET_LIST_VARIANTS'] and len(passives) == 4 * (n['TD_PET_SLOT_EMPTY'] + 1) + 2 * n['TD_PET_SKILL_COUNT'] + 2 and not channels & passives, 'Source object/rawcode capacity/collision mismatch')
+    require(len(channels) == 33 + 49 + 10 * n['TD_PET_LIST_VARIANTS'] and len(passives) == 4 * (n['TD_PET_SLOT_EMPTY'] + 1) + 2 * n['TD_PET_SKILL_COUNT'] + 2 and not channels & passives, 'Source object/rawcode capacity/collision mismatch')
     for cell, species, quality, count in itertools.product(range(-1, 11), range(-1, n['TD_PET_SPECIES_COUNT'] + 2), range(-1, 6), range(-1, 6)):
         valid = 0 <= cell < 10 and ((species, quality, count) == (0, 0, 0) or (1 <= species <= n['TD_PET_SPECIES_COUNT'] and 1 <= quality <= 4 and 1 <= count <= 4))
         require((n['tdPetListAbilityId'](cell, species, quality, count) != 0) == valid, 'Invalid list portrait/count must fail closed')
@@ -243,7 +244,7 @@ def verify_scalar_contracts(namespace=None):
             expected = next(((slot + step * direction) % 20 for step in range(1, 21) if (slot + step * direction) % 20 in occupied), -1)
             require(n['tdPetNextOccupied'](0, slot, direction) == expected, 'Source skip-hole navigation mismatch')
             require(n['tdPetNextOccupied'](1, slot, direction) == -1, 'Source lane isolation mismatch')
-    for function, args in [('tdPetListAbilityId', (10, 1, 1, 1)), ('tdPetListAbilityId', (0, 16, 1, 1)), ('tdPetPreviewAbilityId', (2, 0)), ('tdPetPreviewArrowAbilityId', (2,)), ('tdPetManagerCommandId', (23,)), ('tdPetSlotAbilityId', (4, 0)), ('tdPetSlotAbilityId', (0, 129)), ('tdPetDisplayUnitId', (16, 1))]:
+    for function, args in [('tdPetListAbilityId', (10, 1, 1, 1)), ('tdPetListAbilityId', (0, 16, 1, 1)), ('tdPetPreviewAbilityId', (2, 0)), ('tdPetPreviewArrowAbilityId', (2,)), ('tdPetManagerCommandId', (33,)), ('tdPetDirectedAbilityId', (-1,)), ('tdPetDirectedAbilityId', (49,)), ('tdPetSlotAbilityId', (4, 0)), ('tdPetSlotAbilityId', (0, 129)), ('tdPetDisplayUnitId', (16, 1))]:
         require(n[function](*args) == 0, 'Source out-of-partition rawcode must fail closed')
     # Full source literal collision scan, not merely the new namespace itself.
     reserved = channels | passives | {n['tdPetDisplayUnitId'](species, quality) for species, quality in itertools.product(range(1, n['TD_PET_SPECIES_COUNT'] + 1), range(1, 5))} | {int.from_bytes(b'pd00', 'big')}
@@ -253,10 +254,10 @@ def verify_scalar_contracts(namespace=None):
             continue
         for literal in re.findall(r"'([A-Za-z0-9]{4})'", path.read_text(encoding='utf-8')):
             require(int.from_bytes(literal.encode(), 'big') not in reserved, f'Rawcode reservation collision in {path.relative_to(ROOT)}: {literal}')
-    print('PASS SOURCE SCALARS: 861 page/action cases; definition-derived Channel identities; definition-sized passive rawcode capacity; exhaustive count inputs; 20 numbers; 1,280 quality cases; navigation and boundary guards')
+    print('PASS SOURCE SCALARS: 2,110 page/action cases; definition-derived Channel identities; definition-sized passive rawcode capacity; exhaustive count inputs; 20 numbers; 1,280 quality cases; navigation and boundary guards')
 
 
-def verify_wiring(*, verify_legacy_wild_scope=True):
+def verify_wiring(*, verify_legacy_wild_scope=True, baseline=BASELINE):
     texts = {name: source(name) for name in FILES}
     ui, view, state, session, objects = (texts[n] for n in ('TDPetUI', 'TDPetUIView', 'TDPetState', 'TDPetUIState', 'TDPetObjectGen'))
     require('TD_PET_COLLECTION_LIMIT = 20' in texts['TDPetData'], 'Collection capacity must be twenty')
@@ -324,14 +325,16 @@ def verify_wiring(*, verify_legacy_wild_scope=True):
             'Status query must not repeat skill tooltips or expose internal record IDs')
     require(not re.search(r'\[生效|生效技能\s*\d|生效数', ui + view + session), 'Unrequested effective-status label/count')
     hud = (ROOT / 'wurst/TDHud.wurst').read_text()
-    before = subprocess.run(['git', 'show', BASELINE + ':wurst/TDHud.wurst'], cwd=ROOT, check=True, capture_output=True, text=True).stdout
+    before = subprocess.run(['git', 'show', baseline + ':wurst/TDHud.wurst'], cwd=ROOT, check=True, capture_output=True, text=True).stdout
+    if baseline != BASELINE:
+        require(hud == before, 'Current frozen baseline HUD bytes changed')
     require(hud.count('CreateMultiboard') == before.count('CreateMultiboard'), 'Manager replaces ranking board')
     require('setColumnCount(TD_DAMAGE_HUD_COLUMNS)' in hud and 'tdPetHudSummaries[playerId]' in hud and 'tdPetHudSummaries[lane]' in hud, 'Keep ranking columns and synchronous lane summaries')
     if verify_legacy_wild_scope:
         for path in ('wurst/pets/TDPetWild.wurst', 'wurst/pets/TDPetWildState.wurst'):
-            before = subprocess.run(['git', 'show', BASELINE + ':' + path], cwd=ROOT, check=True, capture_output=True).stdout
+            before = subprocess.run(['git', 'show', baseline + ':' + path], cwd=ROOT, check=True, capture_output=True).stdout
             actual = (ROOT / path).read_bytes()
-            if path.endswith('TDPetWild.wurst') and 'TD_PET_SPECIES_COUNT = 15' in source('TDPetData'):
+            if baseline == BASELINE and path.endswith('TDPetWild.wurst') and 'TD_PET_SPECIES_COUNT = 15' in source('TDPetData'):
                 require(before.count(b'species > 3') == 1 and before.count(b'GetRandomInt(1, 3)') == 1, 'Wild species expansion baseline changed')
                 before = before.replace(b'species > 3', b'species > TD_PET_SPECIES_COUNT').replace(b'GetRandomInt(1, 3)', b'GetRandomInt(1, TD_PET_SPECIES_COUNT)')
             require(actual == before, 'Wild encounter changes outside approved species-only scope: ' + path)
@@ -380,7 +383,7 @@ def verify_ui_workflow():
     for text in ('mount(0, tdPetPreviewAbilityId(0', 'mount(1, tdPetPreviewArrowAbilityId(0)', 'mount(2, tdPetPreviewArrowAbilityId(1)', 'mount(3, tdPetPreviewAbilityId(1'):
         require(text in opened, 'Preview old/arrow/arrow/new layout missing: ' + text)
     config = function_body(objects, 'listCommand')[1]
-    for text in ('setLevels(2)', 'presetBaseOrderID(lvl -> order)', 'presetTargetType(lvl -> 0)', 'presetOptions(lvl -> 1)', 'presetDisableOtherAbilities(lvl -> false)', 'presetFollowThroughTime(lvl -> 0.0)', 'presetArtDuration(lvl -> 0.0)', 'setHeroAbility(false)', 'setItemAbility(false)', 'presetManaCost(lvl -> 0)', 'presetCooldown(lvl -> 0.0)', 'setArtCaster("")', 'setArtEffect("")', 'setArtSpecial("")', 'setArtTarget("")'):
+    for text in ('setLevels(levels)', 'presetBaseOrderID(lvl -> order)', 'presetTargetType(lvl -> 0)', 'presetOptions(lvl -> 1)', 'presetDisableOtherAbilities(lvl -> false)', 'presetFollowThroughTime(lvl -> 0.0)', 'presetArtDuration(lvl -> 0.0)', 'setHeroAbility(false)', 'setItemAbility(false)', 'presetManaCost(lvl -> 0)', 'presetCooldown(lvl -> 0.0)', 'setArtCaster("")', 'setArtEffect("")', 'setArtSpecial("")', 'setArtTarget("")'):
         require(text in config, 'Incomplete shared list Channel configuration: ' + text)
     continued = function_body(state, 'tdPetContinueReroll')[1]
     for text in ('tdPetLaneCanManage(lane)', 'pet != expected', 'pet.released', 'pet.proposalSlot >= pet.skillCount', 'pet.proposalSlot >= 4', 'candidateVersion <= 0', 'pet.proposalVersion != candidateVersion', 'pet.proposalVersion >= 2147483647', 'pet.proposalRevision != sourceRevision', 'pet.revision != sourceRevision', 'tdPetRerollStones[lane] < 1', 'candidate < 0'):

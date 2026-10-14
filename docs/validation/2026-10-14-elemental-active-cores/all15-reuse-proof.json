@@ -1,0 +1,201 @@
+{
+  "status": "PASS",
+  "oldMapSHA256": "9f8a2a52902016a59f22883b0cde2bccede4ec06eeda5ff95453010e1159d887",
+  "mapSHA256": "c3a50d47b9a5c47677e52ca6cb5bd8081e2f4d792385f8f63a9ba3cef3cb85bc",
+  "resourcePairs": 15,
+  "resources": [
+    {
+      "path": "war3mapImported\\SilverManeBeast.mdx",
+      "sha256": "7967acb75baacba9f14f71264dc11256674840927dd93134dd1d56983b89dbe4",
+      "bytes": 421506,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\SilverManeAtlas.blp",
+      "sha256": "af713ae301a3dd2b5c83e2b9a128101e901119901301978d8f10e8f04f4084b2",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\SteelwingFalcon.mdx",
+      "sha256": "9d08287cbfa64df2bc7b6cc5b32841fc0e40bd8ca1efd6f66b75484e7ce6455f",
+      "bytes": 236384,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\SteelwingAtlas.blp",
+      "sha256": "76aea1a30bcc21f4eb828458afb53bdf24b1c77cae683e306fcd957d19f96e10",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\BrassPangolin.mdx",
+      "sha256": "f8ba608398a59d2bd4a12d3363818dc11af76b7fca7ea03f69e68fe58f6b8514",
+      "bytes": 286592,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\BrassPangolinAtlas.blp",
+      "sha256": "3b5c0c69d621b60ad3a6452c28e41fac88bbb50bf2ec0848b01e95aae81982b5",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\LeafwingSpirit.mdx",
+      "sha256": "015962f0bdd40391193fa207cee4d5b41cb358ccda78614eeadbebc9b305930d",
+      "bytes": 316376,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\LeafwingAtlas.blp",
+      "sha256": "3aaa1f8c80611f1def57db646db97878e7405eecf41128ee34b539de312043f2",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\RootbudStag.mdx",
+      "sha256": "36aeedea98979a086be92f17995820d1a1c41c33d841b7d346745e6c56bcbcd0",
+      "bytes": 233654,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\RootbudAtlas.blp",
+      "sha256": "937a3ec5a0541f0056cf1eb2297608ef1028a52ee550010b3539b5429b43fe4c",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\MosscapSprite.mdx",
+      "sha256": "9007639eb4f11095e4f2c0faa00eccdd4c206f9692066c853d7302bd33817ab9",
+      "bytes": 251540,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\MosscapAtlas.blp",
+      "sha256": "a0fe255bd0f7d3ef74ea7fa5e3c92a7603e4ef677fd948f6a3bcdbaff6ac4744",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\TideWyrm.mdx",
+      "sha256": "e620111850fb3ca3ac5da23d8e481ed314e24992b24e907a6a4ddecebca37800",
+      "bytes": 303398,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\TideWyrmAtlas.blp",
+      "sha256": "19d718ff83b8b91461e85cc2088a23e438b31b77512b91725d00eb57c3e8364b",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\FrostFinManta.mdx",
+      "sha256": "7d2cd0dac23f9e73e806d503533929af7beffc663ceabfe7f28ebe451daf41bb",
+      "bytes": 245690,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\FrostMantaAtlas.blp",
+      "sha256": "9bf4acd0f72da2ed0186bfb8c98465eedab09ad2b845a8309e86c362a0de068c",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\SnowManeOtter.mdx",
+      "sha256": "0c58f1c73f525be922f3e21497a748e7c4cc3df08a0862f9f6f4e089e6acb0a8",
+      "bytes": 309062,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\SnowOtterAtlas.blp",
+      "sha256": "0b006eb033b2c1cd2161616136cb10aec0eef5830cb6f786a684d016b5895c75",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\EmberBird.mdx",
+      "sha256": "6cd3716d43e791cceb704df484e8cdf8541a748cf7dc932becc1790b313152d1",
+      "bytes": 418244,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\EmberBirdAtlas.blp",
+      "sha256": "b8c10edb0fb4e1c317036d889b20ccde4396989eb7817fa1462b47b7f721680f",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\MoltenHornSalamander.mdx",
+      "sha256": "bb9bc585505dc6849cc05574b7367ec361183502e204290d4ede9e981cfbc822",
+      "bytes": 367652,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\MoltenHornAtlas.blp",
+      "sha256": "752a7c5fb18397e4cff06e30b9fc99ce52d555fd2388cf7b203c0accaa4fa676",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\CinderTailFox.mdx",
+      "sha256": "4923fde2dc40d971cb320d1c63697986dde93c7b3b885a565c417045a66df914",
+      "bytes": 398240,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\CinderFoxAtlas.blp",
+      "sha256": "c3008040004ce6a06d03b900ac7c040f3ce5b533a50b20da844aca77ebf03a99",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\RockShellTurtle.mdx",
+      "sha256": "22b5df4b1cab01ecfc80d165583d3417900d79c62fd7ad9de10cafbfdfc597cf",
+      "bytes": 304524,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\RockTurtlePalette.blp",
+      "sha256": "ee567e4260f21ac424a049bc635f26768d8a169ca071cdabefab27023494c0cc",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\BoulderArmGibbon.mdx",
+      "sha256": "b9efa3c1168af2a9f7106620c55e1a04233146d887353f62717acd2bb849dcc9",
+      "bytes": 316202,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\BoulderArmAtlas.blp",
+      "sha256": "79b1531e1e7c5d50ba112d3f84872d9f44994b23ca68c112aaa95ce5ca0c7baf",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "war3mapImported\\SandSpiralSnail.mdx",
+      "sha256": "adf34a4400bdd3a973a83669832d43e41fd145438f43099bf7569894a4164cb7",
+      "bytes": 289988,
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "Textures\\SandSpiralAtlas.blp",
+      "sha256": "035390b665758d495f2b217c639fdb919f43b9489a489add729a857b2d7709c5",
+      "bytes": 88561,
+      "unchangedFromApprovedAll15": true
+    }
+  ],
+  "sources": [
+    {
+      "path": "wurst/pets/TDPetDisplayRuntime.wurst",
+      "sha256": "94855cb5849014ed26d950bb20a98dcad15263c6966397a98850b7c8be63a7da",
+      "unchangedFromApprovedAll15": true
+    },
+    {
+      "path": "wurst/pets/TDPetDisplayRules.wurst",
+      "sha256": "46969e83451fd19399ec400158061216cd43cbf6259e1265c1b72a419227e83a",
+      "unchangedFromApprovedAll15": true
+    }
+  ],
+  "boundary": "Reuses approved all15 display review/gates only for byte-identical resources and display source. No native rendering or FPS claim."
+}

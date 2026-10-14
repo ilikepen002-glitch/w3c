@@ -1,0 +1,59 @@
+{
+  "recovery": [
+    {
+      "mode": "null",
+      "firstRejected": true,
+      "retryInterval": 0.25,
+      "automaticRecovery": true,
+      "recoveredAt": 20.35,
+      "callbackDelivery": "controlled-delayed"
+    },
+    {
+      "mode": "core-live",
+      "firstRejected": true,
+      "retryInterval": 0.25,
+      "automaticRecovery": true,
+      "recoveredAt": 20.35,
+      "callbackDelivery": "controlled-delayed"
+    },
+    {
+      "mode": "core-rate",
+      "firstRejected": true,
+      "retryInterval": 0.25,
+      "automaticRecovery": true,
+      "recoveredAt": 21.0,
+      "callbackDelivery": "controlled-delayed"
+    },
+    {
+      "mode": "combined-sparse",
+      "firstRejected": true,
+      "retryInterval": 0.25,
+      "automaticRecovery": true,
+      "recoveredAt": 21.0,
+      "callbackDelivery": "controlled-delayed"
+    },
+    {
+      "mode": "combined-continuous",
+      "firstRejected": true,
+      "retryInterval": 0.25,
+      "automaticRecovery": true,
+      "recoveredAt": 21.1,
+      "callbackDelivery": "every.05"
+    }
+  ],
+  "renewalWithoutCreation": true,
+  "failedNewSkillClearedInvalidOldCore": true,
+  "replacementOneOwner": true,
+  "cancelledExpectedStates": [
+    "clear-pet",
+    "forget-source",
+    "clear-lane",
+    "shutdown",
+    "host-death",
+    "owner-transfer",
+    "lane-inactive",
+    "epoch",
+    "deadline"
+  ],
+  "rebindFenced": true
+}

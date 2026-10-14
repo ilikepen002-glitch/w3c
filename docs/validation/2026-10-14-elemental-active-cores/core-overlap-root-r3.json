@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "mapSHA256": "c3a50d47b9a5c47677e52ca6cb5bd8081e2f4d792385f8f63a9ba3cef3cb85bc",
+  "gateSHA256": "4e059f5246c2b97d8106fddd9d4ae357491810c25f0eea9be1275848e13ed28b",
+  "cases": [
+    {
+      "order": "visual-first",
+      "legalSources": 40,
+      "sameWindowCores": 40,
+      "elementalSkills": 20,
+      "overlapPeaks": {
+        "core": 40,
+        "decoration": 80,
+        "shared": 120
+      },
+      "nativeCreationsByIntegerSecond": {
+        "20": 120,
+        "21": 72,
+        "22": 52,
+        "23": 60,
+        "24": 26,
+        "25": 6
+      },
+      "coreCreationsByIntegerSecond": {
+        "20": 40,
+        "23": 2
+      },
+      "poolAfter": 48
+    },
+    {
+      "order": "battle-first",
+      "legalSources": 40,
+      "sameWindowCores": 40,
+      "elementalSkills": 20,
+      "overlapPeaks": {
+        "core": 40,
+        "decoration": 80,
+        "shared": 120
+      },
+      "nativeCreationsByIntegerSecond": {
+        "20": 120,
+        "21": 72,
+        "22": 52,
+        "23": 60,
+        "24": 26,
+        "25": 6
+      },
+      "coreCreationsByIntegerSecond": {
+        "20": 40,
+        "23": 2
+      },
+      "poolAfter": 48
+    }
+  ]
+}

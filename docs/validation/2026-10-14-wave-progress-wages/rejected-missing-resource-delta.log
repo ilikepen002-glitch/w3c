@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyWaveProgressWageArtifact.py", line 234, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyWaveProgressWageArtifact.py", line 231, in main
+    'changedMembers':verify_objects(data,a.baseline.read_bytes()),
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyWaveProgressWageArtifact.py", line 166, in verify_objects
+    require(a.keys()==b.keys(),'Unexpected archive membership change')
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: Unexpected archive membership change

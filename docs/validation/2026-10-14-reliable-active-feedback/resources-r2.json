@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "mapSHA256": "05746604cc6cc7108d95619cd6538fa508d97db18dabb4aed184d125ed56d504",
+  "baselineSHA256": "f28f375462e64ea08e159eea88e386582cdcb1e2b3dc448fe979108a40468a13",
+  "added": [
+    "war3mapimported\\tdpetbuffchargeseal.mdx",
+    "war3mapimported\\tdpetbufffrenzyorbit.mdx"
+  ],
+  "removed": [],
+  "changed": [
+    "(listfile)",
+    "war3map.imp",
+    "war3map.j",
+    "war3map.w3i"
+  ],
+  "unchanged": 413,
+  "models": [
+    {
+      "name": "TDPetBuffChargeSeal",
+      "resourcePath": "war3mapImported\\TDPetBuffChargeSeal.mdx",
+      "sha256": "73f1f51315923e6946467a3daee11f47139c9eaf7ae3fc11fea348b3eed2a1d9",
+      "bytes": 28592,
+      "triangles": 176,
+      "durationMs": 1800
+    },
+    {
+      "name": "TDPetBuffFrenzyOrbit",
+      "resourcePath": "war3mapImported\\TDPetBuffFrenzyOrbit.mdx",
+      "sha256": "1e059b08707f92dceeab67c294e84b4e2f59f2af681c5059a76f0a059c9e05f5",
+      "bytes": 22016,
+      "triangles": 152,
+      "durationMs": 1200
+    }
+  ],
+  "atlasUnchanged": true
+}

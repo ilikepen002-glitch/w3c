@@ -1,0 +1,6 @@
+package TDItemDropDiagnosticRules
+
+public constant real TD_ITEM_DROP_TRACE_SECONDS = 10.0
+
+public function tdItemDropTraceAllowed(boolean enabled, boolean laneActive, boolean gameOver, boolean handleValid, boolean owned, real elapsed) returns boolean
+	return enabled and laneActive and not gameOver and handleValid and not owned and elapsed >= 0.0 and elapsed < TD_ITEM_DROP_TRACE_SECONDS

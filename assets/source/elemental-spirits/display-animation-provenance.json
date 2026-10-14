@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "baselineCommit": "2847c3f742a69661972cabb7a616e08e81cbae9c",
+  "scope": "Append-only tower display poses for species 2–15; species 1 stays exactly approved",
+  "generator": "tools/BuildPetDisplayModels.cjs",
+  "sharedPoseSource": "assets/source/elemental-spirits/display-animations.cjs",
+  "sharedPoseSha256": "b1fc2cf215fad3e15ad40a9147d82193f913302e5a69b5c3c2ecd90981b7e3f2",
+  "rebuild": "MDX_PARSER_MODULES=/path/to/pinned/node_modules node tools/BuildPetDisplayModels.cjs --write --preview-dir /scratch/preview",
+  "dependencies": {
+    "mdx-m3-viewer": "5.7.9",
+    "typescript": "4.9.5",
+    "gl-matrix": "3.4.4"
+  },
+  "framesPerBoneTrackPerNewSequence": 17,
+  "preserved": [
+    "all original geometry, normals, UVs, topology and matrix groups",
+    "bone identity, parents, pivots, tracks and all original binary key records",
+    "all original 0–4 sequence identities and extents",
+    "all 15 approved texture files and references",
+    "all cameras, materials, attachments and non-animation chunks"
+  ],
+  "newIndices": {
+    "5": "Display Float (2.0s loop)",
+    "6": "Display Jump (0.8s once)",
+    "7": "Display Spin (1.2s bounded sway/bank)",
+    "8": "Display Sleep (3.0s loop)",
+    "9": "Display Cast (1.2s once)"
+  },
+  "motionLimits": "Rigid bone transforms; no new scaling deformation. Quaternions retain consecutive hemisphere; bounded turns avoid full-turn wrap. Per-sequence extents derive from 129 samples plus keys with 2-unit padding and are independently checked at 128 midpoints.",
+  "runtimeScope": "Only capability 1–15; existing successful-cast callback, 0.5s scheduler, deadlines and fences stay unchanged. No new timer, RNG, effect handle or gameplay value.",
+  "visualBoundary": "Actual exported final MDX/approved BLP offline previews; no Warcraft gameplay, tower-overlap, client culling or FPS claim.",
+  "castLegibilityRevision": {
+    "species": [
+      3,
+      5,
+      9,
+      11,
+      14
+    ],
+    "scope": "Only Cast interval 15400–16600 changes; all original and Display5–8 binary keys and extents remain exact",
+    "axisConvention": "Existing rigs use forward X and up Z. Negative local Y rotates low forward paws/fists up around their existing shoulder/hoof pivots, without scaling.",
+    "gestures": {
+      "3": "Digging claws lift forward under the muzzle, about -0.95rad",
+      "5": "Raised left forehoof about -1.0rad and asymmetric braced right forehoof",
+      "9": "Both front paws lift to chest/muzzle height, about -0.95rad",
+      "11": "Front-paw brace about -0.85rad and horn/head lift about -0.50rad",
+      "14": "Double fists lift to chest/head height about -1.20rad around shoulder (0,+/-18,47)"
+    },
+    "review": "Parent visually inspected the final five start/peak/end offline panels and approved freezing the revision."
+  }
+}

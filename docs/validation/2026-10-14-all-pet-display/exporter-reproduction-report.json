@@ -1,0 +1,89 @@
+{
+  "status": "PASS",
+  "models": [
+    {
+      "model": "SteelwingFalcon",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "9d08287cbfa64df2bc7b6cc5b32841fc0e40bd8ca1efd6f66b75484e7ce6455f",
+      "bytes": 236384
+    },
+    {
+      "model": "BrassPangolin",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "f8ba608398a59d2bd4a12d3363818dc11af76b7fca7ea03f69e68fe58f6b8514",
+      "bytes": 286592
+    },
+    {
+      "model": "LeafwingSpirit",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "015962f0bdd40391193fa207cee4d5b41cb358ccda78614eeadbebc9b305930d",
+      "bytes": 316376
+    },
+    {
+      "model": "RootbudStag",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "36aeedea98979a086be92f17995820d1a1c41c33d841b7d346745e6c56bcbcd0",
+      "bytes": 233654
+    },
+    {
+      "model": "MosscapSprite",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "9007639eb4f11095e4f2c0faa00eccdd4c206f9692066c853d7302bd33817ab9",
+      "bytes": 251540
+    },
+    {
+      "model": "TideWyrm",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "e620111850fb3ca3ac5da23d8e481ed314e24992b24e907a6a4ddecebca37800",
+      "bytes": 303398
+    },
+    {
+      "model": "FrostFinManta",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "7d2cd0dac23f9e73e806d503533929af7beffc663ceabfe7f28ebe451daf41bb",
+      "bytes": 245690
+    },
+    {
+      "model": "SnowManeOtter",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "0c58f1c73f525be922f3e21497a748e7c4cc3df08a0862f9f6f4e089e6acb0a8",
+      "bytes": 309062
+    },
+    {
+      "model": "EmberBird",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "6cd3716d43e791cceb704df484e8cdf8541a748cf7dc932becc1790b313152d1",
+      "bytes": 418244
+    },
+    {
+      "model": "MoltenHornSalamander",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "bb9bc585505dc6849cc05574b7367ec361183502e204290d4ede9e981cfbc822",
+      "bytes": 367652
+    },
+    {
+      "model": "CinderTailFox",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "4923fde2dc40d971cb320d1c63697986dde93c7b3b885a565c417045a66df914",
+      "bytes": 398240
+    },
+    {
+      "model": "RockShellTurtle",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "22b5df4b1cab01ecfc80d165583d3417900d79c62fd7ad9de10cafbfdfc597cf",
+      "bytes": 304524
+    },
+    {
+      "model": "BoulderArmGibbon",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "b9efa3c1168af2a9f7106620c55e1a04233146d887353f62717acd2bb849dcc9",
+      "bytes": 316202
+    },
+    {
+      "model": "SandSpiralSnail",
+      "exporterMdxEqualsPublishedBaselineAppendGenerator": true,
+      "sha256": "adf34a4400bdd3a973a83669832d43e41fd145438f43099bf7569894a4164cb7",
+      "bytes": 289988
+    }
+  ]
+}

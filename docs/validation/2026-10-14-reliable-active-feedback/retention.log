@@ -1,0 +1,39 @@
+retention lifetime verified 21 visual-first
+retention lifetime verified 22 visual-first
+retention lifetime verified 24 visual-first
+retention lifetime verified 30 visual-first
+retention lifetime verified 31 visual-first
+retention lifetime verified 33 visual-first
+retention lifetime verified 34 visual-first
+retention lifetime verified 38 visual-first
+retention lifetime verified 21 battle-first
+retention lifetime verified 22 battle-first
+retention lifetime verified 24 battle-first
+retention lifetime verified 30 battle-first
+retention lifetime verified 31 battle-first
+retention lifetime verified 33 battle-first
+retention lifetime verified 34 battle-first
+retention lifetime verified 38 battle-first
+retention gate verified lifetimes
+retention gate verified aborts
+retention gate verified deliveredTargetDeath
+retention gate verified explicitCleanup
+retention gate verified passiveCleanup
+retention gate verified ownerReuse
+retention gate verified serialExhaustion
+retention gate verified partialTransfer
+retention gate verified onStackCleanup
+retention gate verified overlapStress
+retention gate verified coreAdmission
+retention gate verified buffAdmission
+Traceback (most recent call last):
+  File "/workspace/scratch/2106c0ab1fac/active-feedback-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 1080, in <module>
+    main()
+  File "/workspace/scratch/2106c0ab1fac/active-feedback-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 1070, in main
+    report['coverage'][name] = check(script)
+                               ^^^^^^^^^^^^^
+  File "/workspace/scratch/2106c0ab1fac/active-feedback-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 791, in verify_buff_retry
+    require(r.field('TDVisualSource_petBuff', owner), 'Buff failed automatic retry after capacity/native recovery')
+  File "/workspace/scratch/2106c0ab1fac/active-feedback-integration-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: Buff failed automatic retry after capacity/native recovery

@@ -1,0 +1,91 @@
+{
+  "status": "PASS exported MDX800 offline validation",
+  "inGameTested": false,
+  "parserVersion": "5.7.9",
+  "importedBytesChecked": true,
+  "textureSampleRGBA": [
+    255,
+    254,
+    229,
+    255
+  ],
+  "models": [
+    {
+      "name": "TDPetBuffChargeSeal",
+      "description": "Three level interrupted seals and four upright diamond runes. Slow 1800 ms warm-white/gold breathing; no frenzy orbit.",
+      "durationMs": 1800,
+      "resourcePath": "war3mapImported\\TDPetBuffChargeSeal.mdx",
+      "bytes": 28592,
+      "sha256": "73f1f51315923e6946467a3daee11f47139c9eaf7ae3fc11fea348b3eed2a1d9",
+      "triangles": 176,
+      "materials": 2,
+      "geosets": 6,
+      "bones": 4,
+      "particleEmitters": 0,
+      "ribbonEmitters": 0,
+      "eventObjects": 0,
+      "deathAlpha": 0,
+      "texture": "Textures\\TDPetVfxAtlas.blp",
+      "textureSha256": "d47bf6ab34bdbfc651954cbf460d8ff82c770de66da8d4e4c3259131b810fa1a",
+      "sampledEnvelope": {
+        "min": [
+          -57.402099609375,
+          -57.402099609375,
+          48
+        ],
+        "max": [
+          57.402099609375,
+          57.402099609375,
+          135.8000030517578
+        ],
+        "maxRadius": 58.68449684492334,
+        "minAlpha": 0.7200000286102295,
+        "loopPositionMaxDelta": 0,
+        "quarterLoopMovement": 2.7320556640625,
+        "standSamplingStepMs": 10,
+        "deathSamplingStepMs": 1
+      },
+      "importFile": "imports/war3mapImported/TDPetBuffChargeSeal.mdx",
+      "sourceFile": "assets/source/persistent-buff-vfx/TDPetBuffChargeSeal-source.json"
+    },
+    {
+      "name": "TDPetBuffFrenzyOrbit",
+      "description": "Two counter-rotating canted broken flame arcs with sharp outward teeth. Fast 1200 ms orbit and three 400 ms red energy pulses per loop.",
+      "durationMs": 1200,
+      "resourcePath": "war3mapImported\\TDPetBuffFrenzyOrbit.mdx",
+      "bytes": 22016,
+      "sha256": "1e059b08707f92dceeab67c294e84b4e2f59f2af681c5059a76f0a059c9e05f5",
+      "triangles": 152,
+      "materials": 2,
+      "geosets": 4,
+      "bones": 2,
+      "particleEmitters": 0,
+      "ribbonEmitters": 0,
+      "eventObjects": 0,
+      "deathAlpha": 0,
+      "texture": "Textures\\TDPetVfxAtlas.blp",
+      "textureSha256": "d47bf6ab34bdbfc651954cbf460d8ff82c770de66da8d4e4c3259131b810fa1a",
+      "sampledEnvelope": {
+        "min": [
+          -55.67725372314453,
+          -56.2066535949707,
+          72.84087371826172
+        ],
+        "max": [
+          55.86049270629883,
+          56.037296295166016,
+          136
+        ],
+        "maxRadius": 56.20968902467413,
+        "minAlpha": 0.7200000286102295,
+        "loopPositionMaxDelta": 0,
+        "quarterLoopMovement": 76.79672813415527,
+        "standSamplingStepMs": 10,
+        "deathSamplingStepMs": 1
+      },
+      "importFile": "imports/war3mapImported/TDPetBuffFrenzyOrbit.mdx",
+      "sourceFile": "assets/source/persistent-buff-vfx/TDPetBuffFrenzyOrbit-source.json"
+    }
+  ],
+  "caveat": "Actual exported/reparsed MDX mesh and animation. Software projection is not Warcraft rendering. No production/runtime integration or map build. Samples do not prove continuous runtime behavior, native depth/attachment behavior, all tower profiles, or FPS."
+}

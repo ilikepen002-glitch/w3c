@@ -114,7 +114,8 @@ def verify_routing(script):
     runtime.globals['TDPetUIView_tdPetDisplayOwners'] = owners
     runtime.tables[owners][display] = 0
     runtime.event_target = display
-    codes = [f'Pc{a:02X}' if a < 8 else f'Pm{a-8:02X}' for a in range(23)]
+    codes = [f'Pc{a:02X}' if a < 8 else f'Pm{a-8:02X}' for a in range(33)]
+    codes += [f'Pn{skill:02X}' for skill in range(49) if runtime.invoke('tdPetSkillDefined', skill) and runtime.invoke('tdPetSkillQualityValid', skill, 2)]
     last = runtime.invoke('tdPetListAbilityId', 9, 15, 4, 4)
     if last == int.from_bytes(b'L966', 'big'):
         indices = [cell * 241 + variant for cell in range(10) for variant in (0, *range(1, 241, 4))]
@@ -128,7 +129,7 @@ def verify_routing(script):
         variants = 490
         indices = range(variants)
     codes += [f'L{index:03X}' for index in indices]
-    expected_admissions = 23 + variants
+    expected_admissions = 33 + 28 + variants
     for code in codes:
         runtime.spell = int.from_bytes(code.encode('ascii'), 'big')
         runtime.units[display]['abilities'][runtime.spell] = 1

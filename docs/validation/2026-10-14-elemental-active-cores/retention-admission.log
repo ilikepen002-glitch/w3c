@@ -1,0 +1,163 @@
+retention gate verified coreAdmission
+retention gate verified buffAdmission
+retention gate verified buffRetry
+retention gate verified caps
+retention gate verified reliableCores
+retention gate verified castCoreRetry
+retention gate verified coreDemotion
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 1470, in <module>
+    main()
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 1460, in main
+    report['coverage'][name] = check(script)
+                               ^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 1286, in verify_core_overlap_stress
+    r.tick()
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 222, in tick
+    self.invoke('call_doPeriodically_'+package, cb, cb)
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyTrialReplay.py", line 63, in invoke
+    return self.call(name, list(arguments))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 207, in call
+    return self.execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 125, in execute_call
+    value = super().execute_call(name, args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyElementalVfxArtifact.py", line 23, in execute_call
+    try:return super().execute_call(name,args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyPureBossArtifact.py", line 991, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 291, in execute_call
+    elif active and line.startswith('call '): self.expression(line[5:], scope)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyTrialReplay.py", line 110, in expression
+    return super().expression(text, scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 201, in expression
+    return read(node)
+           ^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 178, in read
+    return self.call(part.func.id, [read(arg) for arg in part.args])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 207, in call
+    return self.execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 125, in execute_call
+    value = super().execute_call(name, args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyElementalVfxArtifact.py", line 23, in execute_call
+    try:return super().execute_call(name,args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyPureBossArtifact.py", line 991, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 290, in execute_call
+    self.assign(key, self.expression(value, scope), scope)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyTrialReplay.py", line 110, in expression
+    return super().expression(text, scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 201, in expression
+    return read(node)
+           ^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 171, in read
+    return all(bool(read(value)) for value in part.values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 171, in <genexpr>
+    return all(bool(read(value)) for value in part.values)
+                    ^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 178, in read
+    return self.call(part.func.id, [read(arg) for arg in part.args])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 207, in call
+    return self.execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 125, in execute_call
+    value = super().execute_call(name, args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyElementalVfxArtifact.py", line 23, in execute_call
+    try:return super().execute_call(name,args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyPureBossArtifact.py", line 991, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 290, in execute_call
+    self.assign(key, self.expression(value, scope), scope)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyTrialReplay.py", line 110, in expression
+    return super().expression(text, scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 201, in expression
+    return read(node)
+           ^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 178, in read
+    return self.call(part.func.id, [read(arg) for arg in part.args])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 207, in call
+    return self.execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 125, in execute_call
+    value = super().execute_call(name, args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyElementalVfxArtifact.py", line 23, in execute_call
+    try:return super().execute_call(name,args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyPureBossArtifact.py", line 991, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 290, in execute_call
+    self.assign(key, self.expression(value, scope), scope)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyTrialReplay.py", line 110, in expression
+    return super().expression(text, scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 201, in expression
+    return read(node)
+           ^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 178, in read
+    return self.call(part.func.id, [read(arg) for arg in part.args])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 207, in call
+    return self.execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 125, in execute_call
+    value = super().execute_call(name, args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyElementalVfxArtifact.py", line 23, in execute_call
+    try:return super().execute_call(name,args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyPureBossArtifact.py", line 991, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 291, in execute_call
+    elif active and line.startswith('call '): self.expression(line[5:], scope)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyTrialReplay.py", line 110, in expression
+    return super().expression(text, scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 201, in expression
+    return read(node)
+           ^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 178, in read
+    return self.call(part.func.id, [read(arg) for arg in part.args])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 207, in call
+    return self.execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifySpiritActiveRetentionArtifact.py", line 125, in execute_call
+    value = super().execute_call(name, args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyElementalVfxArtifact.py", line 23, in execute_call
+    try:return super().execute_call(name,args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyPureBossArtifact.py", line 991, in execute_call
+    return super().execute_call(name, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyBossSpellResistanceArtifact.py", line 226, in execute_call
+    require(steps <= 10000, f'{name}: packaged loop did not terminate')
+  File "/workspace/shared/spirit-active-final-integration-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: TDPetCastContext_line: packaged loop did not terminate

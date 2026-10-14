@@ -1,0 +1,4 @@
+PASS SOURCE SCALARS: 2,110 page/action cases; definition-derived Channel identities; definition-sized passive rawcode capacity; exhaustive count inputs; 20 numbers; 1,280 quality cases; navigation and boundary guards
+Traceback (most recent call last):
+  File "<stdin>", line 4, in <module>
+TypeError: verify_wiring() takes 0 positional arguments but 1 was given

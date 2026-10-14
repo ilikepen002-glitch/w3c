@@ -30,6 +30,18 @@ public function tdPetStageEnd(int stage) returns int
 public function tdPetStageBallReward(int wave) returns int
 	return wave == 4 or wave == 8 or wave == 13 or wave == 19 ? 6 : 0
 
+public function tdPetStageSlotStoneReward(int wave) returns int
+	return wave == 4 or wave == 12 ? 1 : 0
+
+public function tdPetStageRerollStoneReward(int wave) returns int
+	return wave == 4 or wave == 12 or wave == 20 or wave == 28 ? 2 : 0
+
+public function tdPetMaterialRewardDelta(int stock, int reward) returns int
+	if stock < 0 or reward <= 0
+		return 0
+	// Subtract before adding; stocks may already be at the signed-int limit.
+	return IMinBJ(reward, 2147483647 - stock)
+
 public function tdPetSkillIsNumeric(int skill) returns boolean
 	return skill >= 0 and skill <= 3
 
@@ -257,3 +269,17 @@ public function tdPetOwnedQuality(int count, int first, int second, int third, i
 	if count >= 4
 		quality = IMaxBJ(quality, fourth)
 	return IMinBJ(4, quality)
+
+// Stable physical positions: one object per green identity, never per-list-cell variants.
+public function tdPetDirectedSkillCell(int skill) returns int
+	if skill >= 0 and skill <= 3
+		return skill
+	if skill >= 5 and skill <= 8
+		return skill - 5
+	if skill >= 16 and skill <= 18
+		return skill - 12
+	if skill >= 39 and skill <= 48
+		return (skill - 32) mod 8
+	if skill == 11 or skill == 12
+		return skill - 10
+	return tdPetSkillElement(skill) != 0 and tdPetSkillQualityValid(skill, 2) ? 0 : -1

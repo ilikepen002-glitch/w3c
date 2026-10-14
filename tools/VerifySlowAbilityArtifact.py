@@ -46,29 +46,34 @@ def validate_enemy_speed(units, *, pure_boss=False):
 
 
 def validate_slow_abilities(abilities):
-    for ability, move, attack, dps in [('A106', .22, .16, 12), ('A114', .22, .16, 14.4)]:
+    # Frozen current production: damage/attack slow remain native; movement
+    # and shield control belong to the shared script authorities.
+    for ability, attack, dps in [('A106', .16, 60), ('AhDP', .16, 90), ('A114', .16, 108)]:
         parent, fields = abilities[ability]
         require(parent == 'Aspo', f'{ability}: wrong native parent')
         require(fields[('alev', 0, 0)] == (0, 61), f'{ability}: poison levels changed')
         for level in range(1, 62):
             check_field(fields, 'Spo1', level, 1, dps)
-            check_field(fields, 'Spo2', level, 2, min(.70, move * (1 + (level - 1) / 100)))
+            check_field(fields, 'Spo2', level, 2, 0.0)
             check_field(fields, 'Spo3', level, 3, attack)
             check_field(fields, 'adur', level, 0, 5)
             check_field(fields, 'ahdu', level, 0, 1)
             require(fields[('abuf', level, 0)] == (3, 'Bspo,Bssd'), f'{ability}: native poison buffs changed')
-    for ability, radius, move in [('A110', 225, .18), ('A140', 265, .18), ('AeSL', 265, .216)]:
+            require(fields[('atar', level, 0)] == (3, 'air,ground,organic'), f'{ability}: native poison targets changed')
+    for ability, radius in [('A110', 225), ('A140', 400), ('AeSL', 400)]:
         require(ability in abilities, f'Missing slow ability {ability}')
         parent, fields = abilities[ability]
         require(parent == 'Aasl', f'{ability}: wrong native parent')
         require(fields.get(('alev', 0, 0)) == (0, 61), f'{ability}: control levels changed')
         for level in range(1, 62):
-            check_field(fields, 'Slo1', level, 1, -min(.70, move * (1 + (level - 1) / 100)))
+            check_field(fields, 'Slo1', level, 1, 0.0)
             check_field(fields, 'Slo2', level, 2, 0)
             check_field(fields, 'aare', level, 0, radius)
             require(fields.get(('atar', level, 0)) == (3, 'enemy,ground,air,organic'), f'{ability}/{level}: targets changed')
-            require(fields.get(('abuf', level, 0)) == (3, 'Basl'), f'{ability}/{level}: native slow buff changed')
-    for ability, radius, move in [('A135', 225, .18), ('A141', 265, .18), ('A136', 265, .216)]:
+            require(fields.get(('abuf', level, 0)) == (3, ''), f'{ability}/{level}: native slow buff changed')
+            check_field(fields, 'adur', level, 0, 0.0)
+            check_field(fields, 'ahdu', level, 0, 0.0)
+    for ability, radius, move in [('A135', 225, .18), ('A141', 400, .18), ('A136', 400, .216)]:
         require(ability in abilities, f'Missing slow display {ability}')
         parent, fields = abilities[ability]
         require(parent == 'AOcr', f'{ability}: display must inherit neutral critical strike')
@@ -82,16 +87,18 @@ def validate_slow_abilities(abilities):
             displayed = [float(value) for value in re.findall(r'(\d+(?:\.\d+)?)%', text)]
             displayed_radius = re.search(r'周围(\d+(?:\.\d+)?)范围', text)
             require(displayed_radius is not None and float(displayed_radius[1]) == radius and len(displayed) == 1 and math.isclose(displayed[0], percent, rel_tol=1e-6, abs_tol=.001), f'{ability}/{level}: slow display radius/reduction mismatch')
-    for ability, chance, bonus in [('A104', 22.0, 20), ('A113', 26.4, 24)]:
+    for ability in ('A104', 'A113'):
         parent, fields = abilities[ability]
         require(parent == 'AHbh', f'{ability}: wrong native Bash parent')
         require(fields[('alev', 0, 0)] == (0, 61), f'{ability}: control levels changed')
         for level in range(1, 62):
-            check_field(fields, 'adur', level, 0, 2 * (1 + (level - 1) / 100))
-            check_field(fields, 'ahdu', level, 0, 1 + (level - 1) / 100)
-            check_field(fields, 'Hbh1', level, 1, chance)
-            check_field(fields, 'Hbh2', level, 2, 1.45)
-            check_field(fields, 'Hbh3', level, 3, bonus)
+            check_field(fields, 'adur', level, 0, 0.0)
+            check_field(fields, 'ahdu', level, 0, 0.0)
+            check_field(fields, 'Hbh1', level, 1, 0.0)
+            check_field(fields, 'Hbh2', level, 2, 1.0)
+            check_field(fields, 'Hbh3', level, 3, 0.0)
+            require(fields.get(('abuf', level, 0)) == (3, ''), f'{ability}/{level}: native bash buff changed')
+            require(fields.get(('atar', level, 0)) == (3, 'ground,air'), f'{ability}/{level}: native bash targets changed')
 
 
 def main():
@@ -99,7 +106,7 @@ def main():
     artifact = Mpq(Path(sys.argv[1]).read_bytes())
     validate_enemy_speed(unit_objects(artifact.extract('war3map.w3u')), pure_boss=len(sys.argv) == 3)
     validate_slow_abilities(ability_objects(artifact.extract('war3map.w3a')))
-    print('PASS: enemy speed bounds; all 61 poison, 225/265-range slow, neutral display and Bash control levels and unchanged native poison damage.')
+    print('PASS: enemy speed bounds; all 61 native poison, script-owned 225/400-range slow, neutral display and zero-effect Bash carrier levels.')
     print('NOT TESTED: native displacement, buff application, stacking, or pathing.')
 
 

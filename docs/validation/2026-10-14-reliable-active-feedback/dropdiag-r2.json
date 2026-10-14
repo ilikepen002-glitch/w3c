@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "map": "/workspace/scratch/2106c0ab1fac/active-feedback-integration-20261014/ExampleMap.w3x",
+  "mapSHA256": "05746604cc6cc7108d95619cd6538fa508d97db18dabb4aed184d125ed56d504",
+  "scenarios": [
+    "default_off_no_timers",
+    "per_player_event_and_next_frame_actual_unknown_target",
+    "tower_and_farmer_carriers",
+    "cancel_off_and_stale_callback_silent",
+    "cancel_pickup_and_stale_callback_silent",
+    "cancel_invalid_and_stale_callback_silent",
+    "cancel_owned_and_stale_callback_silent",
+    "cancel_leave_and_stale_callback_silent",
+    "cancel_game_over_and_stale_callback_silent",
+    "cancel_inactive_and_stale_callback_silent",
+    "new_drop_supersedes_previous_watch",
+    "new_carrier_clears_prior_watch_even_if_disabled",
+    "ten_second_expiry_cleanup",
+    "packed_restore_hook_preserves_native_action_and_records_before_after",
+    "bounded_move_log_count"
+  ],
+  "rejectedMutations": [
+    "disabled_drop_gate",
+    "pickup_cleanup",
+    "next_frame_unknown_target",
+    "restore_before_log"
+  ],
+  "limits": [
+    "Native coordinates/pathing/cliff levels and callback dispatch are controlled fixtures, not Warcraft 1.27a tests.",
+    "Equipment classification is a narrow fixture; diagnostic/terrain-mask/lifecycle logic executes from actual packaged JASS.",
+    "Ground restore hook executes; other movement sites are covered by source observer-only guards, not full gameplay execution.",
+    "No cursor/drop intended position is available or inferred."
+  ]
+}

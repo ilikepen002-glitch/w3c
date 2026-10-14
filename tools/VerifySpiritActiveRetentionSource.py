@@ -33,13 +33,14 @@ def verify(sources, baseline):
         for stage in range(8):
             for marks in (0, 1, 3, 4):
                 for now, expiry, pulse in ((4.,4.,4.), (3.9,4.,3.9), (4.,4.,3.5)):
-                    expected = (skill in (21,22,31,33) and stage==4) or (skill==24 and stage==6) or (skill==34 and marks>0 and stage==marks) or (skill==30 and stage>0 and now>=expiry and pulse==now) or (skill==38 and stage==4 and now>=expiry)
+                    expected = (skill in (19,32,35,36) and stage==1) or (skill in (21,22,31,33) and stage==4) or (skill==24 and stage==6) or (skill==34 and marks>0 and stage==marks) or (skill==30 and stage>0 and now>=expiry and pulse==now) or (skill==38 and stage==4 and now>=expiry)
                     require(call('tdPetVisualTerminal', skill, stage, marks, now, expiry, pulse)==expected,
                             'Terminal whitelist accepted an abort/stale pulse '+str((skill,stage,marks,now,expiry,pulse)))
                     cases += 1
     owner = uncomment(sources[OWNER])
     require(owner.count('doPeriodically(')==1 and 'doAfter(' not in owner, 'Retention added another timer')
-    for name, following in (('tdCombatVisualAdoptPetPoint', 'tdCombatVisualRetainPetLines'),
+    for name, following in (('tdCombatVisualAdoptPetPoint', 'tdCombatVisualAdoptPetCoreLine'),
+                            ('tdCombatVisualAdoptPetCoreLine', 'tdCombatVisualRetainPetLines'),
                             ('tdCombatVisualRetainPetLines', 'tdCombatVisualCreateLine')):
         body = owner[owner.index('public function '+name):owner.index('public function '+following)]
         require(all(token not in body for token in ('tdCombatVisualAcquireCast(', 'AddSpecialEffect(', 'AddLightningEx(', 'CreateUnit(', 'GetRandom')),
@@ -47,9 +48,18 @@ def verify(sources, baseline):
     require('owner.detachedCount == 0' in owner and 'owner.serial == ownerSerial' in owner and
             'owner.petSerial == petSerial' in owner and 'tdTrialContextValid(trial)' in owner,
             'Detached owner lost immutable source/trial identity or retention count')
-    buff = owner[owner.index('public function tdCombatVisualStartPetBuff'):owner.index('public function tdCombatVisualHit(')]
+    buff = owner[owner.index('function retryPetBuff('):owner.index('public function tdCombatVisualPetBuffCount(')]
     require(buff.index('owner.petBuff = art') < buff.index('addHitArt('), 'Optional burst precedes persistent buff ownership')
     context = uncomment(sources[CONTEXT])
+    require('visualCoreReserved ? 1 : 0' in context and 'visualCoreRetryAt = now + TD_VISUAL_CORE_RETRY_INTERVAL' in context,
+            'Pending core lost its per-cast slot or bounded retry')
+    require('now > expiresAt' in context and 'not valid()' in context,
+            'Core retry can outlive its original combat context')
+    require('tdCombatVisualDemoteCore()' in context and 'tdCombatVisualAdoptPetCoreLine(' in context,
+            'Terminal core lost classified existing-handle transfer')
+    require('public constant int TD_VISUAL_CORE_LIMIT = 40' in sources['visuals/TDCombatVisualData.wurst'] and
+            'public constant int TD_VISUAL_DECORATION_LIMIT = 88' in sources['visuals/TDCombatVisualData.wurst'],
+            'Reserved core and decoration storage classes expanded')
     require('return visualCount + tdCombatVisualRetainedPetPointCount()' in context, 'Public live-point count hides retained ownership')
     require('if not visualLinesDetached\n\t\t\ttdCombatVisualClearLines(visualSerial)' in context,
             'Context destruction kills successfully detached final lines')

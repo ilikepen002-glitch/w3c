@@ -2,6 +2,7 @@ package TDPetFourSlotTests
 import TDPetData
 import TDPetRules
 import TDPetState
+import TDPetCultivation
 import TDPetUIState
 import TDPetUIView
 import TDCombatVisualData
@@ -81,8 +82,23 @@ import TDState
 	destroy session
 
 @Test function buffVisualModelsAreDistinctAndUseClassicAssets()
-	tdCombatVisualPetBuffModel(11).contains("BloodLustTarget").assertTrue()
-	tdCombatVisualPetBuffModel(12).contains("InnerFireTarget").assertTrue()
+	tdCombatVisualPetBuffModel(11).contains("TDPetBuffFrenzyOrbit").assertTrue()
+	tdCombatVisualPetBuffModel(12).contains("TDPetBuffChargeSeal").assertTrue()
 	tdCombatVisualPetBuffStartModel(11).contains("BloodLustSpecial").assertTrue()
 	tdCombatVisualPetBuffStartModel(12).contains("RoarCaster").assertTrue()
 	tdCombatVisualPetBuffModel(35).assertEquals("")
+
+@Test function directedFourthSlotKeepsThreeFixedSpeciesGreenChoices()
+	for species = 1 to TD_PET_SPECIES_COUNT
+		let pet = new TDPet(0, species, 1)
+		pet.setSkill(0, 0, 1)
+		pet.setSkill(1, 5, 1)
+		pet.setSkill(2, 6, 1)
+		pet.setSkill(3, 11, 1)
+		tdPetDirectedCandidateAt(pet, 3, 0).assertEquals(20 + (tdPetSpeciesElement(species) - 1) * 4)
+		tdPetDirectedCandidateAt(pet, 3, 1).assertEquals(11)
+		tdPetDirectedCandidateAt(pet, 3, 2).assertEquals(12)
+		tdPetDirectedCandidateAt(pet, 3, 3).assertEquals(-1)
+		pet.setSkill(3, 11, 2)
+		tdPetDirectedCandidateAt(pet, 3, 1).assertEquals(-1)
+		destroy pet

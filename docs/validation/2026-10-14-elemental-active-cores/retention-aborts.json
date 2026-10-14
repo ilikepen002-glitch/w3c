@@ -1,0 +1,494 @@
+{
+  "status": "PASS",
+  "mapSHA256": "c3a50d47b9a5c47677e52ca6cb5bd8081e2f4d792385f8f63a9ba3cef3cb85bc",
+  "packedJassSHA256": "1f18e8034415ffca77f4b5741f0488fe2472a4be666c16d0e3ac29e9415a49c3",
+  "gateSHA256": "6b5f8781b929a9ac825c05173ecec9fc0d4ab88dbdfdb6b279d996c8ec908da0",
+  "boundary": "Targeted actual-packed spirit terminal retention, cleanup and admission gate.\n\nAll ownership, admission, terminal decisions, cleanup and timer bodies execute the\nsupplied map's JASS through VerifyElementalVfxArtifact.VfxRuntime. Python observes\nproduction fields and delivers controlled native clocks/handles/collections only.\nNo Warcraft rendering, particle-tail, attachment-quality or FPS claim is made.\n",
+  "bounds": {
+    "TDCombatVisualData_TD_VISUAL_SHORT_LIMIT": 128,
+    "TDCombatVisualData_TD_VISUAL_HIT_LIMIT": 32,
+    "TDCombatVisualData_TD_VISUAL_NEW_PER_SECOND": 120,
+    "TDCombatVisualData_TD_VISUAL_MOVING_LIMIT": 8,
+    "TDCombatVisualData_TD_VISUAL_CORE_LIMIT": 40,
+    "TDCombatVisualData_TD_VISUAL_DECORATION_LIMIT": 88,
+    "TDCombatVisualData_TD_VISUAL_CORE_NEW_PER_SECOND": 40,
+    "TDCombatVisualData_TD_VISUAL_DECORATION_NEW_PER_SECOND": 80,
+    "TDCombatVisualData_TD_VISUAL_CORE_RETRY_INTERVAL": 0.25,
+    "TDPetCastContext_TD_PET_EFFECT_VISUAL_LIMIT": 128,
+    "TDPetActiveVisualData_TD_PET_VISUAL_TERMINAL_DWELL": 0.25
+  },
+  "coverage": {
+    "aborts": [
+      {
+        "skill": 19,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 19,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 19,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 32,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 32,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 32,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 35,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 35,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 35,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 36,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 36,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 36,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 21,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 21,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 21,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 22,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 22,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 22,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 24,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 24,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 24,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 30,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 30,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 30,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 31,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 31,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 31,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 33,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 33,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 33,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 34,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 34,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 34,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 38,
+        "point": "pre-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 38,
+        "point": "synchronous-final",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 38,
+        "point": "timeout",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 19,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 19,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 19,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 32,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 32,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 32,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 35,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 35,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 35,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 36,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 36,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 36,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 21,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 21,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 21,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 22,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 22,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 22,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 24,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 24,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 24,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 30,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 30,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 30,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 31,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 31,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 31,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 33,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 33,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 33,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 34,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 34,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 34,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 38,
+        "point": "pre-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 38,
+        "point": "synchronous-final",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 38,
+        "point": "timeout",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 21,
+        "point": "target-loss",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 31,
+        "point": "target-loss",
+        "order": "visual-first",
+        "detached": 0
+      },
+      {
+        "skill": 21,
+        "point": "target-loss",
+        "order": "battle-first",
+        "detached": 0
+      },
+      {
+        "skill": 31,
+        "point": "target-loss",
+        "order": "battle-first",
+        "detached": 0
+      }
+    ],
+    "deliveredTargetDeath": [
+      {
+        "order": "visual-first",
+        "deliveredImpactSurvivedTargetDeath": true,
+        "targetReferencesRetained": 0
+      },
+      {
+        "order": "battle-first",
+        "deliveredImpactSurvivedTargetDeath": true,
+        "targetReferencesRetained": 0
+      }
+    ]
+  },
+  "completeGate": false,
+  "legalFixtureBoundary": "All active battle fixtures use complete legal four-slot pets. Opening a fifth slot is impossible; the existing open-slot invalidation hook is source-fenced by the separate mechanics gate, not fabricated as an active-tail fixture."
+}

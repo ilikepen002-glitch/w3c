@@ -1,0 +1,129 @@
+{
+  "status": "PASS_BY_EXHAUSTIVE_GROUP_COMPOSITION",
+  "mapSHA256": "05746604cc6cc7108d95619cd6538fa508d97db18dabb4aed184d125ed56d504",
+  "packedJassSHA256": "a87b49da4c08c2bd73c514a423e49ce41002e73c60d01c7b8757593532466186",
+  "officialBuildSource": "347dab2",
+  "finalToolRevision": "b6626cd",
+  "baselineSHA256": "f28f375462e64ea08e159eea88e386582cdcb1e2b3dc448fe979108a40468a13",
+  "boundary": "Targeted actual-packed spirit terminal retention, cleanup and admission gate.\n\nAll ownership, admission, terminal decisions, cleanup and timer bodies execute the\nsupplied map's JASS through VerifyElementalVfxArtifact.VfxRuntime. Python observes\nproduction fields and delivers controlled native clocks/handles/collections only.\nNo Warcraft rendering, particle-tail, attachment-quality or FPS claim is made.\n",
+  "retention": {
+    "registeredGroups": 15,
+    "coveredGroups": 15,
+    "originalExecution": {
+      "gateRevision": "347dab2",
+      "overallStatus": "FAIL_FIXTURE_CORE_LIVE_ALSO_SPENT_CORE_RATE",
+      "reusedPassedGroups": [
+        "lifetimes",
+        "aborts",
+        "deliveredTargetDeath",
+        "explicitCleanup",
+        "passiveCleanup",
+        "ownerReuse",
+        "serialExhaustion",
+        "partialTransfer",
+        "onStackCleanup",
+        "overlapStress"
+      ],
+      "evidence": {
+        "path": "/workspace/shared/spirit-feedback-a-python-r2-20261014/retention.log",
+        "bytes": 2099,
+        "sha256": "e3c8e4e00eb0b737cd8c8798bfa3511830a96929c39aaf05a12f3cc74c139543"
+      }
+    },
+    "repairedAdmission": {
+      "gateRevision": "e9322da",
+      "status": "PASS",
+      "passedGroups": [
+        "coreAdmission",
+        "buffAdmission",
+        "buffRetry",
+        "caps"
+      ],
+      "gateSHA256": "a3944826c880947b920b937e721ec70800e7e607606eec294fe1e585dbf710ea",
+      "evidence": {
+        "path": "/workspace/shared/spirit-feedback-a-python-r2-20261014/retention-admission-final.json",
+        "bytes": 16034,
+        "sha256": "c76f6c852a1cd3ebaa7ee8d9f571b48138aaadc2f1e698be0de1c21d5cf74521"
+      }
+    },
+    "compiledNegatives": {
+      "gateRevision": "b6626cd",
+      "status": "PASS",
+      "cases": 19,
+      "allRejected": true,
+      "gateSHA256": "031c69bd709e6fde85831f28abf41a0a20a95bf685e6b80bd859f94c5af5fd87",
+      "evidence": {
+        "path": "/workspace/shared/spirit-feedback-a-python-r2-20261014/retention-mutations-r3.json",
+        "bytes": 5308,
+        "sha256": "5a762037362ecb1f4dd3014e2fd86bc913a061711b52dd7b990d75af40424eb5"
+      }
+    },
+    "reuseJustification": "Production map/packed JASS unchanged. e9322da changes only verify_buff_retry clock fixture; b6626cd changes only exact packed buff-admission mutation call anchor, preserving stack arguments. The ten reused suite functions are byte-identical at all three gate revisions. Original failed overall run is not represented as one complete PASS.",
+    "reusedFunctionEquivalence": {
+      "verify_lifetimes": true,
+      "verify_aborts": true,
+      "verify_delivered_target_death": true,
+      "verify_explicit_cleanup": true,
+      "verify_passive_cleanup": true,
+      "verify_owner_reuse": true,
+      "verify_serial_exhaustion": true,
+      "verify_partial_transfer": true,
+      "verify_on_stack_cleanup": true,
+      "verify_overlap_stress": true
+    }
+  },
+  "otherGates": {
+    "all22": {
+      "status": "PASS",
+      "cases": 264,
+      "statesPerCase": 131,
+      "totalComparedStates": 34584,
+      "fullReport": {
+        "sha256": "7ae9c68c76f415b04fbbb1887481c0ec3c94c1ba5fb817e6442d5215f22e2b3a",
+        "bytes": 6550210,
+        "retainedLocalPath": "/workspace/shared/spirit-feedback-a-python-r2-20261014/all22.json"
+      },
+      "compact": {
+        "path": "/workspace/shared/spirit-feedback-a-python-r2-20261014/all22-compact.json",
+        "bytes": 58524,
+        "sha256": "d449cacb8c998c985360adeea1afb3106c808fae92ae6b1f787b4c2481d36162"
+      }
+    },
+    "fourSlot": {
+      "status": "PASS",
+      "evidence": {
+        "path": "/workspace/shared/spirit-feedback-a-python-r2-20261014/four-slot.log",
+        "bytes": 5992,
+        "sha256": "7f28225a8c953e81c2015afdb35215c4170b93a9b3f1b518cc62d8b4ad262104"
+      }
+    },
+    "combatVisual": {
+      "status": "PASS",
+      "evidence": {
+        "path": "/workspace/shared/spirit-feedback-a-python-r2-20261014/combat-visual.log",
+        "bytes": 7808,
+        "sha256": "1273454042758d9893ffe387499412996f63f6bdbcdbba4696a96e85bff933b2"
+      }
+    },
+    "elementalVfx": {
+      "status": "PASS",
+      "evidence": {
+        "path": "/workspace/shared/spirit-feedback-a-python-r2-20261014/elemental-vfx.json",
+        "bytes": 666735,
+        "sha256": "3366f31337ee23d4569f6c62efa06fa441b256be4080161fd5fcc9972cdfa0e6"
+      }
+    }
+  },
+  "reproduction": {
+    "cwd": "/workspace/scratch/2106c0ab1fac/active-feedback-integration-20261014",
+    "commands": [
+      "python3 tools/VerifySpiritActiveRetentionArtifact.py ExampleMap.w3x --output /tmp/a-retention-all.json",
+      "python3 tools/VerifySpiritActiveRetentionArtifact.py ExampleMap.w3x --only admission --output /tmp/a-retention-admission.json",
+      "python3 tools/VerifySpiritActiveRetentionArtifact.py ExampleMap.w3x --only mutations --output /tmp/a-retention-mutations.json",
+      "python3 tools/VerifyAllSpiritActiveVisualTrace.py ExampleMap.w3x --baseline /workspace/scratch/2106c0ab1fac/corpse-slot-name-20261014/ExampleMap.w3x --output /tmp/a-all22.json",
+      "python3 tools/VerifyElementalVfxArtifact.py ExampleMap.w3x --baseline /workspace/scratch/2106c0ab1fac/corpse-slot-name-20261014/ExampleMap.w3x --output /tmp/a-elemental-vfx.json",
+      "python3 tools/VerifyPetFourSlotArtifact.py ExampleMap.w3x",
+      "python3 tools/VerifyCombatVisualArtifact.py ExampleMap.w3x --baseline /workspace/scratch/2106c0ab1fac/corpse-slot-name-20261014/ExampleMap.w3x"
+    ]
+  }
+}

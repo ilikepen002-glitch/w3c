@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "models": [
+    {
+      "model": "RootbudStag",
+      "allOriginalAndDisplay5Through8KeysAndExtentsPreserved": true,
+      "binaryKeyRecordsPreservedBeforeCast": 4590,
+      "onlyDisplayCastGestureChanged": true
+    },
+    {
+      "model": "SnowManeOtter",
+      "allOriginalAndDisplay5Through8KeysAndExtentsPreserved": true,
+      "binaryKeyRecordsPreservedBeforeCast": 4131,
+      "onlyDisplayCastGestureChanged": true
+    },
+    {
+      "model": "MoltenHornSalamander",
+      "allOriginalAndDisplay5Through8KeysAndExtentsPreserved": true,
+      "binaryKeyRecordsPreservedBeforeCast": 4131,
+      "onlyDisplayCastGestureChanged": true
+    },
+    {
+      "model": "BrassPangolin",
+      "allOriginalAndDisplay5Through8KeysAndExtentsPreserved": true,
+      "binaryKeyRecordsPreservedBeforeCast": 4131,
+      "onlyDisplayCastGestureChanged": true
+    },
+    {
+      "model": "BoulderArmGibbon",
+      "allOriginalAndDisplay5Through8KeysAndExtentsPreserved": true,
+      "binaryKeyRecordsPreservedBeforeCast": 4131,
+      "onlyDisplayCastGestureChanged": true
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import TDConfig
 import ObjectIds
 
 public constant int TD_FARMER_BUILD_ABILITY_ID = 'AUbu'
-public constant int TD_FARMER_WAGE_ABILITY_ID = 'A109'
+// A109 retired: old manual/random farmer wage; do not reuse this rawcode.
 public constant int TD_TOWER_BRANCH_A = 1
 public constant int TD_TOWER_BRANCH_B = 2
 
@@ -56,6 +56,7 @@ public constant int TD_DRYAD_SLOW_AURA_ABILITY_ID = 'A110'
 public constant int TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID = 'A116'
 public constant int TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID = 'A130'
 public constant int TD_TOWER_EVOLUTION_STATUS_ABILITY_ID = 'AeEV'
+public constant int TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID = 'AeEC'
 public constant int TD_FOOT_EVOLVED_COMMAND_ABILITY_ID = 'AeCM'
 public constant int TD_DRYAD_EVOLVED_SLOW_ABILITY_ID = 'AeSL'
 public constant int TD_TOWER_SELL_ABILITY_ID = 'A133'

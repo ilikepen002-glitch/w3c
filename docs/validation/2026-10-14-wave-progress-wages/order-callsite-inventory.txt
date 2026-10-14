@@ -1,0 +1,58 @@
+tests/wurst/runtime/TDNativeEnemyMechanicProbe.wurst:123:	IssuePointOrderById(probeRunner, Orders.move, -1600, 2672)
+tests/wurst/runtime/TDNativePetSkillsProbe.wurst:103:	IssueTargetOrderById(host, Orders.attack, targets[0])
+tests/wurst/runtime/TDNativeNormalPlayProbe.wurst:298:	let accepted = IssueTargetOrderById(worker, OrderId("ambush"), normalCaptureTarget)
+tests/wurst/runtime/TDNativeNormalPlayProbe.wurst:342:		accepted = IssuePointOrderById(actor, id, position.x, position.y)
+tests/wurst/runtime/TDNativeNormalPlayProbe.wurst:344:		accepted = IssueImmediateOrderById(actor, id)
+tests/wurst/runtime/TDNativeRouteProbe.wurst:153:    if GetUnitCurrentOrder(enemy) != Orders.move
+tests/wurst/runtime/TDNativeEquipmentEffectsProbe.wurst:170:		IssueTargetOrderById(archer, Orders.attack, attackTarget)
+tests/wurst/runtime/TDNativeEquipmentEffectsProbe.wurst:181:		IssueTargetOrderById(archer, Orders.attack, attackTarget)
+tests/wurst/runtime/TDNativeEquipmentEffectsProbe.wurst:196:			IssueTargetOrderById(storm, Orders.slow, stormTarget)
+tests/wurst/runtime/TDNativeEquipmentEffectsProbe.wurst:252:	IssueTargetOrderById(archer, Orders.attack, attackTarget)
+tests/wurst/runtime/TDNativePetProbe.wurst:95:		IssueTargetOrder(probeTower, "attack", probeCombatTarget)
+tests/wurst/runtime/TDNativeEquipmentProbe.wurst:95:                if not IssueImmediateOrderById(towerA, Orders.cancel)
+tests/wurst/runtime/TDNativeEquipmentProbe.wurst:116:        if not IssueImmediateOrderById(towerA, TD_ARCHER_LEVEL_2_ID)
+tests/wurst/runtime/TDNativeEquipmentProbe.wurst:198:            if not IssueImmediateOrderById(towerA, TD_ARCHER_LEVEL_2_ID)
+tests/wurst/runtime/TDNativeDenseDamageProbe.wurst:90:            if not IssueTargetOrderById(caster, Orders.slow, targets[0])
+tests/wurst/runtime/TDNativeSlowProbe.wurst:75:        if not IssueTargetOrderById(source, Orders.attack, target)
+tests/wurst/runtime/TDNativeSlowProbe.wurst:102:            if not IssuePointOrderById(target, Orders.move, -1300, 2672)
+tests/wurst/runtime/TDNativeBladestormProbe.wurst:68:        if not IssueTargetOrderById(caster, Orders.slow, target)
+tests/wurst/runtime/TDNativeBladestormProbe.wurst:71:        if not IssueImmediateOrderById(caster, Orders.slowon)
+tests/wurst/runtime/TDNativeBladestormProbe.wurst:100:        if not IssuePointOrderById(target, Orders.move, -1300, 2672)
+wurst/trial/TDTrialRuntime.wurst:31:	if advanced or binding.target.getCurrentOrder() != Orders.move
+wurst/trial/TDTrialRuntime.wurst:32:		binding.target.issuePointOrderById(Orders.move, tdTrialDestination(binding))
+wurst/TDSpawn.wurst:87:function tdEnemyLaneOrderId() returns int
+wurst/TDSpawn.wurst:88:	return Orders.move
+wurst/TDSpawn.wurst:91:	return tdEnemyLaneOrderId()
+wurst/TDSpawn.wurst:102:function tdEnemyShouldIssueLaneOrder(int currentOrder, int laneOrderId, boolean waypointAdvanced) returns boolean
+wurst/TDSpawn.wurst:105:public function tdEnemyShouldIssueLaneOrderForTest(int currentOrder, int laneOrderId, boolean waypointAdvanced) returns boolean
+wurst/TDSpawn.wurst:106:	return tdEnemyShouldIssueLaneOrder(currentOrder, laneOrderId, waypointAdvanced)
+wurst/TDSpawn.wurst:114:	let laneOrderId = tdEnemyLaneOrderId()
+wurst/TDSpawn.wurst:115:	if not tdEnemyShouldIssueLaneOrder(enemy.getCurrentOrder(), laneOrderId, waypointAdvanced)
+wurst/TDSpawn.wurst:121:		enemy.issuePointOrderById(laneOrderId, tdLaneWaypointPosition(playerId, waypointIndex))
+wurst/TDSpawn.wurst:123:		enemy.issuePointOrderById(laneOrderId, tdLaneExitPosition(playerId))
+wurst/towers/TDTowerTargetPriorityRuntime.wurst:71:	return orderId == 0 or orderId == Orders.attack or orderId == Orders.smart
+wurst/towers/TDTowerTargetPriorityRuntime.wurst:109:	record.scriptOrderId = Orders.attack
+wurst/towers/TDTowerTargetPriorityRuntime.wurst:111:	let issued = IssueTargetOrderById(source, Orders.attack, candidate)
+wurst/towers/TDTowerTargetPriorityRuntime.wurst:140:	record.scriptOrderId = Orders.stop
+wurst/towers/TDTowerTargetPriorityRuntime.wurst:142:	IssueImmediateOrderById(source, Orders.stop)
+wurst/towers/TDTowerTargetPriorityRuntime.wurst:245:	let orderId = GetIssuedOrderId()
+wurst/towers/TDTowerTargetPriorityRuntime.wurst:251:	if orderId == Orders.bloodluston or orderId == Orders.bloodlustoff
+wurst/towers/TDTowerTargetPriorityRuntime.wurst:257:	record.playerHold = orderId == Orders.stop or orderId == Orders.holdposition
+wurst/towers/TDTowerTargetPriorityRuntime.wurst:258:	if orderId == Orders.attack or orderId == Orders.smart
+tests/wurst/runtime/TDNativePetLifecycleProbe.wurst:59:	IssueTargetOrderById(pet.host, Orders.attack, target)
+tests/wurst/runtime/TDNativePetLifecycleProbe.wurst:131:			report("actual native upgrade order accepted=" + IssueImmediateOrderById(pet.host, TD_ORC_LEVEL_2_ID).toString())
+wurst/towers/TDTowerBloodlustAutocast.wurst:23:	return tdActiveAutocastChoiceAfterOrder(choice, orderId, eligible, scripted, Orders.bloodluston, Orders.bloodlustoff)
+wurst/towers/TDTowerBloodlustAutocast.wurst:26:	return tdActiveAutocastOrderForChoice(choice, eligible, Orders.bloodluston, Orders.bloodlustoff)
+wurst/towers/TDTowerBloodlustAutocast.wurst:47:	tower.issueImmediateOrderById(orderId)
+wurst/towers/TDTowerBloodlustAutocast.wurst:77:	let orderId = GetIssuedOrderId()
+wurst/pets/TDPetWild.wurst:184:						else if record.creature.getCurrentOrder() != Orders.move
+wurst/pets/TDPetWild.wurst:185:							record.creature.issuePointOrderById(Orders.move, destination)
+wurst/pets/TDPetWild.wurst:189:							record.creature.issuePointOrderById(Orders.move, hold)
+wurst/pets/TDPetWild.wurst:191:							record.creature.issueImmediateOrderById(Orders.stop)
+wurst/pets/TDPetObjectGen.wurst:110:		let order = anchor.getOrderString()
+wurst/pets/TDPetCastContext.wurst:187:		let accepted = tdTryEnemyControlToken(host, target, pet.lane, duration, abilityId, level, not boss and kind == 1 ? Orders.entanglingroots : Orders.thunderbolt, this castTo int, buffId)
+wurst/items/TDShieldRuntime.wurst:25:	return tdTryEnemyControl(source, enemy, lane, tdShieldStunDuration(boss, control), boss ? TD_SHIELD_BOSS_STUN_ID : TD_SHIELD_NORMAL_STUN_ID, boss ? 1 : controlLevel, Orders.thunderbolt)
+tests/wurst/runtime/TDNativeEquipmentDamageProbe.wurst:158:		IssueTargetOrderById(source, Orders.attack, target)
+tests/wurst/runtime/TDNativeEquipmentDamageProbe.wurst:192:			IssueTargetOrderById(source, Orders.attack, target)
+wurst/abilities/TDActiveSkillData.wurst:28:		return tdActiveSkillDefinition(TD_ACTIVE_BLOODLUST, TD_ACTIVE_DRIVER_NATIVE_ABILITY, TD_ORC_BLOODLUST_ABILITY_ID, -1, 12.0, Orders.bloodluston, Orders.bloodlustoff, TD_ACTIVE_AUTOCAST_ON)
+wurst/abilities/TDActiveSkillData.wurst:30:		return tdActiveSkillDefinition(TD_ACTIVE_BLADESTORM, TD_ACTIVE_DRIVER_NATIVE_ABILITY, TD_ORC_BLADESTORM_ABILITY_ID, -1, 9.0, Orders.slowon, Orders.slowoff, TD_ACTIVE_AUTOCAST_UNKNOWN)

@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "mapSHA256": "cd662ef1454356687cd7e9383b702d5c33f2614e863b2bbdb059659ddf5ee651",
+  "baselineSHA256": "962da70b23e122e08f7ef82f0b5016ebf1c7d99d3373d5a90c64c1b8dd26476e",
+  "delta": {
+    "changedMembers": [
+      "war3map.j",
+      "war3map.w3a",
+      "war3map.w3i"
+    ],
+    "newAbility": "AeEC",
+    "unchangedUnits": true,
+    "resourceDeltas": 0,
+    "balanceDeltas": 0,
+    "nativeProbeOrderMatched": true
+  },
+  "boundary": "Exact packed archive/object delta only; no Warcraft rendering or input claim."
+}

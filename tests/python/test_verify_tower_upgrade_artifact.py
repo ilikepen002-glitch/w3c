@@ -104,6 +104,14 @@ class TowerUpgradeArtifactTests(unittest.TestCase):
                         with self.subTest(edge=(uid, target), field=field), self.assertRaisesRegex(ValueError, 'range regressed'):
                             verifier.validate_upgrade_edges(units)
 
+    def test_all_35_nodes_reject_any_exact_range_or_buffer_change(self):
+        for uid in verifier.EXPECTED_TOWERS:
+            for field, reason in [('uacq', 'effective range changed'), ('ua1r', 'equipment range buffer changed')]:
+                units = deepcopy(self.units)
+                units[uid][field] += 1
+                with self.subTest(unit=uid, field=field), self.assertRaisesRegex(ValueError, reason):
+                    verifier.validate_tower_identity(units)
+
     def test_all_ten_terminals_reject_basic_dps_retreat(self):
         for uid in verifier.EVOLUTION_REPLACEMENTS:
             units = deepcopy(self.units)
@@ -168,7 +176,7 @@ class TowerUpgradeArtifactTests(unittest.TestCase):
 
     def test_evolved_split_and_corpse_tooltips_cannot_hide_or_invent_strengthening(self):
         for aid, text, reason in [('A100', '主箭伤害提高20%，6目标', 'extra-arrow-only gain'),
-                                  ('A116', '尸爆36点伤害', '43.2 damage')]:
+                                  ('A116', '尸爆36点伤害', '324 damage')]:
             abilities = self.copy_ability(aid)
             self.change_field(abilities, aid, 'aub1', text, 2)
             with self.subTest(ability=aid), self.assertRaisesRegex(ValueError, reason):
@@ -200,7 +208,8 @@ class TowerUpgradeArtifactTests(unittest.TestCase):
     def test_scalar_evaluator_rejects_mixed_jass_boolean_precedence(self):
         evaluator = verifier.JassScalarEvaluator('')
         with self.assertRaisesRegex(ValueError, 'Jass-specific precedence parser'):
-            evaluator.expression('(a or b) and c', {'a': True, 'b': False, 'c': True})
+            evaluator.expression('a or b and c', {'a': True, 'b': False, 'c': True})
+        self.assertTrue(evaluator.expression('(a or b) and c', {'a': True, 'b': False, 'c': True}))
 
     def test_pure_command_conflict_checks(self):
         for commands, reason in [([('A131', (2, 1), 'E'), ('A132', (2, 1), 'R')], 'cells overlap'),
@@ -286,7 +295,7 @@ class TowerUpgradeArtifactTests(unittest.TestCase):
             verifier.validate_evolution_jass(script, self.units, self.abilities)
 
     def test_jass_rejects_extra_removal_and_main_arrow_rewrite(self):
-        for function, line, reason in [('tdEvolutionRefresh', '\n call unit_removeAbility(tower_2, 1093742897)\n', 'remove only selected'),
+        for function, line, reason in [('tdEvolutionApplyChosenBranch', '\n call unit_removeAbility(tower_2, 1093742897)\n', 'remove only selected'),
                                       ('tdHandleArcherSplitArrowDamage', '\n call DamageEvent_setAmount(999.0)\n', 'primary-arrow damage')]:
             script = self.mutate_function(function, lambda body: body + line)
             with self.subTest(function=function), self.assertRaisesRegex(ValueError, reason):
@@ -295,6 +304,12 @@ class TowerUpgradeArtifactTests(unittest.TestCase):
     def test_jass_rejects_six_target_final_split_arrow(self):
         script = self.mutate_function('tdArcherSplitArrowTargetCount', lambda body: body.replace('clampedLevel + 1', 'clampedLevel'))
         with self.assertRaisesRegex(ValueError, 'seven total targets'):
+            verifier.validate_evolution_jass(script, self.units, self.abilities)
+
+    def test_jass_rejects_pet_epidemic_inheriting_evolved_corpse_damage(self):
+        script = self.mutate_function('tdPetHeroOnCorpseExplosionSettled',
+                                     lambda body: body.replace('tdGhoulCorpseExplosionDamage()', 'tdGhoulCorpseExplosionDamageForBranch(6, 2, true)'))
+        with self.assertRaisesRegex(ValueError, 'pet epidemic must retain base corpse damage'):
             verifier.validate_evolution_jass(script, self.units, self.abilities)
 
 

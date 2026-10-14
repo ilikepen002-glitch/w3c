@@ -36,7 +36,6 @@ ICON_STEMS = (
 EXPECTED = {
     'Geqb': (3, 0, 'C', 'Aspb'),
     'Gupg': (1, 1, 'U', 'ANcl'),
-    'A109': (3, 1, 'G', 'ANcl'),
     'Pcap': (1, 2, 'Q', 'ANcl'),
     'Pcol': (2, 2, 'W', 'ANcl'),
 }
@@ -105,6 +104,7 @@ def field_value(fields, key, level=0):
 
 
 def verify_farmer_grid(abilities, units):
+    require('A109' not in abilities, 'Retired farmer wage object A109 remains')
     occupied = {cell: 'native command' for cell in NATIVE_CELLS}
     for rawcode in EXPECTED:
         require(rawcode in abilities, f'Missing farmer command {rawcode}')
@@ -113,8 +113,8 @@ def verify_farmer_grid(abilities, units):
         require(cell not in occupied,
                 f'{rawcode}: farmer cell overlaps {occupied.get(cell)} at {cell}')
         occupied[cell] = rawcode
-    require(set(occupied) == {(x, y) for x in range(4) for y in range(3)} - {(2, 1), (3, 2)},
-            'Farmer command grid must occupy exactly ten cells, leaving 2,1 and 3,2 empty')
+    require(set(occupied) == {(x, y) for x in range(4) for y in range(3)} - {(2, 1), (3, 1), (3, 2)},
+            'Farmer command grid must occupy exactly nine cells, leaving 2,1, 3,1 and 3,2 empty')
     for rawcode, (x, y, hotkey, parent) in EXPECTED.items():
         actual_parent, fields = abilities[rawcode]
         require(actual_parent == parent, f'{rawcode}: wrong parent {actual_parent}')
@@ -123,9 +123,9 @@ def verify_farmer_grid(abilities, units):
         require(field_value(fields, 'ahky') == hotkey, f'{rawcode}: wrong farmer hotkey')
     candidates = [(uid, fields) for uid, fields in units.items()
                   if set(EXPECTED).issubset(fields.get('uabi', '').split(','))]
-    require(len(candidates) == 1, 'Expected exactly one farmer with all five commands')
+    require(len(candidates) == 1, 'Expected exactly one farmer with all four commands')
     uid, farmer = candidates[0]
-    require(farmer['uabi'].split(',') == ['AUbu', 'A109', 'A117', 'Geqb',
+    require(farmer['uabi'].split(',') == ['AUbu', 'A117', 'Geqb',
                                         'Gupg', 'Pcap', 'Pcol'],
             f'{uid}: farmer ability attachment/order changed')
     require('A108' not in abilities and 'Prpr' not in abilities, 'Removed blink/repair objects remain')
@@ -138,7 +138,7 @@ def verify_farmer_grid(abilities, units):
     return uid
 
 
-def verify_collection_commands(abilities):
+def verify_collection_commands(abilities, current_manager=False):
     cells, icons, orders = {}, [], []
     for rawcode in COLLECTION_COMMANDS:
         require(rawcode in abilities, f'Missing collection command {rawcode}')
@@ -160,7 +160,7 @@ def verify_collection_commands(abilities):
         for field in ('aart', 'arar'):
             require(field_value(fields, field) == icon_path(stem), f'{rawcode}: {field} icon path mismatch')
     verify_global_channel_orders(abilities)
-    verify_cultivation_command(abilities)
+    verify_cultivation_command(abilities, current_manager=current_manager)
 
 
 def verify_cultivation_command(abilities, current_manager=False):
@@ -855,13 +855,26 @@ MANAGER_COMMANDS = {
     'Pm0C': (1, 2, 'N', 0, 'TDPetKeep'),
     'Pm0D': (0, 2, 'W', 0, 'TDPetCultivate'),
     'Pm0E': (3, 2, 'R', 0, 'TDPetInfo'),
+    'Pm0F': (1, 2, 'L', 0, 'TDPetCultivate'),
+    'Pm10': (0, 0, 'Q', 0, 'TDPetCultivate'),
+    'Pm11': (1, 0, 'W', 0, 'TDPetCultivate'),
+    'Pm12': (2, 0, 'E', 0, 'TDPetCultivate'),
+    'Pm13': (3, 0, 'T', 0, 'TDPetCultivate'),
+    'Pm14': (3, 2, 'R', 0, 'TDPetInfo'),
+    'Pm15': (0, 2, 'N', 0, 'TDPetNext'),
+    'Pm16': (1, 2, 'P', 0, 'TDPetPrevious'),
+    'Pm17': (0, 1, 'Q', 0, 'TDPetKeepOld'),
+    'Pm18': (3, 1, 'E', 0, 'TDPetUseNew'),
 }
 PAGE_ACTIONS = {
     0: list(range(100, 110)) + [8, 9],
     1: list(range(7)) + [15],
-    2: [10, 11, 12, 13, 14, 16, 9],
+    2: [10, 11, 12, 13, 14, 16, 9, 23],
     3: [17, 18, 21, 22],
     4: [19, 20, 9],
+    5: [24, 25, 26, 27, 28],
+    6: list(range(200, 208)) + [29, 30, 28],
+    7: [31, 32, 22],
 }
 LIST_KEYS = 'QWETASDFZX'
 
@@ -875,6 +888,8 @@ def expected_action_cell(mode, action):
         return -1
     if mode == 0:
         return action - 100 if action >= 100 else action + 2
+    if mode == 6 and action >= 200:
+        return action - 200
     rawcode = manager_rawcode(action)
     x, y = MANAGER_COMMANDS[rawcode][:2]
     return y * 4 + x
@@ -895,7 +910,9 @@ def verify_manager_commands(abilities):
     for mode, actions in PAGE_ACTIONS.items():
         cells, keys = set(), set()
         for action in actions:
-            if action >= 100:
+            if action >= 200:
+                cell, key = action - 200, LIST_KEYS[action - 200]
+            elif action >= 100:
                 cell, key = action - 100, LIST_KEYS[action - 100]
             else:
                 x, y, key = MANAGER_COMMANDS[manager_rawcode(action)][:3]
@@ -904,13 +921,39 @@ def verify_manager_commands(abilities):
             require(key not in keys, f'Manager mode {mode}: duplicate hotkey {key}')
             cells.add(cell)
             keys.add(key)
-        skill_cells = {4, 5, 6, 7} if mode in (1, 2) else {0, 1, 2, 3} if mode == 3 else set()
+        skill_cells = {4, 5, 6, 7} if mode in (1, 2) else {0, 1, 2, 3} if mode in (3, 7) else set()
         require(not cells & skill_cells, f'Manager mode {mode}: passive skill overlap')
     verify_cultivation_command(abilities, current_manager=True)
     require(field_value(abilities['Pm09'][1], 'anam') == '保留原技能', 'Keep choice must name the original skill')
     require(field_value(abilities['Pm0A'][1], 'anam') == '换成新技能', 'Adopt choice must name the new skill')
     verify_global_channel_orders(abilities)
     require(unique_channel_order_count(abilities) <= 335, "Global unique Channel orders exceed the native order pool")
+
+
+def verify_directed_objects(abilities):
+    green = [*range(4), *range(5, 9), 11, 12, *range(16, 19), 20, 24, 28, 32, 36, *range(39, 49)]
+    expected = {f'Pn{skill:02X}' for skill in green}
+    actual = {raw for raw in abilities if re.fullmatch(r'Pn[0-9A-F]{2}', raw)}
+    require(actual == expected and len(actual) == 28, 'Directed choices require exactly 28 fixed-position identities')
+    require(not any(re.fullmatch(r'N[0-9A-F]{3}', raw) for raw in abilities), 'Unapproved skill x8 choice-variant library')
+    orders = {}
+    for skill in green:
+        raw = f'Pn{skill:02X}'
+        parent, fields = abilities[raw]
+        cell = skill if skill < 4 else skill-5 if 5 <= skill <= 8 else skill-12 if 16 <= skill <= 18 else (skill-32)%8 if skill >= 39 else skill-10 if skill in (11, 12) else 0
+        require(parent == 'ANcl' and field_value(fields, 'alev') == 1, raw + ': one-level green Channel expected')
+        require(all(level in (0, 1) for _, level, _ in fields), raw + ': residual second-level fields are forbidden')
+        for name in ('Ncl1', 'Ncl2', 'Ncl3', 'Ncl4', 'Ncl5', 'Ncl6', 'amcs', 'acdn', 'aran'):
+            column = int(name[-1]) if name.startswith('Ncl') else 0
+            require([(level, data) for field, level, data in fields if field == name] == [(1, column)], raw + ': Channel field must exist exactly at level one: ' + name)
+        require((field_value(fields, 'abpx'), field_value(fields, 'abpy')) == (cell%4, cell//4), raw + ': fixed directory position changed')
+        require(field_value(fields, 'ahky') == LIST_KEYS[cell] and field_value(fields, 'Ncl2', 1) == 0, raw + ': choice key/target changed')
+        require('3洗练石' in field_value(fields, 'aub1', 1) and QUALITY_NAMES[1] in field_value(fields, 'atp1', 1), raw + ': cost/green tooltip missing')
+        order = field_value(fields, 'Ncl6', 1)
+        if cell in orders:
+            require(orders[cell] == order, 'Directed identity allocated an extra per-variant order')
+        orders[cell] = order
+    require(len(orders) == len(set(orders.values())) == 8, 'Eight fixed choice cells require eight distinct orders')
 
 
 def verify_manager_list(abilities):
@@ -1076,8 +1119,8 @@ def verify_manager_jass(script):
     # by the locked LegacyJass runner; local-array storage is not a newer native.
     constants = {name: int(number) for name, number in re.findall(r'\bset (\w*TD_PET_\w+)\s*=\s*(-?\d+)\b', script)}
     helper = jass_function(script, 'tdPetActionCell')
-    for mode in range(-1, 6):
-        for action in range(-1, 122):
+    for mode in range(-1, 9):
+        for action in range(-1, 210):
             actual = _run_scalar_helper(helper, (mode, action), constants)
             require(actual == expected_action_cell(mode, action),
                     f'Packaged page whitelist mode={mode} action={action}: {actual}')
@@ -1129,6 +1172,7 @@ def verify_manager_core(abilities, units):
 def verify_manager_objects(abilities, units):
     verify_manager_commands(abilities)
     verify_manager_list(abilities)
+    verify_directed_objects(abilities)
     verify_manager_preview(abilities)
     verify_manager_units(units)
     # Require exact legal slots and all qualities; preserve frozen predecessor support.
@@ -1138,7 +1182,7 @@ def verify_manager_objects(abilities, units):
     verify_no_hunt_objects(abilities, units)
     species_count = len(manager_species(abilities, units))
     variants = 1 + (4 if species_count == 15 else 16) * species_count
-    require(len(MANAGER_COMMANDS) + 10 * variants == (633 if species_count == 15 else 513), 'Manager Channel object budget changed')
+    require(len(MANAGER_COMMANDS) + 10 * variants == (643 if species_count == 15 else 523), 'Manager Channel object budget changed')
 
 
 def verify_global_rawcode_uniqueness(artifact):
@@ -1184,7 +1228,7 @@ def main():
         verify_elemental_resources(artifact)
     require(not artifact.has(r'Units\CommandFunc.txt'), 'Global CommandFunc override is forbidden')
     species_count = len(manager_species(abilities, units))
-    channels = len(MANAGER_COMMANDS) + 10 * (1 + (4 if species_count == 15 else 16) * species_count)
+    channels = len(MANAGER_COMMANDS) + 28 + 10 * (1 + (4 if species_count == 15 else 16) * species_count)
     passives = verify_phase_one_slots(abilities) if is_phase_one_ui(abilities) else 550
     prototypes = 1 + species_count * 4
     print(f'PASS PET MANAGER: {farmer}; 20 fixed slots/two pages; {channels} Channels + {passives} slot displays; '

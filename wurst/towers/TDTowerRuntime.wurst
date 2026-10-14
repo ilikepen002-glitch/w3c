@@ -2,6 +2,7 @@ package TDTowerRuntime
 import TDCombatVisualRuntime
 import TDBossDarkTideRuntime
 import TDConfig
+import TDItemDropDiagnostic
 import TDState
 import TDSpawn
 import RegisterEvents
@@ -47,7 +48,6 @@ unit array tdTowerRangeIndicatorTowers
 
 boolean tdTowerGameplayEventsReady = false
 boolean tdTowerSelectionEventsReady = false
-boolean tdFarmerWageUnlocked = false
 trigger tdTowerConstructionStartTrigger = CreateTrigger()
 trigger tdTowerConstructionFinishTrigger = CreateTrigger()
 trigger tdTowerConstructionCancelTrigger = CreateTrigger()
@@ -55,6 +55,7 @@ trigger tdTowerUpgradeTrigger = CreateTrigger()
 trigger tdTowerUpgradeStartTrigger = CreateTrigger()
 trigger tdTowerUpgradeCancelTrigger = CreateTrigger()
 trigger tdTowerDeathTrigger = CreateTrigger()
+trigger tdTowerOwnerChangeTrigger = CreateTrigger()
 trigger tdTowerAttackTrigger = CreateTrigger()
 trigger tdTowerSelectionTrigger = CreateTrigger()
 trigger tdTowerDeselectionTrigger = CreateTrigger()
@@ -95,7 +96,9 @@ function tdHandleTowerSellCast() returns boolean
 		let equipment = UnitItemInSlot(tower, slot)
 		if equipment != null
 			UnitRemoveItem(tower, equipment)
+			tdItemDropDiagnosticMove(equipment, "卖塔退装备", true, position.x, position.y)
 			SetItemPosition(equipment, position.x, position.y)
+			tdItemDropDiagnosticMove(equipment, "卖塔退装备", false, position.x, position.y)
 	tdClearTowerRangeIndicatorsForTower(tower)
 	tdClearOrcBladestormState(tower)
 	tdClearTowerSaleState(tower)
@@ -308,12 +311,14 @@ function tdValidateTowerConstruction(unit tower) returns boolean
 
 function tdHandleTowerSelected()
 	let tower = GetTriggerUnit()
+	tdEvolutionSelectionChanged(GetTriggerPlayer(), tower)
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	tdShowTowerRangeIndicatorForPlayer(GetTriggerPlayer(), tower)
 
 function tdHandleTowerDeselected()
 	let tower = GetTriggerUnit()
+	tdEvolutionDeselected(GetTriggerPlayer(), tower)
 	let playerId = GetPlayerId(GetTriggerPlayer())
 	if tdValidRangeIndicatorPlayerId(playerId) and tdTowerRangeIndicatorTowers[playerId] == tower
 		tdClearTowerRangeIndicator(playerId)
@@ -328,17 +333,14 @@ function tdHandleTowerEquipmentVisualChanged()
 // 虽然名字还是 createPads，但目前这里实际做的是给每个玩家生成建造农民。
 // 玩家就是通过这个农民的建造菜单来放置 1 阶塔。
 public function tdCreatePads()
-	tdFarmerWageUnlocked = false
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		if tdIsLaneActive(playerId)
 			tdFarmers[playerId] = createUnit(Player(playerId), TD_FARMER_UNIT_ID, tdFarmerSpawnPosition(playerId), 0 .fromDeg())
 			if tdFarmersShouldBeInvulnerable()
 				tdFarmers[playerId].setInvulnerable(true)
-			Player(playerId).setAbilityAvailable(TD_FARMER_WAGE_ABILITY_ID, false)
 			tdAlignPlayerTowerPopulation(playerId)
 		else
 			tdFarmers[playerId] = null
-	tdStartFarmerWageUnlockWatcher()
 
 // 预留给“对话框式建造 UI”的启动入口。
 // 当前原型直接用农民自带的建造菜单，所以这里先留空。
@@ -346,7 +348,7 @@ public function tdSetupBuildDialog()
 
 // 预留给塔位选择逻辑的启动入口。
 public function tdSetupPadSelection()
-	if tdTowerSelectionEventsReady or not tdTowerRangeIndicatorEnabled()
+	if tdTowerSelectionEventsReady
 		return
 	tdTowerSelectionEventsReady = true
 	tdTowerSelectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SELECTED)
@@ -459,6 +461,13 @@ function tdHandleTowerUpgradeFinished()
 	tdRefreshTowerRangeIndicatorsForTower(tower)
 	tdInitializeBloodlustAutocast(tower)
 	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
+
+function tdHandleTowerEvolutionCast() returns boolean
+	tdEvolutionRequest(GetTriggerUnit(), GetTriggerPlayer())
+	return false
+
+function tdHandleTowerOwnershipChanged()
+	tdEvolutionOwnershipChanged(GetTriggerUnit())
 
 function tdHandleTowerDeath()
 	let tower = GetTriggerUnit()
@@ -804,22 +813,6 @@ function tdHandleArcherSplitArrowDamage()
 				doAfter(impactDelay) ->
 					tdDealArcherSplitArrowAttackDamage(source, victim, attackDamage, context, revision)
 
-function tdUnlockFarmerWageAbility()
-	if tdFarmerWageUnlocked
-		return
-	tdFarmerWageUnlocked = true
-	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
-		if tdIsLaneActive(playerId)
-			Player(playerId).setAbilityAvailable(TD_FARMER_WAGE_ABILITY_ID, true)
-
-function tdStartFarmerWageUnlockWatcher()
-	doPeriodically(0.25) cb ->
-		if tdIsGameOver()
-			destroy cb
-		else if tdGetGlobalWave() >= tdFarmerWageUnlockWave()
-			tdUnlockFarmerWageAbility()
-			destroy cb
-
 // 预留给建造/选择相关触发器注册的启动入口。
 public function tdSetupDialogTrigger()
 	if tdTowerGameplayEventsReady
@@ -827,9 +820,9 @@ public function tdSetupDialogTrigger()
 	tdTowerGameplayEventsReady = true
 	tdSetupBloodlustAutocastOrders()
 	tdSetupTargetPriorityOrders()
-	registerSpellEffectEvent(TD_FARMER_WAGE_ABILITY_ID, function tdHandleFarmerWageCast)
 	registerSpellEffectEvent(TD_ORC_BLADESTORM_ABILITY_ID, function tdHandleOrcBladestormCast)
 	registerSpellEffectEvent(TD_TOWER_SELL_ABILITY_ID, function tdHandleTowerSellCast)
+	registerSpellEffectEvent(TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID, function tdHandleTowerEvolutionCast)
 	tdTowerAttackTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_ATTACKED)
 	tdTowerConstructionStartTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_START)
 	tdTowerConstructionFinishTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_FINISH)
@@ -838,6 +831,7 @@ public function tdSetupDialogTrigger()
 	tdTowerUpgradeStartTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_UPGRADE_START)
 	tdTowerUpgradeCancelTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_UPGRADE_CANCEL)
 	tdTowerDeathTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
+	tdTowerOwnerChangeTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CHANGE_OWNER)
 	tdTowerItemPickupVisualTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
 	tdTowerItemDropVisualTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DROP_ITEM)
 	tdTowerConstructionStartTrigger.addAction(function tdHandleTowerConstructionStarted)
@@ -847,6 +841,7 @@ public function tdSetupDialogTrigger()
 	tdTowerUpgradeStartTrigger.addAction(function tdHandleTowerUpgradeStarted)
 	tdTowerUpgradeCancelTrigger.addAction(function tdHandleTowerUpgradeCancelled)
 	tdTowerDeathTrigger.addAction(function tdHandleTowerDeath)
+	tdTowerOwnerChangeTrigger.addAction(function tdHandleTowerOwnershipChanged)
 	tdTowerAttackTrigger.addAction(function tdHandleTowerAttackStarted)
 	tdTowerItemPickupVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)
 	tdTowerItemDropVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)
@@ -858,18 +853,4 @@ public function tdSetupDialogTrigger()
 			tdApplyEquipmentAttack(DamageEvent.getSource(), target, tdEnemyLaneId(target), tdIsBossUnitTypeId(GetUnitTypeId(target)))
 	DamageEvent.addListener(2) ->
 		tdHandleGhoulCorpseExplosionDamage()
-
-function tdHandleFarmerWageCast() returns boolean
-	let farmer = GetTriggerUnit()
-	if farmer == null or GetUnitTypeId(farmer) != TD_FARMER_UNIT_ID
-		return false
-	let playerId = GetPlayerId(GetOwningPlayer(farmer))
-	if not tdIsLaneActive(playerId)
-		return false
-	let wage = tdRollFarmerWageGold(tdGetGlobalWave())
-	tdGainGold(playerId, wage)
-	tdRefreshHud()
-	DisplayTimedTextToPlayer(Player(playerId), 0, 0, 4.0, "领取工资：+" + wage.toString() + " 金币。")
-	return false
-
 

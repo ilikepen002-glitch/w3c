@@ -1,0 +1,53 @@
+test_reject_channel_order_collision (test_evolution_command_card.EvolutionCommandCardTests.test_reject_channel_order_collision) ... ok
+test_reject_combat_hotkey_collision (test_evolution_command_card.EvolutionCommandCardTests.test_reject_combat_hotkey_collision) ... ok
+test_reject_other_tower_targeting (test_evolution_command_card.EvolutionCommandCardTests.test_reject_other_tower_targeting) ... FAIL
+test_reject_residual_second_level_channel_fields (test_evolution_command_card.EvolutionCommandCardTests.test_reject_residual_second_level_channel_fields) ... ok
+test_reject_sale_command_cell_collision (test_evolution_command_card.EvolutionCommandCardTests.test_reject_sale_command_cell_collision) ... FAIL
+test_synthetic_ten_terminal_selection_cards (test_evolution_command_card.EvolutionCommandCardTests.test_synthetic_ten_terminal_selection_cards) ... ERROR
+
+======================================================================
+ERROR: test_synthetic_ten_terminal_selection_cards (test_evolution_command_card.EvolutionCommandCardTests.test_synthetic_ten_terminal_selection_cards)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-growth-evolution-20261014/tests/python/test_evolution_command_card.py", line 24, in test_synthetic_ten_terminal_selection_cards
+    validate_evolution_action_commands(self.abilities)
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEvolutionArtifact.py", line 41, in validate_evolution_action_commands
+    require(order and all(order != field_value(abilities, aid, 'Ncl6', 1, 6) for aid in ('A133', 'Pdep')),
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: Evolution chooser must use a distinct native Channel order
+
+======================================================================
+FAIL: test_reject_other_tower_targeting (test_evolution_command_card.EvolutionCommandCardTests.test_reject_other_tower_targeting)
+----------------------------------------------------------------------
+ValueError: Evolution chooser must use a distinct native Channel order
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-growth-evolution-20261014/tests/python/test_evolution_command_card.py", line 44, in test_reject_other_tower_targeting
+    self.mutate('Ncl2', 1, 'own-tower instant', 1, 2)
+  File "/workspace/shared/spirit-growth-evolution-20261014/tests/python/test_evolution_command_card.py", line 29, in mutate
+    with self.assertRaisesRegex(ValueError, reason): validate_evolution_action_commands(abilities)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "own-tower instant" does not match "Evolution chooser must use a distinct native Channel order"
+
+======================================================================
+FAIL: test_reject_sale_command_cell_collision (test_evolution_command_card.EvolutionCommandCardTests.test_reject_sale_command_cell_collision)
+----------------------------------------------------------------------
+ValueError: Evolution chooser must use a distinct native Channel order
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-growth-evolution-20261014/tests/python/test_evolution_command_card.py", line 38, in test_reject_sale_command_cell_collision
+    self.mutate('abpy', 1, 'command cells overlap')
+  File "/workspace/shared/spirit-growth-evolution-20261014/tests/python/test_evolution_command_card.py", line 29, in mutate
+    with self.assertRaisesRegex(ValueError, reason): validate_evolution_action_commands(abilities)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "command cells overlap" does not match "Evolution chooser must use a distinct native Channel order"
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.867s
+
+FAILED (failures=2, errors=1)

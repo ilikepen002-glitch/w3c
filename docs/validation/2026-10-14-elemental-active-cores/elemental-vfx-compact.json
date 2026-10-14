@@ -1,0 +1,330 @@
+{
+  "status": "PASS",
+  "mapSHA256": "c3a50d47b9a5c47677e52ca6cb5bd8081e2f4d792385f8f63a9ba3cef3cb85bc",
+  "baselineSHA256": "f28f375462e64ea08e159eea88e386582cdcb1e2b3dc448fe979108a40468a13",
+  "twenty": [
+    {
+      "skill": 19,
+      "hit_times": [
+        11.05
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 10,
+      "eventsSHA256": "9fa92317abfbf5c2c555dc841701134a7a298931e2c83226e828fc2da0460db1",
+      "fx_updatesCount": 0,
+      "fx_updatesSHA256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "skill": 20,
+      "hit_times": [
+        11.05
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 15,
+      "eventsSHA256": "44bd7d24129575eb714af9c4bc5d90c5d9825697f00df24fa356d69e99617679",
+      "fx_updatesCount": 1,
+      "fx_updatesSHA256": "7532671d15178b6b9ee1a5e3a778c54d01899a9b07dc751af3351d0cdf0c3c74"
+    },
+    {
+      "skill": 21,
+      "hit_times": [
+        11.05,
+        11.2,
+        11.4,
+        11.6
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 25,
+      "eventsSHA256": "b034450835a3b6500f7e8d85425efec5dd0e9d0206ab1128bce86465941aa547",
+      "fx_updatesCount": 0,
+      "fx_updatesSHA256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "skill": 22,
+      "hit_times": [
+        12.0,
+        13.0,
+        14.0,
+        15.0
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 456,
+      "eventsSHA256": "7596f2d21c5f94ffe9c2e458542d6a0e540b862e606625f25591896f11dcac26",
+      "fx_updatesCount": 401,
+      "fx_updatesSHA256": "e8ad0501a77492d171c9186dde380d51df47304318f1125ac2232eb45a9e03fd"
+    },
+    {
+      "skill": 23,
+      "hit_times": [
+        11.05
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 12,
+      "eventsSHA256": "3a86fbf0b00eefe5eaa515e5b36a261733d2f1af3fb8e80ae635213c3d188e30",
+      "fx_updatesCount": 1,
+      "fx_updatesSHA256": "7532671d15178b6b9ee1a5e3a778c54d01899a9b07dc751af3351d0cdf0c3c74"
+    },
+    {
+      "skill": 24,
+      "hit_times": [
+        12.0,
+        13.0,
+        14.0,
+        15.0,
+        16.0
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 50,
+      "eventsSHA256": "a898d9f110ed58749af40324ecf1987f7feb094261870c52b9f66f139e55bff4",
+      "fx_updatesCount": 1,
+      "fx_updatesSHA256": "107d760983b77754a34a1539c40b4c768cce4096380def981226dacfdb176946"
+    },
+    {
+      "skill": 25,
+      "hit_times": [
+        11.05
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 12,
+      "eventsSHA256": "889441eb4ee2863f397c07d91142589766eb5482897a4ebe74c762611ee4ca26",
+      "fx_updatesCount": 0,
+      "fx_updatesSHA256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "skill": 26,
+      "hit_times": [
+        11.05,
+        11.4
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 36,
+      "eventsSHA256": "1c803898c86fbb56218c0765569a95a038bbfc913fc8eb883f17749b6212fbb1",
+      "fx_updatesCount": 11,
+      "fx_updatesSHA256": "637f6b292f6d815ef0400eeca768868b8f9b941181881955d6c97247dcfd31c4"
+    },
+    {
+      "skill": 27,
+      "hit_times": [
+        11.05
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 9,
+      "eventsSHA256": "41ad3bc0e69210d10e9e1ce5db3038c20d37143c316ce5f683d8857b321e8141",
+      "fx_updatesCount": 1,
+      "fx_updatesSHA256": "7532671d15178b6b9ee1a5e3a778c54d01899a9b07dc751af3351d0cdf0c3c74"
+    },
+    {
+      "skill": 28,
+      "hit_times": [
+        11.05,
+        11.6
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 13,
+      "eventsSHA256": "50f0b90acc6aa29472d2da852c6c828695fe0d0b437d0a116ad3503d7676ade3",
+      "fx_updatesCount": 0,
+      "fx_updatesSHA256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "skill": 29,
+      "hit_times": [
+        11.95
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 168,
+      "eventsSHA256": "07319bf2249f5cd4a725203312a086d5c97762b9502d2df491780be468dde30e",
+      "fx_updatesCount": 132,
+      "fx_updatesSHA256": "7daa9b8e55c90b9e81d29b50089292a55e1ddadb3dd9913cc461c2106f285aab"
+    },
+    {
+      "skill": 30,
+      "hit_times": [
+        11.5,
+        12.0,
+        12.5,
+        13.0,
+        13.5,
+        14.0,
+        14.5,
+        15.0
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 454,
+      "eventsSHA256": "33904e797364e2b83a9c18b62fa4b71b826b2c8bb562809eb959b351ff67fa78",
+      "fx_updatesCount": 401,
+      "fx_updatesSHA256": "df5cb60b31af56ab0cad29fcf9df899c4f947875029a9e0963727219f02f4ab3"
+    },
+    {
+      "skill": 31,
+      "hit_times": [
+        12.0,
+        13.0,
+        14.0,
+        15.0
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 20,
+      "eventsSHA256": "e3828236f49fd9c77a1709096d2d310cd986c6e8c5872a7a69037343701c5077",
+      "fx_updatesCount": 1,
+      "fx_updatesSHA256": "107d760983b77754a34a1539c40b4c768cce4096380def981226dacfdb176946"
+    },
+    {
+      "skill": 32,
+      "hit_times": [
+        11.05
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 16,
+      "eventsSHA256": "40815193cf7d279e92c2aaef5ce30498a726e508b59fe88b51640770099993b8",
+      "fx_updatesCount": 0,
+      "fx_updatesSHA256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "skill": 33,
+      "hit_times": [
+        11.75,
+        12.75,
+        13.75,
+        14.75
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 129,
+      "eventsSHA256": "e40c476b9441abfeb38d3b27dbcada42b5271c071c83d781f5e004d370591e1f",
+      "fx_updatesCount": 76,
+      "fx_updatesSHA256": "518410c828c53eae74e7a07e5ce3aa00b9ecb90ab38a1149ba27f7236bcee8b3"
+    },
+    {
+      "skill": 34,
+      "hit_times": [
+        11.6,
+        11.8,
+        12.0,
+        12.2
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 38,
+      "eventsSHA256": "c68d6905f6120170298c606dcb465c0b053500bf00363889dcde1a6290aca617",
+      "fx_updatesCount": 0,
+      "fx_updatesSHA256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "skill": 35,
+      "hit_times": [
+        11.05
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 12,
+      "eventsSHA256": "e3db37fd55653db141c1e92d9c3661a045f88dcaa496fbafcc5b177082fac9cf",
+      "fx_updatesCount": 1,
+      "fx_updatesSHA256": "b33f4b6849c4710dea275d30d03318b2d7225f8a6656ee115bfb6f692800d930"
+    },
+    {
+      "skill": 36,
+      "hit_times": [
+        11.05
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 18,
+      "eventsSHA256": "46141c71696790eb749142c82fe9f1edbd9f5ef87d82e510e6088f0b7648a898",
+      "fx_updatesCount": 1,
+      "fx_updatesSHA256": "0b1ff51a68c22aa1566b04201e3cddbffaca37bc621c3f6af04169d8529d9e74"
+    },
+    {
+      "skill": 37,
+      "hit_times": [],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 44,
+      "eventsSHA256": "9f52e601396c46843cfc1d7b4116451658518346e0dae42ce7eeb86d37304729",
+      "fx_updatesCount": 0,
+      "fx_updatesSHA256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "skill": 38,
+      "hit_times": [
+        11.05,
+        11.2
+      ],
+      "normal_finish": true,
+      "pool_baseline": 48,
+      "pool_after": 48,
+      "eventsCount": 42,
+      "eventsSHA256": "206e6d28eb54637be62e3f4c9e1c79ef4481c5eaace54f8b0f52ec2a570bac93",
+      "fx_updatesCount": 16,
+      "fx_updatesSHA256": "4b990080b6a30b7599d56e9b949cc9726a00d4496d1e403bb21c69b75f35b1f9"
+    }
+  ],
+  "fxBudget": {
+    "globalFxMax": 8,
+    "perCastFxMax": 2,
+    "newFxPerSecondMax": 8,
+    "movesWithoutRebuild": 100,
+    "actualPoolBaseline": 48,
+    "actualPoolAfter": 48,
+    "nativeRecycleDelay": 1.0,
+    "physicalDummyCreations": 50,
+    "engineBoundary": "unit setters, flat bounds and native handles"
+  },
+  "globalCapIndependent": {
+    "active": 8,
+    "rateBucketReset": true,
+    "ninthRejected": true,
+    "poolAfter": 48
+  },
+  "compiledMutations": [
+    {
+      "delay": "0.",
+      "rejected": true,
+      "reason": "Actual Fx recycle delay is not exactly one second"
+    },
+    {
+      "delay": "0.01",
+      "rejected": true,
+      "reason": "Actual Fx recycle delay is not exactly one second"
+    },
+    {
+      "globalLimit": 9,
+      "rejected": true,
+      "reason": "Global eight-Fx cap failed after creation-rate window reset"
+    }
+  ],
+  "boundary": "Packed elemental VFX calls, battle-trace equivalence and real Fx recycler execution.\nClock, engine unit setters, collection primitives, flat terrain/world bounds and native\nart/lightning handles are recorded boundaries. No Warcraft picture, blending or FPS claim.\n",
+  "fullReportSHA256": "529c6304470c7bf3cc8b40eb9df3d4911b2c03179823d6d257b9602757153e14"
+}

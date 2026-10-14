@@ -1,0 +1,2893 @@
+{
+  "status": "PASS",
+  "baseline": "2847c3f742a69661972cabb7a616e08e81cbae9c",
+  "scope": "14 append-only MDX800 display extensions; no atlas/geometry/rig/runtime scheduler edits",
+  "formatBoundary": "New parse of final MDX bytes; not Warcraft rendering or FPS",
+  "models": [
+    {
+      "species": 2,
+      "name": "锋翼隼",
+      "model": "SteelwingFalcon",
+      "sha256": "9d08287cbfa64df2bc7b6cc5b32841fc0e40bd8ca1efd6f66b75484e7ce6455f",
+      "bytes": 236384,
+      "rawGrowthBytes": 45000,
+      "profile": "wingbeats, talon tuck, banking turn, folded-wing rest, wing flare",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 18.64254379272461,
+          "maxAdjacentMidpointCoordinateChange": 0.8951225280761719,
+          "loopEndpointMaxDelta": 5.731346793642553e-16,
+          "minAdjacentQuaternionDot": 0.9994069337844849,
+          "bounds": {
+            "min": [
+              -57.5,
+              -81.4207763671875,
+              18.294076919555664
+            ],
+            "max": [
+              42.21819305419922,
+              81.4207763671875,
+              78.6560287475586
+            ]
+          },
+          "extent": {
+            "min": [
+              -59.5,
+              -83.42073059082031,
+              16.283611297607422
+            ],
+            "max": [
+              44.219139099121094,
+              83.42073059082031,
+              80.66867065429688
+            ],
+            "radius": 130.4097442626953
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 49.093849182128906,
+          "maxAdjacentMidpointCoordinateChange": 3.5582542419433594,
+          "loopEndpointMaxDelta": 3.8208981271261645e-16,
+          "minAdjacentQuaternionDot": 0.9889952540397644,
+          "bounds": {
+            "min": [
+              -58.9881477355957,
+              -81.41694641113281,
+              13.501507759094238
+            ],
+            "max": [
+              42.472862243652344,
+              81.41694641113281,
+              90.61393737792969
+            ]
+          },
+          "extent": {
+            "min": [
+              -60.98815155029297,
+              -83.4140396118164,
+              11.17058277130127
+            ],
+            "max": [
+              44.47284698486328,
+              83.4140396118164,
+              93.18285369873047
+            ],
+            "radius": 139.1420135498047
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 38.115413665771484,
+          "maxAdjacentMidpointCoordinateChange": 1.7844352722167969,
+          "loopEndpointMaxDelta": 5.275778169774826e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -84.63665771484375,
+              -98.00675964355469,
+              16.280807495117188
+            ],
+            "max": [
+              41.99797439575195,
+              88.70811462402344,
+              74.99628448486328
+            ]
+          },
+          "extent": {
+            "min": [
+              -86.72062683105469,
+              -100.04716491699219,
+              14.19210433959961
+            ],
+            "max": [
+              44,
+              90.70984649658203,
+              77
+            ],
+            "radius": 153.16299438476562
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 2.892976760864258,
+          "maxAdjacentMidpointCoordinateChange": 0.13914871215820312,
+          "loopEndpointMaxDelta": 3.688124389155073e-17,
+          "minAdjacentQuaternionDot": 0.9999885559082031,
+          "bounds": {
+            "min": [
+              -62.038448333740234,
+              -68.96553802490234,
+              15.092698097229004
+            ],
+            "max": [
+              41.124664306640625,
+              68.96553802490234,
+              75.9298324584961
+            ]
+          },
+          "extent": {
+            "min": [
+              -64.0420150756836,
+              -70.96678161621094,
+              13.079174995422363
+            ],
+            "max": [
+              43.12552261352539,
+              70.96678161621094,
+              77.93159484863281
+            ],
+            "radius": 123.33287048339844
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 45.174964904785156,
+          "maxAdjacentMidpointCoordinateChange": 1.1367301940917969,
+          "loopEndpointMaxDelta": 1.5283592508504658e-15,
+          "minAdjacentQuaternionDot": 0.9988108277320862,
+          "bounds": {
+            "min": [
+              -60.24492263793945,
+              -81.41943359375,
+              18.437734603881836
+            ],
+            "max": [
+              42.131534576416016,
+              81.41943359375,
+              88.21121978759766
+            ]
+          },
+          "extent": {
+            "min": [
+              -62.251895904541016,
+              -83.42091369628906,
+              16.382858276367188
+            ],
+            "max": [
+              44.13146209716797,
+              83.42091369628906,
+              90.25550842285156
+            ],
+            "radius": 137.76939392089844
+          }
+        }
+      ]
+    },
+    {
+      "species": 3,
+      "name": "铜甲穿山灵",
+      "model": "BrassPangolin",
+      "sha256": "f8ba608398a59d2bd4a12d3363818dc11af76b7fca7ea03f69e68fe58f6b8514",
+      "bytes": 286592,
+      "rawGrowthBytes": 40580,
+      "profile": "tail sway, digging-paw hop, tail sweep, tucked curl, digging brace",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 9.664145231246948,
+          "maxAdjacentMidpointCoordinateChange": 0.46388912200927734,
+          "loopEndpointMaxDelta": 3.7435282848393846e-16,
+          "minAdjacentQuaternionDot": 0.9998517036437988,
+          "bounds": {
+            "min": [
+              -103.61046600341797,
+              -22.330127716064453,
+              4.308563232421875
+            ],
+            "max": [
+              57.60359573364258,
+              22.330127716064453,
+              41.374088287353516
+            ]
+          },
+          "extent": {
+            "min": [
+              -105.61048889160156,
+              -24.330127716064453,
+              2.3000001907348633
+            ],
+            "max": [
+              59.60425567626953,
+              24.330127716064453,
+              43.38455581665039
+            ],
+            "radius": 116.73795318603516
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 25.07953643798828,
+          "maxAdjacentMidpointCoordinateChange": 0.6098852157592773,
+          "loopEndpointMaxDelta": 2.495686229087046e-16,
+          "minAdjacentQuaternionDot": 0.9996784329414368,
+          "bounds": {
+            "min": [
+              -104.71800994873047,
+              -22.330127716064453,
+              2.2719497680664062
+            ],
+            "max": [
+              57.60359573364258,
+              22.330127716064453,
+              45.67194366455078
+            ]
+          },
+          "extent": {
+            "min": [
+              -106.7179183959961,
+              -24.330127716064453,
+              0.09999990463256836
+            ],
+            "max": [
+              59.60425567626953,
+              24.330127716064453,
+              47.68455505371094
+            ],
+            "radius": 119.39215087890625
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 61.783565521240234,
+          "maxAdjacentMidpointCoordinateChange": 3.1122502088546753,
+          "loopEndpointMaxDelta": 6.076466132836581e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -103.42367553710938,
+              -56.33877182006836,
+              2.1365792751312256
+            ],
+            "max": [
+              57.42721176147461,
+              64.5595932006836,
+              38.18095397949219
+            ]
+          },
+          "extent": {
+            "min": [
+              -105.43336486816406,
+              -58.5894889831543,
+              0.09999990463256836
+            ],
+            "max": [
+              59.424869537353516,
+              66.7761459350586,
+              40.18455505371094
+            ],
+            "radius": 131.11082458496094
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 2.658674716949463,
+          "maxAdjacentMidpointCoordinateChange": 0.12814104557037354,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9999885156238099,
+          "bounds": {
+            "min": [
+              -103.12153625488281,
+              -22.330127716064453,
+              2.6005802154541016
+            ],
+            "max": [
+              56.6047477722168,
+              22.330127716064453,
+              39.73458480834961
+            ]
+          },
+          "extent": {
+            "min": [
+              -105.12154388427734,
+              -24.330127716064453,
+              0.6005802154541016
+            ],
+            "max": [
+              58.60569763183594,
+              24.330127716064453,
+              41.73589324951172
+            ],
+            "radius": 115.69087982177734
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 23.87134599685669,
+          "maxAdjacentMidpointCoordinateChange": 1.1464112401008606,
+          "loopEndpointMaxDelta": 9.982742798765815e-16,
+          "minAdjacentQuaternionDot": 0.9957094192504883,
+          "bounds": {
+            "min": [
+              -103.3689956665039,
+              -22.330127716064453,
+              0.9365142583847046
+            ],
+            "max": [
+              57.73794174194336,
+              22.330127716064453,
+              43.42192077636719
+            ]
+          },
+          "extent": {
+            "min": [
+              -105.3695068359375,
+              -24.330127716064453,
+              -1.0651006698608398
+            ],
+            "max": [
+              59.7379150390625,
+              24.330127716064453,
+              45.43459701538086
+            ],
+            "radius": 117.29872131347656
+          }
+        }
+      ]
+    },
+    {
+      "species": 4,
+      "name": "叶翼仙灵",
+      "model": "LeafwingSpirit",
+      "sha256": "015962f0bdd40391193fa207cee4d5b41cb358ccda78614eeadbebc9b305930d",
+      "bytes": 316376,
+      "rawGrowthBytes": 49420,
+      "profile": "four-leaf flutter, root kick, leafy twirl, folded leaves, arm/leaf flare",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 13.051532745361328,
+          "maxAdjacentMidpointCoordinateChange": 0.5380630493164062,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9992678761482239,
+          "bounds": {
+            "min": [
+              -19.680545806884766,
+              -58.516971588134766,
+              24.082847595214844
+            ],
+            "max": [
+              23.56475257873535,
+              58.516971588134766,
+              118.8296890258789
+            ]
+          },
+          "extent": {
+            "min": [
+              -21.680545806884766,
+              -60.55188751220703,
+              22.070335388183594
+            ],
+            "max": [
+              25.567819595336914,
+              60.55188751220703,
+              120.87056732177734
+            ],
+            "radius": 137.58612060546875
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 21.61642837524414,
+          "maxAdjacentMidpointCoordinateChange": 1.6326751708984375,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9936068058013916,
+          "bounds": {
+            "min": [
+              -22.665687561035156,
+              -62.3999137878418,
+              22.8378963470459
+            ],
+            "max": [
+              24.743715286254883,
+              62.3999137878418,
+              126.2857437133789
+            ]
+          },
+          "extent": {
+            "min": [
+              -24.67058563232422,
+              -64.57868957519531,
+              20.74029541015625
+            ],
+            "max": [
+              26.745498657226562,
+              64.57868957519531,
+              128.41354370117188
+            ],
+            "radius": 146.2045440673828
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 26.189760208129883,
+          "maxAdjacentMidpointCoordinateChange": 1.2011327743530273,
+          "loopEndpointMaxDelta": 2.3898886376014315e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -42.481388092041016,
+              -50.99191665649414,
+              22.764705657958984
+            ],
+            "max": [
+              28.842702865600586,
+              63.13650894165039,
+              116.59818267822266
+            ]
+          },
+          "extent": {
+            "min": [
+              -44.5923957824707,
+              -52.99468231201172,
+              20.74029541015625
+            ],
+            "max": [
+              30.859203338623047,
+              65.1611328125,
+              118.61035919189453
+            ],
+            "radius": 142.48814392089844
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 2.2178235054016113,
+          "maxAdjacentMidpointCoordinateChange": 0.10683202743530273,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9999885559082031,
+          "bounds": {
+            "min": [
+              -20.741666793823242,
+              -61.79898452758789,
+              23.751447677612305
+            ],
+            "max": [
+              24.74906349182129,
+              61.79898452758789,
+              103.00180053710938
+            ]
+          },
+          "extent": {
+            "min": [
+              -22.746536254882812,
+              -63.8027458190918,
+              21.750654220581055
+            ],
+            "max": [
+              26.752023696899414,
+              63.8027458190918,
+              105.00178527832031
+            ],
+            "radius": 125.74512481689453
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 18.959598541259766,
+          "maxAdjacentMidpointCoordinateChange": 0.458282470703125,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9990791082382202,
+          "bounds": {
+            "min": [
+              -25.10601043701172,
+              -50.055931091308594,
+              22.80157470703125
+            ],
+            "max": [
+              25.89332389831543,
+              50.055931091308594,
+              120.5743637084961
+            ]
+          },
+          "extent": {
+            "min": [
+              -27.113235473632812,
+              -52.25819778442383,
+              20.74029541015625
+            ],
+            "max": [
+              27.893409729003906,
+              52.25819778442383,
+              122.58824157714844
+            ],
+            "radius": 136.15005493164062
+          }
+        }
+      ]
+    },
+    {
+      "species": 5,
+      "name": "树芽鹿",
+      "model": "RootbudStag",
+      "sha256": "36aeedea98979a086be92f17995820d1a1c41c33d841b7d346745e6c56bcbcd0",
+      "bytes": 233654,
+      "rawGrowthBytes": 45000,
+      "profile": "ear/tail alertness, lifted forehoof, looking turn, head-down rest, antler brace",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 3.1389846801757812,
+          "maxAdjacentMidpointCoordinateChange": 0.1503448486328125,
+          "loopEndpointMaxDelta": 9.013400411510362e-16,
+          "minAdjacentQuaternionDot": 0.9997364282608032,
+          "bounds": {
+            "min": [
+              -39.99997329711914,
+              -26,
+              3.6085634231567383
+            ],
+            "max": [
+              46.86647415161133,
+              26,
+              106.86550903320312
+            ]
+          },
+          "extent": {
+            "min": [
+              -42,
+              -28,
+              1.5999999046325684
+            ],
+            "max": [
+              48.867027282714844,
+              28,
+              108.87901306152344
+            ],
+            "radius": 122.58313751220703
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 22.16403841972351,
+          "maxAdjacentMidpointCoordinateChange": 0.5077686309814453,
+          "loopEndpointMaxDelta": 1.6165339248217604e-16,
+          "minAdjacentQuaternionDot": 0.999238908290863,
+          "bounds": {
+            "min": [
+              -40.4628791809082,
+              -26,
+              1.5792903900146484
+            ],
+            "max": [
+              47.30032730102539,
+              26,
+              109.11064147949219
+            ]
+          },
+          "extent": {
+            "min": [
+              -42.4640007019043,
+              -28,
+              -0.6000000238418579
+            ],
+            "max": [
+              49.301239013671875,
+              28,
+              111.11613464355469
+            ],
+            "radius": 124.74536895751953
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 22.28741455078125,
+          "maxAdjacentMidpointCoordinateChange": 1.1204965114593506,
+          "loopEndpointMaxDelta": 5.737370044930478e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -39.99732971191406,
+              -29.54607391357422,
+              1.4365794658660889
+            ],
+            "max": [
+              46.728607177734375,
+              29.54607391357422,
+              102.99639892578125
+            ]
+          },
+          "extent": {
+            "min": [
+              -42,
+              -31.59776496887207,
+              -0.6000000238418579
+            ],
+            "max": [
+              48.732051849365234,
+              31.59776496887207,
+              105
+            ],
+            "radius": 119.99263000488281
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 2.9407262802124023,
+          "maxAdjacentMidpointCoordinateChange": 0.14167213439941406,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9999885559082031,
+          "bounds": {
+            "min": [
+              -40.245513916015625,
+              -26,
+              3.3734397888183594
+            ],
+            "max": [
+              47.32274627685547,
+              26,
+              104.14768981933594
+            ]
+          },
+          "extent": {
+            "min": [
+              -42.24678039550781,
+              -28,
+              1.3734397888183594
+            ],
+            "max": [
+              49.32392501831055,
+              28,
+              106.14799499511719
+            ],
+            "radius": 120.35051727294922
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 24.268195152282715,
+          "maxAdjacentMidpointCoordinateChange": 0.7204132080078125,
+          "loopEndpointMaxDelta": 3.3866058591627227e-15,
+          "minAdjacentQuaternionDot": 0.9952462315559387,
+          "bounds": {
+            "min": [
+              -40.75979995727539,
+              -26,
+              1.446836233139038
+            ],
+            "max": [
+              46.71121597290039,
+              26,
+              100.49559783935547
+            ]
+          },
+          "extent": {
+            "min": [
+              -42.76072692871094,
+              -28,
+              -0.6000000238418579
+            ],
+            "max": [
+              48.732051849365234,
+              28,
+              102.50392150878906
+            ],
+            "radius": 116.9011001586914
+          }
+        }
+      ]
+    },
+    {
+      "species": 6,
+      "name": "菌伞灵",
+      "model": "MosscapSprite",
+      "sha256": "9007639eb4f11095e4f2c0faa00eccdd4c206f9692066c853d7302bd33817ab9",
+      "bytes": 251540,
+      "rawGrowthBytes": 36160,
+      "profile": "cap/leaf sway, root-foot hop, cap wobble, cap-down breathing, spore-cap thrust",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 6.3840179443359375,
+          "maxAdjacentMidpointCoordinateChange": 0.2992706298828125,
+          "loopEndpointMaxDelta": 3.6616937848271865e-16,
+          "minAdjacentQuaternionDot": 0.999588131904602,
+          "bounds": {
+            "min": [
+              -34.79999923706055,
+              -29.367082595825195,
+              4.00856351852417
+            ],
+            "max": [
+              33.20000076293945,
+              32.1862907409668,
+              89.32617950439453
+            ]
+          },
+          "extent": {
+            "min": [
+              -36.79999923706055,
+              -31.368446350097656,
+              2
+            ],
+            "max": [
+              35.20000076293945,
+              34.20917892456055,
+              91.34890747070312
+            ],
+            "radius": 104.255126953125
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 19.220901250839233,
+          "maxAdjacentMidpointCoordinateChange": 0.4665255546569824,
+          "loopEndpointMaxDelta": 2.5717582580799545e-16,
+          "minAdjacentQuaternionDot": 0.9994069337844849,
+          "bounds": {
+            "min": [
+              -35.591609954833984,
+              -29.239999771118164,
+              1.981953501701355
+            ],
+            "max": [
+              34.13664245605469,
+              30.71207046508789,
+              90.82951354980469
+            ]
+          },
+          "extent": {
+            "min": [
+              -37.59293746948242,
+              -31.239999771118164,
+              -0.20000004768371582
+            ],
+            "max": [
+              36.14018249511719,
+              32.72861862182617,
+              92.83109283447266
+            ],
+            "radius": 105.36604309082031
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 20.72054433822632,
+          "maxAdjacentMidpointCoordinateChange": 0.9849281311035156,
+          "loopEndpointMaxDelta": 3.591644160089256e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -35.46973419189453,
+              -30.41470718383789,
+              1.836579442024231
+            ],
+            "max": [
+              33.19839096069336,
+              40.67589569091797,
+              87.34957122802734
+            ]
+          },
+          "extent": {
+            "min": [
+              -37.47018051147461,
+              -32.43379211425781,
+              -0.20000004768371582
+            ],
+            "max": [
+              35.20000076293945,
+              42.722511291503906,
+              89.3548355102539
+            ],
+            "radius": 105.89388275146484
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 2.2059402465820312,
+          "maxAdjacentMidpointCoordinateChange": 0.10530853271484375,
+          "loopEndpointMaxDelta": 1.2858791290399772e-16,
+          "minAdjacentQuaternionDot": 0.9999542236328125,
+          "bounds": {
+            "min": [
+              -35.26938247680664,
+              -29.257081985473633,
+              2.473644256591797
+            ],
+            "max": [
+              33.70456314086914,
+              29.186859130859375,
+              85.06165313720703
+            ]
+          },
+          "extent": {
+            "min": [
+              -37.271568298339844,
+              -31.257083892822266,
+              0.4736442565917969
+            ],
+            "max": [
+              35.70691680908203,
+              31.18709945678711,
+              87.06841278076172
+            ],
+            "radius": 99.73506927490234
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 13.914968490600586,
+          "maxAdjacentMidpointCoordinateChange": 0.49212074279785156,
+          "loopEndpointMaxDelta": 2.0574066329337432e-16,
+          "minAdjacentQuaternionDot": 0.9965389966964722,
+          "bounds": {
+            "min": [
+              -35.467105865478516,
+              -29.239999771118164,
+              1.8546315431594849
+            ],
+            "max": [
+              33.17634201049805,
+              31.455564498901367,
+              85.77446746826172
+            ]
+          },
+          "extent": {
+            "min": [
+              -37.467105865478516,
+              -31.239999771118164,
+              -0.20000004768371582
+            ],
+            "max": [
+              35.20000076293945,
+              33.51994705200195,
+              87.79136657714844
+            ],
+            "radius": 101.16667175292969
+          }
+        }
+      ]
+    },
+    {
+      "species": 7,
+      "name": "潮尾灵蛟",
+      "model": "TideWyrm",
+      "sha256": "e620111850fb3ca3ac5da23d8e481ed314e24992b24e907a6a4ddecebca37800",
+      "bytes": 303398,
+      "rawGrowthBytes": 53840,
+      "profile": "traveling spine wave, cresting surge, serpentine sway, slow spine breathing, head/fin charge",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 23.69962978363037,
+          "maxAdjacentMidpointCoordinateChange": 0.6688899993896484,
+          "loopEndpointMaxDelta": 5.231886934151358e-16,
+          "minAdjacentQuaternionDot": 0.9998169541358948,
+          "bounds": {
+            "min": [
+              -96.2582778930664,
+              -33.3570442199707,
+              23.047626495361328
+            ],
+            "max": [
+              61.08479309082031,
+              33.55143356323242,
+              78.21855163574219
+            ]
+          },
+          "extent": {
+            "min": [
+              -98.261962890625,
+              -35.39897155761719,
+              21.039064407348633
+            ],
+            "max": [
+              63.0848274230957,
+              35.590232849121094,
+              80.2283706665039
+            ],
+            "radius": 131.75230407714844
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 22.57045865058899,
+          "maxAdjacentMidpointCoordinateChange": 1.128687858581543,
+          "loopEndpointMaxDelta": 1.1089407994146066e-31,
+          "minAdjacentQuaternionDot": 0.9966955780982971,
+          "bounds": {
+            "min": [
+              -97.6953125,
+              -40.36193084716797,
+              20.977680206298828
+            ],
+            "max": [
+              61.08019256591797,
+              33.924903869628906,
+              82.81439208984375
+            ]
+          },
+          "extent": {
+            "min": [
+              -99.70221710205078,
+              -42.36886978149414,
+              18.83906364440918
+            ],
+            "max": [
+              63.080169677734375,
+              35.924747467041016,
+              84.82683563232422
+            ],
+            "radius": 137.5908660888672
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 74.13122940063477,
+          "maxAdjacentMidpointCoordinateChange": 2.9282264709472656,
+          "loopEndpointMaxDelta": 7.23898751272406e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -98.23731994628906,
+              -70.67677307128906,
+              20.875642776489258
+            ],
+            "max": [
+              61.634273529052734,
+              71.49253845214844,
+              75.1986312866211
+            ]
+          },
+          "extent": {
+            "min": [
+              -100.23877716064453,
+              -72.75057220458984,
+              18.83906364440918
+            ],
+            "max": [
+              63.63497543334961,
+              73.6219482421875,
+              77.20182800292969
+            ],
+            "radius": 146.38348388671875
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 11.84955883026123,
+          "maxAdjacentMidpointCoordinateChange": 0.32914161682128906,
+          "loopEndpointMaxDelta": 2.615771413508268e-16,
+          "minAdjacentQuaternionDot": 0.9999542236328125,
+          "bounds": {
+            "min": [
+              -94.5665054321289,
+              -32.4089241027832,
+              22.83906364440918
+            ],
+            "max": [
+              61.08134078979492,
+              31.61655616760254,
+              74.82958984375
+            ]
+          },
+          "extent": {
+            "min": [
+              -96.57435607910156,
+              -34.41309356689453,
+              20.83906364440918
+            ],
+            "max": [
+              63.08133316040039,
+              33.61695098876953,
+              76.83000946044922
+            ],
+            "radius": 128.11602783203125
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 16.30316662788391,
+          "maxAdjacentMidpointCoordinateChange": 0.8137025833129883,
+          "loopEndpointMaxDelta": 8.009017407102982e-32,
+          "minAdjacentQuaternionDot": 0.9997259974479675,
+          "bounds": {
+            "min": [
+              -97.37822723388672,
+              -35.044952392578125,
+              19.675901412963867
+            ],
+            "max": [
+              61.08842086791992,
+              33.6524543762207,
+              74.02588653564453
+            ]
+          },
+          "extent": {
+            "min": [
+              -99.3782958984375,
+              -37.04486846923828,
+              17.675907135009766
+            ],
+            "max": [
+              63.08835983276367,
+              35.657039642333984,
+              76.02742004394531
+            ],
+            "radius": 130.49343872070312
+          }
+        }
+      ]
+    },
+    {
+      "species": 8,
+      "name": "霜鳍灵鲼",
+      "model": "FrostFinManta",
+      "sha256": "7d2cd0dac23f9e73e806d503533929af7beffc663ceabfe7f28ebe451daf41bb",
+      "bytes": 245690,
+      "rawGrowthBytes": 40580,
+      "profile": "fin ripple, double fin beat, banking sweep, lowered fins, fin/head thrust",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 14.736929893493652,
+          "maxAdjacentMidpointCoordinateChange": 0.7093843221664429,
+          "loopEndpointMaxDelta": 3.5709582920283257e-16,
+          "minAdjacentQuaternionDot": 0.9995313882827759,
+          "bounds": {
+            "min": [
+              -98.62406921386719,
+              -62.50397491455078,
+              27.310466766357422
+            ],
+            "max": [
+              44.428104400634766,
+              62.50397491455078,
+              58.66130828857422
+            ]
+          },
+          "extent": {
+            "min": [
+              -100.62395477294922,
+              -64.50376892089844,
+              25.299999237060547
+            ],
+            "max": [
+              46.4283447265625,
+              64.50376892089844,
+              60.7203369140625
+            ],
+            "radius": 134.06295776367188
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 30.80312728881836,
+          "maxAdjacentMidpointCoordinateChange": 2.2577896118164062,
+          "loopEndpointMaxDelta": 2.3806387731196185e-16,
+          "minAdjacentQuaternionDot": 0.9936068058013916,
+          "bounds": {
+            "min": [
+              -98.76641845703125,
+              -62.49870681762695,
+              21.557483673095703
+            ],
+            "max": [
+              44.41999435424805,
+              62.49870681762695,
+              72.29704284667969
+            ]
+          },
+          "extent": {
+            "min": [
+              -100.7659683227539,
+              -64.50312042236328,
+              19.30821990966797
+            ],
+            "max": [
+              46.42005920410156,
+              64.50312042236328,
+              74.60380554199219
+            ],
+            "radius": 140.9970245361328
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 65.91446208953857,
+          "maxAdjacentMidpointCoordinateChange": 3.4132431745529175,
+          "loopEndpointMaxDelta": 4.717053214909261e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -98.53450012207031,
+              -64.20942687988281,
+              17.594100952148438
+            ],
+            "max": [
+              45.356502532958984,
+              67.41725158691406,
+              65.3451919555664
+            ]
+          },
+          "extent": {
+            "min": [
+              -100.54031372070312,
+              -66.2105941772461,
+              15.514284133911133
+            ],
+            "max": [
+              47.35722351074219,
+              69.63262939453125,
+              67.4119644165039
+            ],
+            "radius": 139.64752197265625
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 3.8799721896648407,
+          "maxAdjacentMidpointCoordinateChange": 0.1869903802871704,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9999707341194153,
+          "bounds": {
+            "min": [
+              -98.51519012451172,
+              -62.50101089477539,
+              27.159271240234375
+            ],
+            "max": [
+              44.43511962890625,
+              62.50101089477539,
+              53.15398025512695
+            ]
+          },
+          "extent": {
+            "min": [
+              -100.51513671875,
+              -64.50108337402344,
+              25.157657623291016
+            ],
+            "max": [
+              46.43510818481445,
+              64.50108337402344,
+              55.15670394897461
+            ],
+            "radius": 131.55206298828125
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 25.745784759521484,
+          "maxAdjacentMidpointCoordinateChange": 1.2873987555503845,
+          "loopEndpointMaxDelta": 9.522556151269658e-16,
+          "minAdjacentQuaternionDot": 0.9991001486778259,
+          "bounds": {
+            "min": [
+              -98.81961822509766,
+              -61.3514289855957,
+              25.56243324279785
+            ],
+            "max": [
+              44.38435745239258,
+              61.3514289855957,
+              67.1230239868164
+            ]
+          },
+          "extent": {
+            "min": [
+              -100.81983947753906,
+              -63.41753387451172,
+              23.5
+            ],
+            "max": [
+              46.38768005371094,
+              63.41753387451172,
+              69.14871978759766
+            ],
+            "radius": 137.7242431640625
+          }
+        }
+      ]
+    },
+    {
+      "species": 9,
+      "name": "雪鬃水獭",
+      "model": "SnowManeOtter",
+      "sha256": "0c58f1c73f525be922f3e21497a748e7c4cc3df08a0862f9f6f4e089e6acb0a8",
+      "bytes": 309062,
+      "rawGrowthBytes": 40580,
+      "profile": "tail/paw paddle, playful hop, tail wag turn, tucked paws, double-paw brace",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 7.375758647918701,
+          "maxAdjacentMidpointCoordinateChange": 0.3546571731567383,
+          "loopEndpointMaxDelta": 4.76837158203125e-7,
+          "minAdjacentQuaternionDot": 0.9997364282608032,
+          "bounds": {
+            "min": [
+              -81.23036193847656,
+              -21.810365676879883,
+              4.32253360748291
+            ],
+            "max": [
+              47.2294921875,
+              21.810365676879883,
+              47.89632034301758
+            ]
+          },
+          "extent": {
+            "min": [
+              -83.2301254272461,
+              -23.810365676879883,
+              2.312185764312744
+            ],
+            "max": [
+              49.22970962524414,
+              23.810365676879883,
+              49.90678787231445
+            ],
+            "radius": 99.92434692382812
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 16.144686698913574,
+          "maxAdjacentMidpointCoordinateChange": 0.4460306167602539,
+          "loopEndpointMaxDelta": 5.652060274614814e-17,
+          "minAdjacentQuaternionDot": 0.9997026920318604,
+          "bounds": {
+            "min": [
+              -81.64189910888672,
+              -21.810365676879883,
+              2.7616305351257324
+            ],
+            "max": [
+              47.384761810302734,
+              21.810365676879883,
+              52.300254821777344
+            ]
+          },
+          "extent": {
+            "min": [
+              -83.64277648925781,
+              -23.810365676879883,
+              0.5999999046325684
+            ],
+            "max": [
+              49.384765625,
+              23.810365676879883,
+              54.30624771118164
+            ],
+            "radius": 102.52909851074219
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 46.51783895492554,
+          "maxAdjacentMidpointCoordinateChange": 2.3670055270195007,
+          "loopEndpointMaxDelta": 4.7773094447110375e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -81.1912841796875,
+              -42.5413932800293,
+              2.6365792751312256
+            ],
+            "max": [
+              47.1628532409668,
+              48.295867919921875,
+              44.703125
+            ]
+          },
+          "extent": {
+            "min": [
+              -83.19986724853516,
+              -44.73212814331055,
+              0.5999999046325684
+            ],
+            "max": [
+              49.165061950683594,
+              50.46599578857422,
+              46.706787109375
+            ],
+            "radius": 107.93775177001953
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 2.2880125045776367,
+          "maxAdjacentMidpointCoordinateChange": 0.11029243469238281,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9999885559082031,
+          "bounds": {
+            "min": [
+              -81.27770233154297,
+              -21.810365676879883,
+              3.708360195159912
+            ],
+            "max": [
+              47.2455940246582,
+              21.810365676879883,
+              43.778499603271484
+            ]
+          },
+          "extent": {
+            "min": [
+              -83.27787780761719,
+              -23.810365676879883,
+              1.708360195159912
+            ],
+            "max": [
+              49.24559783935547,
+              23.810365676879883,
+              45.77880859375
+            ],
+            "radius": 97.96855163574219
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 21.231324195861816,
+          "maxAdjacentMidpointCoordinateChange": 0.8743734508752823,
+          "loopEndpointMaxDelta": 2.2608262274282937e-16,
+          "minAdjacentQuaternionDot": 0.9956028461456299,
+          "bounds": {
+            "min": [
+              -81.13892364501953,
+              -23.499048233032227,
+              2.643902063369751
+            ],
+            "max": [
+              47.160377502441406,
+              23.499048233032227,
+              48.106895446777344
+            ]
+          },
+          "extent": {
+            "min": [
+              -83.13787841796875,
+              -25.500892639160156,
+              0.5999999046325684
+            ],
+            "max": [
+              49.165061950683594,
+              25.500892639160156,
+              50.11450958251953
+            ],
+            "radius": 100.3676528930664
+          }
+        }
+      ]
+    },
+    {
+      "species": 10,
+      "name": "赤翎火鸟",
+      "model": "EmberBird",
+      "sha256": "6cd3716d43e791cceb704df484e8cdf8541a748cf7dc932becc1790b313152d1",
+      "bytes": 418244,
+      "rawGrowthBytes": 45000,
+      "profile": "wing/crest flutter, rising wingbeat, banking turn, folded-wing rest, crest/wing flare",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 11.498481750488281,
+          "maxAdjacentMidpointCoordinateChange": 0.5509109497070312,
+          "loopEndpointMaxDelta": 2.152034797990609e-15,
+          "minAdjacentQuaternionDot": 0.9994069337844849,
+          "bounds": {
+            "min": [
+              -76.31352996826172,
+              -60.58804702758789,
+              17.184368133544922
+            ],
+            "max": [
+              32.14176559448242,
+              60.58804702758789,
+              114.6080322265625
+            ]
+          },
+          "extent": {
+            "min": [
+              -78.3132553100586,
+              -62.59132385253906,
+              15.173900604248047
+            ],
+            "max": [
+              34.14236068725586,
+              62.59132385253906,
+              116.62826538085938
+            ],
+            "radius": 153.79464721679688
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 30.329734802246094,
+          "maxAdjacentMidpointCoordinateChange": 2.1676254272460938,
+          "loopEndpointMaxDelta": 1.4346899006201122e-15,
+          "minAdjacentQuaternionDot": 0.9889952540397644,
+          "bounds": {
+            "min": [
+              -77.80152130126953,
+              -60.725433349609375,
+              15.411446571350098
+            ],
+            "max": [
+              32.834346771240234,
+              60.725433349609375,
+              116.59575653076172
+            ]
+          },
+          "extent": {
+            "min": [
+              -79.80458068847656,
+              -62.72697830200195,
+              13.3739013671875
+            ],
+            "max": [
+              34.83513641357422,
+              62.72697830200195,
+              118.59867858886719
+            ],
+            "radius": 156.1060333251953
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 42.806406021118164,
+          "maxAdjacentMidpointCoordinateChange": 2.2097930908203125,
+          "loopEndpointMaxDelta": 1.1315269196881389e-14,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -76.30784606933594,
+              -68.47008514404297,
+              15.2385892868042
+            ],
+            "max": [
+              31.99879264831543,
+              70.19657897949219,
+              110.45704650878906
+            ]
+          },
+          "extent": {
+            "min": [
+              -78.31304931640625,
+              -70.49282836914062,
+              13.228327751159668
+            ],
+            "max": [
+              34,
+              72.21444702148438,
+              112.4605712890625
+            ],
+            "radius": 154.9039764404297
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 2.4133548736572266,
+          "maxAdjacentMidpointCoordinateChange": 0.11621665954589844,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9999885559082031,
+          "bounds": {
+            "min": [
+              -76.46012115478516,
+              -60.65474319458008,
+              15.19117259979248
+            ],
+            "max": [
+              31.27042007446289,
+              60.65474319458008,
+              112.61750030517578
+            ]
+          },
+          "extent": {
+            "min": [
+              -78.46281433105469,
+              -62.65494155883789,
+              13.180806159973145
+            ],
+            "max": [
+              33.27048873901367,
+              62.65494155883789,
+              114.62095642089844
+            ],
+            "radius": 152.38116455078125
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 25.816818237304688,
+          "maxAdjacentMidpointCoordinateChange": 1.0354664325714111,
+          "loopEndpointMaxDelta": 5.738759602480449e-15,
+          "minAdjacentQuaternionDot": 0.9988108277320862,
+          "bounds": {
+            "min": [
+              -76.27246856689453,
+              -58.97990798950195,
+              14.662422180175781
+            ],
+            "max": [
+              31.994064331054688,
+              58.97990798950195,
+              106.08902740478516
+            ]
+          },
+          "extent": {
+            "min": [
+              -78.31304931640625,
+              -61.06106185913086,
+              12.661733627319336
+            ],
+            "max": [
+              34,
+              61.06106185913086,
+              108.12000274658203
+            ],
+            "radius": 146.80368041992188
+          }
+        }
+      ]
+    },
+    {
+      "species": 11,
+      "name": "熔角火蜥",
+      "model": "MoltenHornSalamander",
+      "sha256": "bb9bc585505dc6849cc05574b7367ec361183502e204290d4ede9e981cfbc822",
+      "bytes": 367652,
+      "rawGrowthBytes": 40580,
+      "profile": "tail/head sway, low paw hop, tail sweep, low resting breath, horn brace",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 8.159671783447266,
+          "maxAdjacentMidpointCoordinateChange": 0.3875389099121094,
+          "loopEndpointMaxDelta": 9.596463084640046e-17,
+          "minAdjacentQuaternionDot": 0.9998517036437988,
+          "bounds": {
+            "min": [
+              -91.78009796142578,
+              -36.94384765625,
+              5.50856351852417
+            ],
+            "max": [
+              63.23252868652344,
+              36.94384765625,
+              52.078216552734375
+            ]
+          },
+          "extent": {
+            "min": [
+              -93.79415130615234,
+              -38.94384765625,
+              3.5
+            ],
+            "max": [
+              65.23346710205078,
+              38.94384765625,
+              54.08995819091797
+            ],
+            "radius": 115.06385040283203
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 14.2493577003479,
+          "maxAdjacentMidpointCoordinateChange": 0.3670339584350586,
+          "loopEndpointMaxDelta": 6.397643821078671e-17,
+          "minAdjacentQuaternionDot": 0.9998096823692322,
+          "bounds": {
+            "min": [
+              -92.81138610839844,
+              -36.94384765625,
+              3.425004243850708
+            ],
+            "max": [
+              63.056922912597656,
+              36.94384765625,
+              52.632896423339844
+            ]
+          },
+          "extent": {
+            "min": [
+              -94.81507110595703,
+              -38.94384765625,
+              1.2999999523162842
+            ],
+            "max": [
+              65.05701446533203,
+              38.94384765625,
+              54.6393928527832
+            ],
+            "radius": 116.15499877929688
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 57.65201759338379,
+          "maxAdjacentMidpointCoordinateChange": 2.7915005683898926,
+          "loopEndpointMaxDelta": 6.480830768009838e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -93.3676528930664,
+              -46.803611755371094,
+              3.3365793228149414
+            ],
+            "max": [
+              63.003257751464844,
+              67.63927459716797,
+              48.655113220214844
+            ]
+          },
+          "extent": {
+            "min": [
+              -95.36883544921875,
+              -48.836299896240234,
+              1.2999999523162842
+            ],
+            "max": [
+              65.00011444091797,
+              69.77392578125,
+              50.658592224121094
+            ],
+            "radius": 128.56869506835938
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 2.5423688888549805,
+          "maxAdjacentMidpointCoordinateChange": 0.12218666076660156,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9999885559082031,
+          "bounds": {
+            "min": [
+              -92.48612976074219,
+              -36.94384765625,
+              4.239969253540039
+            ],
+            "max": [
+              62.7640380859375,
+              36.94384765625,
+              48.53619384765625
+            ]
+          },
+          "extent": {
+            "min": [
+              -94.49064636230469,
+              -38.94384765625,
+              2.239969253540039
+            ],
+            "max": [
+              64.76449584960938,
+              38.94384765625,
+              50.53675842285156
+            ],
+            "radius": 114.01345825195312
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 30.77606201171875,
+          "maxAdjacentMidpointCoordinateChange": 0.9902992248535156,
+          "loopEndpointMaxDelta": 2.5590575284314683e-16,
+          "minAdjacentQuaternionDot": 0.9964963793754578,
+          "bounds": {
+            "min": [
+              -92.10662841796875,
+              -38.46015548706055,
+              2.718752861022949
+            ],
+            "max": [
+              63.42072677612305,
+              38.46015548706055,
+              54.11241912841797
+            ]
+          },
+          "extent": {
+            "min": [
+              -94.14835357666016,
+              -40.46173858642578,
+              0.7122237682342529
+            ],
+            "max": [
+              65.42169189453125,
+              40.46173858642578,
+              56.1421012878418
+            ],
+            "radius": 116.84605407714844
+          }
+        }
+      ]
+    },
+    {
+      "species": 12,
+      "name": "烬尾火狐",
+      "model": "CinderTailFox",
+      "sha256": "4923fde2dc40d971cb320d1c63697986dde93c7b3b885a565c417045a66df914",
+      "bytes": 398240,
+      "rawGrowthBytes": 58260,
+      "profile": "three-tail flutter, forepaw hop, three-tail fan, head-down rest, tail/head flare",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 12.728096008300781,
+          "maxAdjacentMidpointCoordinateChange": 0.43195265531539917,
+          "loopEndpointMaxDelta": 2.211712080772937e-15,
+          "minAdjacentQuaternionDot": 0.9998097274612987,
+          "bounds": {
+            "min": [
+              -78.14955139160156,
+              -59.64817428588867,
+              5.108563423156738
+            ],
+            "max": [
+              49.18971252441406,
+              59.64817428588867,
+              85.17955780029297
+            ]
+          },
+          "extent": {
+            "min": [
+              -80.1500015258789,
+              -61.649620056152344,
+              3.1000003814697266
+            ],
+            "max": [
+              51.189720153808594,
+              61.649620056152344,
+              87.19001770019531
+            ],
+            "radius": 133.51702880859375
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 23.845985412597656,
+          "maxAdjacentMidpointCoordinateChange": 0.77099609375,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9998096823692322,
+          "bounds": {
+            "min": [
+              -78.10148620605469,
+              -53.573448181152344,
+              3.0774424076080322
+            ],
+            "max": [
+              49.439483642578125,
+              53.573448181152344,
+              99.77584075927734
+            ]
+          },
+          "extent": {
+            "min": [
+              -80.1500015258789,
+              -55.573448181152344,
+              0.9000000953674316
+            ],
+            "max": [
+              51.44034194946289,
+              55.573448181152344,
+              101.78337860107422
+            ],
+            "radius": 140.96910095214844
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 56.71446132659912,
+          "maxAdjacentMidpointCoordinateChange": 2.6701793670654297,
+          "loopEndpointMaxDelta": 1.312625443723129e-14,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -87.74004364013672,
+              -79.42499542236328,
+              2.936579465866089
+            ],
+            "max": [
+              49.16258239746094,
+              79.42499542236328,
+              81.98641967773438
+            ]
+          },
+          "extent": {
+            "min": [
+              -89.73957824707031,
+              -81.45110321044922,
+              0.9000000953674316
+            ],
+            "max": [
+              51.165061950683594,
+              81.45110321044922,
+              83.99002075195312
+            ],
+            "radius": 147.4510040283203
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 4.839134216308594,
+          "maxAdjacentMidpointCoordinateChange": 0.2307891845703125,
+          "loopEndpointMaxDelta": 9.903814151158291e-16,
+          "minAdjacentQuaternionDot": 0.9999542520944891,
+          "bounds": {
+            "min": [
+              -71.73806762695312,
+              -56.631996154785156,
+              4.678218364715576
+            ],
+            "max": [
+              48.99248123168945,
+              56.631996154785156,
+              90.70023345947266
+            ]
+          },
+          "extent": {
+            "min": [
+              -73.74225616455078,
+              -58.645694732666016,
+              2.678218364715576
+            ],
+            "max": [
+              50.992462158203125,
+              58.645694732666016,
+              92.70858001708984
+            ],
+            "radius": 132.18214416503906
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 15.650371551513672,
+          "maxAdjacentMidpointCoordinateChange": 0.45209503173828125,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.9997978210449219,
+          "bounds": {
+            "min": [
+              -86.94015502929688,
+              -53.437625885009766,
+              2.9458553791046143
+            ],
+            "max": [
+              49.162315368652344,
+              53.437625885009766,
+              78.8658676147461
+            ]
+          },
+          "extent": {
+            "min": [
+              -88.9495620727539,
+              -55.573448181152344,
+              0.9000000953674316
+            ],
+            "max": [
+              51.165061950683594,
+              55.573448181152344,
+              80.99002075195312
+            ],
+            "radius": 132.51345825195312
+          }
+        }
+      ]
+    },
+    {
+      "species": 13,
+      "name": "岩壳龟",
+      "model": "RockShellTurtle",
+      "sha256": "22b5df4b1cab01ecfc80d165583d3417900d79c62fd7ad9de10cafbfdfc597cf",
+      "bytes": 304524,
+      "rawGrowthBytes": 36160,
+      "profile": "head/tail alertness, forefoot lift, shell rocking, tucked head/feet, shell/head brace",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 2.7038135528564453,
+          "maxAdjacentMidpointCoordinateChange": 0.12994766235351562,
+          "loopEndpointMaxDelta": 2.051117810347074e-16,
+          "minAdjacentQuaternionDot": 0.9998517036437988,
+          "bounds": {
+            "min": [
+              -54.135276794433594,
+              -39,
+              3.3104665279388428
+            ],
+            "max": [
+              64.85795593261719,
+              39,
+              84.18953704833984
+            ]
+          },
+          "extent": {
+            "min": [
+              -56.135276794433594,
+              -41,
+              1.3000001907348633
+            ],
+            "max": [
+              66.85795593261719,
+              41,
+              86.19999694824219
+            ],
+            "radius": 116.53937530517578
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 15.085692405700684,
+          "maxAdjacentMidpointCoordinateChange": 0.3597245216369629,
+          "loopEndpointMaxDelta": 3.894376647113699e-16,
+          "minAdjacentQuaternionDot": 0.9997026920318604,
+          "bounds": {
+            "min": [
+              -54.62006378173828,
+              -39,
+              1.6042873859405518
+            ],
+            "max": [
+              64.85769653320312,
+              39,
+              82.50213623046875
+            ]
+          },
+          "extent": {
+            "min": [
+              -56.62196731567383,
+              -41,
+              -0.5
+            ],
+            "max": [
+              66.85760498046875,
+              41,
+              84.50212860107422
+            ],
+            "radius": 115.28897857666016
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 26.539458513259888,
+          "maxAdjacentMidpointCoordinateChange": 1.3061864376068115,
+          "loopEndpointMaxDelta": 6.688114553279542e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -54.10020446777344,
+              -48.3569450378418,
+              1.5365794897079468
+            ],
+            "max": [
+              64.89372253417969,
+              48.3569450378418,
+              80.99632263183594
+            ]
+          },
+          "extent": {
+            "min": [
+              -56.10176086425781,
+              -50.390682220458984,
+              -0.5
+            ],
+            "max": [
+              66.89293670654297,
+              50.390682220458984,
+              83
+            ],
+            "radius": 117.9104995727539
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 1.800933837890625,
+          "maxAdjacentMidpointCoordinateChange": 0.08677864074707031,
+          "loopEndpointMaxDelta": 1.9471883235568495e-16,
+          "minAdjacentQuaternionDot": 0.9999885559082031,
+          "bounds": {
+            "min": [
+              -54.39221954345703,
+              -37,
+              2.9894285202026367
+            ],
+            "max": [
+              60.843441009521484,
+              37,
+              80.42616271972656
+            ]
+          },
+          "extent": {
+            "min": [
+              -56.39333724975586,
+              -39,
+              0.9879100322723389
+            ],
+            "max": [
+              62.84348678588867,
+              39,
+              82.42810821533203
+            ],
+            "radius": 110.74609375
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 14.968587875366211,
+          "maxAdjacentMidpointCoordinateChange": 0.36260223388671875,
+          "loopEndpointMaxDelta": 5.469648553050048e-16,
+          "minAdjacentQuaternionDot": 0.9991001486778259,
+          "bounds": {
+            "min": [
+              -54.048892974853516,
+              -39,
+              1.5531851053237915
+            ],
+            "max": [
+              67.23200988769531,
+              39,
+              82.62236785888672
+            ]
+          },
+          "extent": {
+            "min": [
+              -56.04998016357422,
+              -41,
+              -0.5
+            ],
+            "max": [
+              69.23397827148438,
+              41,
+              84.62772369384766
+            ],
+            "radius": 116.77412414550781
+          }
+        }
+      ]
+    },
+    {
+      "species": 14,
+      "name": "磐臂山魈",
+      "model": "BoulderArmGibbon",
+      "sha256": "b9efa3c1168af2a9f7106620c55e1a04233146d887353f62717acd2bb849dcc9",
+      "bytes": 316202,
+      "rawGrowthBytes": 40580,
+      "profile": "arm/torso sway, heavy arm bounce, shoulder sway, crouched breathing, chest-level double-fist raise",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 3.609628677368164,
+          "maxAdjacentMidpointCoordinateChange": 0.1725025177001953,
+          "loopEndpointMaxDelta": 0,
+          "minAdjacentQuaternionDot": 0.999910295009613,
+          "bounds": {
+            "min": [
+              -20,
+              -40.51056671142578,
+              4.408563613891602
+            ],
+            "max": [
+              31.3757266998291,
+              40.51056671142578,
+              86.8096694946289
+            ]
+          },
+          "extent": {
+            "min": [
+              -22,
+              -42.51056671142578,
+              2.4000000953674316
+            ],
+            "max": [
+              33.37622833251953,
+              42.51056671142578,
+              88.82080841064453
+            ],
+            "radius": 103.97238159179688
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 17.516895294189453,
+          "maxAdjacentMidpointCoordinateChange": 0.4758434295654297,
+          "loopEndpointMaxDelta": 3.7964048459673263e-16,
+          "minAdjacentQuaternionDot": 0.9996784329414368,
+          "bounds": {
+            "min": [
+              -20.22395133972168,
+              -40.51056671142578,
+              2.364288568496704
+            ],
+            "max": [
+              34.94102478027344,
+              40.51056671142578,
+              90.58316040039062
+            ]
+          },
+          "extent": {
+            "min": [
+              -22.22490119934082,
+              -42.51056671142578,
+              0.20000004768371582
+            ],
+            "max": [
+              36.9483642578125,
+              42.51056671142578,
+              92.59418487548828
+            ],
+            "radius": 108.3790283203125
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 22.587287425994873,
+          "maxAdjacentMidpointCoordinateChange": 1.07421875,
+          "loopEndpointMaxDelta": 3.214869082073966e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -25.008169174194336,
+              -43.15613555908203,
+              2.236579418182373
+            ],
+            "max": [
+              42.57097625732422,
+              43.15613555908203,
+              83.45848083496094
+            ]
+          },
+          "extent": {
+            "min": [
+              -27.05739402770996,
+              -45.155784606933594,
+              0.20000004768371582
+            ],
+            "max": [
+              44.62376403808594,
+              45.155784606933594,
+              85.46208190917969
+            ],
+            "radius": 106.4616928100586
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 1.8340740203857422,
+          "maxAdjacentMidpointCoordinateChange": 0.0883932113647461,
+          "loopEndpointMaxDelta": 1.8982024229836632e-16,
+          "minAdjacentQuaternionDot": 0.9999885559082031,
+          "bounds": {
+            "min": [
+              -20.11820411682129,
+              -40.51056671142578,
+              2.6399383544921875
+            ],
+            "max": [
+              32.14006042480469,
+              40.51056671142578,
+              81.04426574707031
+            ]
+          },
+          "extent": {
+            "min": [
+              -22.118736267089844,
+              -42.51056671142578,
+              0.6399383544921875
+            ],
+            "max": [
+              34.14287185668945,
+              42.51056671142578,
+              83.04499816894531
+            ],
+            "radius": 99.3446273803711
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 58.3404541015625,
+          "maxAdjacentMidpointCoordinateChange": 1.3816280364990234,
+          "loopEndpointMaxDelta": 3.0371239826529795e-16,
+          "minAdjacentQuaternionDot": 0.9931569695472717,
+          "bounds": {
+            "min": [
+              -20.335281372070312,
+              -40.51056671142578,
+              2.248772621154785
+            ],
+            "max": [
+              43.85134506225586,
+              40.51056671142578,
+              84.6949462890625
+            ]
+          },
+          "extent": {
+            "min": [
+              -22.335607528686523,
+              -42.51056671142578,
+              0.20000004768371582
+            ],
+            "max": [
+              45.849822998046875,
+              42.51056671142578,
+              86.6994400024414
+            ],
+            "radius": 106.89315795898438
+          }
+        }
+      ]
+    },
+    {
+      "species": 15,
+      "name": "砂环灵螺",
+      "model": "SandSpiralSnail",
+      "sha256": "adf34a4400bdd3a973a83669832d43e41fd145438f43099bf7569894a4164cb7",
+      "bytes": 289988,
+      "rawGrowthBytes": 31740,
+      "profile": "eye-stalk/shell sway, shell bob, shell rocking, tucked stalks, stalk/head reach",
+      "animations": [
+        {
+          "index": 5,
+          "name": "Display Float",
+          "interval": [
+            8000,
+            10000
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 2.9230728149414062,
+          "maxAdjacentMidpointCoordinateChange": 0.14033126831054688,
+          "loopEndpointMaxDelta": 5.055288505582717e-16,
+          "minAdjacentQuaternionDot": 0.9997620582580566,
+          "bounds": {
+            "min": [
+              -50.06300354003906,
+              -18.697792053222656,
+              2.672351121902466
+            ],
+            "max": [
+              57.08682632446289,
+              18.697792053222656,
+              68.159423828125
+            ]
+          },
+          "extent": {
+            "min": [
+              -52.06303024291992,
+              -20.70035743713379,
+              0.6618845462799072
+            ],
+            "max": [
+              59.08682632446289,
+              20.70035743713379,
+              70.16960144042969
+            ],
+            "radius": 94.04004669189453
+          }
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "interval": [
+            10100,
+            10900
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 7.9465179443359375,
+          "maxAdjacentMidpointCoordinateChange": 0.270599365234375,
+          "loopEndpointMaxDelta": 3.3701924252877433e-16,
+          "minAdjacentQuaternionDot": 0.999919593334198,
+          "bounds": {
+            "min": [
+              -50.16380310058594,
+              -18.17810821533203,
+              0.8977869749069214
+            ],
+            "max": [
+              57.56161117553711,
+              18.17810821533203,
+              67.45787048339844
+            ]
+          },
+          "extent": {
+            "min": [
+              -52.16377258300781,
+              -20.17810821533203,
+              -1.138115406036377
+            ],
+            "max": [
+              59.563541412353516,
+              20.17810821533203,
+              69.45838165283203
+            ],
+            "radius": 93.69865417480469
+          }
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "interval": [
+            11000,
+            12200
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 24.458529472351074,
+          "maxAdjacentMidpointCoordinateChange": 1.2264175415039062,
+          "loopEndpointMaxDelta": 6.260030878000797e-15,
+          "minAdjacentQuaternionDot": 0.9967725872993469,
+          "bounds": {
+            "min": [
+              -50.060245513916016,
+              -36.89588928222656,
+              0.8984639644622803
+            ],
+            "max": [
+              59.005455017089844,
+              36.89588928222656,
+              64.99626922607422
+            ]
+          },
+          "extent": {
+            "min": [
+              -52.06287384033203,
+              -38.987586975097656,
+              -1.138115406036377
+            ],
+            "max": [
+              61.003971099853516,
+              38.987586975097656,
+              67
+            ],
+            "radius": 98.64337921142578
+          }
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "interval": [
+            12300,
+            15300
+          ],
+          "loop": true,
+          "samples": 128,
+          "maxVertexCoordinateChange": 1.5623788833618164,
+          "maxAdjacentMidpointCoordinateChange": 0.07530069351196289,
+          "loopEndpointMaxDelta": 1.396097438416871e-16,
+          "minAdjacentQuaternionDot": 0.9999885559082031,
+          "bounds": {
+            "min": [
+              -50.03596115112305,
+              -18.36091423034668,
+              2.134620428085327
+            ],
+            "max": [
+              55.65232849121094,
+              18.36091423034668,
+              64.49718475341797
+            ]
+          },
+          "extent": {
+            "min": [
+              -52.036041259765625,
+              -20.361867904663086,
+              0.13007736206054688
+            ],
+            "max": [
+              57.653160095214844,
+              20.361867904663086,
+              66.49945831298828
+            ],
+            "radius": 90.33642578125
+          }
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "interval": [
+            15400,
+            16600
+          ],
+          "loop": false,
+          "samples": 128,
+          "maxVertexCoordinateChange": 13.660924911499023,
+          "maxAdjacentMidpointCoordinateChange": 0.3328514099121094,
+          "loopEndpointMaxDelta": 1.3480769701150973e-15,
+          "minAdjacentQuaternionDot": 0.9991001486778259,
+          "bounds": {
+            "min": [
+              -50.05881118774414,
+              -18.17810821533203,
+              0.9523388147354126
+            ],
+            "max": [
+              57.773250579833984,
+              18.17810821533203,
+              66.01541900634766
+            ]
+          },
+          "extent": {
+            "min": [
+              -52.06287384033203,
+              -20.17810821533203,
+              -1.138115406036377
+            ],
+            "max": [
+              59.77324676513672,
+              20.17810821533203,
+              68.01969146728516
+            ],
+            "radius": 92.77217102050781
+          }
+        }
+      ]
+    }
+  ],
+  "totalGrowthBytes": 603480
+}

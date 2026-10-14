@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "checksParent": "5dc69ccf05c3ff365c691a9fa9b2e089178d45fe",
+  "buildParent": "510b45e5e6e270045685cd63b02fdce7ce31092e",
+  "checksManifest": "/workspace/shared/spirit-growth-evolution-20261014/_build/linux-zedkpncq/manifest.json",
+  "buildManifest": "/workspace/shared/spirit-growth-evolution-20261014/_build/linux-ljbtepur/manifest.json",
+  "mapPath": "/workspace/shared/spirit-growth-evolution-final-20261014.w3x",
+  "mapSHA256": "cd662ef1454356687cd7e9383b702d5c33f2614e863b2bbdb059659ddf5ee651",
+  "productionWurstByteExactAgainstChecksAndBuild": true,
+  "testsWurstAgainstChecksOnlyDifference": {
+    "path": "tests/wurst/runtime/TDNativeNormalPlayProbe.wurst",
+    "commentOnly": true
+  },
+  "testsWurstByteExactAgainstBuild": true,
+  "postBuildEdits": "Only independent artifact validation tools and Python fixtures/tests; no Wurst, dependencies, config or map byte edit",
+  "candidateMapEnvironmentForMutationRuns": {
+    "PYTHON_CANDIDATE_MAP": "/workspace/shared/spirit-growth-evolution-final-20261014.w3x",
+    "sha256": "cd662ef1454356687cd7e9383b702d5c33f2614e863b2bbdb059659ddf5ee651"
+  },
+  "mutationCommands": [
+    "python3 -m unittest discover -s tests/python -p test_verify_tower_upgrade_artifact.py -v",
+    "python3 -m unittest discover -s tests/python -p test_evolution_current_carriers.py -v"
+  ]
+}

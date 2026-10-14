@@ -5,6 +5,18 @@ public constant int TD_VISUAL_HIT_LIMIT = 32
 public constant int TD_VISUAL_NEW_PER_SECOND = 120
 public constant int TD_VISUAL_LANE_GROUPS_PER_SECOND = 10
 public constant int TD_VISUAL_MOVING_LIMIT = 8
+// Reserved within, never in addition to, the existing 128/120 shared limits.
+public constant int TD_VISUAL_CORE_LIMIT = 40
+public constant int TD_VISUAL_DECORATION_LIMIT = 88
+public constant int TD_VISUAL_CORE_NEW_PER_SECOND = 40
+public constant int TD_VISUAL_DECORATION_NEW_PER_SECOND = 80
+public constant real TD_VISUAL_CORE_RETRY_INTERVAL = 0.25
+
+public function tdCombatVisualCoreBudget(int cores, int total, int created, int coreCreated) returns boolean
+	return cores < TD_VISUAL_CORE_LIMIT and total < TD_VISUAL_SHORT_LIMIT and created < TD_VISUAL_NEW_PER_SECOND and coreCreated < TD_VISUAL_CORE_NEW_PER_SECOND
+
+public function tdCombatVisualDecorationBudget(int cores, int total, int created, int coreCreated) returns boolean
+	return total - cores < TD_VISUAL_DECORATION_LIMIT and total < TD_VISUAL_SHORT_LIMIT and created < TD_VISUAL_NEW_PER_SECOND and created - coreCreated < TD_VISUAL_DECORATION_NEW_PER_SECOND
 
 // Mesh-only five-element impacts. Complete fade lives in Stand; transparent
 // Death cannot leave an uncounted visible tail after the shared owner releases.
@@ -57,12 +69,12 @@ public function tdCombatVisualGearModel(int profile) returns string
 public function tdCombatVisualHitBudget(real now, real readyAt, int sourceCount, int laneGroups, int hits, int total, int created) returns boolean
 	return now >= readyAt and sourceCount < 2 and laneGroups < TD_VISUAL_LANE_GROUPS_PER_SECOND and hits < TD_VISUAL_HIT_LIMIT and total < TD_VISUAL_SHORT_LIMIT and created < TD_VISUAL_NEW_PER_SECOND
 
-// Optional automatic buff feedback; the locked classic Abilities catalogue
-// contains both paths. These are separate from the equipment attachment.
+// Authored MDX800 body-height loops. One persistent core per host;
+// transparent Death avoids residual art after the real buff expires.
 public function tdCombatVisualPetBuffModel(int skill) returns string
 	if skill == 11
-		return "Abilities\\Spells\\Orc\\Bloodlust\\BloodLustTarget.mdx"
-	return skill == 12 ? "Abilities\\Spells\\Human\\InnerFire\\InnerFireTarget.mdx" : ""
+		return "war3mapImported\\TDPetBuffFrenzyOrbit.mdx"
+	return skill == 12 ? "war3mapImported\\TDPetBuffChargeSeal.mdx" : ""
 
 public function tdCombatVisualPetBuffStartModel(int skill) returns string
 	if skill == 11

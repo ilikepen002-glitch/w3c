@@ -1,0 +1,115 @@
+{
+  "status": "PASS",
+  "mapSHA256": "962da70b23e122e08f7ef82f0b5016ebf1c7d99d3373d5a90c64c1b8dd26476e",
+  "source": {
+    "scalar_page_cases": 2110,
+    "preview_cost": 0,
+    "commit_cost": 3,
+    "fixed_choice_identities": 28,
+    "additional_manager_commands": 10,
+    "unchanged_behavior_bodies": 7
+  },
+  "transactions": {
+    "stock_cases": [
+      {
+        "stock": 0,
+        "final": 0
+      },
+      {
+        "stock": 2,
+        "final": 2
+      },
+      {
+        "stock": 3,
+        "final": 0
+      },
+      {
+        "stock": 4,
+        "final": 1
+      }
+    ],
+    "legacy_random_free_adoption_rejected": true,
+    "double_confirm_rejected": true,
+    "two_pet_inventory_race": true,
+    "lifecycle_negatives": 11,
+    "directed_rng_draws": 0
+  },
+  "pages": {
+    "two_owned_slots_hide_third_fourth": true,
+    "first_last_page_boundaries": true,
+    "third_slot_pages": 3,
+    "legal_choices_reached": 16,
+    "heroes_reached": 10,
+    "empty_cells": 8,
+    "close_preserves_candidate": true,
+    "stale_generation_consumes_only_page_authority": true
+  },
+  "nativeBridge": {
+    "actual_onCommand_navigation_preview_confirm": true,
+    "bound_host_generation_old_page_rejected": true,
+    "candidate_retained_and_new_page_commits": true,
+    "host_refresh": true,
+    "native_double_click_charged_once": true,
+    "preview_current_stock_and_cost": true
+  },
+  "objects": null,
+  "mutations": [
+    {
+      "mutation": "random_free_adoption",
+      "rejected_by_same_transaction_oracle": "tdPetResolveRerollVersion: legacy entrance accepted directed candidate"
+    },
+    {
+      "mutation": "duplicate_payment",
+      "rejected_by_same_transaction_oracle": "Wrong exact payment"
+    },
+    {
+      "mutation": "residual_level_two",
+      "rejected_by_same_object_oracle": "Pn00: residual second-level fields are forbidden"
+    }
+  ],
+  "growthSupplyCompatibility": {
+    "milestones": [
+      {
+        "wave": 4,
+        "perLane": [
+          1,
+          2,
+          9
+        ]
+      },
+      {
+        "wave": 12,
+        "perLane": [
+          2,
+          4,
+          15
+        ]
+      },
+      {
+        "wave": 20,
+        "perLane": [
+          2,
+          6,
+          27
+        ]
+      },
+      {
+        "wave": 28,
+        "perLane": [
+          2,
+          8,
+          27
+        ]
+      }
+    ],
+    "lanes": 4,
+    "all32Waves": true,
+    "idempotent": true,
+    "delayedResolution": true,
+    "closedStates": 6,
+    "saturation": true,
+    "independentResources": true,
+    "invalidEvents": 5
+  },
+  "historicalDelta": "Not rerun or weakened; wages delta independently proves all directed objects preserved against final 769baeff baseline."
+}

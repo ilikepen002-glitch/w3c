@@ -68,6 +68,18 @@ public function tdPetManagerCommandIconPath(int action) returns string
 		return importedIcon("TDPetKeep")
 	if action == 21
 		return importedIcon("TDPetCultivate")
+	if action == 23 or (action >= 24 and action <= 27)
+		return importedIcon("TDPetCultivate")
+	if action == 28
+		return importedIcon("TDPetInfo")
+	if action == 29
+		return importedIcon("TDPetNext")
+	if action == 30
+		return importedIcon("TDPetPrevious")
+	if action == 31
+		return importedIcon("TDPetKeepOld")
+	if action == 32
+		return importedIcon("TDPetUseNew")
 	return importedIcon("TDPetAdopt")
 
 public function tdPetSkillIconName(int skill) returns string

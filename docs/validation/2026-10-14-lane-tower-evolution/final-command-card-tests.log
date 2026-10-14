@@ -1,0 +1,11 @@
+test_reject_channel_order_collision (test_evolution_command_card.EvolutionCommandCardTests.test_reject_channel_order_collision) ... ok
+test_reject_combat_hotkey_collision (test_evolution_command_card.EvolutionCommandCardTests.test_reject_combat_hotkey_collision) ... ok
+test_reject_other_tower_targeting (test_evolution_command_card.EvolutionCommandCardTests.test_reject_other_tower_targeting) ... ok
+test_reject_residual_second_level_channel_fields (test_evolution_command_card.EvolutionCommandCardTests.test_reject_residual_second_level_channel_fields) ... ok
+test_reject_sale_command_cell_collision (test_evolution_command_card.EvolutionCommandCardTests.test_reject_sale_command_cell_collision) ... ok
+test_synthetic_ten_terminal_selection_cards (test_evolution_command_card.EvolutionCommandCardTests.test_synthetic_ten_terminal_selection_cards) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.802s
+
+OK

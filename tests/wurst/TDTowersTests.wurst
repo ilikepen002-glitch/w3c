@@ -122,18 +122,6 @@ import ObjEditingCommons
 @Test function farmerMobilityAndUtilityValuesMatchDesign()
 	tdFarmerUsesFlyingMovement().assertTrue()
 	tdFarmerBaseMoveSpeed().assertEquals(522)
-	tdFarmerWageCooldown().assertEquals(180.0)
-	tdFarmerWageUnlockWave().assertEquals(1)
-
-@Test function farmerUtilitySkillsKeepDistinctIcons()
-	tdFarmerWageIconPath().assertEquals("ReplaceableTextures\\CommandButtons\\BTNChestOfGold.blp")
-	(tdFarmerWageIconPath() != tdFarmerCraftIconPath()).assertTrue()
-
-@Test function wageFormulaUsesGlobalWaveAndRandomBonusBounds()
-	tdFarmerWageGoldForWaveAndBonus(0, 1).assertEquals(40)
-	tdFarmerWageGoldForWaveAndBonus(2, 3).assertEquals(80)
-	tdFarmerWageMinimumGold(4).assertEquals(80)
-	tdFarmerWageMaximumGold(4).assertEquals(100)
 
 @Test function towerTooltipsStayChineseAndDoNotAdvertiseExtraRequirements()
 	tdTowerTooltipExtended(TD_TOWER_CHOICE_ORC, 1).contains("25%概率暴击").assertTrue()

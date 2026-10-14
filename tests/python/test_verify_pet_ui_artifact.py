@@ -32,7 +32,7 @@ class PetUIArtifactTests(unittest.TestCase):
         cls.abilities = ability_objects(cls.artifact.extract("war3map.w3a"))
         cls.units = unit_objects(cls.artifact.extract("war3map.w3u"))
 
-    def test_actual_farmer_grid_is_ten_cells_without_tower_detail(self):
+    def test_actual_farmer_grid_is_nine_cells_without_manual_wage_or_tower_detail(self):
         verifier.verify_manager_farmer(self.abilities, self.units)
 
     def test_actual_twenty_three_manager_commands_match_pages(self):
@@ -79,7 +79,7 @@ class PetUIArtifactTests(unittest.TestCase):
         from VerifyPetStartupArtifact import measure, verify_routing
         script = self.artifact.extract('war3map.j').decode('utf-8')
         self.assertEqual(measure(script)['registrations'], 2)
-        count = 633 if len(verifier.manager_species(self.abilities, self.units)) == 15 else 513
+        count = (671 if "Pn00" in self.abilities else 633) if len(verifier.manager_species(self.abilities, self.units)) == 15 else 513
         self.assertIn(f'{count} button IDs', verify_routing(script))
 
 
@@ -91,9 +91,10 @@ class HistoricalPetUINegativeTests(unittest.TestCase):
         cls.corrected_units = unit_objects(artifact.extract("war3map.w3u"))
         correct_release_contract(cls.corrected_abilities, cls.corrected_units)
         # Adapt only the historical negative fixture to the current farmer grid.
+        cls.corrected_abilities.pop("A109", None)
         for fields in cls.corrected_units.values():
             if "Pcol" in fields.get("uabi", "").split(","):
-                fields["uabi"] = ",".join(a for a in fields["uabi"].split(",") if a != "Pdep")
+                fields["uabi"] = ",".join(a for a in fields["uabi"].split(",") if a not in ("Pdep", "A109"))
         # Frozen formal predecessor; current-artifact positives above stay raw.
         cls.historical_script = artifact.extract('war3map.j').decode('utf-8')
         # Permit deterministic negative coverage before the next map rebuild.
@@ -207,7 +208,7 @@ class HistoricalPetUINegativeTests(unittest.TestCase):
                     verifier.verify_no_hunt_objects(abilities, units)
 
     def test_rejects_channel_collision_outside_collection_and_at_later_level(self):
-        for owner in ("A109", "A133", "Gupg"):
+        for owner in ("A119", "A133", "Gupg"):
             with self.subTest(owner=owner):
                 abilities = deepcopy(self.abilities)
                 order = verifier.field_value(abilities[owner][1], "Ncl6", 1)

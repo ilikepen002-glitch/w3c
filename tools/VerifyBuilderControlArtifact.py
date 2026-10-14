@@ -18,6 +18,7 @@ from VerifyGroundItemArtifact import verify_global_channel_orders, verify_no_hun
 ROOT = Path(__file__).resolve().parents[1]
 B_REMOVED = ('A108', 'Prpr')
 PREDECESSOR_REMOVED = ('Dsta', 'Pmas', 'Pfor')
+WAGE_REMOVED = ('A109',)
 
 
 def field(abilities, code, key, level=0, column=0):
@@ -28,6 +29,7 @@ def field(abilities, code, key, level=0, column=0):
 
 def verify_builder_function_book(abilities, units):
     verify_no_hunt_objects(abilities, units)
+    require('A109' not in abilities, 'Retired farmer wage object A109 remains')
     for code in ('Geqb', 'A119', 'Gupg'):
         require(code in abilities, 'Missing command ' + code)
     require(abilities['Geqb'][0] == 'Aspb', 'Book must inherit Spell Book')
@@ -48,13 +50,13 @@ def verify_builder_function_book(abilities, units):
     candidates = [(uid, fields) for uid, fields in units.items() if 'Geqb' in fields.get('uabi', '').split(',')]
     require(len(candidates) == 1, 'Expected exactly one function-book farmer')
     uid, farmer = candidates[0]
-    require(farmer['uabi'].split(',') == ['AUbu', 'A109', 'A117', 'Geqb', 'Gupg', 'Pcap', 'Pcol'],
+    require(farmer['uabi'].split(',') == ['AUbu', 'A117', 'Geqb', 'Gupg', 'Pcap', 'Pcol'],
             'Farmer exact command attachment/order changed')
     return uid, verify_global_channel_orders(abilities)
 
 
 def verify_no_removed_controls(abilities, units):
-    for group, codes in [('B blink/repair', B_REMOVED), ('predecessor master/rank', PREDECESSOR_REMOVED)]:
+    for group, codes in [('B blink/repair', B_REMOVED), ('predecessor master/rank', PREDECESSOR_REMOVED), ('retired wage', WAGE_REMOVED)]:
         for code in codes:
             require(code not in abilities and code not in units, f'{group}: removed object {code} remains')
             pattern = re.compile(r'(?<![A-Za-z0-9_])' + re.escape(code) + r'(?![A-Za-z0-9_])')
@@ -69,7 +71,7 @@ def verify_no_removed_controls(abilities, units):
 
 def verify_no_removed_raw_controls(objects, label):
     """Check IDs, raw parents and string references in every packed object table."""
-    for group, codes in [('B blink/repair', B_REMOVED), ('predecessor master/rank', PREDECESSOR_REMOVED)]:
+    for group, codes in [('B blink/repair', B_REMOVED), ('predecessor master/rank', PREDECESSOR_REMOVED), ('retired wage', WAGE_REMOVED)]:
         for code in codes:
             pattern = re.compile(r'(?<![A-Za-z0-9_])' + re.escape(code) + r'(?![A-Za-z0-9_])')
             for uid, obj in objects.items():
@@ -89,7 +91,7 @@ def verify_raw_control_tables(artifact):
 
 def validate_control_sources(catalog, common, tower_objects, pet_data, pet_objects, item_data, item_objects, startup):
     for source in (catalog, common, tower_objects, pet_data, pet_objects):
-        for token in ('TD_FARMER_BLINK_ABILITY_ID', 'TD_FARMER_REPAIR_ABILITY_ID', 'TD_FARMER_MENU_REPAIR_ABILITY_ID', 'tdFarmerBlink'):
+        for token in ('TD_FARMER_BLINK_ABILITY_ID', 'TD_FARMER_REPAIR_ABILITY_ID', 'TD_FARMER_MENU_REPAIR_ABILITY_ID', 'tdFarmerBlink', 'TD_FARMER_WAGE_ABILITY_ID', 'tdFarmerWage'):
             require(token not in source, 'Unused blink/repair source remains: ' + token)
     require('TD_FARMER_GROUND_UPGRADE_ABILITY_ID.toRawCode()' in tower_objects, 'Gupg must attach to farmer main bar')
     require('setSpellList(1, TD_FARMER_CRAFT_ABILITY_ID.toRawCode())' in item_objects, 'Book source must contain only A119')
@@ -122,8 +124,8 @@ def main():
     uid, channels = verify_builder_function_book(abilities, units)
     from VerifyPetUIArtifact import verify_farmer_grid, verify_collection_commands
     verify_farmer_grid(abilities, units)
-    verify_collection_commands(abilities)
-    print(f'PASS ARTIFACT: {uid}, exact 11 cells with 2,1 empty; Gupg main 1,1/U, book only A119; {channels} globally unique Channels.')
+    verify_collection_commands(abilities, current_manager=True)
+    print(f'PASS ARTIFACT: {uid}, exact 9 cells with 2,1/3,1/3,2 empty; Gupg main 1,1/U, book only A119; {channels} globally unique Channels.')
     if len(sys.argv) == 4:
         import json
         from VerifyBuilderControlDelta import validate_closed_control_delta

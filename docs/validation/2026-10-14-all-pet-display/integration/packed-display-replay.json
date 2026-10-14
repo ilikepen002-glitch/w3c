@@ -1,0 +1,190 @@
+{
+  "failed_start_no_cast": true,
+  "post_hit_invalidation_no_cast": true,
+  "active_success_trace_equivalence": [
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    11,
+    12
+  ],
+  "profile_species_scenarios": 525,
+  "all_species_action_scenarios": 15,
+  "idle_sequence": [
+    6,
+    7,
+    8
+  ],
+  "cast_preemption": true,
+  "pause_upgrade": true,
+  "invalid_visual_cases": 4,
+  "stress_bound": 80,
+  "steady_state_writes": 0,
+  "rebinding": {
+    "transactions": {
+      "matrix": [
+        {
+          "source_bound": false,
+          "target_occupied": false,
+          "full_20": false
+        },
+        {
+          "source_bound": false,
+          "target_occupied": false,
+          "full_20": true
+        },
+        {
+          "source_bound": false,
+          "target_occupied": true,
+          "full_20": false
+        },
+        {
+          "source_bound": false,
+          "target_occupied": true,
+          "full_20": true
+        },
+        {
+          "source_bound": true,
+          "target_occupied": false,
+          "full_20": false
+        },
+        {
+          "source_bound": true,
+          "target_occupied": false,
+          "full_20": true
+        },
+        {
+          "source_bound": true,
+          "target_occupied": true,
+          "full_20": false
+        },
+        {
+          "source_bound": true,
+          "target_occupied": true,
+          "full_20": true
+        }
+      ],
+      "strict_same_host_noop": true
+    },
+    "failures": {
+      "preflight_failures": [
+        "null",
+        "dead",
+        "foreign",
+        "not_tower",
+        "busy",
+        "unowned_a",
+        "released_b",
+        "duplicate_target",
+        "foreign_stale_b",
+        "duplicate_source",
+        "duplicate_source_same_lane",
+        "foreign_source",
+        "create_null"
+      ],
+      "post_native_adversaries": [
+        "a_generation",
+        "a_revision",
+        "a_slot",
+        "b_generation",
+        "b_released",
+        "b_slot",
+        "prepared_owner",
+        "target_dead",
+        "target_owner",
+        "target_upgrade",
+        "epoch"
+      ],
+      "paused_source_allowed": true
+    },
+    "lifecycle": {
+      "active_buff_pending_cancelled": true,
+      "old_generations_invalid": true,
+      "ready_at_preserved": [
+        91.0,
+        117.0
+      ],
+      "immediate_inspiration_and_bonus_refresh": true,
+      "player_ui_facade_route": true
+    },
+    "active_lifecycle": [
+      "both_queued_originals_cancelled",
+      "both_running_casts_cancelled_other_source_completes",
+      "on_stack_cancel_then_safe_exit"
+    ],
+    "mutations": [
+      {
+        "mutation": "recall_before_prepare",
+        "exception_type": "ValueError",
+        "reason": "Failed deployment damaged prior state: null"
+      },
+      {
+        "mutation": "prepared_owner_unchecked",
+        "exception_type": "ValueError",
+        "reason": "Post-native stale transaction accepted: prepared_owner"
+      },
+      {
+        "mutation": "source_uniqueness_unchecked",
+        "exception_type": "ValueError",
+        "reason": "Illegal/failing deploy accepted: duplicate_source_same_lane"
+      },
+      {
+        "mutation": "b_recall_omitted",
+        "exception_type": "ValueError",
+        "reason": "B moved instead of becoming unbound"
+      },
+      {
+        "mutation": "cooldown_reset",
+        "exception_type": "ValueError",
+        "reason": "Rebind changed identity/skills/CD: readyAt"
+      },
+      {
+        "mutation": "omit_target_refresh",
+        "exception_type": "ValueError",
+        "reason": "Facade omitted immediate host refresh"
+      }
+    ]
+  },
+  "mutations": [
+    {
+      "mutation": "failed_start_cast",
+      "reason": "Unexpected packed display action"
+    },
+    {
+      "mutation": "generation_guard_removed",
+      "reason": "Stale generation wrote display"
+    },
+    {
+      "mutation": "same_host_reinitialize",
+      "reason": "Same-host reinitialized cosmetic state"
+    },
+    {
+      "mutation": "tick_animation_reset",
+      "reason": "Stationary early tick spammed setters"
+    },
+    {
+      "mutation": "rng_introduced",
+      "reason": "Display grew handles/timers/RNG"
+    }
+  ],
+  "status": "PASS",
+  "map_sha256": "9f8a2a52902016a59f22883b0cde2bccede4ec06eeda5ff95453010e1159d887",
+  "boundary": "Actual packed JASS; engine setters recorded; no Warcraft observation"
+}

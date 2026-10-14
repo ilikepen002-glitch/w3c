@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "baselineSha256": "05746604cc6cc7108d95619cd6538fa508d97db18dabb4aed184d125ed56d504",
+  "mapSha256": "9f8a2a52902016a59f22883b0cde2bccede4ec06eeda5ff95453010e1159d887",
+  "exactChangedMedia": [
+    "war3mapImported\\BoulderArmGibbon.mdx",
+    "war3mapImported\\BrassPangolin.mdx",
+    "war3mapImported\\CinderTailFox.mdx",
+    "war3mapImported\\EmberBird.mdx",
+    "war3mapImported\\FrostFinManta.mdx",
+    "war3mapImported\\LeafwingSpirit.mdx",
+    "war3mapImported\\MoltenHornSalamander.mdx",
+    "war3mapImported\\MosscapSprite.mdx",
+    "war3mapImported\\RockShellTurtle.mdx",
+    "war3mapImported\\RootbudStag.mdx",
+    "war3mapImported\\SandSpiralSnail.mdx",
+    "war3mapImported\\SnowManeOtter.mdx",
+    "war3mapImported\\SteelwingFalcon.mdx",
+    "war3mapImported\\TideWyrm.mdx"
+  ],
+  "allOtherMediaAndAResourcesPreserved": true,
+  "mpqMemberSetUnchanged": true,
+  "allGameplayUnitFieldsAndParentsPreserved": true,
+  "allOtherObjectAndTerrainFilesPreserved": true,
+  "timerStartSiteCountUnchanged": true,
+  "boundary": "MPQ/object/media delta only; packed display/lifecycle/combat execution is in separate replay."
+}
