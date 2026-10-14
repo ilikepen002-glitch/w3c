@@ -1,0 +1,60 @@
+{
+  "baseline": {
+    "path": "/workspace/shared/local-combat-hotpath-evidence-20261014/final.w3x",
+    "map_sha256": "d84f03d19c4e026c85968e4de9a9cf3057d0ff7ad4471aa4f1155a6bad450d43",
+    "jass_sha256": "fd03a61e318de78bbcfa85c1d92e7c4c489f3815bd782c79d79c8b03fd5f607d"
+  },
+  "baseline_kills": {
+    "kills": 934,
+    "native_calls": {
+      "GetUnitAbilityLevel": 1868,
+      "SetUnitAbilityLevel": 1868,
+      "UnitRemoveAbility": 934
+    },
+    "set_level_by_ability": {
+      "1093743408": 934,
+      "1097155926": 934
+    },
+    "interpreter_steps_total": 214820,
+    "interpreter_steps_min": 230,
+    "interpreter_steps_max": 230
+  },
+  "repair_cases": [
+    "missing_status",
+    "wrong_status",
+    "missing_progress",
+    "unexpected_choose",
+    "qualified_missing_choose",
+    "qualified_unexpected_status",
+    "working_status",
+    "working_missing_status",
+    "work_finished_choose",
+    "evolved_status",
+    "evolved_missing_status",
+    "spent_other_tower",
+    "spent_wrong_status"
+  ],
+  "candidate": {
+    "path": "/workspace/shared/performance-hud-diff-evidence-20261014/hud-evolution-flat.w3x",
+    "map_sha256": "c57d8d6b01818f1e77b90317ac7aa5ee630eccc9e76ef1ac5f7f16f96f09b720",
+    "jass_sha256": "06db07c8082d148a7c73068dc041cf1c1101b34a6d00de8c3bc8b875d2abdbd2"
+  },
+  "candidate_kills": {
+    "kills": 934,
+    "native_calls": {
+      "GetUnitAbilityLevel": 2802,
+      "SetUnitAbilityLevel": 934
+    },
+    "set_level_by_ability": {
+      "1093743408": 934
+    },
+    "interpreter_steps_total": 230698,
+    "interpreter_steps_min": 247,
+    "interpreter_steps_max": 247
+  },
+  "mutation": {
+    "skipped_full_kill_refresh_detected": true
+  },
+  "source_commit": "fa11939f44648972c40e7c5b479aca0b610de43b",
+  "boundary": "Actual supplied MPQ JASS; native levels/handles are controlled. No Warcraft rendering, native ability application timing or FPS measurement."
+}

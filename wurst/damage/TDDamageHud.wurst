@@ -2,6 +2,7 @@ package TDDamageHud
 import TDDamageState
 import TDConfig
 import TDState
+import TDHudProjection
 
 public constant int TD_DAMAGE_HUD_ROWS = 16
 public constant int TD_DAMAGE_HUD_COLUMNS = 4
@@ -54,6 +55,7 @@ public function tdDamagePrepareHud(TDDamageLedger ledger, boolean p0, boolean p1
 public function tdDamageRefreshHud(multiboard board, int firstRow)
 	// Active is the startup participation set; leaving never removes history.
 	tdDamagePrepareHud(tdDamageLedger, tdIsLaneActive(0), tdIsLaneActive(1), tdIsLaneActive(2), tdIsLaneActive(3))
+	tdHudProjectionBind(TD_HUD_DAMAGE_SECTION, board, firstRow, TD_DAMAGE_HUD_ROWS, TD_DAMAGE_HUD_COLUMNS)
 	for row = 0 to TD_DAMAGE_HUD_ROWS - 1
 		for column = 0 to TD_DAMAGE_HUD_COLUMNS - 1
-			board.setItemValue(firstRow + row, column, tdDamageHudCell(row, column))
+			tdHudProjectionSetValue(TD_HUD_DAMAGE_SECTION, row, column, tdDamageHudCell(row, column))

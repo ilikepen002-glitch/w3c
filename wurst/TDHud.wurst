@@ -11,6 +11,7 @@ import TDDamageRuntime
 import TDWaveFlowState
 import GameTimer
 import TDTrialHud
+import TDHudProjection
 
 multiboard tdStatusBoard = null
 boolean tdHudRefreshPending = false
@@ -63,10 +64,8 @@ public function tdHudThreatText(int wave) returns string
 
 function tdHudSetBossIcon(int row, int wave)
 	let icon = tdIsGameOver() ? "" : tdBossIconPath(wave)
-	tdStatusBoard.setItemIcon(row, 1, icon)
-	let cell = tdStatusBoard.getItem(row, 1)
-	cell.setStyle(false, icon != "")
-	cell.release()
+	tdHudProjectionSetIcon(TD_HUD_STATUS_SECTION, row, 1, icon)
+	tdHudProjectionSetStyle(TD_HUD_STATUS_SECTION, row, 1, false, icon != "")
 
 public function tdHudBossMechanicText(int wave) returns string
 	if tdFlowIsPreparing()
@@ -83,40 +82,42 @@ public function tdHudBossMechanicText(int wave) returns string
 public function tdRefreshStatusBoard()
 	if compiletime or tdStatusBoard == null
 		return
+	tdHudProjectionBind(TD_HUD_STATUS_SECTION, tdStatusBoard, 0, tdCountActiveLanes() + 5, TD_DAMAGE_HUD_COLUMNS)
 	var anyFinished = false
 	var row = 1
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		if tdIsLaneActive(playerId)
 			anyFinished = anyFinished or tdIsLaneFinished(playerId)
-			tdStatusBoard.setItemValue(row, 0, "玩家" + (playerId + 1).toString())
-			tdStatusBoard.setItemValue(row, 1, tdGetLives(playerId))
-			tdStatusBoard.setItemValue(row, 2, tdHudLaneStatus(true, tdIsLaneFinished(playerId), tdIsLaneDefeated(playerId), tdGetGlobalWave(), tdWaveCount()))
+			tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 0, "玩家" + (playerId + 1).toString())
+			tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 1, tdGetLives(playerId).toString())
+			tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 2, tdHudLaneStatus(true, tdIsLaneFinished(playerId), tdIsLaneDefeated(playerId), tdGetGlobalWave(), tdWaveCount()))
 			row += 1
 	let phase = tdHudPhaseText(tdIsGameOver(), anyFinished, tdGetGlobalWave(), tdIsNextWaveQueued(), tdGetQueuedWave(), tdWaveCount())
-	tdStatusBoard.setTitle(tdDifficultyLabel(tdGetDifficulty()) + " · " + phase + (tdIsDifficultyLocked() ? "" : " · 首波锁定"))
+	tdHudProjectionSetTitle(TD_HUD_STATUS_SECTION, tdDifficultyLabel(tdGetDifficulty()) + " · " + phase + (tdIsDifficultyLocked() ? "" : " · 首波锁定"))
 	let nextWave = tdIsNextWaveQueued() ? tdGetQueuedWave() : tdGetGlobalWave() + 1
-	tdStatusBoard.setItemValue(row, 0, "预告")
-	tdStatusBoard.setItemValue(row, 1, "")
-	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() ? "本局结束" : tdHudThreatText(nextWave))
+	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 0, "预告")
+	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 1, "")
+	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 2, tdIsGameOver() ? "本局结束" : tdHudThreatText(nextWave))
 	row += 1
 	// A separate short row keeps mechanic hints out of the already full threat line.
 	tdHudSetBossIcon(row, tdFlowIsPreparing() ? 0 : tdGetGlobalWave())
-	tdStatusBoard.setItemValue(row, 0, "本波")
-	tdStatusBoard.setItemValue(row, 1, "")
-	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() ? "本局结束" : tdHudBossMechanicText(tdGetGlobalWave()))
+	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 0, "本波")
+	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 1, "")
+	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 2, tdIsGameOver() ? "本局结束" : tdHudBossMechanicText(tdGetGlobalWave()))
 	row += 1
 	tdHudSetBossIcon(row, nextWave)
-	tdStatusBoard.setItemValue(row, 0, "下波")
-	tdStatusBoard.setItemValue(row, 1, "")
-	tdStatusBoard.setItemValue(row, 2, tdIsGameOver() or nextWave > tdWaveCount() ? "无后续机制" : tdWaveStrategyHint(nextWave) + " · " + tdEnemyMechanicHint(nextWave))
+	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 0, "下波")
+	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 1, "")
+	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 2, tdIsGameOver() or nextWave > tdWaveCount() ? "无后续机制" : tdWaveStrategyHint(nextWave) + " · " + tdEnemyMechanicHint(nextWave))
 	row += 1
 	// Compute every lane on all clients before selecting only display text locally.
 	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
 		let detail = tdPetDetailHudTextForLane(playerId)
 		tdPetHudSummaries[playerId] = detail != "" ? detail : "球" + tdPetBallsForLane(playerId) + " · 收藏" + tdPetCollectionCount(playerId) + "/20 · 洗" + tdPetRerollStones[playerId] + " · 开" + tdPetSlotStones[playerId]
 	let lane = GetPlayerId(GetLocalPlayer())
-	tdStatusBoard.setItemValue(row, 0, "宝宝")
-	tdStatusBoard.setItemValue(row, 1, "")
+	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 0, "宝宝")
+	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 1, "")
+	// This local cell deliberately keeps unconditional get/set/release on all clients.
 	if tdIsLanePlayer(lane)
 		tdStatusBoard.setItemValue(row, 2, tdPetHudSummaries[lane])
 	else

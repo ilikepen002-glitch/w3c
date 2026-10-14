@@ -1,0 +1,41 @@
+{
+  "tested_production_commit": "fa11939f44648972c40e7c5b479aca0b610de43b",
+  "final_probe_commit": "6c31650978d2b5eedbcb19581ed4bf00311bb74e",
+  "validation": {
+    "initial_full_checks": {
+      "manifest": "/workspace/shared/performance-hud-diff-20261014/_build/linux-bayfx4y9/manifest.json",
+      "status": "PASS",
+      "input_parent_commit": "5880f2ae847026e838f14d762b69bd12ae5da1fe",
+      "matching_wurst_files": 228,
+      "differing_wurst_files": [
+        "tests/wurst/TDHudProjectionTests.wurst",
+        "wurst/TDHud.wurst",
+        "wurst/TDHudProjection.wurst",
+        "wurst/damage/TDDamageHud.wurst",
+        "wurst/trial/TDTrialHud.wurst"
+      ]
+    },
+    "final_focused_tests": {
+      "manifest": "/workspace/shared/performance-hud-diff-20261014/_build/linux-sbdgh2ft/manifest.json",
+      "status": "PASS",
+      "input_parent_commit": "5880f2ae847026e838f14d762b69bd12ae5da1fe",
+      "matching_wurst_files": 233,
+      "differing_wurst_files": []
+    },
+    "final_build": {
+      "manifest": "/workspace/shared/performance-hud-diff-20261014/_build/linux-niuz1vxi/manifest.json",
+      "status": "PASS",
+      "input_parent_commit": "fa11939f44648972c40e7c5b479aca0b610de43b",
+      "matching_wurst_files": 233,
+      "differing_wurst_files": []
+    }
+  },
+  "artifact": {
+    "path": "/workspace/shared/performance-hud-diff-evidence-20261014/hud-evolution-flat.w3x",
+    "map_sha256": "c57d8d6b01818f1e77b90317ac7aa5ee630eccc9e76ef1ac5f7f16f96f09b720",
+    "jass_sha256": "06db07c8082d148a7c73068dc041cf1c1101b34a6d00de8c3bc8b875d2abdbd2"
+  },
+  "evidence_directory": "/workspace/shared/performance-hud-diff-evidence-20261014",
+  "grill_process": "completed; lock released",
+  "warcraft_started": false
+}

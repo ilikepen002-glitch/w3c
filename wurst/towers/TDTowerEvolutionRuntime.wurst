@@ -193,19 +193,31 @@ public function tdEvolutionRefresh(unit tower)
 	let lane = GetPlayerId(GetOwningPlayer(tower))
 	if not tdIsLanePlayer(lane)
 		return
-	if tower.getAbilityLevel(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID) == 0
+	let progressLevel = tdEvolutionProgressLevel(record.kills)
+	var actualProgressLevel = tower.getAbilityLevel(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID)
+	if actualProgressLevel == 0
 		tower.addPermanentAbility(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID, 1)
-	tower.setAbilityLevel(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID, tdEvolutionProgressLevel(record.kills))
+		actualProgressLevel = 1
+	if actualProgressLevel != progressLevel
+		tower.setAbilityLevel(TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID, progressLevel)
+	// Keep every refresh authoritative: actual native state repairs external
+	// removals while unchanged projections need no repeated level/removal writes.
 	// One physical command-card slot: action and state display are exclusive.
 	if tdEvolutionTowerCanChoose(tower, lane)
-		tower.removeAbility(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID)
+		if tower.getAbilityLevel(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID) != 0
+			tower.removeAbility(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID)
 		if tower.getAbilityLevel(TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID) == 0
 			tower.addPermanentAbility(TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID, 1)
 	else
-		tower.removeAbility(TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID)
-		if tower.getAbilityLevel(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID) == 0
+		if tower.getAbilityLevel(TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID) != 0
+			tower.removeAbility(TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID)
+		let statusLevel = tdEvolutionStatusLevel(tdEvolutionLane(lane).isQualified(), record.evolved, tdEvolutionLane(lane).isSpent())
+		var actualStatusLevel = tower.getAbilityLevel(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID)
+		if actualStatusLevel == 0
 			tower.addPermanentAbility(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID, 1)
-		tower.setAbilityLevel(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID, tdEvolutionStatusLevel(tdEvolutionLane(lane).isQualified(), record.evolved, tdEvolutionLane(lane).isSpent()))
+			actualStatusLevel = 1
+		if actualStatusLevel != statusLevel
+			tower.setAbilityLevel(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID, statusLevel)
 
 function tdEvolutionRefreshLane(int lane)
 	// Existing bounded tower registry only; no world enumeration or recursive claim.

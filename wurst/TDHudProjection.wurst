@@ -1,0 +1,89 @@
+package TDHudProjection
+
+public constant int TD_HUD_STATUS_SECTION = 0
+public constant int TD_HUD_DAMAGE_SECTION = 1
+public constant int TD_HUD_TRIAL_SECTION = 2
+
+// Three fixed presentation-only sections, each with at most 64 cells. Flat
+// globals avoid Wurst's class-array accessor trees in this frequent write path.
+// Never cache local-player text: its get/set/release must stay synchronized.
+multiboard array tdHudProjectionBoards
+int array tdHudProjectionFirstRows
+int array tdHudProjectionRows
+int array tdHudProjectionColumns
+boolean array tdHudProjectionValueWritten
+boolean array tdHudProjectionIconWritten
+boolean array tdHudProjectionStyleWritten
+string array tdHudProjectionValues
+string array tdHudProjectionIcons
+boolean array tdHudProjectionShowValues
+boolean array tdHudProjectionShowIcons
+boolean array tdHudProjectionTitleWritten
+string array tdHudProjectionTitles
+
+public function tdHudProjectionInvalidate(int section)
+	tdHudProjectionTitleWritten[section] = false
+	for index = section * 64 to section * 64 + 63
+		tdHudProjectionValueWritten[index] = false
+		tdHudProjectionIconWritten[index] = false
+		tdHudProjectionStyleWritten[index] = false
+
+// Moving/resizing a section or replacing its board invalidates even equal text.
+public function tdHudProjectionBind(int section, multiboard board, int firstRow, int rows, int columns)
+	if tdHudProjectionBoards[section] != board or tdHudProjectionFirstRows[section] != firstRow or tdHudProjectionRows[section] != rows or tdHudProjectionColumns[section] != columns
+		tdHudProjectionInvalidate(section)
+		tdHudProjectionBoards[section] = board
+		tdHudProjectionFirstRows[section] = firstRow
+		tdHudProjectionRows[section] = rows
+		tdHudProjectionColumns[section] = columns
+
+// Written flags distinguish an untouched cell from a legitimately empty one.
+public function tdHudProjectionAcceptValue(int section, int row, int column, string value) returns boolean
+	let index = section * 64 + row * tdHudProjectionColumns[section] + column
+	if tdHudProjectionValueWritten[index] and tdHudProjectionValues[index] == value
+		return false
+	tdHudProjectionValueWritten[index] = true
+	tdHudProjectionValues[index] = value
+	return true
+
+public function tdHudProjectionAcceptIcon(int section, int row, int column, string icon) returns boolean
+	let index = section * 64 + row * tdHudProjectionColumns[section] + column
+	if tdHudProjectionIconWritten[index] and tdHudProjectionIcons[index] == icon
+		return false
+	tdHudProjectionIconWritten[index] = true
+	tdHudProjectionIcons[index] = icon
+	return true
+
+public function tdHudProjectionAcceptStyle(int section, int row, int column, boolean showValue, boolean showIcon) returns boolean
+	let index = section * 64 + row * tdHudProjectionColumns[section] + column
+	if tdHudProjectionStyleWritten[index] and tdHudProjectionShowValues[index] == showValue and tdHudProjectionShowIcons[index] == showIcon
+		return false
+	tdHudProjectionStyleWritten[index] = true
+	tdHudProjectionShowValues[index] = showValue
+	tdHudProjectionShowIcons[index] = showIcon
+	return true
+
+public function tdHudProjectionAcceptTitle(int section, string value) returns boolean
+	if tdHudProjectionTitleWritten[section] and tdHudProjectionTitles[section] == value
+		return false
+	tdHudProjectionTitleWritten[section] = true
+	tdHudProjectionTitles[section] = value
+	return true
+
+public function tdHudProjectionSetValue(int section, int row, int column, string value)
+	if tdHudProjectionAcceptValue(section, row, column, value)
+		tdHudProjectionBoards[section].setItemValue(tdHudProjectionFirstRows[section] + row, column, value)
+
+public function tdHudProjectionSetIcon(int section, int row, int column, string icon)
+	if tdHudProjectionAcceptIcon(section, row, column, icon)
+		tdHudProjectionBoards[section].setItemIcon(tdHudProjectionFirstRows[section] + row, column, icon)
+
+public function tdHudProjectionSetStyle(int section, int row, int column, boolean showValue, boolean showIcon)
+	if tdHudProjectionAcceptStyle(section, row, column, showValue, showIcon)
+		let cell = tdHudProjectionBoards[section].getItem(tdHudProjectionFirstRows[section] + row, column)
+		cell.setStyle(showValue, showIcon)
+		cell.release()
+
+public function tdHudProjectionSetTitle(int section, string value)
+	if tdHudProjectionAcceptTitle(section, value)
+		tdHudProjectionBoards[section].setTitle(value)

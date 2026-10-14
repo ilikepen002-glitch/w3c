@@ -2,6 +2,7 @@ package TDTrialHud
 import TDTrialIdentity
 import TDTrialObjectGen
 import GameTimer
+import TDHudProjection
 
 public constant int TD_TRIAL_HUD_ROWS = 6
 string array tdTrialHudCells
@@ -47,10 +48,9 @@ public function tdTrialPrepareHud(TDTrialState state, real now)
 
 public function tdTrialRefreshHud(multiboard board, int firstRow)
 	tdTrialPrepareHud(tdTrialState, getElapsedGameTime())
+	tdHudProjectionBind(TD_HUD_TRIAL_SECTION, board, firstRow, TD_TRIAL_HUD_ROWS, 4)
 	for row = 0 to TD_TRIAL_HUD_ROWS - 1
 		for column = 0 to 3
-			board.setItemValue(firstRow + row, column, tdTrialHudCell(row, column))
-	board.setItemIcon(firstRow, 0, tdTrialIconPath())
-	let header = board.getItem(firstRow, 0)
-	header.setStyle(true, true)
-	header.release()
+			tdHudProjectionSetValue(TD_HUD_TRIAL_SECTION, row, column, tdTrialHudCell(row, column))
+	tdHudProjectionSetIcon(TD_HUD_TRIAL_SECTION, 0, 0, tdTrialIconPath())
+	tdHudProjectionSetStyle(TD_HUD_TRIAL_SECTION, 0, 0, true, true)
