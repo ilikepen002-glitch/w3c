@@ -447,19 +447,6 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	..setRequirementsLevels("")
 	..setCheckDependencies(false)
 
-	let wageAbility = new ChannelAbilityPreset(TD_FARMER_WAGE_ABILITY_ID, 1, true)
-	wageAbility
-	..setName("工资")
-	..setTooltipNormal(1, "工资")
-	..setTooltipNormalExtended(1, "领取10×当前波次 + 随机40、50或60金币。|n第1波开始后可用，冷却180秒。")
-	..setIconNormal(tdFarmerWageIconPath())
-	..setIconResearch(tdFarmerWageIconPath())
-	..presetHotkey("G")
-	..presetButtonPosNormal(3, 1)
-	..presetTargetTypes(Targettype.NONE)
-	..makeUnitSpell(0, tdFarmerWageCooldown())
-	..setCheckDependencies(false)
-
 	new AbilityDefinitionItemAuraCommand(TD_FOOT_EVOLVED_COMMAND_ABILITY_ID)
 	..setName("进化统帅光环")
 	..setLevels(1)
@@ -545,7 +532,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	..setRace(tdFarmerRaceForObjectGen())
 	// Remove Human repair atomically with switching the native build mode.
 	..setDefaultActiveAbility("")
-	..setNormalAbilities(TD_FARMER_BUILD_ABILITY_ID.toRawCode() + "," + TD_FARMER_WAGE_ABILITY_ID.toRawCode() + "," + TD_FARMER_INVENTORY_ABILITY_ID.toRawCode() + "," + TD_FARMER_EQUIPMENT_BOOK_ABILITY_ID.toRawCode() + "," + TD_FARMER_GROUND_UPGRADE_ABILITY_ID.toRawCode() + "," + TD_PET_CAPTURE_ABILITY_ID.toRawCode() + "," + TD_PET_COLLECTION_ABILITY_ID.toRawCode())
+	..setNormalAbilities(TD_FARMER_BUILD_ABILITY_ID.toRawCode() + "," + TD_FARMER_INVENTORY_ABILITY_ID.toRawCode() + "," + TD_FARMER_EQUIPMENT_BOOK_ABILITY_ID.toRawCode() + "," + TD_FARMER_GROUND_UPGRADE_ABILITY_ID.toRawCode() + "," + TD_PET_CAPTURE_ABILITY_ID.toRawCode() + "," + TD_PET_COLLECTION_ABILITY_ID.toRawCode())
 	..setStructuresBuilt(tdFarmerBuildMenuRawcodes())
 	..setGoldCost(0)
 	..setLumberCost(0)

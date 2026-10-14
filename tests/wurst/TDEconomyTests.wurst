@@ -1,6 +1,7 @@
 package TDEconomyTests
 import TDState
-import TDTowers
+import TDConfig
+import TDBossRewardRules
 import TDWaves
 
 @Test function goldReadsFromNativePlayerStateAtRuntime()
@@ -22,10 +23,44 @@ import TDWaves
 	tdGetGold(2).assertEquals(32)
 	tdNativeGoldStateForTest(2).assertEquals(32)
 
-@Test function wageFormulaStaysMinorComparedToWaveRewards()
-	tdFarmerWageCooldown().assertEquals(180.0)
-	tdFarmerWageGoldForWaveAndBonus(0, 1).assertEquals(40)
-	tdFarmerWageGoldForWaveAndBonus(4, 3).assertEquals(100)
-	tdFarmerWageMinimumGold(8).assertEquals(120)
-	tdFarmerWageMaximumGold(8).assertEquals(140)
-	(tdFarmerWageMaximumGold(8) < tdWaveReward(8)).assertTrue()
+function wagesThrough(int lastWave) returns int
+	var total = 0
+	for wave = 1 to lastWave
+		total += tdWaveProgressWage(wave)
+	return total
+
+@Test function progressWageHasOnlyTheElevenApprovedNodes()
+	var nextWage = 60
+	for wave = 1 to 32
+		if wave == 1 or wave == 4 or wave == 7 or wave == 10 or wave == 13 or wave == 16 or wave == 19 or wave == 22 or wave == 25 or wave == 28 or wave == 31
+			tdWaveProgressWage(wave).assertEquals(nextWage)
+			nextWage += 30
+		else
+			tdWaveProgressWage(wave).assertEquals(0)
+	nextWage.assertEquals(390)
+	for wave = -2 to 0
+		tdWaveProgressWage(wave).assertEquals(0)
+	tdWaveProgressWage(33).assertEquals(0)
+	tdWaveProgressWage(34).assertEquals(0)
+	tdWaveProgressWage(2147483647).assertEquals(0)
+
+@Test function progressWageChapterTotalsAreFixedRegardlessOfWallClock()
+	wagesThrough(8).assertEquals(270)
+	wagesThrough(16).assertEquals(810)
+	wagesThrough(24).assertEquals(1320)
+	wagesThrough(32).assertEquals(2310)
+	wagesThrough(320).assertEquals(2310)
+
+@Test function allKillEconomyIncludesProgressWageWithoutChangingClearRewards()
+	var total = TD_STARTING_GOLD
+	for wave = 1 to 32
+		total += tdWaveNormalEnemyCount(wave) * tdWaveKillGold(wave) div 2 + (tdWaveEliteEnemyCount(wave) + tdWaveBossEnemyCount(wave)) * tdWaveKillGold(wave) + tdBossKillCompensation(wave)
+		total += tdWaveReward(wave) + tdWaveProgressWage(wave)
+		if wave == 8
+			total.assertEquals(5900)
+		else if wave == 16
+			total.assertEquals(15450)
+		else if wave == 24
+			total.assertEquals(33000)
+		else if wave == 32
+			total.assertEquals(56400)

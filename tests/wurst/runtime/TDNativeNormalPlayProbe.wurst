@@ -1,6 +1,7 @@
 package TDNativeNormalPlayProbe
 import TDConfig
 import TDState
+import TDWaves
 import TDSpawn
 import TDTowers
 import TDTowerPlacementRules
@@ -54,11 +55,6 @@ int normalCaptureCollectionBefore = 0
 boolean normalCaptureEffect = false
 real normalCaptureIssuedAt = 0.0
 real normalCaptureReadyAt = 0.0
-boolean normalWageEnabled = true
-boolean normalWagePending = false
-real normalWageIssuedAt = 0.0
-real normalWageReadyAt = 0.0
-real normalWageUnlockedAt = -1.0
 string array normalWaveStart
 string array normalWaveClear
 string array normalWaveEnd
@@ -151,8 +147,6 @@ function normalObservePets(string context, boolean retain)
 
 function normalStop(string reason)
 	normalRunning = false
-	normalWageEnabled = false
-	normalWagePending = false
 	normalCaptureEnabled = false
 	if normalCaptureTarget != null
 		normalLog("CAPTURE observation ended; native order not cancelled")
@@ -172,7 +166,7 @@ function normalSnapshot(int page)
 	var oldest = normalRecordCount - 256
 	if oldest < 0
 		oldest = 0
-	DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL snapshot running=" + normalRunning.toString() + " autoWaiting=" + normalAutoWaiting.toString() + " held=" + normalHeld.toString() + " wagePending=" + normalWagePending.toString() + " capturePending=" + (normalCaptureTarget != null).toString() + " step=" + normalStep.toString() + " pending=" + normalPending.toString() + " reason=" + normalStopReason + " retained absolute records=" + (oldest + 1).toString() + ".." + normalRecordCount.toString())
+	DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL snapshot running=" + normalRunning.toString() + " autoWaiting=" + normalAutoWaiting.toString() + " held=" + normalHeld.toString() + " capturePending=" + (normalCaptureTarget != null).toString() + " step=" + normalStep.toString() + " pending=" + normalPending.toString() + " reason=" + normalStopReason + " retained absolute records=" + (oldest + 1).toString() + ".." + normalRecordCount.toString())
 	var first = normalRecordCount - 6
 	var last = normalRecordCount - 1
 	if page > 0
@@ -247,10 +241,6 @@ function normalOnDeath()
 			return
 
 function normalOnCaptureEffect()
-	if normalRunning and GetTriggerUnit() == tdGetFarmer(0) and GetSpellAbilityId() == TD_FARMER_WAGE_ABILITY_ID
-		normalWageReadyAt = getElapsedGameTime() + tdFarmerWageCooldown()
-		normalWagePending = false
-		normalLog("WAGE actual SPELL_EFFECT; next available after180s")
 	if normalRunning and GetOwningPlayer(GetTriggerUnit()) == Player(0) and (GetSpellAbilityId() == TD_PET_DEPLOY_ABILITY_ID or GetSpellAbilityId() == TD_PET_COLLECTION_ABILITY_ID)
 		normalLog("MANUAL pet UI spell=" + GetSpellAbilityId().toRawCode())
 	if normalCaptureTarget != null and GetTriggerUnit() == tdGetFarmer(0) and GetSpellAbilityId() == TD_PET_CAPTURE_ABILITY_ID and GetSpellTargetUnit() == normalCaptureTarget
@@ -285,7 +275,7 @@ function normalCaptureTick() returns boolean
 			normalCaptureTarget = null
 		return true
 	let worker = tdGetFarmer(0)
-	if normalHeld or not normalCaptureEnabled or normalPending != 0 or normalWagePending or normalTime < normalCaptureReadyAt or worker == null or not worker.isAlive() or GetUnitCurrentOrder(worker) != 0
+	if normalHeld or not normalCaptureEnabled or normalPending != 0 or normalTime < normalCaptureReadyAt or worker == null or not worker.isAlive() or GetUnitCurrentOrder(worker) != 0
 		return false
 	if tdPetCollectionCount(0) > 0 or normalCaptureAttempts >= 3 or tdPetBallsForLane(0) <= 0
 		normalCaptureEnabled = false
@@ -306,27 +296,9 @@ function normalCaptureTick() returns boolean
 	normalCaptureBallsBefore = tdPetBallsForLane(0)
 	normalCaptureCollectionBefore = tdPetCollectionCount(0)
 	normalCaptureIssuedAt = normalTime
-	let accepted = IssueTargetOrderById(worker, OrderId("ambush"), normalCaptureTarget)
+	// Retiring the first Channel allocation moves Pcap from ambush to whirlwind; packed gate verifies Ncl6.
+	let accepted = IssueTargetOrderById(worker, OrderId("whirlwind"), normalCaptureTarget)
 	normalLog("CAPTURE request attempt=" + normalCaptureAttempts.toString() + " returned=" + accepted.toString() + "; boolean diagnostic only")
-	return true
-
-function normalWageTick() returns boolean
-	if normalWageUnlockedAt < 0.0 and tdGetGlobalWave() >= tdFarmerWageUnlockWave()
-		normalWageUnlockedAt = normalTime
-	if normalWagePending
-		if normalTime - normalWageIssuedAt >= 5.0
-			normalWagePending = false
-			normalWageEnabled = false
-			normalLog("WAGE no actual effect within5s; disable wage task without retry")
-		return true
-	let worker = tdGetFarmer(0)
-	if normalHeld or not normalWageEnabled or normalPending != 0 or normalCaptureTarget != null or normalWageUnlockedAt < 0.0 or normalTime - normalWageUnlockedAt < 1.0 or getElapsedGameTime() < normalWageReadyAt or worker == null or not worker.isAlive() or GetUnitCurrentOrder(worker) != 0
-		return false
-	normalWagePending = true
-	normalWageIssuedAt = normalTime
-	// Current ordinary0500 W3A A109 Ncl6=absorb; recheck the next artifact.
-	let accepted = IssueImmediateOrderById(worker, OrderId("absorb"))
-	normalLog("WAGE requested returned=" + accepted.toString() + "; await real effect")
 	return true
 
 function normalWaitFor(string reason)
@@ -395,7 +367,7 @@ function normalTick()
 		if not normalObservedClear[original] and tdIsWaveResolved(0, original)
 			normalObservedClear[original] = true
 			normalWaveClear[original] = normalWaveState()
-			normalLog("ACTUAL_CLEAR originalWave=" + original.toString())
+			normalLog("ACTUAL_CLEAR originalWave=" + original.toString() + " progressWage=" + tdWaveProgressWage(original).toString())
 			normalObservePets("after-clear=" + original.toString(), true)
 	// Successful terminal flags remain observable before the game-over stop.
 	if tdIsGameOver() or tdIsLaneFinished(0)
@@ -407,8 +379,6 @@ function normalTick()
 	if normalPending != 0
 		if normalTime - normalIssuedAt >= 20.0
 			normalStop("20s without native completion; no retry")
-		return
-	if normalWageTick()
 		return
 	normalIssueNext()
 
@@ -435,7 +405,7 @@ function normalStart()
 	normalStopReason = "running"
 	normalEpoch += 1
 	let epoch = normalEpoch
-	normalLog("START strategyB normal-resource32wave fixed5tower plan + native wage + natural firstcapture max3; no resource/life/wave/unit/HP changes; manual gear/deploy must be recorded")
+	normalLog("START strategyB normal-resource32wave fixed5tower plan + automatic progress wages + natural firstcapture max3; no resource/life/wave/unit/HP changes; manual gear/deploy must be recorded")
 	normalIssueNext()
 	doPeriodically(0.25) cb ->
 		if epoch != normalEpoch or not normalRunning
@@ -444,7 +414,7 @@ function normalStart()
 			normalTick()
 
 function normalHoldStatus() returns string
-	return " held=" + normalHeld.toString() + " step=" + normalStep.toString() + " investmentPending=" + normalPending.toString() + " wagePending=" + normalWagePending.toString() + " capturePending=" + (normalCaptureTarget != null).toString()
+	return " held=" + normalHeld.toString() + " step=" + normalStep.toString() + " investmentPending=" + normalPending.toString() + " capturePending=" + (normalCaptureTarget != null).toString()
 
 function normalCommand()
 	let command = GetEventPlayerChatString()
@@ -458,7 +428,7 @@ function normalCommand()
 				DisplayTimedTextToPlayer(Player(0), 0, 0, 600.0, "NORMAL already held; pending orders and deadlines unchanged" + normalHoldStatus())
 			else
 				normalHeld = true
-				normalLog("HOLD new orders only; manual play requires investment pending0, wagePending=false, capturePending=false and worker idle" + normalHoldStatus())
+				normalLog("HOLD new orders only; manual play requires investment pending0, capturePending=false and worker idle" + normalHoldStatus())
 		else if normalHeld
 			normalHeld = false
 			normalLog("RESUME next normal tick; step, cooldowns, attempts and deadlines retained" + normalHoldStatus())

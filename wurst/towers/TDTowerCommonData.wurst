@@ -99,27 +99,6 @@ public function tdFarmerUsesFlyingMovement() returns boolean
 public function tdFarmerBaseMoveSpeed() returns int
 	return 522
 
-public function tdFarmerWageCooldown() returns real
-	return 180.0
-
-public function tdFarmerWageUnlockWave() returns int
-	return 1
-
-public function tdFarmerWageIconPath() returns string
-	return Icons.bTNChestOfGold
-
-public function tdFarmerWageGoldForWaveAndBonus(int wave, int bonus) returns int
-	return (3 + wave + bonus) * 10
-
-public function tdFarmerWageMinimumGold(int wave) returns int
-	return tdFarmerWageGoldForWaveAndBonus(wave, 1)
-
-public function tdFarmerWageMaximumGold(int wave) returns int
-	return tdFarmerWageGoldForWaveAndBonus(wave, 3)
-
-public function tdRollFarmerWageGold(int wave) returns int
-	return tdFarmerWageGoldForWaveAndBonus(wave, GetRandomInt(1, 3))
-
 public function tdTowerFoodCostForObjectGen() returns int
 	return 1
 

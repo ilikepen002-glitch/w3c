@@ -36,7 +36,6 @@ ICON_STEMS = (
 EXPECTED = {
     'Geqb': (3, 0, 'C', 'Aspb'),
     'Gupg': (1, 1, 'U', 'ANcl'),
-    'A109': (3, 1, 'G', 'ANcl'),
     'Pcap': (1, 2, 'Q', 'ANcl'),
     'Pcol': (2, 2, 'W', 'ANcl'),
 }
@@ -105,6 +104,7 @@ def field_value(fields, key, level=0):
 
 
 def verify_farmer_grid(abilities, units):
+    require('A109' not in abilities, 'Retired farmer wage object A109 remains')
     occupied = {cell: 'native command' for cell in NATIVE_CELLS}
     for rawcode in EXPECTED:
         require(rawcode in abilities, f'Missing farmer command {rawcode}')
@@ -113,8 +113,8 @@ def verify_farmer_grid(abilities, units):
         require(cell not in occupied,
                 f'{rawcode}: farmer cell overlaps {occupied.get(cell)} at {cell}')
         occupied[cell] = rawcode
-    require(set(occupied) == {(x, y) for x in range(4) for y in range(3)} - {(2, 1), (3, 2)},
-            'Farmer command grid must occupy exactly ten cells, leaving 2,1 and 3,2 empty')
+    require(set(occupied) == {(x, y) for x in range(4) for y in range(3)} - {(2, 1), (3, 1), (3, 2)},
+            'Farmer command grid must occupy exactly nine cells, leaving 2,1, 3,1 and 3,2 empty')
     for rawcode, (x, y, hotkey, parent) in EXPECTED.items():
         actual_parent, fields = abilities[rawcode]
         require(actual_parent == parent, f'{rawcode}: wrong parent {actual_parent}')
@@ -123,9 +123,9 @@ def verify_farmer_grid(abilities, units):
         require(field_value(fields, 'ahky') == hotkey, f'{rawcode}: wrong farmer hotkey')
     candidates = [(uid, fields) for uid, fields in units.items()
                   if set(EXPECTED).issubset(fields.get('uabi', '').split(','))]
-    require(len(candidates) == 1, 'Expected exactly one farmer with all five commands')
+    require(len(candidates) == 1, 'Expected exactly one farmer with all four commands')
     uid, farmer = candidates[0]
-    require(farmer['uabi'].split(',') == ['AUbu', 'A109', 'A117', 'Geqb',
+    require(farmer['uabi'].split(',') == ['AUbu', 'A117', 'Geqb',
                                         'Gupg', 'Pcap', 'Pcol'],
             f'{uid}: farmer ability attachment/order changed')
     require('A108' not in abilities and 'Prpr' not in abilities, 'Removed blink/repair objects remain')
@@ -138,7 +138,7 @@ def verify_farmer_grid(abilities, units):
     return uid
 
 
-def verify_collection_commands(abilities):
+def verify_collection_commands(abilities, current_manager=False):
     cells, icons, orders = {}, [], []
     for rawcode in COLLECTION_COMMANDS:
         require(rawcode in abilities, f'Missing collection command {rawcode}')
@@ -160,7 +160,7 @@ def verify_collection_commands(abilities):
         for field in ('aart', 'arar'):
             require(field_value(fields, field) == icon_path(stem), f'{rawcode}: {field} icon path mismatch')
     verify_global_channel_orders(abilities)
-    verify_cultivation_command(abilities)
+    verify_cultivation_command(abilities, current_manager=current_manager)
 
 
 def verify_cultivation_command(abilities, current_manager=False):

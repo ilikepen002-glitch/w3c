@@ -344,8 +344,10 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
                     require('合计上限40%' in text, uid)
                 elif kind == 'CONTROL_POWER':
                     require('上限60%' in text, uid)
-    actions = ('A119', 'A133', 'A109', 'AeEV', 'A130', 'Pcap', 'Pcol', 'Pdep', 'Geqb', 'Gupg') + tuple(f'Pc0{i}' for i in range(8))
-    for retired in ('Dsta', 'Pmas', 'Pfor'):
+    actions = ('A119', 'A133', 'AeEV', 'A130', 'Pcap', 'Pcol', 'Pdep', 'Geqb', 'Gupg') + tuple(f'Pc0{i}' for i in range(8))
+    if not current:
+        actions += ('A109',)  # Preserve the frozen historical tooltip profiles.
+    for retired in ('Dsta', 'Pmas', 'Pfor') + (('A109',) if current else ()):
         require(retired not in abilities, f'Removed action {retired} remains')
     for uid in actions:
         require(uid in abilities, f'Missing required action {uid}')
@@ -392,7 +394,11 @@ def validate(abilities, units, items, *, profile='current40', source_root=None, 
         require('冷却结束' in value(abilities['Pm0A'][1], 'aub1', 1), 'adopt cooldown restriction missing')
         continuation = value(abilities['Pm0D'][1], 'aub1', 1)
         require(all(x in continuation for x in ('消耗1洗练石', '新技能会被替换', '原技能保持不变')), 'continue reroll cost/preservation missing')
-        require('保留本次洗练结果' in value(abilities['Pm0E'][1], 'aub1', 1), 'preview return preservation missing')
+        preserved = value(abilities['Pm0E'][1], 'aub1', 1)
+        if 'Pn00' in abilities:
+            require(all(text in preserved for text in ('保留本次培养候选', '随机洗练已支付1石', '定向学习尚未扣料', '确认支付3石')), 'directed/random preview return preservation or payment disclosure missing')
+        else:
+            require('保留本次洗练结果' in preserved, 'preview return preservation missing')
     else:
         cultivation = value(abilities['Pc06'][1], 'aub1', 1)
         require(all(x in cultivation for x in ('不退石', '共鸣锁定', '永久删除', '不退球和已用材料', '1洗练石', '2%', '1开栏石', '先召回')), 'cultivation risk/cost missing')

@@ -1,0 +1,149 @@
+EFF.F.FFFFF.F
+======================================================================
+ERROR: test_all_packaged_tooltips_match_rules (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_all_packaged_tooltips_match_rules)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 38, in test_all_packaged_tooltips_match_rules
+    self.assertGreater(validate(self.a, self.u, self.i, profile='legacy72', source_root=self.frozen.root), 900)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyPlayerTooltipArtifact.py", line 257, in validate
+    require(all(x in text for x in ('780范围', '每秒造成350伤害', '不受装备射程影响')), label)
+  File "/workspace/shared/wave-progress-wages-final-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: A132/1
+
+======================================================================
+FAIL: test_rejects_charge_current_attack_instead_of_base (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_charge_current_attack_instead_of_base)
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 53, in test_rejects_charge_current_attack_instead_of_base
+    self.check_bad('s030', 1, lambda s: s.replace('基础攻击', '攻击'), 's030')
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "s030" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_execution_exclusive_threshold (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_execution_exclusive_threshold)
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 56, in test_rejects_execution_exclusive_threshold
+    self.check_bad('s020', 1, lambda s: s.replace('不高于30%', '低于30%'), 's020')
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "s020" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_float_truncation_pet_slow (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_float_truncation_pet_slow)
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 50, in test_rejects_float_truncation_pet_slow
+    self.check_bad('s016', 1, lambda s: s.replace('20%', '19%'), 's016')
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "s016" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_missing_cultivation_risk (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_missing_cultivation_risk) (phrase='不退石')
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 61, in test_rejects_missing_cultivation_risk
+    self.check_bad('Pc06', 1, lambda s, p=phrase: s.replace(p, ''), 'cultivation risk')
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "cultivation risk" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_missing_cultivation_risk (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_missing_cultivation_risk) (phrase='永久删除')
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 61, in test_rejects_missing_cultivation_risk
+    self.check_bad('Pc06', 1, lambda s, p=phrase: s.replace(p, ''), 'cultivation risk')
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "cultivation risk" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_missing_cultivation_risk (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_missing_cultivation_risk) (phrase='2%')
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 61, in test_rejects_missing_cultivation_risk
+    self.check_bad('Pc06', 1, lambda s, p=phrase: s.replace(p, ''), 'cultivation risk')
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "cultivation risk" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_missing_cultivation_risk (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_missing_cultivation_risk) (phrase='先召回')
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 61, in test_rejects_missing_cultivation_risk
+    self.check_bad('Pc06', 1, lambda s, p=phrase: s.replace(p, ''), 'cultivation risk')
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 34, in check_bad
+    with self.assertRaisesRegex(ValueError, reason):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "cultivation risk" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_missing_required_action (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_missing_required_action)
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 66, in test_rejects_missing_required_action
+    with self.assertRaisesRegex(ValueError, 'Missing required action Pcap'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "Missing required action Pcap" does not match "A132/1"
+
+======================================================================
+FAIL: test_rejects_wrong_base_damage_die (test_player_tooltip_artifact.PlayerTooltipArtifactTests.test_rejects_wrong_base_damage_die)
+----------------------------------------------------------------------
+ValueError: A132/1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/shared/wave-progress-wages-final-20261014/tests/python/test_player_tooltip_artifact.py", line 72, in test_rejects_wrong_base_damage_die
+    with self.assertRaisesRegex(ValueError, 'uO6B: base/die mismatch'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "uO6B: base/die mismatch" does not match "A132/1"
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.857s
+
+FAILED (failures=9, errors=1)

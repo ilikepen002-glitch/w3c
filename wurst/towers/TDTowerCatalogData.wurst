@@ -3,7 +3,7 @@ import TDConfig
 import ObjectIds
 
 public constant int TD_FARMER_BUILD_ABILITY_ID = 'AUbu'
-public constant int TD_FARMER_WAGE_ABILITY_ID = 'A109'
+// A109 retired: old manual/random farmer wage; do not reuse this rawcode.
 public constant int TD_TOWER_BRANCH_A = 1
 public constant int TD_TOWER_BRANCH_B = 2
 

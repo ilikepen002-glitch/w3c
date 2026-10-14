@@ -194,7 +194,7 @@ class ParsedObjectNegativeTests(unittest.TestCase):
 
     def test_ground_retains_existing_channel_order_checks(self):
         shared_order = self.baseline_abilities["Pcol"][1][("Ncl6", 1, 6)][1]
-        for rawcode in ("Gupg", "A109", "A133", "Pc02"):
+        for rawcode in ("Gupg", "A119", "A133", "Pc02"):
             with self.subTest(command=rawcode):
                 self.setUp()
                 self.change_field(rawcode, "Ncl6", shared_order, 1, 6)

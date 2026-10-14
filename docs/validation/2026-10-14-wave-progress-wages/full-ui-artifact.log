@@ -1,0 +1,34 @@
+PASS GLOBAL RAWCODES: 1809 unique strict-decoded object identities
+PASS RESOURCE: war3mapImported\BTNTDPetMenuTools.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=37e5812d51d294ebb76be159d7116d495ea9a2fde13bebabc075da7c4dee85b9
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetMenuTools.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=17f466a86c7ab0bcdbef64dab4e764b319e32fb391fad6b4acc9366e645d6422
+PASS RESOURCE: war3mapImported\BTNTDPetCollection.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=030766bcb2f6abbba5af1535c8922aa92b3832379c7a10fe98a2ab66c91c11b0
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetCollection.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=2d9fdf30ce10a626099aa7d080f8bf2adeed70225848cfe35528134ea43ced2b
+PASS RESOURCE: war3mapImported\BTNTDPetPrevious.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=ebc1c9400cc1dd0ac744812e1c7647f6478b31ab84b46aef9fdb0a808aa7316e
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetPrevious.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=fc136ad3d5cdccd50cf0da6f3530a168a54c852b3680409511c62ed67ce5c4f6
+PASS RESOURCE: war3mapImported\BTNTDPetNext.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=78133488330594e7dab24062a7308a2dd9d5e3a7e0ced747e91c274719db499a
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetNext.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=b7d9cdcf32e714747a35022f4bb0dba9774ee4f848125382a05da52f566b6c1a
+PASS RESOURCE: war3mapImported\BTNTDPetReturnBuilder.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=01431868d964cda6285538697f92128788f09e4d04c578476fad202d6facadaf
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetReturnBuilder.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=d98381dca5d019d7724a87965852ebc0ac5fe47ab2feba402028abe2a90764be
+PASS RESOURCE: war3mapImported\BTNTDPetDeploy.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=99349674464fcc96e7311b652353239333add6d57147623a370742464812e650
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetDeploy.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=9a75218704f005c9896187af222c6fda229f04f1b1a66ae35143ad893edeb296
+PASS RESOURCE: war3mapImported\BTNTDPetRecall.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=cd4133074b832de960d5fe4c19f5706b28e1cbaaeb0e4d5b6cf4b699426d275b
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetRecall.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=b3339e1db3bcadd9b44985891a0c86b73a90339b864fcc667ba765cd894e15c1
+PASS RESOURCE: war3mapImported\BTNTDPetCultivate.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=905ae5f98051e3a7b9f83f7afa40424b48a8b004355eac9067718eacce4a9dde
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetCultivate.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=4b89f89ed42c46b8c93f69f1ad3522781ecbf7f8c3ba2b4fdbb0bcffb31ee2b4
+PASS RESOURCE: war3mapImported\BTNTDPetInfo.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=9101121fbbd919532850db56d73e483f1728324d30f0520d921276b1d2b325d7
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetInfo.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=0e5087ffc095ec1ae1e33429fa9ec40e211497c15f4d97a5dea007cc9e8cafdd
+PASS RESOURCE: war3mapImported\BTNTDPetEmptySlot.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=1b6b37ef0038afaedf2470feee1953dafdec86417941e3bff637948cc919eaed
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetEmptySlot.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=b0e74a437464908098dbd5f6824980a8c95a9b3ee37952234f041d472a39ffc5
+PASS RESOURCE: war3mapImported\BTNTDPetRelease.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=8195085b7326afc4473a7f8967fba0a1411e181fcdde570439813a84e8d6beeb
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetRelease.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=e88edd6e42625a263b721488d74663f7642bd035490588eac3f0ae1a269e8c9c
+PASS RESOURCE: war3mapImported\BTNTDPetKeep.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=9b85b5a583cd86c0f7b58264047746b169b87781327979db554ae8367105d3cf
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetKeep.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=659ef5461263cf97057253c00c3b9c561b9ff34618c1abb239ff368f2a6e19f0
+PASS RESOURCE: war3mapImported\BTNTDPetAdopt.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=672f919b4057791a4104d560ff2dc302747c98a83d9e47e81d951335f07a566c
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetAdopt.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=29ee88d4de9c8103a27aafecaefd805dca5bf271d24306b5ab8dece6117abc81
+PASS RESOURCE: war3mapImported\BTNTDPetKeepOld.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=a437a6b0b0064cd8c99d0f2806b47bb1148d000e18f724fedb04f2e78a4173a3
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetKeepOld.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=aa17d03e1c2587086c623357aa841d7af55b14bd427e3c8714d8620639806d9f
+PASS RESOURCE: war3mapImported\BTNTDPetUseNew.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=2d17bf255b89c590115e0e4c50195f20d3d47ff6cfa1556a1e6f001b73effa6e
+PASS RESOURCE: ReplaceableTextures\CommandButtonsDisabled\DISBTNTDPetUseNew.blp; BLP1 palette/alpha8, 64x64, 7 mips; SHA256=2d1cd675ead2e8c4fdbae1033be682b848bbdb690f30f669f5e8eb9c921e4e0c
+PASS ELEMENTAL RESOURCES: 15 final MDX800 + 15 exact BLP atlases + 75 BTN/DIS pairs; source/MPQ SHA match
+PASS PET MANAGER: uF01; 20 fixed slots/two pages; 671 Channels + 93 slot displays; 61 runtime-mounted display prototypes; all page cells/hotkeys/targets; native synchronized session bridge; packaged BTN/DIS assets match source.
+NOT TESTED: live rendering/selection/queued network events, actual placement, performance or skill effects.

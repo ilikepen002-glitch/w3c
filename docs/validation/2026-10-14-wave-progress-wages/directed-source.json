@@ -1,0 +1,11 @@
+{
+  "source": {
+    "scalar_page_cases": 2110,
+    "preview_cost": 0,
+    "commit_cost": 3,
+    "fixed_choice_identities": 28,
+    "additional_manager_commands": 10,
+    "unchanged_behavior_bodies": 7
+  },
+  "boundary": "Actual packed production transactions/pages run; engine native handles, input/timer/RNG delivery modeled; Warcraft rendering, load time and FPS not tested."
+}

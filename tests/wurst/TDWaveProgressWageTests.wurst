@@ -1,0 +1,64 @@
+package TDWaveProgressWageTests
+import TDGame
+import TDState
+import TDWaveFlowState
+import TDWaves
+import TDPetState
+
+function wageLanes()
+	tdResetState()
+	for lane = 0 to 3
+		tdPetInitializeLane(lane)
+		tdSetLaneActive(lane, true)
+	// Isolate completed-event tests from the unrelated next-wave timer.
+	tdSetGlobalWave(32)
+
+@Test function progressWageSettlesOnceWithOriginalClearRewardPerLane()
+	wageLanes()
+	for lane = 0 to 3
+		let before = tdGetGold(lane)
+		tdHandleWaveFinished(lane, 4)
+		tdGetGold(lane).assertEquals(before + tdWaveReward(4) + 90)
+		tdIsWaveResolved(lane, 4).assertTrue()
+		tdHandleWaveFinished(lane, 4)
+		tdGetGold(lane).assertEquals(before + tdWaveReward(4) + 90)
+		tdHandleWaveFinished(lane, 1)
+		tdGetGold(lane).assertEquals(before + tdWaveReward(4) + 90 + tdWaveReward(1) + 60)
+	tdResetState()
+
+@Test function progressWageAllowsOldClearWhileLaterWaveStillSpawns()
+	wageLanes()
+	let pending = tdFlowBeginSpawn(0)
+	let before = tdGetGold(0)
+	tdHandleWaveFinished(0, 1)
+	tdGetGold(0).assertEquals(before + tdWaveReward(1) + 60)
+	tdFlowLaneHasPendingSpawn(0).assertTrue()
+	tdFlowEndSpawn(0, pending)
+	tdResetState()
+
+@Test function progressWageRejectsClosedLaneAndInvalidEvents()
+	for mode = 0 to 4
+		wageLanes()
+		if mode == 0
+			tdSetLaneActive(0, false)
+		else if mode == 1
+			tdSetLaneDefeated(0, true)
+		else if mode == 2
+			tdSetLaneFinished(0, true)
+		else if mode == 3
+			tdPetMarkPlayerLeft(0)
+		else
+			tdSetGameOver(true)
+		let closedGold = tdGetGold(0)
+		tdHandleWaveFinished(0, 4)
+		tdGetGold(0).assertEquals(closedGold)
+		tdIsWaveResolved(0, 4).assertFalse()
+	wageLanes()
+	let before = tdGetGold(0)
+	tdHandleWaveFinished(-1, 4)
+	tdHandleWaveFinished(4, 4)
+	tdHandleWaveFinished(0, -1)
+	tdHandleWaveFinished(0, 0)
+	tdHandleWaveFinished(0, 33)
+	tdGetGold(0).assertEquals(before)
+	tdResetState()

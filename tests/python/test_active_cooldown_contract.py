@@ -357,20 +357,30 @@ class ActiveSourceContractTests(unittest.TestCase):
         replace_once(sources, 'towers/TDTowerObjectGen.wurst',
                      '\tnew ChannelAbilityPreset(TD_TOWER_SELL_ABILITY_ID, 1, true)',
                      "\tnew ChannelAbilityPreset('Cn04', 1, true)\n"
-                     '\t..makeUnitSpell(0, tdFarmerWageCooldown())\n'
+                     '\t..makeUnitSpell(0, 180.0)\n'
                      '\tnew ChannelAbilityPreset(TD_TOWER_SELL_ABILITY_ID, 1, true)')
         replace_once(sources, 'towers/TDTowerCatalogData.wurst',
                      'return TD_ARCHER_SPLIT_ARROW_ABILITY_ID.toRawCode()',
                      'return TD_ARCHER_SPLIT_ARROW_ABILITY_ID.toRawCode() + ",Cn04"')
         with self.assertRaisesRegex(ValueError, 'operation rawcode/cooldown role'):
             v.verify_source(sources=sources)
-        # Even the real salary operation's reviewed rawcode cannot borrow a
-        # tower host. Its farmer role is independent of its generator's path.
+        # The retired salary rawcode cannot return as a tower-hosted operation.
         self.reject('towers/TDTowerCatalogData.wurst', 'return TD_ARCHER_SPLIT_ARROW_ABILITY_ID.toRawCode()',
                     'return TD_ARCHER_SPLIT_ARROW_ABILITY_ID.toRawCode() + "," + TD_FARMER_WAGE_ABILITY_ID.toRawCode()',
-                    'Undefined mounted combat active/unknown parent')
+                    'Retired manual/random farmer wage production entry')
         self.reject('towers/TDTowerObjectGen.wurst', '..makeUnitSpell(0, 0.0)',
-                    '..makeUnitSpell(0, tdFarmerWageCooldown())', 'operation rawcode/cooldown role')
+                    '..makeUnitSpell(0, 180.0)', 'operation rawcode/cooldown role')
+
+    def test_retired_farmer_wage_object_and_hidden_mount_are_rejected(self):
+        contract = v.verify_source(sources=self.sources)
+        abilities, units, items = object_fixture(contract)
+        abilities['A109'] = ('ANcl', {('acdn', 1, 0): (2, 180.0)})
+        with self.assertRaisesRegex(ValueError, 'Retired farmer wage'):
+            v.verify_objects(contract, abilities, units, items)
+        abilities.pop('A109')
+        units['wageFixture'] = {'uabi': 'A109'}
+        with self.assertRaisesRegex(ValueError, 'Retired farmer wage'):
+            v.verify_objects(contract, abilities, units, items)
 
     def test_class_cooldown_writer_and_direct_object_mount_are_rejected(self):
         sources = self.sources.copy()

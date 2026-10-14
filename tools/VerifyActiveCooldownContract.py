@@ -886,9 +886,12 @@ def verify_inventory(evaluator):
     # operations require their owner role to be reviewed rather than silently
     # being added to a CDR exclusion list.
     verify_manager_list_zero_cooldown(evaluator)
+    for path, source in evaluator.sources.items():
+        require(not re.search(r"\b(?:TD_FARMER_WAGE_ABILITY_ID|td\w*FarmerWage\w*)\b|[\"\']A109[\"\']", uncomment(source)),
+                "Retired manual/random farmer wage production entry: " + path)
     operation_roles = {
         ('towers/TDTowerObjectGen.wurst', 'tdGenerateTowerAbilities'): {
-            'TD_FARMER_WAGE_ABILITY_ID': 'tdFarmerWageCooldown ( )', 'TD_TOWER_SELL_ABILITY_ID': '0.0'},
+            'TD_TOWER_SELL_ABILITY_ID': '0.0'},
         ('items/TDItemObjectGen.wurst', 'tdGenerateCraftAbility'): {'TD_FARMER_CRAFT_ABILITY_ID': '0.50'},
         ('items/TDItemObjectGen.wurst', 'tdGenerateGroundEquipmentCommands'): {'TD_FARMER_GROUND_UPGRADE_ABILITY_ID': '0.50'},
         ('pets/TDPetObjectGen.wurst', 'command'): {'abilityId': '0.0'},
@@ -1005,7 +1008,7 @@ def verify_inventory(evaluator):
     require(['TD_TOWER_INVENTORY_ABILITY_ID', '3', 'false'] in inventories,
             'Tower inventory source must not enable item use')
     tower_mount = canonical('abilities + "," + TD_TOWER_INVENTORY_ABILITY_ID.toRawCode() + "," + TD_TOWER_SELL_ABILITY_ID.toRawCode() + "," + TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID.toRawCode() + "," + TD_PET_DEPLOY_ABILITY_ID.toRawCode()')
-    farmer_mount = canonical('TD_FARMER_BUILD_ABILITY_ID.toRawCode() + "," + TD_FARMER_WAGE_ABILITY_ID.toRawCode() + "," + TD_FARMER_INVENTORY_ABILITY_ID.toRawCode() + "," + TD_FARMER_EQUIPMENT_BOOK_ABILITY_ID.toRawCode() + "," + TD_FARMER_GROUND_UPGRADE_ABILITY_ID.toRawCode() + "," + TD_PET_CAPTURE_ABILITY_ID.toRawCode() + "," + TD_PET_COLLECTION_ABILITY_ID.toRawCode()')
+    farmer_mount = canonical('TD_FARMER_BUILD_ABILITY_ID.toRawCode() + "," + TD_FARMER_INVENTORY_ABILITY_ID.toRawCode() + "," + TD_FARMER_EQUIPMENT_BOOK_ABILITY_ID.toRawCode() + "," + TD_FARMER_GROUND_UPGRADE_ABILITY_ID.toRawCode() + "," + TD_PET_CAPTURE_ABILITY_ID.toRawCode() + "," + TD_PET_COLLECTION_ABILITY_ID.toRawCode()')
     for path, source in evaluator.sources.items():
         for arguments in calls(source, 'setNormalAbilities'):
             if path == 'towers/TDTowerObjectGen.wurst':
@@ -1031,6 +1034,8 @@ def verify_source(root=ROOT, sources=None):
 
 def verify_objects(contract, abilities, units, items, dynamic_mounts=()):
     evaluator = contract['evaluator']
+    require('A109' not in abilities and all('A109' not in unit.get('uabi', '').split(',') for unit in units.values()),
+            'Retired farmer wage remains in packaged objects or unit mounts')
     native = {rawstring(d.abilityId): d for d in contract['definitions'] if d.abilityId}
     mounted = set()
     for uid, expected in contract['towers'].items():

@@ -12,7 +12,7 @@
 | `wurst/TDWaves.wurst` | 波次配置和奖励 |
 | `wurst/TDTowers.wurst` | 塔系统对外 facade |
 | `wurst/towers/TDTowerCatalogData.wurst` | rawcode、等级与升级链、基础技能和塔族映射 |
-| `wurst/towers/TDTowerCommonData.wurst` | 农民、工资、完美升级与共享配置 |
+| `wurst/towers/TDTowerCommonData.wurst` | 农民、完美升级与共享配置 |
 | `wurst/towers/TDTowerBalanceData.wurst` | 数值、文案、图标、模型和攻击表现 |
 | `wurst/towers/TDTowerData.wurst` | 塔数据聚合 facade |
 | `wurst/towers/TDTowerRuntime.wurst` | 塔运行时入口及建造、升级、死亡等事件 |

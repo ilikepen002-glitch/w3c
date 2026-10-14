@@ -543,7 +543,7 @@ public function tdStartWaveSchedule()
 public function tdHandleWaveFinished(int playerId, int wave)
 	if not tdIsLanePlayer(playerId) or wave < 1 or wave > tdWaveCount()
 		return
-	if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId)
+	if tdIsGameOver() or not tdIsLaneActive(playerId) or tdIsLaneDefeated(playerId) or tdIsLaneFinished(playerId) or tdPetPlayerHasLeft(playerId)
 		return
 	if tdIsWaveResolved(playerId, wave)
 		return
@@ -558,8 +558,11 @@ public function tdHandleWaveFinished(int playerId, int wave)
 	tdMarkWaveResolved(playerId, wave)
 	tdPetCreditWave(playerId, wave)
 	tdPetSyncBallAbility(playerId)
-	// 只有这一波的怪已经全部清空，才发放通关奖励。
-	tdGainGold(playerId, tdWaveReward(wave))
+	// 已认领本路原始波次；工资与原通关奖同次到账，不依赖全局波次或墙钟。
+	let wage = tdWaveProgressWage(wave)
+	tdGainGold(playerId, tdWaveReward(wave) + wage)
+	if wage > 0
+		DisplayTimedTextToPlayer(Player(playerId), 0, 0, 4.0, "第 " + wave.toString() + " 波进度工资：+" + wage.toString() + " 金币。")
 	tdTryUnlockPopulationAfterWave(wave)
 	if tdGetResolvedWave(playerId) >= tdWaveCount()
 		tdSetLaneFinished(playerId, true)
