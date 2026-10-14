@@ -1,0 +1,84 @@
+{
+  "status": "PASS",
+  "newActualMapRuns": true,
+  "candidate_path": "/workspace/shared/performance-zone-delta-evidence-20261014/zone-integrated-legacy-fixed.w3x",
+  "mapSHA256": "e5fb76ea50517db2d624639133e3d20688c7509845cfcb48dfdae9777d06d810",
+  "packedJassSHA256": "177a6f48a6edec60ad4898534c0588111d12ae9497dbb41e8fd42935db95573b",
+  "baseline_path": "/workspace/shared/performance-hud-diff-evidence-20261014/hud-evolution-flat.w3x",
+  "baselineSHA256": "c57d8d6b01818f1e77b90317ac7aa5ee630eccc9e76ef1ac5f7f16f96f09b720",
+  "retention": {
+    "status": "PASS",
+    "completeGate": true,
+    "suiteCount": 23,
+    "suiteNames": [
+      "lifetimes",
+      "aborts",
+      "deliveredTargetDeath",
+      "explicitCleanup",
+      "passiveCleanup",
+      "ownerReuse",
+      "serialExhaustion",
+      "partialTransfer",
+      "onStackCleanup",
+      "overlapStress",
+      "coreAdmission",
+      "buffAdmission",
+      "buffRetry",
+      "caps",
+      "sharedTargetRelease",
+      "reliableCores",
+      "castCoreRetry",
+      "coreDemotion",
+      "coreOverlapStress",
+      "targetCoreRetirement",
+      "coreTransferFailure",
+      "postMortemSeedCore",
+      "compiledMutations"
+    ],
+    "lifetimes": 24,
+    "aborts": 80,
+    "explicitCleanup": 10,
+    "passiveCleanup": 20,
+    "compiledMutationsRejected": 26
+  },
+  "allActiveVisual": {
+    "status": "PASS",
+    "skills": 22,
+    "modes": 12,
+    "cases": 264,
+    "stateSnapshotsPerCase": [
+      131
+    ],
+    "allExact": true
+  },
+  "additionalNonterminalCancellation": {
+    "status": "PASS",
+    "skills": [
+      20,
+      23,
+      25,
+      26,
+      27,
+      28,
+      29,
+      37
+    ],
+    "cases": 16,
+    "tickOrders": [
+      "battle-first",
+      "visual-first"
+    ],
+    "point": "After actual first scheduler turn; execute actual recall/destructor"
+  },
+  "knownCoverageLimit": "These original broad matrices did not catch the cross-skill legacy physical-slot bug in rejected 160ad map. PASS here is limited to enumerated scenarios; new dedicated zone legacy slot reuse gate remains required separately. Retention tool has no baseline argument and is candidate-only invariants, not paired whole-retention equivalence.",
+  "toolHashes": {
+    "VerifyAllSpiritActiveVisualTrace.py": "66f62bc8efe245f91f5c1e841200d2e3d18f89398ef8e5a188c2d967e55f71c8",
+    "VerifyLocalCombatHotpathArtifact.py": "cbf2868897ae73afb7f53da5ed53c74f72b58e2045d6908e5b30266a25c2bc82",
+    "VerifyElementalVfxArtifact.py": "844c64894c1be5e3b86978bfd7d4d2943b00143c640dfd2f5dd60240038f50ed",
+    "SpiritVisualBudgetFixture.py": "94aef63440b2da034a4608d435a3a882574d33da5d151d3de7369d57a899db42",
+    "VerifyTowerTargetPriorityArtifact.py": "60404013536dc9a852034cb8d802e575568f8ffba6a347d1c6886688bf94fa10",
+    "VerifySpiritActiveRetentionArtifact.py": "4e059f5246c2b97d8106fddd9d4ae357491810c25f0eea9be1275848e13ed28b",
+    "VerifyActiveCooldownContract.py": "5d1d192d7c60b9781cb80c17ad93ee03cc41199e1a3eeaf3bbc2c9bd65bd797d"
+  },
+  "changes": "No source, map or tool edits; evidence-only files. No Grill/build/deploy/Warcraft. All original gates fully rerun without skip flags or relaxed rules. Existing rejected-map reports not reused as fixed-map evidence."
+}

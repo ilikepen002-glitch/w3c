@@ -1,0 +1,6052 @@
+{
+  "status": "PASS",
+  "source_commit": "d6f4c7000cc674fd9f30186f8d2a395d94107f8f",
+  "boundary": "Replay actual MPQ zone coverage, ordered combat, contribution/ref lifetimes.\n\nProduction zone/slow/weakening/group-copy functions are never substituted. The\nexisting interpreter supplies native units, clock/delivery, list/table primitives,\nrange/enumeration order, ability acceptance, and art handles. No WC3 timing/FPS or\nmultiplayer claim. Only interpreter safety guards are raised for legal40-source\nfixtures. Inputs and hashes are explicit; this does not import old audit globals.\n",
+  "baseline": {
+    "map": "/workspace/shared/performance-zone-delta-20261014/ExampleMap.w3x",
+    "map_sha256": "c57d8d6b01818f1e77b90317ac7aa5ee630eccc9e76ef1ac5f7f16f96f09b720",
+    "jass_sha256": "06db07c8082d148a7c73068dc041cf1c1101b34a6d00de8c3bc8b875d2abdbd2"
+  },
+  "verification_tool_sha256": "acc8dfb0e8080e2200efc27866ac5647f3a0825e0eb6549fd3bdba79e20be94e",
+  "candidate": {
+    "map": "/workspace/shared/performance-zone-delta-evidence-20261014/zone-integrated-legacy-fixed.w3x",
+    "map_sha256": "e5fb76ea50517db2d624639133e3d20688c7509845cfcb48dfdae9777d06d810",
+    "jass_sha256": "177a6f48a6edec60ad4898534c0588111d12ae9497dbb41e8fd42935db95573b"
+  },
+  "compiled_mutations": [
+    {
+      "mutation": "retired-intersection",
+      "rejected": true,
+      "reason": "Retired/revision-changed identity was incorrectly retained as intersection"
+    },
+    {
+      "mutation": "skip-permutation",
+      "rejected": true,
+      "reason": "Packaged JASS error: Called TDPetEffectTargetPosition.TDPetEffectTargetPosition on invalid object."
+    },
+    {
+      "mutation": "forget-parallel-position",
+      "rejected": true,
+      "reason": "Packaged JASS error: Called TDPetEffectTargetPosition.TDPetEffectTargetPosition on invalid object."
+    },
+    {
+      "mutation": "skip-revision",
+      "rejected": true,
+      "reason": "Retired/revision-changed identity was incorrectly retained as intersection"
+    },
+    {
+      "mutation": "skip-owner",
+      "rejected": true,
+      "reason": "Invalid source continued zone lifetime: owner"
+    },
+    {
+      "mutation": "skip-retained-offer",
+      "rejected": true,
+      "reason": "Intersection offer skipped native carrier repair"
+    },
+    {
+      "mutation": "skip-expiry-refresh",
+      "rejected": true,
+      "reason": "Expired unrelated source survived retained offer refresh"
+    },
+    {
+      "mutation": "late-zone-tick",
+      "rejected": true,
+      "reason": "Original 0.5s damage/4s endpoint count changed"
+    },
+    {
+      "mutation": "old-generation-overlap-admission",
+      "rejected": true,
+      "reason": "Fresh generation entered before old executing cleanup"
+    },
+    {
+      "mutation": "old-generation-stale-admission",
+      "rejected": true,
+      "reason": "Old generation entered after its cleanup"
+    },
+    {
+      "mutation": "clear-legacy-hitcounts",
+      "rejected": true,
+      "reason": "Subsequent segment changed legacy-hit behavior after zone class ID reuse"
+    },
+    {
+      "mutation": "clear-legacy-controlled",
+      "rejected": true,
+      "reason": "Subsequent roots changed actual control targets after zone class ID reuse"
+    },
+    {
+      "mutation": "swap-legacy-hitcounts",
+      "rejected": true,
+      "reason": "Subsequent roots changed actual control targets after zone class ID reuse"
+    },
+    {
+      "mutation": "swap-legacy-controlled",
+      "rejected": true,
+      "reason": "Subsequent roots changed actual control targets after zone class ID reuse"
+    }
+  ],
+  "full_report_sha256": "e1fe726e9968a3e6938e06b5af6f40822de97051bedc14d40839e4bde1748560",
+  "cases": [
+    {
+      "case": "overlap-1",
+      "trace_equal": true,
+      "baseline": {
+        "first": {
+          "expressions": 25926,
+          "interpreter_source_lines": 133185,
+          "enumerated": 52,
+          "slow_refresh": 12,
+          "slow_offer": 12,
+          "slow_remove": 0,
+          "timed_new": 12,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 12,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 12,
+          "group_adds": 52,
+          "group_next": 52,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 37574,
+          "interpreter_source_lines": 196929,
+          "enumerated": 52,
+          "slow_refresh": 24,
+          "slow_offer": 12,
+          "slow_remove": 12,
+          "timed_new": 12,
+          "timed_destroy": 12,
+          "position_new": 12,
+          "position_acquire": 12,
+          "position_release": 12,
+          "position_destroy": 12,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 24,
+          "group_adds": 52,
+          "group_next": 52,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 43538,
+          "interpreter_source_lines": 215412,
+          "enumerated": 52,
+          "slow_refresh": 24,
+          "slow_offer": 12,
+          "slow_remove": 12,
+          "timed_new": 12,
+          "timed_destroy": 12,
+          "position_new": 12,
+          "position_acquire": 12,
+          "position_release": 12,
+          "position_destroy": 12,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 24,
+          "group_adds": 52,
+          "group_next": 52,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 12
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "first": {
+          "expressions": 28970,
+          "interpreter_source_lines": 145881,
+          "enumerated": 52,
+          "slow_refresh": 12,
+          "slow_offer": 12,
+          "slow_remove": 0,
+          "timed_new": 12,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 12,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 12,
+          "group_adds": 52,
+          "group_next": 52,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 21272,
+          "interpreter_source_lines": 110229,
+          "enumerated": 52,
+          "slow_refresh": 12,
+          "slow_offer": 12,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 52,
+          "group_next": 52,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 27236,
+          "interpreter_source_lines": 128712,
+          "enumerated": 52,
+          "slow_refresh": 12,
+          "slow_offer": 12,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 52,
+          "group_next": 52,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 12
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "overlap-2",
+      "trace_equal": true,
+      "baseline": {
+        "first": {
+          "expressions": 43575,
+          "interpreter_source_lines": 225631,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 24,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 24,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 12,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 58795,
+          "interpreter_source_lines": 332467,
+          "enumerated": 104,
+          "slow_refresh": 48,
+          "slow_offer": 24,
+          "slow_remove": 24,
+          "timed_new": 24,
+          "timed_destroy": 24,
+          "position_new": 0,
+          "position_acquire": 24,
+          "position_release": 24,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 70759,
+          "interpreter_source_lines": 369517,
+          "enumerated": 104,
+          "slow_refresh": 48,
+          "slow_offer": 24,
+          "slow_remove": 24,
+          "timed_new": 24,
+          "timed_destroy": 24,
+          "position_new": 0,
+          "position_acquire": 24,
+          "position_release": 24,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 24
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "first": {
+          "expressions": 49663,
+          "interpreter_source_lines": 251023,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 24,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 24,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 12,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 43267,
+          "interpreter_source_lines": 224695,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 55231,
+          "interpreter_source_lines": 261745,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 24
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "overlap-10",
+      "trace_equal": true,
+      "baseline": {
+        "first": {
+          "expressions": 198384,
+          "interpreter_source_lines": 1043987,
+          "enumerated": 520,
+          "slow_refresh": 120,
+          "slow_offer": 120,
+          "slow_remove": 0,
+          "timed_new": 120,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 120,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 12,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 355172,
+          "interpreter_source_lines": 2010455,
+          "enumerated": 520,
+          "slow_refresh": 240,
+          "slow_offer": 120,
+          "slow_remove": 120,
+          "timed_new": 120,
+          "timed_destroy": 120,
+          "position_new": 0,
+          "position_acquire": 120,
+          "position_release": 120,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 416246,
+          "interpreter_source_lines": 2198645,
+          "enumerated": 520,
+          "slow_refresh": 240,
+          "slow_offer": 120,
+          "slow_remove": 120,
+          "timed_new": 120,
+          "timed_destroy": 120,
+          "position_new": 0,
+          "position_acquire": 120,
+          "position_release": 120,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 120
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "first": {
+          "expressions": 228824,
+          "interpreter_source_lines": 1170947,
+          "enumerated": 520,
+          "slow_refresh": 120,
+          "slow_offer": 120,
+          "slow_remove": 0,
+          "timed_new": 120,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 120,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 12,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 245372,
+          "interpreter_source_lines": 1293515,
+          "enumerated": 520,
+          "slow_refresh": 120,
+          "slow_offer": 120,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 306446,
+          "interpreter_source_lines": 1481705,
+          "enumerated": 520,
+          "slow_refresh": 120,
+          "slow_offer": 120,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 120
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "overlap-40",
+      "trace_equal": true,
+      "baseline": {
+        "first": {
+          "expressions": 790080,
+          "interpreter_source_lines": 4168883,
+          "enumerated": 2080,
+          "slow_refresh": 480,
+          "slow_offer": 480,
+          "slow_remove": 0,
+          "timed_new": 480,
+          "timed_destroy": 0,
+          "position_new": 48,
+          "position_acquire": 480,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 48,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 1417232,
+          "interpreter_source_lines": 8034755,
+          "enumerated": 2080,
+          "slow_refresh": 960,
+          "slow_offer": 480,
+          "slow_remove": 480,
+          "timed_new": 480,
+          "timed_destroy": 480,
+          "position_new": 0,
+          "position_acquire": 480,
+          "position_release": 480,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 1665904,
+          "interpreter_source_lines": 8801020,
+          "enumerated": 2080,
+          "slow_refresh": 960,
+          "slow_offer": 480,
+          "slow_remove": 480,
+          "timed_new": 480,
+          "timed_destroy": 480,
+          "position_new": 0,
+          "position_acquire": 480,
+          "position_release": 480,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 480
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "first": {
+          "expressions": 911840,
+          "interpreter_source_lines": 4676723,
+          "enumerated": 2080,
+          "slow_refresh": 480,
+          "slow_offer": 480,
+          "slow_remove": 0,
+          "timed_new": 480,
+          "timed_destroy": 0,
+          "position_new": 48,
+          "position_acquire": 480,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 48,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 978032,
+          "interpreter_source_lines": 5166995,
+          "enumerated": 2080,
+          "slow_refresh": 480,
+          "slow_offer": 480,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 1226704,
+          "interpreter_source_lines": 5933260,
+          "enumerated": 2080,
+          "slow_refresh": 480,
+          "slow_offer": 480,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 0,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 480
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "mixed-2",
+      "trace_equal": true,
+      "baseline": {
+        "first": {
+          "expressions": 48422,
+          "interpreter_source_lines": 245670,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 24,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 24,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 12,
+          "move_speed_set": 24,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 78494,
+          "interpreter_source_lines": 413538,
+          "enumerated": 104,
+          "slow_refresh": 48,
+          "slow_offer": 24,
+          "slow_remove": 24,
+          "timed_new": 24,
+          "timed_destroy": 24,
+          "position_new": 0,
+          "position_acquire": 24,
+          "position_release": 24,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 12,
+          "move_speed_set": 48,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 84494,
+          "interpreter_source_lines": 432105,
+          "enumerated": 104,
+          "slow_refresh": 48,
+          "slow_offer": 24,
+          "slow_remove": 24,
+          "timed_new": 24,
+          "timed_destroy": 24,
+          "position_new": 0,
+          "position_acquire": 24,
+          "position_release": 24,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 12,
+          "move_speed_set": 48,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 12
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "first": {
+          "expressions": 54510,
+          "interpreter_source_lines": 271062,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 24,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 24,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 12,
+          "move_speed_set": 24,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 44718,
+          "interpreter_source_lines": 230922,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 12,
+          "move_speed_set": 0,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 50718,
+          "interpreter_source_lines": 249489,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 12,
+          "move_speed_set": 0,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 12
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "mixed-10",
+      "trace_equal": true,
+      "baseline": {
+        "first": {
+          "expressions": 209260,
+          "interpreter_source_lines": 1089274,
+          "enumerated": 520,
+          "slow_refresh": 120,
+          "slow_offer": 120,
+          "slow_remove": 0,
+          "timed_new": 120,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 120,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 60,
+          "move_speed_set": 24,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 369712,
+          "interpreter_source_lines": 2073970,
+          "enumerated": 520,
+          "slow_refresh": 240,
+          "slow_offer": 120,
+          "slow_remove": 120,
+          "timed_new": 120,
+          "timed_destroy": 120,
+          "position_new": 0,
+          "position_acquire": 120,
+          "position_release": 120,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 60,
+          "move_speed_set": 0,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 400792,
+          "interpreter_source_lines": 2169325,
+          "enumerated": 520,
+          "slow_refresh": 240,
+          "slow_offer": 120,
+          "slow_remove": 120,
+          "timed_new": 120,
+          "timed_destroy": 120,
+          "position_new": 0,
+          "position_acquire": 120,
+          "position_release": 120,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 60,
+          "move_speed_set": 0,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 60
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "first": {
+          "expressions": 239700,
+          "interpreter_source_lines": 1216234,
+          "enumerated": 520,
+          "slow_refresh": 120,
+          "slow_offer": 120,
+          "slow_remove": 0,
+          "timed_new": 120,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 120,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 60,
+          "move_speed_set": 24,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 252852,
+          "interpreter_source_lines": 1324990,
+          "enumerated": 520,
+          "slow_refresh": 120,
+          "slow_offer": 120,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 60,
+          "move_speed_set": 0,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 283932,
+          "interpreter_source_lines": 1420345,
+          "enumerated": 520,
+          "slow_refresh": 120,
+          "slow_offer": 120,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 60,
+          "move_speed_set": 0,
+          "group_adds": 520,
+          "group_next": 520,
+          "group_create": 10,
+          "group_destroy": 10,
+          "damage": 60
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "mixed-40",
+      "trace_equal": true,
+      "baseline": {
+        "first": {
+          "expressions": 835384,
+          "interpreter_source_lines": 4353871,
+          "enumerated": 2080,
+          "slow_refresh": 480,
+          "slow_offer": 480,
+          "slow_remove": 0,
+          "timed_new": 480,
+          "timed_destroy": 0,
+          "position_new": 48,
+          "position_acquire": 480,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 240,
+          "move_speed_set": 96,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 1477192,
+          "interpreter_source_lines": 8292655,
+          "enumerated": 2080,
+          "slow_refresh": 960,
+          "slow_offer": 480,
+          "slow_remove": 480,
+          "timed_new": 480,
+          "timed_destroy": 480,
+          "position_new": 0,
+          "position_acquire": 480,
+          "position_release": 480,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 240,
+          "move_speed_set": 0,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 1604136,
+          "interpreter_source_lines": 8682255,
+          "enumerated": 2080,
+          "slow_refresh": 960,
+          "slow_offer": 480,
+          "slow_remove": 480,
+          "timed_new": 480,
+          "timed_destroy": 480,
+          "position_new": 0,
+          "position_acquire": 480,
+          "position_release": 480,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 240,
+          "move_speed_set": 0,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 240
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "first": {
+          "expressions": 957144,
+          "interpreter_source_lines": 4861711,
+          "enumerated": 2080,
+          "slow_refresh": 480,
+          "slow_offer": 480,
+          "slow_remove": 0,
+          "timed_new": 480,
+          "timed_destroy": 0,
+          "position_new": 48,
+          "position_acquire": 480,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 240,
+          "move_speed_set": 96,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 1009752,
+          "interpreter_source_lines": 5296735,
+          "enumerated": 2080,
+          "slow_refresh": 480,
+          "slow_offer": 480,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 240,
+          "move_speed_set": 0,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 1136696,
+          "interpreter_source_lines": 5686335,
+          "enumerated": 2080,
+          "slow_refresh": 480,
+          "slow_offer": 480,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 240,
+          "move_speed_set": 0,
+          "group_adds": 2080,
+          "group_next": 2080,
+          "group_create": 40,
+          "group_destroy": 40,
+          "damage": 240
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "actual-seal-mechanic",
+      "trace_equal": true,
+      "baseline": {
+        "first": {
+          "expressions": 45052,
+          "interpreter_source_lines": 229409,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 24,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 24,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 24,
+          "weakening_destroy": 0,
+          "weakening_offer": 24,
+          "move_speed_set": 12,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 61308,
+          "interpreter_source_lines": 339869,
+          "enumerated": 104,
+          "slow_refresh": 48,
+          "slow_offer": 24,
+          "slow_remove": 24,
+          "timed_new": 24,
+          "timed_destroy": 24,
+          "position_new": 0,
+          "position_acquire": 24,
+          "position_release": 24,
+          "position_destroy": 0,
+          "weakening_new": 24,
+          "weakening_destroy": 24,
+          "weakening_offer": 24,
+          "move_speed_set": 0,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 61308,
+          "interpreter_source_lines": 339869,
+          "enumerated": 104,
+          "slow_refresh": 48,
+          "slow_offer": 24,
+          "slow_remove": 24,
+          "timed_new": 24,
+          "timed_destroy": 24,
+          "position_new": 0,
+          "position_acquire": 24,
+          "position_release": 24,
+          "position_destroy": 0,
+          "weakening_new": 24,
+          "weakening_destroy": 24,
+          "weakening_offer": 24,
+          "move_speed_set": 0,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "first": {
+          "expressions": 51140,
+          "interpreter_source_lines": 254801,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 24,
+          "timed_destroy": 0,
+          "position_new": 12,
+          "position_acquire": 24,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 24,
+          "weakening_destroy": 0,
+          "weakening_offer": 24,
+          "move_speed_set": 12,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "steady": {
+          "expressions": 44384,
+          "interpreter_source_lines": 227729,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 24,
+          "move_speed_set": 0,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "pulse": {
+          "expressions": 44384,
+          "interpreter_source_lines": 227729,
+          "enumerated": 104,
+          "slow_refresh": 24,
+          "slow_offer": 24,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 0,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 24,
+          "move_speed_set": 0,
+          "group_adds": 104,
+          "group_next": 104,
+          "group_create": 2,
+          "group_destroy": 2,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "order-thirteenth",
+      "trace_equal": true,
+      "baseline": {
+        "change": {
+          "expressions": 36330,
+          "interpreter_source_lines": 195249,
+          "enumerated": 13,
+          "slow_refresh": 24,
+          "slow_offer": 12,
+          "slow_remove": 12,
+          "timed_new": 12,
+          "timed_destroy": 12,
+          "position_new": 12,
+          "position_acquire": 12,
+          "position_release": 12,
+          "position_destroy": 12,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 24,
+          "group_adds": 13,
+          "group_next": 13,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "change": {
+          "expressions": 23626,
+          "interpreter_source_lines": 128193,
+          "enumerated": 13,
+          "slow_refresh": 13,
+          "slow_offer": 12,
+          "slow_remove": 1,
+          "timed_new": 1,
+          "timed_destroy": 1,
+          "position_new": 1,
+          "position_acquire": 1,
+          "position_release": 1,
+          "position_destroy": 1,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 2,
+          "group_adds": 13,
+          "group_next": 13,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "retired-resurrection",
+      "trace_equal": true,
+      "baseline": {
+        "counts": {
+          "expressions": 35919,
+          "interpreter_source_lines": 192975,
+          "enumerated": 12,
+          "slow_refresh": 24,
+          "slow_offer": 12,
+          "slow_remove": 12,
+          "timed_new": 12,
+          "timed_destroy": 11,
+          "position_new": 12,
+          "position_acquire": 12,
+          "position_release": 12,
+          "position_destroy": 12,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 24,
+          "group_adds": 12,
+          "group_next": 12,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "counts": {
+          "expressions": 22078,
+          "interpreter_source_lines": 119424,
+          "enumerated": 12,
+          "slow_refresh": 13,
+          "slow_offer": 12,
+          "slow_remove": 1,
+          "timed_new": 1,
+          "timed_destroy": 0,
+          "position_new": 1,
+          "position_acquire": 1,
+          "position_release": 1,
+          "position_destroy": 1,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 2,
+          "group_adds": 12,
+          "group_next": 12,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "revision-mismatch",
+      "trace_equal": true,
+      "baseline": {
+        "counts": {
+          "expressions": 35934,
+          "interpreter_source_lines": 193009,
+          "enumerated": 12,
+          "slow_refresh": 24,
+          "slow_offer": 12,
+          "slow_remove": 12,
+          "timed_new": 12,
+          "timed_destroy": 12,
+          "position_new": 12,
+          "position_acquire": 12,
+          "position_release": 12,
+          "position_destroy": 12,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 24,
+          "group_adds": 12,
+          "group_next": 12,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "counts": {
+          "expressions": 22093,
+          "interpreter_source_lines": 119458,
+          "enumerated": 12,
+          "slow_refresh": 13,
+          "slow_offer": 12,
+          "slow_remove": 1,
+          "timed_new": 1,
+          "timed_destroy": 1,
+          "position_new": 1,
+          "position_acquire": 1,
+          "position_release": 1,
+          "position_destroy": 1,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 2,
+          "group_adds": 12,
+          "group_next": 12,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "strength-expiry",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "same-identity-strength",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "filtering-boundaries",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "live-boss-type-change",
+      "trace_equal": true,
+      "baseline": {
+        "counts": {
+          "expressions": 35934,
+          "interpreter_source_lines": 193009,
+          "enumerated": 12,
+          "slow_refresh": 24,
+          "slow_offer": 12,
+          "slow_remove": 12,
+          "timed_new": 12,
+          "timed_destroy": 12,
+          "position_new": 12,
+          "position_acquire": 12,
+          "position_release": 12,
+          "position_destroy": 12,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 24,
+          "group_adds": 12,
+          "group_next": 12,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "counts": {
+          "expressions": 22078,
+          "interpreter_source_lines": 119371,
+          "enumerated": 12,
+          "slow_refresh": 13,
+          "slow_offer": 12,
+          "slow_remove": 1,
+          "timed_new": 1,
+          "timed_destroy": 1,
+          "position_new": 1,
+          "position_acquire": 1,
+          "position_release": 1,
+          "position_destroy": 1,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 2,
+          "group_adds": 12,
+          "group_next": 12,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "intersection-refresh-repairs",
+      "trace_equal": true,
+      "baseline": {
+        "counts": {
+          "expressions": 35951,
+          "interpreter_source_lines": 193051,
+          "enumerated": 12,
+          "slow_refresh": 24,
+          "slow_offer": 12,
+          "slow_remove": 12,
+          "timed_new": 12,
+          "timed_destroy": 13,
+          "position_new": 12,
+          "position_acquire": 12,
+          "position_release": 12,
+          "position_destroy": 12,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 23,
+          "group_adds": 12,
+          "group_next": 12,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "counts": {
+          "expressions": 19983,
+          "interpreter_source_lines": 107814,
+          "enumerated": 12,
+          "slow_refresh": 12,
+          "slow_offer": 12,
+          "slow_remove": 0,
+          "timed_new": 0,
+          "timed_destroy": 1,
+          "position_new": 0,
+          "position_acquire": 0,
+          "position_release": 0,
+          "position_destroy": 0,
+          "weakening_new": 0,
+          "weakening_destroy": 0,
+          "weakening_offer": 0,
+          "move_speed_set": 1,
+          "group_adds": 12,
+          "group_next": 12,
+          "group_create": 1,
+          "group_destroy": 1,
+          "damage": 0
+        },
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "death-in-pulse",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "remove-in-pulse",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "move-in-pulse",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "recall-in-pulse",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "generation-in-pulse",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "owner",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "host-remove",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "lane",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "gameover",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "epoch",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "revision",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "trial-new",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "trial-reused",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "trial-reset",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "cast-id-reuse",
+      "trace_equal": true,
+      "baseline": {
+        "old_cd": 38.1,
+        "class_id_reused": 1,
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "old_cd": 38.1,
+        "class_id_reused": 1,
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "generation-admission",
+      "trace_equal": true,
+      "baseline": {
+        "admission": [
+          [
+            "deferred-cancel",
+            1,
+            2,
+            1,
+            38.1
+          ],
+          [
+            "fresh-retained",
+            2,
+            38.1,
+            [
+              [
+                1000,
+                16,
+                1,
+                0.25,
+                20.95
+              ]
+            ]
+          ]
+        ],
+        "class_id_reused": 1,
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "admission": [
+          [
+            "deferred-cancel",
+            1,
+            2,
+            1,
+            38.1
+          ],
+          [
+            "fresh-retained",
+            2,
+            38.1,
+            [
+              [
+                1000,
+                16,
+                1,
+                0.25,
+                20.95
+              ]
+            ]
+          ]
+        ],
+        "class_id_reused": 1,
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "cross-skill-28-30-exit-recall",
+      "trace_equal": true,
+      "baseline": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            22.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            22.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "cross-skill-28-37-exit-invalidate",
+      "trace_equal": true,
+      "baseline": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            22.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            22.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "cross-skill-28-30-reverse-recall",
+      "trace_equal": true,
+      "baseline": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            22.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            22.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "cross-skill-28-30.37-exit-recall",
+      "trace_equal": true,
+      "baseline": {
+        "class_ids": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            23.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            23.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            23.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            23.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "class_ids": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            23.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            23.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            23.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            23.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "cross-skill-26-30-reverse-recall",
+      "trace_equal": true,
+      "baseline": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            22.45,
+            1000,
+            2000,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2001,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2002,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2003,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2004,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2005,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2006,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2007,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2006
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2007
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            22.45,
+            1000,
+            2000,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2001,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2002,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2003,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2004,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2005,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2006,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2007,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2006
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2007
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "cross-skill-26-37-exit-invalidate",
+      "trace_equal": true,
+      "baseline": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            22.45,
+            1000,
+            2000,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2001,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2002,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2003,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2004,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2005,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2006,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2007,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2006
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2007
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            22.45,
+            1000,
+            2000,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2001,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2002,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2003,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2004,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2005,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2006,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2007,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            22.45,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2006
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2007
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "cross-skill-28-30-reverse-natural",
+      "trace_equal": true,
+      "baseline": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            26.25,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            26.25,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "cross-skill-26-37-reverse-natural",
+      "trace_equal": true,
+      "baseline": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            26.25,
+            1000,
+            2000,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2001,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2002,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2003,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2004,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2005,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2006,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2007,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2006
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2007
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "class_ids": [
+          1,
+          1,
+          1
+        ],
+        "legacy_before_zone": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        "final_segment_damage": [
+          [
+            26.25,
+            1000,
+            2000,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2001,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2002,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2003,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2004,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2005,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2006,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2007,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2008,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2009,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2010,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ],
+          [
+            26.25,
+            1000,
+            2011,
+            70.0,
+            false,
+            false,
+            "chaos",
+            "universal",
+            "unknown"
+          ]
+        ],
+        "final_segment_controls": [
+          [
+            1349678128,
+            35,
+            0,
+            2006
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2007
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2008
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2009
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2010
+          ],
+          [
+            1349678128,
+            35,
+            0,
+            2011
+          ]
+        ],
+        "zone_legacy": [
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ],
+          [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          ]
+        ],
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    },
+    {
+      "case": "completion",
+      "trace_equal": true,
+      "baseline": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      },
+      "candidate": {
+        "cleanup": {
+          "tasks": 0,
+          "casts": 0,
+          "position_index": 0,
+          "position_refs": 0,
+          "timed": 0,
+          "weakening": 0,
+          "native_effects": 0,
+          "native_lightning": 0
+        }
+      }
+    }
+  ],
+  "retained_baseline_map": "/workspace/shared/performance-hud-diff-20261014/ExampleMap.w3x"
+}

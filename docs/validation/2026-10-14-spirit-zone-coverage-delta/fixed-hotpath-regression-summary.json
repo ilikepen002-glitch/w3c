@@ -1,0 +1,73 @@
+{
+  "status": "PASS",
+  "candidate_map": "/workspace/shared/performance-zone-delta-evidence-20261014/zone-integrated-legacy-fixed.w3x",
+  "map_sha256": "e5fb76ea50517db2d624639133e3d20688c7509845cfcb48dfdae9777d06d810",
+  "jass_sha256": "177a6f48a6edec60ad4898534c0588111d12ae9497dbb41e8fd42935db95573b",
+  "baseline_map": "/workspace/shared/local-combat-hotpath-evidence-20261014/final.w3x",
+  "baseline_sha256": "d84f03d19c4e026c85968e4de9a9cf3057d0ff7ad4471aa4f1155a6bad450d43",
+  "active_cooldown_actual_mpq": "PASS",
+  "active_unit_tests": {
+    "status": "PASS",
+    "count": 47,
+    "newRun": true
+  },
+  "target_priority_actual_mpq": "PASS",
+  "target_comparator_cases": 2304,
+  "target_packed_mutants": 9,
+  "primary_selection_cases": 480,
+  "local_hotpath_mutants": 5,
+  "attack_costs": [
+    {
+      "candidates": 16,
+      "before_expressions": 6067,
+      "after_expressions": 6067,
+      "queries": 2,
+      "groups": 3,
+      "copies": 16,
+      "sqrt": 34
+    },
+    {
+      "candidates": 52,
+      "before_expressions": 10459,
+      "after_expressions": 10459,
+      "queries": 2,
+      "groups": 3,
+      "copies": 52,
+      "sqrt": 106
+    },
+    {
+      "candidates": 104,
+      "before_expressions": 16803,
+      "after_expressions": 16803,
+      "queries": 2,
+      "groups": 3,
+      "copies": 104,
+      "sqrt": 210
+    },
+    {
+      "candidates": 308,
+      "before_expressions": 41691,
+      "after_expressions": 41691,
+      "queries": 2,
+      "groups": 3,
+      "copies": 308,
+      "sqrt": 618
+    }
+  ],
+  "auras": [
+    {
+      "scene": "uA11",
+      "definition_calls": 4,
+      "before_expressions": 2322,
+      "after_expressions": 2322
+    },
+    {
+      "scene": "uA6B",
+      "definition_calls": 4,
+      "before_expressions": 3930,
+      "after_expressions": 3930
+    }
+  ],
+  "scope": "Read-only actual fixed MPQ. Source unchanged; no Grill/build/deploy/Warcraft. Actual packed regression evidence newly produced, no old certificates reused.",
+  "knownCoverageLimit": "Not a whole-S1 correctness certificate; legacy physical slot cross-skill reuse is covered by the separate zone gate. Original broad active fixtures passed the rejected 160ad map and do not subsume that regression."
+}

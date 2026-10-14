@@ -1,0 +1,366 @@
+{
+  "status": "FAIL",
+  "baseline": {
+    "map": "/workspace/shared/performance-hud-diff-20261014/ExampleMap.w3x",
+    "map_sha256": "c57d8d6b01818f1e77b90317ac7aa5ee630eccc9e76ef1ac5f7f16f96f09b720",
+    "jass_sha256": "06db07c8082d148a7c73068dc041cf1c1101b34a6d00de8c3bc8b875d2abdbd2"
+  },
+  "candidate": {
+    "map": "/workspace/shared/performance-zone-delta-evidence-20261014/zone-integrated.w3x",
+    "map_sha256": "160ad32521c9caa974eda9ffb83da13a2545f3b359af4f28d56209f9734c3bfc",
+    "jass_sha256": "6fdc2d0dae95afbd9dc29e22247bd59bc707c398773294214af549f7bd924e66"
+  },
+  "before": {
+    "cast_ids": [
+      1,
+      1,
+      1
+    ],
+    "stages": [
+      {
+        "skill": 28,
+        "victims": [
+          2000,
+          2001,
+          2002,
+          2003,
+          2004,
+          2005,
+          2006,
+          2007
+        ],
+        "hitCounts": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "skill": 30,
+        "victims": [],
+        "hitCounts": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "skill": 26,
+        "victims": [
+          2000,
+          2001,
+          2002,
+          2003,
+          2004,
+          2005,
+          2006,
+          2007,
+          2008,
+          2009,
+          2010,
+          2011
+        ],
+        "hitCounts": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "final_segment_damage": [
+      [
+        22.15,
+        1000,
+        2008,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2009,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2010,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2011,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ]
+    ],
+    "final_segment_hits": 4
+  },
+  "after": {
+    "cast_ids": [
+      1,
+      1,
+      1
+    ],
+    "stages": [
+      {
+        "skill": 28,
+        "victims": [
+          2000,
+          2001,
+          2002,
+          2003,
+          2004,
+          2005,
+          2006,
+          2007
+        ],
+        "hitCounts": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "skill": 30,
+        "victims": [],
+        "hitCounts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "skill": 26,
+        "victims": [
+          2000,
+          2001,
+          2002,
+          2003,
+          2004,
+          2005,
+          2006,
+          2007,
+          2008,
+          2009,
+          2010,
+          2011
+        ],
+        "hitCounts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "final_segment_damage": [
+      [
+        22.15,
+        1000,
+        2000,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2001,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2002,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2003,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2004,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2005,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2006,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2007,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2008,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2009,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2010,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2011,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ]
+    ],
+    "final_segment_hits": 12
+  },
+  "boundary": "Three consecutive legal four-slot pets use one host, real original-hit admission, actual packed scheduler/casts/destructors and actual freed class ID reuse. Only native clock, enemy x coordinates and legal fixture pet host/store setup are controlled. No production body replacement or direct hitCounts write."
+}

@@ -1,0 +1,74 @@
+{
+  "status": "PASS",
+  "reviewer": "GPT-6 Astra",
+  "baseline": {
+    "map": "/workspace/shared/performance-hud-diff-20261014/ExampleMap.w3x",
+    "map_sha256": "c57d8d6b01818f1e77b90317ac7aa5ee630eccc9e76ef1ac5f7f16f96f09b720",
+    "jass_sha256": "06db07c8082d148a7c73068dc041cf1c1101b34a6d00de8c3bc8b875d2abdbd2"
+  },
+  "candidate": {
+    "map": "/workspace/shared/performance-zone-delta-evidence-20261014/zone-integrated-legacy-fixed.w3x",
+    "map_sha256": "e5fb76ea50517db2d624639133e3d20688c7509845cfcb48dfdae9777d06d810",
+    "jass_sha256": "177a6f48a6edec60ad4898534c0588111d12ae9497dbb41e8fd42935db95573b"
+  },
+  "member_count": 427,
+  "active_mpq_hash_count": 427,
+  "unknown_hash_members": 0,
+  "changed_members": [
+    "war3map.j",
+    "war3map.w3i"
+  ],
+  "byte_identical_other_members": 425,
+  "w3i_only_build_name_and_loading_title_changed": true,
+  "build_names": [
+    "契灵守卫战 20261014-1942-UTC+8",
+    "契灵守卫战 20261014-2042-UTC+8"
+  ],
+  "object_tables_byte_identical": {
+    "war3map.w3a": 1811189,
+    "war3map.w3h": 11885,
+    "war3map.w3t": 30731,
+    "war3map.w3u": 377626
+  },
+  "official_build_manifest_current_source_check": {
+    "transaction": "/workspace/shared/performance-zone-delta-20261014/_build/linux-9wqv3sao",
+    "status": "PASS",
+    "mode": "build",
+    "parent_commit": "d6f4c7000cc674fd9f30186f8d2a395d94107f8f",
+    "verified_source_test_config_count": 235,
+    "source_test_config_mismatches": [],
+    "compiler_sha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+    "stdlib_tree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+    "artifact": {
+      "sha256": "e5fb76ea50517db2d624639133e3d20688c7509845cfcb48dfdae9777d06d810",
+      "importsChecked": 407,
+      "displayName": "契灵守卫战 20261014-2042-UTC+8",
+      "gate": "real read-only Python MPQ/JASS/object tables/import bytes",
+      "candidate": "/workspace/shared/performance-zone-delta-20261014/_build/linux-9wqv3sao/project/_build/MyFirstWurstMap.w3x.w3x",
+      "output": "/workspace/shared/performance-zone-delta-evidence-20261014/zone-integrated-legacy-fixed.w3x"
+    }
+  },
+  "checks_evidence_boundary": "Legacy-slot-fixed typecheck/full-tests/build PASS manifests read from their transactions or SHA-verified recoverable archives. All three match current production/test/config hashes. This report belongs only to the e5fb76ea fixed candidate; original 160ad325 map remains rejected.",
+  "archived_checks_manifest_current_source_checks": [
+    {
+      "manifest": "/workspace/shared/performance-zone-delta-20261014/_build/linux-5lm_7i8_/manifest.json",
+      "status": "PASS",
+      "mode": "typecheck",
+      "parent_commit": "872e5b40b950714059cf70a2967af321f2074b40",
+      "verified_source_test_config_count": 235,
+      "source_test_config_mismatches": [],
+      "compiler_sha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+      "stdlib_tree": "90b45617eda50c15703e8cb2ec3241d3c7b61816"
+    },
+    {
+      "manifest": "/workspace/shared/performance-zone-delta-20261014/_build/linux-528rh545/manifest.json",
+      "status": "PASS",
+      "mode": "test",
+      "parent_commit": "872e5b40b950714059cf70a2967af321f2074b40",
+      "verified_source_test_config_count": 235,
+      "source_test_config_mismatches": [],
+      "compiler_sha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+      "stdlib_tree": "90b45617eda50c15703e8cb2ec3241d3c7b61816"
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import TDEnemySlowState
 import TDAuraRules
 import TDEnemyMechanicRuntime
 import TDPetEffectTargetState
+import TDWaves
 
 function TDPetCastContext.area(vec2 point, real radius, real power)
 	this.candidates.enumUnitsInRange(point, radius)
@@ -39,26 +40,53 @@ function TDPetCastContext.segment(vec2 point, real radius, real power, boolean r
 		hits += 1
 
 function TDPetCastContext.zone(real now)
-	// Only the current <=12 covered targets are retained. Leaving removes this
-	// source immediately (within the allowed .3s linger); another source survives.
+	// Sample the original <=12 enumeration order, then retain only live identities.
+	// The borrowed scratch handles are cleared before any synchronous pulse damage.
 	let identity = this.skill == 30 ? TD_AURA_PET_VORTEX : TD_AURA_PET_SEAL
-	for index = 0 to this.victimCount - 1
-		tdEnemySlowRemoveTimed(this.victims[index], this.host, identity)
-		if this.skill == 37
-			tdEnemyMechanicRemoveStageWeakening(this.victims[index], this.host, this castTo int)
-		tdPetReleaseEffectTarget(this.targetPositions[index])
-		this.targetPositions[index] = null
-		this.victims[index] = null
-	this.victimCount = 0
 	let radius = this.skill == 30 ? 280.0 : 260.0
+	let power = this.skill == 30 ? 0.25 : 0.15
 	this.candidates.enumUnitsInRange(this.center, radius)
+	var sampleCount = 0
 	for target in this.candidates
 		if not this.valid()
 			break
-		if this.victimCount < 12 and this.aoeValid(target)
-			this.slow(target, identity, this.skill == 30 ? 0.25 : 0.15, 0.30)
-			if this.skill == 37 and this.valid()
-				tdEnemyMechanicOfferStageWeakening(target, this.host, this castTo int, 0.30)
+		if sampleCount < 12 and this.aoeValid(target)
+			this.zoneSamples[sampleCount] = target
+			this.zoneSampleRevisions[sampleCount] = this.revisionFor(target)
+			this.zoneSamplePowers[sampleCount] = power * (tdIsBossUnitTypeId(GetUnitTypeId(target)) ? 0.5 : 1.0)
+			sampleCount += 1
+	var retainedIndex = 0
+	while retainedIndex < this.victimCount
+		var retained = false
+		let position = this.targetPositions[retainedIndex]
+		if position != null and position.target == this.victims[retainedIndex] and position.revision == this.revisions[retainedIndex]
+			for sample = 0 to sampleCount - 1
+				if this.victims[retainedIndex] == this.zoneSamples[sample] and this.zoneSlowPowers[retainedIndex] == this.zoneSamplePowers[sample] and tdPetZoneCoverageReusable(this.revisions[retainedIndex], this.zoneSampleRevisions[sample], position.retired)
+					retained = true
+					break
+		if retained
+			retainedIndex += 1
+		else
+			this.forgetZoneVictim(retainedIndex, identity)
+	var committedCount = 0
+	for sample = 0 to sampleCount - 1
+		let target = this.zoneSamples[sample]
+		let sampledPower = this.zoneSamplePowers[sample]
+		this.zoneSamples[sample] = null
+		this.zoneSampleRevisions[sample] = 0
+		this.zoneSamplePowers[sample] = 0.0
+		if this.valid() and this.aoeValid(target)
+			let slot = this.remember(target)
+			if slot >= 0
+				// Swap every zone-owned field; legacy other-skill slots stay untouched.
+				this.swapZoneVictimSlots(committedCount, slot)
+				committedCount += 1
+				this.slow(target, identity, this.skill == 30 ? 0.25 : 0.15, 0.30)
+				this.zoneSlowPowers[committedCount - 1] = sampledPower
+				if this.skill == 37 and this.valid()
+					tdEnemyMechanicOfferStageWeakening(target, this.host, this castTo int, 0.30)
+	while this.victimCount > committedCount
+		this.forgetZoneVictim(this.victimCount - 1, identity)
 	if this.skill == 30 and this.stage > 0 and this.stage mod 2 == 0
 		this.visualVortexPulse()
 		for index = 0 to this.victimCount - 1

@@ -63,6 +63,11 @@ public abstract class TDPetCastContext extends TDPetEffectTask
 	TDPetEffectTargetPosition array[12] targetPositions
 	real array[12] lastPositionX
 	real array[12] lastPositionY
+	real array[12] zoneSlowPowers
+	// Borrowed handles only during a synchronous zone sample; no extra owner/ref.
+	unit array[12] zoneSamples
+	int array[12] zoneSampleRevisions
+	real array[12] zoneSamplePowers
 	int controlCount = 0
 	int markCount = 0
 	group candidates = CreateGroup()
@@ -147,6 +152,48 @@ public abstract class TDPetCastContext extends TDPetEffectTask
 		setLastPosition(index, target.getPos())
 		targetPositions[index] = tdPetCaptureEffectTarget(target, revisions[index])
 		return index
+
+	// Zone owns only these target-record fields. Legacy hitCounts/controlled
+	// stay in their original physical slots across reused cast IDs; 30/37 never
+	// consume them, and moving/clearing them would change later skills' behavior.
+	function swapZoneVictimSlots(int first, int second)
+		if first == second
+			return
+		let target = victims[first]
+		let revision = revisions[first]
+		let position = targetPositions[first]
+		let x = lastPositionX[first]
+		let y = lastPositionY[first]
+		let slowPower = zoneSlowPowers[first]
+		victims[first] = victims[second]
+		revisions[first] = revisions[second]
+		targetPositions[first] = targetPositions[second]
+		lastPositionX[first] = lastPositionX[second]
+		lastPositionY[first] = lastPositionY[second]
+		zoneSlowPowers[first] = zoneSlowPowers[second]
+		victims[second] = target
+		revisions[second] = revision
+		targetPositions[second] = position
+		lastPositionX[second] = x
+		lastPositionY[second] = y
+		zoneSlowPowers[second] = slowPower
+
+	function forgetZoneVictim(int index, int identity)
+		let target = victims[index]
+		let position = targetPositions[index]
+		victimCount -= 1
+		swapZoneVictimSlots(index, victimCount)
+		// Revoke slot ownership before cleanup can observe/cancel this cast.
+		victims[victimCount] = null
+		revisions[victimCount] = 0
+		targetPositions[victimCount] = null
+		lastPositionX[victimCount] = 0.0
+		lastPositionY[victimCount] = 0.0
+		zoneSlowPowers[victimCount] = 0.0
+		tdEnemySlowRemoveTimed(target, host, identity)
+		if skill == 37
+			tdEnemyMechanicRemoveStageWeakening(target, host, this castTo int)
+		tdPetReleaseEffectTarget(position)
 
 	// Scalar component arrays avoid the locked compiler's tuple-array IR rewrite.
 	function setLastPosition(int index, vec2 point)
@@ -340,14 +387,23 @@ public abstract class TDPetCastContext extends TDPetEffectTask
 			tdCombatVisualClearLines(visualSerial)
 		if tdPetActiveCastIndex.loadInt(ownerKey) == this castTo int
 			tdPetActiveCastIndex.removeInt(ownerKey)
-		for index = 0 to victimCount - 1
+		let retainedCount = victimCount
+		victimCount = 0
+		for index = 0 to retainedCount - 1
 			let target = victims[index]
+			let position = targetPositions[index]
+			victims[index] = null
+			targetPositions[index] = null
 			if skill == 27 or skill == 30 or skill == 37
 				tdEnemySlowRemoveTimed(target, host, skill == 27 ? TD_AURA_PET_COLD : (skill == 30 ? TD_AURA_PET_VORTEX : TD_AURA_PET_SEAL))
 			if skill == 37
 				tdEnemyMechanicRemoveStageWeakening(target, host, this castTo int)
 			tdCancelEnemyControl(target, host, this castTo int)
-			tdPetReleaseEffectTarget(targetPositions[index])
+			tdPetReleaseEffectTarget(position)
+		for index = 0 to 11
+			zoneSamples[index] = null
+			zoneSampleRevisions[index] = 0
+			zoneSamplePowers[index] = 0.0
 		if skill == 20
 			tdPetRemoveBladeArmor(primary, host, this castTo int)
 		clearVisuals()

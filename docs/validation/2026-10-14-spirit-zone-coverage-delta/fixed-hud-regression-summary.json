@@ -1,0 +1,62 @@
+{
+  "status": "PASS",
+  "baseline": {
+    "path": "/workspace/shared/performance-hud-diff-evidence-20261014/hud-evolution-flat.w3x",
+    "map_sha256": "c57d8d6b01818f1e77b90317ac7aa5ee630eccc9e76ef1ac5f7f16f96f09b720",
+    "jass_sha256": "06db07c8082d148a7c73068dc041cf1c1101b34a6d00de8c3bc8b875d2abdbd2"
+  },
+  "candidate": {
+    "path": "/workspace/shared/performance-zone-delta-evidence-20261014/zone-integrated-legacy-fixed.w3x",
+    "map_sha256": "e5fb76ea50517db2d624639133e3d20688c7509845cfcb48dfdae9777d06d810",
+    "jass_sha256": "177a6f48a6edec60ad4898534c0588111d12ae9497dbb41e8fd42935db95573b"
+  },
+  "hud_exact_comparisons": 155,
+  "hud_properties": {
+    "independent_value_icon_style_title": true,
+    "move_resize_invalidation": true
+  },
+  "hud_mutation": {
+    "local_cell_dirty_handle_divergence_detected": true
+  },
+  "evolution_exact_kills": 934,
+  "evolution_counts": {
+    "kills": 934,
+    "native_calls": {
+      "GetUnitAbilityLevel": 2802,
+      "SetUnitAbilityLevel": 934
+    },
+    "set_level_by_ability": {
+      "1093743408": 934
+    },
+    "interpreter_steps_total": 230698,
+    "interpreter_steps_min": 247,
+    "interpreter_steps_max": 247
+  },
+  "evolution_repair_cases": 13,
+  "evolution_mutation": {
+    "skipped_full_kill_refresh_detected": true
+  },
+  "full_evolution_lifecycle": {
+    "stale_lifecycle_cases": 17,
+    "kill_only_cases": 935
+  },
+  "full_evolution_branches": {
+    "ten_terminal_branches": 10,
+    "pet_binding_readyAt_preserved": true,
+    "single_wings_and_no_repeat": true
+  },
+  "startup_hud_gate": "PASS",
+  "archive_delta": {
+    "members": 427,
+    "changed": [
+      "war3map.j",
+      "war3map.w3i"
+    ],
+    "all_other_bytes_identical": true
+  },
+  "prior_160ad_certificate_reused": false,
+  "source_modified": false,
+  "grill_run": false,
+  "large_files_copied": false,
+  "warcraft_started": false
+}

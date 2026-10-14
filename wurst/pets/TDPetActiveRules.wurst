@@ -55,3 +55,7 @@ public function tdPetElementTargetLimit(int skill) returns int
 // Floating deadlines such as 3*.20 must not skip the final bounded tick.
 public function tdPetEffectDue(real now, real deadline) returns boolean
 	return now + 0.0001 >= deadline
+
+// Death/retirement invalidates retention even when a native handle is reused.
+public function tdPetZoneCoverageReusable(int retainedRevision, int sampledRevision, boolean retired) returns boolean
+	return not retired and retainedRevision == sampledRevision

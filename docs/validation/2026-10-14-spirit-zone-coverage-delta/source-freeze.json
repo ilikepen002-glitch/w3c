@@ -1,0 +1,49 @@
+{
+  "status": "REVIEWED PASS WITH NOTES; only e5fb76ea candidate approved; final root artifact copied verbatim",
+  "source_commit": "d6f4c7000cc674fd9f30186f8d2a395d94107f8f",
+  "production_last_changed_commit": "872e5b40b950714059cf70a2967af321f2074b40",
+  "files": {
+    "wurst/pets/TDPetActivePeriodic.wurst": "e5cba488c157cbc4aab3949a087dad3bb454ff847040240843c46652b3a05d20",
+    "wurst/pets/TDPetCastContext.wurst": "cc40fbfb6afc7fa11fa589f2927a1322c9a5a6d7252eb553e01ab0c4dda41d4a",
+    "wurst/pets/TDPetActiveRules.wurst": "ea7d2e156a6c135f928f5b437268a6c37f8d0b2015bb5827fbf1505c96db4b00",
+    "tests/wurst/TDPetZoneCoverageTests.wurst": "3a24b3f0f55a509b1efd1c517f394793c71ab41e1cc88cb0743035e969ffc133",
+    "tools/VerifyZoneCoverageArtifact.py": "acc8dfb0e8080e2200efc27866ac5647f3a0825e0eb6549fd3bdba79e20be94e"
+  },
+  "candidate_map_sha256": "e5fb76ea50517db2d624639133e3d20688c7509845cfcb48dfdae9777d06d810",
+  "rejected_old_map_sha256": "160ad32521c9caa974eda9ffb83da13a2545f3b359af4f28d56209f9734c3bfc",
+  "plan_amendment_sha256": "19f29811f8aa6a38f89e8e1f17f756a84d10af74204b0cafa7e14f159f9df2c1",
+  "official_manifests": [
+    {
+      "path": "/workspace/shared/performance-zone-delta-20261014/_build/linux-5lm_7i8_/manifest.json",
+      "sha256": "277a5eeb03aa5f39f18069faf640d9776bd4476b034cdc9b773b477cbdf50f3e",
+      "status": "PASS",
+      "mode": "typecheck",
+      "parent_commit": "872e5b40b950714059cf70a2967af321f2074b40",
+      "compiler_sha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+      "stdlib_tree": "90b45617eda50c15703e8cb2ec3241d3c7b61816"
+    },
+    {
+      "path": "/workspace/shared/performance-zone-delta-20261014/_build/linux-528rh545/manifest.json",
+      "sha256": "ec06e6f2dfc36ef3906155a16035e2edd1460a40bb7c776e93872bce17882825",
+      "status": "PASS",
+      "mode": "test",
+      "parent_commit": "872e5b40b950714059cf70a2967af321f2074b40",
+      "compiler_sha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+      "stdlib_tree": "90b45617eda50c15703e8cb2ec3241d3c7b61816"
+    },
+    {
+      "path": "/workspace/shared/performance-zone-delta-20261014/_build/linux-9wqv3sao/manifest.json",
+      "sha256": "51c4b8629843fef9eba914ef7198184a27124ed50d17098fb4025003be4dc67c",
+      "status": "PASS",
+      "mode": "build",
+      "parent_commit": "d6f4c7000cc674fd9f30186f8d2a395d94107f8f",
+      "compiler_sha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+      "stdlib_tree": "90b45617eda50c15703e8cb2ec3241d3c7b61816"
+    }
+  ],
+  "baseline_retained_map": "/workspace/shared/performance-hud-diff-20261014/ExampleMap.w3x",
+  "baseline_sha256": "c57d8d6b01818f1e77b90317ac7aa5ee630eccc9e76ef1ac5f7f16f96f09b720",
+  "candidate_jass_sha256": "177a6f48a6edec60ad4898534c0588111d12ae9497dbb41e8fd42935db95573b",
+  "review_sha256": "ac70bce549457c5b85e64ffdeb108028552422fd10b1b54f31a9c5ef99776550",
+  "source_base": "8b941e84eb392514a6c96434b3fdc1d6c11d9d7d"
+}

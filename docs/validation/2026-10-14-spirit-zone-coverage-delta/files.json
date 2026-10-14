@@ -1,0 +1,78 @@
+{
+  "README.md": {
+    "sha256": "09fc5f5a7219a6632b29d7f074b08a0dcca6f2efc439f1421a9c3f4c972890a1",
+    "bytes": 9185
+  },
+  "S1-plan-amendment-legacy-slots.md": {
+    "sha256": "19f29811f8aa6a38f89e8e1f17f756a84d10af74204b0cafa7e14f159f9df2c1",
+    "bytes": 5283
+  },
+  "admission-summary.json": {
+    "sha256": "569c51e687a73a5a48f6deb54ea8b3bf69a5552567e2443d67a794df19c42680",
+    "bytes": 14681
+  },
+  "astra-review-rejected-160ad325.md": {
+    "sha256": "3ea5b4399f28b9ea2191e4248962251a387c2aed5a99c033733bf30549a4265a",
+    "bytes": 9454
+  },
+  "astra-review.md": {
+    "sha256": "ac70bce549457c5b85e64ffdeb108028552422fd10b1b54f31a9c5ef99776550",
+    "bytes": 9473
+  },
+  "cross-skill-summary.json": {
+    "sha256": "23a374312e73e4dbeba95e075ebbe8e23ded668ecafac6cb857187f0996d565f",
+    "bytes": 69076
+  },
+  "evidence-index.json": {
+    "sha256": "2db0e30cc1764ee3ed7ae3c26b8c9f8f6541a3f36c2a9ebe67ef4e69e14525f2",
+    "bytes": 22938
+  },
+  "fixed-active-regression-summary.json": {
+    "sha256": "872656ecc67d284d263c329f96e7867b39ad9ccb5f8d447be74e044d693ebaaf",
+    "bytes": 3219
+  },
+  "fixed-hotpath-regression-summary.json": {
+    "sha256": "9ea2f0049930895142fdd5c302c8e756e4940418ef745e53eb4feeb17b2aa212",
+    "bytes": 2227
+  },
+  "fixed-hud-regression-summary.json": {
+    "sha256": "fee9115f6599272039611ea30b1feef37d40207e8f8836b015cfdef297ffb8e0",
+    "bytes": 1868
+  },
+  "official-build-legacy-fixed.log": {
+    "sha256": "9b41781f5f903da7905a47755ca7b645ab53d5e97af8ef3ea5ab74d4083682e7",
+    "bytes": 18596
+  },
+  "official-full-tests-legacy-fixed.log": {
+    "sha256": "5069cbf736eecbb96fbdc3607408d6a8aeb486fa2c404ae0c84a8a875b050572",
+    "bytes": 15117
+  },
+  "official-typecheck-legacy-fixed.log": {
+    "sha256": "cbbc9bc98b0bcdb0ea8d587bebf07adac140b377e9db357fac85495218bbd42e",
+    "bytes": 15122
+  },
+  "paired-zone-summary.json": {
+    "sha256": "def03d3c520f7ad7968b8e82732db710021caa34c82b7715f50fea12c0025ca2",
+    "bytes": 130530
+  },
+  "recall-costs-legacy-fixed.json": {
+    "sha256": "cdf912e7598fc0fb2ab8b96c8aeee2743f3888a597f9d7aaf23577f769740f95",
+    "bytes": 15592
+  },
+  "review-cross-skill-reuse-fixed.json": {
+    "sha256": "0aabba3bf62765846659fde7e4720c162d4eaeb8d7f0d38b0402908b25f70a2d",
+    "bytes": 4676
+  },
+  "review-cross-skill-reuse.json": {
+    "sha256": "4e96aa733c8d395ab062203dcae00ebd407cc30c3e2503e3ddfa9273ba27f767",
+    "bytes": 5944
+  },
+  "review-support-fixed.json": {
+    "sha256": "c32f8e5b9accd2f697eab52fe969cc4543e196efb1f46ef8091089bf4e4c33bf",
+    "bytes": 3474
+  },
+  "source-freeze.json": {
+    "sha256": "cc34593b832e93ebeca9c19dd7be7d172788b6f4a8c20c6acf8008ad9c5f3197",
+    "bytes": 2988
+  }
+}

@@ -1,0 +1,278 @@
+{
+  "status": "PASS",
+  "baseline": {
+    "map": "/workspace/shared/performance-hud-diff-20261014/ExampleMap.w3x",
+    "map_sha256": "c57d8d6b01818f1e77b90317ac7aa5ee630eccc9e76ef1ac5f7f16f96f09b720",
+    "jass_sha256": "06db07c8082d148a7c73068dc041cf1c1101b34a6d00de8c3bc8b875d2abdbd2"
+  },
+  "candidate": {
+    "map": "/workspace/shared/performance-zone-delta-evidence-20261014/zone-integrated-legacy-fixed.w3x",
+    "map_sha256": "e5fb76ea50517db2d624639133e3d20688c7509845cfcb48dfdae9777d06d810",
+    "jass_sha256": "177a6f48a6edec60ad4898534c0588111d12ae9497dbb41e8fd42935db95573b"
+  },
+  "before": {
+    "cast_ids": [
+      1,
+      1,
+      1
+    ],
+    "stages": [
+      {
+        "skill": 28,
+        "victims": [
+          2000,
+          2001,
+          2002,
+          2003,
+          2004,
+          2005,
+          2006,
+          2007
+        ],
+        "hitCounts": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "skill": 30,
+        "victims": [],
+        "hitCounts": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "skill": 26,
+        "victims": [
+          2000,
+          2001,
+          2002,
+          2003,
+          2004,
+          2005,
+          2006,
+          2007,
+          2008,
+          2009,
+          2010,
+          2011
+        ],
+        "hitCounts": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "final_segment_damage": [
+      [
+        22.15,
+        1000,
+        2008,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2009,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2010,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2011,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ]
+    ],
+    "final_segment_hits": 4
+  },
+  "after": {
+    "cast_ids": [
+      1,
+      1,
+      1
+    ],
+    "stages": [
+      {
+        "skill": 28,
+        "victims": [
+          2000,
+          2001,
+          2002,
+          2003,
+          2004,
+          2005,
+          2006,
+          2007
+        ],
+        "hitCounts": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "skill": 30,
+        "victims": [],
+        "hitCounts": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "skill": 26,
+        "victims": [
+          2000,
+          2001,
+          2002,
+          2003,
+          2004,
+          2005,
+          2006,
+          2007,
+          2008,
+          2009,
+          2010,
+          2011
+        ],
+        "hitCounts": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "final_segment_damage": [
+      [
+        22.15,
+        1000,
+        2008,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2009,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2010,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ],
+      [
+        22.15,
+        1000,
+        2011,
+        70.0,
+        false,
+        false,
+        "chaos",
+        "universal",
+        "unknown"
+      ]
+    ],
+    "final_segment_hits": 4
+  },
+  "boundary": "Three consecutive legal four-slot pets use one host, real original-hit admission, actual packed scheduler/casts/destructors and actual freed class ID reuse. Only native clock, enemy x coordinates and legal fixture pet host/store setup are controlled. No production body replacement or direct hitCounts write."
+}

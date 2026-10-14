@@ -1,0 +1,11 @@
+package TDPetZoneCoverageTests
+import TDPetActiveRules
+
+@Test function zoneRetainsOnlyTheSameLiveRevision()
+	tdPetZoneCoverageReusable(0, 0, false).assertTrue()
+	tdPetZoneCoverageReusable(7, 7, false).assertTrue()
+	tdPetZoneCoverageReusable(7, 8, false).assertFalse()
+	tdPetZoneCoverageReusable(8, 7, false).assertFalse()
+	tdPetZoneCoverageReusable(0, 0, true).assertFalse()
+	tdPetZoneCoverageReusable(7, 7, true).assertFalse()
+	tdPetZoneCoverageReusable(7, 8, true).assertFalse()
