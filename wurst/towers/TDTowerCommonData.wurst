@@ -201,7 +201,17 @@ public function tdArcherSplitArrowDamageMultiplier(int level, int branch, boolea
 	return evolved and level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_A ? tdEvolutionSkillMultiplier() : 1.0
 
 public function tdGhoulCorpseExplosionDamageForBranch(int level, int branch, boolean evolved) returns real
-	return tdGhoulCorpseExplosionDamage() * (evolved and level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_B ? tdEvolutionSkillMultiplier() : 1.0)
+	let blood = level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_B
+	return (blood ? 270.0 : tdGhoulCorpseExplosionDamage()) * (blood and evolved ? tdEvolutionSkillMultiplier() : 1.0)
+
+public function tdArcherAuraDamageBonusForBranch(int level, int branch) returns real
+	return level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_B ? 0.20 : tdArcherAuraDamageBonus()
+
+public function tdFootmanCommandAuraDamageBonusForBranch(int level, int branch) returns real
+	return level == TD_MAX_TOWER_LEVEL and branch == TD_TOWER_BRANCH_B ? 0.18 : tdFootmanCommandAuraDamageBonus()
+
+public function tdDryadHeroPoisonDps() returns real
+	return 90.0
 
 public function tdOrcUltimateSkillButtonX() returns int
 	return 2
@@ -302,9 +312,9 @@ public function tdDryadAuraSlowRadius() returns real
 	return 225.0
 
 public function tdDryadWideAuraSlowRadius() returns real
-	// Approved: 225 * 940 / 800 = 264.375, rounded to a 5-unit step.
-	// Evolution preserves this radius; this is not an in-game balance result.
-	return 265.0
+	// Local tower-centered control; deliberately below the 940 attack range.
+	// Evolution preserves this radius and the shared total slow cap.
+	return 400.0
 
 public function tdDryadAttackSlowFactor() returns real
 	return 0.84

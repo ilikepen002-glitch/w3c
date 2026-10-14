@@ -154,10 +154,12 @@ public function tdPetSkillPower(int skill, int quality) returns real
 		return tdPetHeroPower(skill, quality)
 	if skill == 0
 		return 40.0 * quality
-	if skill == 1 or skill == 2 or skill == 3
+	if skill == 1 or skill == 3
 		return 0.06 * quality
+	if skill == 2
+		return quality <= 2 ? 0.06 * quality : (quality == 3 ? 0.20 : 0.30)
 	if skill == 5
-		return 0.06
+		return (quality + 2) / 100.0
 	if skill == 9
 		return 0.08 + 0.04 * quality
 	if skill == 6
@@ -189,7 +191,7 @@ public function tdPetSkillDescriptionById(int skill, int quality) returns string
 	if skill == 4
 		return "此技能已并入疾攻，新捕获和洗练不会获得。"
 	if skill == 5
-		return "普攻命中使主目标增加1层减速，每层6%，最多5层30%，持续" + tdTooltipNumber(1.0 + 0.5 * quality) + "秒。不同精灵各自叠层，同类取最强；Boss减速减半。异名移动慢相加，总上限75%。"
+		return "普攻命中使主目标增加1层减速，每层" + (power * 100.0 + 0.5).toInt().toString() + "%，最多5层" + (power * 500.0 + 0.5).toInt().toString() + "%，持续" + tdTooltipNumber(1.0 + 0.5 * quality) + "秒。不同精灵各自叠层，同类取最强；Boss减速减半。异名移动慢相加，总上限75%。"
 	if skill == 6
 		return "普攻使目标护甲降低" + power.toInt().toString() + "，持续3秒。同类精灵破甲取最强效果。"
 	if skill == 7

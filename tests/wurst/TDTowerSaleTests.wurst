@@ -15,7 +15,7 @@ import TDConfig
 
 @Test function ultimateBranchRefundsUseTheirActualCosts()
 	tdTowerSellRefund('uO6A').assertEquals(8280)
-	tdTowerSellRefund('uO6B').assertEquals(7880)
+	tdTowerSellRefund('uO6B').assertEquals(7400)
 	tdTowerSellRefund('uH6A').assertEquals(7240)
 	tdTowerSellRefund('uH6B').assertEquals(7360)
 

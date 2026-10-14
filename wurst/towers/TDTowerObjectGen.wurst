@@ -38,8 +38,8 @@ function tdGeneratePassiveDisplay(int abilityId, string name, string icon, int b
 	let evolvedSlow = tdGeneratePassiveDisplay(TD_DRYAD_EVOLVED_SLOW_DISPLAY_ABILITY_ID, "进化缓速藤蔓", tdTowerSupportSkillIconPath(TD_TOWER_CHOICE_DRYAD), 1, 61)
 	for level = 1 to 61
 		slow.setTooltipNormalExtended(level, "被动：周围225范围敌军移动速度降低" + tdPreciseBonusPercentString(tdEquipmentSlowAuraReduction(false, level)) + "。")
-		wideSlow.setTooltipNormalExtended(level, "被动：周围265范围敌军移动速度降低" + tdPreciseBonusPercentString(tdEquipmentSlowAuraReduction(false, level)) + "。")
-		evolvedSlow.setTooltipNormalExtended(level, "被动：周围265范围敌军移动速度降低" + tdPreciseBonusPercentString(tdEquipmentSlowAuraReduction(true, level)) + "。")
+		wideSlow.setTooltipNormalExtended(level, "被动：周围400范围敌军移动速度降低" + tdPreciseBonusPercentString(tdEquipmentSlowAuraReduction(false, level)) + "。")
+		evolvedSlow.setTooltipNormalExtended(level, "被动：周围400范围敌军移动速度降低" + tdPreciseBonusPercentString(tdEquipmentSlowAuraReduction(true, level)) + "。")
 	let frenzy = tdGeneratePassiveDisplay(TD_GHOUL_FRENZY_DISPLAY_ABILITY_ID, "狂热", tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_GHOUL), 0, 1)
 	frenzy.setTooltipNormalExtended(1, "被动：攻击速度提高" + tdBonusPercentString(tdGhoulFrenzyAttackSpeedBonus()) + "。")
 	let evolvedFrenzy = tdGeneratePassiveDisplay(TD_GHOUL_PERFECT_FRENZY_DISPLAY_ABILITY_ID, "进化狂热", tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_GHOUL), 0, 1)
@@ -137,7 +137,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	new AbilityDefinitionMoonPriestessTrueshotAura(TD_ARCHER_TRUESHOT_ABILITY_ID)
 	..setName("白虎战吼")
 	..setTooltipNormal(1, "白虎战吼")
-	..setTooltipNormalExtended(1, "900范围内友塔获得" + tdBonusPercentString(tdArcherAuraDamageBonus()) + "攻击力加成。")
+	..setTooltipNormalExtended(1, "900范围内友塔获得" + tdBonusPercentString(tdArcherAuraDamageBonus()) + "攻击力加成；月神号令购买即提高至20%。")
 	..setIconResearch(tdArcherAuraIconPath())
 	..setIconNormal(tdArcherAuraIconPath())
 	..setButtonPositionNormalX(1)
@@ -274,7 +274,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	new AbilityDefinitionItemAuraCommand(TD_FOOT_COMMAND_ABILITY_ID)
 	..setName("统帅光环")
 	..setTooltipNormal(1, "统帅光环")
-	..setTooltipNormalExtended(1, "900范围内友塔获得" + tdBonusPercentString(tdFootmanCommandAuraDamageBonus()) + "攻击力加成。")
+	..setTooltipNormalExtended(1, "900范围内友塔获得" + tdBonusPercentString(tdFootmanCommandAuraDamageBonus()) + "攻击力加成；圣佑统帅购买即提高至18%。")
 	..setIconNormal(tdTowerSupportSkillIconPath(TD_TOWER_CHOICE_FOOTMAN))
 	..setIconResearch(tdTowerSupportSkillIconPath(TD_TOWER_CHOICE_FOOTMAN))
 	..presetButtonPosNormal(1, 1)
@@ -298,6 +298,16 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 		"被动：普通攻击附带持续毒伤，并对单个目标施加" + tdSlowPercentString(tdDryadSlowFactor()) + "移动减速。",
 		tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_DRYAD),
 		tdDryadPoisonDps(),
+		tdDryadSlowFactor(),
+		tdDryadAttackSlowFactor()
+	)
+
+	tdGenerateDryadPoisonAbility(
+		TD_DRYAD_HERO_POISON_ABILITY_ID,
+		"剧毒镖",
+		"终极：持续毒伤90/秒，保留单体减速。",
+		tdTowerBaseSkillIconPath(TD_TOWER_CHOICE_DRYAD),
+		tdDryadHeroPoisonDps(),
 		tdDryadSlowFactor(),
 		tdDryadAttackSlowFactor()
 	)
@@ -351,14 +361,14 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	..setCheckDependencies(false)
 
 	let corpseExplosion = tdGeneratePassiveDisplay(TD_GHOUL_CORPSE_EXPLOSION_DISPLAY_ABILITY_ID, "尸爆", tdTowerSupportSkillIconPath(TD_TOWER_CHOICE_GHOUL), 1, 2)
-	corpseExplosion.setTooltipNormalExtended(1, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围" + tdGhoulCorpseExplosionRadius().toInt().toString() + "范围内其他敌人造成180伤害。")
+	corpseExplosion.setTooltipNormalExtended(1, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围" + tdGhoulCorpseExplosionRadius().toInt().toString() + "范围内其他敌人造成180伤害。血疫憎恶购买即270伤害，同样需要25%血线补刀。")
 	corpseExplosion.setTooltipNormal(2, "进化尸爆")
-	corpseExplosion.setTooltipNormalExtended(2, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围" + tdGhoulCorpseExplosionRadius().toInt().toString() + "范围内其他敌人造成216伤害。")
+	corpseExplosion.setTooltipNormalExtended(2, "普攻击杀攻击前生命值不高于" + tdBonusPercentString(tdGhoulCorpseExplosionLifeThreshold()) + "的敌人时，对其周围" + tdGhoulCorpseExplosionRadius().toInt().toString() + "范围内其他敌人造成324伤害。")
 
 	new AbilityDefinitionMoonPriestessTrueshotAura(TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID)
 	..setName("进化白虎战吼")
 	..setTooltipNormal(1, "进化白虎战吼")
-	..setTooltipNormalExtended(1, "900范围内友塔攻击力提高21.6%。")
+	..setTooltipNormalExtended(1, "月神号令进化：900范围内友塔攻击力提高24%。")
 	..setIconResearch(tdArcherPerfectAuraIconPath())
 	..setIconNormal(tdArcherPerfectAuraIconPath())
 	..setButtonPositionNormalX(1)
@@ -418,7 +428,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 		"进化毒镖",
 		"进化：持续毒伤+20%，减速保留当前装备强化。",
 		tdTowerPerfectSkillIconPath(TD_TOWER_CHOICE_DRYAD),
-		tdDryadPoisonDps() * tdEvolutionSkillMultiplier(),
+		tdDryadHeroPoisonDps() * tdEvolutionSkillMultiplier(),
 		tdDryadSlowFactor(),
 		tdDryadAttackSlowFactor()
 	)
@@ -466,7 +476,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	..setIconResearch(tdTowerSupportSkillIconPath(TD_TOWER_CHOICE_FOOTMAN))
 	..presetButtonPosNormal(1, 1)
 	..setTooltipNormal(1, "进化统帅光环")
-	..setTooltipNormalExtended(1, "周围900范围友塔攻击力提高19.2%。")
+	..setTooltipNormalExtended(1, "圣佑统帅进化：周围900范围友塔攻击力提高21.6%。")
 
 	let evolvedSlow = new AbilityDefinitionAuraSlow(TD_DRYAD_EVOLVED_SLOW_ABILITY_ID)
 	evolvedSlow

@@ -1,5 +1,6 @@
 package TDPetAttackState
 import TDPetAttackRules
+import TDPetRules
 import TDPetEffectTargetState
 import TDPetHeroRuntime
 import TDEnemyControlRuntime
@@ -135,7 +136,7 @@ public function tdPetApplyAttackDebuffs(TDPet pet, unit source, unit target, rea
 		tdEnemySlowRemoveTimed(target, source, TD_AURA_PET_REDUCE)
 		let bossFactor = tdIsBossUnitTypeId(GetUnitTypeId(target)) ? 0.5 : 1.0
 		// Equal rank makes same-name selection strongest power, not longest quality.
-		tdEnemySlowOfferTimed(target, source, TD_AURA_PET_REDUCE, 1, entry.stacks * 0.06 * bossFactor, tdPetReduceDuration(slowQuality))
+		tdEnemySlowOfferTimed(target, source, TD_AURA_PET_REDUCE, 1, entry.stacks * tdPetSkillPower(5, slowQuality) * bossFactor, tdPetReduceDuration(slowQuality))
 	record.refresh(now)
 
 public function tdPetExpireAttackDebuffs()

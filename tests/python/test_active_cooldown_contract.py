@@ -327,6 +327,10 @@ class ActiveSourceContractTests(unittest.TestCase):
         self.reject(v.RUNTIME, signature, signature +
                     '\tSetUnitAbilityLevel(record.tower, record.abilityId, 41)\n', 'sole actual native setter')
         for path, old, extra, indent in [
+                ('auras/TDAuraState.wurst', 'let carrier = tdAuraRankCarrier(identity, rank)',
+                 'carrier = TD_ORC_BLOODLUST_ABILITY_ID', 1),
+                ('auras/TDAuraState.wurst', 'let failedBuff = tdAuraBuff(identity, rank)',
+                 'failedBuff.buffId = TD_ORC_BLOODLUST_ABILITY_ID', 4),
                 ('auras/TDAuraState.wurst', 'let previousCarrier = tdAuraRankCarrier(identity, previousRank)',
                  'previousCarrier = TD_ORC_BLOODLUST_ABILITY_ID', 2),
                 ('items/TDEquipmentSpecialState.wurst', 'let obsolete = tdSpecialStageBuff(war, previous)',

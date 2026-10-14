@@ -2,6 +2,7 @@ package TDAuraState
 import BuffObjEditing
 import public TDAuraRules
 import TDAuraObjectIds
+import TDAuraMetadata
 import Table
 import LinkedList
 
@@ -96,7 +97,9 @@ public function tdAuraSyncDisplayedRank(TDAuraTarget record, int identity, int r
 	let target = record.target
 	let carrier = tdAuraRankCarrier(identity, rank)
 	var carrierPresent = carrier != 0 and target.getAbilityLevel(carrier) > 0
-	if not record.pendingApplications[identity] and not tdAuraCarrierRepairNeeded(rank, oldRank, carrierPresent)
+	let desiredLevel = tdAuraPercentageCarrierLevel(identity, rank, record.effective.power(identity))
+	let levelRepair = identity <= TD_AURA_COMMANDER and rank > 0 and carrierPresent and target.getAbilityLevel(carrier) != desiredLevel
+	if not record.pendingApplications[identity] and not levelRepair and not tdAuraCarrierRepairNeeded(rank, oldRank, carrierPresent)
 		return
 	// Set before side effects. An interrupted add/remove is repaired even if the
 	// next requested rank returns to zero or the previously shown rank.
@@ -120,6 +123,16 @@ public function tdAuraSyncDisplayedRank(TDAuraTarget record, int identity, int r
 			record.effective.clearIdentity(identity)
 			record.shownRanks[identity] = 0
 			return // pending stays true; next round retries this exact identity.
+		if identity <= TD_AURA_COMMANDER and target.getAbilityLevel(carrier) != desiredLevel
+			target.setAbilityLevel(carrier, desiredLevel)
+			if target.getAbilityLevel(carrier) != desiredLevel
+				record.effective.clearIdentity(identity)
+				record.shownRanks[identity] = 0
+				target.removeAbility(carrier)
+				let failedBuff = tdAuraBuff(identity, rank)
+				if failedBuff.buffId != 0
+					target.removeAbility(failedBuff.buffId)
+				return // Fail closed; the next round retries from the native state.
 	// Commit only after the actual ability exists (Buff projection is engine-owned).
 	record.shownRanks[identity] = tdAuraConfirmedAppliedRank(rank, carrierPresent)
 	record.pendingApplications[identity] = false

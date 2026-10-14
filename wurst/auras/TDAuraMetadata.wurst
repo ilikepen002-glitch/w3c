@@ -87,6 +87,16 @@ public function tdAuraNominalPower(int identity, int rank) returns real
 		return 1.0 - tdDryadSlowFactor()
 	return 0.0
 
+// Rank remains normal/evolved. Native carrier level only selects its branch value.
+public function tdAuraBranchPower(int identity, int rank) returns real
+	let base = identity == TD_AURA_WHITE_TIGER ? tdArcherAuraDamageBonusForBranch(6, 2) : tdFootmanCommandAuraDamageBonusForBranch(6, 2)
+	return base * (rank == 2 ? tdEvolutionSkillMultiplier() : 1.0)
+
+public function tdAuraPercentageCarrierLevel(int identity, int rank, real power) returns int
+	if identity < TD_AURA_WHITE_TIGER or identity > TD_AURA_COMMANDER or rank < 1 or rank > 2
+		return 1
+	return power > tdAuraNominalPower(identity, rank) + 0.000001 ? 2 : 1
+
 public function tdAuraNominalRadius(int identity, int rank) returns real
 	if identity <= TD_AURA_COMMANDER
 		return 900.0
@@ -107,7 +117,7 @@ public function tdAuraStateTooltip(int identity, int rank) returns string
 	let percent = tdPreciseBonusPercentString(power)
 	var description = "基础移动减速" + percent + "。"
 	if identity <= TD_AURA_COMMANDER
-		description = "攻击力提高" + percent + "。"
+		description = "攻击力提高" + percent + "；终极支援分支提高" + tdPreciseBonusPercentString(tdAuraBranchPower(identity, rank)) + "。"
 	else if identity == TD_AURA_EQUIPMENT_ATTACK
 		description = "增加基础攻击的" + percent + "攻击力。"
 	else if identity == TD_AURA_EQUIPMENT_SPEED

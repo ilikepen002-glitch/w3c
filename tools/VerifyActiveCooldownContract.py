@@ -154,6 +154,8 @@ def require_dynamic_role_binding(expression, params, body, owner):
                 'obsolete . abilId': 'tdSpecialStageBuff(war, previous)',
                 'obsolete . buffId': 'tdSpecialStageBuff(war, previous)',
                 'previousCarrier': 'tdAuraRankCarrier(identity, previousRank)',
+                'carrier': 'tdAuraRankCarrier(identity, rank)',
+                'failedBuff . buffId': 'tdAuraBuff(identity, rank)',
                 'previous . buffId': 'tdAuraBuff(identity, previousRank)'}
     if expression in bindings:
         root = expression.split()[0]
@@ -666,10 +668,11 @@ def source_mount_roles(evaluator, towers, active):
                      ('items/TDInventoryRuntime.wurst', 'tdSetTowerEquipmentAbilityLevel'): {'abilityId'},
                      ('items/TDEquipmentSpecialState.wurst', 'tdSpecialSyncBuff'): {'obsolete . abilId', 'obsolete . buffId'},
                      ('items/TDEquipmentSpecialState.wurst', 'tdEquipmentSpecialSyncStages'): {'TD_WAR_INTENT_SPEED_CARRIER'},
-                     ('auras/TDAuraState.wurst', 'tdAuraSyncDisplayedRank'): {'previousCarrier', 'previous . buffId'},
+                     ('auras/TDAuraState.wurst', 'tdAuraSyncDisplayedRank'): {'previousCarrier', 'previous . buffId', 'carrier', 'failedBuff . buffId'},
                      ('pets/TDPetCombat.wurst', 'setBonus'): {'abilityId'},
                      ('enemies/TDEnemyControlRuntime.wurst', 'tdCancelEnemyControl'): {'record . buffId'}}
-    setter_roles = {('items/TDInventoryRuntime.wurst', 'tdSetTowerEquipmentAbilityLevel'): {'abilityId'},
+    setter_roles = {('auras/TDAuraState.wurst', 'tdAuraSyncDisplayedRank'): {'carrier'},
+                    ('items/TDInventoryRuntime.wurst', 'tdSetTowerEquipmentAbilityLevel'): {'abilityId'},
                     ('items/TDEquipmentAbilities.wurst', 'tdEquipmentSyncControl'): {'abilityId'},
                     ('pets/TDPetCombat.wurst', 'setBonus'): {'abilityId'},
                     (RUNTIME, 'tdApplyNativeActiveCooldownLevel'): {'record . abilityId'}}

@@ -34,6 +34,7 @@ public function tdRefreshEquipmentAbilities(unit tower, real cooldownReduction, 
 	tdRefreshNativeActiveCooldowns(tower, cooldownReduction)
 	let controlLevel = tdEquipmentPercentLevel(controlPower, 60)
 	tdEquipmentSyncControl(tower, TD_DRYAD_POISON_ABILITY_ID, controlLevel)
+	tdEquipmentSyncControl(tower, TD_DRYAD_HERO_POISON_ABILITY_ID, controlLevel)
 	tdEquipmentSyncControl(tower, TD_DRYAD_PERFECT_POISON_ABILITY_ID, controlLevel)
 	tdEquipmentSyncControl(tower, TD_DRYAD_SLOW_AURA_ABILITY_ID, controlLevel)
 	tdEquipmentSyncControl(tower, TD_DRYAD_EVOLVED_SLOW_ABILITY_ID, controlLevel)

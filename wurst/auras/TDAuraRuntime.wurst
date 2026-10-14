@@ -96,10 +96,14 @@ function tdAuraOfferSource(TDAuraTarget record, unit source, TDAuraAggregate agg
 		return
 	let distance = source.getPos().distanceTo(targetPos)
 	if record.tower
-		aggregate.offer(TD_AURA_WHITE_TIGER, 1, tdArcherAuraDamageBonus(), source.getAbilityLevel(TD_ARCHER_TRUESHOT_ABILITY_ID) > 0 and distance <= 900.0)
-		aggregate.offer(TD_AURA_WHITE_TIGER, 2, tdArcherAuraDamageBonus() * tdEvolutionSkillMultiplier(), source.getAbilityLevel(TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID) > 0 and distance <= 900.0)
-		aggregate.offer(TD_AURA_COMMANDER, 1, tdFootmanCommandAuraDamageBonus(), source.getAbilityLevel(TD_FOOT_COMMAND_ABILITY_ID) > 0 and distance <= 900.0)
-		aggregate.offer(TD_AURA_COMMANDER, 2, tdFootmanCommandAuraDamageBonus() * tdEvolutionSkillMultiplier(), source.getAbilityLevel(TD_FOOT_EVOLVED_COMMAND_ABILITY_ID) > 0 and distance <= 900.0)
+		let sourceLevel = tdTowerLevelForUnitTypeId(GetUnitTypeId(source))
+		let sourceBranch = tdTowerBranchForUnitTypeId(GetUnitTypeId(source))
+		let archerBonus = tdArcherAuraDamageBonusForBranch(sourceLevel, sourceBranch)
+		let commandBonus = tdFootmanCommandAuraDamageBonusForBranch(sourceLevel, sourceBranch)
+		aggregate.offer(TD_AURA_WHITE_TIGER, 1, archerBonus, source.getAbilityLevel(TD_ARCHER_TRUESHOT_ABILITY_ID) > 0 and distance <= 900.0)
+		aggregate.offer(TD_AURA_WHITE_TIGER, 2, archerBonus * tdEvolutionSkillMultiplier(), source.getAbilityLevel(TD_ARCHER_PERFECT_TRUESHOT_ABILITY_ID) > 0 and distance <= 900.0)
+		aggregate.offer(TD_AURA_COMMANDER, 1, commandBonus, source.getAbilityLevel(TD_FOOT_COMMAND_ABILITY_ID) > 0 and distance <= 900.0)
+		aggregate.offer(TD_AURA_COMMANDER, 2, commandBonus * tdEvolutionSkillMultiplier(), source.getAbilityLevel(TD_FOOT_EVOLVED_COMMAND_ABILITY_ID) > 0 and distance <= 900.0)
 	else if not mechanical
 		let normal = source.getAbilityLevel(TD_DRYAD_SLOW_AURA_ABILITY_ID)
 		let wide = source.getAbilityLevel(TD_DRYAD_WIDE_SLOW_ABILITY_ID)
@@ -179,7 +183,9 @@ function tdCapturePoisonDartMovementSlow()
 	var level = source.getAbilityLevel(TD_DRYAD_PERFECT_POISON_ABILITY_ID)
 	var rank = 2
 	if level <= 0
-		level = source.getAbilityLevel(TD_DRYAD_POISON_ABILITY_ID)
+		level = source.getAbilityLevel(TD_DRYAD_HERO_POISON_ABILITY_ID)
+		if level <= 0
+			level = source.getAbilityLevel(TD_DRYAD_POISON_ABILITY_ID)
 		rank = 1
 	if level <= 0
 		return

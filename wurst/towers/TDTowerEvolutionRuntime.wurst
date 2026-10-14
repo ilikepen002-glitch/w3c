@@ -52,8 +52,8 @@ public function tdEvolutionSkillOriginal(int choice, int branch) returns int
 		return branch == TD_TOWER_BRANCH_B ? TD_ARCHER_TRUESHOT_ABILITY_ID : 0
 	if choice == TD_TOWER_CHOICE_FOOTMAN and branch == TD_TOWER_BRANCH_B
 		return TD_FOOT_COMMAND_ABILITY_ID
-	if choice == TD_TOWER_CHOICE_DRYAD and branch == TD_TOWER_BRANCH_B
-		return TD_DRYAD_WIDE_SLOW_ABILITY_ID
+	if choice == TD_TOWER_CHOICE_DRYAD
+		return branch == TD_TOWER_BRANCH_B ? TD_DRYAD_WIDE_SLOW_ABILITY_ID : TD_DRYAD_HERO_POISON_ABILITY_ID
 	if choice == TD_TOWER_CHOICE_GHOUL and branch == TD_TOWER_BRANCH_B
 		return 0
 	return tdTowerBaseSkillAbilityId(choice)

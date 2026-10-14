@@ -1,0 +1,30 @@
+package TDPetQualityBalanceTests
+import TDPetRules
+import TDPetAttackRules
+
+@Test function hasteQualityValuesAndPlayerDescriptionsAgree()
+	for quality = 1 to 4
+		let percent = quality == 1 ? 6 : (quality == 2 ? 12 : (quality == 3 ? 20 : 30))
+		((tdPetSkillPower(2, quality) - percent / 100.0).abs() < 0.000001).assertTrue()
+		tdPetSkillDescriptionById(2, quality).assertEquals("附身塔攻击速度 +" + percent.toString() + "%")
+
+@Test function reduceQualityValuesDurationsAndPlayerDescriptionsAgree()
+	for quality = 1 to 4
+		let percent = quality + 2
+		((tdPetSkillPower(5, quality) - percent / 100.0).abs() < 0.000001).assertTrue()
+		tdPetReduceDuration(quality).assertEquals(1.0 + quality * 0.5)
+		let description = tdPetSkillDescriptionById(5, quality)
+		description.contains("每层" + percent.toString() + "%").assertTrue()
+		description.contains("最多5层" + (percent * 5).toString() + "%").assertTrue()
+		description.contains("同类取最强；Boss减速减半").assertTrue()
+		description.contains("总上限75%").assertTrue()
+		tdPetReduceStacks(5, tdPetReduceDuration(quality), 0.0).assertEquals(5)
+		tdPetReduceStacks(5, tdPetReduceDuration(quality), tdPetReduceDuration(quality)).assertEquals(1)
+
+@Test function qualityRevisionPreservesOtherNumericAndHeroSkills()
+	for quality = 1 to 4
+		tdPetSkillPower(0, quality).assertEquals(40.0 * quality)
+		tdPetSkillPower(1, quality).assertEquals(0.06 * quality)
+		tdPetSkillPower(3, quality).assertEquals(0.06 * quality)
+		((tdPetSkillPower(TD_PET_HERO_ROOT, quality) - (0.10 + 0.10 * quality)).abs() < 0.000001).assertTrue()
+		((180.0 * tdPetSkillPower(TD_PET_HERO_EPIDEMIC, quality) - (18.0 + 27.0 * quality)).abs() < 0.0001).assertTrue()

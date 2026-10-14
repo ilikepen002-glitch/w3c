@@ -53,7 +53,7 @@ import TDPetData
 		foot.contains("A104").assertTrue()
 		foot.contains("A105").assertTrue()
 		let dryad = tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_DRYAD, 6, branch)
-		dryad.contains("A106").assertTrue()
+		dryad.contains(branch == TD_TOWER_BRANCH_A ? "AhDP" : "A106").assertTrue()
 		let ghoul = tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_GHOUL, 6, branch)
 		ghoul.contains("A107").assertTrue()
 		ghoul.contains("A137").assertTrue()
@@ -76,7 +76,7 @@ function expectedSkills(int choice, int level, int branch) returns string
 	if choice == TD_TOWER_CHOICE_DRYAD
 		if level < 5
 			return "A106"
-		return level == 6 and branch == TD_TOWER_BRANCH_B ? "A106,A140,A141" : "A106,A110,A135"
+		return level == 6 ? (branch == TD_TOWER_BRANCH_B ? "A106,A140,A141" : "AhDP,A110,A135") : "A106,A110,A135"
 	return "A107,A137,A116"
 
 @Test function allThirtyFiveNodesExposeExactCumulativeSkillLists()
@@ -96,7 +96,9 @@ function expectedSkills(int choice, int level, int branch) returns string
 			for branch = TD_TOWER_BRANCH_A to branches
 				let before = tdTowerNormalAbilitiesRawcodes(choice, level)
 				var after = tdTowerNormalAbilitiesRawcodesForBranch(choice, level + 1, branch)
-				// A wider Aasl replaces the same effect, rather than stacking two auras.
+				// Hero poison and wider Aasl replace the same effects instead of stacking.
+				if choice == TD_TOWER_CHOICE_DRYAD and level == 5 and branch == TD_TOWER_BRANCH_A
+					after = after.replace("AhDP", "A106")
 				if choice == TD_TOWER_CHOICE_DRYAD and level == 5 and branch == TD_TOWER_BRANCH_B
 					after = after.replace("A140", "A110").replace("A141", "A135")
 				if level < 4 or choice == TD_TOWER_CHOICE_GHOUL or level == 5 and choice != TD_TOWER_CHOICE_ORC
@@ -141,7 +143,7 @@ function expectedSkills(int choice, int level, int branch) returns string
 
 @Test function wideVinesKeepNormalReductionAcrossAllControlLevels()
 	tdDryadAuraSlowRadius().assertEquals(225.0)
-	tdDryadWideAuraSlowRadius().assertEquals(265.0)
+	tdDryadWideAuraSlowRadius().assertEquals(400.0)
 	for level = 1 to 61
 		tdEquipmentSlowAuraReduction(false, level).assertEquals((1.0 - tdDryadAuraSlowFactor()) * (1.0 + (level - 1) / 100.0))
 		tdEquipmentSlowAuraReduction(true, level).assertEquals((1.0 - tdDryadAuraSlowFactor()) * tdEvolutionSkillMultiplier() * (1.0 + (level - 1) / 100.0))
@@ -183,8 +185,8 @@ function evolvedSkills(int choice, int branch) returns string
 			for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
 				tdArcherSplitArrowDamageMultiplier(level, branch, false).assertEquals(1.0)
 				tdArcherSplitArrowDamageMultiplier(level, branch, true).assertEquals(level == 6 and branch == TD_TOWER_BRANCH_A ? 1.2 : 1.0)
-				tdGhoulCorpseExplosionDamageForBranch(level, branch, false).assertEquals(180.0)
-				tdGhoulCorpseExplosionDamageForBranch(level, branch, true).assertEquals(180.0 * (level == 6 and branch == TD_TOWER_BRANCH_B ? 1.2 : 1.0))
+				tdGhoulCorpseExplosionDamageForBranch(level, branch, false).assertEquals(level == 6 and branch == TD_TOWER_BRANCH_B ? 270.0 : 180.0)
+				tdGhoulCorpseExplosionDamageForBranch(level, branch, true).assertEquals(level == 6 and branch == TD_TOWER_BRANCH_B ? 324.0 : 180.0)
 
 @Test function evolutionNumbersAndUnselectedMechanismsKeepTheirOwnBaselines()
 	for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
@@ -198,7 +200,7 @@ function evolvedSkills(int choice, int branch) returns string
 	(tdFootmanBashChance() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.264)
 	(tdFootmanBashDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.0)
 	(tdFootmanCommandAuraDamageBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.192)
-	(tdDryadPoisonDps() * tdEvolutionSkillMultiplier()).assertContinuityNear(72.0)
+	(tdDryadHeroPoisonDps() * tdEvolutionSkillMultiplier()).assertContinuityNear(108.0)
 	tdDryadPoisonDps().assertContinuityNear(60.0)
 	(tdGhoulFrenzyAttackSpeedBonus() * tdEvolutionSkillMultiplier()).assertContinuityNear(0.504)
 	tdGhoulFrenzyAttackSpeedBonus().assertContinuityNear(0.42)
@@ -234,8 +236,8 @@ function evolvedSkills(int choice, int branch) returns string
 		tdTowerLoreForBranch(TD_TOWER_CHOICE_FOOTMAN, 6, branch).contains("保留").assertTrue()
 		tdTowerLoreForBranch(TD_TOWER_CHOICE_ARCHER, 6, branch).contains("牺牲").assertFalse()
 		tdTowerLoreForBranch(TD_TOWER_CHOICE_ORC, 6, branch).contains("强化致命一击").assertFalse()
-	tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_DRYAD, 6, TD_TOWER_BRANCH_B).contains("265").assertTrue()
-	tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_GHOUL, 6, TD_TOWER_BRANCH_B).contains("进化后仅尸爆216").assertTrue()
+	tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_DRYAD, 6, TD_TOWER_BRANCH_B).contains("400").assertTrue()
+	tdTowerTooltipExtendedForBranch(TD_TOWER_CHOICE_GHOUL, 6, TD_TOWER_BRANCH_B).contains("进化后324").assertTrue()
 
 @Test function ordinaryUpgradeHelpersIgnoreUltimateBranchParameters()
 	for choice = 1 to TD_TOWER_CHOICE_COUNT

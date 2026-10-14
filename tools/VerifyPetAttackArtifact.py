@@ -688,13 +688,14 @@ def verify_debuffs(script):
     r.units[103]={**r.units[102],'abilities':{},'life':10000.}
     r.emit(1.,target=103)
     near(r.invoke('tdAuraEnemySpeedFactor',103),.94,'New target owns first layer')
+    near(r.invoke('tdAuraEnemySpeedFactor',102),.70,'Changing target preserves unexpired old stacks')
     r.now += 3.;r.invoke('tdPetExpireAttackDebuffs');r.emit(1.)
     near(r.invoke('tdAuraEnemySpeedFactor',102),.94,'Exact expiry restarts first stack')
     # Same name max; other identities sum then cap; invalidating one source leaves another.
     r.units[106]={**r.units[101],'abilities':{},'inventory':{}}
     other=r.pet([(5,1)],host=106)
     for _ in range(5):r.emit(1.,source=106)
-    near(r.invoke('tdAuraEnemySpeedFactor',102),.70,'Same name highest source only')
+    near(r.invoke('tdAuraEnemySpeedFactor',102),.85,'Same name highest source only')
     r.invoke('TDPet_invalidateCombat',other);r.invoke('tdPetExpireAttackDebuffs')
     near(r.invoke('tdAuraEnemySpeedFactor',102),.94,'Removing one source preserves other')
     r.invoke('tdEnemySlowOfferTimed',102,106,13,4,.85,3.)
@@ -705,8 +706,20 @@ def verify_debuffs(script):
     near(r.invoke('tdAuraEnemySpeedFactor',100),.85,'Boss five stacks halved15%')
     r.invoke('tdPetForgetEnemy',100)
     require(not r.lists[r.globals['TDPetAttackState_targets']],'Explicit target exit leaked pet records')
+    quality_factors = []
+    for quality, power in enumerate((.03, .04, .05, .06), 1):
+        q = PetAttackRuntime(script); q.pet([(5, quality)])
+        for hit in range(1, 7):
+            q.emit(1.)
+            near(q.invoke('tdAuraEnemySpeedFactor',102),1.-power*min(hit,5),'Quality stack strength')
+        quality_factors.append(q.invoke('tdAuraEnemySpeedFactor',102))
+        q.now += 1. + .5 * quality
+        q.invoke('tdPetExpireAttackDebuffs'); q.emit(1.)
+        near(q.invoke('tdAuraEnemySpeedFactor',102),1.-power,'Quality expiry restarts own target')
+        for _ in range(5): q.emit(1.,target=100)
+        near(q.invoke('tdAuraEnemySpeedFactor',100),1.-power*5*.5,'Each quality Boss half strength')
     return {'armor_fallback':[8,8,2,0], 'six_hit_slow_factors':factors,'boss_five_layer_factor':.85,
-            'same_name_max_other_name_sum_cap':.25,'cleared_target_records':0}
+            'same_name_max_other_name_sum_cap':.25,'cleared_target_records':0,'quality_five_layer_factors':quality_factors}
 
 
 def verify_trial(script):

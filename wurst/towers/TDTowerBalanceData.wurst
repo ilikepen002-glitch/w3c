@@ -209,7 +209,7 @@ public function tdTowerUltimateUpgradeCost(int towerChoice, int branch) returns 
 		return 5800
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
-			return 5900
+			return 5300
 		return 6400
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
@@ -548,11 +548,11 @@ public function tdTowerLoreForBranch(int towerChoice, int level, int branch) ret
 		return "审判圣骑士保留统帅光环，以更高攻击和更快攻击节奏配合盾击守住拐角。"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if branch == TD_TOWER_BRANCH_B
-			return "缠根守护者保留毒镖，将缓速藤蔓范围从225扩大到265，以940射程拖长输出窗口。"
+			return "缠根守护者保留毒镖，将缓速藤蔓范围从225扩大到400，以940射程拖长输出窗口。"
 		return "剧毒守护者保留225范围缓速藤蔓，以更高攻击和更快攻击节奏配合毒镖。"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if branch == TD_TOWER_BRANCH_B
-			return "血疫憎恶保留狂热与尸爆，以更高生命和650射程收割密集波次。"
+			return "血疫憎恶保留狂热，以720射程及270伤害尸爆收割密集波次，仍需25%血线原生普攻补刀。"
 		return "疾猎憎恶保留尸爆，以更高攻击和更快攻击节奏配合狂热补刀。"
 	return tdTowerLore(towerChoice, level)
 
@@ -580,7 +580,7 @@ public function tdTowerTalentSummaryForBranch(int towerChoice, int level, int br
 		return tdTowerTalentSummary(towerChoice, level)
 	if towerChoice == TD_TOWER_CHOICE_ARCHER
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 战吼支援；保留分裂箭，总计7目标。进化后仅战吼增伤18%→21.6%。"
+			return "分支: 战吼支援；购买即战吼20%，保留分裂箭总计7目标。进化后战吼20%→24%。"
 		return "分支: 分裂压制，总计7目标；保留18%战吼。进化后仅额外箭伤害+20%，主箭不变。"
 	if towerChoice == TD_TOWER_CHOICE_ORC
 		if branch == TD_TOWER_BRANCH_B
@@ -588,15 +588,15 @@ public function tdTowerTalentSummaryForBranch(int towerChoice, int level, int br
 		return "嗜血：攻击速度提高35%，持续5秒。保留25%暴击与30%剑舞攻速。|n进化：暴击伤害2.64倍，追加108伤害。"
 	if towerChoice == TD_TOWER_CHOICE_FOOTMAN
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 统帅支援；保留22%盾击与16%统帅光环。进化后仅光环16%→19.2%。"
+			return "分支: 统帅支援；购买即统帅光环18%，保留22%盾击。进化后光环18%→21.6%。"
 		return "分支: 盾击审判；保留16%统帅光环。进化后盾击概率" + tdPreciseBonusPercentString(tdFootmanBashChance()) + "→" + tdPreciseBonusPercentString(tdFootmanBashChance() * tdEvolutionSkillMultiplier()) + "，无额外伤害；眩晕与保护时间不变。"
 	if towerChoice == TD_TOWER_CHOICE_DRYAD
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 宽域藤蔓；保留毒伤60/秒和单体减速。藤蔓范围265、减速18%；进化后仅藤蔓减速21.6%。"
-		return "分支: 剧毒镖击；保留225范围18%藤蔓减速。毒伤60/秒；进化后仅毒伤72/秒。"
+			return "分支: 宽域藤蔓；保留毒伤60/秒和单体减速。藤蔓范围400、减速18%；进化后仅藤蔓减速21.6%。"
+		return "分支: 剧毒镖击；保留225范围18%藤蔓减速。购买即毒伤90/秒；进化后毒伤108/秒。"
 	if towerChoice == TD_TOWER_CHOICE_GHOUL
 		if branch == TD_TOWER_BRANCH_B
-			return "分支: 血疫尸爆；保留42%狂热。尸爆180伤害；进化后仅尸爆216伤害。"
+			return "分支: 血疫尸爆；保留42%狂热。购买即尸爆270伤害；原生普攻击杀命中前生命不高于25%的敌人时触发，220范围、不连锁；进化后324伤害。"
 		return "分支: 疾猎狂热；保留180伤害尸爆。攻速+42%；进化后仅狂热+50.4%。"
 	return tdTowerTalentSummary(towerChoice, level)
 

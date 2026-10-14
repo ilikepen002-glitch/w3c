@@ -1,0 +1,75 @@
+package TDHeroUpgradeReturnsTests
+import TDTowers
+import TDConfig
+import TDAuraRules
+import TDAuraMetadata
+
+@Test function heroPoisonPurchasesDistinctNativePoisonWithoutWeakeningEarlyOrSupportTowers()
+	tdDryadPoisonDps().assertEquals(60.0)
+	tdDryadHeroPoisonDps().assertEquals(90.0)
+	(tdDryadHeroPoisonDps() * tdEvolutionSkillMultiplier()).assertEquals(108.0, 0.0001)
+	for level = 1 to 5
+		tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_DRYAD, level).contains("A106").assertTrue()
+		tdTowerNormalAbilitiesRawcodes(TD_TOWER_CHOICE_DRYAD, level).contains("AhDP").assertFalse()
+	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_DRYAD, 6, TD_TOWER_BRANCH_A).contains("AhDP").assertTrue()
+	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_DRYAD, 6, TD_TOWER_BRANCH_A).contains("A106").assertFalse()
+	tdTowerNormalAbilitiesRawcodesForBranch(TD_TOWER_CHOICE_DRYAD, 6, TD_TOWER_BRANCH_B).contains("A106").assertTrue()
+	tdEvolutionSkillOriginal(TD_TOWER_CHOICE_DRYAD, TD_TOWER_BRANCH_A).assertEquals(TD_DRYAD_HERO_POISON_ABILITY_ID)
+	tdEvolutionSkillReplacement(TD_TOWER_CHOICE_DRYAD, TD_TOWER_BRANCH_A).assertEquals(TD_DRYAD_PERFECT_POISON_ABILITY_ID)
+
+@Test function bloodPlaguePurchasesStrongerExplosionWithoutChangingEarlyOrHunterBranches()
+	for level = 1 to 6
+		for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+			let blood = level == 6 and branch == TD_TOWER_BRANCH_B
+			tdGhoulCorpseExplosionDamageForBranch(level, branch, false).assertEquals(blood ? 270.0 : 180.0)
+			tdGhoulCorpseExplosionDamageForBranch(level, branch, true).assertEquals(blood ? 324.0 : 180.0)
+	tdGhoulCorpseExplosionLifeThreshold().assertEquals(0.25)
+	tdGhoulCorpseExplosionRadius().assertEquals(220.0)
+
+@Test function wideVinesImproveLocalCoverageWithoutChangingSlowCaps()
+	tdDryadAuraSlowRadius().assertEquals(225.0)
+	tdDryadWideAuraSlowRadius().assertEquals(400.0)
+	tdDryadAuraSlowFactor().assertEquals(0.82)
+	tdCombinedEnemySlowFactor(2.0).assertEquals(0.25)
+
+@Test function stormPriceImprovesWhileItsAoeAndOtherUltimatePricesStayStable()
+	tdTowerUltimateUpgradeCost(TD_TOWER_CHOICE_ORC, TD_TOWER_BRANCH_B).assertEquals(5300)
+	tdTowerUltimateUpgradeCost(TD_TOWER_CHOICE_ORC, TD_TOWER_BRANCH_A).assertEquals(6400)
+	tdOrcBladestormDamagePerSecond().assertEquals(350.0)
+	tdOrcBladestormRadius().assertEquals(780.0)
+	tdOrcBladestormDuration().assertEquals(2.5)
+	for choice = 1 to TD_TOWER_CHOICE_COUNT
+		tdTowerCost(choice).assertEquals(500)
+		tdTowerUpgradeCost(choice, 1).assertEquals(500)
+
+@Test function supportAuraPurchaseKeepsExistingRanksAndSelectsSeparateCarrierLevels()
+	for level = 1 to 6
+		for branch = TD_TOWER_BRANCH_A to TD_TOWER_BRANCH_B
+			let support = level == 6 and branch == TD_TOWER_BRANCH_B
+			tdArcherAuraDamageBonusForBranch(level, branch).assertEquals(support ? 0.20 : 0.18)
+			tdFootmanCommandAuraDamageBonusForBranch(level, branch).assertEquals(support ? 0.18 : 0.16)
+	for identity = TD_AURA_WHITE_TIGER to TD_AURA_COMMANDER
+		for rank = 1 to 2
+			let ordinary = tdAuraNominalPower(identity, rank)
+			let support = tdAuraBranchPower(identity, rank)
+			tdAuraPercentageCarrierLevel(identity, rank, ordinary).assertEquals(1)
+			tdAuraPercentageCarrierLevel(identity, rank, support).assertEquals(2)
+			let state = new TDAuraAggregate()
+			state.offer(identity, rank, ordinary, true)
+			state.offer(identity, rank, support, true)
+			state.rank(identity).assertEquals(rank)
+			state.power(identity).assertEquals(support)
+			state.clear()
+			state.offer(identity, rank, support, true)
+			state.offer(identity, rank, ordinary, true)
+			state.rank(identity).assertEquals(rank)
+			state.power(identity).assertEquals(support)
+			state.clear()
+			state.offer(identity, 1, tdAuraBranchPower(identity, 1), true)
+			state.offer(identity, 2, tdAuraNominalPower(identity, 2), true)
+			state.rank(identity).assertEquals(2)
+			state.power(identity).assertEquals(tdAuraNominalPower(identity, 2))
+			destroy state
+	tdAuraPercentageCarrierLevel(TD_AURA_VINES, 1, 0.50).assertEquals(1)
+	tdAuraPercentageCarrierLevel(TD_AURA_WHITE_TIGER, 0, 0.20).assertEquals(1)
+	tdAuraPercentageCarrierLevel(TD_AURA_WHITE_TIGER, 3, 0.40).assertEquals(1)

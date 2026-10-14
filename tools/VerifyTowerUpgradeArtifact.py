@@ -44,7 +44,7 @@ EVOLUTION_REPLACEMENTS = {
     'uA6A': {}, 'uA6B': {'A101': 'A111'},
     'uO6A': {'A102': 'A112'}, 'uO6B': {'A102': 'A112'},
     'uH6A': {'A104': 'A113'}, 'uH6B': {'A105': 'AeCM'},
-    'uD6A': {'A106': 'A114'}, 'uD6B': {'A140': 'AeSL', 'A141': 'A136'},
+    'uD6A': {'AhDP': 'A114'}, 'uD6B': {'A140': 'AeSL', 'A141': 'A136'},
     'uG6A': {'A107': 'A115', 'A137': 'A138'}, 'uG6B': {},
 }
 
@@ -63,7 +63,7 @@ def expected_towers():
             elif family == 'H':
                 skills = ['A104'] + (['A105'] if level >= 5 else [])
             elif family == 'D':
-                skills = ['A106'] + (['A140', 'A141'] if suffix == '6B' else ['A110', 'A135'] if level >= 5 else [])
+                skills = ['AhDP' if suffix == '6A' else 'A106'] + (['A140', 'A141'] if suffix == '6B' else ['A110', 'A135'] if level >= 5 else [])
             else:
                 skills = ['A107', 'A137', 'A116']
             result['u' + family + suffix] = skills + COMMON
@@ -132,7 +132,7 @@ def validate_tower_identity(units):
 
 
 def validate_command_ui(units, abilities):
-    normal_slots = {'A100': 0, 'A101': 1, 'A102': 0, 'A104': 0, 'A105': 1, 'A106': 0,
+    normal_slots = {'A100': 0, 'A101': 1, 'A102': 0, 'A104': 0, 'A105': 1, 'A106': 0, 'AhDP': 0,
                     'A116': 1, 'A111': 1, 'A112': 0, 'A113': 0, 'A114': 0, 'AeCM': 1,
                     'A135': 1, 'A136': 1, 'A137': 0, 'A138': 0, 'A139': 1, 'A141': 1,
                     'A131': 2, 'A132': 2}
@@ -421,7 +421,7 @@ def validate_evolution_jass(script, units, abilities):
                 split = evaluator.call('tdArcherSplitArrowDamageMultiplier', [level, branch, evolved])
                 corpse = evaluator.call('tdGhoulCorpseExplosionDamageForBranch', [level, branch, evolved])
                 require(math.isclose(split, 1.2 if level == 6 and branch == 1 and evolved else 1.0), f'Jass split multiplier leaks: level={level}, branch={branch}, evolved={evolved}')
-                require(math.isclose(corpse, 216.0 if level == 6 and branch == 2 and evolved else 180.0), f'Jass corpse damage leaks: level={level}, branch={branch}, evolved={evolved}')
+                require(math.isclose(corpse, (324.0 if evolved else 270.0) if level == 6 and branch == 2 else 180.0), f'Jass corpse damage leaks: level={level}, branch={branch}, evolved={evolved}')
     require(evaluator.call('tdArcherSplitArrowTargetCount', [6]) == 7, 'Jass six-tier split arrow must have seven total targets')
     refresh = function_body(script, 'tdEvolutionRefresh')
     for fragment in ['tdEvolutionSkillReplacement(choice, branch)', 'tdEvolutionSkillOriginal(choice, branch)',

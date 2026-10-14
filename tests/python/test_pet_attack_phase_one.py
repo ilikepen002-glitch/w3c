@@ -23,7 +23,7 @@ class PetAttackPhaseOneSourceTests(unittest.TestCase):
         cls.rules=SourceScalarEvaluator(read_sources())
 
     def test_seven_attack_passive_values_and_exact_eligibility_boundaries(self):
-        expected={5:[.06]*4,6:[2,4,6,8],7:[.40,.55,.70,.85],8:[.20,.30,.40,.50],16:[.10,.15,.20,.25],17:[1.5,1.7,1.9,2.1],18:[.12,.18,.24,.30]}
+        expected={5:[.03,.04,.05,.06],6:[2,4,6,8],7:[.40,.55,.70,.85],8:[.20,.30,.40,.50],16:[.10,.15,.20,.25],17:[1.5,1.7,1.9,2.1],18:[.12,.18,.24,.30]}
         for skill,values in expected.items():
             for quality,value in enumerate(values,1):
                 self.assertAlmostEqual(self.rules.call('tdPetSkillPower',[skill,quality]),value)
