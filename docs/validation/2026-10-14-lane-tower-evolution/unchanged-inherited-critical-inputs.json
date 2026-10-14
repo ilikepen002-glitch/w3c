@@ -1,0 +1,26 @@
+[
+  {
+    "path": "wurst/towers/TDTowerBalanceData.wurst",
+    "sha256": "25097fda380a991d63c3e7b80af87cdb6220cba3788456cf9b8850d80182c103",
+    "bytes": 25956,
+    "byteExactAgainstFrozenBatch3": true
+  },
+  {
+    "path": "wurst/pets/TDPetCultivation.wurst",
+    "sha256": "30e7dbe520b1d42629b3a10d9958f5d6d1a42f422109851f3766c14c2569d747",
+    "bytes": 4453,
+    "byteExactAgainstFrozenBatch3": true
+  },
+  {
+    "path": "wurst/pets/TDPetUI.wurst",
+    "sha256": "386be3a18564411ea8df2e850c6d283eba149e5b0249f701f83043225c7c3190",
+    "bytes": 11944,
+    "byteExactAgainstFrozenBatch3": true
+  },
+  {
+    "path": "wurst/TDWaves.wurst",
+    "sha256": "c0457fab85d69b67f6f96b4f60c20f2c222614fe740b2897596e0cdb1dcaaf10",
+    "bytes": 29962,
+    "byteExactAgainstFrozenBatch3": true
+  }
+]

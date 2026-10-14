@@ -1,0 +1,12 @@
+PASS SOURCE SCALARS: 2,110 page/action cases; definition-derived Channel identities; definition-sized passive rawcode capacity; exhaustive count inputs; 20 numbers; 1,280 quality cases; navigation and boundary guards
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyPetManagerSource.py", line 416, in <module>
+    main()
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyPetManagerSource.py", line 409, in main
+    verify_wiring()
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyPetManagerSource.py", line 328, in verify_wiring
+    before = subprocess.run(['git', 'show', baseline + ':wurst/TDHud.wurst'], cwd=ROOT, check=True, capture_output=True, text=True).stdout
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'show', 'c9d59e6482d13c97bd205b7b55276f06e416cf46:wurst/TDHud.wurst']' returned non-zero exit status 128.

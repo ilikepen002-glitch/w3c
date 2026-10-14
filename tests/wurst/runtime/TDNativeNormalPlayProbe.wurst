@@ -296,8 +296,8 @@ function normalCaptureTick() returns boolean
 	normalCaptureBallsBefore = tdPetBallsForLane(0)
 	normalCaptureCollectionBefore = tdPetCollectionCount(0)
 	normalCaptureIssuedAt = normalTime
-	// Retiring the first Channel allocation moves Pcap from ambush to whirlwind; packed gate verifies Ncl6.
-	let accepted = IssueTargetOrderById(worker, OrderId("whirlwind"), normalCaptureTarget)
+	// Adding AeEC before sale moves Pcap from whirlwind to ambush; packed gate verifies Ncl6.
+	let accepted = IssueTargetOrderById(worker, OrderId("ambush"), normalCaptureTarget)
 	normalLog("CAPTURE request attempt=" + normalCaptureAttempts.toString() + " returned=" + accepted.toString() + "; boolean diagnostic only")
 	return true
 

@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEvolutionArtifact.py", line 192, in <module>
+    main()
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEvolutionArtifact.py", line 187, in main
+    validate_evolution_artifact(units, abilities, artifact)
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEvolutionArtifact.py", line 177, in validate_evolution_artifact
+    validate_evolution_jass(script, units, abilities)
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyTowerUpgradeArtifact.py", line 465, in validate_evolution_jass
+    pet_corpse = function_body(script, 'tdPetOnCorpseExplosion')
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyTowerUpgradeArtifact.py", line 386, in function_body
+    require(match is not None, f'Missing Jass function {name}')
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: Missing Jass function tdPetOnCorpseExplosion

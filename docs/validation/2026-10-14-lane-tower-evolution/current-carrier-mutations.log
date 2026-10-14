@@ -1,0 +1,11 @@
+test_actual_current_source_and_rank_carriers (test_evolution_current_carriers.CurrentEvolutionCarriers.test_actual_current_source_and_rank_carriers) ... ok
+test_all_bash_levels_reject_reactivated_native_effect (test_evolution_current_carriers.CurrentEvolutionCarriers.test_all_bash_levels_reject_reactivated_native_effect) ... ok
+test_all_poison_levels_reject_native_damage_control_duration_buff_or_target_change (test_evolution_current_carriers.CurrentEvolutionCarriers.test_all_poison_levels_reject_native_damage_control_duration_buff_or_target_change) ... ok
+test_each_rank_level_rejects_percentage_target_buff_radius_or_visibility_change (test_evolution_current_carriers.CurrentEvolutionCarriers.test_each_rank_level_rejects_percentage_target_buff_radius_or_visibility_change) ... ok
+test_production_native_cooldown_is_allowed_but_each_diagnostic_probe_is_rejected (test_evolution_current_carriers.CurrentEvolutionCarriers.test_production_native_cooldown_is_allowed_but_each_diagnostic_probe_is_rejected) ... ok
+test_visible_aura_sources_reject_range_double_application (test_evolution_current_carriers.CurrentEvolutionCarriers.test_visible_aura_sources_reject_range_double_application) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 5.318s
+
+OK

@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEvolutionArtifact.py", line 169, in <module>
+    main()
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEvolutionArtifact.py", line 164, in main
+    validate_evolution_artifact(units, abilities, artifact)
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEvolutionArtifact.py", line 58, in validate_evolution_artifact
+    validate_slow_abilities(abilities)
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifySlowAbilityArtifact.py", line 54, in validate_slow_abilities
+    check_field(fields, 'Spo1', level, 1, dps)
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifySlowAbilityArtifact.py", line 18, in check_field
+    require(kind == 2 and math.isclose(value, expected, rel_tol=1e-6, abs_tol=1e-7),
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: Spo1 level 1: got (2, 60.0), expected 12

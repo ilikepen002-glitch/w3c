@@ -55,6 +55,7 @@ trigger tdTowerUpgradeTrigger = CreateTrigger()
 trigger tdTowerUpgradeStartTrigger = CreateTrigger()
 trigger tdTowerUpgradeCancelTrigger = CreateTrigger()
 trigger tdTowerDeathTrigger = CreateTrigger()
+trigger tdTowerOwnerChangeTrigger = CreateTrigger()
 trigger tdTowerAttackTrigger = CreateTrigger()
 trigger tdTowerSelectionTrigger = CreateTrigger()
 trigger tdTowerDeselectionTrigger = CreateTrigger()
@@ -310,12 +311,14 @@ function tdValidateTowerConstruction(unit tower) returns boolean
 
 function tdHandleTowerSelected()
 	let tower = GetTriggerUnit()
+	tdEvolutionSelectionChanged(GetTriggerPlayer(), tower)
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
 		return
 	tdShowTowerRangeIndicatorForPlayer(GetTriggerPlayer(), tower)
 
 function tdHandleTowerDeselected()
 	let tower = GetTriggerUnit()
+	tdEvolutionDeselected(GetTriggerPlayer(), tower)
 	let playerId = GetPlayerId(GetTriggerPlayer())
 	if tdValidRangeIndicatorPlayerId(playerId) and tdTowerRangeIndicatorTowers[playerId] == tower
 		tdClearTowerRangeIndicator(playerId)
@@ -345,7 +348,7 @@ public function tdSetupBuildDialog()
 
 // 预留给塔位选择逻辑的启动入口。
 public function tdSetupPadSelection()
-	if tdTowerSelectionEventsReady or not tdTowerRangeIndicatorEnabled()
+	if tdTowerSelectionEventsReady
 		return
 	tdTowerSelectionEventsReady = true
 	tdTowerSelectionTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SELECTED)
@@ -458,6 +461,13 @@ function tdHandleTowerUpgradeFinished()
 	tdRefreshTowerRangeIndicatorsForTower(tower)
 	tdInitializeBloodlustAutocast(tower)
 	tdAlignPlayerTowerPopulation(GetPlayerId(GetOwningPlayer(tower)))
+
+function tdHandleTowerEvolutionCast() returns boolean
+	tdEvolutionRequest(GetTriggerUnit(), GetTriggerPlayer())
+	return false
+
+function tdHandleTowerOwnershipChanged()
+	tdEvolutionOwnershipChanged(GetTriggerUnit())
 
 function tdHandleTowerDeath()
 	let tower = GetTriggerUnit()
@@ -812,6 +822,7 @@ public function tdSetupDialogTrigger()
 	tdSetupTargetPriorityOrders()
 	registerSpellEffectEvent(TD_ORC_BLADESTORM_ABILITY_ID, function tdHandleOrcBladestormCast)
 	registerSpellEffectEvent(TD_TOWER_SELL_ABILITY_ID, function tdHandleTowerSellCast)
+	registerSpellEffectEvent(TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID, function tdHandleTowerEvolutionCast)
 	tdTowerAttackTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_ATTACKED)
 	tdTowerConstructionStartTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_START)
 	tdTowerConstructionFinishTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_FINISH)
@@ -820,6 +831,7 @@ public function tdSetupDialogTrigger()
 	tdTowerUpgradeStartTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_UPGRADE_START)
 	tdTowerUpgradeCancelTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_UPGRADE_CANCEL)
 	tdTowerDeathTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
+	tdTowerOwnerChangeTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_CHANGE_OWNER)
 	tdTowerItemPickupVisualTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
 	tdTowerItemDropVisualTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_DROP_ITEM)
 	tdTowerConstructionStartTrigger.addAction(function tdHandleTowerConstructionStarted)
@@ -829,6 +841,7 @@ public function tdSetupDialogTrigger()
 	tdTowerUpgradeStartTrigger.addAction(function tdHandleTowerUpgradeStarted)
 	tdTowerUpgradeCancelTrigger.addAction(function tdHandleTowerUpgradeCancelled)
 	tdTowerDeathTrigger.addAction(function tdHandleTowerDeath)
+	tdTowerOwnerChangeTrigger.addAction(function tdHandleTowerOwnershipChanged)
 	tdTowerAttackTrigger.addAction(function tdHandleTowerAttackStarted)
 	tdTowerItemPickupVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)
 	tdTowerItemDropVisualTrigger.addAction(function tdHandleTowerEquipmentVisualChanged)

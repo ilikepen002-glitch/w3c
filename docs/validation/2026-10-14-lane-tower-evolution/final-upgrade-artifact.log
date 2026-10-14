@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyTowerUpgradeArtifact.py", line 495, in <module>
+    main()
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyTowerUpgradeArtifact.py", line 489, in main
+    validate_evolution_jass(artifact.extract('war3map.j').decode('utf-8'), units, abilities)
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyTowerUpgradeArtifact.py", line 432, in validate_evolution_jass
+    require(fragment in refresh, f'Jass evolution runtime does not consume {fragment}')
+  File "/workspace/shared/spirit-growth-evolution-20261014/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: Jass evolution runtime does not consume tdEvolutionSplitArrowDisplayLevel(choice, branch, TDEvolutionTower_evolved[record])

@@ -1,0 +1,13 @@
+diff --git a/tests/wurst/runtime/TDNativeNormalPlayProbe.wurst b/tests/wurst/runtime/TDNativeNormalPlayProbe.wurst
+index 984c44e..149e3a8 100644
+--- a/tests/wurst/runtime/TDNativeNormalPlayProbe.wurst
++++ b/tests/wurst/runtime/TDNativeNormalPlayProbe.wurst
+@@ -296,7 +296,7 @@ function normalCaptureTick() returns boolean
+ 	normalCaptureBallsBefore = tdPetBallsForLane(0)
+ 	normalCaptureCollectionBefore = tdPetCollectionCount(0)
+ 	normalCaptureIssuedAt = normalTime
+-	// Retiring the first Channel allocation moves Pcap from ambush to whirlwind; packed gate verifies Ncl6.
++	// Adding AeEC before sale moves Pcap from whirlwind to ambush; packed gate verifies Ncl6.
+ 	let accepted = IssueTargetOrderById(worker, OrderId("ambush"), normalCaptureTarget)
+ 	normalLog("CAPTURE request attempt=" + normalCaptureAttempts.toString() + " returned=" + accepted.toString() + "; boolean diagnostic only")
+ 	return true

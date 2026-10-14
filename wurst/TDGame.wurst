@@ -162,6 +162,7 @@ public function tdHandleLanePlayerLeft(int playerId)
 	if not tdIsLanePlayer(playerId)
 		return
 	tdPetMarkPlayerLeft(playerId)
+	tdEvolutionClearLaneEffects(playerId)
 	tdPetLaneDefeated(playerId)
 	if not tdIsLaneActive(playerId) or tdIsLaneFinished(playerId) or tdIsLaneDefeated(playerId)
 		return
@@ -557,6 +558,7 @@ public function tdHandleWaveFinished(int playerId, int wave)
 			return
 	tdMarkWaveResolved(playerId, wave)
 	tdPetCreditWave(playerId, wave)
+	tdEvolutionCreditWave(playerId, wave)
 	tdPetSyncBallAbility(playerId)
 	// 已认领本路原始波次；工资与原通关奖同次到账，不依赖全局波次或墙钟。
 	let wage = tdWaveProgressWage(wave)
@@ -566,6 +568,7 @@ public function tdHandleWaveFinished(int playerId, int wave)
 	tdTryUnlockPopulationAfterWave(wave)
 	if tdGetResolvedWave(playerId) >= tdWaveCount()
 		tdSetLaneFinished(playerId, true)
+		tdEvolutionClearLaneEffects(playerId)
 		tdTargetPriorityClearLane(playerId)
 		tdCombatVisualClearLane(playerId)
 		tdRefreshHud()

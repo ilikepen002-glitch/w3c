@@ -1,0 +1,2 @@
+PASS: exact 35 tower skill bars; 30 non-regressive upgrade edges; 10 terminal basic DPS; build/upgrade and visible-command cells/hotkeys; branch BTN/DISBTN resources.
+NOT TESTED: native command rendering, in-game combat, balance or pathing.

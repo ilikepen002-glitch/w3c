@@ -1,0 +1,37 @@
+diff --git a/tests/python/test_evolution_command_card.py b/tests/python/test_evolution_command_card.py
+index c147f3e..06089c5 100644
+--- a/tests/python/test_evolution_command_card.py
++++ b/tests/python/test_evolution_command_card.py
+@@ -9,6 +9,7 @@ sys.path.insert(0, str(ROOT / 'tools'))
+ from GenerateTowerTerrainMask import Mpq
+ from VerifyEquipmentAbilityArtifact import ability_objects
+ from VerifyEvolutionArtifact import validate_evolution_action_commands
++from VerifyTowerEvolutionDelta import CHANNEL_ORDERS
+ 
+ class EvolutionCommandCardTests(unittest.TestCase):
+     @classmethod
+@@ -18,7 +19,10 @@ class EvolutionCommandCardTests(unittest.TestCase):
+         parent, fields = deepcopy(original['Pdep'])
+         for field, value in [('abpx',3), ('abpy',2), ('ahky','R')]:
+             fields[field,0,0] = (0 if isinstance(value,int) else 3, value)
+-        fields['Ncl6',1,6] = (3, 'ancestralspirit')
++        # A predecessor fixture may have either wage or evolution allocation.
++        # Keep this synthetic action distinct without modifying real objects.
++        occupied = {original[code][1]['Ncl6',1,6][1] for code in ('A133', 'Pdep')}
++        fields['Ncl6',1,6] = (3, next(order for order in CHANNEL_ORDERS if order not in occupied))
+         cls.abilities['AeEC'] = parent, fields
+     def test_synthetic_ten_terminal_selection_cards(self):
+         validate_evolution_action_commands(self.abilities)
+diff --git a/tests/wurst/runtime/TDNativeNormalPlayProbe.wurst b/tests/wurst/runtime/TDNativeNormalPlayProbe.wurst
+index 984c44e..149e3a8 100644
+--- a/tests/wurst/runtime/TDNativeNormalPlayProbe.wurst
++++ b/tests/wurst/runtime/TDNativeNormalPlayProbe.wurst
+@@ -296,7 +296,7 @@ function normalCaptureTick() returns boolean
+ 	normalCaptureBallsBefore = tdPetBallsForLane(0)
+ 	normalCaptureCollectionBefore = tdPetCollectionCount(0)
+ 	normalCaptureIssuedAt = normalTime
+-	// Retiring the first Channel allocation moves Pcap from ambush to whirlwind; packed gate verifies Ncl6.
++	// Adding AeEC before sale moves Pcap from whirlwind to ambush; packed gate verifies Ncl6.
+ 	let accepted = IssueTargetOrderById(worker, OrderId("ambush"), normalCaptureTarget)
+ 	normalLog("CAPTURE request attempt=" + normalCaptureAttempts.toString() + " returned=" + accepted.toString() + "; boolean diagnostic only")
+ 	return true

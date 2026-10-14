@@ -1,0 +1,25 @@
+test_exact_synthetic_delta (test_tower_evolution_delta.EvolutionDeltaTests.test_exact_synthetic_delta) ... ok
+test_reject_chooser_cooldown (test_tower_evolution_delta.EvolutionDeltaTests.test_reject_chooser_cooldown) ... ok
+test_reject_chooser_second_level (test_tower_evolution_delta.EvolutionDeltaTests.test_reject_chooser_second_level) ... ok
+test_reject_extra_action (test_tower_evolution_delta.EvolutionDeltaTests.test_reject_extra_action) ... ok
+test_reject_insertion_not_at_first_allocation (test_tower_evolution_delta.EvolutionDeltaTests.test_reject_insertion_not_at_first_allocation) ... ok
+test_reject_numeric_branch_change (test_tower_evolution_delta.EvolutionDeltaTests.test_reject_numeric_branch_change) ... ok
+test_reject_order_shift_waiver (test_tower_evolution_delta.EvolutionDeltaTests.test_reject_order_shift_waiver) ... ok
+test_reject_status_combat_effect (test_tower_evolution_delta.EvolutionDeltaTests.test_reject_status_combat_effect) ... ok
+test_reject_unrelated_direction_choice (test_tower_evolution_delta.EvolutionDeltaTests.test_reject_unrelated_direction_choice) ... ok
+test_current_source_contract (test_tower_evolution_source.EvolutionSourceTests.test_current_source_contract) ... ok
+test_reject_automatic_refresh_claim (test_tower_evolution_source.EvolutionSourceTests.test_reject_automatic_refresh_claim) ... ok
+test_reject_cancel_new_preview_from_stale_callback (test_tower_evolution_source.EvolutionSourceTests.test_reject_cancel_new_preview_from_stale_callback) ... ok
+test_reject_duplicate_spending (test_tower_evolution_source.EvolutionSourceTests.test_reject_duplicate_spending) ... ok
+test_reject_evolution_overwriting_orc_skill_hotkey (test_tower_evolution_source.EvolutionSourceTests.test_reject_evolution_overwriting_orc_skill_hotkey) ... ok
+test_reject_global_wave_qualification (test_tower_evolution_source.EvolutionSourceTests.test_reject_global_wave_qualification) ... ok
+test_reject_missing_new_match_reset (test_tower_evolution_source.EvolutionSourceTests.test_reject_missing_new_match_reset) ... ok
+test_reject_nonce_reset_reusing_old_match_authority (test_tower_evolution_source.EvolutionSourceTests.test_reject_nonce_reset_reusing_old_match_authority) ... ok
+test_reject_paid_state_after_ui_destruction (test_tower_evolution_source.EvolutionSourceTests.test_reject_paid_state_after_ui_destruction) ... ok
+test_reject_preview_guard_bypasses (test_tower_evolution_source.EvolutionSourceTests.test_reject_preview_guard_bypasses) ... ok
+test_reject_reuse_of_retired_wage_rawcode (test_tower_evolution_source.EvolutionSourceTests.test_reject_reuse_of_retired_wage_rawcode) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 3.644s
+
+OK

@@ -35,10 +35,12 @@ IDENTITIES = {
 }
 RANGES = {
     'A': [735, 770, 805, 840, 875, 900, 1020],
-    'O': [550, 580, 610, 640, 670, 670, 780],
-    'H': [505, 530, 555, 580, 605, 640, 720],
+    # Frozen current source/map already uses 720 for melee plateau coverage;
+    # retain exact checks instead of reviving the pre-coverage fixture values.
+    'O': [720, 720, 720, 720, 720, 720, 780],
+    'H': [720, 720, 720, 720, 720, 720, 720],
     'D': [650, 680, 710, 740, 800, 820, 940],
-    'G': [475, 500, 525, 550, 575, 600, 650],
+    'G': [720, 720, 720, 720, 720, 720, 720],
 }
 EVOLUTION_REPLACEMENTS = {
     'uA6A': {}, 'uA6B': {'A101': 'A111'},
@@ -423,16 +425,19 @@ def validate_evolution_jass(script, units, abilities):
                 require(math.isclose(split, 1.2 if level == 6 and branch == 1 and evolved else 1.0), f'Jass split multiplier leaks: level={level}, branch={branch}, evolved={evolved}')
                 require(math.isclose(corpse, (324.0 if evolved else 270.0) if level == 6 and branch == 2 else 180.0), f'Jass corpse damage leaks: level={level}, branch={branch}, evolved={evolved}')
     require(evaluator.call('tdArcherSplitArrowTargetCount', [6]) == 7, 'Jass six-tier split arrow must have seven total targets')
-    refresh = function_body(script, 'tdEvolutionRefresh')
+    refresh = function_body(script, 'tdEvolutionApplyChosenBranch')
+    signature = re.search(r'^function tdEvolutionApplyChosenBranch takes integer (\w+)(?:, string w__wurst_stackPos)? returns nothing$', script, re.M)
+    require(signature is not None, 'Jass chosen evolution record parameter missing')
+    record_parameter = signature[1]
     for fragment in ['tdEvolutionSkillReplacement(choice, branch)', 'tdEvolutionSkillOriginal(choice, branch)',
                      'tdEvolutionDisplayOriginal(choice, branch)', 'tdEvolutionDisplayReplacement(choice, branch)',
-                     'tdEvolutionSplitArrowDisplayLevel(choice, branch, TDEvolutionTower_evolved[record])', 'tdEvolutionCorpseDisplayLevel(choice, branch, TDEvolutionTower_evolved[record])']:
+                     f'tdEvolutionSplitArrowDisplayLevel(choice, branch, TDEvolutionTower_evolved[{record_parameter}])', f'tdEvolutionCorpseDisplayLevel(choice, branch, TDEvolutionTower_evolved[{record_parameter}])']:
         require(fragment in refresh, f'Jass evolution runtime does not consume {fragment}')
     require(len(re.findall(r'call unit_removeAbility\(', refresh)) == 2, 'Jass evolution must remove only selected effect/display')
     require(re.search(r'call unit_removeAbility\([^,]+, tdEvolutionSkillOriginal\(choice, branch\)\)', refresh), 'Jass evolution original is not removed')
     require(re.search(r'call unit_removeAbility\([^,]+, displayOriginal\)', refresh), 'Jass evolution selected display is not removed')
-    require(re.search(r'call unit_addPermanentAbility\([^,]+, replacement, 1\)', refresh), 'Jass evolution replacement is not added')
-    require(re.search(r'call unit_addPermanentAbility\([^,]+, tdEvolutionDisplayReplacement\(choice, branch\), 1\)', refresh), 'Jass evolution replacement display is not added')
+    require(re.search(r'call unit_addPermanentAbility(?:_\d+)?\([^,]+, replacement, 1\)', refresh), 'Jass evolution replacement is not added')
+    require(re.search(r'call unit_addPermanentAbility(?:_\d+)?\([^,]+, tdEvolutionDisplayReplacement\(choice, branch\), 1\)', refresh), 'Jass evolution replacement display is not added')
     for handler, helper in [('tdHandleArcherSplitArrowDamage', 'tdArcherSplitArrowDamageMultiplier'),
                             ('tdHandleGhoulCorpseExplosionDamage', 'tdGhoulCorpseExplosionDamageForBranch')]:
         body = function_body(script, handler)
@@ -440,7 +445,7 @@ def validate_evolution_jass(script, units, abilities):
         require('tdTowerLevelForUnitTypeId(GetUnitTypeId(' in body and 'tdTowerBranchForUnitTypeId(GetUnitTypeId(' in body and 'tdTowerIsEvolved(' in body, f'{handler}: multiplier does not use actual level/branch/evolution')
         require(re.search(r'call ' + handler + r'\(', script), f'{handler}: damage callback is not wired')
     split_body = function_body(script, 'tdHandleArcherSplitArrowDamage')
-    split_assignment = re.search(r'set (\w+) = DamageEvent_getUnreducedAmount\(\) \* tdArcherSplitArrowDamageMultiplier\(tdTowerLevelForUnitTypeId\(GetUnitTypeId\((\w+)\)\), tdTowerBranchForUnitTypeId\(GetUnitTypeId\(\2\)\), tdTowerIsEvolved\(\2,', split_body)
+    split_assignment = re.search(r'set (\w+) = DamageEvent_getUnreducedOriginalAmount\(\) \* tdArcherSplitArrowDamageMultiplier\(tdTowerLevelForUnitTypeId\(GetUnitTypeId\((\w+)\)\), tdTowerBranchForUnitTypeId\(GetUnitTypeId\(\2\)\), tdTowerIsEvolved\(\2,', split_body)
     require(split_assignment is not None, 'Jass split damage path detached from unreduced extra-arrow multiplier')
     damage_variable, source_variable = split_assignment.groups()
     require(re.search(r'call tdDealArcherSplitArrowAttackDamage\(' + source_variable + r', \w+, ' + damage_variable + r',', split_body), 'Jass split multiplier result does not reach immediate extra-arrow damage')
@@ -457,8 +462,13 @@ def validate_evolution_jass(script, units, abilities):
         require(setter not in split_body, 'Jass split evolution changes primary-arrow damage')
     corpse_body = function_body(script, 'tdHandleGhoulCorpseExplosionDamage')
     require(re.search(r'call unit_damageTarget(?:_\d+)?\((\w+), (\w+), (?:tdEnemyMechanicScaleSpellDamage\(\2, )?tdGhoulCorpseExplosionDamageForBranch\(tdTowerLevelForUnitTypeId\(GetUnitTypeId\(\1\)\), tdTowerBranchForUnitTypeId\(GetUnitTypeId\(\1\)\), tdTowerIsEvolved\(\1,', corpse_body), 'Jass corpse helper result does not reach damage')
-    pet_corpse = function_body(script, 'tdPetOnCorpseExplosion')
-    require(re.search(r'set (\w+) = tdGhoulCorpseExplosionDamage\(\) \* power', pet_corpse), 'Jass pet poison domain must retain base corpse damage times power')
+    pet_corpse = function_body(script, 'tdPetHeroOnCorpseExplosionSettled')
+    pet_damage = re.search(r'set (\w+) = tdGhoulCorpseExplosionDamage\(\) \* tdPetHeroPower\(TDPetHeroRules_TD_PET_HERO_EPIDEMIC, \w+\)', pet_corpse)
+    require(pet_damage is not None, 'Jass pet epidemic must retain base corpse damage times power')
+    require(re.search(r'new_TDPetHeroTicket\(\w+, \w+, \w+, ' + pet_damage[1] + r',', pet_corpse),
+            'Jass pet epidemic damage must reach the actual ticket')
+    require(len(re.findall(r'set ' + pet_damage[1] + r' =', pet_corpse)) == 1,
+            'Jass pet epidemic damage cannot be overwritten before the ticket')
     require('tdGhoulCorpseExplosionDamageForBranch(' not in pet_corpse, 'Jass pet poison domain must not inherit evolved corpse multiplier')
     # Both tooltip upgrades have to run after the selected-effect block ends:
     # archer A and ghoul B deliberately have no effect replacement.

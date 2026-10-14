@@ -664,7 +664,7 @@ def source_mount_roles(evaluator, towers, active):
             require(parents[code] in PASSIVE_PARENTS or tower_command,
                     'Undefined mounted combat active/unknown parent: ' + code + ':' + parents[code])
     native_ids = {d.abilityId for d in active if d.abilityId}
-    removal_roles = {('towers/TDTowerEvolutionRuntime.wurst', 'tdEvolutionRefresh'): {'tdEvolutionSkillOriginal ( choice , branch )', 'displayOriginal'},
+    removal_roles = {('towers/TDTowerEvolutionRuntime.wurst', 'tdEvolutionApplyChosenBranch'): {'tdEvolutionSkillOriginal ( choice , branch )', 'displayOriginal'},
                      ('items/TDInventoryRuntime.wurst', 'tdSetTowerEquipmentAbilityLevel'): {'abilityId'},
                      ('items/TDEquipmentSpecialState.wurst', 'tdSpecialSyncBuff'): {'obsolete . abilId', 'obsolete . buffId'},
                      ('items/TDEquipmentSpecialState.wurst', 'tdEquipmentSpecialSyncStages'): {'TD_WAR_INTENT_SPEED_CARRIER'},
@@ -891,7 +891,7 @@ def verify_inventory(evaluator):
                 "Retired manual/random farmer wage production entry: " + path)
     operation_roles = {
         ('towers/TDTowerObjectGen.wurst', 'tdGenerateTowerAbilities'): {
-            'TD_TOWER_SELL_ABILITY_ID': '0.0'},
+            'TD_TOWER_SELL_ABILITY_ID': '0.0', 'TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID': '0.0'},
         ('items/TDItemObjectGen.wurst', 'tdGenerateCraftAbility'): {'TD_FARMER_CRAFT_ABILITY_ID': '0.50'},
         ('items/TDItemObjectGen.wurst', 'tdGenerateGroundEquipmentCommands'): {'TD_FARMER_GROUND_UPGRADE_ABILITY_ID': '0.50'},
         ('pets/TDPetObjectGen.wurst', 'command'): {'abilityId': '0.0'},
@@ -902,7 +902,8 @@ def verify_inventory(evaluator):
     # arbitrary ability in one of these owners is still rejected.
     dynamic_roles = {
         ('TDSpawn.wurst', 'tdCreateEnemy'): {'tdDifficultyHealthAbilityId ( wave , tdDifficultyEnemyRole ( unitId ) , tdGetDifficulty ( ) )'},
-        ('towers/TDTowerEvolutionRuntime.wurst', 'tdEvolutionRefresh'): {'replacement , 1', 'tdEvolutionDisplayReplacement ( choice , branch ) , 1', 'TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID , 1', 'TD_TOWER_EVOLUTION_STATUS_ABILITY_ID , 1'},
+        ('towers/TDTowerEvolutionRuntime.wurst', 'tdEvolutionApplyChosenBranch'): {'replacement , 1', 'tdEvolutionDisplayReplacement ( choice , branch ) , 1'},
+        ('towers/TDTowerEvolutionRuntime.wurst', 'tdEvolutionRefresh'): {'TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID , 1', 'TD_TOWER_EVOLUTION_STATUS_ABILITY_ID , 1', 'TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID , 1'},
         ('items/TDInventoryRuntime.wurst', 'tdSetTowerEquipmentAbilityLevel'): {'abilityId , level'},
         ('pets/TDPetCombat.wurst', 'setBonus'): {'abilityId , clamped'},
     }
@@ -967,7 +968,7 @@ def verify_inventory(evaluator):
                     identity = evaluator.constant(first)
                     # Farmer/management registrations must remain tied to their
                     # named ownership, not a new arbitrary combat ability.
-                    require(identity in {d.abilityId for d in definitions(evaluator)} or re.search(r'FARMER|TOWER_SELL|PET_(?:CAPTURE|COLLECTION|DEPLOY)', first), 'Undefined combat spell registration: ' + first)
+                    require(identity in {d.abilityId for d in definitions(evaluator)} or re.search(r'FARMER|TOWER_(?:SELL|EVOLUTION_CHOOSE)|PET_(?:CAPTURE|COLLECTION|DEPLOY)', first), 'Undefined combat spell registration: ' + first)
                 else:
                     require(path == 'pets/TDPetUI.wurst' and first.startswith(('tdPetManagerCommandId (', 'tdPetListAbilityId (')), 'Unknown dynamic spell registration: ' + first)
             for method in ('registerSpellCastEvent', 'registerSpellFinishEvent', 'registerSpellChannelEvent', 'registerSpellEndcastEvent'):
@@ -1128,7 +1129,9 @@ def compiled_dynamic_mounts(contract, script):
             runtime.invoke('tdSpecialStageBuff', war, stage)
             value = runtime.globals['tdSpecialStageBuff_return_abilId']
             if value: result.add(rawstring(value))
-    for suffix in ('TD_WAR_INTENT_SPEED_CARRIER', 'TD_BOSS_DARK_TIDE_ABILITY_ID'):
+    for suffix in ('TD_WAR_INTENT_SPEED_CARRIER', 'TD_BOSS_DARK_TIDE_ABILITY_ID',
+                   'TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID', 'TD_TOWER_EVOLUTION_STATUS_ABILITY_ID',
+                   'TD_TOWER_EVOLUTION_PROGRESS_ABILITY_ID'):
         candidates = [value for name, value in runtime.globals.items() if name.endswith('_' + suffix)]
         require(len(candidates) == 1 and candidates[0], 'Unresolved packaged dynamic support rawcode: ' + suffix)
         result.add(rawstring(candidates[0]))

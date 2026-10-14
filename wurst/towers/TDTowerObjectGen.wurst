@@ -485,7 +485,7 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 	..setIconResearch(tdTowerEvolutionProgressIconPath())
 	..presetButtonPosNormal(2, 2)
 	..presetTooltipNormal(lvl -> "累计击杀：" + (lvl - 1).toString())
-	..presetTooltipNormalExtended(lvl -> "本塔累计击杀：" + (lvl - 1).toString() + "。升级继承统计；进化后继续累计。达到" + TD_EVOLUTION_KILL_REQUIREMENT.toString() + "击杀且完成6阶升级后自动进化，全局仅一座。")
+	..presetTooltipNormalExtended(lvl -> "本塔累计击杀：" + (lvl - 1).toString() + "。升级继承统计；进化后继续累计。击杀仅作统计，不决定进化资格。")
 	for level = 1 to tdMatchEnemyCountPerLane() + 1
 		progress.setChancetoCriticalStrike(level, 0.0)
 		progress.setDamageMultiplier(level, 1.0)
@@ -494,20 +494,32 @@ function tdGenerateDryadPoisonAbility(int abilityId, string name, string tooltip
 
 	let status = new AbilityDefinitionBladeMasterCriticalStrike(TD_TOWER_EVOLUTION_STATUS_ABILITY_ID)
 	status
-	..setName("击杀进化")
-	..setLevels(3)
+	..setName("路线进化")
+	..setLevels(4)
 	..setHeroAbility(false)
 	..setItemAbility(false)
 	..setIconNormal(tdTowerEvolutionStatusIconPath())
 	..setIconResearch(tdTowerEvolutionStatusIconPath())
 	..presetButtonPosNormal(3, 2)
-	..presetTooltipNormal(lvl -> lvl == 3 ? "名额已用" : (lvl == 2 ? "已进化" : "等待完成6阶"))
-	..presetTooltipNormalExtended(lvl -> lvl == 3 ? "其他塔已使用本局唯一进化名额，此塔无法进化。击杀数仍会累计。" : (lvl == 2 ? "此塔已进化，当前分支技能已强化。|n出售或失守不返还全局进化名额。" : "完成6阶升级且累计" + TD_EVOLUTION_KILL_REQUIREMENT.toString() + "击杀后自动进化，强化当前分支技能。|n全局仅1座；出售或失守不返还名额。具体强化见分支说明。"))
-	for level = 1 to 3
+	..presetTooltipNormal(lvl -> lvl == 4 ? "本路名额已用" : (lvl == 3 ? "已进化" : (lvl == 2 ? "等待完成6阶" : "第24波后进化")))
+	..presetTooltipNormalExtended(lvl -> lvl == 4 ? "本路进化名额已使用，此塔无法进化。出售或死亡不返还名额。" : (lvl == 3 ? "此塔已进化，当前分支技能已强化。|n出售或死亡不返还本路进化名额。" : (lvl == 2 ? "本路已有一次进化资格。完成6阶升级后点击进化并确认；尚无终阶塔可保留资格。" : "本路第24波完成后获得一次资格。主动选择一座已完工6阶终阶塔进化，沿用该分支20%强化。")))
+	for level = 1 to 4
 		status.setChancetoCriticalStrike(level, 0.0)
 		status.setDamageMultiplier(level, 1.0)
 		status.setDamageBonus(level, 0.0)
 		status.setNeverMiss(level, false)
+
+	new ChannelAbilityPreset(TD_TOWER_EVOLUTION_CHOOSE_ABILITY_ID, 1, true)
+	..setName("选择进化")
+	..setTooltipNormal(1, "进化 (R)")
+	..setTooltipNormalExtended(1, "预览并确认此塔的当前分支20%强化。|n本路第24波完成后仅一次；出售或死亡不返还。取消不消耗资格。")
+	..setIconNormal(tdTowerEvolutionStatusIconPath())
+	..setIconResearch(tdTowerEvolutionStatusIconPath())
+	..presetHotkey("R")
+	..presetButtonPosNormal(3, 2)
+	..presetTargetTypes(Targettype.NONE)
+	..makeUnitSpell(0, 0.0)
+	..setCheckDependencies(false)
 
 	new ChannelAbilityPreset(TD_TOWER_SELL_ABILITY_ID, 1, true)
 	..setName("卖塔")
