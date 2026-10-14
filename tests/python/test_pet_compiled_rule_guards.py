@@ -28,6 +28,20 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
         cls.phase_one = 'tdPetSkillDefined' in functions(cls.script)
         cls.four_slots = 'tdPetSkillIsAttackPassive' in functions(cls.script)
         cls.actual_duplicate = signature[2].strip().split()[1]
+        cls.actual_enemy = re.search(r'set (\w+) = GetEnumUnit\(\)', verifier.jass_function(cls.script, 'tdLaneEnemyCheckEnum').group(1)).group(1)
+
+    def test_accepts_compiler_renamed_enum_unit_with_all_guards(self):
+        original = verifier.jass_function(self.script, 'tdLaneEnemyCheckEnum').group(1)
+        renamed = re.sub(r'\b' + re.escape(self.actual_enemy) + r'\b', 'enemy_204', original)
+        verifier.verify_lane_enemy_guards(replace_body(self.script, 'tdLaneEnemyCheckEnum', renamed),
+                                         require_match_registry=True)
+
+    def test_unrelated_null_guard_cannot_replace_enum_unit_null_guard(self):
+        original = verifier.jass_function(self.script, 'tdLaneEnemyCheckEnum').group(1)
+        changed = original.replace(self.actual_enemy + ' == null', 'unrelated == null')
+        with self.assertRaisesRegex(ValueError, 'Lane enemy guards missing explicit null rejection'):
+            verifier.verify_lane_enemy_guards(replace_body(self.script, 'tdLaneEnemyCheckEnum', changed),
+                                             require_match_registry=True)
 
     def test_actual_full_skill_admission_matrix(self):
         verifier.verify_skill_allowed(self.script)
@@ -37,7 +51,7 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
 
     def test_rejects_missing_actual_current_match_registration(self):
         original = verifier.jass_function(self.script, 'tdLaneEnemyCheckEnum').group(1)
-        changed, count = re.subn(r' or \( not tdEnemyBelongsToCurrentMatch\(enemy_1, "[^"]+"\)\)', '', original)
+        changed, count = re.subn(r' or \( not tdEnemyBelongsToCurrentMatch\(' + re.escape(self.actual_enemy) + r', "[^"]+"\)\)', '', original)
         self.assertEqual(count, 1)
         with self.assertRaisesRegex(ValueError, 'Lane enemy guards missing current-match registration'):
             verifier.verify_lane_enemy_guards(replace_body(self.script, 'tdLaneEnemyCheckEnum', changed),
@@ -158,6 +172,7 @@ class PetCompiledRuleGuardTests(unittest.TestCase):
                       'tdPetIsWild(enemy_1)', '( not unit_isAlive(enemy_1))',
                       'GetOwningPlayer(enemy_1) != Player(TDConfig_TD_ENEMY_PLAYER_ID)',
                       'tdEnemyLaneId(enemy_1) != TDSpawn_tdLaneEnemyCheckPlayer']
+        conditions = [condition.replace('enemy_1', self.actual_enemy) for condition in conditions]
         for condition in conditions:
             with self.subTest(guard=condition):
                 self.assertIn(condition, original)

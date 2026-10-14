@@ -281,10 +281,34 @@ public function tdClaimEnemyKill(unit enemy) returns boolean
 	tdMarkEnemyKilled(enemy)
 	return true
 
+// All three original Boss models have a 2s Death; Leoric's is 2.234s.
+// Keep the complete animation plus a short pause, without relying on Decay.
+public function tdBossCorpseCleanupDelay() returns real
+	return 3.0
+
+public function tdBossCorpseCanRemove(int originalType, int currentType, int originalIdentity, int currentIdentity, boolean alive) returns boolean
+	return tdIsBossUnitTypeId(originalType) and currentType == originalType and originalIdentity == currentIdentity and not alive
+
+function tdScheduleBossCorpseCleanup(unit enemy)
+	let originalType = GetUnitTypeId(enemy)
+	if not tdIsBossUnitTypeId(originalType) or not tdEnemyBelongsToCurrentMatch(enemy)
+		return
+	// Lane/wave are immutable; the final two digits change during kill/leak settlement.
+	let identity = enemy.getUserData() div 100
+	// Retain the actual unit handle, never reconstruct it from a recyclable integer ID.
+	// A one-shot closure releases that reference after completion. Earlier removal
+	// makes GetUnitTypeId zero; revival must not let this callback remove a live unit.
+	doAfter(tdBossCorpseCleanupDelay()) ->
+		if tdBossCorpseCanRemove(originalType, GetUnitTypeId(enemy), identity, enemy.getUserData() div 100, enemy.isAlive())
+			enemy.remove()
+
 function tdHandleEnemyDeath()
 	let enemy = GetTriggerUnit()
 	if enemy == null
 		return
+	// Queue before any branch forgets match membership, but leave every synchronous
+	// death consumer (rewards, corpse explosion, epidemic) its intact unit/context.
+	tdScheduleBossCorpseCleanup(enemy)
 	if tdPetIsWild(enemy) or tdIsGameOver() or GetOwningPlayer(enemy) != Player(TD_ENEMY_PLAYER_ID)
 		tdPetForgetEnemy(enemy)
 		tdEnemyMechanicUnregister(enemy)

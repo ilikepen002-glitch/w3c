@@ -43,7 +43,7 @@ public class PatchMapSlots {
         }
 
         player1.setNum(1);
-        player1.setName("Enemy Slot");
+        player1.setName("黑潮怪物");
         player1.setType(Controller.COMPUTER);
         player1.setStartPos(new Coords2DF(128f, 64f));
         player1.setStartPosFixed(0);

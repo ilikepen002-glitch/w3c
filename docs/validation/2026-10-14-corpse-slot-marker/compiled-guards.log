@@ -1,0 +1,18 @@
+test_accepts_compiler_renamed_enum_unit_with_all_guards (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_accepts_compiler_renamed_enum_unit_with_all_guards) ... ok
+test_actual_all_256_lane_enemy_guard_combinations (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_actual_all_256_lane_enemy_guard_combinations) ... ok
+test_actual_full_skill_admission_matrix (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_actual_full_skill_admission_matrix) ... ok
+test_rejects_each_missing_skill_admission_guard (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_rejects_each_missing_skill_admission_guard) ... ok
+test_rejects_missing_actual_current_match_registration (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_rejects_missing_actual_current_match_registration) ... ok
+test_rejects_missing_wave_filter_or_wrong_found_assignment (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_rejects_missing_wave_filter_or_wrong_found_assignment) ... ok
+test_rejects_old_compiled_skill_admission_mixed_precedence (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_rejects_old_compiled_skill_admission_mixed_precedence) ... ok
+test_rejects_old_compiled_wave_match_bypassing_enum_guards (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_rejects_old_compiled_wave_match_bypassing_enum_guards) ... ok
+test_rejects_removing_each_enum_guard_even_with_matching_wave (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_rejects_removing_each_enum_guard_even_with_matching_wave) ... ok
+test_rejects_unverified_int_pow_implementation (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_rejects_unverified_int_pow_implementation) ... ok
+test_rejects_wrong_real_bitset_get_and_contains_pow (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_rejects_wrong_real_bitset_get_and_contains_pow) ... ok
+test_rejects_wrong_real_numeric_universal_and_active_helpers (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_rejects_wrong_real_numeric_universal_and_active_helpers) ... ok
+test_unrelated_null_guard_cannot_replace_enum_unit_null_guard (test_pet_compiled_rule_guards.PetCompiledRuleGuardTests.test_unrelated_null_guard_cannot_replace_enum_unit_null_guard) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 65.167s
+
+OK

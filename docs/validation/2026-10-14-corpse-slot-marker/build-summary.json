@@ -1,0 +1,17 @@
+{
+  "official_checks": "PASS",
+  "official_build": "PASS",
+  "source_commit": "b703944",
+  "checks_build_wurst_inputs_equal": 225,
+  "build_current_inputs_equal": 837,
+  "python_boss_source_tests": 4,
+  "compiled_guard_tests": 13,
+  "map_sha256": "f28f375462e64ea08e159eea88e386582cdcb1e2b3dc448fe979108a40468a13",
+  "tools": "Official locked Run-WurstLinux.py with OpenJDK27 and pre1.29 fixed-tree standard library.",
+  "ignored_leoric_original_hashes": {
+    "imports/war3mapImported/Leoric.mdx": "f68cc2971589fac2518d934a8f445e8667812ecd5f1a7d26fb295bf26a1e5245",
+    "imports/war3mapImported/Leoric_Portrait.mdx": "1c9a56c3025369a5eb5eb00481b7b7a7239a68c730f7b0fb2dae03830fce143f",
+    "imports/Leoric.blp": "c7b229e3ddae7cda6ea632e9fbabfe6f1c8863d37d6fef7c97b51318c600ed2c",
+    "imports/KingLeoric-original-readme.html": "0e6547dac6b9c642e3ca7805fa56235dd66f716a851ae089d151192e15e99be3"
+  }
+}

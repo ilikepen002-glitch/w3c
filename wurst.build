@@ -38,7 +38,7 @@ buildMapData:
     controller: USER
     fixedStartLoc: true
   - id: 4
-    name: Enemy Slot
+    name: 黑潮怪物
     race: ORC
     controller: COMPUTER
     fixedStartLoc: true

@@ -1,0 +1,158 @@
+{
+  "map_sha256": "f28f375462e64ea08e159eea88e386582cdcb1e2b3dc448fe979108a40468a13",
+  "jass_sha256": "4d1d1dcf2486eff486266e75fa38fa62b07b47c6a95c7faa85e8e18571b38e3e",
+  "changed_members": [
+    "war3map.j",
+    "war3map.w3i"
+  ],
+  "unchanged_members": 415,
+  "slot_name_exact": "黑潮怪物",
+  "marker": {
+    "visibility_cases": [
+      "visible",
+      "other_viewer",
+      "hidden",
+      "fog",
+      "dead",
+      "removed"
+    ],
+    "local_gameplay_unchanged": true,
+    "idempotent_clear": true,
+    "removed_unit_cleanup": true,
+    "direct_destroy": true
+  },
+  "boss": {
+    "guard_cases": [
+      {
+        "wave": 8,
+        "state": "dead",
+        "removed": true
+      },
+      {
+        "wave": 8,
+        "state": "revived",
+        "removed": false
+      },
+      {
+        "wave": 8,
+        "state": "removed",
+        "removed": false
+      },
+      {
+        "wave": 8,
+        "state": "identity_changed",
+        "removed": false
+      },
+      {
+        "wave": 8,
+        "state": "type_changed",
+        "removed": false
+      },
+      {
+        "wave": 16,
+        "state": "dead",
+        "removed": true
+      },
+      {
+        "wave": 16,
+        "state": "revived",
+        "removed": false
+      },
+      {
+        "wave": 16,
+        "state": "removed",
+        "removed": false
+      },
+      {
+        "wave": 16,
+        "state": "identity_changed",
+        "removed": false
+      },
+      {
+        "wave": 16,
+        "state": "type_changed",
+        "removed": false
+      },
+      {
+        "wave": 24,
+        "state": "dead",
+        "removed": true
+      },
+      {
+        "wave": 24,
+        "state": "revived",
+        "removed": false
+      },
+      {
+        "wave": 24,
+        "state": "removed",
+        "removed": false
+      },
+      {
+        "wave": 24,
+        "state": "identity_changed",
+        "removed": false
+      },
+      {
+        "wave": 24,
+        "state": "type_changed",
+        "removed": false
+      },
+      {
+        "wave": 32,
+        "state": "dead",
+        "removed": true
+      },
+      {
+        "wave": 32,
+        "state": "revived",
+        "removed": false
+      },
+      {
+        "wave": 32,
+        "state": "removed",
+        "removed": false
+      },
+      {
+        "wave": 32,
+        "state": "identity_changed",
+        "removed": false
+      },
+      {
+        "wave": 32,
+        "state": "type_changed",
+        "removed": false
+      }
+    ],
+    "real_death_duplicate_and_cleanup_no_rewards": true,
+    "closure_released": true
+  },
+  "legacy_wild": {
+    "deadline_cases": [
+      {
+        "appeared": 0.0,
+        "deadline": 180.0,
+        "strict_boundaries": true
+      },
+      {
+        "appeared": 10.0,
+        "deadline": 190.0,
+        "strict_boundaries": true
+      }
+    ],
+    "capture_first_and_expiry_first": true,
+    "native_dead_leave_defeat_inactive_gameover": true
+  },
+  "legacy_waves": {
+    "four_live_wild_boss_ready": true,
+    "old_enemy_pending_resolved_guards": true,
+    "absolute_deadline_across_boss": true,
+    "boss_six_balls_usable": true,
+    "normal_delays": [
+      20,
+      60
+    ],
+    "trial_token_preserved": true
+  },
+  "status": "PASS"
+}

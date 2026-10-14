@@ -27,6 +27,25 @@ public class TDPetWildRecord extends TDPetWildState
 		this.species = species
 		this.tutorial = wave == 1 and not tdPetTutorialUsed[lane]
 
+	function clearMarker()
+		if marker != null
+			DestroyTextTag(marker)
+			marker = null
+
+	ondestroy
+		clearMarker()
+
+public function tdPetWildMarkerShouldShow(int lane, int viewer, boolean exists, boolean alive, boolean hidden, boolean visible) returns boolean
+	return lane == viewer and exists and alive and not hidden and visible
+
+function tdPetWildSyncMarkerVisibility(TDPetWildRecord record)
+	if record.marker == null
+		return
+	let creature = record.creature
+	let viewer = GetLocalPlayer()
+	// Only the cosmetic native call depends on local visibility.
+	SetTextTagVisibility(record.marker, tdPetWildMarkerShouldShow(record.lane, GetPlayerId(viewer), creature != null and GetUnitTypeId(creature) != 0, creature.isAlive(), IsUnitHidden(creature), IsUnitVisible(creature, viewer)))
+
 public LinkedList<TDPetWildRecord> tdPetWildRecords = new LinkedList<TDPetWildRecord>()
 boolean ready = false
 trigger deathTrigger = CreateTrigger()
@@ -47,9 +66,7 @@ public function tdPetWildTransition(TDPetWildRecord record, int nextState) retur
 	let settled = record.settle(nextState, getElapsedGameTime())
 	if record.state == TD_PET_WILD_ALIVE
 		return false
-	if record.marker != null
-		DestroyTextTag(record.marker)
-		record.marker = null
+	record.clearMarker()
 	return settled
 
 public function tdPetWildCanCapture(TDPetWildRecord record, int lane) returns boolean
@@ -111,7 +128,7 @@ public function tdPetSpawnWild(int lane, int wave, int species) returns TDPetWil
 	SetTextTagPermanent(record.marker, true)
 	SetTextTagText(record.marker, "野生精灵 180s · Q捕获", 0.022)
 	SetTextTagPosUnit(record.marker, creature, 85.0)
-	SetTextTagVisibility(record.marker, GetLocalPlayer() == Player(lane))
+	tdPetWildSyncMarkerVisibility(record)
 	tdPetWildRecords.add(record)
 	tdAuraRegisterTarget(creature, false)
 	creature.flashEffect("Abilities\\Spells\\Other\\Charm\\CharmTarget.mdl", "origin")
@@ -154,11 +171,12 @@ public function tdPetSetupWild()
 		while iter.hasNext()
 			let record = iter.next()
 			if record.state == TD_PET_WILD_ALIVE
-				if record.creature == null or not record.creature.isAlive() or tdPetPlayerHasLeft(record.lane) or now >= record.deadline or tdIsGameOver() or tdIsLaneDefeated(record.lane) or not tdIsLaneActive(record.lane)
+				if record.creature == null or GetUnitTypeId(record.creature) == 0 or not record.creature.isAlive() or tdPetPlayerHasLeft(record.lane) or now >= record.deadline or tdIsGameOver() or tdIsLaneDefeated(record.lane) or not tdIsLaneActive(record.lane)
 					tdPetWildTransition(record, TD_PET_WILD_EXPIRED)
 				else
 					SetTextTagText(record.marker, "可捕获 " + IMaxBJ(0, (record.deadline - now).toInt()).toString() + "s", 0.022)
 					SetTextTagPosUnit(record.marker, record.creature, 85.0)
+					tdPetWildSyncMarkerVisibility(record)
 					if record.waypoint < tdLaneWaypointCount(record.lane)
 						let destination = tdLaneWaypointPosition(record.lane, record.waypoint)
 						if record.creature.getPos().distanceTo(destination) < 32.0

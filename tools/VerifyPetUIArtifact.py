@@ -522,7 +522,12 @@ def verify_lane_enemy_guards(script, require_match_registry=False):
     registered = 'tdEnemyBelongsToCurrentMatch(' in helper.group(1)
     require(not require_match_registry or registered, 'Lane enemy guards missing current-match registration')
     if registered:
-        require('enemy_1 == null' in helper.group(1), 'Lane enemy guards missing explicit null rejection')
+        # Compiler-local suffixes change when unrelated closures capture `enemy`.
+        # Bind the guard to the actual GetEnumUnit result, never an arbitrary null check.
+        enum_bindings = re.findall(r'^\s*(?:set|local unit) (\w+) = GetEnumUnit\(\)\s*$', helper.group(1), re.M)
+        require(len(enum_bindings) == 1, 'Lane enemy guards ambiguous enum-unit binding')
+        require(re.search(r'\b' + re.escape(enum_bindings[0]) + r'\s*==\s*null\b', helper.group(1)),
+                'Lane enemy guards missing explicit null rejection')
     field = 'TDSpawn_tdLaneEnemyCheckFound'
     for wild, same_lane, alive, enemy_owner, nonnull, found, any_wave, same_wave, same_match in itertools.product(
             (False, True), (False, True), (False, True), (False, True),

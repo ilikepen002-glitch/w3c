@@ -1,0 +1,10 @@
+package TDPetWildMarkerTests
+import TDPetWild
+
+@Test function markerOnlyShowsForVisibleLiveOwnedWildUnit()
+	tdPetWildMarkerShouldShow(0, 0, true, true, false, true).assertTrue()
+	tdPetWildMarkerShouldShow(0, 1, true, true, false, true).assertFalse()
+	tdPetWildMarkerShouldShow(0, 0, false, true, false, true).assertFalse()
+	tdPetWildMarkerShouldShow(0, 0, true, false, false, true).assertFalse()
+	tdPetWildMarkerShouldShow(0, 0, true, true, true, true).assertFalse()
+	tdPetWildMarkerShouldShow(0, 0, true, true, false, false).assertFalse()

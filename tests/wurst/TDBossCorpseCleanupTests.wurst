@@ -1,0 +1,15 @@
+package TDBossCorpseCleanupTests
+import TDGame
+import TDWaves
+
+@Test function bossCorpseRemovalKeepsDeathAndRejectsOtherUnits()
+	tdBossCorpseCleanupDelay().assertEquals(3.0)
+	for index = 1 to 4
+		let wave = index * 8
+		let bossType = tdWaveSpecialUnitId(wave)
+		tdBossCorpseCanRemove(bossType, bossType, wave, wave, false).assertTrue()
+		tdBossCorpseCanRemove(bossType, 0, wave, wave, false).assertFalse()
+		tdBossCorpseCanRemove(bossType, bossType, wave, wave, true).assertFalse()
+		tdBossCorpseCanRemove(bossType, bossType, wave, wave + 1, false).assertFalse()
+		tdBossCorpseCanRemove(bossType, tdWaveUnitId(1), wave, wave, false).assertFalse()
+	tdBossCorpseCanRemove(tdWaveUnitId(1), tdWaveUnitId(1), 1, 1, false).assertFalse()

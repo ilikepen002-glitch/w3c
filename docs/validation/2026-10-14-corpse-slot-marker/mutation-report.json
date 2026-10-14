@@ -1,0 +1,14 @@
+[
+  {
+    "mutation": "revival_guard",
+    "rejected": "Corpse guard failed revived"
+  },
+  {
+    "mutation": "identity_guard",
+    "rejected": "Corpse guard failed identity_changed"
+  },
+  {
+    "mutation": "viewer_guard",
+    "rejected": "Marker visibility other_viewer"
+  }
+]
