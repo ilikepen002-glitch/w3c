@@ -364,11 +364,9 @@ class TowerTargetRuntime(PetAttackRuntime):
         self.enemy(103, life=10.)
         self.enemy(104, life=80.)
         self.visible_units = [102, 103, 104]
-        # Admission is intentionally saturated using the real VFX budget; split
-        # shots/queues still execute, while dummy recycler rendering is outside
-        # this transaction fixture. No gameplay target/queue helper is stubbed.
-        self.globals['TDTowerRuntime_tdArcherVisualCreationWindow'] = int(self.now)
-        self.globals['TDTowerRuntime_tdArcherVisualCreationCount'] = 6
+        # Rendering is an explicit boundary for this gameplay fixture. Record every
+        # actual launch; the full-arrow artifact gate executes Fx/recycler separately.
+        self.split_visual_launches = []
         self.clear_trace()
 
     def initialize_match(self):
@@ -428,6 +426,9 @@ class TowerTargetRuntime(PetAttackRuntime):
         return super().expression(jass_boolean_expression(text), scope)
 
     def native(self, name, args):
+        if name == 'tdLaunchArcherSplitArrowVisual':
+            self.split_visual_launches.append(tuple(args))
+            return True, None
         if name == 'GetUnitMoveSpeed':
             return True, self.units.get(args[0], {}).get('speed', 0.)
         if name == 'IsUnitPaused':
@@ -987,8 +988,6 @@ def baseline_trace(script, type_='uA6B', scene='passive'):
     r.clear_trace(); r.emitted.clear(); r.native_damage.clear(); r.moves.clear(); r.random_draws.clear()
     trace = []
     for index, damage in enumerate((40.,100.,160.,100.,40.,160.,100.,40.)):
-        r.globals['TDTowerRuntime_tdArcherVisualCreationWindow'] = int(r.now)
-        r.globals['TDTowerRuntime_tdArcherVisualCreationCount'] = 6
         before = len(r.emitted)
         r.attack(102)
         r.emit(damage, target=102); r.flush()
@@ -1012,8 +1011,6 @@ def baseline_trace(script, type_='uA6B', scene='passive'):
         r.now += .25
     if scene == 'plain_death':
         r.units[102]['life'] = 25.
-        r.globals['TDTowerRuntime_tdArcherVisualCreationWindow'] = int(r.now)
-        r.globals['TDTowerRuntime_tdArcherVisualCreationCount'] = 6
         r.attack(102); r.emit(100.,target=102); r.flush()
         r.event_source, r.event_target = 101,102
         r.invoke('tdHandleEnemyDeath')

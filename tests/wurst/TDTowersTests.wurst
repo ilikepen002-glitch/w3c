@@ -330,14 +330,6 @@ import ObjEditingCommons
 	tdSplitArrowLifetimeRegressionForTest().assertTrue()
 	tdSplitArrowLiveVolleyCount().assertEquals(before)
 
-@Test function splitArrowVisualBudgetIsIndependentAndBounded()
-	tdArcherVisualBudgetAllows(0, 0).assertTrue()
-	tdArcherVisualBudgetAllows(7, 5).assertTrue()
-	tdArcherVisualBudgetAllows(8, 0).assertFalse()
-	tdArcherVisualBudgetAllows(0, 6).assertFalse()
-	tdArcherVisualBudgetAllows(100000, 0).assertFalse()
-	tdArcherVisualBudgetAllows(0, 100000).assertFalse()
-
 @Test function openingBudgetSupportsEveryPairOrOneLevelTwoTower()
 	TD_STARTING_GOLD.assertEquals(1000)
 	for first = 1 to TD_TOWER_CHOICE_COUNT

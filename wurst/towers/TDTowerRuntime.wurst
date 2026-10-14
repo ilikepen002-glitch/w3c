@@ -35,7 +35,6 @@ import TDTowerBloodlustAutocast
 import TDEnemyMechanicRuntime
 import TDTrialIdentity
 import TDWaveFlowState
-import GameTimer
 
 unit array tdFarmers
 constant Table tdOrcBladestormStates = new Table()
@@ -580,18 +579,7 @@ function tdArcherSplitArrowFlightTime(unit source, unit target) returns real
 	let distance = source.getPos().distanceTo(target.getPos())
 	return distance / projectileSpeed
 
-// The shared recycler starts with 48 angle-partitioned dummies and Fx holds
-// each for another second after destroy. Any rolling second carries at most
-// 8 earlier live arrows plus 12 new attempts across its integer boundary:
-// at most 20 live/cooling dummies, leaving room for elemental moving visuals.
-constant int TD_ARCHER_VISUAL_LIVE_LIMIT = 8
-constant int TD_ARCHER_VISUAL_NEW_PER_SECOND = 6
-int tdArcherVisualCreationWindow = -1
-int tdArcherVisualCreationCount = 0
-
-public function tdArcherVisualBudgetAllows(int liveCount, int creationCount) returns boolean
-	return liveCount < TD_ARCHER_VISUAL_LIVE_LIMIT and creationCount < TD_ARCHER_VISUAL_NEW_PER_SECOND
-
+// Every selected extra shot owns a visible arrow; shared timing only, no admission cap.
 class TDArcherArrowVisual
 	Fx fx
 	vec3 startPos
@@ -618,15 +606,6 @@ boolean tdArcherVisualTimerRunning = false
 function tdLaunchArcherSplitArrowVisual(unit source, unit target, real duration)
 	if source == null or target == null
 		return
-	let window = getElapsedGameTime().toInt()
-	if tdArcherVisualCreationWindow != window
-		tdArcherVisualCreationWindow = window
-		tdArcherVisualCreationCount = 0
-	if not tdArcherVisualBudgetAllows(tdArcherArrowVisuals.size(), tdArcherVisualCreationCount)
-		return
-	// Count attempts, even if the engine cannot display the effect. Never refund
-	// on finish/reset: dummies remain in Fx's one-second recycling delay.
-	tdArcherVisualCreationCount += 1
 	tdArcherArrowVisuals.add(new TDArcherArrowVisual(source, target, duration))
 	if tdArcherVisualTimerRunning
 		return

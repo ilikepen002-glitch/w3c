@@ -223,7 +223,7 @@ class BossJassRuntime(GroundJassRuntime):
                 steps += 1
                 self.executed_steps += 1
                 require(self.executed_steps <= 2000000, 'Packaged execution exceeded bounded interpreter budget')
-                require(steps <= 10000, f'{name}: packaged loop did not terminate')
+                require(steps <= getattr(self, 'per_call_step_limit', 10000), f'{name}: packaged loop did not terminate')
                 line = lines[index].split('//', 1)[0].strip()
                 if not line: pass
                 elif line.startswith('if ') and line.endswith(' then'):
