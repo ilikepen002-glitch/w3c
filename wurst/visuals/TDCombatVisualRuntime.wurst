@@ -215,6 +215,15 @@ public function tdCombatVisualReleaseCore()
 		coreVisualCount -= 1
 		tdCombatVisualReleaseCast()
 
+// Completion transfers an already-counted core into an available decorative
+// live slot. Creation tickets never move or refund; a full decoration class
+// returns false so its context destroys the core instead of keeping priority.
+public function tdCombatVisualDemoteCore() returns boolean
+	if coreVisualCount <= 0 or tdCombatVisualShortCount() - coreVisualCount >= TD_VISUAL_DECORATION_LIMIT
+		return false
+	coreVisualCount -= 1
+	return true
+
 public function tdCombatVisualCoreCount() returns int
 	return coreVisualCount
 
@@ -595,6 +604,19 @@ public function tdCombatVisualAdoptPetPoint(int serial, unit source, int lane, e
 	entry.art = art
 	entry.detach(owner, trial)
 	retainedPetPointCount += 1
+	castLines.add(entry)
+	wake()
+	return true
+
+// The caller has demoted its core token before this existing-handle handoff.
+public function tdCombatVisualAdoptPetCoreLine(int serial, unit source, int lane, lightning line, real expiresAt, tdTrialCombatContext trial) returns boolean
+	if serial <= 0 or source == null or line == null or not laneValid(lane) or expiresAt <= getElapsedGameTime() or not tdTrialContextValid(trial)
+		return false
+	let owner = sourceFor(source, lane)
+	if owner == null or not sourceValid(owner)
+		return false
+	let entry = new TDVisualCastLine(serial, source, lane, line, expiresAt)
+	entry.detach(owner, trial)
 	castLines.add(entry)
 	wake()
 	return true

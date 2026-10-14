@@ -24,7 +24,7 @@ class VfxRuntime(ElementRuntime):
         finally:
             if phase:self.phase_stack.pop()
     def native(self,name,args):
-        if name in ('AddSpecialEffect','AddSpecialEffectTarget','AddLightningEx','DestroyEffect','DestroyLightning') or name.startswith('SetUnit') and args and args[0] in getattr(self,'effect_dummies',{}):
+        if name in ('AddSpecialEffect','AddSpecialEffectTarget','AddLightningEx','MoveLightningEx','DestroyEffect','DestroyLightning') or name.startswith('SetUnit') and args and args[0] in getattr(self,'effect_dummies',{}):
             self.visual_events.append({'time':round(self.now,6),'phase':self.phase_stack[-1] if self.phase_stack else 'shared','phases':list(self.phase_stack),
                                       'native':name,'args':list(args)})
         return super().native(name,args)
@@ -77,7 +77,7 @@ def actual_stages(r,skill):
         impact=[e for e in events if marked(e,immediate[skill]) and e['native'].startswith('Add')]
         require(impact and all(e['time'] in hit_times for e in impact),'Immediate trace is not on existing damage frame '+str(skill))
     if skill==21:
-        starts=[tuple(e['args'][2:4]) for e in events if marked(e,'visualSwordCut') and e['native']=='AddLightningEx']
+        starts=[tuple(e['args'][2:4]) for e in events if marked(e,'visualSwordCut') and e['native'] in ('AddLightningEx','MoveLightningEx')]
         require(len(starts)==4 and len(set(starts))==4,'Four sword traces did not have distinct cardinal starts')
     if skill in (22,33):
         z=[item[5] for item in r.fx_history if item[1]=='SetUnitFlyHeight']

@@ -1,0 +1,649 @@
+{
+  "status": "PASS",
+  "inGameTested": false,
+  "format": "MDX800",
+  "models": [
+    {
+      "name": "TDPetVfxSwordDomain",
+      "skill": 22,
+      "status": "PASS exported MDX800 offline validation",
+      "inGameTested": false,
+      "importPath": "war3mapImported\\TDPetVfxSwordDomain.mdx",
+      "bytes": 22676,
+      "sha256": "da67d272961c98df05a88b36df23d90a8771e7bc77f4d292b4dab72cda8d1c81",
+      "radius": 260,
+      "maxVisibleRadius": 256,
+      "triangles": 192,
+      "bones": 2,
+      "materials": 2,
+      "geosets": 3,
+      "sequences": [
+        {
+          "name": "Stand",
+          "interval": [
+            0,
+            2000
+          ],
+          "loop": true
+        },
+        {
+          "name": "Death",
+          "interval": [
+            10000,
+            10001
+          ],
+          "loop": false
+        }
+      ],
+      "deathAlpha": 0,
+      "materialFlags": [
+        [
+          {
+            "filterMode": 2,
+            "flags": 1
+          }
+        ],
+        [
+          {
+            "filterMode": 3,
+            "flags": 129
+          }
+        ]
+      ],
+      "mdxBinaryRoundtripExact": true,
+      "mdlTextRoundtripMaxError": 8.344650268554688e-7,
+      "maxSourceCornerError": 0.000005295946237993121,
+      "maxAnimatedVertexMotion": 7,
+      "loopSeamError": 0,
+      "visibleTrianglesAt0": 192,
+      "animatedBounds": {
+        "min": [
+          -256,
+          -256,
+          6
+        ],
+        "max": [
+          256,
+          256,
+          118
+        ]
+      },
+      "declaredBounds": {
+        "min": [
+          -261,
+          -261,
+          0
+        ],
+        "max": [
+          261,
+          261,
+          128
+        ]
+      },
+      "sampledTimes": 216,
+      "phaseContract": {
+        "neutral": true,
+        "visibleFromMs": 0,
+        "automaticSwordImpact": false,
+        "loopMs": 2000,
+        "deathVisibleMs": 0,
+        "hold": "real cast lifecycle"
+      },
+      "closedParts": 12,
+      "oneSidedSurfaces": 12
+    },
+    {
+      "name": "TDPetVfxFrostDomain",
+      "skill": 29,
+      "status": "PASS exported MDX800 offline validation",
+      "inGameTested": false,
+      "importPath": "war3mapImported\\TDPetVfxFrostDomain.mdx",
+      "bytes": 15974,
+      "sha256": "b2bd96a9334bbe79387f0258564b1ce0d44b5e3f86c1eb4767551edd54b49b76",
+      "radius": 240,
+      "maxVisibleRadius": 236,
+      "triangles": 126,
+      "bones": 2,
+      "materials": 2,
+      "geosets": 3,
+      "sequences": [
+        {
+          "name": "Stand",
+          "interval": [
+            0,
+            2000
+          ],
+          "loop": true
+        },
+        {
+          "name": "Death",
+          "interval": [
+            10000,
+            10001
+          ],
+          "loop": false
+        }
+      ],
+      "deathAlpha": 0,
+      "materialFlags": [
+        [
+          {
+            "filterMode": 2,
+            "flags": 1
+          }
+        ],
+        [
+          {
+            "filterMode": 3,
+            "flags": 129
+          }
+        ]
+      ],
+      "mdxBinaryRoundtripExact": true,
+      "mdlTextRoundtripMaxError": 9.5367431640625e-7,
+      "maxSourceCornerError": 0.000006830409432723172,
+      "maxAnimatedVertexMotion": 16.931462388985942,
+      "loopSeamError": 0,
+      "visibleTrianglesAt0": 126,
+      "animatedBounds": {
+        "min": [
+          -236,
+          -236,
+          5
+        ],
+        "max": [
+          236,
+          236,
+          89
+        ]
+      },
+      "declaredBounds": {
+        "min": [
+          -241,
+          -241,
+          0
+        ],
+        "max": [
+          241,
+          241,
+          105
+        ]
+      },
+      "sampledTimes": 216,
+      "phaseContract": {
+        "neutral": true,
+        "visibleFromMs": 0,
+        "automaticFreeze": false,
+        "automaticFracture": false,
+        "loopMs": 2000,
+        "deathVisibleMs": 0,
+        "hold": "real cast lifecycle"
+      },
+      "closedParts": 6,
+      "oneSidedSurfaces": 42
+    },
+    {
+      "name": "TDPetVfxVortexDomain",
+      "skill": 30,
+      "status": "PASS exported MDX800 offline validation",
+      "inGameTested": false,
+      "importPath": "war3mapImported\\TDPetVfxVortexDomain.mdx",
+      "bytes": 20080,
+      "sha256": "03576f1631eddc62026b6d9aca78ecd084c6ae366e287a6c5a7862cb39d0b6bc",
+      "radius": 280,
+      "maxVisibleRadius": 276.00001304153653,
+      "triangles": 168,
+      "bones": 2,
+      "materials": 2,
+      "geosets": 3,
+      "sequences": [
+        {
+          "name": "Stand",
+          "interval": [
+            0,
+            2000
+          ],
+          "loop": true
+        },
+        {
+          "name": "Death",
+          "interval": [
+            10000,
+            10001
+          ],
+          "loop": false
+        }
+      ],
+      "deathAlpha": 0,
+      "materialFlags": [
+        [
+          {
+            "filterMode": 2,
+            "flags": 1
+          }
+        ],
+        [
+          {
+            "filterMode": 3,
+            "flags": 129
+          }
+        ]
+      ],
+      "mdxBinaryRoundtripExact": true,
+      "mdlTextRoundtripMaxError": 0.0000019073486328125,
+      "maxSourceCornerError": 0.00001304086373465907,
+      "maxAnimatedVertexMotion": 516.000003288314,
+      "loopSeamError": 1.6655196983400046e-14,
+      "visibleTrianglesAt0": 168,
+      "animatedBounds": {
+        "min": [
+          -275.9689636230469,
+          -275.9689636230469,
+          7
+        ],
+        "max": [
+          275.9689636230469,
+          275.9689636230469,
+          90
+        ]
+      },
+      "declaredBounds": {
+        "min": [
+          -281,
+          -281,
+          0
+        ],
+        "max": [
+          281,
+          281,
+          130
+        ]
+      },
+      "sampledTimes": 216,
+      "phaseContract": {
+        "neutral": true,
+        "visibleFromMs": 0,
+        "automaticHit": false,
+        "loopMs": 2000,
+        "deathVisibleMs": 0,
+        "hold": "real cast lifecycle"
+      },
+      "closedParts": 3,
+      "oneSidedSurfaces": 72
+    },
+    {
+      "name": "TDPetVfxStarfallDomain",
+      "skill": 33,
+      "status": "PASS exported MDX800 offline validation",
+      "inGameTested": false,
+      "importPath": "war3mapImported\\TDPetVfxStarfallDomain.mdx",
+      "bytes": 12038,
+      "sha256": "4aa8fd25e7c823f32cd2c5df703df3c908a71be9ee3c124d08e729b1e9d42f5a",
+      "radius": 240,
+      "maxVisibleRadius": 236.00000114796956,
+      "triangles": 90,
+      "bones": 2,
+      "materials": 2,
+      "geosets": 3,
+      "sequences": [
+        {
+          "name": "Stand",
+          "interval": [
+            0,
+            2000
+          ],
+          "loop": true
+        },
+        {
+          "name": "Death",
+          "interval": [
+            10000,
+            10001
+          ],
+          "loop": false
+        }
+      ],
+      "deathAlpha": 0,
+      "materialFlags": [
+        [
+          {
+            "filterMode": 2,
+            "flags": 1
+          }
+        ],
+        [
+          {
+            "filterMode": 3,
+            "flags": 129
+          }
+        ]
+      ],
+      "mdxBinaryRoundtripExact": true,
+      "mdlTextRoundtripMaxError": 9.834766387939453e-7,
+      "maxSourceCornerError": 0.000007519717598825082,
+      "maxAnimatedVertexMotion": 10.979999542236328,
+      "loopSeamError": 0,
+      "visibleTrianglesAt0": 90,
+      "animatedBounds": {
+        "min": [
+          -227.95849609375,
+          -227.95849609375,
+          5
+        ],
+        "max": [
+          227.95849609375,
+          227.95849609375,
+          61
+        ]
+      },
+      "declaredBounds": {
+        "min": [
+          -241,
+          -241,
+          0
+        ],
+        "max": [
+          241,
+          241,
+          90
+        ]
+      },
+      "sampledTimes": 216,
+      "phaseContract": {
+        "neutral": true,
+        "visibleFromMs": 0,
+        "automaticMeteor": false,
+        "automaticImpact": false,
+        "loopMs": 2000,
+        "deathVisibleMs": 0,
+        "hold": "real cast lifecycle"
+      },
+      "closedParts": 6,
+      "oneSidedSurfaces": 30
+    },
+    {
+      "name": "TDPetVfxEarthSealDomain",
+      "skill": 37,
+      "status": "PASS exported MDX800 offline validation",
+      "inGameTested": false,
+      "importPath": "war3mapImported\\TDPetVfxEarthSealDomain.mdx",
+      "bytes": 14132,
+      "sha256": "e980c7ea36673660702bf8db6404e0bd1d89fead8fc1ec3d3bf28ec89d8278a9",
+      "radius": 260,
+      "maxVisibleRadius": 256,
+      "triangles": 112,
+      "bones": 2,
+      "materials": 2,
+      "geosets": 3,
+      "sequences": [
+        {
+          "name": "Stand",
+          "interval": [
+            0,
+            2000
+          ],
+          "loop": true
+        },
+        {
+          "name": "Death",
+          "interval": [
+            10000,
+            10001
+          ],
+          "loop": false
+        }
+      ],
+      "deathAlpha": 0,
+      "materialFlags": [
+        [
+          {
+            "filterMode": 2,
+            "flags": 1
+          }
+        ],
+        [
+          {
+            "filterMode": 3,
+            "flags": 129
+          }
+        ]
+      ],
+      "mdxBinaryRoundtripExact": true,
+      "mdlTextRoundtripMaxError": 8.940696716308594e-7,
+      "maxSourceCornerError": 3.197442310920451e-14,
+      "maxAnimatedVertexMotion": 4,
+      "loopSeamError": 0,
+      "visibleTrianglesAt0": 112,
+      "animatedBounds": {
+        "min": [
+          -256,
+          -256,
+          6
+        ],
+        "max": [
+          256,
+          256,
+          68
+        ]
+      },
+      "declaredBounds": {
+        "min": [
+          -261,
+          -261,
+          0
+        ],
+        "max": [
+          261,
+          261,
+          98
+        ]
+      },
+      "sampledTimes": 216,
+      "phaseContract": {
+        "neutral": true,
+        "visibleFromMs": 0,
+        "automaticQuake": false,
+        "loopMs": 2000,
+        "deathVisibleMs": 0,
+        "hold": "real cast lifecycle"
+      },
+      "closedParts": 8,
+      "oneSidedSurfaces": 16
+    },
+    {
+      "name": "TDPetVfxFlowerBloomLoop",
+      "skill": 25,
+      "status": "PASS exported MDX800 offline validation",
+      "inGameTested": false,
+      "importPath": "war3mapImported\\TDPetVfxFlowerBloomLoop.mdx",
+      "bytes": 13332,
+      "sha256": "bc33ee02b154d139355bcbfa89d23450a57ca4cc99ce818699b8d6b12d81518a",
+      "radius": 100,
+      "maxVisibleRadius": 96,
+      "triangles": 104,
+      "bones": 2,
+      "materials": 2,
+      "geosets": 3,
+      "sequences": [
+        {
+          "name": "Stand",
+          "interval": [
+            0,
+            2000
+          ],
+          "loop": true
+        },
+        {
+          "name": "Death",
+          "interval": [
+            10000,
+            10001
+          ],
+          "loop": false
+        }
+      ],
+      "deathAlpha": 0,
+      "materialFlags": [
+        [
+          {
+            "filterMode": 2,
+            "flags": 1
+          }
+        ],
+        [
+          {
+            "filterMode": 3,
+            "flags": 129
+          }
+        ]
+      ],
+      "mdxBinaryRoundtripExact": true,
+      "mdlTextRoundtripMaxError": 0.0000019073486328125,
+      "maxSourceCornerError": 0.000003399536595338759,
+      "maxAnimatedVertexMotion": 6.3000030517578125,
+      "loopSeamError": 0,
+      "visibleTrianglesAt0": 104,
+      "animatedBounds": {
+        "min": [
+          -94,
+          -96,
+          5
+        ],
+        "max": [
+          94,
+          96,
+          63
+        ]
+      },
+      "declaredBounds": {
+        "min": [
+          -101,
+          -101,
+          0
+        ],
+        "max": [
+          101,
+          101,
+          78
+        ]
+      },
+      "sampledTimes": 216,
+      "phaseContract": {
+        "neutral": true,
+        "visibleFromMs": 0,
+        "queryPoint": "first actual road flower point only",
+        "automaticBloomHit": false,
+        "loopMs": 2000,
+        "deathVisibleMs": 0,
+        "hold": "real cast lifecycle"
+      },
+      "closedParts": 7,
+      "oneSidedSurfaces": 18
+    },
+    {
+      "name": "TDPetVfxLotusBurstLoop",
+      "skill": 32,
+      "status": "PASS exported MDX800 offline validation",
+      "inGameTested": false,
+      "importPath": "war3mapImported\\TDPetVfxLotusBurstLoop.mdx",
+      "bytes": 21942,
+      "sha256": "614dc956fd62c3df1977fd05b66a7b1a38bc2be28a042b7ed3acacd1173bc5b8",
+      "radius": 230,
+      "maxVisibleRadius": 226,
+      "triangles": 186,
+      "bones": 2,
+      "materials": 2,
+      "geosets": 3,
+      "sequences": [
+        {
+          "name": "Stand",
+          "interval": [
+            0,
+            2000
+          ],
+          "loop": true
+        },
+        {
+          "name": "Death",
+          "interval": [
+            10000,
+            10001
+          ],
+          "loop": false
+        }
+      ],
+      "deathAlpha": 0,
+      "materialFlags": [
+        [
+          {
+            "filterMode": 2,
+            "flags": 1
+          }
+        ],
+        [
+          {
+            "filterMode": 3,
+            "flags": 129
+          }
+        ]
+      ],
+      "mdxBinaryRoundtripExact": true,
+      "mdlTextRoundtripMaxError": 9.5367431640625e-7,
+      "maxSourceCornerError": 0.000006438750943971172,
+      "maxAnimatedVertexMotion": 12.720001220703125,
+      "loopSeamError": 0,
+      "visibleTrianglesAt0": 186,
+      "animatedBounds": {
+        "min": [
+          -226,
+          -195.72174072265625,
+          7
+        ],
+        "max": [
+          226,
+          195.72174072265625,
+          106
+        ]
+      },
+      "declaredBounds": {
+        "min": [
+          -231,
+          -231,
+          0
+        ],
+        "max": [
+          231,
+          231,
+          125
+        ]
+      },
+      "sampledTimes": 216,
+      "phaseContract": {
+        "neutral": true,
+        "visibleFromMs": 0,
+        "automaticRepeatedDamage": false,
+        "loopMs": 2000,
+        "deathVisibleMs": 0,
+        "hold": "real cast lifecycle plus authorized 250ms visual dwell"
+      },
+      "closedParts": 12,
+      "oneSidedSurfaces": 12
+    }
+  ],
+  "texture": {
+    "importPath": "Textures\\TDPetVfxSolidWhite.blp",
+    "bytes": 1222,
+    "sha256": "2da6ca463603ab3bb8dc78da84f97f28487502eb087ebf9fdd8316dc0fac54b6",
+    "version": 1,
+    "width": 4,
+    "height": 4,
+    "mipmaps": 3,
+    "rgbaAll": [
+      255,
+      255,
+      255,
+      255
+    ]
+  },
+  "limitations": "Offline software projection does not verify Warcraft native animation choice, depth/occlusion, terrain fitting or FPS."
+}

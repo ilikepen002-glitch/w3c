@@ -12,6 +12,7 @@ import hashlib
 import json
 import math
 import re
+from collections import Counter
 
 from GenerateTowerTerrainMask import Mpq
 from VerifyElementalVfxArtifact import VfxRuntime
@@ -23,6 +24,10 @@ from SpiritVisualBudgetFixture import reserve, release, spend, saturate, core_co
 TERMINAL = (21, 22, 24, 30, 31, 33, 34, 38)
 ORDERS = ('visual-first', 'battle-first')
 EPS = 1e-7
+
+
+def terminal_skills(script):
+    return (19, 32, 35, 36, *TERMINAL) if 'TDPetCastContext_visualCoreReserved' in script else TERMINAL
 
 
 def function_body(script, name):
@@ -55,6 +60,7 @@ class RetentionRuntime(VfxRuntime):
         self.finishes = []
         self.destructions = []
         self.adoptions = []
+        self.core_creations = []
         self.context_ids = set()
         self.line_births = {}
         self.destroyed_groups = []
@@ -67,6 +73,7 @@ class RetentionRuntime(VfxRuntime):
         self.finishes.clear()
         self.destructions.clear()
         self.adoptions.clear()
+        self.core_creations.clear()
 
     def field(self, name, identity):
         return self.globals[name][identity]
@@ -76,6 +83,9 @@ class RetentionRuntime(VfxRuntime):
         scalar = ('pet', 'host', 'skill', 'stage', 'markCount', 'visualSerial', 'createdAt',
                   'expiresAt', 'victimCount', 'visualSize', 'primary', 'candidates')
         result = {name: self.field(p+name, identity) for name in scalar}
+        for name in ('visualCorePoint', 'visualCoreLine', 'visualCoreMode', 'visualCoreReserved'):
+            if p+name in self.globals:
+                result[name] = self.field(p+name, identity)
         result['id'] = identity
         result['points'] = [self.field(p+'visuals_'+str(i), identity)
                             for i in range(result['visualSize'])]
@@ -106,10 +116,22 @@ class RetentionRuntime(VfxRuntime):
                 'tdCombatVisualAdoptPetPoint', 'tdCombatVisualRetainPetLines'):
             self.helper_calls.append({'time': self.now, 'name': name, 'args': list(args)})
         before = None
+        core_before = None
+        if name == 'TDPetCastContext_retryVisualCore':
+            core_before = (self.field('TDPetCastContext_visualCorePoint', args[0]),
+                           self.field('TDPetCastContext_visualCoreLine', args[0]))
         if name in ('TDPetCastContext_visualFinish', 'TDPetCastContext_onDestroy'):
             before = self.context(args[0])
+        target_refs_before = {target: self.field('TDPetEffectTargetPosition_references', target)
+                              for target in before['targets'] if target} if name == 'TDPetCastContext_onDestroy' else {}
         add_before = sum(1 for h in self.handles.values() if h['created'] == self.now) if name == 'TDPetCastContext_visualFinish' else 0
         value = super().execute_call(name, args)
+        if core_before is not None:
+            core_after = (self.field('TDPetCastContext_visualCorePoint', args[0]),
+                          self.field('TDPetCastContext_visualCoreLine', args[0]))
+            if not any(core_before) and any(core_after):
+                self.core_creations.append({'time': self.now, 'context': args[0],
+                                            'point': core_after[0], 'line': core_after[1]})
         if name == 'new_TDPetActiveCast' and value:
             self.context_ids.add(value)
         if name == 'new_TDVisualCastLine' and value and args[3]:
@@ -132,11 +154,15 @@ class RetentionRuntime(VfxRuntime):
             require(not after['pet'] and not after['host'] and not after['primary'],
                     'Context destruction retained combat references')
             require(not any(after['points']), 'Context destruction retained a native point slot')
+            require(not after.get('visualCorePoint') and not after.get('visualCoreLine'),
+                    'Context destruction retained a native core handle')
             require(before['candidates'] in self.destroyed_groups, 'Context destruction omitted candidate-group release')
-            for target in before['targets']:
-                if target:
-                    require(self.field('TDPetEffectTargetPosition_references', target) <= 0,
-                            'Context destruction retained target-position ownership')
+            # Multiple legal casts share each target-position record. Verify
+            # this context releases exactly its own references, not its peers'.
+            for target, owned in Counter(t for t in before['targets'] if t).items():
+                require(target_refs_before[target] >= owned and
+                        self.field('TDPetEffectTargetPosition_references', target) == target_refs_before[target]-owned,
+                        'Context destruction failed exact target-position release')
             for control in self.tables[self.globals['TDEnemyControlRuntime_byHandle']].values():
                 require(not (self.field('TDEnemyControlWindow_source', control) == before['host'] and
                             self.field('TDEnemyControlWindow_sourceToken', control) == args[0]),
@@ -356,7 +382,7 @@ def verify_one(script, skill, order='visual-first'):
 def verify_lifetimes(script):
     result = []
     for order in ORDERS:
-        for skill in TERMINAL:
+        for skill in terminal_skills(script):
             result.append(verify_one(script, skill, order))
             print('retention lifetime verified', skill, order, flush=True)
     return result
@@ -373,7 +399,8 @@ def abort_fixture(script, skill, point, order='visual-first'):
     if point == 'pre-final':
         r.invoke('TDPet_recall', p)
     elif point == 'synchronous-final':
-        final_stage = {21: 3, 22: 3, 24: 5, 31: 3, 33: 3, 34: 3, 38: 3}.get(skill)
+        final_stage = {19: 0, 21: 3, 22: 3, 24: 5, 31: 3, 32: 0, 33: 3,
+                       34: 3, 35: 0, 36: 0, 38: 3}.get(skill)
         limit = r.now+6.
         while r.now < limit:
             if skill == 30:
@@ -392,8 +419,18 @@ def abort_fixture(script, skill, point, order='visual-first'):
         while p in r.tables[r.globals['TDPetCastContext_tdPetActiveCastIndex']] and r.now < limit:
             r.tick()
         require(r.damage_cancel is None, 'Final-hit cancellation did not run inside native damage '+str((skill, point, order)))
-    elif point == 'target-loss':
+    elif point in ('target-loss', 'target-loss-after-stage'):
         require(skill in (21, 31), 'Target-loss fixture must use real early-exit skill')
+        if point == 'target-loss-after-stage':
+            # Deliver the original first cut/pulse while its primary is valid.
+            # This leaves actual decorative handles available to expose an
+            # incorrect terminal handoff after a later false combat result.
+            limit = r.now+2.
+            while r.now < limit and r.field('TDPetCastContext_stage', c) < 1:
+                r.tick()
+            require(r.field('TDPetCastContext_stage', c) == 1
+                    and any(r.context(c)['points']),
+                    'Late target-loss fixture missed first delivered decorative stage')
         r.units[target].update(alive=False, life=0.)
         # Single-target primary checks remain on the existing hit-due callback.
         # Brand31's first hit is at created+1; do not invent an earlier abort.
@@ -412,9 +449,13 @@ def abort_fixture(script, skill, point, order='visual-first'):
 
 
 def verify_aborts(script):
-    return [abort_fixture(script, skill, point, order) for order in ORDERS for skill in TERMINAL
+    rows = [abort_fixture(script, skill, point, order) for order in ORDERS for skill in terminal_skills(script)
             for point in ('pre-final', 'synchronous-final', 'timeout')]+[
                 abort_fixture(script, skill, 'target-loss', order) for order in ORDERS for skill in (21, 31)]
+    if 'TDPetCastContext_visualCorePoint' in script:
+        rows += [abort_fixture(script, skill, 'target-loss-after-stage', order)
+                 for order in ORDERS for skill in (21, 31)]
+    return rows
 
 
 def verify_delivered_target_death(script):
@@ -424,11 +465,16 @@ def verify_delivered_target_death(script):
         c, _ = begin(r, p, target)
         while r.field('TDPetCastContext_stage', c) < 3:
             r.tick()
+        target_core = r.field('TDPetCastContext_visualCorePoint', c) if 'TDPetCastContext_visualCorePoint' in r.globals else 0
         r.damage_cancel = lambda: r.units[target].update(alive=False, life=0.)
-        complete(r, p)
+        destruction = complete(r, p)
         require(r.damage_cancel is None and not r.units[target]['alive'], 'Delivered-target-death native fixture missed final hit')
         tails = r.entries(detached=True)
         require(tails, 'Delivered target death incorrectly aborted source-valid impact')
+        if target_core:
+            require(r.handles[target_core]['destroyed'] == destruction['time']
+                    and all(e['art'] != target_core for e in tails),
+                    'Synchronous final-target death retained its invalid target-bound core')
         r.tick()
         require(all(e['art'] in r.visual_handles for e in tails if e['art']), 'Delivered impact retained target validity after handoff')
         r.expire(); r.flush_fx_recycle(); r.assert_counts()
@@ -642,12 +688,13 @@ def verify_core_admission(script):
             else: r.tick(.60 if skill == 29 else .75)
             prepare = [h for h in r.handles.values() if 'TDPetCastContext_visualPrepare' in h['phases'] or 'TDPetCastContext_visualStrike' in h['phases']]
             fallback = {29: 'BlizzardTarget.mdx', 33: 'FireBallMissile.mdx', 35: 'TDPetVfxFaultRidge.mdx'}[skill]
-            native_core = [h for h in prepare if h['native'] == 'AddSpecialEffect' and h['args'][0].endswith(fallback)]
+            core_subject = {29: 'TDPetVfxFrostDomain.mdx', 33: 'TDPetVfxStarfallDomain.mdx', 35: fallback}[skill] if 'TDPetCastContext_visualCoreReserved' in r.globals else fallback
+            native_core = [h for h in prepare if h['native'] == 'AddSpecialEffect' and h['args'][0].endswith(core_subject)]
             moving_core = [h for h in prepare if h['native'] == 'AddSpecialEffectTarget' and h['args'][0].endswith(fallback)]
             if mode in ('moving-live', 'moving-rate'):
                 require(native_core, 'Moving denial lost authored native core '+str(skill)+' '+mode)
                 first = min(prepare, key=lambda h: (h['created'], h['handle']))
-                require(first['args'][0].endswith(fallback), 'Optional ornament preceded denied-moving core '+str(skill))
+                require(first['args'][0].endswith(core_subject), 'Optional ornament preceded denied-moving core '+str(skill))
             if mode == 'normal':
                 require(len(moving_core) == (2 if skill == 29 else 1), 'Normal moving core count changed '+str(skill))
             if mode == 'moving-one' and skill == 29:
@@ -911,8 +958,12 @@ def verify_overlap_stress(script):
             for slot in range(10):
                 host = 1000+lane*10+slot
                 target = 2000+lane*10+slot
-                r.units[host] = {**r.units[101], 'owner': lane, 'lane': lane, 'abilities': {}, 'inventory': {}}
-                r.enemy(target, x=100., lane=lane)
+                # Four physical lanes, each with ten overlapping legal casts.
+                # Native range enumeration must not pull all forty enemies
+                # into a single lane's repeated target-selection scan.
+                r.units[host] = {**r.units[101], 'x': lane*2000., 'owner': lane, 'lane': lane,
+                                 'abilities': {}, 'inventory': {}}
+                r.enemy(target, x=lane*2000.+100., lane=lane)
                 pets.append((legal_lane_pet(r, lane, host, slot), host, target))
                 targets.append(target)
         r.visible_units = targets
@@ -989,10 +1040,364 @@ def verify_caps(script):
     c, _ = begin(r, p, target)
     r.invoke('TDPetCastContext_clearVisuals', c)
     for _ in range(9): r.invoke('TDPetCastContext_addVisual', c, 'Abilities\\Weapons\\Rifle\\RifleImpact.mdx', 100., 0.)
-    require(r.field('TDPetCastContext_visualSize', c) == 8, 'Actual per-cast eight-handle cap expanded')
+    reserved = int(bool(r.field('TDPetCastContext_visualCoreReserved', c))) if 'TDPetCastContext_visualCoreReserved' in r.globals else 0
+    require(r.field('TDPetCastContext_visualSize', c) == 8-reserved
+            and r.invoke('TDPetCastContext_visualSlots', c) == 8, 'Actual per-cast eight-handle cap expanded')
     r.invoke('TDPet_recall', p); r.invoke('tdCombatVisualShutdown'); r.flush_fx_recycle(); r.assert_counts()
     return {'creation': 120, 'coreCreation': 40, 'decorationCreation': 80,
             'shared': 128, 'coreLive': 40, 'decorationLive': 88, 'petNative': 128, 'perCast': 8, 'hit': 32, 'moving': 8}
+
+
+def core_handles(r, context):
+    return (r.field('TDPetCastContext_visualCorePoint', context),
+            r.field('TDPetCastContext_visualCoreLine', context))
+
+
+def verify_reliable_cores(script):
+    rows = []
+    line_skills = (19, 21, 26, 28, 34, 36, 38)
+    target_skills = (20, 23, 24, 27, 31)
+    expected_models = {19: 'DRAM', 20: 'FaerieFireTarget.mdx', 21: 'DRAM',
+                       22: 'TDPetVfxSwordDomain.mdx', 23: 'EntanglingRootsTarget.mdx',
+                       24: 'RejuvenationTarget.mdx', 25: 'TDPetVfxFlowerBloomLoop.mdx', 26: 'DRAL',
+                       27: 'FrostArmorTarget.mdx', 28: 'DRAM', 29: 'TDPetVfxFrostDomain.mdx',
+                       30: 'TDPetVfxVortexDomain.mdx', 31: 'FlameStrikeDamageTarget.mdx',
+                       32: 'TDPetVfxLotusBurstLoop.mdx', 33: 'TDPetVfxStarfallDomain.mdx', 34: 'AFOD',
+                       35: 'TDPetVfxFaultRidge.mdx', 36: 'SPLK',
+                       37: 'TDPetVfxEarthSealDomain.mdx', 38: 'SPLK'}
+    for skill in range(19, 39):
+        for mode in ('normal', 'decoration-live', 'decoration-rate', 'moving-live'):
+            r, p, target = fixture(script, skill)
+            require('TDPetCastContext_visualCoreReserved' in r.globals, 'Packed cast core reservation missing')
+            r.now = 19.10
+            held = reserve(r, 80) if mode == 'decoration-live' else []
+            moving = moving_fixture(r, 8) if mode == 'moving-live' else []
+            r.now = 20.10
+            if mode == 'decoration-live': held += reserve(r, 8)
+            if mode == 'decoration-rate': spend(r, 80)
+            original_assert = r.assert_counts
+            if held: r.assert_counts = lambda: original_assert(borrowed=held)
+            c, _ = begin(r, p, target)
+            r.tick()
+            point, line = core_handles(r, c)
+            require(bool(point) != bool(line), 'Reliable core missing/duplicated despite decoration-only saturation '+str((skill, mode)))
+            require(bool(line) == (skill in line_skills), 'Skill core lost its authored point/line representation '+str(skill))
+            expected_mode = 3 if skill in line_skills else (2 if skill in target_skills else 1)
+            require(r.field('TDPetCastContext_visualCoreMode', c) == expected_mode, 'Skill core lost target/position identity '+str(skill))
+            handle = point or line
+            require(r.handles[handle]['args'][0].endswith(expected_models[skill]), 'Skill core used the wrong authored subject '+str(skill))
+            if skill in target_skills:
+                require(r.handles[handle]['native'] == 'AddSpecialEffectTarget'
+                        and r.handles[handle]['args'][1] == r.field('TDPetCastContext_primary', c),
+                        'Target-bound core did not use the admitted primary '+str(skill))
+            require(core_count(r) == 1 and r.invoke('TDPetCastContext_visualSlots', c) <= 8,
+                    'One cast exceeded its one-core/eight-native contract')
+            index = r.tables[r.globals['TDPetCastContext_tdPetActiveCastIndex']]
+            while p in index and r.now < 26.10:
+                r.tick()
+                if p in index:
+                    if skill != 24:
+                        require(core_handles(r, c) == (point, line), 'Existing cast core was rebuilt between delivered stages '+str(skill))
+                    else:
+                        require(bool(core_handles(r, c)[0]) and not core_handles(r, c)[1] and core_count(r) == 1,
+                                'Seed target-to-ground handoff lost its one-core ownership')
+            expected_births = 2 if skill == 24 else 1
+            require(p not in index and len([birth for birth in r.core_creations if birth['context'] == c]) == expected_births,
+                    'Reliable core leaked/rebuilt production cast ownership '+str(skill))
+            r.expire(); r.invoke('tdCombatVisualShutdown')
+            release(r, held)
+            r.assert_counts = original_assert; r.assert_counts(); r.flush_fx_recycle()
+            rows.append({'skill': skill, 'mode': mode, 'native': r.handles[handle]['native'],
+                         'subject': r.handles[handle]['args'][0], 'successfulCoreCreations': expected_births,
+                         'boundedSlots': 8, 'existingHandleReusedAcrossStages': skill != 24,
+                         'capturedSeedTargetToGroundHandoff': skill == 24})
+    return {'matrix': rows, 'elementalSkills': 20, 'buffSkillsCoveredSeparately': [11, 12],
+            'decorationCannotStarveCore': True, 'movingCannotStarveCore': True}
+
+
+def verify_cast_core_retry(script):
+    rows = []
+    for skill in (21, 31):
+        for mode in ('null', 'core-live', 'core-rate'):
+            r, p, target = fixture(script, skill)
+            r.now = 19.10 if mode == 'core-live' else 20.10
+            held = reserve(r, 40, core=True) if mode == 'core-live' else []
+            if mode == 'core-rate': spend(r, 40, core=True)
+            r.now = 20.10
+            r.reject_visual = mode == 'null'
+            original_assert = r.assert_counts
+            if held: r.assert_counts = lambda: original_assert(borrowed=held)
+            c, _ = begin(r, p, target); r.tick()
+            require(not any(core_handles(r, c)), 'Core retry fixture admitted an unavailable native handle')
+            require(r.field('TDPetCastContext_visualCoreReserved', c), 'Native-null cast released its reserved per-cast slot')
+            deadline = r.field('TDPetCastContext_expiresAt', c)
+            retry = r.field('TDPetCastContext_visualCoreRetryAt', c)
+            attempted = len(r.core_creations)
+            r.tick(.15)
+            require(r.now < retry and not any(core_handles(r, c)) and len(r.core_creations) == attempted,
+                    'Missing cast core retried before its low-frequency deadline')
+            release(r, held); held.clear(); r.reject_visual = False
+            r.tick(retry-r.now)
+            if mode == 'core-rate':
+                require(not any(core_handles(r, c)), 'Failed core admission refunded a spent creation ticket')
+                if skill == 21:
+                    # Its real .60 cast finishes before a fresh integer-second
+                    # creation window. An unavailable cue must expire with it.
+                    while r.now < 21.10-EPS: r.tick()
+                    index = r.tables[r.globals['TDPetCastContext_tdPetActiveCastIndex']]
+                    require(p not in index and not any(core_handles(r, c)) and not r.core_creations
+                            and not r.field('TDPetCastContext_visualCoreReserved', c)
+                            and core_count(r) == 0, 'Expired short cast replayed a late rate-denied core')
+                    r.invoke('tdCombatVisualShutdown')
+                    r.assert_counts = original_assert; r.assert_counts(); r.flush_fx_recycle()
+                    rows.append({'skill': skill, 'mode': mode, 'expiredWhileMissing': True,
+                                 'successfulCoreCreations': 0, 'latePlayback': False})
+                    continue
+                while r.now < 21.-EPS: r.tick()
+                require(not any(core_handles(r, c)), 'Cast core bypassed its pending low-frequency deadline at bucket reset')
+                due = r.field('TDPetCastContext_visualCoreRetryAt', c)
+                while not any(core_handles(r, c)) and r.now < due+.05-EPS: r.tick()
+                require(due-EPS <= r.now <= due+.05+EPS, 'Recovered cast core missed its low-frequency timer upper bound')
+            require(any(core_handles(r, c)), 'Missing cast core did not recover automatically')
+            near(r.field('TDPetCastContext_expiresAt', c), deadline, 'Core recovery extended the actual combat deadline')
+            r.invoke('TDPet_recall', p); r.expire(); r.invoke('tdCombatVisualShutdown')
+            r.assert_counts = original_assert; r.assert_counts(); r.flush_fx_recycle()
+            rows.append({'skill': skill, 'mode': mode, 'automaticRecovery': True, 'unchangedCombatDeadline': True})
+    # A still-missing request must die with its actual context, rather than
+    # outliving recall, invalid source/lane identity, or the original timeout.
+    cancelled = []
+    for action in ('recall', 'host-death', 'owner-transfer', 'lane-inactive', 'epoch', 'timeout'):
+        r, p, target = fixture(script, 31); r.now = 20.10; r.reject_visual = True
+        c, _ = begin(r, p, target)
+        if action == 'recall': r.invoke('TDPet_recall', p)
+        elif action == 'host-death': r.units[101].update(alive=False, life=0.)
+        elif action == 'owner-transfer': r.units[101]['owner'] = 1
+        elif action == 'lane-inactive': r.invoke('tdSetLaneActive', 0, False)
+        elif action == 'epoch': r.invoke('tdResetWaveFlowState')
+        elif action == 'timeout': r.now = r.field('TDPetCastContext_createdAt', c)+6.
+        r.reject_visual = False; r.tick(.30)
+        require(not any(core_handles(r, c)) and not r.field('TDPetCastContext_visualCoreReserved', c)
+                and not r.core_creations and core_count(r) == 0,
+                'Cancelled missing cast core resurrected a native handle '+action)
+        r.invoke('tdCombatVisualShutdown'); r.assert_counts(); r.flush_fx_recycle()
+        cancelled.append(action)
+    # Decoration-full terminal retention refuses demotion and destroys the
+    # existing core immediately. It never allocates a substitute terminal cue.
+    for skill in (21, 31):
+        r, p, target = fixture(script, skill); r.now = 19.10; held = reserve(r, 80)
+        r.now = 20.10; held += reserve(r, 8)
+        original_assert = r.assert_counts; r.assert_counts = lambda: original_assert(borrowed=held)
+        c, _ = begin(r, p, target); r.tick(); handle = next(h for h in core_handles(r, c) if h)
+        destruction = complete(r, p)
+        require(not r.entries(detached=True) and r.handles[handle]['destroyed'] == destruction['time']
+                and core_count(r) == 0, 'Full-decoration terminal kept/overbooked a core tail')
+        r.invoke('tdCombatVisualShutdown'); release(r, held)
+        r.assert_counts = original_assert; r.assert_counts(); r.flush_fx_recycle()
+    return {'recovery': rows, 'cancelledMissingCores': cancelled, 'fullDecorationTailDestroyedImmediately': [21, 31]}
+
+
+def verify_target_core_retirement(script):
+    rows = []
+    for skill in (20, 23, 24, 27, 31):
+        for mode in ('normal', 'null-before-death', 'null-after-death'):
+            r, p, target = fixture(script, skill); r.now = 20.10
+            r.reject_visual = mode == 'null-before-death'
+            c, _ = begin(r, p, target); r.tick()
+            old = r.field('TDPetCastContext_visualCorePoint', c)
+            require(bool(old) == (mode != 'null-before-death'), 'Target-core retirement fixture initial native mode changed')
+            deadline = r.field('TDPetCastContext_expiresAt', c)
+            # This is the actual production death-position hook delivered at
+            # the controlled engine boundary, not a rewritten context position.
+            r.units[target].update(x=165., y=25.)
+            r.invoke('tdPetRetireEffectTarget', target)
+            r.units[target].update(alive=False, life=0.)
+            r.reject_visual = mode == 'null-after-death'
+            r.tick()
+            if old:
+                require(old not in r.visual_handles, 'Retired target kept its invalid native core attachment '+str((skill, mode)))
+            if skill == 24:
+                require(r.field('TDPetCastContext_visualCoreMode', c) == 1
+                        and not r.field('TDPetCastContext_visualCoreTarget', c)
+                        and r.field('TDPetCastContext_visualCoreReserved', c),
+                        'Continuing seed retained its retired target identity')
+                r.tick(.25)
+                if mode == 'null-after-death':
+                    require(not any(core_handles(r, c)) and core_count(r) == 0,
+                            'Ground-seed native-null retry retained a live admission')
+                    r.reject_visual = False; r.tick(.25)
+                ground = r.field('TDPetCastContext_visualCorePoint', c)
+                require(ground and core_count(r) == 1 and r.handles[ground]['native'] == 'AddSpecialEffect'
+                        and r.handles[ground]['args'][0].endswith('MoonWellTarget.mdx')
+                        and tuple(r.handles[ground]['args'][1:3]) == (165., 25.),
+                        'Continuing seed did not recover at the immutable captured death position')
+            else:
+                require(not any(core_handles(r, c)) and not r.field('TDPetCastContext_visualCoreReserved', c)
+                        and r.field('TDPetCastContext_visualCoreMode', c) == 0 and core_count(r) == 0,
+                        'Retired target left a retryable armor/root/cold/brand core')
+                r.reject_visual = False; r.tick(.30)
+                require(not any(core_handles(r, c)), 'Retired target core resurrected after native recovery')
+            near(r.field('TDPetCastContext_expiresAt', c), deadline, 'Target-core retirement extended combat deadline')
+            r.invoke('TDPet_recall', p); r.invoke('tdCombatVisualShutdown'); r.assert_counts(); r.flush_fx_recycle()
+            rows.append({'skill': skill, 'mode': mode, 'retiredTargetAttachmentDestroyed': True,
+                         'continuedAtCapturedGround': skill == 24, 'unchangedCombatDeadline': True})
+    return rows
+
+
+def verify_post_mortem_seed_core(script):
+    rows = []
+    for mode in ('normal', 'null'):
+        r, p, target = fixture(script, 24); r.now = 20.10
+        r.units[target].update(x=165., y=25., life=50.)
+        r.reject_visual = mode == 'null'
+        c, original = begin(r, p, target)
+        require(not r.units[target]['alive'], 'Post-mortem seed fixture original hit did not kill its admitted primary')
+        require(r.field('TDPetCastContext_visualCoreMode', c) == 1
+                and not r.field('TDPetCastContext_visualCoreTarget', c), 'Post-mortem seed requested an invalid target attachment')
+        attempts = [event for event in r.visual_events if event['native'] == 'AddSpecialEffectTarget'
+                    and event['args'][0].endswith('RejuvenationTarget.mdx')]
+        require(not attempts, 'Post-mortem seed wasted a core ticket on a dead primary attachment')
+        r.reject_visual = False; r.tick(.30)
+        point = r.field('TDPetCastContext_visualCorePoint', c)
+        require(point and core_count(r) == 1 and r.handles[point]['native'] == 'AddSpecialEffect'
+                and r.handles[point]['args'][0].endswith('MoonWellTarget.mdx')
+                and tuple(r.handles[point]['args'][1:3]) == (165., 25.),
+                'Post-mortem seed failed native recovery at its original captured ground point')
+        complete(r, p)
+        require(len(r.core_creations) == 1, 'Post-mortem seed created an unnecessary second core state')
+        r.expire(); r.invoke('tdCombatVisualShutdown'); r.assert_counts(); r.flush_fx_recycle()
+        rows.append({'mode': mode, 'originalHit': original, 'groundPosition': [165., 25.],
+                     'deadTargetAttachmentAttempts': 0, 'successfulCoreCreations': 1})
+    return rows
+
+
+def verify_core_transfer_failure(script):
+    changed = replace_body(script, 'tdCombatVisualAdoptPetPoint',
+                           lambda b: insert_statement(b, '    return false\n'))
+    changed = replace_body(changed, 'tdCombatVisualAdoptPetCoreLine',
+                           lambda b: insert_statement(b, '    return false\n'))
+    rows = []
+    for skill in (21, 31):
+        r, p, target = fixture(changed, skill)
+        c, _ = begin(r, p, target); r.tick()
+        handle = next(h for h in core_handles(r, c) if h)
+        destruction = complete(r, p)
+        require(not r.entries() and not r.visual_handles and not r.lightning_handles
+                and core_count(r) == 0 and r.invoke('tdCombatVisualShortCount') == 0,
+                'Failed demoted core adoption leaked or released the wrong admission class')
+        require(r.handles[handle]['destroyed'] == destruction['time'], 'Failed core adoption delayed existing-handle destruction')
+        r.invoke('tdCombatVisualShutdown'); r.assert_counts(); r.flush_fx_recycle()
+        rows.append({'skill': skill, 'failedAfterDemotion': True, 'immediateDestruction': True, 'matchingDecorationRelease': True})
+    return rows
+
+
+def verify_shared_target_release(script):
+    rows = []
+    for count in (1, 2):
+        r = RetentionRuntime(script); r.now = 20.10
+        r.enemy(2000, x=100., lane=0); r.visible_units = [2000]
+        pets = []
+        for slot in range(count):
+            host = 1000+slot
+            r.units[host] = {**r.units[101], 'owner': 0, 'lane': 0, 'abilities': {}, 'inventory': {}}
+            pet = legal_lane_pet(r, 0, host, slot, 30)
+            pets.append(pet); r.emit(100., source=host, target=2000)
+        r.tick()
+        index = r.tables[r.globals['TDPetCastContext_tdPetActiveCastIndex']]
+        records = [r.context(index[pet])['targets'] for pet in pets]
+        require(all(len(targets) == 1 and targets[0] for targets in records), 'Shared-target fixture missed actual vortex capture')
+        target = records[0][0]
+        require(all(targets[0] == target for targets in records), 'Shared-target fixture did not share one record')
+        require(r.field('TDPetEffectTargetPosition_references', target) == count, 'Shared target initial references incorrect')
+        for ordinal, pet in enumerate(pets):
+            r.invoke('TDPet_recall', pet)
+            require(r.field('TDPetEffectTargetPosition_references', target) == count-ordinal-1,
+                    'Shared target released too many or too few references')
+        require(not r.tables[r.globals['TDPetEffectTargetState_positions']], 'Shared target lookup index survived final release')
+        r.invoke('tdCombatVisualShutdown'); r.assert_counts(); r.flush_fx_recycle()
+        rows.append({'contexts': count, 'sharedRecord': True, 'exactRelease': True, 'finalReferences': 0})
+    return rows
+
+
+def verify_core_overlap_stress(script):
+    rows = []
+    for order in ORDERS:
+        r = RetentionRuntime(script, order); r.now = 20.10
+        pets = []
+        targets = []
+        for lane in range(4):
+            for slot in range(10):
+                skill = 19+(lane*10+slot)%20
+                host, target = 1000+lane*10+slot, 2000+lane*10+slot
+                r.units[host] = {**r.units[101], 'x': lane*2000., 'owner': lane, 'lane': lane, 'abilities': {}, 'inventory': {}}
+                r.enemy(target, x=lane*2000.+100., lane=lane)
+                pets.append((legal_lane_pet(r, lane, host, slot, skill), host, target, skill))
+                targets.append(target)
+        r.visible_units = targets
+        for pet, host, target, _ in pets: r.emit(100., source=host, target=target)
+        r.tick()
+        index = r.tables[r.globals['TDPetCastContext_tdPetActiveCastIndex']]
+        require(len(index) == 40 and core_count(r) == 40, 'Forty legal mixed actives did not own40 same-window cores')
+        for pet, _, _, skill in pets:
+            point, line = core_handles(r, index[pet])
+            require(bool(point) != bool(line), 'A mixed-stress cast lacked exactly one core '+str(skill))
+            require(r.invoke('TDPetCastContext_visualSlots', index[pet]) <= 8, 'Mixed stress exceeded per-cast eight-slot bound')
+        peaks = {'core': core_count(r), 'decoration': r.invoke('tdCombatVisualShortCount')-core_count(r),
+                 'shared': r.invoke('tdCombatVisualShortCount')}
+        while index and r.now < 26.10:
+            r.tick()
+            peaks['core'] = max(peaks['core'], core_count(r))
+            peaks['decoration'] = max(peaks['decoration'], r.invoke('tdCombatVisualShortCount')-core_count(r))
+            peaks['shared'] = max(peaks['shared'], r.invoke('tdCombatVisualShortCount'))
+        require(not index and r.invoke('tdPetEffectTaskCount') == 0, 'Mixed stress retained battle ownership for art')
+        require(all(value == 0 for value in r.globals['TDPetEffectTargetPosition_references'].values()),
+                'Mixed stress retained shared target references after all casts ended')
+        require(not r.tables[r.globals['TDPetEffectTargetState_positions']], 'Mixed stress retained target lookup index')
+        r.expire()
+        for pet, _, _, _ in pets: r.invoke('TDPet_recall', pet)
+        r.invoke('tdCombatVisualShutdown'); r.assert_counts(); r.flush_fx_recycle()
+        native_buckets, core_buckets = {}, {}
+        for handle in r.handles.values():
+            window = int(handle['created'])
+            native_buckets[window] = native_buckets.get(window, 0)+1
+        for birth in r.core_creations:
+            window = int(birth['time'])
+            core_buckets[window] = core_buckets.get(window, 0)+1
+        require(all(count <= 120 for count in native_buckets.values())
+                and all(count <= 40 for count in core_buckets.values())
+                and all(count-core_buckets.get(window, 0) <= 80 for window, count in native_buckets.items()),
+                'Mixed stress exceeded classified120/40/80 native creation windows')
+        require(core_count(r) == 0 and r.fx_pool_size() == 48
+                and not r.periodic_callbacks('TDCombatVisualRuntime'), 'Mixed stress leaked core/timer/recycler ownership')
+        rows.append({'order': order, 'legalSources': 40, 'sameWindowCores': 40, 'elementalSkills': 20,
+                     'overlapPeaks': peaks, 'nativeCreationsByIntegerSecond': native_buckets,
+                     'coreCreationsByIntegerSecond': core_buckets, 'poolAfter': 48})
+    return rows
+
+
+def verify_core_demotion(script):
+    r = RetentionRuntime(script)
+    require('tdCombatVisualDemoteCore' in r.functions, 'Packed core-tail demotion API missing')
+    r.now = 19.10
+    held = reserve(r, 80)+reserve(r, 1, core=True)
+    r.now = 20.10
+    held += reserve(r, 8)
+    before = (r.invoke('tdCombatVisualShortCount'), core_count(r),
+              r.globals['TDCombatVisualRuntime_creationCount'], r.globals['TDCombatVisualRuntime_coreCreationCount'])
+    require(not r.invoke('tdCombatVisualDemoteCore'), 'Core tail bypassed full88 decoration live cap')
+    require(before == (r.invoke('tdCombatVisualShortCount'), core_count(r),
+                       r.globals['TDCombatVisualRuntime_creationCount'], r.globals['TDCombatVisualRuntime_coreCreationCount']),
+            'Rejected core demotion changed ownership or creation tickets')
+    r.invoke(held.pop())
+    live = r.invoke('tdCombatVisualShortCount')
+    tickets = (r.globals['TDCombatVisualRuntime_creationCount'], r.globals['TDCombatVisualRuntime_coreCreationCount'])
+    require(r.invoke('tdCombatVisualDemoteCore'), 'Core tail could not demote into the final decoration slot')
+    require(r.invoke('tdCombatVisualShortCount') == live and core_count(r) == 0
+            and tickets == (r.globals['TDCombatVisualRuntime_creationCount'], r.globals['TDCombatVisualRuntime_coreCreationCount'])
+            and not r.handles, 'Core demotion created art/tickets or released its existing live owner')
+    held[held.index('tdCombatVisualReleaseCore')] = 'tdCombatVisualReleaseCast'
+    release(r, held); r.assert_counts()
+    return {'fullDecorationRejected': True, 'lastDecorationSlotAccepted': True,
+            'newNativeHandles': 0, 'newCreationTickets': 0, 'sameLiveOwner': True}
 
 
 def reject_mutations(script):
@@ -1013,12 +1418,13 @@ def reject_mutations(script):
     test('zero-dwell', script.replace(anchor, anchor.replace('0.25', '0.0'), 1),
          lambda s: verify_one(s, 31), 'Delivered terminal points were not adopted')
     test('blanket-false-result-terminal', replace_body(script, 'tdPetVisualTerminal', lambda b: insert_statement(b, '    return true\n')),
-         lambda s: abort_fixture(s, 31, 'target-loss'), 'Abort path retained')
+         lambda s: abort_fixture(s, 21, 'target-loss-after-stage') if 'TDPetCastContext_visualCorePoint' in script
+         else abort_fixture(s, 31, 'target-loss'), 'Abort path retained')
     def extend_line(body):
         pattern = r'(^\s*call dispatch_TDVisualCastLine_TDVisualCastLine_detach\((\w+),[^\n]*\n)'
         return re.sub(pattern, lambda m: m.group(1)+'    set TDVisualCastLine_expiresAt['+m.group(2)+'] = getElapsedGameTime() + 0.25\n', body, count=1, flags=re.M)
     test('extended-original-line-deadline', replace_body(script, 'tdCombatVisualRetainPetLines', extend_line),
-         lambda s: verify_one(s, 21), 'Detached final line deadline was extended')
+         lambda s: verify_one(s, 30), 'Detached final line deadline was extended')
     test('missing-context-index-cleanup', replace_body(script, 'TDPetCastContext_onDestroy', lambda b: re.sub(r'^\s*call dispatch_Table_Table_removeInt\(TDPetCastContext_tdPetActiveCastIndex[^\n]*\n', '', b, count=1, flags=re.M)),
          lambda s: verify_one(s, 31), 'Context destruction retained active index')
     test('double-admission-release', replace_body(script, 'TDVisualCastLine_onDestroy', lambda b: b.replace('call tdCombatVisualReleaseCast()', 'call tdCombatVisualReleaseCast()\n    call tdCombatVisualReleaseCast()', 1)),
@@ -1054,6 +1460,34 @@ def reject_mutations(script):
         require(script.count(anchor) == 1, 'Packed constant mutation root changed '+name)
         test('raised-'+name, script.replace(anchor, anchor.replace('= '+str(value), '= '+str(value+1)), 1),
              packed_contract, 'Packed bound '+name)
+    retry_anchor = 'set TDCombatVisualData_TD_VISUAL_CORE_RETRY_INTERVAL = 0.25'
+    require(script.count(retry_anchor) == 1, 'Packed retry interval mutation root changed')
+    test('zero-core-retry-interval', script.replace(retry_anchor, retry_anchor.replace('0.25', '0.0'), 1),
+         packed_contract, 'Packed bound TDCombatVisualData_TD_VISUAL_CORE_RETRY_INTERVAL')
+    if 'TDPetCastContext_visualCoreReserved' in script:
+        test('cast-core-uses-decoration-admission', replace_body(script, 'TDPetCastContext_retryVisualCore',
+             lambda b: b.replace('tdCombatVisualAcquireCore(', 'tdCombatVisualAcquireCast(', 1)),
+             verify_reliable_cores, ('Reliable core missing/duplicated', 'One cast exceeded its one-core'))
+        test('unbounded-core-tail-demotion', replace_body(script, 'tdCombatVisualDemoteCore',
+             lambda b: insert_statement(b, '    return true\n')),
+             verify_core_demotion, 'Core tail bypassed full88 decoration live cap')
+        test('core-demotion-spends-new-ticket', replace_body(script, 'tdCombatVisualDemoteCore',
+             lambda b: insert_statement(b, '    set TDCombatVisualRuntime_creationCount = TDCombatVisualRuntime_creationCount + 1\n')),
+             verify_core_demotion, 'Rejected core demotion changed ownership or creation tickets')
+        test('wrong-class-release-after-demotion', replace_body(script, 'TDPetCastContext_retainVisualCore',
+             lambda b: b.replace('call tdCombatVisualReleaseCast()', 'call tdCombatVisualReleaseCore()', 1)),
+             verify_core_transfer_failure, ('Failed demoted core adoption leaked', 'Shared admission released twice'))
+    if 'TDPetCastContext_visualCoreReserved' in script:
+        def target_release_mutation(body, duplicate):
+            pattern = r'(^\s*call tdPetReleaseEffectTarget\([^\n]*\n)'
+            return re.sub(pattern, lambda m: m.group(1)*2 if duplicate else '', body, count=1, flags=re.M)
+        for duplicate in (False, True):
+            test('duplicate-target-release' if duplicate else 'missing-target-release',
+                 replace_body(script, 'TDPetCastContext_onDestroy', lambda b: target_release_mutation(b, duplicate)),
+                 verify_shared_target_release,
+                 ('exact target-position release', 'Shared target released',
+                  'Called TDPetEffectTargetPosition.TDPetEffectTargetPosition on invalid object.') if duplicate
+                 else ('exact target-position release', 'Shared target released'))
     return cases
 
 
@@ -1078,6 +1512,13 @@ def main():
                       ('partialTransfer', verify_partial_transfer), ('onStackCleanup', verify_on_stack_cleanup), ('overlapStress', verify_overlap_stress)],
         'admission': [('coreAdmission', verify_core_admission), ('buffAdmission', verify_buff_admission), ('buffRetry', verify_buff_retry), ('caps', verify_caps)],
         'mutations': [('compiledMutations', reject_mutations)]}
+    if 'TDPetCastContext_visualCoreReserved' in script:
+        suites['admission'] += [('sharedTargetRelease', verify_shared_target_release), ('reliableCores', verify_reliable_cores),
+                                ('castCoreRetry', verify_cast_core_retry), ('coreDemotion', verify_core_demotion),
+                                ('coreOverlapStress', verify_core_overlap_stress),
+                                ('targetCoreRetirement', verify_target_core_retirement),
+                                ('coreTransferFailure', verify_core_transfer_failure),
+                                ('postMortemSeedCore', verify_post_mortem_seed_core)]
     for group, checks in suites.items():
         if args.only and args.only != group: continue
         if group == 'mutations' and args.skip_mutations: continue

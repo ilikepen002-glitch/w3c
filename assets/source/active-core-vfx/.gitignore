@@ -1,0 +1,6 @@
+/output/
+/generated-source/
+/parsed-preview-data.json
+/validation-report.json
+
+/previews/*.gif

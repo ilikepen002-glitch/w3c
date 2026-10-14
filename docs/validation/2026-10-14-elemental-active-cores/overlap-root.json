@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "mapSHA256": "c3a50d47b9a5c47677e52ca6cb5bd8081e2f4d792385f8f63a9ba3cef3cb85bc",
+  "gateSHA256": "ea441a8aa1729b50a7ed5f994e7bc1de714a5177da0666dd97e13bd915e62332",
+  "coverage": [
+    {
+      "order": "visual-first",
+      "legalSources": 40,
+      "overlapPeaks": {
+        "shared": 120,
+        "nativePet": 120,
+        "entries": 88
+      },
+      "nativeCreationsByIntegerSecond": {
+        "20": 72,
+        "21": 80,
+        "22": 80,
+        "23": 80,
+        "24": 84
+      },
+      "newAttacksDuringDwell": 4,
+      "singleVisualTimerMax": 1,
+      "poolAfter": 48
+    },
+    {
+      "order": "battle-first",
+      "legalSources": 40,
+      "overlapPeaks": {
+        "shared": 120,
+        "nativePet": 120,
+        "entries": 88
+      },
+      "nativeCreationsByIntegerSecond": {
+        "20": 72,
+        "21": 80,
+        "22": 80,
+        "23": 80,
+        "24": 84
+      },
+      "newAttacksDuringDwell": 4,
+      "singleVisualTimerMax": 1,
+      "poolAfter": 48
+    }
+  ]
+}

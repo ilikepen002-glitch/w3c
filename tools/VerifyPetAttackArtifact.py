@@ -39,6 +39,7 @@ class PetAttackRuntime(EquipmentTrialRuntime):
         self.four_slot_contract = 'tdPetSkillIsAttackPassive' in self.functions
         self.visual_handles = {}
         self.lightning_handles = {}
+        self.lightning_moves = []
         self.visual_serial = 100000
         self.initialize_match()
         self.timer_trace.clear()
@@ -109,6 +110,12 @@ class PetAttackRuntime(EquipmentTrialRuntime):
             return True, self.visual_serial
         if name == 'SetLightningColor':
             require(args[0] in self.lightning_handles, 'Unknown lightning color owner')
+            return True, True
+        if name == 'MoveLightningEx':
+            require(len(args) == 8 and args[0] in self.lightning_handles, 'Unknown/non-live lightning move owner')
+            previous = self.lightning_handles[args[0]]
+            self.lightning_handles[args[0]] = (previous[0], *args[1:])
+            self.lightning_moves.append((self.now, *args))
             return True, True
         if name == 'DestroyLightning':
             require(args[0] in self.lightning_handles, 'Unknown/double-owned lightning destruction')

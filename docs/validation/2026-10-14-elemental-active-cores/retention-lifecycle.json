@@ -1,0 +1,266 @@
+{
+  "status": "PASS",
+  "mapSHA256": "c3a50d47b9a5c47677e52ca6cb5bd8081e2f4d792385f8f63a9ba3cef3cb85bc",
+  "packedJassSHA256": "1f18e8034415ffca77f4b5741f0488fe2472a4be666c16d0e3ac29e9415a49c3",
+  "gateSHA256": "f82c5ce26c954ab35d8a793098e82ca62e4be47c5f2d1887c6ec8363dc391c03",
+  "boundary": "Targeted actual-packed spirit terminal retention, cleanup and admission gate.\n\nAll ownership, admission, terminal decisions, cleanup and timer bodies execute the\nsupplied map's JASS through VerifyElementalVfxArtifact.VfxRuntime. Python observes\nproduction fields and delivers controlled native clocks/handles/collections only.\nNo Warcraft rendering, particle-tail, attachment-quality or FPS claim is made.\n",
+  "bounds": {
+    "TDCombatVisualData_TD_VISUAL_SHORT_LIMIT": 128,
+    "TDCombatVisualData_TD_VISUAL_HIT_LIMIT": 32,
+    "TDCombatVisualData_TD_VISUAL_NEW_PER_SECOND": 120,
+    "TDCombatVisualData_TD_VISUAL_MOVING_LIMIT": 8,
+    "TDCombatVisualData_TD_VISUAL_CORE_LIMIT": 40,
+    "TDCombatVisualData_TD_VISUAL_DECORATION_LIMIT": 88,
+    "TDCombatVisualData_TD_VISUAL_CORE_NEW_PER_SECOND": 40,
+    "TDCombatVisualData_TD_VISUAL_DECORATION_NEW_PER_SECOND": 80,
+    "TDCombatVisualData_TD_VISUAL_CORE_RETRY_INTERVAL": 0.25,
+    "TDPetCastContext_TD_PET_EFFECT_VISUAL_LIMIT": 128,
+    "TDPetActiveVisualData_TD_PET_VISUAL_TERMINAL_DWELL": 0.25
+  },
+  "coverage": {
+    "explicitCleanup": [
+      {
+        "action": "clear-pet",
+        "synchronous": true,
+        "otherSourcePreserved": true
+      },
+      {
+        "action": "forget-source",
+        "synchronous": true,
+        "otherSourcePreserved": true
+      },
+      {
+        "action": "clear-lane",
+        "synchronous": true,
+        "otherSourcePreserved": true
+      },
+      {
+        "action": "shutdown",
+        "synchronous": true,
+        "otherSourcePreserved": false
+      },
+      {
+        "action": "recall",
+        "synchronous": true,
+        "otherSourcePreserved": true
+      },
+      {
+        "action": "invalidate",
+        "synchronous": true,
+        "otherSourcePreserved": true
+      },
+      {
+        "action": "reroll",
+        "synchronous": true,
+        "otherSourcePreserved": true
+      },
+      {
+        "action": "work-start",
+        "synchronous": true,
+        "otherSourcePreserved": true
+      },
+      {
+        "action": "tower-removed",
+        "synchronous": true,
+        "otherSourcePreserved": true
+      },
+      {
+        "action": "lane-defeat",
+        "synchronous": true,
+        "otherSourcePreserved": true
+      }
+    ],
+    "passiveCleanup": [
+      {
+        "action": "host-death",
+        "order": "visual-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "host-removal",
+        "order": "visual-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "owner-transfer",
+        "order": "visual-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "lane-inactive",
+        "order": "visual-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "lane-defeat",
+        "order": "visual-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "lane-finish",
+        "order": "visual-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "epoch",
+        "order": "visual-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "trial-generation",
+        "order": "visual-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "trial-token",
+        "order": "visual-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "trial-deadline",
+        "order": "visual-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "host-death",
+        "order": "battle-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "host-removal",
+        "order": "battle-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "owner-transfer",
+        "order": "battle-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "lane-inactive",
+        "order": "battle-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "lane-defeat",
+        "order": "battle-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "lane-finish",
+        "order": "battle-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "epoch",
+        "order": "battle-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "trial-generation",
+        "order": "battle-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "trial-token",
+        "order": "battle-first",
+        "byNextQuantum": true
+      },
+      {
+        "action": "trial-deadline",
+        "order": "battle-first",
+        "byNextQuantum": true
+      }
+    ],
+    "ownerReuse": [
+      {
+        "order": "visual-first",
+        "classIdReused": 1,
+        "oldSerial": 3,
+        "freshSerial": 4,
+        "staleEntriesRejected": 3
+      },
+      {
+        "order": "battle-first",
+        "classIdReused": 1,
+        "oldSerial": 3,
+        "freshSerial": 4,
+        "staleEntriesRejected": 3
+      }
+    ],
+    "serialExhaustion": [
+      {
+        "when": "before-start",
+        "order": "visual-first",
+        "zeroTail": true
+      },
+      {
+        "when": "before-transfer",
+        "order": "visual-first",
+        "zeroTail": true
+      },
+      {
+        "when": "before-start",
+        "order": "battle-first",
+        "zeroTail": true
+      },
+      {
+        "when": "before-transfer",
+        "order": "battle-first",
+        "zeroTail": true
+      }
+    ],
+    "partialTransfer": {
+      "accepted": 1,
+      "failedImmediate": 2,
+      "oneOwnerPerHandle": true
+    },
+    "onStackCleanup": {
+      "executing": true,
+      "callback": 3,
+      "nativeTimerDestroyed": false
+    },
+    "overlapStress": [
+      {
+        "order": "visual-first",
+        "legalSources": 40,
+        "overlapPeaks": {
+          "shared": 120,
+          "nativePet": 120,
+          "entries": 88
+        },
+        "nativeCreationsByIntegerSecond": {
+          "20": 72,
+          "21": 80,
+          "22": 80,
+          "23": 80,
+          "24": 84
+        },
+        "newAttacksDuringDwell": 4,
+        "singleVisualTimerMax": 1,
+        "poolAfter": 48
+      },
+      {
+        "order": "battle-first",
+        "legalSources": 40,
+        "overlapPeaks": {
+          "shared": 120,
+          "nativePet": 120,
+          "entries": 88
+        },
+        "nativeCreationsByIntegerSecond": {
+          "20": 72,
+          "21": 80,
+          "22": 80,
+          "23": 80,
+          "24": 84
+        },
+        "newAttacksDuringDwell": 4,
+        "singleVisualTimerMax": 1,
+        "poolAfter": 48
+      }
+    ]
+  },
+  "completeGate": false,
+  "legalFixtureBoundary": "All active battle fixtures use complete legal four-slot pets. Opening a fifth slot is impossible; the existing open-slot invalidation hook is source-fenced by the separate mechanics gate, not fabricated as an active-tail fixture."
+}

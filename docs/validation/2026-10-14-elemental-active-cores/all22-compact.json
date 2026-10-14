@@ -1,0 +1,2159 @@
+{
+  "status": "PASS",
+  "skills": [
+    11,
+    12,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38
+  ],
+  "modes": [
+    "normal",
+    "null",
+    "full",
+    "full-rate",
+    "decor-live",
+    "decor-rate",
+    "core-live",
+    "core-rate",
+    "moving-live",
+    "moving-rate",
+    "one-live",
+    "one-rate"
+  ],
+  "cases": [
+    {
+      "skill": 11,
+      "mode": "normal",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 11,
+      "mode": "null",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 11,
+      "mode": "full",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 11,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 11,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 11,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 11,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 11,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 11,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 11,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 11,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 11,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "ed99da68398432f285b904fa1fd42e9486b73aaf8675a8b8b4cd03cb48234b29"
+    },
+    {
+      "skill": 12,
+      "mode": "normal",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 12,
+      "mode": "null",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 12,
+      "mode": "full",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 12,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 12,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 12,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 12,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 12,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 12,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 12,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 12,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 12,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "bd566b9c624a4b67757908b22cab0fb9ca1dfeed79b2bf704c556d49940e2968"
+    },
+    {
+      "skill": 19,
+      "mode": "normal",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 19,
+      "mode": "null",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 19,
+      "mode": "full",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 19,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 19,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 19,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 19,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 19,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 19,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 19,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 19,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 19,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 6,
+      "ticksCompared": 131,
+      "traceSHA256": "520096a18f9cb63354da775bfe32259e54a70bf130b5456f1787243d7cc9068a"
+    },
+    {
+      "skill": 20,
+      "mode": "normal",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 20,
+      "mode": "null",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 20,
+      "mode": "full",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 20,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 20,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 20,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 20,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 20,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 20,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 20,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 20,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 20,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "536699fe8eb1ba00372469057b123466b109d7c54d3a20da55e93eecf6e51693"
+    },
+    {
+      "skill": 21,
+      "mode": "normal",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 21,
+      "mode": "null",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 21,
+      "mode": "full",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 21,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 21,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 21,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 21,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 21,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 21,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 21,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 21,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 21,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "e7859909ef26b82f7d9fcb9b6c974aa3caaac221285e4b5a5d40c274e744097b"
+    },
+    {
+      "skill": 22,
+      "mode": "normal",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 22,
+      "mode": "null",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 22,
+      "mode": "full",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 22,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 22,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 22,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 22,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 22,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 22,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 22,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 22,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 22,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "973bf86ebd79886493cbc617216a6aadd4a8c1de9d8e52441319015d74b4b990"
+    },
+    {
+      "skill": 23,
+      "mode": "normal",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 23,
+      "mode": "null",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 23,
+      "mode": "full",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 23,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 23,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 23,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 23,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 23,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 23,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 23,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 23,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 23,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "722ae15ae745cb08fa338bf6a33d7d7d2b8ed9eff62ad131796bf28fe10b34e4"
+    },
+    {
+      "skill": 24,
+      "mode": "normal",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 24,
+      "mode": "null",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 24,
+      "mode": "full",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 24,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 24,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 24,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 24,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 24,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 24,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 24,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 24,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 24,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 9,
+      "ticksCompared": 131,
+      "traceSHA256": "f169f1e63a313f5366f393a6cfa9d840a67c036950a076f142ffcbffa618154e"
+    },
+    {
+      "skill": 25,
+      "mode": "normal",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 25,
+      "mode": "null",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 25,
+      "mode": "full",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 25,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 25,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 25,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 25,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 25,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 25,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 25,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 25,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 25,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "d3a9803ed3ca303eac6c1ac1213f34c0a074b88f8ab15646c4d5731b80ba69bb"
+    },
+    {
+      "skill": 26,
+      "mode": "normal",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 26,
+      "mode": "null",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 26,
+      "mode": "full",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 26,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 26,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 26,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 26,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 26,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 26,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 26,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 26,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 26,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "b21c16fee9c0a43b3a1735ab26f3c76972d5b7a16b5fcbafdcaf67393ab648c5"
+    },
+    {
+      "skill": 27,
+      "mode": "normal",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 27,
+      "mode": "null",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 27,
+      "mode": "full",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 27,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 27,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 27,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 27,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 27,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 27,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 27,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 27,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 27,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "fd62ef69c642178e64a59e0072899687cb16926097df052a083e3bf35eb8b50e"
+    },
+    {
+      "skill": 28,
+      "mode": "normal",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 28,
+      "mode": "null",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 28,
+      "mode": "full",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 28,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 28,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 28,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 28,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 28,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 28,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 28,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 28,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 28,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 16,
+      "ticksCompared": 131,
+      "traceSHA256": "98769c28b349d979f13c6bc1f819476757d52356c8a4975ddab7b72e89f2404b"
+    },
+    {
+      "skill": 29,
+      "mode": "normal",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 29,
+      "mode": "null",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 29,
+      "mode": "full",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 29,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 29,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 29,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 29,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 29,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 29,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 29,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 29,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 29,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "ab7ffd8e252d2572b4cf2606cea7267b29fcc0d9c36f36dec6992da046108ca5"
+    },
+    {
+      "skill": 30,
+      "mode": "normal",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 30,
+      "mode": "null",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 30,
+      "mode": "full",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 30,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 30,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 30,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 30,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 30,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 30,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 30,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 30,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 30,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 96,
+      "ticksCompared": 131,
+      "traceSHA256": "c47f9f7111f4a10cd849e43ac5f2ea51aa38a954bede91a8b69a897f2f8038bd"
+    },
+    {
+      "skill": 31,
+      "mode": "normal",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 31,
+      "mode": "null",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 31,
+      "mode": "full",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 31,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 31,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 31,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 31,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 31,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 31,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 31,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 31,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 31,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 4,
+      "ticksCompared": 131,
+      "traceSHA256": "54b6d3c295a8ef6beec6001281d8366d08dd8c5aa6c251bfd6ded2b2b0a50500"
+    },
+    {
+      "skill": 32,
+      "mode": "normal",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 32,
+      "mode": "null",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 32,
+      "mode": "full",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 32,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 32,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 32,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 32,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 32,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 32,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 32,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 32,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 32,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 12,
+      "ticksCompared": 131,
+      "traceSHA256": "2304fcfbf3609a25105ffdf43d1f112d7576feeca747ec01be5c018442ffb856"
+    },
+    {
+      "skill": 33,
+      "mode": "normal",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 33,
+      "mode": "null",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 33,
+      "mode": "full",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 33,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 33,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 33,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 33,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 33,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 33,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 33,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 33,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 33,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 48,
+      "ticksCompared": 131,
+      "traceSHA256": "ab6d13a652094a63d39540f70e9b2566a9ced26a5d8fffc4ccea8811452c8b04"
+    },
+    {
+      "skill": 34,
+      "mode": "normal",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 34,
+      "mode": "null",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 34,
+      "mode": "full",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 34,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 34,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 34,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 34,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 34,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 34,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 34,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 34,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 34,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 28,
+      "ticksCompared": 131,
+      "traceSHA256": "72bc1cd64a372d6928c294dfea207803661142aca6e13f0ac32626f9cc033999"
+    },
+    {
+      "skill": 35,
+      "mode": "normal",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 35,
+      "mode": "null",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 35,
+      "mode": "full",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 35,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 35,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 35,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 35,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 35,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 35,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 35,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 35,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 35,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 1,
+      "ticksCompared": 131,
+      "traceSHA256": "862218be5a1662a25c8240523d8b8714bc5ee580b187930c34369b74308954fe"
+    },
+    {
+      "skill": 36,
+      "mode": "normal",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 36,
+      "mode": "null",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 36,
+      "mode": "full",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 36,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 36,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 36,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 36,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 36,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 36,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 36,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 36,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 36,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 8,
+      "ticksCompared": 131,
+      "traceSHA256": "c5f85348491cf2e62534f228d871b22da12e82a9f9461e0dc24025912414d666"
+    },
+    {
+      "skill": 37,
+      "mode": "normal",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 37,
+      "mode": "null",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 37,
+      "mode": "full",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 37,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 37,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 37,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 37,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 37,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 37,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 37,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 37,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 37,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 0,
+      "ticksCompared": 131,
+      "traceSHA256": "17891d3df3acc1ba64cfa43b265c3d07071c559f777cce1c9c07b1b151dada63"
+    },
+    {
+      "skill": 38,
+      "mode": "normal",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    },
+    {
+      "skill": 38,
+      "mode": "null",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    },
+    {
+      "skill": 38,
+      "mode": "full",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    },
+    {
+      "skill": 38,
+      "mode": "full-rate",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    },
+    {
+      "skill": 38,
+      "mode": "decor-live",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    },
+    {
+      "skill": 38,
+      "mode": "decor-rate",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    },
+    {
+      "skill": 38,
+      "mode": "core-live",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    },
+    {
+      "skill": 38,
+      "mode": "core-rate",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    },
+    {
+      "skill": 38,
+      "mode": "moving-live",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    },
+    {
+      "skill": 38,
+      "mode": "moving-rate",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    },
+    {
+      "skill": 38,
+      "mode": "one-live",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    },
+    {
+      "skill": 38,
+      "mode": "one-rate",
+      "identical": true,
+      "hits": 24,
+      "ticksCompared": 131,
+      "traceSHA256": "fe9e012fe4b3e6826e79d91b47f55e23afb2517531be217509783ce6e093b4e2"
+    }
+  ],
+  "mapSHA256": "c3a50d47b9a5c47677e52ca6cb5bd8081e2f4d792385f8f63a9ba3cef3cb85bc",
+  "baselineSHA256": "f28f375462e64ea08e159eea88e386582cdcb1e2b3dc448fe979108a40468a13",
+  "boundary": "All 22 legal four-slot actives, real packed battle traces under visual quotas.\nOnly the existing replay's native clock/handles/collections/engine callbacks are\nboundaries. Damage, CD, RNG, targets, control and visual admissions execute JASS.\nNo Warcraft rendering, attachment placement or FPS assertion.\n",
+  "fullReportSHA256": "4d959a62721cb525bd708182a69ff6e403c95c8d6a4bbbfdc05d53e61a41d96a"
+}

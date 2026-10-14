@@ -52,7 +52,7 @@ import TDPetActiveVisualData
 @Test function terminalVisualRetentionRequiresDeliveredWhitelistedStage()
 	for skill = 19 to 38
 		for stage = 0 to 6
-			let expected = ((skill == 21 or skill == 22 or skill == 31 or skill == 33 or skill == 38) and stage == 4) or (skill == 24 and stage == 6) or (skill == 34 and stage == 3) or (skill == 30 and stage > 0)
+			let expected = ((skill == 19 or skill == 32 or skill == 35 or skill == 36) and stage == 1) or ((skill == 21 or skill == 22 or skill == 31 or skill == 33 or skill == 38) and stage == 4) or (skill == 24 and stage == 6) or (skill == 34 and stage == 3) or (skill == 30 and stage > 0)
 			tdPetVisualTerminal(skill, stage, 3, 4.0, 4.0, 4.0).assertEquals(expected)
 	for skill = 21 to 33
 		if skill == 21 or skill == 22 or skill == 31 or skill == 33

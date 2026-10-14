@@ -5,7 +5,7 @@ import TDPetActiveVisualData
 import GameTimer
 
 // Native 1.27 resources from the locked stdlib Abilities catalogue. Each stage
-// owns <=8 handles and the shared context cap is 128; omitted art never gates
+// reserves one of its <=8 slots for a core within the shared 40+88 budget; omitted art never gates
 // selection, damage, control or cooldown. Only delivered terminal point/line
 // handles may transfer to the existing short-visual expiry owner.
 public constant string TD_PET_VFX_BLADE = "Abilities\\Weapons\\GlaiveMissile\\GlaiveMissile.mdx"
@@ -43,6 +43,23 @@ public constant string TD_PET_VFX_METEOR_BODY = "Abilities\\Weapons\\FireBallMis
 public constant string TD_PET_VFX_METAL_SPARK = "Abilities\\Weapons\\Rifle\\RifleImpact.mdx"
 public constant string TD_PET_VFX_SEED_CORE = "Abilities\\Spells\\NightElf\\MoonWell\\MoonWellTarget.mdx"
 
+// Neutral, immediate looping region cores. Native stage bursts remain below
+// and run only from delivered battle callbacks, never from a baked model clock.
+public constant string TD_PET_VFX_FROST_DOMAIN = "war3mapImported\\TDPetVfxFrostDomain.mdx"
+public constant string TD_PET_VFX_STARFALL_DOMAIN = "war3mapImported\\TDPetVfxStarfallDomain.mdx"
+public constant string TD_PET_VFX_SWORD_DOMAIN = "war3mapImported\\TDPetVfxSwordDomain.mdx"
+public constant string TD_PET_VFX_VORTEX_DOMAIN = "war3mapImported\\TDPetVfxVortexDomain.mdx"
+public constant string TD_PET_VFX_SEAL_DOMAIN = "war3mapImported\\TDPetVfxEarthSealDomain.mdx"
+public constant string TD_PET_VFX_FLOWER_DOMAIN = "war3mapImported\\TDPetVfxFlowerBloomLoop.mdx"
+public constant string TD_PET_VFX_LOTUS_DOMAIN = "war3mapImported\\TDPetVfxLotusBurstLoop.mdx"
+
+function TDPetCastContext.visualCoreTrace(vec2 startPoint, vec2 endPoint, int element, real alpha)
+	let lightningCode = element == 2 ? "DRAL" : (element == 4 ? "AFOD" : (element == 5 ? "SPLK" : "DRAM"))
+	let red = element == 2 ? 0.25 : (element == 3 ? 0.50 : 1.0)
+	let green = element == 4 ? 0.30 : (element == 5 ? 0.68 : 0.95)
+	let blue = element == 1 ? 0.30 : (element == 2 ? 0.35 : (element == 3 ? 1.0 : 0.15))
+	this.lineCore(lightningCode, startPoint.withTerrainZ(45.0), endPoint.withTerrainZ(45.0), red, green, blue, alpha)
+
 public function TDPetCastContext.visualRing(string model, vec2 point, real radius)
 	this.clearVisuals()
 	this.addVisual(model, point)
@@ -67,31 +84,30 @@ function TDPetCastContext.visualTrace(vec2 startPoint, vec2 endPoint, int elemen
 public function TDPetCastContext.visualInstantLine(boolean returning)
 	this.clearVisuals()
 	let endpoint = this.origin + this.direction * (this.skill == 19 ? 650.0 : 600.0)
-	this.visualTrace(returning ? endpoint : this.origin, returning ? this.origin : endpoint, this.skill == 19 ? 1 : 3)
+	this.visualCoreTrace(returning ? endpoint : this.origin, returning ? this.origin : endpoint, this.skill == 19 ? 1 : 3, 0.95)
 	this.addVisual(this.skill == 19 ? TD_PET_VFX_BLADE : TD_PET_VFX_TIDE, returning ? this.origin : endpoint)
 	this.addVisual(this.skill == 19 ? TD_PET_VFX_SWORD : TD_PET_VFX_RETURN, this.origin + this.direction * 300.0)
 
 public function TDPetCastContext.visualStrike(vec2 point)
 	this.clearVisuals()
 	if this.skill == 20
-		this.addVisual(TD_PET_VFX_ARMOR, point)
+		this.pointCore(TD_PET_VFX_ARMOR, point, this.primary)
 		this.addVisual(TD_PET_VFX_SWORD, point)
 		this.addVisual(TD_PET_VFX_METAL_SPARK, point + vec2(30.0, 0.0))
 		this.addVisual(TD_PET_VFX_METAL_SPARK, point + vec2(-30.0, 0.0))
 		this.visualTrace(point - this.direction * 120.0, point, 1)
 	else if this.skill == 23
-		this.addVisual(TD_PET_VFX_ROOT, point)
+		this.pointCore(TD_PET_VFX_ROOT, point, this.primary)
 		this.addVisual(TD_PET_VFX_POISON, point + vec2(35.0, 20.0))
 		this.addVisual(TD_PET_VFX_POISON, point + vec2(-35.0, -20.0))
 		this.addVisual(TD_PET_VFX_SEED_CORE, point)
 	else if this.skill == 27
+		this.pointCore(TD_PET_VFX_WARNING, point, this.primary)
 		this.addVisual(TD_PET_VFX_COLD, point)
-		this.addVisual(TD_PET_VFX_WARNING, point)
 		this.visualTrace(this.origin, point, 3)
 	else if this.skill == 35
+		this.pointCore(TD_PET_VFX_FAULT_RIDGE, point, null)
 		let movingCore = this.addMoving(0, TD_PET_VFX_FAULT_RIDGE, point.withTerrainZ(), this.direction.getAngle(), 0.60)
-		if not movingCore
-			this.addVisual(TD_PET_VFX_FAULT_RIDGE, point)
 		this.addVisual(TD_PET_VFX_ROCK, point)
 		this.addVisual(TD_PET_VFX_METAL_SPARK, point + vec2(55.0, 0.0))
 		if movingCore
@@ -100,14 +116,12 @@ public function TDPetCastContext.visualStrike(vec2 point)
 public function TDPetCastContext.visualSwordCut(vec2 point)
 	this.clearVisuals()
 	let start = point + tdPetVisualSwordOffset(this.stage)
-	this.visualTrace(start, point, 1)
+	this.visualCoreTrace(start, point, 1, 0.95)
 	this.addVisual(TD_PET_VFX_BLADE, start)
 	this.addVisual(TD_PET_VFX_SWORD, point)
 
 public function TDPetCastContext.visualSwordDrop()
 	this.clearVisuals()
-	if this.visualFrame == 0
-		this.addVisual(TD_PET_VFX_SWORD_ARRAY, this.center)
 	this.addVisual(TD_PET_VFX_GOLD, this.center)
 	for index = 0 to 3
 		this.addVisual(TD_PET_VFX_SWORD, this.center + tdPetVisualSwordOffset(index))
@@ -118,14 +132,20 @@ public function TDPetCastContext.visualSeedPulse(vec2 point)
 	if this.stage == 2
 		return
 	this.clearVisuals()
-	this.addVisual(TD_PET_VFX_SEED, point)
+	if this.primaryValid()
+		this.pointCore(TD_PET_VFX_SEED, point, this.primary)
+	else
+		// Area admission can legally start after the original primary died.
+		this.pointCore(TD_PET_VFX_SEED_CORE, this.lastPosition(0), null)
 	this.addVisual(TD_PET_VFX_SEED_CORE, point)
 	this.addVisual(TD_PET_VFX_POISON, point + vec2(35.0, 0.0))
 	this.addVisual(TD_PET_VFX_POISON, point + vec2(-35.0, 0.0))
 
 public function TDPetCastContext.visualSeedSpread(vec2 point)
 	this.clearVisuals()
-	this.addVisual(TD_PET_VFX_SEED_CORE, point)
+	// The primary seed is over. The immutable captured spread origin, not a
+	// live target or a new enemy, owns the remaining weak-generation subject.
+	this.pointCore(TD_PET_VFX_SEED_CORE, point, null)
 
 public function TDPetCastContext.visualSeedBranch(vec2 startPoint, vec2 endPoint)
 	// The caller has already selected and remembered this exact weak seed.
@@ -145,6 +165,9 @@ public function TDPetCastContext.visualRoadSegment(int current)
 	let facing = tdPetVisualRoadFacing(previous, point, this.direction)
 	let model = this.skill == 26 ? TD_PET_VFX_VERDANT_ROOT : TD_PET_VFX_FAULT_RIDGE
 	let scale = this.skill == 26 ? 0.85 : 0.70
+	// A bounded root/fault chord reuses its handle at the actual node. Optional
+	// moving silhouettes cannot suppress it when the global eight Fx are busy.
+	this.visualCoreTrace(point - facing.direction(this.skill == 26 ? 145.0 : 155.0), point + facing.direction(this.skill == 26 ? 145.0 : 155.0), this.skill == 26 ? 2 : 5, 0.95)
 	if current == 0
 		this.addMoving(0, model, point.withTerrainZ(), facing, scale)
 	else
@@ -161,8 +184,7 @@ public function TDPetCastContext.visualRoadSegment(int current)
 
 public function TDPetCastContext.visualFreeze()
 	this.clearVisuals()
-	if this.visualFrame < 2
-		this.addVisual(TD_PET_VFX_FREEZE, this.center)
+	this.addVisual(TD_PET_VFX_FREEZE, this.center)
 	this.moveMoving(0, (this.center + vec2(90.0, 0.0)).withTerrainZ(), this.direction.getAngle(), 0.55)
 	this.moveMoving(1, (this.center - vec2(90.0, 0.0)).withTerrainZ(), this.direction.getAngle(), 0.55)
 
@@ -173,21 +195,19 @@ public function TDPetCastContext.visualIceBreak()
 public function TDPetCastContext.visualVortexPulse()
 	this.visualPulseAt = getElapsedGameTime()
 	this.clearVisuals()
-	if this.visualFrame == 0
-		this.addVisual(TD_PET_VFX_VORTEX, this.center)
 	this.addVisual(TD_PET_VFX_SHATTER, this.center)
 	this.visualTrace(this.center + vec2(160.0, 0.0), this.center + vec2(0.0, 160.0), 3)
 	this.visualTrace(this.center - vec2(160.0, 0.0), this.center - vec2(0.0, 160.0), 3)
 
 public function TDPetCastContext.visualBrandPulse(vec2 point)
 	this.clearVisuals()
-	this.addVisual(TD_PET_VFX_BRAND, point)
+	this.pointCore(TD_PET_VFX_BRAND, point, this.primary)
 	this.addVisual(TD_PET_VFX_GROUND_FIRE, point + vec2(25.0, 0.0))
 	this.addVisual(TD_PET_VFX_GROUND_FIRE, point - vec2(25.0, 0.0))
 
 public function TDPetCastContext.visualLotus()
 	this.clearVisuals()
-	this.addVisual(TD_PET_VFX_LOTUS, this.center)
+	this.pointCore(TD_PET_VFX_LOTUS_DOMAIN, this.center, null)
 	for index = 0 to 3
 		this.addVisual(TD_PET_VFX_BRAND, this.center + tdPetVisualSwordOffset(index))
 	this.visualTrace(this.center, this.center + vec2(120.0, 0.0), 4)
@@ -205,6 +225,9 @@ public function TDPetCastContext.visualMeteorImpact()
 
 public function TDPetCastContext.visualChainBurst(vec2 point)
 	this.clearVisuals()
+	// This one central burst chord follows the consumed mark. The four marked
+	// target meshes remain optional and never occupy four reserved core slots.
+	this.visualCoreTrace(point - this.direction * 170.0, point + this.direction * 170.0, 4, 0.95)
 	this.addVisual(TD_PET_VFX_EXPLODE, point)
 	this.addVisual(TD_PET_VFX_GROUND_FIRE, point)
 	if this.stage + 1 < this.markCount
@@ -213,6 +236,7 @@ public function TDPetCastContext.visualChainBurst(vec2 point)
 public function TDPetCastContext.visualRockFan()
 	this.clearVisuals()
 	let side = vec2(-this.direction.y, this.direction.x)
+	this.visualCoreTrace(this.origin + this.direction * 40.0, this.origin + this.direction * 500.0, 5, 0.95)
 	this.addMoving(0, TD_PET_VFX_FAULT_RIDGE, (this.origin + this.direction * 300.0).withTerrainZ(), this.direction.getAngle(), 0.60)
 	for index = -1 to 1
 		let point = this.origin + this.direction * 350.0 + side * (index * 200.0)
@@ -229,19 +253,24 @@ function TDPetCastContext.visualSealPulse()
 
 public function TDPetCastContext.visualPrepare()
 	if this.skill == 22
+		this.pointCore(TD_PET_VFX_SWORD_DOMAIN, this.center, null)
 		this.visualFrame = 1
 		if not this.addMoving(0, TD_PET_VFX_SWORD_ARRAY, this.center.withTerrainZ(260.0), this.direction.getAngle(), 0.75)
 			this.visualFrame = 0
-			this.addVisual(TD_PET_VFX_SWORD_ARRAY, this.center)
 		for index = 0 to 3
 			this.addVisual(TD_PET_VFX_METAL_SPARK, this.center + tdPetVisualSwordOffset(index))
 	else if this.skill == 24
 		this.visualSeedPulse(this.center)
 	else if this.skill == 25
 		this.visualFrame = 0
-		for flower = 0 to 2
+		// Only the first captured 100-radius flower is the guaranteed subject;
+		// the other two independent real positions are decorative, never a fake
+		// continuous field between separate damage circles.
+		this.pointCore(TD_PET_VFX_FLOWER_DOMAIN, this.road.pointAt(0), null)
+		for flower = 1 to 2
 			this.addVisual(TD_PET_VFX_FLOWER, this.road.pointAt(flower))
 	else if this.skill == 29
+		this.pointCore(TD_PET_VFX_FROST_DOMAIN, this.center, null)
 		this.visualFrame = 0
 		if this.addMoving(0, TD_PET_VFX_FREEZE, (this.center + vec2(180.0, 0.0)).withTerrainZ(100.0), this.direction.getAngle(), 0.55)
 			this.visualFrame += 1
@@ -254,26 +283,40 @@ public function TDPetCastContext.visualPrepare()
 		this.visualTrace(this.center + vec2(180.0, 0.0), this.center + vec2(0.0, 180.0), 3)
 		this.visualTrace(this.center - vec2(180.0, 0.0), this.center - vec2(0.0, 180.0), 3)
 	else if this.skill == 30
+		this.pointCore(TD_PET_VFX_VORTEX_DOMAIN, this.center, null)
 		this.visualFrame = 1
 		if not this.addMoving(0, TD_PET_VFX_VORTEX, this.center.withTerrainZ(), this.direction.getAngle(), 0.80)
 			this.visualFrame = 0
-			this.addVisual(TD_PET_VFX_VORTEX, this.center)
 	else if this.skill == 31
-		this.addVisual(TD_PET_VFX_BRAND, this.center)
+		this.pointCore(TD_PET_VFX_BRAND, this.center, this.primary)
 	else if this.skill == 33
+		this.pointCore(TD_PET_VFX_STARFALL_DOMAIN, this.center, null)
 		let movingCore = this.addMoving(0, TD_PET_VFX_METEOR_BODY, this.center.withTerrainZ(520.0), this.direction.getAngle(), 1.10)
 		if not movingCore
 			this.addVisual(TD_PET_VFX_METEOR_BODY, this.center)
 		for index = 0 to (movingCore ? 3 : 2)
 			this.addVisual(TD_PET_VFX_MARK, this.center + tdPetVisualSwordOffset(index) * 1.25)
 	else if this.skill == 34
+		let point = this.lastPosition(0)
+		this.visualCoreTrace(point - this.direction * 170.0, point + this.direction * 170.0, 4, 0.40)
 		for index = 0 to this.markCount - 1
 			this.addVisual(TD_PET_VFX_MARK, this.lastPosition(index))
 	else if this.skill == 37
+		this.pointCore(TD_PET_VFX_SEAL_DOMAIN, this.center, null)
 		this.visualFrame = 0
 		this.visualSealPulse()
 
 public function TDPetCastContext.visualTick(real now)
+	if this.visualCoreMode == 2 and not this.primaryValid()
+		if this.skill == 24
+			// The existing target-position owner captures death/removal before this
+			// turn. Keep the continuing seed at that exact last known ground point.
+			this.pointCore(TD_PET_VFX_SEED_CORE, this.lastPosition(0), null)
+		else
+			// Armor/root/cold/brand on a retired target are no longer real buffs.
+			this.clearVisualCore()
+	// Missing cores retry only inside this still-valid cast and its real expiry.
+	this.retryVisualCore(now)
 	let elapsed = now - this.createdAt
 	if this.skill == 22
 		this.moveMoving(0, this.center.withTerrainZ(tdPetVisualSwordHeight(elapsed, this.stage)), this.direction.getAngle(), 0.75)

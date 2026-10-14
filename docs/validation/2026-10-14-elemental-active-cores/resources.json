@@ -1,0 +1,46 @@
+{
+  "mapSHA256": "c3a50d47b9a5c47677e52ca6cb5bd8081e2f4d792385f8f63a9ba3cef3cb85bc",
+  "packedCoreAssets": [
+    {
+      "path": "war3mapImported\\TDPetVfxSwordDomain.mdx",
+      "bytes": 22676,
+      "sha256": "da67d272961c98df05a88b36df23d90a8771e7bc77f4d292b4dab72cda8d1c81"
+    },
+    {
+      "path": "war3mapImported\\TDPetVfxFrostDomain.mdx",
+      "bytes": 15974,
+      "sha256": "b2bd96a9334bbe79387f0258564b1ce0d44b5e3f86c1eb4767551edd54b49b76"
+    },
+    {
+      "path": "war3mapImported\\TDPetVfxVortexDomain.mdx",
+      "bytes": 20080,
+      "sha256": "03576f1631eddc62026b6d9aca78ecd084c6ae366e287a6c5a7862cb39d0b6bc"
+    },
+    {
+      "path": "war3mapImported\\TDPetVfxStarfallDomain.mdx",
+      "bytes": 12038,
+      "sha256": "4aa8fd25e7c823f32cd2c5df703df3c908a71be9ee3c124d08e729b1e9d42f5a"
+    },
+    {
+      "path": "war3mapImported\\TDPetVfxEarthSealDomain.mdx",
+      "bytes": 14132,
+      "sha256": "e980c7ea36673660702bf8db6404e0bd1d89fead8fc1ec3d3bf28ec89d8278a9"
+    },
+    {
+      "path": "war3mapImported\\TDPetVfxFlowerBloomLoop.mdx",
+      "bytes": 13332,
+      "sha256": "bc33ee02b154d139355bcbfa89d23450a57ca4cc99ce818699b8d6b12d81518a"
+    },
+    {
+      "path": "war3mapImported\\TDPetVfxLotusBurstLoop.mdx",
+      "bytes": 21942,
+      "sha256": "614dc956fd62c3df1977fd05b66a7b1a38bc2be28a042b7ed3acacd1173bc5b8"
+    },
+    {
+      "path": "Textures\\TDPetVfxSolidWhite.blp",
+      "bytes": 1222,
+      "sha256": "2da6ca463603ab3bb8dc78da84f97f28487502eb087ebf9fdd8316dc0fac54b6"
+    }
+  ],
+  "scope": "actual MPQ bytes, no native rendering/FPS claim"
+}
