@@ -22,6 +22,7 @@ TEST_DIR = ROOT / 'tests/python'
 # New classes are unclassified until their inputs have been reviewed.
 CLASS_GROUPS = {
     'source': '''
+        test_upgrade_refund_artifact.UpgradeRefundSourceTests
         test_ambient_critter_source.AmbientCritterTests
         test_inventory_range_source.InventoryRangeSourceTests
         test_spirit_skill_icons.SpiritSkillIconTests
@@ -121,6 +122,7 @@ CLASS_GROUPS = {
         test_wurst_linux.JavaProbeTests
     '''.split(),
     'map': '''
+        test_upgrade_refund_artifact.UpgradeRefundActualArtifactTests
         test_tower_target_priority_artifact.TowerTargetPriorityPackedTests
         test_pet_attack_phase_one.FinalPetAttackArtifactTests
         test_aura_target_artifact.AuraTargetArtifactTests

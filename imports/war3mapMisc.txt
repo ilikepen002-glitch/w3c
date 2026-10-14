@@ -3,3 +3,6 @@ PickupItemRange=1200.0
 DropItemRange=1200.0
 GiveItemRange=1200.0
 DisplayBuildingStatus=1
+// Native structure-upgrade cancellation refunds the exact charged cost once.
+// ConstructionRefundRate and scripted tower-sale refunds remain unchanged.
+UpgradeRefundRate=1.0

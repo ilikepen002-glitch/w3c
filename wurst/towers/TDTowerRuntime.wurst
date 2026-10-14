@@ -413,6 +413,9 @@ function tdHandleTowerConstructionCancelled()
 	doAfter(0.0) ->
 		tdAlignPlayerTowerPopulation(playerId)
 
+// UpgradeRefundRate=1.0 in war3mapMisc.txt makes the engine refund the full
+// upgrade debit. Never add scripted compensation here (including deferred or
+// duplicate callbacks); construction and tower sale have separate refund rules.
 function tdHandleTowerUpgradeCancelled()
 	let tower = GetTriggerUnit()
 	if tower == null or tdTowerChoiceForUnitTypeId(GetUnitTypeId(tower)) == 0
