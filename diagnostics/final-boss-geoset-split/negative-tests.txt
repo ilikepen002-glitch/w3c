@@ -1,0 +1,8 @@
+PASS rejects bone metadata changed
+PASS rejects animation changed
+PASS rejects UV changed
+PASS rejects normal changed
+PASS rejects binding changed
+PASS rejects triangle order changed
+PASS rejects material changed
+PASS rejects original oversized single geoset

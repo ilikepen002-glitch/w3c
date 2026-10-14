@@ -1,0 +1,27 @@
+{
+  "mapSha256": "37a1b54900e5e77e5b96031ceb543b27c220a0c33002ff7197ae2287ba803903",
+  "base": "15204026",
+  "memberCount": 427,
+  "changedMembers": [
+    "war3map.j",
+    "war3mapimported\\eclipsespellweaver.mdx",
+    "war3mapimported\\uncrownedabyssking.mdx",
+    "war3map.w3i"
+  ],
+  "newFunctions": [
+    "bossMeshAnimation",
+    "bossMeshClear",
+    "bossMeshCommand",
+    "bossMeshCreate",
+    "bossMeshFocus",
+    "bossMeshReport",
+    "init_TDBossMeshSplitDiagnostic"
+  ],
+  "changedInheritedFunctions": [
+    "config",
+    "initGlobals",
+    "main"
+  ],
+  "replay": "PASS create/replace/animations/movement/turn/focus/idempotent clear/null guards",
+  "nativeEngineTested": false
+}

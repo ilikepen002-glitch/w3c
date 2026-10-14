@@ -1,0 +1,254 @@
+{
+  "status": "OFFLINE PASS: diagnostic candidate only",
+  "native127aTested": false,
+  "productionManifestUpdated": false,
+  "models": [
+    {
+      "name": "EclipseSpellweaver",
+      "sourceSha256": "b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406",
+      "candidateSha256": "5f10d5a9f9568c7da35e7eba39cd1dbe5e5e1ecd7b01ecf94e8790335e1022e6",
+      "candidateBytes": 766274,
+      "changedChunks": [
+        "GEOS"
+      ],
+      "geosetVertices": [
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        1962
+      ],
+      "sanity": {
+        "errors": 0,
+        "severe": 0,
+        "warnings": 0
+      },
+      "orderedCornerAttributesAndBindingsExact": true,
+      "allOtherChunksByteIdentical": true,
+      "binaryRoundtripExact": true,
+      "animations": [
+        {
+          "name": "Stand",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -23.80955696105957,
+            -43.283668518066406,
+            9.739768028259277
+          ],
+          "max": [
+            39.179168701171875,
+            40.63609313964844,
+            139.98153686523438
+          ],
+          "maxTriangleEdge": 36.209999084472656
+        },
+        {
+          "name": "Walk",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -29.006141662597656,
+            -42.86394500732422,
+            9.764412879943848
+          ],
+          "max": [
+            40.041561126708984,
+            40.87329864501953,
+            140.78152465820312
+          ],
+          "maxTriangleEdge": 36.210000667042586
+        },
+        {
+          "name": "Spell",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -23.80955696105957,
+            -43.442440032958984,
+            9.809656143188477
+          ],
+          "max": [
+            38.73387908935547,
+            42.39976501464844,
+            139.2624053955078
+          ],
+          "maxTriangleEdge": 36.209999084472656
+        },
+        {
+          "name": "Stand Hit",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -25.360092163085938,
+            -42.685516357421875,
+            9.59411334991455
+          ],
+          "max": [
+            38.696231842041016,
+            39.22608947753906,
+            138.82553100585938
+          ],
+          "maxTriangleEdge": 36.210001263789096
+        },
+        {
+          "name": "Death",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -56.91859817504883,
+            -42.685516357421875,
+            8.915999412536621
+          ],
+          "max": [
+            40.52946472167969,
+            38.66301345825195,
+            138.38153076171875
+          ],
+          "maxTriangleEdge": 36.21000003814697
+        },
+        {
+          "name": "Portrait",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -23.80955696105957,
+            -43.283668518066406,
+            9.739768028259277
+          ],
+          "max": [
+            39.179168701171875,
+            40.63609313964844,
+            139.98153686523438
+          ],
+          "maxTriangleEdge": 36.209999084472656
+        }
+      ]
+    },
+    {
+      "name": "UncrownedAbyssKing",
+      "sourceSha256": "f736e64c9d238e60dfc7fb0fb5040fae5563aaa51df592f9cf9d4bc972ac974e",
+      "candidateSha256": "9ace10f09e7fe0a4c3c800f51070c130a51ce6f032a1391ab0be0d666c29ad56",
+      "candidateBytes": 827866,
+      "changedChunks": [
+        "GEOS"
+      ],
+      "geosetVertices": [
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        318
+      ],
+      "sanity": {
+        "errors": 0,
+        "severe": 0,
+        "warnings": 0
+      },
+      "orderedCornerAttributesAndBindingsExact": true,
+      "allOtherChunksByteIdentical": true,
+      "binaryRoundtripExact": true,
+      "animations": [
+        {
+          "name": "Stand",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -53.992530822753906,
+            -68.95658111572266,
+            3.299999952316284
+          ],
+          "max": [
+            25.519163131713867,
+            68.95658111572266,
+            160.47235107421875
+          ],
+          "maxTriangleEdge": 33.9092943069198
+        },
+        {
+          "name": "Walk",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -58.180782318115234,
+            -67.85926055908203,
+            2.681523084640503
+          ],
+          "max": [
+            25.640323638916016,
+            67.9596176147461,
+            161.85935974121094
+          ],
+          "maxTriangleEdge": 33.90929567389413
+        },
+        {
+          "name": "Attack",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -52.46228790283203,
+            -66.9915771484375,
+            3.299999952316284
+          ],
+          "max": [
+            94.07363891601562,
+            71.7190933227539,
+            159.81234741210938
+          ],
+          "maxTriangleEdge": 33.90929783617725
+        },
+        {
+          "name": "Stand Hit",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -55.76570510864258,
+            -66.9915771484375,
+            3.299999952316284
+          ],
+          "max": [
+            25.519163131713867,
+            66.9915771484375,
+            159.01234436035156
+          ],
+          "maxTriangleEdge": 33.90929431646521
+        },
+        {
+          "name": "Death",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -56.46228790283203,
+            -66.9915771484375,
+            3.299999952316284
+          ],
+          "max": [
+            26.167213439941406,
+            66.9915771484375,
+            159.01234436035156
+          ],
+          "maxTriangleEdge": 33.909290924263345
+        },
+        {
+          "name": "Portrait",
+          "poses": 101,
+          "maximumCoordinateDelta": 0,
+          "min": [
+            -53.992530822753906,
+            -68.95658111572266,
+            3.299999952316284
+          ],
+          "max": [
+            25.519163131713867,
+            68.95658111572266,
+            160.47235107421875
+          ],
+          "maxTriangleEdge": 33.9092943069198
+        }
+      ]
+    }
+  ]
+}
