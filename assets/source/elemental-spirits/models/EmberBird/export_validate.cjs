@@ -1,5 +1,4 @@
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
-// Set MDX_PARSER_MODULES or install the pinned npm packages in an ancestor.
 const runtime=process.env.MDX_PARSER_MODULES || path.dirname(path.dirname(require.resolve('mdx-m3-viewer/package.json')));
 const ts=require(runtime+'/typescript');
 require.extensions['.ts']=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2018}}).outputText,f);
@@ -25,6 +24,7 @@ for(const p of src.parts){const smooth=p.verts.map(()=>[0,0,0]),faceNormals=[];
 }
 g.vertices=new Float32Array(verts);g.normals=new Float32Array(normals);g.faces=new Uint16Array(faces);g.uvSets=[new Float32Array(uv)];g.vertexGroups=new Uint8Array(groups);g.matrixGroups=new Uint32Array(src.bones.map(()=>1));g.matrixIndices=new Uint32Array(src.bones.map((_,i)=>i));g.faceTypeGroups=new Uint32Array([4]);g.faceGroups=new Uint32Array([faces.length]);g.extent=ext();g.sequenceExtents=src.sequences.map(()=>ext());m.geosets.push(g);
 const cam=new Camera();cam.name='Portrait';cam.position.set([115,-72,95]);cam.targetPosition.set([8,0,72]);cam.fieldOfView=.7;cam.nearClippingPlane=1;cam.farClippingPlane=1000;m.cameras.push(cam);
+require('../../display-animations.cjs').append(m, 'EmberBird', runtime);
 const out=__dirname+'/original/EmberBird.mdx';fs.writeFileSync(out,Buffer.from(m.saveMdx()));fs.writeFileSync(__dirname+'/original/EmberBird.mdl',m.saveMdl());
 // Every preview below comes from a NEW parse of the on-disk MDX, not the generator JSON.
 const r=new Model();const mdx=fs.readFileSync(out);r.load(new Uint8Array(mdx));if(r.version!==800)throw Error('not MDX800');

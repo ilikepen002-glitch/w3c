@@ -24,3 +24,21 @@ frame, then produces palette BLP1 BTN and DIS icons and `ui-manifest.json`.
 There are 315 required combinations in each state: 15 plain species icons,
 60 species/quality icons and 240 species/quality/owned-skill-count list icons.
 All have seven mip levels; no concept artwork or render animation cache ships.
+
+Tower-display extension (2026-10-14): all 15 species now share indices 5–9
+(Display Float, Jump, Spin, Sleep, Cast), with species-specific leaf, wing, fin,
+spine, cap, ear, paw, tail, or eye-stalk motion. The approved Silver Mane asset
+stays unchanged. The other 14 original source JSON files and every approved
+atlas remain byte-identical. `display-animations.cjs` appends deterministic poses
+in memory; no generated per-frame source cache is committed. Each original
+exporter calls the helper, or use `tools/BuildPetDisplayModels.cjs` to append to
+the exact pinned published MDX baseline. See `display-animation-provenance.json`.
+
+`tools/VerifyAllPetDisplayArtifact.py` checks source/import preservation and,
+with `--map`, the actual packed 15 MDX/BLP pairs. It replaces the historical
+Silver-only resource delta scope of VerifyPetDisplayArtifact.py for this change.
+`tools/VerifyPetDisplayReplay.py` now checks all species' indices 5–9 in packed
+JASS. Offline pose caches and labelled per-species previews belong in scratch,
+not imports or the source tree; RenderPetDisplayPreviews.py and
+MakePetDisplayPreviewSheets.py reproduce them. Map checking/building and actual
+Warcraft rendering remain separate acceptance layers.

@@ -1,5 +1,5 @@
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
-const runtime=path.resolve(__dirname,'../boss-leoric-20261013/technical/parser-runtime/node_modules');
+const runtime=process.env.MDX_PARSER_MODULES || path.dirname(path.dirname(require.resolve('mdx-m3-viewer/package.json')));
 const ts=require(runtime+'/typescript');
 require.extensions['.ts']=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2018}}).outputText,f);
 const base=runtime+'/mdx-m3-viewer/src';const get=n=>require(base+'/parsers/mdlx/'+n+'.ts').default;
@@ -24,6 +24,7 @@ for(const p of src.parts){const smooth=p.verts.map(()=>[0,0,0]),faceNormals=[];
 }
 g.vertices=new Float32Array(verts);g.normals=new Float32Array(normals);g.faces=new Uint16Array(faces);g.uvSets=[new Float32Array(uv)];g.vertexGroups=new Uint8Array(groups);g.matrixGroups=new Uint32Array(src.bones.map(()=>1));g.matrixIndices=new Uint32Array(src.bones.map((_,i)=>i));g.faceTypeGroups=new Uint32Array([4]);g.faceGroups=new Uint32Array([faces.length]);g.extent=ext();g.sequenceExtents=src.sequences.map(()=>ext());m.geosets.push(g);
 const cam=new Camera();cam.name='Portrait';cam.position.set([118,-86,70]);cam.targetPosition.set([34,0,29]);cam.fieldOfView=.7;cam.nearClippingPlane=1;cam.farClippingPlane=1000;m.cameras.push(cam);
+require('../../display-animations.cjs').append(m, 'RockShellTurtle', runtime);
 const out=__dirname+'/original/RockShellTurtle.mdx';fs.writeFileSync(out,Buffer.from(m.saveMdx()));fs.writeFileSync(__dirname+'/original/RockShellTurtle.mdl',m.saveMdl());
 // Every preview below comes from a NEW parse of the on-disk MDX, not the generator JSON.
 const r=new Model();const mdx=fs.readFileSync(out);r.load(new Uint8Array(mdx));if(r.version!==800)throw Error('not MDX800');

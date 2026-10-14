@@ -1,0 +1,56 @@
+{
+  "status": "PASS",
+  "transaction": "/workspace/shared/all-spirit-display-integration-20261014/_build/linux-1kgk4pmf",
+  "mode": "build",
+  "parentCommit": "b453393d9a1d979b88ac06a5572ccd9b176f2eb8",
+  "compilerSha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+  "grillSha256": "c5afe67aa5eeabfb98f0ec2f3f0831d8ffc2f4199c26b89eb7418f14319f9f87",
+  "stdlibTree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+  "jdkRuntime": "27+35-2325",
+  "activeCooldownSourceGate": "PASS",
+  "nativeMapScript": {
+    "sourceTemplateSha256": "ad702b6b5faa154f9416a9a3650303abfbbad4f7ff64794cecbeb51082f42304",
+    "scriptSha256": "95cb24509ca5210908221ac0edf0614529fb8d1fb681578fbcc0b4e8689ab75e",
+    "origin": "read-only war3map.j from exact source template, not a stub or inherited built map"
+  },
+  "dependencyMapping": {
+    "original": "- file:///E:/WurstToolchain/WurstStdlib2-source:pre1.29",
+    "temporary": "- file:///workspace/shared/all-spirit-display-integration-20261014/_build/linux-1kgk4pmf/stdlib-source/WurstStdlib2-source:pre1.29"
+  },
+  "activeCooldownArtifactGate": "real MPQ/JASS PASS",
+  "startupArtifactGate": "pet registration/routing and gameplay bootstrap PASS",
+  "artifact": {
+    "sha256": "9f8a2a52902016a59f22883b0cde2bccede4ec06eeda5ff95453010e1159d887",
+    "importsChecked": 399,
+    "displayName": "契灵守卫战 20261014-1011-UTC+8",
+    "gate": "real read-only Python MPQ/JASS/object tables/import bytes",
+    "candidate": "/workspace/shared/all-spirit-display-integration-20261014/_build/linux-1kgk4pmf/project/_build/MyFirstWurstMap.w3x.w3x",
+    "output": "/workspace/shared/all-spirit-display-integration-20261014/ExampleMap.w3x"
+  },
+  "checks": {
+    "status": "PASS",
+    "transaction": "/workspace/shared/all-spirit-display-integration-20261014/_build/linux-3espeuia",
+    "mode": "checks",
+    "parentCommit": "b453393d9a1d979b88ac06a5572ccd9b176f2eb8",
+    "compilerSha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+    "grillSha256": "c5afe67aa5eeabfb98f0ec2f3f0831d8ffc2f4199c26b89eb7418f14319f9f87",
+    "stdlibTree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+    "jdkRuntime": "27+35-2325",
+    "activeCooldownSourceGate": "PASS",
+    "nativeMapScript": {
+      "sourceTemplateSha256": "ad702b6b5faa154f9416a9a3650303abfbbad4f7ff64794cecbeb51082f42304",
+      "scriptSha256": "95cb24509ca5210908221ac0edf0614529fb8d1fb681578fbcc0b4e8689ab75e",
+      "origin": "read-only war3map.j from exact source template, not a stub or inherited built map"
+    },
+    "dependencyMapping": {
+      "original": "- file:///E:/WurstToolchain/WurstStdlib2-source:pre1.29",
+      "temporary": "- file:///workspace/shared/all-spirit-display-integration-20261014/_build/linux-3espeuia/stdlib-source/WurstStdlib2-source:pre1.29"
+    }
+  },
+  "baselineSourceCommit": "347dab20329e7c967564f49457ccebd948827464",
+  "baselineMapSha256": "05746604cc6cc7108d95619cd6538fa508d97db18dabb4aed184d125ed56d504",
+  "recoveredFirstBuildFailure": "Disk capacity exhausted while copying JDK, before compilation/output. Only own reproducible pose JSON and incomplete install copy were removed; full checks stayed valid.",
+  "displayResourceGate": "PASS: actual MPQ contains all 15 exact final MDX/approved BLP pairs",
+  "displayReplayGate": "PASS: 525 profile/species cases, all 15 action sequences, all 22 active trace equivalence, lifecycle and mutation guards",
+  "publicationStatus": "Built/verified local artifact; root controls publication"
+}

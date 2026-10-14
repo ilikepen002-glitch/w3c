@@ -1,0 +1,971 @@
+{
+  "status": "PASS",
+  "baseline": "2847c3f742a69661972cabb7a616e08e81cbae9c",
+  "source": {
+    "onlyCapabilityRangeChanged": true,
+    "displayRuntimeStateAndSchedulerUnchanged": true,
+    "combatAndObjectValuesUnchanged": true,
+    "noNewTimerRngOrLifecycleProtocol": true
+  },
+  "resources": {
+    "models": [
+      {
+        "species": 1,
+        "name": "银鬃灵兽",
+        "sha256": "7967acb75baacba9f14f71264dc11256674840927dd93134dd1d56983b89dbe4",
+        "bytes": 421506,
+        "originalBinaryKeyRecordsPreserved": 5610,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 3038,
+        "bones": 11,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 0,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [],
+          "Display Jump": [],
+          "Display Spin": [],
+          "Display Sleep": [],
+          "Display Cast": []
+        }
+      },
+      {
+        "species": 2,
+        "name": "锋翼隼",
+        "sha256": "9d08287cbfa64df2bc7b6cc5b32841fc0e40bd8ca1efd6f66b75484e7ce6455f",
+        "bytes": 236384,
+        "originalBinaryKeyRecordsPreserved": 2550,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 1368,
+        "bones": 10,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 45000,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "ArmoredHead",
+            "FanTail",
+            "LeftWing",
+            "LeftWingTip",
+            "RaptorChest",
+            "RightWing",
+            "RightWingTip"
+          ],
+          "Display Jump": [
+            "ArmoredHead",
+            "FanTail",
+            "LeftTalons",
+            "LeftWing",
+            "LeftWingTip",
+            "RaptorChest",
+            "RightTalons",
+            "RightWing",
+            "RightWingTip"
+          ],
+          "Display Spin": [
+            "FanTail",
+            "LeftWing",
+            "LeftWingTip",
+            "RaptorChest",
+            "RightWing",
+            "RightWingTip"
+          ],
+          "Display Sleep": [
+            "ArmoredHead",
+            "FanTail",
+            "LeftWing",
+            "LeftWingTip",
+            "RaptorChest",
+            "RightWing",
+            "RightWingTip"
+          ],
+          "Display Cast": [
+            "ArmoredHead",
+            "FanTail",
+            "LeftTalons",
+            "LeftWing",
+            "LeftWingTip",
+            "RaptorChest",
+            "RightTalons",
+            "RightWing",
+            "RightWingTip"
+          ]
+        }
+      },
+      {
+        "species": 3,
+        "name": "铜甲穿山灵",
+        "sha256": "f8ba608398a59d2bd4a12d3363818dc11af76b7fca7ea03f69e68fe58f6b8514",
+        "bytes": 286592,
+        "originalBinaryKeyRecordsPreserved": 2295,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 1932,
+        "bones": 9,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 40580,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "LongNose",
+            "LowBack",
+            "TailBase",
+            "TailTip"
+          ],
+          "Display Jump": [
+            "DiggingArmLeft",
+            "DiggingArmRight",
+            "HindLeft",
+            "HindRight",
+            "LongNose",
+            "LowBack",
+            "TailBase",
+            "TailTip"
+          ],
+          "Display Spin": [
+            "LongNose",
+            "TailBase",
+            "TailTip"
+          ],
+          "Display Sleep": [
+            "LongNose",
+            "LowBack",
+            "TailBase",
+            "TailTip"
+          ],
+          "Display Cast": [
+            "DiggingArmLeft",
+            "DiggingArmRight",
+            "HindLeft",
+            "HindRight",
+            "LongNose",
+            "LowBack",
+            "TailBase",
+            "TailTip"
+          ]
+        }
+      },
+      {
+        "species": 4,
+        "name": "叶翼仙灵",
+        "sha256": "015962f0bdd40391193fa207cee4d5b41cb358ccda78614eeadbebc9b305930d",
+        "bytes": 316376,
+        "originalBinaryKeyRecordsPreserved": 2805,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 2044,
+        "bones": 11,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 49420,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "ArmLeft",
+            "ArmRight",
+            "LeafFace",
+            "LeafLowerLeft",
+            "LeafLowerRight",
+            "LeafUpperLeft",
+            "LeafUpperRight",
+            "RootLeft",
+            "RootRight",
+            "SeedBody"
+          ],
+          "Display Jump": [
+            "ArmLeft",
+            "ArmRight",
+            "LeafFace",
+            "LeafLowerLeft",
+            "LeafLowerRight",
+            "LeafUpperLeft",
+            "LeafUpperRight",
+            "RootLeft",
+            "RootRight",
+            "SeedBody"
+          ],
+          "Display Spin": [
+            "ArmLeft",
+            "ArmRight",
+            "LeafLowerLeft",
+            "LeafLowerRight",
+            "LeafUpperLeft",
+            "LeafUpperRight",
+            "RootLeft",
+            "RootRight"
+          ],
+          "Display Sleep": [
+            "LeafFace",
+            "LeafLowerLeft",
+            "LeafLowerRight",
+            "LeafUpperLeft",
+            "LeafUpperRight",
+            "SeedBody"
+          ],
+          "Display Cast": [
+            "ArmLeft",
+            "ArmRight",
+            "LeafFace",
+            "LeafLowerLeft",
+            "LeafLowerRight",
+            "LeafUpperLeft",
+            "LeafUpperRight",
+            "RootLeft",
+            "RootRight",
+            "SeedBody"
+          ]
+        }
+      },
+      {
+        "species": 5,
+        "name": "树芽鹿",
+        "sha256": "36aeedea98979a086be92f17995820d1a1c41c33d841b7d346745e6c56bcbcd0",
+        "bytes": 233654,
+        "originalBinaryKeyRecordsPreserved": 2550,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 1342,
+        "bones": 10,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 45000,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "AlertDeerHead",
+            "FrontLeft",
+            "LeafTail",
+            "LeftEar",
+            "RightEar",
+            "SlimTrunk"
+          ],
+          "Display Jump": [
+            "AlertDeerHead",
+            "FrontLeft",
+            "FrontRight",
+            "LeafTail",
+            "LeftEar",
+            "RearLeft",
+            "RearRight",
+            "RightEar",
+            "SlimTrunk"
+          ],
+          "Display Spin": [
+            "AlertDeerHead",
+            "LeafTail",
+            "LeftEar",
+            "RightEar"
+          ],
+          "Display Sleep": [
+            "AlertDeerHead",
+            "LeafTail",
+            "SlimTrunk"
+          ],
+          "Display Cast": [
+            "AlertDeerHead",
+            "FrontLeft",
+            "FrontRight",
+            "LeafTail",
+            "LeftEar",
+            "RearLeft",
+            "RearRight",
+            "RightEar",
+            "SlimTrunk"
+          ]
+        }
+      },
+      {
+        "species": 6,
+        "name": "菌伞灵",
+        "sha256": "9007639eb4f11095e4f2c0faa00eccdd4c206f9692066c853d7302bd33817ab9",
+        "bytes": 251540,
+        "originalBinaryKeyRecordsPreserved": 2040,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 1684,
+        "bones": 8,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 36160,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "CapLeaf",
+            "StemBody",
+            "VineArmLeft",
+            "VineArmRight",
+            "WideMushroomCap"
+          ],
+          "Display Jump": [
+            "CapLeaf",
+            "RootFootLeft",
+            "RootFootRight",
+            "StemBody",
+            "VineArmLeft",
+            "VineArmRight",
+            "WideMushroomCap"
+          ],
+          "Display Spin": [
+            "CapLeaf",
+            "VineArmLeft",
+            "VineArmRight",
+            "WideMushroomCap"
+          ],
+          "Display Sleep": [
+            "CapLeaf",
+            "StemBody",
+            "WideMushroomCap"
+          ],
+          "Display Cast": [
+            "CapLeaf",
+            "RootFootLeft",
+            "RootFootRight",
+            "StemBody",
+            "VineArmLeft",
+            "VineArmRight",
+            "WideMushroomCap"
+          ]
+        }
+      },
+      {
+        "species": 7,
+        "name": "潮尾灵蛟",
+        "sha256": "e620111850fb3ca3ac5da23d8e481ed314e24992b24e907a6a4ddecebca37800",
+        "bytes": 303398,
+        "originalBinaryKeyRecordsPreserved": 3060,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 1834,
+        "bones": 12,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 53840,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "FinLeft",
+            "FinRight",
+            "LongWaterHead",
+            "SwimSpine0",
+            "SwimSpine1",
+            "SwimSpine2",
+            "SwimSpine3",
+            "SwimSpine4",
+            "SwimSpine5",
+            "WhiskerLeft",
+            "WhiskerRight"
+          ],
+          "Display Jump": [
+            "FinLeft",
+            "FinRight",
+            "LongWaterHead",
+            "SwimSpine0",
+            "SwimSpine1",
+            "SwimSpine2",
+            "SwimSpine3",
+            "SwimSpine4",
+            "SwimSpine5",
+            "WhiskerLeft",
+            "WhiskerRight"
+          ],
+          "Display Spin": [
+            "FinLeft",
+            "FinRight",
+            "LongWaterHead",
+            "SwimSpine0",
+            "SwimSpine1",
+            "SwimSpine2",
+            "SwimSpine3",
+            "SwimSpine4",
+            "SwimSpine5",
+            "WhiskerLeft",
+            "WhiskerRight"
+          ],
+          "Display Sleep": [
+            "FinLeft",
+            "FinRight",
+            "LongWaterHead",
+            "SwimSpine0",
+            "SwimSpine1",
+            "SwimSpine2",
+            "SwimSpine3",
+            "SwimSpine4",
+            "SwimSpine5",
+            "WhiskerLeft",
+            "WhiskerRight"
+          ],
+          "Display Cast": [
+            "FinLeft",
+            "FinRight",
+            "LongWaterHead",
+            "SwimSpine0",
+            "SwimSpine1",
+            "SwimSpine2",
+            "SwimSpine3",
+            "SwimSpine4",
+            "SwimSpine5",
+            "WhiskerLeft",
+            "WhiskerRight"
+          ]
+        }
+      },
+      {
+        "species": 8,
+        "name": "霜鳍灵鲼",
+        "sha256": "7d2cd0dac23f9e73e806d503533929af7beffc663ceabfe7f28ebe451daf41bb",
+        "bytes": 245690,
+        "originalBinaryKeyRecordsPreserved": 2295,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 1542,
+        "bones": 9,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 40580,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "FinLeft",
+            "FinLeftTip",
+            "FinRight",
+            "FinRightTip",
+            "MantaBody",
+            "MantaHead",
+            "TailBase",
+            "TailWhip"
+          ],
+          "Display Jump": [
+            "FinLeft",
+            "FinLeftTip",
+            "FinRight",
+            "FinRightTip",
+            "MantaBody",
+            "MantaHead",
+            "TailBase",
+            "TailWhip"
+          ],
+          "Display Spin": [
+            "FinLeft",
+            "FinLeftTip",
+            "FinRight",
+            "FinRightTip",
+            "MantaBody",
+            "TailBase",
+            "TailWhip"
+          ],
+          "Display Sleep": [
+            "FinLeft",
+            "FinLeftTip",
+            "FinRight",
+            "FinRightTip",
+            "MantaBody",
+            "MantaHead",
+            "TailBase",
+            "TailWhip"
+          ],
+          "Display Cast": [
+            "FinLeft",
+            "FinLeftTip",
+            "FinRight",
+            "FinRightTip",
+            "MantaBody",
+            "MantaHead",
+            "TailBase",
+            "TailWhip"
+          ]
+        }
+      },
+      {
+        "species": 9,
+        "name": "雪鬃水獭",
+        "sha256": "0c58f1c73f525be922f3e21497a748e7c4cc3df08a0862f9f6f4e089e6acb0a8",
+        "bytes": 309062,
+        "originalBinaryKeyRecordsPreserved": 2295,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 2146,
+        "bones": 9,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 40580,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "FrontLeftPaw",
+            "FrontRightPaw",
+            "LongOtterBody",
+            "RoundOtterHead",
+            "ThickTailBase",
+            "ThickTailTip"
+          ],
+          "Display Jump": [
+            "FrontLeftPaw",
+            "FrontRightPaw",
+            "LongOtterBody",
+            "RearLeftPaw",
+            "RearRightPaw",
+            "RoundOtterHead",
+            "ThickTailBase",
+            "ThickTailTip"
+          ],
+          "Display Spin": [
+            "LongOtterBody",
+            "ThickTailBase",
+            "ThickTailTip"
+          ],
+          "Display Sleep": [
+            "LongOtterBody",
+            "RoundOtterHead",
+            "ThickTailBase",
+            "ThickTailTip"
+          ],
+          "Display Cast": [
+            "FrontLeftPaw",
+            "FrontRightPaw",
+            "LongOtterBody",
+            "RearLeftPaw",
+            "RearRightPaw",
+            "RoundOtterHead",
+            "ThickTailBase",
+            "ThickTailTip"
+          ]
+        }
+      },
+      {
+        "species": 10,
+        "name": "赤翎火鸟",
+        "sha256": "6cd3716d43e791cceb704df484e8cdf8541a748cf7dc932becc1790b313152d1",
+        "bytes": 418244,
+        "originalBinaryKeyRecordsPreserved": 2550,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 3100,
+        "bones": 10,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 45000,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "BirdBody",
+            "FlameCrest",
+            "SharpBirdHead",
+            "TailBase",
+            "TailTip",
+            "WingLeft",
+            "WingRight"
+          ],
+          "Display Jump": [
+            "BirdBody",
+            "FlameCrest",
+            "FootLeft",
+            "FootRight",
+            "SharpBirdHead",
+            "TailBase",
+            "TailTip",
+            "WingLeft",
+            "WingRight"
+          ],
+          "Display Spin": [
+            "BirdBody",
+            "FlameCrest",
+            "TailBase",
+            "TailTip",
+            "WingLeft",
+            "WingRight"
+          ],
+          "Display Sleep": [
+            "BirdBody",
+            "SharpBirdHead",
+            "TailBase",
+            "TailTip",
+            "WingLeft",
+            "WingRight"
+          ],
+          "Display Cast": [
+            "BirdBody",
+            "FlameCrest",
+            "FootLeft",
+            "FootRight",
+            "SharpBirdHead",
+            "TailBase",
+            "TailTip",
+            "WingLeft",
+            "WingRight"
+          ]
+        }
+      },
+      {
+        "species": 11,
+        "name": "熔角火蜥",
+        "sha256": "bb9bc585505dc6849cc05574b7367ec361183502e204290d4ede9e981cfbc822",
+        "bytes": 367652,
+        "originalBinaryKeyRecordsPreserved": 2295,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 2704,
+        "bones": 9,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 40580,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "BroadHead",
+            "LowSpine",
+            "TailBase",
+            "TailTip"
+          ],
+          "Display Jump": [
+            "BroadHead",
+            "FrontLeft",
+            "FrontRight",
+            "HindLeft",
+            "HindRight",
+            "LowSpine",
+            "TailBase",
+            "TailTip"
+          ],
+          "Display Spin": [
+            "BroadHead",
+            "TailBase",
+            "TailTip"
+          ],
+          "Display Sleep": [
+            "BroadHead",
+            "LowSpine",
+            "TailBase",
+            "TailTip"
+          ],
+          "Display Cast": [
+            "BroadHead",
+            "FrontLeft",
+            "FrontRight",
+            "HindLeft",
+            "HindRight",
+            "LowSpine",
+            "TailBase",
+            "TailTip"
+          ]
+        }
+      },
+      {
+        "species": 12,
+        "name": "烬尾火狐",
+        "sha256": "4923fde2dc40d971cb320d1c63697986dde93c7b3b885a565c417045a66df914",
+        "bytes": 398240,
+        "originalBinaryKeyRecordsPreserved": 3315,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 2652,
+        "bones": 13,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 58260,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "CompactSpine",
+            "FoxHead",
+            "HighTail",
+            "HighTailTip",
+            "LeftTail",
+            "LeftTailTip",
+            "RightTail",
+            "RightTailTip"
+          ],
+          "Display Jump": [
+            "CompactSpine",
+            "FoxHead",
+            "FrontLeft",
+            "FrontRight",
+            "HighTail",
+            "HighTailTip",
+            "HindLeft",
+            "HindRight",
+            "LeftTail",
+            "LeftTailTip",
+            "RightTail",
+            "RightTailTip"
+          ],
+          "Display Spin": [
+            "HighTail",
+            "HighTailTip",
+            "LeftTail",
+            "LeftTailTip",
+            "RightTail",
+            "RightTailTip"
+          ],
+          "Display Sleep": [
+            "CompactSpine",
+            "FoxHead",
+            "HighTail",
+            "HighTailTip",
+            "LeftTail",
+            "LeftTailTip",
+            "RightTail",
+            "RightTailTip"
+          ],
+          "Display Cast": [
+            "CompactSpine",
+            "FoxHead",
+            "FrontLeft",
+            "FrontRight",
+            "HighTail",
+            "HighTailTip",
+            "HindLeft",
+            "HindRight",
+            "LeftTail",
+            "LeftTailTip",
+            "RightTail",
+            "RightTailTip"
+          ]
+        }
+      },
+      {
+        "species": 13,
+        "name": "岩壳龟",
+        "sha256": "22b5df4b1cab01ecfc80d165583d3417900d79c62fd7ad9de10cafbfdfc597cf",
+        "bytes": 304524,
+        "originalBinaryKeyRecordsPreserved": 1656,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 2252,
+        "bones": 8,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 36160,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "BackLeft",
+            "BackRight",
+            "Body",
+            "Head",
+            "Tail"
+          ],
+          "Display Jump": [
+            "BackLeft",
+            "BackRight",
+            "Body",
+            "FrontLeft",
+            "FrontRight",
+            "Head",
+            "Tail"
+          ],
+          "Display Spin": [
+            "Body",
+            "Tail"
+          ],
+          "Display Sleep": [
+            "BackLeft",
+            "BackRight",
+            "Body",
+            "Head",
+            "Tail"
+          ],
+          "Display Cast": [
+            "BackLeft",
+            "BackRight",
+            "Body",
+            "FrontLeft",
+            "FrontRight",
+            "Head",
+            "Tail"
+          ]
+        }
+      },
+      {
+        "species": 14,
+        "name": "磐臂山魈",
+        "sha256": "b9efa3c1168af2a9f7106620c55e1a04233146d887353f62717acd2bb849dcc9",
+        "bytes": 316202,
+        "originalBinaryKeyRecordsPreserved": 2295,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 2214,
+        "bones": 9,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 40580,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "HeavyTorso",
+            "LeftArm",
+            "LeftHand",
+            "RightArm",
+            "RightHand",
+            "RockMaskHead"
+          ],
+          "Display Jump": [
+            "HeavyTorso",
+            "LeftArm",
+            "LeftHand",
+            "LeftLeg",
+            "RightArm",
+            "RightHand",
+            "RightLeg",
+            "RockMaskHead"
+          ],
+          "Display Spin": [
+            "LeftArm",
+            "LeftHand",
+            "RightArm",
+            "RightHand"
+          ],
+          "Display Sleep": [
+            "HeavyTorso",
+            "RockMaskHead"
+          ],
+          "Display Cast": [
+            "HeavyTorso",
+            "LeftArm",
+            "LeftHand",
+            "RightArm",
+            "RightHand",
+            "RockMaskHead"
+          ]
+        }
+      },
+      {
+        "species": 15,
+        "name": "砂环灵螺",
+        "sha256": "adf34a4400bdd3a973a83669832d43e41fd145438f43099bf7569894a4164cb7",
+        "bytes": 289988,
+        "originalBinaryKeyRecordsPreserved": 1785,
+        "geometryUvNormalsTopologyBindingByteIdentical": true,
+        "originalSequencesAndExtentsPreserved": true,
+        "cameraMaterialTextureAndRigPreserved": true,
+        "triangles": 2136,
+        "bones": 7,
+        "displaySequenceIndices": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "rawGrowthBytes": 31740,
+        "animatedNonRootBonesBySequence": {
+          "Display Float": [
+            "LeftEyeStalk",
+            "LowTail",
+            "RightEyeStalk",
+            "SoftFoot",
+            "SpiralShell"
+          ],
+          "Display Jump": [
+            "LeftEyeStalk",
+            "LowTail",
+            "RightEyeStalk",
+            "SoftFoot",
+            "SpiralShell"
+          ],
+          "Display Spin": [
+            "LeftEyeStalk",
+            "LowTail",
+            "RightEyeStalk",
+            "SpiralShell"
+          ],
+          "Display Sleep": [
+            "LeftEyeStalk",
+            "LowTail",
+            "RightEyeStalk",
+            "SoftFoot",
+            "SpiralShell"
+          ],
+          "Display Cast": [
+            "LeftEyeStalk",
+            "LowTail",
+            "RightEyeStalk",
+            "SlugHead",
+            "SoftFoot",
+            "SpiralShell"
+          ]
+        }
+      }
+    ],
+    "allFifteenAtlasBytesPreserved": true,
+    "originalGeometryRigAndTextureSourcesPreserved": true,
+    "otherTrackedImportsPreserved": 379,
+    "totalRawMdxGrowthBytes": 603480,
+    "packedModelAndTexturePairsVerified": 0
+  },
+  "boundary": "MDX/source/MPQ structural preservation only; independent Node sampling and packed replay required. No Warcraft rendering/FPS claim."
+}

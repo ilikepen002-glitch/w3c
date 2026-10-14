@@ -5,9 +5,9 @@ import TDPetDisplayRuntime
 import TDTowerCatalogData
 import TDConfig
 
-@Test function displayOnlySilverManeOwnsNewAnimationIndices()
+@Test function displayAllFifteenSpeciesOwnNewAnimationIndices()
 	for species = 1 to 15
-		tdPetDisplaySupported(species).assertEquals(species == 1)
+		tdPetDisplaySupported(species).assertTrue()
 	tdPetDisplaySupported(0).assertFalse()
 	tdPetDisplaySupported(16).assertFalse()
 	TD_PET_DISPLAY_FLOAT.assertEquals(5)

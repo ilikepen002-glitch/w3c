@@ -46,7 +46,7 @@ def verify_display(script, full_profiles=True):
                 visual = r.field('visual', pet)
                 require(r.units[visual]['x'] == r.units[host]['x'] and r.units[visual]['y'] == r.units[host]['y'], 'Visual not host-centered')
                 require(r.units[visual]['z'] == r.invoke('tdPetDisplayHeight', rawcode('u'+family+suffix)), 'Profile native height mismatch')
-                require_action(r, pet, 5 if species == 1 else 0)
+                require_action(r, pet, 5)
                 before = len(r.display_writes)
                 r.invoke('tdPetDisplayTick', pet, 0, r.now + .5)
                 require(len(r.display_writes) == before, 'Stationary early tick spammed setters')
@@ -58,6 +58,26 @@ def verify_display(script, full_profiles=True):
                 r.invoke('TDPet_recall', pet)
                 require(r.invoke('tdPetDiscardOwned', 0, 0), 'Profile cleanup rejected')
                 profiles += 1
+    # Every species must transition through all appended indices using the real
+    # packed runtime, not just share the initial Float capability check.
+    for species in range(1, 16):
+        each = DisplayRuntime(script)
+        host = each.tower(5200 + species)
+        pet = each.invoke('new_TDPet', 0, species, 1)
+        require(each.invoke('tdPetStore', 0, pet), 'Species-action collection fixture rejected')
+        require(each.invoke('tdPetDeploy', pet, host), 'Species-action deployment rejected')
+        for action in (6, 7, 8):
+            each.now = each.field('visualNextAt', pet)
+            each.invoke('tdPetDisplayTick', pet, 0, each.now)
+            require_action(each, pet, action)
+            each.now = each.field('visualNextAt', pet)
+            each.invoke('tdPetDisplayTick', pet, 0, each.now)
+            require_action(each, pet, 5)
+        each.invoke('tdPetDisplayCast', pet, host, each.field('generation', pet), each.now)
+        require_action(each, pet, 9)
+        each.now = each.field('visualNextAt', pet)
+        each.invoke('tdPetDisplayTick', pet, 0, each.now)
+        require_action(each, pet, 5)
     r = DisplayRuntime(script)
     pet = r.record(host=r.tower(201))
     host = r.field('host', pet); generation = r.field('generation', pet)
@@ -163,13 +183,13 @@ def verify_display(script, full_profiles=True):
             active.now += 1.
             active.emit(100.)
             if not missing:
-                expected=9 if active.field('species',record)==1 else 0
+                expected=9
                 require_action(active,record,expected)
             active.finish(9.)
             traces.append(battle(active,record))
         require(traces[0]==traces[1],'Display affected actual active battle trace: '+str(skill))
         active_reports.append(skill)
-    return {'failed_start_no_cast':True,'post_hit_invalidation_no_cast':True,'active_success_trace_equivalence':active_reports,'profile_species_scenarios':profiles,'idle_sequence':[6,7,8],'cast_preemption':True,'pause_upgrade':True,'invalid_visual_cases':4,'stress_bound':80,'steady_state_writes':0,'rebinding':verify_rebinding(script)}
+    return {'failed_start_no_cast':True,'post_hit_invalidation_no_cast':True,'active_success_trace_equivalence':active_reports,'profile_species_scenarios':profiles,'all_species_action_scenarios':15,'idle_sequence':[6,7,8],'cast_preemption':True,'pause_upgrade':True,'invalid_visual_cases':4,'stress_bound':80,'steady_state_writes':0,'rebinding':verify_rebinding(script)}
 
 def verify_display_mutations(script):
     def mutate(name, transform):
