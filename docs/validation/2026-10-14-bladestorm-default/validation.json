@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "status": "PASS",
+    "mode": "checks",
+    "parentCommit": "96bddd3da25193f01d3eddaeb61c2c702d44f106",
+    "transaction": "/workspace/shared/blade-storm-default-auto-20261014/_build/linux-3z6wow66"
+  },
+  "build": {
+    "status": "PASS",
+    "mode": "build",
+    "parentCommit": "e46afd9cbc70ba028b609311dd3ae51f1d096ce7",
+    "transaction": "/workspace/shared/blade-storm-default-auto-20261014/_build/linux-uphz7v_o"
+  }
+}

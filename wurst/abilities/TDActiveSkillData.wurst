@@ -27,7 +27,7 @@ public function tdActiveSkillDefinitionAt(int index) returns tdActiveSkillDefini
 	if index == 0
 		return tdActiveSkillDefinition(TD_ACTIVE_BLOODLUST, TD_ACTIVE_DRIVER_NATIVE_ABILITY, TD_ORC_BLOODLUST_ABILITY_ID, -1, 12.0, Orders.bloodluston, Orders.bloodlustoff, TD_ACTIVE_AUTOCAST_ON)
 	if index == 1
-		return tdActiveSkillDefinition(TD_ACTIVE_BLADESTORM, TD_ACTIVE_DRIVER_NATIVE_ABILITY, TD_ORC_BLADESTORM_ABILITY_ID, -1, 9.0, Orders.slowon, Orders.slowoff, TD_ACTIVE_AUTOCAST_UNKNOWN)
+		return tdActiveSkillDefinition(TD_ACTIVE_BLADESTORM, TD_ACTIVE_DRIVER_NATIVE_ABILITY, TD_ORC_BLADESTORM_ABILITY_ID, -1, 9.0, Orders.slowon, Orders.slowoff, TD_ACTIVE_AUTOCAST_ON)
 	if index == 2
 		return tdActiveSkillDefinition(TD_ACTIVE_PET_FRENZY, TD_ACTIVE_DRIVER_PET_PROC, 0, 11, 14.0, 0, 0, TD_ACTIVE_AUTOCAST_UNKNOWN)
 	if index == 3

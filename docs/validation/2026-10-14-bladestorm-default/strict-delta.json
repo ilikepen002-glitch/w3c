@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "baseline_sha256": "b632d51143397128e623203b1f73017902b35cdcd86acf8d647434142883e28e",
+  "candidate_sha256": "209b08ea44e82c675176be57694eb1e76650aa54305d6386879daf52abf69d30",
+  "changed_members": [
+    "war3map.j",
+    "war3map.w3i"
+  ],
+  "jass_delta": "Exactly A132 initialAutocastChoice UNKNOWN -> ON; all other JASS bytes identical",
+  "objects_and_assets": "All members byte-identical except JASS and normalized build metadata"
+}

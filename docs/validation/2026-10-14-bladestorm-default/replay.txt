@@ -1,0 +1,1 @@
+PASS packed upgrade/default ON, manual OFF, CDR restore, repeated completion, stale/matching cancellation, retirement
