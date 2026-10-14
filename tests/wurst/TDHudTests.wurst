@@ -17,3 +17,22 @@ import TDHud
 	tdHudChapter(17).assertEquals("第三章")
 	tdHudChapter(25).assertEquals("终章")
 	tdHudThreatText(33).assertEquals("无后续波次")
+
+@Test function compactHudKeepsPhaseShortAndWaveCountDynamic()
+	tdHudCompactPhase(false, false, 0, false, 0, 32).assertEquals("准备中")
+	tdHudCompactPhase(false, false, 3, false, 0, 32).assertEquals("第3/32波")
+	tdHudCompactPhase(false, false, 3, true, 4, 32).assertEquals("等待第4波")
+	tdHudCompactPhase(false, false, 5, false, 0, 8).assertEquals("第5/8波")
+	tdHudCompactPhase(true, true, 32, false, 0, 32).assertEquals("胜利")
+	tdHudCompactPhase(true, false, 3, false, 0, 32).assertEquals("失败")
+
+@Test function hudThreatHidesAbsentEnemyCategories()
+	tdHudThreatText(1).assertEquals("第1波 · 普通16")
+
+@Test function compactThreatKeepsOnlyTheImmediateCounterplay()
+	tdHudCompactThreat(1).assertEquals("常规推进")
+	tdHudCompactThreat(8).assertEquals("首领冲刺 · 注意拦截")
+	tdHudCompactThreat(16).assertEquals("重甲首领 · 法术减伤")
+	tdHudCompactThreat(24).assertEquals("暗潮减攻速 · 预告1秒")
+	tdHudCompactThreat(32).assertEquals("30%血量加速 · 必须击杀")
+	tdHudCompactThreat(12).assertEquals("精英冲刺 · 配置减速")

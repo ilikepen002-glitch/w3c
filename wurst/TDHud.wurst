@@ -12,10 +12,17 @@ import TDWaveFlowState
 import GameTimer
 import TDTrialHud
 import TDHudProjection
+import TDDamageState
+import TDTrialIdentity
 
 multiboard tdStatusBoard = null
 boolean tdHudRefreshPending = false
 string array tdPetHudSummaries
+multiboard tdCompactBoard = null
+boolean array tdHudFullView
+boolean array tdHudSwitchPending
+int tdHudFullLayout = -1
+int tdHudCompactLayout = -1
 
 // Presentation runs on its own timer thread, once per batch of gameplay events.
 public function tdRequestHudRefresh()
@@ -60,7 +67,16 @@ public function tdHudChapter(int wave) returns string
 public function tdHudThreatText(int wave) returns string
 	if wave < 1 or wave > tdWaveCount()
 		return "无后续波次"
-	return "下波 " + wave.toString() + " · 普通 " + tdWaveNormalEnemyCount(wave).toString() + " 精英 " + tdWaveEliteEnemyCount(wave).toString() + " 近卫 " + tdWaveBossGuardEnemyCount(wave).toString() + " 首领 " + tdWaveBossEnemyCount(wave).toString()
+	var text = "第" + wave.toString() + "波"
+	if tdWaveNormalEnemyCount(wave) > 0
+		text += " · 普通" + tdWaveNormalEnemyCount(wave).toString()
+	if tdWaveEliteEnemyCount(wave) > 0
+		text += " 精英" + tdWaveEliteEnemyCount(wave).toString()
+	if tdWaveBossGuardEnemyCount(wave) > 0
+		text += " 近卫" + tdWaveBossGuardEnemyCount(wave).toString()
+	if tdWaveBossEnemyCount(wave) > 0
+		text += " 首领" + tdWaveBossEnemyCount(wave).toString()
+	return text
 
 function tdHudSetBossIcon(int row, int wave)
 	let icon = tdIsGameOver() ? "" : tdBossIconPath(wave)
@@ -79,9 +95,7 @@ public function tdHudBossMechanicText(int wave) returns string
 		return tdEnemyMechanicHint(wave) + " · 剩余" + remaining + "s"
 	return tdEnemyMechanicHint(wave)
 
-public function tdRefreshStatusBoard()
-	if compiletime or tdStatusBoard == null
-		return
+function tdRefreshFullBoard()
 	tdHudProjectionBind(TD_HUD_STATUS_SECTION, tdStatusBoard, 0, tdCountActiveLanes() + 5, TD_DAMAGE_HUD_COLUMNS)
 	var anyFinished = false
 	var row = 1
@@ -93,7 +107,7 @@ public function tdRefreshStatusBoard()
 			tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 2, tdHudLaneStatus(true, tdIsLaneFinished(playerId), tdIsLaneDefeated(playerId), tdGetGlobalWave(), tdWaveCount()))
 			row += 1
 	let phase = tdHudPhaseText(tdIsGameOver(), anyFinished, tdGetGlobalWave(), tdIsNextWaveQueued(), tdGetQueuedWave(), tdWaveCount())
-	tdHudProjectionSetTitle(TD_HUD_STATUS_SECTION, tdDifficultyLabel(tdGetDifficulty()) + " · " + phase + (tdIsDifficultyLocked() ? "" : " · 首波锁定"))
+	tdHudProjectionSetTitle(TD_HUD_STATUS_SECTION, tdDifficultyName(tdGetDifficulty()) + " · " + phase + " · -hud 精简")
 	let nextWave = tdIsNextWaveQueued() ? tdGetQueuedWave() : tdGetGlobalWave() + 1
 	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 0, "预告")
 	tdHudProjectionSetValue(TD_HUD_STATUS_SECTION, row, 1, "")
@@ -124,49 +138,178 @@ public function tdRefreshStatusBoard()
 		tdStatusBoard.setItemValue(row, 2, "旁观")
 
 	row += 1
-	tdDamageRefreshCatalog()
 	tdDamageRefreshHud(tdStatusBoard, row)
-	tdTrialRefreshHud(tdStatusBoard, row + TD_DAMAGE_HUD_ROWS)
+	tdTrialRefreshHud(tdStatusBoard, row + tdDamageHudVisibleRows(), TD_HUD_TRIAL_SECTION, false)
+
+// Layout changes depend only on synchronized snapshots, never the local viewer.
+function tdHudResetBoard(multiboard board, int rows, real first, real second, real third, real fourth)
+	board.setRowCount(rows)
+	board.setItemsStyle(true, false)
+	board.setItemsValue("")
+	board.setItemsIcon("")
+	for row = 0 to rows - 1
+		board.setItemWidth(row, 0, first)
+		board.setItemWidth(row, 1, second)
+		board.setItemWidth(row, 2, third)
+		board.setItemWidth(row, 3, fourth)
+
+public function tdHudNeedsFullView() returns boolean
+	for viewer = 0 to 15
+		if tdHudFullView[viewer]
+			return true
+	return false
+
+public function tdHudCompactPhase(boolean gameOver, boolean finished, int wave, boolean queued, int nextWave, int waveCount) returns string
+	if gameOver
+		return finished ? "胜利" : "失败"
+	if wave == 0
+		return "准备中"
+	if queued
+		return "等待第" + nextWave.toString() + "波"
+	return "第" + wave.toString() + "/" + waveCount.toString() + "波"
+
+public function tdHudCompactThreat(int wave) returns string
+	if wave == 8
+		return "首领冲刺 · 注意拦截"
+	if wave == 16
+		return "重甲首领 · 法术减伤"
+	if wave == 24
+		return "暗潮减攻速 · 预告1秒"
+	if wave == 32
+		return "30%血量加速 · 必须击杀"
+	if wave == 12 or wave == 20 or wave == 28
+		return "精英冲刺 · 配置减速"
+	return "常规推进"
+
+function tdRefreshCompactBoard()
+	let statusRows = tdCountActiveLanes() + 2
+	let trialRows = tdTrialHudVisibleRows(tdTrialState, true)
+	let layout = statusRows * 16 + trialRows
+	if layout != tdHudCompactLayout
+		tdHudCompactLayout = layout
+		tdHudResetBoard(tdCompactBoard, statusRows + trialRows, 0.04, 0.035, 0.11, 0.065)
+		// Mechanic hint uses the full remaining row, without enlarging the board.
+		for hintRow = statusRows - 1 to statusRows + trialRows - 1
+			tdCompactBoard.setItemWidth(hintRow, 1, 0.005)
+			tdCompactBoard.setItemWidth(hintRow, 2, 0.20)
+			tdCompactBoard.setItemWidth(hintRow, 3, 0.005)
+		tdHudProjectionInvalidate(TD_HUD_COMPACT_SECTION)
+		tdHudProjectionInvalidate(TD_HUD_COMPACT_TRIAL_SECTION)
+	tdHudProjectionBind(TD_HUD_COMPACT_SECTION, tdCompactBoard, 0, statusRows, 4)
+	tdHudProjectionSetValue(TD_HUD_COMPACT_SECTION, 0, 0, "玩家")
+	tdHudProjectionSetValue(TD_HUD_COMPACT_SECTION, 0, 1, "生命")
+	tdHudProjectionSetValue(TD_HUD_COMPACT_SECTION, 0, 2, "进度")
+	tdHudProjectionSetValue(TD_HUD_COMPACT_SECTION, 0, 3, "总输出")
+	var row = 1
+	var anyFinished = false
+	for lane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		if tdIsLaneActive(lane)
+			anyFinished = anyFinished or tdIsLaneFinished(lane)
+			tdHudProjectionSetValue(TD_HUD_COMPACT_SECTION, row, 0, "P" + (lane + 1).toString())
+			tdHudProjectionSetValue(TD_HUD_COMPACT_SECTION, row, 1, tdGetLives(lane).toString())
+			tdHudProjectionSetValue(TD_HUD_COMPACT_SECTION, row, 2, tdHudLaneStatus(true, tdIsLaneFinished(lane), tdIsLaneDefeated(lane), tdGetGlobalWave(), tdWaveCount()))
+			tdHudProjectionSetValue(TD_HUD_COMPACT_SECTION, row, 3, tdDamageText(tdDamageLedger.playerTotal(lane)))
+			row += 1
+	tdHudProjectionSetValue(TD_HUD_COMPACT_SECTION, row, 0, "本波")
+	var threat = tdHudCompactThreat(tdGetGlobalWave())
+	if tdIsGameOver()
+		threat = "本局结束"
+	else if tdFlowIsPreparing()
+		threat = "首领待入场 · 清除余敌"
+	else if tdFlowHeldTransitionToken() != 0
+		threat = "休整 · 等待挑战结束"
+	tdHudProjectionSetValue(TD_HUD_COMPACT_SECTION, row, 2, threat)
+	var phase = tdHudCompactPhase(tdIsGameOver(), anyFinished, tdGetGlobalWave(), tdIsNextWaveQueued(), tdGetQueuedWave(), tdWaveCount())
+	if tdFlowIsBossActive() and not tdIsGameOver()
+		var remaining = 0
+		for bossLane = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+			remaining = IMaxBJ(remaining, tdFlowBossSecondsRemaining(bossLane, getElapsedGameTime()))
+		phase += " · " + remaining.toString() + "s"
+	tdHudProjectionSetTitle(TD_HUD_COMPACT_SECTION, tdDifficultyName(tdGetDifficulty()) + " · " + phase + " · -hud 展开")
+	tdTrialRefreshHud(tdCompactBoard, statusRows, TD_HUD_COMPACT_TRIAL_SECTION, true)
+
+public function tdRefreshStatusBoard()
+	if compiletime or tdStatusBoard == null
+		return
+	// Catalog and trial preparation execute once. Full rankings/materials are lazy,
+	// but the demand is shared by all clients, including observers.
+	tdDamageRefreshCatalog()
+	tdTrialPrepareHud(tdTrialState, getElapsedGameTime())
+	tdRefreshCompactBoard()
+	if tdHudNeedsFullView()
+		tdDamagePrepareHud(tdDamageLedger, tdIsLaneActive(0), tdIsLaneActive(1), tdIsLaneActive(2), tdIsLaneActive(3))
+		let statusRows = tdCountActiveLanes() + 5
+		let damageRows = tdDamageHudVisibleRows()
+		let trialRows = tdTrialHudVisibleRows(tdTrialState, false)
+		let layout = statusRows * 256 + damageRows * 16 + trialRows
+		if layout != tdHudFullLayout
+			tdHudFullLayout = layout
+			tdHudResetBoard(tdStatusBoard, statusRows + damageRows + trialRows, 0.045, 0.065, 0.18, 0.065)
+			for row = 0 to statusRows - 1
+				tdStatusBoard.setItemWidth(row, 1, 0.035)
+				tdStatusBoard.setItemWidth(row, 2, 0.27)
+				tdStatusBoard.setItemWidth(row, 3, 0.005)
+			for trialRow = statusRows + damageRows to statusRows + damageRows + trialRows - 1
+				tdStatusBoard.setItemWidth(trialRow, 0, 0.09)
+				tdStatusBoard.setItemWidth(trialRow, 1, 0.075)
+				tdStatusBoard.setItemWidth(trialRow, 2, 0.08)
+				tdStatusBoard.setItemWidth(trialRow, 3, 0.11)
+			if trialRows > 0
+				let rewardRow = statusRows + damageRows + trialRows - 1
+				tdStatusBoard.setItemWidth(rewardRow, 0, 0.06)
+				tdStatusBoard.setItemWidth(rewardRow, 1, 0.005)
+				tdStatusBoard.setItemWidth(rewardRow, 2, 0.285)
+				tdStatusBoard.setItemWidth(rewardRow, 3, 0.005)
+			for section = TD_HUD_STATUS_SECTION to TD_HUD_TRIAL_SECTION
+				tdHudProjectionInvalidate(section)
+			tdStatusBoard.setItemValue(0, 0, "路线")
+			tdStatusBoard.setItemValue(0, 1, "生命")
+			tdStatusBoard.setItemValue(0, 2, "进度 / 下波威胁")
+		tdRefreshFullBoard()
+	// Local choice affects visibility only. No local create/get/release/resize.
+	for viewer = 0 to 15
+		if tdHudSwitchPending[viewer]
+			tdHudSwitchPending[viewer] = false
+			if Player(viewer) == GetLocalPlayer()
+				tdCompactBoard.hide()
+				tdStatusBoard.hide()
+				if tdHudFullView[viewer]
+					tdStatusBoard.show()
+					tdStatusBoard.maximize()
+				else
+					tdCompactBoard.show()
+					tdCompactBoard.maximize()
+
+function tdHudHandleChat()
+	let viewer = GetPlayerId(GetTriggerPlayer())
+	let command = GetEventPlayerChatString()
+	if command == "-hud"
+		tdHudFullView[viewer] = not tdHudFullView[viewer]
+	else if command == "-hud full"
+		tdHudFullView[viewer] = true
+	else if command == "-hud compact"
+		tdHudFullView[viewer] = false
+	else
+		return
+	tdHudSwitchPending[viewer] = true
+	tdRequestHudRefresh()
 
 public function tdSetupHud()
 	if compiletime or tdStatusBoard != null
 		return
+	// Both board handles exist in the same order everywhere, even if never opened.
 	tdStatusBoard = CreateMultiboard()
 	tdStatusBoard.setColumnCount(TD_DAMAGE_HUD_COLUMNS)
-	tdStatusBoard.setRowCount(tdCountActiveLanes() + 5 + TD_DAMAGE_HUD_ROWS + TD_TRIAL_HUD_ROWS)
-	tdStatusBoard.setItemsStyle(true, false)
-	// Keep upper status text widths; a narrow fourth cell is empty above rankings.
-	let firstDamageRow = tdCountActiveLanes() + 5
-	for row = 0 to firstDamageRow - 1
-		tdStatusBoard.setItemWidth(row, 0, 0.055)
-		tdStatusBoard.setItemWidth(row, 1, 0.065)
-		tdStatusBoard.setItemWidth(row, 2, 0.25)
-		tdStatusBoard.setItemWidth(row, 3, 0.005)
-	for row = firstDamageRow to firstDamageRow + TD_DAMAGE_HUD_ROWS - 1
-		tdStatusBoard.setItemWidth(row, 0, 0.07)
-		tdStatusBoard.setItemWidth(row, 1, 0.065)
-		tdStatusBoard.setItemWidth(row, 2, 0.18)
-		tdStatusBoard.setItemWidth(row, 3, 0.06)
-	for row = firstDamageRow + TD_DAMAGE_HUD_ROWS to firstDamageRow + TD_DAMAGE_HUD_ROWS + TD_TRIAL_HUD_ROWS - 1
-		tdStatusBoard.setItemWidth(row, 0, 0.14)
-		tdStatusBoard.setItemWidth(row, 1, 0.10)
-		tdStatusBoard.setItemWidth(row, 2, 0.18)
-		tdStatusBoard.setItemWidth(row, 3, 0.08)
-	for row = firstDamageRow to firstDamageRow + 4
-		tdStatusBoard.setItemWidth(row, 0, 0.13)
-		tdStatusBoard.setItemWidth(row, 1, 0.235)
-		tdStatusBoard.setItemWidth(row, 2, 0.005)
-		tdStatusBoard.setItemWidth(row, 3, 0.005)
-	tdStatusBoard.setItemValue(0, 0, "路线")
-	tdStatusBoard.setItemValue(0, 1, "生命")
-	tdStatusBoard.setItemValue(0, 2, "进度 / 下波威胁")
+	tdStatusBoard.setRowCount(1)
+	tdCompactBoard = CreateMultiboard()
+	tdCompactBoard.setColumnCount(TD_DAMAGE_HUD_COLUMNS)
+	let chat = CreateTrigger()
+	for viewer = 0 to 15
+		TriggerRegisterPlayerChatEvent(chat, Player(viewer), "-hud", false)
+		tdHudSwitchPending[viewer] = true
+	TriggerAddAction(chat, function tdHudHandleChat)
 	tdRequestHudRefresh()
-	tdStatusBoard.show()
-	tdStatusBoard.maximize()
 	doPeriodically(1.0) cb ->
 		tdRequestHudRefresh()
 		if tdIsGameOver()
 			destroy cb
-
-
-

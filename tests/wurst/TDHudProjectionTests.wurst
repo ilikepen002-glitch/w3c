@@ -53,11 +53,11 @@ import TDHudProjection
 	tdHudProjectionAcceptValue(TD_HUD_STATUS_SECTION, 0, 0, "排名").assertTrue()
 
 @Test function hudProjectionSectionsKeepIndependentFlatCellRanges()
-	for section = TD_HUD_STATUS_SECTION to TD_HUD_TRIAL_SECTION
+	for section = TD_HUD_STATUS_SECTION to TD_HUD_COMPACT_TRIAL_SECTION
 		tdHudProjectionInvalidate(section)
 		tdHudProjectionBind(section, null, 0, 16, 4)
 		tdHudProjectionAcceptValue(section, 15, 3, "独立尾格").assertTrue()
-	for section = TD_HUD_STATUS_SECTION to TD_HUD_TRIAL_SECTION
+	for section = TD_HUD_STATUS_SECTION to TD_HUD_COMPACT_TRIAL_SECTION
 		tdHudProjectionAcceptValue(section, 15, 3, "独立尾格").assertFalse()
 	tdHudProjectionInvalidate(TD_HUD_DAMAGE_SECTION)
 	tdHudProjectionAcceptValue(TD_HUD_STATUS_SECTION, 15, 3, "独立尾格").assertFalse()

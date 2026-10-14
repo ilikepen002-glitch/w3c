@@ -249,3 +249,24 @@ import TDState
 		for column = 0 to 3
 			tdDamageHudCell(row, column).assertEquals("")
 	destroy ledger
+
+@Test function damageVisibleRowsDropEmptyPlayersAndTowerTail()
+	let ledger = new TDDamageLedger()
+	tdDamagePrepareHud(ledger, true, false, false, false)
+	tdDamageHudVisibleRows().assertEquals(2)
+	tdDamageHudRowVisible(5).assertFalse()
+	let tower = ledger.register(0, "箭塔")
+	ledger.credit(tower, 10.0, 20.0)
+	tdDamagePrepareHud(ledger, true, false, false, false)
+	tdDamageHudVisibleRows().assertEquals(4)
+	tdDamageHudRowVisible(5).assertTrue()
+	tdDamagePrepareHud(ledger, true, true, true, true)
+	tdDamageHudVisibleRows().assertEquals(7)
+	for index = 0 to 12
+		ledger.register(index mod 4, "塔")
+	tdDamagePrepareHud(ledger, true, true, true, true)
+	tdDamageHudVisibleRows().assertEquals(16)
+	ledger.reset()
+	tdDamagePrepareHud(ledger, true, false, false, false)
+	tdDamageHudVisibleRows().assertEquals(2)
+	destroy ledger

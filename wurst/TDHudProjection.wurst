@@ -4,7 +4,10 @@ public constant int TD_HUD_STATUS_SECTION = 0
 public constant int TD_HUD_DAMAGE_SECTION = 1
 public constant int TD_HUD_TRIAL_SECTION = 2
 
-// Three fixed presentation-only sections, each with at most 64 cells. Flat
+public constant int TD_HUD_COMPACT_SECTION = 3
+public constant int TD_HUD_COMPACT_TRIAL_SECTION = 4
+
+// Five fixed presentation-only sections, each with at most 64 cells. Flat
 // globals avoid Wurst's class-array accessor trees in this frequent write path.
 // Never cache local-player text: its get/set/release must stay synchronized.
 multiboard array tdHudProjectionBoards

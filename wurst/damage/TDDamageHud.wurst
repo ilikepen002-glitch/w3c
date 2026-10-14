@@ -10,6 +10,7 @@ public constant int TD_DAMAGE_TOWER_TOP_COUNT = 10
 
 // Fixed scalar storage keeps one synchronized snapshot without another class.
 string array tdDamageHudCells
+int tdDamageVisibleRows = 0
 
 public function tdDamageHudCell(int row, int column) returns string
 	if row < 0 or row >= TD_DAMAGE_HUD_ROWS or column < 0 or column >= TD_DAMAGE_HUD_COLUMNS
@@ -52,10 +53,26 @@ public function tdDamagePrepareHud(TDDamageLedger ledger, boolean p0, boolean p1
 			tdDamageSetHudCell(row, 2, record.label + (record.retired ? " [退场]" : ""))
 			tdDamageSetHudCell(row, 3, tdDamageText(record.getTotal()))
 
+	tdDamageVisibleRows = 0
+	for visibleRow = 0 to TD_DAMAGE_HUD_ROWS - 1
+		if tdDamageHudRowVisible(visibleRow)
+			tdDamageVisibleRows += 1
+
+// Compact only the presentation; the fixed snapshot and all ranking keys stay intact.
+public function tdDamageHudRowVisible(int row) returns boolean
+	if row == 5
+		return tdDamageHudCell(6, 0) != ""
+	return tdDamageHudCell(row, 0) != ""
+
+public function tdDamageHudVisibleRows() returns int
+	return tdDamageVisibleRows
+
 public function tdDamageRefreshHud(multiboard board, int firstRow)
-	// Active is the startup participation set; leaving never removes history.
-	tdDamagePrepareHud(tdDamageLedger, tdIsLaneActive(0), tdIsLaneActive(1), tdIsLaneActive(2), tdIsLaneActive(3))
-	tdHudProjectionBind(TD_HUD_DAMAGE_SECTION, board, firstRow, TD_DAMAGE_HUD_ROWS, TD_DAMAGE_HUD_COLUMNS)
+	// Prepared once by the HUD owner before sizing the board.
+	tdHudProjectionBind(TD_HUD_DAMAGE_SECTION, board, firstRow, tdDamageHudVisibleRows(), TD_DAMAGE_HUD_COLUMNS)
+	var target = 0
 	for row = 0 to TD_DAMAGE_HUD_ROWS - 1
-		for column = 0 to TD_DAMAGE_HUD_COLUMNS - 1
-			tdHudProjectionSetValue(TD_HUD_DAMAGE_SECTION, row, column, tdDamageHudCell(row, column))
+		if tdDamageHudRowVisible(row)
+			for column = 0 to TD_DAMAGE_HUD_COLUMNS - 1
+				tdHudProjectionSetValue(TD_HUD_DAMAGE_SECTION, target, column, tdDamageHudCell(row, column))
+			target += 1
