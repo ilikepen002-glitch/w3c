@@ -1,0 +1,47 @@
+{
+  "oldMembers": 418,
+  "newMembers": 418,
+  "removedNames": [],
+  "addedNames": [],
+  "unchangedMembers": 416,
+  "changes": [
+    {
+      "name": "war3map.w3i",
+      "oldSize": 912,
+      "newSize": 954,
+      "oldSha": "a3d44071451973d64f22856f985bb3f8d7bb315f03d25226550a3d932ee971d1",
+      "newSha": "f31977520eafd043ab93376fd6c6f8126baac42875ab48f8410076e9833db86c"
+    },
+    {
+      "name": "war3mapImported\\EclipseSpellweaver.mdx",
+      "oldSize": 763754,
+      "newSize": 763754,
+      "oldSha": "b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406",
+      "newSha": "f928308fbb4f09e14703852feaa0251e623e4e6b462f12b1809ab50609a70d73"
+    }
+  ],
+  "mapInfoChanges": [
+    {
+      "kind": "replace",
+      "oldOffset": 39,
+      "newOffset": 39,
+      "old": "2",
+      "new": "3"
+    },
+    {
+      "kind": "replace",
+      "oldOffset": 578,
+      "newOffset": 578,
+      "old": "2",
+      "new": "3"
+    },
+    {
+      "kind": "insert",
+      "oldOffset": 608,
+      "newOffset": 608,
+      "old": "",
+      "new": " | Boss-A诊断（原生效果未验证）"
+    }
+  ],
+  "mapInfoExplanation": "Two build timestamp minute digits change (0932 to 0934) in display/loading titles; one diagnostic subtitle is inserted."
+}

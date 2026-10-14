@@ -1,0 +1,274 @@
+diff --git a/assets/source/eclipse-spellweaver-v3/README.md b/assets/source/eclipse-spellweaver-v3/README.md
+index 5493975..5d07908 100644
+--- a/assets/source/eclipse-spellweaver-v3/README.md
++++ b/assets/source/eclipse-spellweaver-v3/README.md
+@@ -28,3 +28,24 @@ build_eclipse.py + primitives.py 是最小原创建模、骨架、动画和纹
+ 
+ ## 当前仓库接入
+ 仅第24波 uB24，模型 war3mapImported\EclipseSpellweaver.mdx，视觉比例8.00（按用户确认）；原1.50仅为历史离线建议，生产使用8.00。碰撞、选择圈、速度及战斗数值均沿用原值。8倍画面遮挡及客户端效果尚未实机验证。此目录只带最小原创再生源码；地图资源在 imports/。未附视频/Blender大预览。最小实体再生只需上述第1至4步；Blender/FFmpeg仅供预览，不是地图构建依赖。运行 Node 脚本必须显式设置 MDX_PARSER_RUNTIME 为既有 node_modules 路径，不使用工作区相对回退。再生后核对本清单 SHA 再将 MDX/BLP 复制到精确 imports 路径，不改项目工具链锁。
++
++
++## Boss-A diagnostic candidate (2026-10-14)
++
++This isolated branch is a playable-map build input, not a verified native fix.
++Only the 25 BONE GeosetId values change from Multiple (-1) to the sole geoset 0.
++All geometry, normals, UVs, bindings, pivots, animations, textures, uB24 scale 8.0,
++and gameplay remain unchanged. Multiple is a legal sentinel; this tests a native
++compatibility hypothesis, not a proven malformed-file diagnosis. Every bone's
++actual influence or descendant dependency resolves to geoset 0. GeosetAnimId
++remains None (-1), because this model has no geoset animations.
++
++The output filename and loading subtitle are marked Boss-A诊断. The standard
++map name/build timestamp remain intact. Build only via Run-WurstLinux.py
++(or the authorized Windows entrypoint); do not patch a compiled map.
++Run tools/VerifyEclipseBossCandidate.py --map OUTPUT.w3x --reference-map BASELINE.w3x
++to verify packaged model, texture, exact uB24 model path/scale and unchanged Boss
++objects. Without --map it verifies source bytes only. Native rendering is untested.
++Compare original versus A on the same wave-24 spawn, moving/turning, leaving and
++re-entering the camera, and nearby-unit conditions. Roll back the candidate commit
++to recover the exact original asset (SHA256 b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406).
+diff --git a/assets/source/eclipse-spellweaver-v3/check_bone_geosets.cjs b/assets/source/eclipse-spellweaver-v3/check_bone_geosets.cjs
+new file mode 100644
+index 0000000..bd87088
+--- /dev/null
++++ b/assets/source/eclipse-spellweaver-v3/check_bone_geosets.cjs
+@@ -0,0 +1,18 @@
++// Read-only check: actual vertex influences plus ancestor dependencies, not all
++// declared matrix groups (unused groups must not count as an influence).
++const fs=require('fs'),path=require('path'),assert=require('assert');
++const rt=process.env.MDX_PARSER_RUNTIME;if(!rt)throw Error('Set MDX_PARSER_RUNTIME');
++const ts=require(path.join(rt,'typescript'));
++require.extensions['.ts']=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2018}}).outputText,f);
++const base=path.join(rt,'mdx-m3-viewer/src');
++const Model=require(base+'/parsers/mdlx/model.ts').default;
++const sanity=require(base+'/utils/mdlx/sanitytest/sanitytest.ts').default;
++const data=fs.readFileSync(process.argv[2]),m=new Model();m.load(new Uint8Array(data));
++assert.equal(m.geosets.length,1);assert.equal(m.bones.length,25);assert.equal(m.geosetAnimations.length,0);
++const nodes=new Map(m.bones.map(b=>[b.objectId,b])),used=new Map(m.bones.map(b=>[b.objectId,new Set()]));
++m.geosets.forEach((g,gi)=>{let offset=0;const groups=Array.from(g.matrixGroups,n=>{const ids=Array.from(g.matrixIndices.subarray(offset,offset+n));offset+=n;return ids;});
++ for(const vi of g.faces){assert(vi<g.vertices.length/3);const group=groups[g.vertexGroups[vi]];assert(group?.length);for(let id of group){const seen=new Set();while(id!==-1){assert(nodes.has(id));assert(!seen.has(id),'bone parent cycle');seen.add(id);used.get(id).add(gi);id=nodes.get(id).parentId;}}}
++});
++for(const b of m.bones){assert.deepEqual([...used.get(b.objectId)],[0],b.name+' does not resolve solely to geoset 0');assert.equal(b.geosetId,0);assert.equal(b.geosetAnimationId,-1);}
++assert(data.equals(Buffer.from(m.saveMdx())),'binary roundtrip changed');const s=sanity(m);assert.equal(s.errors,0);assert.equal(s.severe,0);assert.equal(s.warnings,0);
++console.log(JSON.stringify({status:'PASS: all 25 bone influence/ancestor dependencies resolve solely to geoset 0',vertices:m.geosets[0].vertices.length/3,bones:m.bones.map(b=>({id:b.objectId,name:b.name,dependencies:[...used.get(b.objectId)]})),sanity:{errors:s.errors,severe:s.severe,warnings:s.warnings},nativeRenderingVerified:false},null,2));
+diff --git a/assets/source/eclipse-spellweaver-v3/export_validate.cjs b/assets/source/eclipse-spellweaver-v3/export_validate.cjs
+index 423aecf..716e344 100644
+--- a/assets/source/eclipse-spellweaver-v3/export_validate.cjs
++++ b/assets/source/eclipse-spellweaver-v3/export_validate.cjs
+@@ -12,7 +12,7 @@ function ext(min=[-110,-115,-10],max=[130,115,180]){const e=new Extent();e.min.s
+ m.extent=ext();const tex=new Texture();tex.path='Textures\\EclipseSpellweaverAtlas.blp';m.textures.push(tex);
+ const mat=new Material(),layer=new Layer();layer.textureId=0;layer.filterMode=0;layer.flags=0;mat.layers.push(layer);m.materials.push(mat);
+ for(const s of src.sequences){const a=new Sequence();a.name=s.name;a.interval.set([s.start,s.end]);a.flags=s.loop?0:1;a.moveSpeed=s.name==='Walk'?85:0;a.extent=ext();m.sequences.push(a);}
+-for(let i=0;i<src.bones.length;i++){const b=src.bones[i],a=new Bone();a.name=b.name;a.objectId=i;a.parentId=b.parent;a.geosetId=-1;a.geosetAnimationId=-1;
++for(let i=0;i<src.bones.length;i++){const b=src.bones[i],a=new Bone();a.name=b.name;a.objectId=i;a.parentId=b.parent;a.geosetId=0;a.geosetAnimationId=-1; // Boss-A diagnostic: sole geoset; native fix unverified.
+  for(const [tag,entries] of Object.entries(b.tracks)){const tr=tag==='KGRT'?new Vector4Animation():new Vector3Animation();tr.name=tag;tr.interpolationType=1;for(const [f,v] of entries){tr.frames.push(f);tr.values.push(new Float32Array(v));}a.animations.push(tr);}m.bones.push(a);m.pivotPoints.push(new Float32Array(b.pivot));}
+ const g=new Geoset();const verts=[],normals=[],faces=[],uv=[],groups=[];const groupSpecs=src.bones.map((_,i)=>[i]);const groupLookup=new Map(groupSpecs.map((a,i)=>[a.join(','),i]));
+ for(const p of src.parts){const smooth=p.verts.map(()=>[0,0,0]),faceNormals=[];
+diff --git a/assets/source/eclipse-spellweaver-v3/production-manifest.json b/assets/source/eclipse-spellweaver-v3/production-manifest.json
+index 7af37fd..6b3c490 100644
+--- a/assets/source/eclipse-spellweaver-v3/production-manifest.json
++++ b/assets/source/eclipse-spellweaver-v3/production-manifest.json
+@@ -1,5 +1,5 @@
+ {
+-  "model": "EclipseSpellweaver v3",
++  "model": "EclipseSpellweaver v3 Boss-A diagnostic",
+   "unitRawcode": "uB24",
+   "wave": 24,
+   "baseUnitRawcode": "Udre",
+@@ -10,7 +10,7 @@
+       "role": "model",
+       "sourceRelative": "original/EclipseSpellweaver.mdx",
+       "importPath": "war3mapImported\\EclipseSpellweaver.mdx",
+-      "sha256": "b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406",
++      "sha256": "f928308fbb4f09e14703852feaa0251e623e4e6b462f12b1809ab50609a70d73",
+       "bytes": 763754,
+       "repositoryImportPath": "imports/war3mapImported/EclipseSpellweaver.mdx"
+     },
+@@ -101,7 +101,8 @@
+     "original/EclipseSpellweaverAtlas_source.png",
+     "README.md",
+     "PROVENANCE.md",
+-    "production-manifest.json"
++    "production-manifest.json",
++    "check_bone_geosets.cjs"
+   ],
+   "previewRebuildSource": [
+     "render_sampled.py",
+@@ -110,11 +111,11 @@
+   "sourceRuntimeVariable": "MDX_PARSER_RUNTIME",
+   "originalAssetProvenance": "All geometry, rig, animation, UV and diffuse were authored for this project; no third-party model or texture pixels.",
+   "integration": {
+-    "baseCommit": "2528a3b356c31350b966078d62aa639d640b44b2",
++    "baseCommit": "5aa702d",
+     "unit": "uB24",
+     "modelPath": "war3mapImported\\EclipseSpellweaver.mdx",
+     "scale": 8.0,
+-    "scope": "Only uB24 visualScalingValue from 1.50 to 8.00; model/assets, all other fields and JASS unchanged"
++    "scope": "Diagnostic candidate only: 25 Bone.GeosetId values -1 to 0 (100 bytes); loading subtitle marked Boss-A; no gameplay/object changes"
+   },
+   "sourceHashes": {
+     "build_eclipse.py": {
+@@ -126,8 +127,8 @@
+       "bytes": 3145
+     },
+     "export_validate.cjs": {
+-      "sha256": "3a6e78e61f3e5641c5e6bc5bcfb74d06a03abbdd6a66892acd2c3e1e8c37d4bd",
+-      "bytes": 8582
++      "sha256": "9385e0572512a5f64182c239684fe82395da46201206ae418e92951678eb66d1",
++      "bytes": 8639
+     },
+     "check_roundtrip.cjs": {
+       "sha256": "7df38b65997301aaff6b15a1aa0a1db4daa0eaea127bf60b776b92951156ffa6",
+@@ -146,13 +147,24 @@
+       "bytes": 68893
+     },
+     "README.md": {
+-      "sha256": "b3bfa5969d55bd2b8d8ae2976b560d85da1e10effb592d7831078ad2b2e3fd52",
+-      "bytes": 3365
++      "sha256": "9694ac6b1be7a8ed4cd5da90689840384dcfb150dfbc0ce2554b32fc70417728",
++      "bytes": 4705
+     },
+     "PROVENANCE.md": {
+       "sha256": "d42c05c0b6dbff0aae1b78db15113a25618ac7ea19c68fcd963aa45b56e51603",
+       "bytes": 852
++    },
++    "check_bone_geosets.cjs": {
++      "sha256": "73109a2ec3cfd13b0d38963e6ec6d716c0a323ff197a0ac509fef95ee2eea305",
++      "bytes": 2204
+     }
+   },
+-  "visualScaleSuggestionStatus": "Historical offline suggestion only; user-approved production scale is 8.00"
++  "visualScaleSuggestionStatus": "Historical offline suggestion only; user-approved production scale is 8.00",
++  "candidate": {
++    "id": "Boss-A-20261014",
++    "status": "diagnostic; native rendering unverified; not a confirmed fix",
++    "originalSha256": "b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406",
++    "semantics": "Every bone influences or is an ancestor of a bone influencing the sole geoset 0; GeosetAnimId stays -1",
++    "changedBytes": 100
++  }
+ }
+diff --git a/imports/war3mapImported/EclipseSpellweaver.mdx b/imports/war3mapImported/EclipseSpellweaver.mdx
+index 958a8ee0588c2d1ef7c2744214de9188e1c6176b..10d520189028ea3c34fb79029c6b48ede644ca8b 100644
+GIT binary patch
+delta 466
+zcmaELPVdz@y@nRX7N!>F7M2#)7Pc1l7LF~PdWM1wK=2<3G^7|9Lh_4>^CvobZ|^eX
+zydud0lG>i+&8Z_LfUGJgF|&BO!4^)h?JrU}uSsIcC7c7wNi<-UoA3fC=P?T?2Qgl0
+z3($B7Gw2+g+4KU=+{DBMQ}9Rz&J;3-Go1qA%%W^Kb5SdhiQ=>(kh3o+aeHmoSiptm
+zY>?bETcA|LE^JcM4Z?wP9apf*B@_bXcD%zXH=!FS_kx2P=G#L`+%V64vVk*|!r{!I
+eLO8Rj8_48?1$=;KScneeL`RA3SC(>5V*~(hsEv#O
+
+delta 466
+zcmaELPVdz@y@nRX7N!>F7M2#)7Pc1l7LF~PdWM4kp+G~5fgvQns5pP3qxbeML(VIb
+zEFhWfN#2|~QUb`Tf)X=}ryFeH^xFO+mGhb;rd+}~pqxYlR=Ei;fN~zQfN~Jym9_wl
+zhcJWA!I@1j;LJ@-TrdTXWZ+C8b2!r}5Y8;hhBFtn0+}dID*`$Df)cmac8vvGXwC-7
+zO|u0`MeM>RHQgW_DA#cXt6V}MP;SRNta1~&fpRZ6xM99Mq{I#L%qJT-Qz;zI3@U^(
+bo4SEaK3Kp9c!q`OFiv!o*nVXx_cTTT*Xi*n
+
+diff --git a/tools/VerifyEclipseBossCandidate.py b/tools/VerifyEclipseBossCandidate.py
+new file mode 100644
+index 0000000..80d5c8c
+--- /dev/null
++++ b/tools/VerifyEclipseBossCandidate.py
+@@ -0,0 +1,89 @@
++#!/usr/bin/env python3
++"""Verify Boss-A exact 100-byte delta; optionally verify actual packaged candidate.
++No parser dependency needed. This does not test native rendering.
++"""
++import argparse
++import hashlib
++import json
++import struct
++from pathlib import Path
++from GenerateTowerTerrainMask import Mpq, ROOT
++from VerifyTowerPlacementArtifact import unit_objects
++
++ORIGINAL = 'b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406'
++CANDIDATE = 'f928308fbb4f09e14703852feaa0251e623e4e6b462f12b1809ab50609a70d73'
++MODEL = 'war3mapImported\\EclipseSpellweaver.mdx'
++TEXTURE = 'Textures\\EclipseSpellweaverAtlas.blp'
++
++def sha(data):
++    return hashlib.sha256(data).hexdigest()
++
++def chunks(data):
++    assert data[:4] == b'MDLX'
++    result, pos = {}, 4
++    while pos < len(data):
++        tag, size = struct.unpack_from('<4sI', data, pos)
++        assert tag not in result
++        result[tag] = (pos + 8, data[pos + 8:pos + 8 + size])
++        pos += 8 + size
++    assert pos == len(data)
++    return result
++
++def verify(data):
++    assert sha(data) == CANDIDATE, 'Candidate hash mismatch'
++    cs = chunks(data)
++    assert struct.unpack('<I', cs[b'VERS'][1])[0] == 800
++    original = bytearray(data)
++    start, bones = cs[b'BONE']
++    pos, offsets = 0, []
++    while pos < len(bones):
++        size = struct.unpack_from('<I', bones, pos)[0]
++        assert size >= 96 and pos + size + 8 <= len(bones)
++        assert struct.unpack_from('<ii', bones, pos + size) == (0, -1)
++        offset = start + pos + size
++        struct.pack_into('<i', original, offset, -1)
++        offsets.append(offset)
++        pos += size + 8
++    assert pos == len(bones) and len(offsets) == 25
++    assert sha(original) == ORIGINAL, 'Bytes besides the 25 GeosetId fields changed'
++    assert sum(a != b for a, b in zip(data, original)) == 100
++    # The reconstructed baseline hash proves geometry, UVs, bindings, animation
++    # tracks, hierarchy, pivots, extents and all other bytes remain identical.
++    return offsets
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--map', type=Path)
++    parser.add_argument('--reference-map', type=Path)
++    args = parser.parse_args()
++    assert not args.reference_map or args.map, '--reference-map requires --map'
++    source = (ROOT/'imports/war3mapImported/EclipseSpellweaver.mdx').read_bytes()
++    offsets = verify(source)
++    manifest = json.loads((ROOT/'assets/source/eclipse-spellweaver-v3/production-manifest.json').read_text())
++    assert manifest['assets'][0]['sha256'] == sha(source)
++    for item in manifest['assets']:
++        b = (ROOT/item['repositoryImportPath']).read_bytes()
++        assert len(b) == item['bytes'] and sha(b) == item['sha256']
++    result = {'candidate':'Boss-A-20261014','sourceSha256':sha(source),'changedBytes':100,
++              'boneGeosetOffsets':offsets,'nonMetadataBytesEquivalent':True,'nativeTested':False}
++    if args.map:
++        artifact = Mpq(args.map.read_bytes())
++        assert artifact.extract(MODEL) == source
++        assert artifact.extract(TEXTURE) == (ROOT/'imports/Textures/EclipseSpellweaverAtlas.blp').read_bytes()
++        units = unit_objects(artifact.extract('war3map.w3u'))
++        assert units['uB24']['umdl'] == MODEL
++        assert units['uB24']['usca'] == 8.0
++        assert b'Boss-A' in artifact.extract('war3map.w3i'), 'Diagnostic map label missing'
++        result.update(mapSha256=sha(args.map.read_bytes()), packagedModelAndTexture=True,
++                      unitModelPath=units['uB24']['umdl'], unitScale=units['uB24']['usca'])
++        if args.reference_map:
++            reference = Mpq(args.reference_map.read_bytes())
++            old = unit_objects(reference.extract('war3map.w3u'))
++            bosses = sorted(k for k in old if k.startswith('uB'))
++            assert bosses and 'uB24' in bosses
++            assert {k: old[k] for k in bosses} == {k: units[k] for k in bosses}, 'Boss object fields changed'
++            result['unchangedBossObjects'] = bosses
++    print(json.dumps(result, ensure_ascii=False, indent=2))
++
++if __name__ == '__main__':
++    main()
+diff --git a/wurst.build b/wurst.build
+index 76112b0..2d43f08 100644
+--- a/wurst.build
++++ b/wurst.build
+@@ -12,7 +12,7 @@ buildMapData:
+     loadingScreen:
+       model: ui\Glues\Loading\Load-Generic\Load-Generic.mdx
+       title: 契灵守卫战
+-      subTitle: 作者：留白散人
++      subTitle: 作者：留白散人 | Boss-A诊断（原生效果未验证）
+       text: 以塔为阵，与灵缔契！捕捉精灵、洗练绝技，让不同的契约与装备碰撞出意想不到的力量。打造属于你的王牌阵容，与契灵并肩，守到最后！
+   optionsFlags:
+     forcesFixed: true
