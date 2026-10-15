@@ -306,6 +306,28 @@ class ActiveSourceContractTests(unittest.TestCase):
         self.reject('towers/TDTowerCatalogData.wurst', 'return TD_ARCHER_SPLIT_ARROW_ABILITY_ID.toRawCode()',
                     'return TD_ARCHER_SPLIT_ARROW_ABILITY_ID.toRawCode() + ",Xnew"', 'Undefined/unresolved mounted')
 
+    def test_decorative_ghost_mount_is_exactly_scoped(self):
+        path = 'TDAmbientCritters.wurst'
+        original = "UnitAddAbility(candidate, 'Aeth')"
+        # Exercise the actual source call; it is a passive decoration role.
+        v.verify_inventory(v.SourceScalarEvaluator(self.sources))
+        mutations = [
+            (original, "UnitAddAbility(candidate, 'Xnew')"),
+            (original, "UnitAddAbility(tower, 'Aeth')"),
+            (original, "addAbility(candidate, 'Aeth')"),
+            ('function tdSetupAmbientCritterOwnership()', 'function otherStartup()'),
+        ]
+        for old, new in mutations:
+            with self.subTest(mutation=new):
+                sources = dict(self.sources)
+                replace_once(sources, path, old, new)
+                with self.assertRaisesRegex(ValueError, 'Unknown dynamic ability mount'):
+                    v.verify_inventory(v.SourceScalarEvaluator(sources))
+        sources = dict(self.sources)
+        sources['OtherDecoration.wurst'] = sources.pop(path)
+        with self.assertRaisesRegex(ValueError, 'Unknown dynamic ability mount'):
+            v.verify_inventory(v.SourceScalarEvaluator(sources))
+
     def test_direct_native_removal_and_unknown_dynamic_mount_are_rejected(self):
         for statement, reason in [('tower.removeAbility(TD_ORC_BLOODLUST_ABILITY_ID)', 'removal/remount'),
                                   ('UnitRemoveAbility(tower, TD_ORC_BLOODLUST_ABILITY_ID)', 'removal/remount'),

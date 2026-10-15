@@ -961,6 +961,12 @@ def verify_inventory(evaluator):
                 for arguments in calls(body, method):
                     expression = canonical(' , '.join(arguments))
                     known = expression in dynamic_roles.get((path, name), set())
+                    # Native Ghost Visible is a decorative collision passive,
+                    # not a combat active/CDR driver. Only this startup call on
+                    # the whitelisted editor critter candidate owns that role.
+                    known |= ((path, name, method, expression) == (
+                        'TDAmbientCritters.wurst', 'tdSetupAmbientCritterOwnership',
+                        'UnitAddAbility', "candidate , 'Aeth'"))
                     known |= (path == 'items/TDEquipmentCombat.wurst' and expression == 'TD_EQUIPMENT_ARMOR_SHRED_ABILITY_ID')
                     known |= (path == 'pets/TDPetCombat.wurst' and expression == 'TD_PET_ARMOR_ID')
                     known |= (path == 'enemies/TDBossDarkTideRuntime.wurst' and expression == 'TD_BOSS_DARK_TIDE_ABILITY_ID')

@@ -1,5 +1,6 @@
 package TDPetHeroEffects
 import TDPetHeroRules
+import TDPetHeroVisuals
 import TDPetHeroState
 import TDPetState
 import TDPetRuntime
@@ -57,6 +58,7 @@ public function tdPetHeroQueueTicketDamage(TDPetHeroTicket ticket, unit target, 
 	let binding = tdTrialBindingFor(target)
 	let targetRevision = binding == null ? 0 : binding.revision
 	let receiverRevision = tdPetHeroTowerRevision(receiver)
+	let skill = ticket.skill
 	let spell = tdPetHeroIsSpellDamage(ticket.skill)
 	ticket.consume()
 	tdPetQueueAttack(pet castTo int) ->
@@ -64,6 +66,7 @@ public function tdPetHeroQueueTicketDamage(TDPetHeroTicket ticket, unit target, 
 			return
 		if receiver != null and not tdPetHeroTowerValid(receiver, pet.lane, receiverRevision)
 			return
+		tdPetHeroVisual(host, pet.lane, skill, target.getPos(), context)
 		if spell
 			tdPetSpellDamage(pet, host, generation, target, amount)
 		else
@@ -84,12 +87,12 @@ class TDPetHeroRootPulse extends TDPetHeroTicket
 		if now < due
 			return true
 		consumed = true
+		tdPetHeroVisual(host, pet.lane, skill, center, context)
 		tdPetHeroAreaDamage(pet, host, generation, revision, center, tdPetHeroRadius(skill), tdPetHeroTargetCap(skill), amount, context, snapshot, false)
 		return false
 
 public function tdPetHeroStartRoot(TDPet pet, int quality, real amount, vec2 center, tdTrialCombatContext context, tdEquipmentTrialAoeSnapshot capturedTargets, int serial)
-	let rootVisual = AddSpecialEffect("Abilities\\Spells\\NightElf\\EntanglingRoots\\EntanglingRootsTarget.mdl", center.x, center.y)
-	DestroyEffect(rootVisual)
+	tdPetHeroVisual(pet.host, pet.lane, TD_PET_HERO_ROOT, center, context)
 	tdPetHeroStoreTicket(new TDPetHeroRootPulse(pet, quality, amount, center, context, capturedTargets, serial))
 
 class TDPetHeroWeakPoison extends TDPetHeroTicket
@@ -109,6 +112,7 @@ class TDPetHeroWeakPoison extends TDPetHeroTicket
 		// Each task carries exactly one secondary target and at most two ticks.
 		ticks += 1
 		nextAt += 1.0
+		tdPetHeroVisual(host, pet.lane, skill, targets[0].getPos(), context)
 		tdPetHeroWeakSpellDamage(pet, host, generation, targets[0], amount)
 		return ticks < 2 and not cancelled and not consumed
 
@@ -148,6 +152,8 @@ public function tdPetHeroExplodeGroup(TDPetHeroTicket ticket, vec2 center)
 	let snapshot = ticket.snapshot
 	ticket.consume()
 	tdPetQueueAttack(pet castTo int) ->
+		if tdPetBindingValid(pet, host, generation) and pet.revision == revision and tdTrialContextValid(context)
+			tdPetHeroVisual(host, pet.lane, TD_PET_HERO_EPIDEMIC, center, context)
 		tdPetHeroAreaDamage(pet, host, generation, revision, center, tdPetHeroRadius(TD_PET_HERO_EPIDEMIC), tdPetHeroTargetCap(TD_PET_HERO_EPIDEMIC), amount, context, snapshot, true)
 
 // Only scalar pet identity is retained by the tower's existing storm timer.
@@ -178,4 +184,6 @@ public function tdPetHeroCompleteStorm(unit host, tdPetHeroStormSnapshot cast)
 	let center = host.getPos()
 	let amount = tdOrcBladestormDamagePerSecond() * tdOrcBladestormTickInterval() * tdPetHeroPower(TD_PET_HERO_STORM, cast.quality)
 	tdPetQueueAttack(pet castTo int) ->
+		if tdPetBindingValid(pet, host, generation) and pet.revision == revision and tdTrialContextValid(cast.context)
+			tdPetHeroVisual(host, pet.lane, TD_PET_HERO_STORM, center, cast.context)
 		tdPetHeroAreaDamage(pet, host, generation, revision, center, tdOrcBladestormRadius(), tdPetHeroTargetCap(TD_PET_HERO_STORM), amount, cast.context, cast.targets, false)

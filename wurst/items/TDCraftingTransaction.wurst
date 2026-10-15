@@ -7,16 +7,16 @@ public constant int TD_CRAFT_COMMIT_SUCCESS = 1
 public constant int TD_CRAFT_COMMIT_RESULT_FAILED = 2
 public constant int TD_CRAFT_COMMIT_ALREADY_ATTEMPTED = 3
 
-// Adapter contract for the later catalog/runtime integration:
-// - available checks the exact captured handle/rawcode, holder or original cast
-//   circle, visibility/liveness, and no intervening pickup/movement out of scope.
-// - prepareResult creates a fully valid hidden output at a legal final drop point
-//   (ground upgrades: next-quality pile; inventory: near the operation).
-//   Return 0 without an output on failure. Never consume.
-// - consumeThree either removes all three, or returns false without any mutation.
-// - publishResult is a no-fail visibility handoff of that prepared output.
-// Every method is synchronous. No timer/yield, spell callbacks or user input.
-// The backend is borrowed; it must live longer than this commit call.
+// Synchronous borrowed-backend contract; native callbacks can reenter.
+// available validates exact source rawcode/handle/slot/owner and pickup snapshot.
+// prepareResult owns one hidden new output; inventory has no ground prerequisite,
+// while ground prepares its final next-quality pile. It never consumes materials.
+// consumeThree first delivers and verifies inventory output after all callbacks,
+// then removes three exact sources consecutively. Failure never deletes originals;
+// one full-inventory temporary source may be independently pending recovery.
+// publishResult is only the accepted output's visibility/ownership handoff.
+// discardResult may delete only this transaction's uncommitted new output.
+// No timer, yield or user input occurs within this commit.
 public interface TDCraftCommitBackend
 	function available(int key, int rawcode) returns boolean
 	function prepareResult(int rawcode) returns int
@@ -48,7 +48,7 @@ public function tdCommitCraftBatch(TDCraftPlan plan, int index, TDCraftCatalog c
 	let resultKey = backend.prepareResult(resultId)
 	if resultKey == 0
 		return TD_CRAFT_COMMIT_RESULT_FAILED
-	// Revalidate after output preparation before the all-or-nothing consumption.
+	// Revalidate after preparation; the native backend rechecks after delivery too.
 	if not tdCraftBatchAvailable(batch, backend)
 		backend.discardResult(resultKey)
 		return TD_CRAFT_COMMIT_CANCELLED

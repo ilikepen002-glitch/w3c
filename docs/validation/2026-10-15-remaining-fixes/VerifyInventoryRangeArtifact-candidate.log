@@ -1,0 +1,1 @@
+{'status': 'PASS', 'map_sha256': '14fa7cd13acce82bf71f95c64de0c152aad0fad2102a83551a3dcd34596f8aae', 'member': 'war3mapMisc.txt', 'bytes': 272, 'pickup_drop_give_range': 1200, 'display_building_status': True, 'boundary': 'Packed native constants only; Warcraft 1.27a inventory behavior and actual native Buff projection/display not playtested'}

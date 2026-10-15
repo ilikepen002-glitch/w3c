@@ -1,0 +1,183 @@
+package TDCraftingRecovery
+import TDCraftingItemWatch
+import TDItemPlacement
+import TDItemData
+import TDConfig
+import TDState
+
+public constant int TD_CRAFT_RECOVERY_STAGING = 1
+public constant int TD_CRAFT_RECOVERY_PENDING = 2
+public constant int TD_CRAFT_RECOVERY_RETURNING = 3
+public constant int TD_CRAFT_RECOVERY_EXTERNAL = 4
+
+// Independent of session/operation lock. At most one exact material per player.
+public class TDCraftRecoveryRecord
+	player owner
+	int playerId
+	unit farmer
+	item material
+	int handleKey
+	int rawcode
+	int quality
+	int originalSlot
+	boolean originalVisible
+	TDCraftPickupRecord watch
+	int pickupSerial
+	real custodyX = 0.0
+	real custodyY = 0.0
+	boolean custodyReady = false
+	int phase = TD_CRAFT_RECOVERY_STAGING
+	boolean notified = false
+	real nextAt = 0.0
+	construct(unit farmer, item material, int rawcode, int quality, int slot)
+		this.farmer = farmer
+		this.owner = GetOwningPlayer(farmer)
+		this.playerId = GetPlayerId(owner)
+		this.material = material
+		this.handleKey = GetHandleId(material)
+		this.rawcode = rawcode
+		this.quality = quality
+		this.originalSlot = slot
+		this.originalVisible = IsItemVisible(material)
+		this.watch = tdCraftWatchAcquire(material)
+		this.pickupSerial = watch.pickupSerial
+	ondestroy
+		// No RemoveItem/CreateItem of an original, including at game over.
+		tdCraftWatchRelease(watch)
+		material = null
+		farmer = null
+		owner = null
+
+TDCraftRecoveryRecord array[4] tdCraftRecoveryRecords
+int tdCraftRecoveryCount = 0
+real tdCraftRecoveryClock = 0.0
+
+public function tdCraftRecoveryForPlayer(int playerId) returns TDCraftRecoveryRecord
+	if playerId < 0 or playerId >= TD_ACTIVE_PLAYER_COUNT
+		return null
+	return tdCraftRecoveryRecords[playerId]
+
+public function tdCraftReserveRecovery(unit farmer, item material, int rawcode, int quality, int slot) returns TDCraftRecoveryRecord
+	let playerId = GetPlayerId(GetOwningPlayer(farmer))
+	if playerId < 0 or playerId >= TD_ACTIVE_PLAYER_COUNT or tdCraftRecoveryRecords[playerId] != null
+		return null
+	let record = new TDCraftRecoveryRecord(farmer, material, rawcode, quality, slot)
+	tdCraftRecoveryRecords[playerId] = record
+	tdCraftRecoveryCount += 1
+	return record
+
+public function tdCraftReleaseRecovery(TDCraftRecoveryRecord record)
+	if record == null or tdCraftRecoveryRecords[record.playerId] != record
+		return
+	tdCraftRecoveryRecords[record.playerId] = null
+	tdCraftRecoveryCount -= 1
+	destroy record
+
+// Only snapshot a native endpoint demonstrably owned by this recovery record.
+public function tdCraftRememberCustody(TDCraftRecoveryRecord record)
+	record.custodyX = GetItemX(record.material)
+	record.custodyY = GetItemY(record.material)
+	record.custodyReady = true
+
+public function tdCraftCustodyUnchanged(TDCraftRecoveryRecord record) returns boolean
+	return record.custodyReady and not IsItemVisible(record.material) and GetItemX(record.material) == record.custodyX and GetItemY(record.material) == record.custodyY
+
+public function tdCraftStagedMaterialValid(TDCraftRecoveryRecord record) returns boolean
+	return record != null and record.phase == TD_CRAFT_RECOVERY_STAGING and record.material != null and GetHandleId(record.material) == record.handleKey and GetItemTypeId(record.material) == record.rawcode and not IsItemOwned(record.material) and record.watch.pickupSerial == record.pickupSerial and tdCraftCustodyUnchanged(record)
+
+function tdCraftRecoveryNotify(TDCraftRecoveryRecord record, string message)
+	if record.notified
+		DisplayTimedTextToPlayer(record.owner, 0, 0, 5.0, message)
+
+public function tdCraftTryRecover(TDCraftRecoveryRecord record)
+	if record == null or tdIsGameOver() or record.phase == TD_CRAFT_RECOVERY_STAGING or record.phase == TD_CRAFT_RECOVERY_RETURNING
+		return
+	let material = record.material
+	if material == null or GetItemTypeId(material) == 0
+		tdCraftRecoveryNotify(record, "待归还的原材料已被其他操作移除，无法恢复。")
+		tdCraftReleaseRecovery(record)
+		return
+	// Actual original-owner membership wins over a native return contradiction.
+	if tdCraftFarmerValid(record.farmer, record.owner) and tdCraftItemInInventory(record.farmer, material)
+		// Membership permits releasing custody, not overwriting a later Hide,
+		// retyping or pickup performed by someone else.
+		tdCraftRecoveryNotify(record, "原物品已在背包，自动归还已结束。")
+		tdCraftReleaseRecovery(record)
+		return
+	if record.phase == TD_CRAFT_RECOVERY_EXTERNAL
+		return
+	if GetItemTypeId(material) != record.rawcode or IsItemOwned(material) or record.watch.pickupSerial != record.pickupSerial or not tdCraftCustodyUnchanged(record)
+		record.phase = TD_CRAFT_RECOVERY_EXTERNAL
+		tdCraftRecoveryNotify(record, "原材料归属或状态已被其他操作改变，自动归还已暂停。")
+		return
+	record.phase = TD_CRAFT_RECOVERY_RETURNING
+	if tdCraftFarmerValid(record.farmer, record.owner) and tdCraftInventoryHasSpace(record.farmer)
+		// Restore only while custody is still ours, before callbacks can change it.
+		SetItemVisible(material, record.originalVisible)
+		UnitAddItem(record.farmer, material)
+		if tdCraftFarmerValid(record.farmer, record.owner) and tdCraftItemInInventory(record.farmer, material)
+			// Do not overwrite the successful return callback's newer display/type.
+			if GetItemTypeId(material) == record.rawcode
+				tdCraftRecoveryNotify(record, "原材料已归还背包。")
+			else
+				tdCraftRecoveryNotify(record, "原物品已在背包，自动归还已结束。")
+			tdCraftReleaseRecovery(record)
+			return
+		// Failed return may not overwrite a callback's newer move/hide state.
+		if GetItemX(material) != record.custodyX or GetItemY(material) != record.custodyY or IsItemVisible(material) != record.originalVisible
+			record.phase = TD_CRAFT_RECOVERY_EXTERNAL
+			tdCraftRecoveryNotify(record, "原材料位置或显示状态已变化，自动归还已暂停。")
+			return
+		// A single own return pickup followed by rejection can retain custody,
+		// but no foreign/extra pickup, deletion or retyping can be forgiven.
+		if GetItemTypeId(material) == record.rawcode and not IsItemOwned(material)
+			if record.watch.pickupSerial == record.pickupSerial + 1 and record.watch.lastHolder == record.farmer
+				record.pickupSerial = record.watch.pickupSerial
+		if GetItemTypeId(material) != record.rawcode or IsItemOwned(material) or record.watch.pickupSerial != record.pickupSerial
+			record.phase = TD_CRAFT_RECOVERY_PENDING
+			tdCraftTryRecover(record)
+			return
+	SetItemVisible(material, false)
+	tdCraftRememberCustody(record)
+	if tdIsGameOver()
+		record.phase = TD_CRAFT_RECOVERY_PENDING
+		return
+	let index = tdTryPlaceItemInPile(material, record.playerId, record.quality, 0)
+	if not tdIsGameOver() and index >= 0 and GetItemTypeId(material) == record.rawcode and record.watch.pickupSerial == record.pickupSerial and tdItemActualInPile(material, record.playerId, record.quality)
+		SetItemVisible(material, true)
+		// Synchronous fallback also needs the exact destination notification.
+		DisplayTimedTextToPlayer(record.owner, 0, 0, 5.0, "原材料已退回本路" + tdItemQualityName(record.quality) + "材料堆。")
+		tdCraftReleaseRecovery(record)
+		return
+	record.phase = TD_CRAFT_RECOVERY_PENDING
+	if GetItemTypeId(material) != record.rawcode or IsItemOwned(material) or record.watch.pickupSerial != record.pickupSerial
+		tdCraftTryRecover(record)
+	else
+		SetItemVisible(material, false)
+		tdCraftRememberCustody(record)
+
+public function tdCraftCancelRecovery(TDCraftRecoveryRecord record, boolean externalChanged)
+	if record == null
+		return
+	let playerId = record.playerId
+	record.phase = externalChanged ? TD_CRAFT_RECOVERY_EXTERNAL : TD_CRAFT_RECOVERY_PENDING
+	tdCraftTryRecover(record)
+	if tdCraftRecoveryForPlayer(playerId) == record
+		record.notified = true
+		record.nextAt = tdCraftRecoveryClock + 0.5
+		if tdIsGameOver()
+			DisplayTimedTextToPlayer(record.owner, 0, 0, 5.0, "原材料已保留；游戏已结束，自动归还已停止。")
+		else if record.phase == TD_CRAFT_RECOVERY_EXTERNAL
+			DisplayTimedTextToPlayer(record.owner, 0, 0, 5.0, "材料已变化，本组合成取消；原材料归属需核对。")
+		else
+			DisplayTimedTextToPlayer(record.owner, 0, 0, 5.0, "本组合成取消，有1件原材料正在归还；可腾出一个空格，系统会自动重试。")
+
+public function tdCraftPumpRecovery(real elapsed)
+	tdCraftRecoveryClock += elapsed
+	if tdCraftRecoveryCount == 0 or tdIsGameOver()
+		return
+	for playerId = 0 to TD_ACTIVE_PLAYER_COUNT - 1
+		let record = tdCraftRecoveryRecords[playerId]
+		if record != null and record.nextAt <= tdCraftRecoveryClock
+			record.nextAt = tdCraftRecoveryClock + 0.5
+			tdCraftTryRecover(record)

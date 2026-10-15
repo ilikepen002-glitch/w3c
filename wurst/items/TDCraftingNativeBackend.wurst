@@ -1,6 +1,8 @@
 package TDCraftingNativeBackend
 import TDCraftingPlan
 import TDCraftingTransaction
+import TDCraftingItemWatch
+import TDCraftingRecovery
 import TDItemData
 import TDConfig
 import TDState
@@ -9,38 +11,35 @@ import TDGroundItemRules
 import LinkedList
 import HashMap
 
-Table tdCraftWatchedPickups = new Table()
-boolean tdCraftPickupWatchReady = false
+constant int TD_CRAFT_PHASE_IDLE = 0
+constant int TD_CRAFT_PHASE_PREPARING = 1
+constant int TD_CRAFT_PHASE_PREPARED = 2
+constant int TD_CRAFT_PHASE_DELIVERING = 3
+constant int TD_CRAFT_PHASE_CONSUMED = 4
+public constant int TD_CRAFT_FAILURE_NONE = 0
+public constant int TD_CRAFT_FAILURE_MATERIAL = 1
+public constant int TD_CRAFT_FAILURE_DELIVERY = 2
 
-function tdCraftTrackPickup()
-	let itm = GetManipulatedItem()
-	if itm == null
-		return
-	let key = GetHandleId(itm)
-	if tdCraftWatchedPickups.hasInt(key)
-		tdCraftWatchedPickups.saveInt(key, tdCraftWatchedPickups.loadInt(key) + 1)
-
-public function tdSetupCraftPickupWatch()
-	if tdCraftPickupWatchReady
-		return
-	tdCraftPickupWatchReady = true
-	let watch = CreateTrigger()
-	watch.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
-	watch.addAction(function tdCraftTrackPickup)
+// The runtime operation lock guards session starts. This narrow native-boundary
+// owner also rejects direct synchronous reentry through a different backend.
+int tdCraftBackendCommitOwner = 0
 
 class TDCraftNativeIngredient
 	item itemHandle
 	int handleKey
 	int rawcode
 	int slot
+	TDCraftPickupRecord watch
+	int pickupSerial
 	construct(item itemHandle, int slot)
 		this.itemHandle = itemHandle
 		this.handleKey = GetHandleId(itemHandle)
 		this.rawcode = GetItemTypeId(itemHandle)
 		this.slot = slot
-		tdCraftWatchedPickups.saveInt(handleKey, 0)
+		this.watch = tdCraftWatchAcquire(itemHandle)
+		this.pickupSerial = watch.pickupSerial
 	ondestroy
-		tdCraftWatchedPickups.removeInt(handleKey)
+		tdCraftWatchRelease(watch)
 		itemHandle = null
 
 public class TDCraftNativeBackend implements TDCraftCommitBackend
@@ -55,8 +54,10 @@ public class TDCraftNativeBackend implements TDCraftCommitBackend
 	private item output = null
 	private int outputId = 0
 	private int outputKey = 0
+	private int phase = TD_CRAFT_PHASE_IDLE
+	private TDCraftRecoveryRecord staging = null
 	private int array[5] pileCounts
-	int deliveryExceptions = 0
+	int lastFailure = TD_CRAFT_FAILURE_NONE
 
 	construct(unit farmer, int lane, vec2 origin, boolean inventory)
 		this.farmer = farmer
@@ -66,7 +67,7 @@ public class TDCraftNativeBackend implements TDCraftCommitBackend
 		this.inventory = inventory
 
 	function capture(TDCraftPlan plan, item itm, int slot) returns boolean
-		if itm == null or GetItemTypeId(itm) == 0 or not tdItemIsEquipment(GetItemTypeId(itm))
+		if phase != TD_CRAFT_PHASE_IDLE or itm == null or GetItemTypeId(itm) == 0 or not tdItemIsEquipment(GetItemTypeId(itm))
 			return false
 		if handles.has(GetHandleId(itm))
 			return false
@@ -80,15 +81,11 @@ public class TDCraftNativeBackend implements TDCraftCommitBackend
 		return true
 
 	override function available(int key, int rawcode) returns boolean
-		if tdIsGameOver() or farmer == null or not farmer.isAlive() or GetUnitTypeId(farmer) != TD_FARMER_UNIT_ID or GetOwningPlayer(farmer) != caster
-			return false
-		if not records.has(key)
+		if not tdCraftFarmerValid(farmer, caster) or not records.has(key)
 			return false
 		let record = records.get(key)
 		let itm = record.itemHandle
-		if itm == null or GetItemTypeId(itm) != rawcode or record.rawcode != rawcode
-			return false
-		if not tdCraftWatchedPickups.hasInt(record.handleKey) or tdCraftWatchedPickups.loadInt(record.handleKey) != 0
+		if itm == null or GetHandleId(itm) != record.handleKey or GetItemTypeId(itm) != rawcode or record.rawcode != rawcode or record.watch.pickupSerial != record.pickupSerial
 			return false
 		if inventory
 			return UnitItemInSlot(farmer, record.slot) == itm
@@ -97,80 +94,159 @@ public class TDCraftNativeBackend implements TDCraftCommitBackend
 		let point = tdItemActualPosition(itm)
 		return tdGroundItemLane(point.x, point.y) == lane and tdGroundPointInUpgradeCircle(point.x, point.y, origin.x, origin.y)
 
+	private function clearOutput()
+		if output != null
+			RemoveItem(output)
+		output = null
+		outputId = 0
+
+	private function releaseCommitOwner()
+		phase = TD_CRAFT_PHASE_IDLE
+		if tdCraftBackendCommitOwner == this castTo int
+			tdCraftBackendCommitOwner = 0
+
 	override function prepareResult(int rawcode) returns int
-		if output != null or not tdItemIsEquipment(rawcode)
+		if phase != TD_CRAFT_PHASE_IDLE or output != null or tdCraftBackendCommitOwner != 0 or not tdItemIsEquipment(rawcode)
 			return 0
-		output = CreateItem(rawcode, origin.x, origin.y)
-		if output == null
+		phase = TD_CRAFT_PHASE_PREPARING
+		tdCraftBackendCommitOwner = this castTo int
+		lastFailure = TD_CRAFT_FAILURE_DELIVERY
+		let created = CreateItem(rawcode, origin.x, origin.y)
+		// Never adopt or delete a captured original returned as a native alias.
+		if created != null and handles.has(GetHandleId(created))
+			releaseCommitOwner()
+			return 0
+		output = created
+		if output == null or GetItemTypeId(output) != rawcode or IsItemOwned(output)
+			clearOutput()
+			releaseCommitOwner()
 			return 0
 		SetItemVisible(output, false)
-		var placed = false
-		if GetItemTypeId(output) == rawcode
-			if inventory
-				placed = tdTryPlaceItemNear(output, lane, origin, false)
-			else
-				// Prepare at the final next-quality pile before consuming anything.
-				// Source terrain is irrelevant; reuse the checked native pile placement.
-				let quality = tdItemQuality(rawcode)
-				let index = tdTryPlaceItemInPile(output, lane, quality, pileCounts[quality])
-				if index >= 0
-					pileCounts[quality] = index + 1
-					placed = true
-		if not placed
-			RemoveItem(output)
-			output = null
-			return 0
+		if not inventory
+			let quality = tdItemQuality(rawcode)
+			let index = tdTryPlaceItemInPile(output, lane, quality, pileCounts[quality])
+			if index < 0
+				clearOutput()
+				releaseCommitOwner()
+				return 0
+			pileCounts[quality] = index + 1
 		outputId = rawcode
 		outputKey += 1
+		phase = TD_CRAFT_PHASE_PREPARED
 		return outputKey
 
-	override function consumeThree(int first, int second, int third) returns boolean
-		if not tdGroundItemHandleValid(output) or GetItemTypeId(output) != outputId or not tdItemGroundPointSafe(lane, tdItemActualPosition(output))
-			return false
-		if not inventory and not tdItemActualInPile(output, lane, tdItemQuality(outputId))
-			return false
-		if first == second or first == third or second == third
-			return false
-		if not records.has(first) or not records.has(second) or not records.has(third)
+	private function sourceValid(int key, TDCraftNativeIngredient record) returns boolean
+		if staging != null and staging.material == record.itemHandle
+			return record.rawcode == staging.rawcode and tdCraftStagedMaterialValid(staging)
+		return available(key, record.rawcode)
+
+	private function sourcesValid(int first, int second, int third) returns boolean
+		if first == second or first == third or second == third or not records.has(first) or not records.has(second) or not records.has(third)
 			return false
 		let one = records.get(first)
 		let two = records.get(second)
 		let three = records.get(third)
-		if not available(first, one.rawcode) or not available(second, two.rawcode) or not available(third, three.rawcode)
+		if one.itemHandle == two.itemHandle or one.itemHandle == three.itemHandle or two.itemHandle == three.itemHandle
 			return false
-		// No yields and no UnitRemoveItem/drop event between ingredient removals.
-		// All three exact handles are valid before the irreversible native phase.
-		RemoveItem(one.itemHandle)
-		RemoveItem(two.itemHandle)
-		RemoveItem(three.itemHandle)
+		return tdCraftFarmerValid(farmer, caster) and sourceValid(first, one) and sourceValid(second, two) and sourceValid(third, three)
+
+	private function inventoryOutputAccepted() returns boolean
+		return output != null and GetItemTypeId(output) == outputId and tdCraftFarmerValid(farmer, caster) and tdCraftItemInInventory(farmer, output)
+
+	private function cancelInventoryDelivery(boolean externalChanged)
+		// Cancellation return natives are part of this occupied boundary too.
+		// Keep both guards until recovery returns, including another backend.
+		phase = TD_CRAFT_PHASE_DELIVERING
+		clearOutput()
+		if staging != null
+			let record = staging
+			staging = null
+			tdCraftCancelRecovery(record, externalChanged)
+		releaseCommitOwner()
+
+	private function deliverInventory(int first, int second, int third) returns boolean
+		phase = TD_CRAFT_PHASE_DELIVERING
+		if not sourcesValid(first, second, third)
+			lastFailure = TD_CRAFT_FAILURE_MATERIAL
+			cancelInventoryDelivery(false)
+			return false
+		if not tdCraftInventoryHasSpace(farmer)
+			let source = records.get(first)
+			staging = tdCraftReserveRecovery(farmer, source.itemHandle, source.rawcode, tdItemQuality(source.rawcode), source.slot)
+			if staging == null
+				lastFailure = TD_CRAFT_FAILURE_DELIVERY
+				cancelInventoryDelivery(false)
+				return false
+			UnitRemoveItem(farmer, source.itemHandle)
+			// DROP can fire before native detachment; inspect only after it returns.
+			// Pure unheld movement here is indistinguishable from native relocation.
+			if tdCraftItemInInventory(farmer, source.itemHandle)
+				tdCraftReleaseRecovery(staging)
+				staging = null
+				lastFailure = TD_CRAFT_FAILURE_DELIVERY
+				cancelInventoryDelivery(false)
+				return false
+			if GetItemTypeId(source.itemHandle) != source.rawcode or IsItemOwned(source.itemHandle) or source.watch.pickupSerial != source.pickupSerial
+				lastFailure = TD_CRAFT_FAILURE_MATERIAL
+				cancelInventoryDelivery(true)
+				return false
+			SetItemVisible(source.itemHandle, false)
+			tdCraftRememberCustody(staging)
+			if not sourcesValid(first, second, third)
+				lastFailure = TD_CRAFT_FAILURE_MATERIAL
+				cancelInventoryDelivery(false)
+				return false
+		SetItemVisible(output, true)
+		let inserted = UnitAddItem(farmer, output)
+		// Both native return and actual exact membership are necessary for output.
+		// Source checks run after all pickup/tower-admission callbacks return.
+		let unchanged = sourcesValid(first, second, third)
+		if not inserted or not inventoryOutputAccepted() or not unchanged
+			lastFailure = unchanged ? TD_CRAFT_FAILURE_DELIVERY : TD_CRAFT_FAILURE_MATERIAL
+			let externalChanged = staging != null and not tdCraftStagedMaterialValid(staging)
+			cancelInventoryDelivery(externalChanged)
+			return false
+		return true
+
+	override function consumeThree(int first, int second, int third) returns boolean
+		if phase != TD_CRAFT_PHASE_PREPARED or tdCraftBackendCommitOwner != this castTo int or not sourcesValid(first, second, third)
+			lastFailure = TD_CRAFT_FAILURE_MATERIAL
+			return false
+		if inventory
+			if not deliverInventory(first, second, third)
+				return false
+		else
+			if not tdGroundItemHandleValid(output) or GetItemTypeId(output) != outputId or not tdItemGroundPointSafe(lane, tdItemActualPosition(output)) or not tdItemActualInPile(output, lane, tdItemQuality(outputId))
+				return false
+		// No yields, DROP/pickup natives or fresh source lookups in this interval.
+		RemoveItem(records.get(first).itemHandle)
+		RemoveItem(records.get(second).itemHandle)
+		RemoveItem(records.get(third).itemHandle)
+		if staging != null
+			tdCraftReleaseRecovery(staging)
+			staging = null
+		phase = TD_CRAFT_PHASE_CONSUMED
+		lastFailure = TD_CRAFT_FAILURE_NONE
 		return true
 
 	override function publishResult(int resultKey)
-		if resultKey != outputKey or output == null
+		if phase != TD_CRAFT_PHASE_CONSUMED or resultKey != outputKey or output == null
 			return
-		let result = output
+		SetItemVisible(output, true)
 		output = null
-		SetItemVisible(result, true)
-		if inventory
-			if UnitAddItem(farmer, result)
-				for slot = 0 to 5
-					if UnitItemInSlot(farmer, slot) == result
-						return
-			// Failed inventory delivery preserves this exact output on legal ground.
-			if not tdTryPlaceItemNear(result, lane, origin, false)
-				deliveryExceptions += 1
-				DisplayTimedTextToPlayer(caster, 0, 0, 6.0, "合成产物未删除，但交付落点异常，请收取物品句柄 " + GetHandleId(result) + "（" + tdItemName(outputId) + "）。")
-			else
-				DisplayTimedTextToPlayer(caster, 0, 0, 4.0, "背包交付未完成，产物已保留在合成操作附近。")
+		outputId = 0
+		releaseCommitOwner()
 
 	override function discardResult(int resultKey)
-		if resultKey == outputKey and output != null
-			RemoveItem(output)
-			output = null
+		if resultKey != outputKey or phase == TD_CRAFT_PHASE_CONSUMED or phase == TD_CRAFT_PHASE_PREPARING or phase == TD_CRAFT_PHASE_DELIVERING
+			return
+		cancelInventoryDelivery(staging != null and not tdCraftStagedMaterialValid(staging))
 
 	ondestroy
-		if output != null
-			RemoveItem(output)
+		if phase != TD_CRAFT_PHASE_CONSUMED
+			cancelInventoryDelivery(staging != null and not tdCraftStagedMaterialValid(staging))
+		else
+			releaseCommitOwner()
 		for record in inputs
 			destroy record
 		destroy inputs

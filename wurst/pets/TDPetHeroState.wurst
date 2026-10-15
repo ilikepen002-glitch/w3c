@@ -1,5 +1,6 @@
 package TDPetHeroState
 import TDPetHeroRules
+import TDPetHeroVisuals
 import TDPetState
 import TDPetRules
 import TDPetRuntime
@@ -215,7 +216,14 @@ public function tdPetHeroStoreTicket(TDPetHeroTicket ticket) returns boolean
 		if previous != null
 			previous.consume()
 		ownerTickets.saveInt(ticket.ownerKey * 10 + ticket.skill - TD_PET_HERO_FIRST, ticket castTo int)
-	return tdPetRegisterEffectTask(ticket)
+	// Registration can destroy a rejected ticket, so snapshot before it runs.
+	let host = ticket.host
+	let lane = ticket.pet.lane
+	let context = ticket.context
+	let accepted = tdPetRegisterEffectTask(ticket)
+	if accepted
+		tdPetHeroVisualReady(host, lane, context)
+	return accepted
 
 public function tdPetHeroStorePendingJudgement(TDPetHeroTicket ticket) returns boolean
 	let previous = pendingJudgements.loadInt(ticket.ownerKey) castTo TDPetHeroTicket
@@ -253,6 +261,7 @@ public function tdPetHeroCommitPendingJudgement(TDPet pet, int serial)
 	ticket.pendingJudgement = false
 	ticket.indexedOwner = true
 	ownerTickets.saveInt(ticket.ownerKey * 10 + TD_PET_HERO_JUDGEMENT - TD_PET_HERO_FIRST, ticket castTo int)
+	tdPetHeroVisualReady(ticket.host, pet.lane, ticket.context)
 
 public function tdPetHeroTargetTicket(unit target, int skill) returns TDPetHeroTicket
 	let bucket = tdPetHeroTargetBucketFor(target, false)

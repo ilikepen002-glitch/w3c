@@ -1,0 +1,1809 @@
+CANDIDATE /workspace/shared/w3c-remaining-fixes-integration/ExampleMap.w3x
+SHA256 14fa7cd13acce82bf71f95c64de0c152aad0fad2102a83551a3dcd34596f8aae
+SELECTED map=24
+FIXTURE START test_inventory_craft_artifact.InventoryCraftArtifactTests.setUpClass
+FIXTURE END test_inventory_craft_artifact.InventoryCraftArtifactTests.setUpClass
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_cf06_actual_catalog_ready_twice_no_loop_or_duplicate_registration
+TEST 0.383082s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_cf06_actual_catalog_ready_twice_no_loop_or_duplicate_registration
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_ground01_real_capture_plan_guaranteed_batches_leftovers_next_pile
+TEST 0.394980s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_ground01_real_capture_plan_guaranteed_batches_leftovers_next_pile
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+TEST 46.456988s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_front_three_pair_mixed_quality_purple_and_non_equipment_rejection
+TEST 1.224109s PASS [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_front_three_pair_mixed_quality_purple_and_non_equipment_rejection
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv02_three_to_six_slots_zero_terrain_and_single_exact_detach
+TEST 0.338381s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv02_three_to_six_slots_zero_terrain_and_single_exact_detach
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_create_and_native_return_membership_contradictions_keep_originals
+TEST 2.292827s PASS [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_create_and_native_return_membership_contradictions_keep_originals
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_output_deleted_retyped_or_transferred_in_add_callback
+TEST 1.052315s PASS [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_output_deleted_retyped_or_transferred_in_add_callback
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_each_source_changed_in_create_and_output_add_callbacks
+TEST 11.083013s PASS [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_each_source_changed_in_create_and_output_add_callbacks
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_at_create_or_output_add
+TEST 3.611163s PASS [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_at_create_or_output_add
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+TEST 3.587927s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+TEST 7.301150s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_cancel_return_other_backend_prepare_stays_blocked
+TEST 0.374244s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_cancel_return_other_backend_prepare_stays_blocked
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_same_backend_add_reentry_three_and_six_slots
+TEST 0.319758s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_same_backend_add_reentry_three_and_six_slots
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_create_and_add_same_and_different_batch_reentry_cannot_prepare
+TEST 0.332150s ERROR [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_create_and_add_same_and_different_batch_reentry_cannot_prepare
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach
+TEST 2.340017s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_duplicate_keys_handles_and_stale_result_tokens_real_backend
+TEST 0.333889s ERROR [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_duplicate_keys_handles_and_stale_result_tokens_real_backend
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_pending_survives_actual_finish_destructor_then_returns_exact_once
+TEST 0.427668s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_pending_survives_actual_finish_destructor_then_returns_exact_once
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_synchronous_original_quality_pile_destination_feedback
+TEST 0.443982s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_synchronous_original_quality_pile_destination_feedback
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_original_holder_and_successful_return_callback_hide_retype_preserved
+TEST 1.646842s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_original_holder_and_successful_return_callback_hide_retype_preserved
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_output_or_failed_return_callback_custody_changes_stop_later_native
+TEST 1.532000s PASS [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_output_or_failed_return_callback_custody_changes_stop_later_native
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_registered_external_move_reveal_never_reclaimed
+TEST 1.240621s PASS [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_registered_external_move_reveal_never_reclaimed
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_pending_player_continuation_other_player_and_ground_after_lock_release
+TEST 0.369662s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_pending_player_continuation_other_player_and_ground_after_lock_release
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_real_four_record_limit_and_shared_watch_reference_lifetime
+TEST 0.399621s PASS [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_real_four_record_limit_and_shared_watch_reference_lifetime
+START [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv09_gameover_stops_retries_without_automatic_retry_promise
+TEST 0.372062s FAIL [map] test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv09_gameover_stops_retries_without_automatic_retry_promise
+FIXTURE START test_inventory_craft_artifact.InventoryCraftArtifactTests.tearDownClass
+FIXTURE END test_inventory_craft_artifact.InventoryCraftArtifactTests.tearDownClass
+======================================================================
+ERROR: test_inv05_create_and_add_same_and_different_batch_reentry_cannot_prepare (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_create_and_add_same_and_different_batch_reentry_cannot_prepare)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 254, in test_inv05_create_and_add_same_and_different_batch_reentry_cannot_prepare
+    self.assertTrue(r.invoke('dispatch_TDCraftPlan_TDCraftPlan_capture',other_plan,index,r.items[i]['id']))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyGroundUpgradeArtifact.py", line 130, in invoke
+    return self.call(name, list(arguments))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyGroundUpgradeArtifact.py", line 187, in call
+    self.assign(key, self.expression(value, scope), scope)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyGroundUpgradeArtifact.py", line 110, in expression
+    return super().expression(ast.unparse(node.body), variables)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyTowerUpgradeArtifact.py", line 334, in expression
+    return read(node)
+           ^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyTowerUpgradeArtifact.py", line 309, in read
+    return self.call(node.func.id, [read(arg) for arg in node.args])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyGroundUpgradeArtifact.py", line 149, in call
+    selected = active and bool(self.expression(line[3:-5], scope))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyGroundUpgradeArtifact.py", line 110, in expression
+    return super().expression(ast.unparse(node.body), variables)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyTowerUpgradeArtifact.py", line 334, in expression
+    return read(node)
+           ^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyTowerUpgradeArtifact.py", line 316, in read
+    values = [bool(read(value)) for value in node.values]
+                   ^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyTowerUpgradeArtifact.py", line 311, in read
+    value = read(node.operand)
+            ^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyTowerUpgradeArtifact.py", line 309, in read
+    return self.call(node.func.id, [read(arg) for arg in node.args])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyGroundUpgradeArtifact.py", line 189, in call
+    self.expression(line[5:], scope)
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyGroundUpgradeArtifact.py", line 110, in expression
+    return super().expression(ast.unparse(node.body), variables)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyTowerUpgradeArtifact.py", line 334, in expression
+    return read(node)
+           ^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyTowerUpgradeArtifact.py", line 309, in read
+    return self.call(node.func.id, [read(arg) for arg in node.args])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyGroundUpgradeArtifact.py", line 133, in call
+    native, result = self.native(name, args)
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py", line 153, in native
+    if name == 'error':raise ValueError('Actual packaged runtime error: ' + str(args[0]))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Actual packaged runtime error: Nullpointer exception when calling TDCraftCatalog.isReady
+
+======================================================================
+ERROR: test_inv05_duplicate_keys_handles_and_stale_result_tokens_real_backend (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_duplicate_keys_handles_and_stale_result_tokens_real_backend)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 269, in test_inv05_duplicate_keys_handles_and_stale_result_tokens_real_backend
+    key=r.invoke('dispatch_TDCraftNativeBackend_TDCraftNativeBackend_prepareResult',backend,expected)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyGroundUpgradeArtifact.py", line 127, in invoke
+    signature = self.functions[name][0]
+                ~~~~~~~~~~~~~~^^^^^^
+KeyError: 'dispatch_TDCraftNativeBackend_TDCraftNativeBackend_prepareResult'
+
+======================================================================
+FAIL: test_cf06_actual_catalog_ready_twice_no_loop_or_duplicate_registration (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_cf06_actual_catalog_ready_twice_no_loop_or_duplicate_registration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 61, in test_cf06_actual_catalog_ready_twice_no_loop_or_duplicate_registration
+    self.assertTrue(r.invoke('tdCraftCatalogReady'))
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_ground01_real_capture_plan_guaranteed_batches_leftovers_next_pile (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_ground01_real_capture_plan_guaranteed_batches_leftovers_next_pile)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 403, in test_ground01_real_capture_plan_guaranteed_batches_leftovers_next_pile
+    self.assertEqual(len(r.removed),3);self.assertFalse(set(leftovers)&set(r.removed))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 3
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=1, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=1, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=1, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=1, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=1, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=1, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=1, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=1, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=1, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=1, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=1, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=2, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=2, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=2, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=2, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=2, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=2, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=2, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=2, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=2, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=2, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=2, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=3, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=3, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=3, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=3, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=3, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=3, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=3, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=3, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=3, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=3, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=0, quality=3, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=1, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=1, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=1, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=1, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=1, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=1, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=1, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=1, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=1, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=1, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=1, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=2, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=2, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=2, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=2, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=2, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=2, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=2, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=2, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=2, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=2, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=2, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=3, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=3, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=3, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=3, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=3, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=3, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=3, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=3, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=3, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=3, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=1, quality=3, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=1, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=1, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=1, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=1, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=1, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=1, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=1, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=1, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=1, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=1, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=1, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=2, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=2, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=2, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=2, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=2, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=2, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=2, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=2, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=2, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=2, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=2, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=3, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=3, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=3, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=3, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=3, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=3, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=3, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=3, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=3, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=3, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=2, quality=3, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=1, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=1, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=1, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=1, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=1, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=1, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=1, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=1, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=1, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=1, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=1, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=2, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=2, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=2, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=2, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=2, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=2, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=2, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=2, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=2, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=2, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=2, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=3, mixed=False, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=3, mixed=True, roll=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=3, mixed=True, roll=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=3, mixed=True, roll=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=3, mixed=True, roll=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=3, mixed=True, roll=5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=3, mixed=True, roll=6)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=3, mixed=True, roll=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=3, mixed=True, roll=8)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=3, mixed=True, roll=9)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll) (lane=3, quality=3, mixed=True, roll=10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 77, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 82, in test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+    self.assertEqual(cases,132)
+AssertionError: 0 != 132
+
+======================================================================
+FAIL: test_inv02_three_to_six_slots_zero_terrain_and_single_exact_detach (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv02_three_to_six_slots_zero_terrain_and_single_exact_detach)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 87, in test_inv02_three_to_six_slots_zero_terrain_and_single_exact_detach
+    self.assertTrue(self.start(r,u));r.drain()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks) (order='before', mode='death')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 198, in test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks) (order='before', mode='remove')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 198, in test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks) (order='before', mode='type')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 198, in test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks) (order='before', mode='owner')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 198, in test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks) (order='before', mode='gameover')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 198, in test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks) (order='after', mode='death')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 198, in test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks) (order='after', mode='remove')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 198, in test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks) (order='after', mode='type')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 198, in test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks) (order='after', mode='owner')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 198, in test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks) (order='after', mode='gameover')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 198, in test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='before', index=1, mode='delete')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='before', index=1, mode='raw')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='before', index=1, mode='swap')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='before', index=1, mode='foreign')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='before', index=1, mode='repick')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='before', index=2, mode='delete')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='before', index=2, mode='raw')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='before', index=2, mode='swap')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='before', index=2, mode='foreign')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='before', index=2, mode='repick')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='after', index=1, mode='delete')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='after', index=1, mode='raw')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='after', index=1, mode='swap')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='after', index=1, mode='foreign')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='after', index=1, mode='repick')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='after', index=2, mode='delete')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='after', index=2, mode='raw')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='after', index=2, mode='swap')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='after', index=2, mode='foreign')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks) (order='after', index=2, mode='repick')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 177, in test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+    self.assertTrue(self.start(r,u));r.drain();self.conserved(r,originals)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv05_actual_cancel_return_other_backend_prepare_stays_blocked (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_cancel_return_other_backend_prepare_stays_blocked)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 243, in test_inv05_actual_cancel_return_other_backend_prepare_stays_blocked
+    self.assertEqual(observed,[(3,backend),0]);self.assertEqual(len(r.products),1)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [] != [(3, 0), 0]
+
+Second list contains 2 additional elements.
+First extra element 0:
+(3, 0)
+
+- []
++ [(3, 0), 0]
+
+======================================================================
+FAIL: test_inv05_actual_same_backend_add_reentry_three_and_six_slots (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_same_backend_add_reentry_three_and_six_slots)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 231, in test_inv05_actual_same_backend_add_reentry_three_and_six_slots
+    self.assertEqual(observed,[3,False,0]);self.assertEqual(r.removed,originals[:3]);self.assertEqual(len(r.products),1)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [] != [3, False, 0]
+
+Second list contains 3 additional elements.
+First extra element 0:
+3
+
+- []
++ [3, False, 0]
+
+======================================================================
+FAIL: test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach) (mode='before')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 216, in test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach
+    if mode in ('before','after'):self.assertEqual(r.removed,originals[:3])
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [] != [1000005, 1000006, 1000007]
+
+Second list contains 3 additional elements.
+First extra element 0:
+1000005
+
+- []
++ [1000005, 1000006, 1000007]
+
+======================================================================
+FAIL: test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach) (mode='after')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 216, in test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach
+    if mode in ('before','after'):self.assertEqual(r.removed,originals[:3])
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [] != [1000005, 1000006, 1000007]
+
+Second list contains 3 additional elements.
+First extra element 0:
+1000005
+
+- []
++ [1000005, 1000006, 1000007]
+
+======================================================================
+FAIL: test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach) (mode='none')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 218, in test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach
+    self.assertEqual(r.detaches,[originals[0]])
+AssertionError: Lists differ: [] != [1000005]
+
+Second list contains 1 additional elements.
+First extra element 0:
+1000005
+
+- []
++ [1000005]
+
+======================================================================
+FAIL: test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach) (mode='foreign')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 218, in test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach
+    self.assertEqual(r.detaches,[originals[0]])
+AssertionError: Lists differ: [] != [1000005]
+
+Second list contains 1 additional elements.
+First extra element 0:
+1000005
+
+- []
++ [1000005]
+
+======================================================================
+FAIL: test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach) (mode='repick')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 218, in test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach
+    self.assertEqual(r.detaches,[originals[0]])
+AssertionError: Lists differ: [] != [1000005]
+
+Second list contains 1 additional elements.
+First extra element 0:
+1000005
+
+- []
++ [1000005]
+
+======================================================================
+FAIL: test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach) (mode='occupied')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 218, in test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach
+    self.assertEqual(r.detaches,[originals[0]])
+AssertionError: Lists differ: [] != [1000005]
+
+Second list contains 1 additional elements.
+First extra element 0:
+1000005
+
+- []
++ [1000005]
+
+======================================================================
+FAIL: test_inv06_pending_survives_actual_finish_destructor_then_returns_exact_once (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_pending_survives_actual_finish_destructor_then_returns_exact_once)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 295, in test_inv06_pending_survives_actual_finish_destructor_then_returns_exact_once
+    self.start(r,u);r.drain();record=self.pending(r);self.assertTrue(record)
+                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv06_synchronous_original_quality_pile_destination_feedback (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_synchronous_original_quality_pile_destination_feedback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 307, in test_inv06_synchronous_original_quality_pile_destination_feedback
+    self.assertTrue(r.invoke('tdItemActualInPile',originals[0],0,quality))
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_inv07_original_holder_and_successful_return_callback_hide_retype_preserved (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_original_holder_and_successful_return_callback_hide_retype_preserved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 335, in test_inv07_original_holder_and_successful_return_callback_hide_retype_preserved
+    if mode in ('hide','both'):self.assertFalse(r.items[originals[0]]['visible'])
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_inv08_pending_player_continuation_other_player_and_ground_after_lock_release (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_pending_player_continuation_other_player_and_ground_after_lock_release)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 372, in test_inv08_pending_player_continuation_other_player_and_ground_after_lock_release
+    self.start(r,u);r.drain();record=self.pending(r);self.assertTrue(record)
+                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+======================================================================
+FAIL: test_inv09_gameover_stops_retries_without_automatic_retry_promise (test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv09_gameover_stops_retries_without_automatic_retry_promise)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py", line 391, in test_inv09_gameover_stops_retries_without_automatic_retry_promise
+    self.start(r,u);r.drain();self.conserved(r,originals);self.assertTrue(self.pending(r))
+                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 is not true
+
+----------------------------------------------------------------------
+Ran 24 tests in 87.967s
+
+FAILED (failures=179, errors=2)
+MAP COVERAGE passed=8 selected=24; explicit candidate only; historical/fixture tests are not map acceptance
+PREP 0.020581s candidate input
+PREP 0.004103s import/discovery test_inventory_craft_artifact
+FIXTURE 0.106664s test_inventory_craft_artifact.InventoryCraftArtifactTests.setUpClass
+FIXTURE 0.000005s test_inventory_craft_artifact.InventoryCraftArtifactTests.tearDownClass
+SLOWEST 10 (tests and preparation/fixtures):
+  46.456988s test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll
+  11.083013s test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_each_source_changed_in_create_and_output_add_callbacks
+  7.301150s test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks
+  3.611163s test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_at_create_or_output_add
+  3.587927s test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks
+  2.340017s test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach
+  2.292827s test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_create_and_native_return_membership_contradictions_keep_originals
+  1.646842s test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_original_holder_and_successful_return_callback_hide_retype_preserved
+  1.532000s test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_output_or_failed_return_callback_custody_changes_stop_later_native
+  1.240621s test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_registered_external_move_reveal_never_reclaimed
+SUMMARY selected=24 run=24 passed=8 failures=179 errors=2 skipped=0 expected_failures=0 unexpected_successes=0 not_covered=0 total=88.014597s
+STATUS FAILED
+RESULTS JSON /workspace/shared/remaining-fixes-evidence-20261015/inventory-candidate.json

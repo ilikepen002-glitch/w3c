@@ -19,7 +19,7 @@ function tdGenerateCraftAbility()
 	craft
 	..setName("合成")
 	..setTooltipNormal(1, "合成")
-	..setTooltipNormalExtended(1, "合成工人前3格的三件同品质装备。三件同名升为对应下一阶，混名随机获得下一品质，均必成。|n紫装不能合成；未成功不耗材料，背包放不下时掉在附近。")
+	..setTooltipNormalExtended(1, "合成工人前3格的三件同品质装备。三件同名升为对应下一阶，混名随机获得下一品质，均必成。|n紫装不能合成；满包也可合成，产物入包后才耗材料；取消时原材料归还背包或本路原品质材料堆，暂不可归还时保留待恢复。")
 	..setIconNormal(tdFarmerCraftIconPath())
 	..setIconResearch(tdFarmerCraftIconPath())
 	..presetHotkey("C")

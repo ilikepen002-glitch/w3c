@@ -1,0 +1,627 @@
+{
+  "artifact": {
+    "path": "/workspace/shared/w3c-remaining-fixes-integration/ExampleMap.w3x",
+    "sha256": "14fa7cd13acce82bf71f95c64de0c152aad0fad2102a83551a3dcd34596f8aae"
+  },
+  "auxiliary_inputs": {
+    "COMBINED_PARENT_MAP": {
+      "sha256": null,
+      "value": ""
+    },
+    "PURE_BOSS_BASELINE_SOURCE": {
+      "sha256": null,
+      "value": ""
+    },
+    "PURE_BOSS_CANDIDATE_SOURCE": {
+      "sha256": null,
+      "value": ""
+    },
+    "PURE_BOSS_HOOK_HARNESS_MAP": {
+      "sha256": null,
+      "value": ""
+    },
+    "PURE_BOSS_REVIEWED_JASS_TEMPLATES": {
+      "sha256": null,
+      "value": ""
+    }
+  },
+  "completed_at": "2026-10-15T11:57:30.393494+00:00",
+  "discovery_errors": [],
+  "elapsed_seconds": 382.01270036099595,
+  "exit_code": 0,
+  "fixtures": [],
+  "issues": [],
+  "methods": [
+    {
+      "duration_seconds": 0.9756596009974601,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_cf06_actual_catalog_ready_twice_no_loop_or_duplicate_registration",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 20.385140279999177,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_ground01_real_capture_plan_guaranteed_batches_leftovers_next_pile",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 192.55991176099633,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 1.2481058449993725,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_front_three_pair_mixed_quality_purple_and_non_equipment_rejection",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 5.519149813000695,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv02_three_to_six_slots_zero_terrain_and_single_exact_detach",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 8.338643171999138,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_create_and_native_return_membership_contradictions_keep_originals",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 4.756418692006264,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_output_deleted_retyped_or_transferred_in_add_callback",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 40.46970631300064,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_each_source_changed_in_create_and_output_add_callbacks",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 14.375189894002688,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_at_create_or_output_add",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 15.208632044996193,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 27.357136614999035,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 1.3746818490035366,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_cancel_return_other_backend_prepare_stays_blocked",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 2.864799645001767,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_same_backend_add_reentry_three_and_six_slots",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 2.840506781998556,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_create_and_add_same_and_different_batch_reentry_cannot_prepare",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 7.953115322998201,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 6.227765488001751,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_duplicate_keys_handles_and_stale_result_tokens_real_backend",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 1.4996699160037679,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_pending_survives_actual_finish_destructor_then_returns_exact_once",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 4.594400024005154,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_synchronous_original_quality_pile_destination_feedback",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 9.10692168300011,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_original_holder_and_successful_return_callback_hide_retype_preserved",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 5.695114786998602,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_output_or_failed_return_callback_custody_changes_stop_later_native",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 4.464658340002643,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_registered_external_move_reveal_never_reclaimed",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 2.1119166420030524,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_pending_player_continuation_other_player_and_ground_after_lock_release",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 0.4439956139976857,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_real_four_record_limit_and_shared_watch_reference_lifetime",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    },
+    {
+      "duration_seconds": 1.474585798001499,
+      "exceptions": [],
+      "executed": true,
+      "group": "map",
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv09_gameover_stops_retries_without_automatic_retry_promise",
+      "outcome": "PASS",
+      "reason": null,
+      "subtests": []
+    }
+  ],
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "run_label": "candidate",
+  "schema": "python-check-results-v1",
+  "selection": {
+    "methods": [
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_cf06_actual_catalog_ready_twice_no_loop_or_duplicate_registration"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_ground01_real_capture_plan_guaranteed_batches_leftovers_next_pile"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_front_three_pair_mixed_quality_purple_and_non_equipment_rejection"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv02_three_to_six_slots_zero_terrain_and_single_exact_detach"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_create_and_native_return_membership_contradictions_keep_originals"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_output_deleted_retyped_or_transferred_in_add_callback"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_each_source_changed_in_create_and_output_add_callbacks"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_at_create_or_output_add"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_cancel_return_other_backend_prepare_stays_blocked"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_same_backend_add_reentry_three_and_six_slots"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_create_and_add_same_and_different_batch_reentry_cannot_prepare"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_duplicate_keys_handles_and_stale_result_tokens_real_backend"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_pending_survives_actual_finish_destructor_then_returns_exact_once"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_synchronous_original_quality_pile_destination_feedback"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_original_holder_and_successful_return_callback_hide_retype_preserved"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_output_or_failed_return_callback_custody_changes_stop_later_native"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_registered_external_move_reveal_never_reclaimed"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_pending_player_continuation_other_player_and_ground_after_lock_release"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_real_four_record_limit_and_shared_watch_reference_lifetime"
+      },
+      {
+        "group": "map",
+        "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv09_gameover_stops_retries_without_automatic_retry_promise"
+      }
+    ],
+    "requested": {
+      "all": false,
+      "groups": [],
+      "selectors": [
+        "test_inventory_craft_artifact"
+      ]
+    }
+  },
+  "started_at": "2026-10-15T11:51:08.380817+00:00",
+  "status": "PASSED_SELECTED",
+  "summary": {
+    "errors": 0,
+    "expected_failures": 0,
+    "failures": 0,
+    "map_passed": 24,
+    "map_selected": 24,
+    "not_covered": 0,
+    "passed": 24,
+    "run": 24,
+    "selected": 24,
+    "skipped": 0,
+    "unexpected_successes": 0
+  },
+  "terminal": true,
+  "verification_manifest": {
+    "tests/python/pet_artifact_fixture.py": "d3c3d4372ed54c2553ceb46e567d6134fd67e3c0c010a9d7c2e089bbec5bb42c",
+    "tests/python/python_check_inputs.py": "e015d8c52b3660dcdeb82829be2bfcc0e33e2ac51ad6ab6f411876d8a775c8a7",
+    "tests/python/test_active_cooldown_contract.py": "08676cc267fcbed0ef2fb90294e9f95066674cadb7e434b0c5fa17d8c591c889",
+    "tests/python/test_all_pet_display_assets.py": "32795eed9e43dc60c74db3d6a817b8d80201bd677b144666d9db0f62ae3459b7",
+    "tests/python/test_ambient_critter_source.py": "777cc0ae5860e474e393b8b856583d8b89f283011dca371371b4f494df1bae16",
+    "tests/python/test_aura_target_artifact.py": "dac39455a00a53e115060275892397ff422a78dcc14712ab20a743d0afa5b704",
+    "tests/python/test_background_music_source.py": "2ef5f708d9aa93cb2b10d29f3f904ef6797baad0d230dad4ce3c94a732101d97",
+    "tests/python/test_basic_hit_vfx_source.py": "94c546ca67fca3fd5da033538caaa018daa412353a801566bedde7cd2916396b",
+    "tests/python/test_boss_corpse_cleanup_source.py": "9b0a999ae8d6e6e8cef29412c257c5d33933dd71569c9097a39f3b7c59321fe3",
+    "tests/python/test_boss_pair_artifact.py": "fa4228d5d936f45bba80d8bce594e9e0814d77c013ef055acf68fe9a8eb501d8",
+    "tests/python/test_boss_spell_resistance_artifact.py": "a7c3be51d8e193808ab3fb4b4c005808122e182a25b7aba763cc8e4d48fcbaf3",
+    "tests/python/test_boss_visual_scale_source.py": "30744bdf8f5794ac39da15ad49c81bc2b42abecf68ae48977d27c1a470238810",
+    "tests/python/test_branch_icon_separation.py": "c19ff6d85228d0d65abd2c96eeab1acbb9adc7ab770fa7fbfb3bedf5784086fe",
+    "tests/python/test_build_semantic_icons.py": "25e81a5523a74e09ebe137d61e694ceb46f5dbc47866d754ad6e0817dccd7817",
+    "tests/python/test_build_trial_assets.py": "69598da3ec413508f77ec70a7ef989168c3b317f8abf7ecca0ce911d641854b3",
+    "tests/python/test_building_status_constants.py": "73c9dd370ad3c87219fe156f29d40cf9e7b63a23cb79918ee23360fc7c968ce1",
+    "tests/python/test_capture_chance_65_source.py": "d72c603a20ad48821f375af677a873f39c715e40df47596165e7a834c5450104",
+    "tests/python/test_capture_removal_artifact.py": "52bcc0fd87051dc70873ac38e62bdf07d4a7ff42a5548a65d1ed6afb4cd216d0",
+    "tests/python/test_combined_visual_text_artifact.py": "e504e75eb9370d483e3e1b6403d47baf59d2fb8393d08ec2d8b85b78542edafd",
+    "tests/python/test_eclipse_boss_artifact.py": "072a44d4f9318ad8363db83f3222cb06ec61a22ac9a51fb041829af61d83d1f0",
+    "tests/python/test_elemental_pet_runtime_source.py": "74f76f9ec1d9572f7952793672c25bf8284ebb17fabe6504738c808df527ffce",
+    "tests/python/test_elemental_pet_source.py": "47367df8a58c7f3fb3aca44ca8b45290de9d96b64949e580909d376564e29b0b",
+    "tests/python/test_equipment_ability_current_contract.py": "eda75803104be0d2fb877ad29d1325efc67f7c18357d326f4ba7063178f2a388",
+    "tests/python/test_equipment_combat_replay.py": "f9f8f8bba8931ef08585b2bd464a5898de272d5eeab651e7de2df6ec52576d3e",
+    "tests/python/test_equipment_icon_refresh.py": "cf34f79dad02032054274a1bc71992385d6f725c916ecd2168bad286335e3a0b",
+    "tests/python/test_equipment_inheritance_source.py": "57dc8417da0eb8f8846cc8c1ee5b2c011708d553a989427003cfd95e4ada8a70",
+    "tests/python/test_equipment_phase_a.py": "011a019fdf1ca496b7cf5b1feebbd03df98c115f4ca95656b1d16f5c2eb1280f",
+    "tests/python/test_equipment_phase_b.py": "c71c3d15fed9e595a8081fb60776a268e279ffd9e32333bce4d227696cc5e7af",
+    "tests/python/test_equipment_phase_c.py": "e7ffb4d1a7d3afc902c760dcae31b89f40502f07689746d0c81ee5aa8f0ec445",
+    "tests/python/test_equipment_tooltip_current_contract.py": "c5bce9db7ea737a06bbd747afb20a5312b0059b1206f3a62c61dbec0dfdaada8",
+    "tests/python/test_equipment_trial_integration.py": "606eab02ca18293c8ebbcd61c11ad124325eba1f6c9b9889c56632e3ff6fb412",
+    "tests/python/test_evolution_command_card.py": "3ee724948ad4e669a074662bd2a88248b2860a176cd72a90b46ca45979eedd95",
+    "tests/python/test_evolution_current_carriers.py": "c940feaaa05a356fd3a9c954cfc1e2a9348e3571136e4a6d2086358aef772f57",
+    "tests/python/test_flower_full_roster_source.py": "79fa383af04e941ba444bc8438de2a17ebef5740fbc0824a13afd199b13666b7",
+    "tests/python/test_global_rankings_artifact.py": "772ab2c9185f229a1f1f233a693dc51bee171d53eb5030491448c9e9900ecd9a",
+    "tests/python/test_ground_upgrade_artifact.py": "bcd72498aaf49c3a168922b4b5544331cbe01cfeeaa80e54189fb8d83819287a",
+    "tests/python/test_ground_upgrade_runtime_source.py": "28e470decdd22226f1f949b68252b3def7ddccc58da20e4e9bce7ec55bcda7a2",
+    "tests/python/test_ground_upgrade_sort_source.py": "7badcb2175b894937a44ff7de4b9e7b0ff3d986a8a95bec3b7c5a2e264701e27",
+    "tests/python/test_inventory_craft_artifact.py": "2b70436e312b622df42f92b29a53fef4ae85b49ff949d468cf02d96d7d593ea4",
+    "tests/python/test_inventory_craft_control_flow.py": "77e56aa4dc096d00b8389f6c301d640bb437157413134088173469968af054c8",
+    "tests/python/test_inventory_craft_native_models.py": "2c68999f1528bd3fdcd9ce2e97fc147758b5a39bfaa4b6ba4a64b9ce6e665d27",
+    "tests/python/test_inventory_craft_runtime_source.py": "de64b765a3c58be374dea3fa35d109bdadaf8e0e558c1f6d951b4f251596ba2e",
+    "tests/python/test_inventory_range_source.py": "15caca41758cf182d2a335e3df0c3edd23f31f35e8e480ceb3879b01b4c60c9f",
+    "tests/python/test_jass_expression_side_effects.py": "baad630b7de01d371e799b41362ac5f0f5a7aabc2b14e90e72ae060df29b59ce",
+    "tests/python/test_jass_grouped_boolean.py": "10bec8bbfe80b95f2383e4a871b0eeaa3b94b6d57bdb91ab3f7f1d92d9bacffa",
+    "tests/python/test_king_leoric_assets.py": "a2cf976c6aff142baf9d3fa6fa99f8adb5f8ab432a111e36d07c89d8efb651b8",
+    "tests/python/test_leak_life_artifact.py": "56ff63f6497e1da956ade9ee2310a49e4f75be2efab9dac430e0877966f594d9",
+    "tests/python/test_map_branding_artifact.py": "f2de169c8820ca367f3fbc8bd77c17fa46c6ce1a0abb2ec32ff4203d960bd2c0",
+    "tests/python/test_pet_attack_phase_one.py": "274a299e7124ebb081fe812f8a3f76bb1f6e9a75fa693cce0572e506e1c02d9a",
+    "tests/python/test_pet_ball_auto_collect_source.py": "ba4ac3af67aa093a6e06ffac5766ef0336cb484c94347eeff07dd3aa876b637c",
+    "tests/python/test_pet_compiled_rule_guards.py": "2eac79365938920af1db7f68e3d1e825fcee1dfc08394a6d8c571e510d3ae1fc",
+    "tests/python/test_pet_deployment_artifact.py": "8ec58add4dcd48e003925a0dddbb0f943a8cf1e8ea5b8d370a2de35b736c8e4b",
+    "tests/python/test_pet_dialog_hotkeys.py": "c678ea65886ef5d37ad1772a2aeca8985e0dd253e0b289d3da1ab23fafb53614",
+    "tests/python/test_pet_display_scale.py": "c8b7dc462bb4e1e8dbb014109712801544099571aa70f8169cd28d61c9c9df8e",
+    "tests/python/test_pet_hero_feedback.py": "11444226eb38fbff85709e4a34cea7d79f4a5fe5d2b3f800612703fac8a94ed1",
+    "tests/python/test_pet_manager_contracts.py": "ab28c653d9bf13a407474ecd7b156eaf36e9a6a77c590fcc23e38f435ba55b41",
+    "tests/python/test_pet_quality_balance.py": "d13f2b1ce8789d9c28d5e46733208cd9d70d007fb1e2c1ee0784853ea8b84fa5",
+    "tests/python/test_pet_skill_fits_artifact.py": "3b3a3f84be7b133de17762ec04ba94bb6f13a2081aef742ba49355ff356747af",
+    "tests/python/test_pet_ui_workflow.py": "6849b09b0e0c6cc24c0712d3d01135b7e6bb0118c85c5fcece98080c5510a4ca",
+    "tests/python/test_pet_wild_visibility_source.py": "ccee538b967545d2547c2f14209a32a61843dc9e8bde50feb505a803be921d5b",
+    "tests/python/test_player_selected_item_description.py": "76f7cc2c36214e0c47969de8ea2ae82da30253104ce1272a634f903781d819fe",
+    "tests/python/test_player_tooltip_artifact.py": "e9fd45e5f29811fe61b1c3330587879906b551a57298be228a214b1721b4afb6",
+    "tests/python/test_purple_pet_release.py": "de967a1d88365d90fca0c5f3ceb0cbf95e77611da239727605dbc994eec80199",
+    "tests/python/test_python_check_results.py": "88024c6104f026066b987c5f54ddd55902fc4692144f1c7c6bf90b77a82ff137",
+    "tests/python/test_python_checks.py": "9771bb8d1254c27d87fd96e9fcc1a0e84030c1fcbd995dd1ecf9b0eff4c0450f",
+    "tests/python/test_resource_retirement.py": "9d8bb5dd39145e5203dcd3751447a7c54d98f717ea83843c4ebc68fa8e4aea71",
+    "tests/python/test_runtime_hotpath_replay.py": "a9a14519463b73d67bdb6e33c56c2656233c3b410650e5485058e780fed9e2c0",
+    "tests/python/test_spirit_skill_icons.py": "64f1362dff3c81f968009a32d69430fcd925894c8deca392c2503b294c74d992",
+    "tests/python/test_tower_evolution_delta.py": "52f383bb8260ecf1b45b530a982d2394b96a1dcb065fdc45e09eec8487a1911c",
+    "tests/python/test_tower_evolution_source.py": "4e757bbf8a7809a03db4a7ac9ac3c70e19b881024e7f695ea60031f551dbe07f",
+    "tests/python/test_tower_pet_detail_source.py": "c804388d9fa546d272d2082d536f9e65b30217c108f15287afe286850d3c2206",
+    "tests/python/test_tower_target_priority_artifact.py": "e7cd22be1414056110aefc87290a5308065fbdfd43df44f74f82e5d103bae376",
+    "tests/python/test_trial_artifact.py": "0d4311ca4fab6b4a5f3af200b2d94d47ac25682b59fa254442fb175c8f5acadc",
+    "tests/python/test_trial_delta.py": "917d4b1e86bbbd605e63580aee3d2c2edda4bd4b35c91cde5ff02659af20a137",
+    "tests/python/test_trial_replay.py": "1b93aabb0c223880231d3c7238e24932dec29c5937cfdd1223c9838a7f49ecff",
+    "tests/python/test_trial_static_contracts.py": "4332193e3ee155abcba96709973951d74e0a889a4f20648d9c9964e591665fa7",
+    "tests/python/test_upgrade_refund_artifact.py": "b64d4bd4d1d4f538f328feed56bad3703511fd59e26549705351900f92e22aac",
+    "tests/python/test_verify_bloodlust_autocast_artifact.py": "01f96cdf0116b4eef2aaa874baa20eae13691fb1199ca5581acc390dc5a1996a",
+    "tests/python/test_verify_bloodlust_delta.py": "81638feda6e9b67262f9207d3a7d8643e0ed3ed65ffb79974db6927df54670e2",
+    "tests/python/test_verify_bloodlust_diagnostics.py": "139fab86c7b00bd46bd7a911be9f50f70bb846eac6a26e02d67dcaa983c49e72",
+    "tests/python/test_verify_builder_construction_artifact.py": "fea0da5189caba854b7821bfdf9980a5a75cbde544c46296ef6ae9d03f788341",
+    "tests/python/test_verify_builder_control_artifact.py": "916b7cdcd8a92d24411595546d8f59c6bdb3537658fa1b84d45e418024b78269",
+    "tests/python/test_verify_builder_control_delta.py": "0458eb36bdee71427018375314968c832b777481cff42588de411b1d2e74a1c6",
+    "tests/python/test_verify_map_artifacts.py": "89f4a5864089aa1b4e40ceb0f9c912a419847199680c7e52f7c5bfd1bb6e143a",
+    "tests/python/test_verify_pet_manager_delta.py": "f50a3e5d5bf76d12134a80b23a58197438742f75e3cb055dfa9b96bbb7911b81",
+    "tests/python/test_verify_pet_ui_artifact.py": "798875951f999f0076ffce279f6cf6526ed64a9d72a11c985b19d6aa0b5f6322",
+    "tests/python/test_verify_pet_wild_pathing_artifact.py": "936aa18583e7fad1cd4863bc72abe0386ecd1bb67b1f2b6e3a40a6ba86e0d0e0",
+    "tests/python/test_verify_pure_boss_artifact.py": "6c2aadfd327887be50266dade9d0979fa6826551368b601d5166e8fd08e1a056",
+    "tests/python/test_verify_semantic_icon_artifact.py": "0b70dfcc3d1818701459502f0c4cd1f30d61cdcd8868f684b5fb127af53a07e6",
+    "tests/python/test_verify_tower_upgrade_artifact.py": "9bdd7222a149c5e8d799a96551a2bf21b3559104d1dfa470496937aaf0066d11",
+    "tests/python/test_wave_progress_wages.py": "36a704245d055711968f633f5d00c21d881b64c636584578e6913e4f0ea37829",
+    "tests/python/test_wurst_linux.py": "a59a18f8d90d40f90e749d0f6000a1e9410eeb255b6ba661e0a60111ab89e951",
+    "tests/python/trial_formal72_fixture.py": "4eb5e2d7724d043f1e755e92e79c158b1965b71e5aa3a4c373b1911cf627e230",
+    "tests/python/trial_legacy009_fixture.py": "bcd4453f5892a4feb0b8e8b933cc900c59cb1ea954edb61e11680b69329b7b74",
+    "tools/AuditMapResourceReachability.py": "9149f54f6a49725c4cd58ff3e2df91c4d8bd72a133e5acb2d3ae5a0183b15c36",
+    "tools/BuildBossAssets.py": "85f30e75e6f6d28daf0e2b964e73e61af96c7a6b5ca4112afeab613e3588e2bb",
+    "tools/BuildElementalPetUiAssets.py": "14a99e11f436eb1e8b507b970976196337cb94081e86ebf447d8500a95765368",
+    "tools/BuildEquipmentIconRefresh.py": "bcd12f6e51f5bc6058b58db61db82ad71794ca48b81b6ef388dfa7b3fc4b3235",
+    "tools/BuildEvolutionAssets.py": "04e8726f28fe58d676c4ba1ac1039d8e34fa90270eba175ee2368ee27f582ffe",
+    "tools/BuildFireTextureRefinements.py": "fa672217591cc45e61456607496e94e06f3a7f01acee6ffef29294b54848bf22",
+    "tools/BuildMapBrandingAssets.py": "3f65676162d1fe7d3e3ae56a4f2a1129f90ac95acd5b918388f23af02c1db38e",
+    "tools/BuildPetUiAssets.py": "df5b548ee471d6cb203b1fbd2ad95c8ec1abe2759f4bdf01e7098f52d8240f9b",
+    "tools/BuildPhoenixRefinement.py": "368d5dcefe4da2c2c13f7e7fbd7c899563a4190f326c7b6040f64eb002899edd",
+    "tools/BuildSemanticIcons.py": "9792f29dfaacdd804ac81133be4ba85b5fb093886fb7312ac7d6c7a917386db3",
+    "tools/BuildSpiritRefinementAssets.py": "d2ec8a1207dd6ef97f431261a4b8e16f8e1db00524e799d33c42491086881f0d",
+    "tools/BuildSpiritSkillIcons.py": "9d8fe3d66dbee117a4a14edfcb7c73f8a1e11664f25947207ba1572451c21e21",
+    "tools/BuildTrialAssets.py": "813dcbdca7f14ef4bbd6bda893402b0d40b988415ec77b81fbb635abb414cce8",
+    "tools/BuildWaterEarthRefinements.py": "8ca3700bcd9de4ac1eeb8cd5304fb891195ce38d55b0bc6897e05ab448ebd0a5",
+    "tools/ComparePythonCheckResults.py": "39e16485896c5da731ce8abe38d7f9067ff42291689b36907e9f186c9eb91574",
+    "tools/CraftingSourceHarness.py": "de07e1e0e5014d1d900fc355d5fa3e6cbdbb8fd303cced4a0e6d92c57bf63b0c",
+    "tools/EncodeWaterEarthAtlas.py": "f3c5bcc17beb331b5e638b172933181fc0d748fc11bffa783869f4cc2557127f",
+    "tools/GenerateGroundItemTerrainMask.py": "022f2ab895e830b841efc5fa13271f69099fba555b5cb9855053a5138cc38a11",
+    "tools/GenerateTowerTerrainMask.py": "477f664e6b0e524107e37cf49c04c595efd8e08d09c7f8490755ae31310660c0",
+    "tools/InventoryCraftJassRuntime.py": "ae83ee18620e8303c573fa9c88b6a1c0612af6a6d2bdf6b5611a361335d17dc7",
+    "tools/MakePetDisplayPreviewSheets.py": "6ab40c02f0451051e4d1a27ca4d81c4647be5aabdcca028522271681567aca2b",
+    "tools/MakeWaterEarthSheets.py": "66bbd71eba6a0b151dc69faae8c2a811a1d9078837c49876ee42b7d50713b464",
+    "tools/ReadEquipmentCatalog.py": "9e76a268bcd66e4d870b51fdb962d820006e5e3b78bfbcda71a91117b2d6a2f9",
+    "tools/RebuildMetalWoodRefinement.py": "953df54897b5b36f6f103115db82ffdf946bc6d2d884b491fc6436f57f39b674",
+    "tools/RenderPetDisplayPreviews.py": "fd83673da83af885faf4cedbf8a749b58520384bef6d53669903a5af0c74a339",
+    "tools/RenderWaterEarthRefinements.py": "d320d2b87d28ef64da17cb067682849da4662c98422c56c2f14678d57196cfc3",
+    "tools/ReplayCombatVfxARegression.py": "fa2287830a2c8e9fcd54d875030a309a9ac1807a07937f62a9260048fdc9bc0d",
+    "tools/RestoreKingLeoricAssets.py": "8c8a02a7da1cd4afc74251ad7d505874974278f461b8f81817853e7ed820de21",
+    "tools/Run-PythonChecks.py": "439fc56130ddd5d10e79b85341f48695e57b301757cc3601326e018f6dc3a172",
+    "tools/Run-WurstLinux.py": "523c27c7ad2c60644b0a5effeec359085311837566cfc68e0a77f6c1532486b5",
+    "tools/SpiritVisualBudgetFixture.py": "94aef63440b2da034a4608d435a3a882574d33da5d151d3de7369d57a899db42",
+    "tools/VerifyActiveCooldownContract.py": "15682fe9a9ff8b6e814f969c067f6fd271d97455a05208709e0576abc61e9e52",
+    "tools/VerifyAllPetDisplayArtifact.py": "2438947331f83b3f02f809597300b6ee802da5043efe311acfc44e3f88002d4c",
+    "tools/VerifyAllSpiritActiveVisualTrace.py": "66f62bc8efe245f91f5c1e841200d2e3d18f89398ef8e5a188c2d967e55f71c8",
+    "tools/VerifyAuraPerfArtifact.py": "45019cd677ec6adac3ee72a8c3427aa5c83d705947d5aef29dc2687c9b245db8",
+    "tools/VerifyAuraTargetArtifact.py": "4890adb8a4d81f8595c8fca38da939ab799a8c943de057ad71eb34f1a62a38f6",
+    "tools/VerifyBackgroundMusicArtifact.py": "c191abf2ecf8e803090ed52780b70a07b508ff66148e428a65c1622a82a4ff28",
+    "tools/VerifyBalanceArtifact.py": "212d55f215860849a9d3577476c004c49a2bc3bfa8b8e1aa859494548aaa8f07",
+    "tools/VerifyBladestormAbilityArtifact.py": "8be1d7b6a224bcf15411a4bd18ef950d65698f0da26f89e93ec9cb88df1ff9cd",
+    "tools/VerifyBladestormDefaultAutocast.py": "93f1313f86ba241f28a6fc2af2965bf9a5bf1e6e67a991ce6cc23ab6bc108d2b",
+    "tools/VerifyBloodlustAutocastArtifact.py": "bec87088bad81cf597ad5fb3fb5a272a0fe23f48a4655bcf10b0cdc1c67a37a0",
+    "tools/VerifyBloodlustDelta.py": "0ad8a281bfc3acac0a2c84ff4cd25c842dbdff24c85a472e0c6a50ce011259c9",
+    "tools/VerifyBloodlustDiagnostics.py": "033978fb1b100552b2b44ca9606753eb360b4245c036c31576a1bf3af12faf1d",
+    "tools/VerifyBossPairArtifact.py": "9f186168d6c0a9b0b7518275187a2e243e09a559f7d575d7486e45e673d53947",
+    "tools/VerifyBossSpellResistanceArtifact.py": "79e9f9e6d0cec711c00b571e1ea958d8ce1dfd5946314b55dfd0bab46d8c2851",
+    "tools/VerifyBuilderConstructionArtifact.py": "99d65a6c8b765d03f9ba194a82c24c37c89add8abad74d3ab7481e77710a7f95",
+    "tools/VerifyBuilderControlArtifact.py": "02822c53e703e6cbf1a40cff76e502a4bc9315b05317b5b14a8d32f83b09fe02",
+    "tools/VerifyBuilderControlDelta.py": "82bdd5e7fbb0b445db2f934745f14739917c760a657771cf57adf587976bdd95",
+    "tools/VerifyCaptureChance65Delta.py": "0e102b2cf4b5649b45d91b33e2c0526e705bf0726232869abd34049e97ea1417",
+    "tools/VerifyCaptureRemovalArtifact.py": "889f4e0dbaaf54d6bb2dd61f4e080dd46067d411825d9f36bf71c1fb1a43501d",
+    "tools/VerifyCombatProjectionArtifact.py": "5eac3e83cff328c33dc0f20421e083ab8cf526fca88218ea14b33abe092f957a",
+    "tools/VerifyCombatVisualArtifact.py": "35fa0e43fe451884212fac2941571bf41b27dd4b05b96a97d7456a9d75496817",
+    "tools/VerifyCombinedVisualTextArtifact.py": "7623d62884089a962ed01d3d3142ac270ce574130df5bddb058dced8fd022935",
+    "tools/VerifyCompactHudReplay.py": "48d91635fcdaf4f45e687ced6a5df141b7bf6ff60f6c5dc3bb868d1e19873726",
+    "tools/VerifyCorpseTooltipArtifact.py": "c7293cd2966e39e91d9a0e48aaab6c10210922706d9bedd40d563153ef87f548",
+    "tools/VerifyDamageRankingJass.py": "16e3d0397ffe75df82cbf5bf9c5260a608744d7b0fd32d9ede965ac1b7e156d7",
+    "tools/VerifyEclipseBossArtifact.py": "f8376fa5555f745f8494e7622bbed56b5f03fc3f7f6231105cff5d16a2bcbbdb",
+    "tools/VerifyElementalPetArtifact.py": "92bc334f0349063e567efd21c3296351f229978af264de25389049cb80241ca7",
+    "tools/VerifyElementalVfxArtifact.py": "844c64894c1be5e3b86978bfd7d4d2943b00143c640dfd2f5dd60240038f50ed",
+    "tools/VerifyElementalVfxSource.py": "7d21e51071c770acf5fbdab52292687639ded23c65165844d748a62dda8c2868",
+    "tools/VerifyEquipmentAbilityArtifact.py": "1fa1f682598169ce04d844b3f29df9aa142a7eaf05ac94e5386a5a239bbc0bd4",
+    "tools/VerifyEquipmentAuraSpecialArtifact.py": "ac7668ddb1541f8218ed38be1b0a05347aed9f1b9ef451024f5f493e96ebc3aa",
+    "tools/VerifyEquipmentCombatReplay.py": "fe9124b7a4f8a6e91c3158e5a252f2a342b48ef28f457ae3cc56887e67249eb3",
+    "tools/VerifyEquipmentIconRefresh.py": "c5f63ed020cee43ff97668b3cd7a2bdeecb4fe2d8ee85ee10305f6b38a8b12e8",
+    "tools/VerifyEquipmentInheritanceSource.py": "7658f4e7a5434a18aab124d55b8d8fdfe4a9c5eb6a1f2a2c64484dcb8d59ab7f",
+    "tools/VerifyEquipmentPhaseA.py": "b0c4997041460d0fb477f9481d0e7f58091b7fc1104ce2519355d48da5e05bc8",
+    "tools/VerifyEvolutionArtifact.py": "85b6c2a69ca97db5e697f248bb962920c38102b5ed913c157949f6ab47ccc49b",
+    "tools/VerifyEvolutionProjectionReplay.py": "dbfe6443dcf1eb35ddfc2583c45fa42b7cd0404c71e217433debc761f6fe58f6",
+    "tools/VerifyGhoulCorpseRadius.py": "41ff1ce92fb0f0f34187d202e0e503d5f20d242a0d56360d0f8e9d7df94bebd2",
+    "tools/VerifyGlobalRankingsArtifact.py": "2af8077cf61f0a2ccc74c71d0c5137805846edc2c2d288a010b5f00b36810f29",
+    "tools/VerifyGroundItemArtifact.py": "ad98b31a0c86a3173bf5a1c97cdbf5f67703e130f254a1ea3ac482d736a45009",
+    "tools/VerifyGroundUpgradeArtifact.py": "37c9ecd83abad52a185f858180eff824682fd3dbd10a8001ec3e2e69fd243a05",
+    "tools/VerifyHudProjectionReplay.py": "c4c54052a6234080959c56c864f22c96e5e798a1d25d02614a71ea97bdad10c9",
+    "tools/VerifyInheritedJassAliases.py": "c5cf12a824e6afd627756945084c94b1364f7f2a2c76edf8113bfa1d1be3c3f9",
+    "tools/VerifyIntegratedTerrain64Artifact.py": "61524fea01c4dc933548e7fff4237c3c6e92b9a49b4a114c3612d6b67e3e8ce2",
+    "tools/VerifyInventoryRangeArtifact.py": "774398f12dd62b0d41185dcaff87403d670c903790837ddc7fdc6cd2eebaf9f4",
+    "tools/VerifyItemCatalogLookup.py": "4382a569119c6ca7e6c7c3f41c748aad73efde7914d7e5c0ebc5f167f07ac395",
+    "tools/VerifyItemDropDiagnosticArtifact.py": "fc5df250d7a999d053c6025e2174358685a58644653629c6b7e92c6f58d7b7a7",
+    "tools/VerifyItemDropDiagnosticSource.py": "1a9dc52783075d11bd4c73d23156b6c957498cb11819814d2f16362b83c6eeaf",
+    "tools/VerifyKingLeoricArtifact.py": "d5ffd0bb24da4f61546c666f00816bf964a906bd16f4a974ecb0fa4f8c34cb4a",
+    "tools/VerifyLocalCombatHotpathArtifact.py": "ad5e2773b0ae2ed6a0990baaf2ba70cbdac4bfae179c7c3b0f472f56d51e0abf",
+    "tools/VerifyMapBrandingArtifact.py": "936e880069bc1dcccfdaa945d6c3bf407086fe54d328368a54cd84b129e0a3b5",
+    "tools/VerifyPetAttackArtifact.py": "50ee3849425c3222bf279d029b6668609ed71fadfb8bce57ac22a9fd94ed1bea",
+    "tools/VerifyPetCaptureBudgetArtifact.py": "a32a0d764f7529a2f99c75a84fcf0000536c09579d4736cc6213fcf0796dbf16",
+    "tools/VerifyPetCollectionArtifact.py": "25218a8faedd06ed7e49c21bb3ebd89fc22fe9cb40d522cfc373caf25fb0cf3a",
+    "tools/VerifyPetDeploymentArtifact.py": "dc11391458be9ddf14a4faf214efc38e66d3999d81650ff91425a6157203814b",
+    "tools/VerifyPetDirectedLearningArtifact.py": "24facf0601d837bfcd4fa5392dfde14a50884d6e10e1efc2f987bfee874480c3",
+    "tools/VerifyPetDisplayArtifact.py": "9f5466f32c72453e8ae1b7c7ddd2a6120726bbecea72ea12f8ee4786cf0f9f16",
+    "tools/VerifyPetDisplayReplay.py": "8bd5784b4b927844ea601bdc66c742ba03cde85187405a2879960fd357bf8467",
+    "tools/VerifyPetDisplayScale.py": "19f979e8c84a719f95b10e8c23d75298670d8d6f04604499352d0740a08c98f4",
+    "tools/VerifyPetFourSlotArtifact.py": "424dd20130f2dc84b87e8ffded5c9107f4a494a794ddd2b00788e163bcb0c623",
+    "tools/VerifyPetGrowthSupplyArtifact.py": "0bf90936a13b16ab89d687852eb3e4229f3e40c97df8e3d76b110328f8085ac5",
+    "tools/VerifyPetHeroArtifact.py": "a5a3019f189a4b110459f915afccdf5087b98bb7b074a9095c3cf9382d3f8102",
+    "tools/VerifyPetHeroSource.py": "c1aa10ae3094cefeb64725b13cb435cf65e047890f8313499ea86ec4afbfddee",
+    "tools/VerifyPetManagerDelta.py": "3cf2744850a4a6b9827545c229371dbb64bfd0caa44cd1620f8b3311f0765c59",
+    "tools/VerifyPetManagerSource.py": "3e8b4cf4dba65133bae87d4316ff05e669ae84eadf10d5342144886ebb67218f",
+    "tools/VerifyPetRebindingArtifact.py": "7df62be56af1abb2968806f656b83087aafd5e0d0dfddb741f2ca4b5eb7f9dc5",
+    "tools/VerifyPetStartupArtifact.py": "a240f69fef09bf5bb578fd836b7c5a60ec260f35e7207cc3f85b913268229bb3",
+    "tools/VerifyPetUIArtifact.py": "d56cd3fb7b28d4d8722ee50280c8dc7a1cd4fc00c546137ffead94346032b9e1",
+    "tools/VerifyPetWalkArtifact.py": "39b1f2676aa1d3380a76036d3cd1f21c3ee35ccdcc975b1206d5f7418926f0bd",
+    "tools/VerifyPetWildPathingArtifact.py": "112dfafbffcd97d411b23af80c4d0d2dc9d235f0264eec2865238dd1241af54a",
+    "tools/VerifyPlayerTooltipArtifact.py": "2ea4357a41754e2a2b8b4ed7207911d229c68ca324dbd273cb50b18e2e007bb8",
+    "tools/VerifyPureBossArtifact.py": "8b53f636e31f791e27e82d0852f2827937d349954806f23da0c93dd77551e177",
+    "tools/VerifySemanticIconArtifact.py": "4ebd8aae6221230087e85e39422e73b1e95fe3f173ee5465663b5e04f04ae7e5",
+    "tools/VerifySlowAbilityArtifact.py": "68cea7dd8b5969b812e54dcb64a2bef3cef5dd79a8c494e465c9b53ea6f279b5",
+    "tools/VerifySpiritActiveRetentionArtifact.py": "4e059f5246c2b97d8106fddd9d4ae357491810c25f0eea9be1275848e13ed28b",
+    "tools/VerifySpiritActiveRetentionSource.py": "f70346180fcdd79a87bd7291a0cfa1f52baddab922c6a5f83d6bed5bc38dac79",
+    "tools/VerifySpiritRefinementArtifact.py": "9244f31468082e586d48d21c68c6eba31c95512b70d12c095d00fec97dc52a09",
+    "tools/VerifySpiritSkillIcons.py": "d403cc4b4d0104d4b490ac592a967afdfbc36f6ee23b4f5918d880a6e76d8124",
+    "tools/VerifySplitArrowVisualBudget.py": "53c565e88b187898ac7e50df3d1561b9b000cc06d27e99490ef08e0eb5beb955",
+    "tools/VerifyStartupArtifact.py": "a7d7f8e6289149a6ca63e5a651bd56bcbefb686e894e9e9b09f163e513aafb03",
+    "tools/VerifyTowerEvolutionDelta.py": "dba63cee710f5fa429dbceb04ba1bcf1c486f0e1f8ab6955e2613dcb82b6edca",
+    "tools/VerifyTowerEvolutionReplay.py": "79a0a402967ef55de8e26ea75793a2db478fd0ea6adbcff84566070ca4542177",
+    "tools/VerifyTowerEvolutionSource.py": "3e1ec6f4b1a8d7a95c84a590d8abce6bda4de17defa24880ecc83620f63e26e2",
+    "tools/VerifyTowerPlacementArtifact.py": "8f9e29a07b313a34fdc788f66f4c669c4169d4997f037f5897f5ab52cc6d2476",
+    "tools/VerifyTowerRangeEligibility.py": "164fae7abd7ec1d6d8ac7a111b9a15f55e160a737699b961fb1de70d9edba040",
+    "tools/VerifyTowerSaleArtifact.py": "5ea5ebceafc7abd43b1ff64d45396dda45d92cc9a9ae0fd9e8761ecd35b49165",
+    "tools/VerifyTowerTargetPriorityArtifact.py": "2c9d4d907aa1bcdcfafef6ab7799059a2b7ab709a660c17e6032241057a5b5a5",
+    "tools/VerifyTowerTerrainMask.py": "a82df9520fbc21e9cb6c2fbb4926df0333ef2ddc6cdfbb73181943aba77f2b53",
+    "tools/VerifyTowerUiGroundArtifact.py": "ddc0cdcc1a77911a41b0ca65bd365915a88cd9076c34e13469708da1054262f0",
+    "tools/VerifyTowerUpgradeArtifact.py": "2a5f43874f1731983310bd91e8b0a8eaa94bc5d620e174dbcc861c6d03cc5d41",
+    "tools/VerifyTrialArtifact.py": "d63773d1042fc99fdf58094feda41427ad0d85245dd4c9f42ed5380621a8a769",
+    "tools/VerifyTrialDelta.py": "d5486109d5ef45fdc63587224dc43f19c4d55adaee57d15029bc83c0653c8bdb",
+    "tools/VerifyTrialReplay.py": "b3e083a5ea5dcfaefc40ae25a0588afa2657d2cf16efe80e63e3710e44e259ed",
+    "tools/VerifyUnitParentsArtifact.py": "49f03ae25e588b56ae4d2d8141c85fbc65d169008c2037c86f4eafadd5d5b3d1",
+    "tools/VerifyUpgradeRefundArtifact.py": "633400445679d20fca6e5451b8e28e29aecef067bbf1877cb01d62add0c7798e",
+    "tools/VerifyWaveProgressWageArtifact.py": "233a4c4ee67d1ce77129b7bfc443efe25bcabcaef266afae37f6c223ba6892dd",
+    "tools/VerifyWildLifetimeArtifact.py": "3bdb96489457b0132f869f4aea72362b6f51deb951d6a72a19937e9d11c5a5b6",
+    "tools/VerifyZoneCoverageArtifact.py": "acc8dfb0e8080e2200efc27866ac5647f3a0825e0eb6549fd3bdba79e20be94e"
+  }
+}

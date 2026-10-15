@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "catalogue": "WurstStdlib2-source/wurst/_wurst/assets/Abilities.wurst",
+  "catalogue_sha256": "fe9a3058dcc8c6fa466f38fa795864d2edc57601f08d6dd96bb317409edd2186",
+  "model_paths": [
+    "Abilities\\\\Spells\\\\Human\\\\HolyBolt\\\\HolyBoltSpecialArt.mdx",
+    "Abilities\\\\Spells\\\\Human\\\\InnerFire\\\\InnerFireTarget.mdx",
+    "Abilities\\\\Spells\\\\NightElf\\\\EntanglingRoots\\\\EntanglingRootsTarget.mdx",
+    "Abilities\\\\Spells\\\\NightElf\\\\Starfall\\\\StarfallTarget.mdx",
+    "Abilities\\\\Spells\\\\Orc\\\\Bloodlust\\\\BloodLustSpecial.mdx",
+    "Abilities\\\\Spells\\\\Other\\\\Tornado\\\\TornadoElementalSmall.mdx",
+    "Abilities\\\\Spells\\\\Undead\\\\DeathCoil\\\\DeathCoilSpecialArt.mdx",
+    "Abilities\\\\Spells\\\\Undead\\\\FrostNova\\\\FrostNovaTarget.mdx",
+    "Abilities\\\\Weapons\\\\GlaiveMissile\\\\GlaiveMissile.mdx"
+  ],
+  "boundary": "Exact locked native asset catalogue paths, not native MPQ extraction or Warcraft pixel verification."
+}

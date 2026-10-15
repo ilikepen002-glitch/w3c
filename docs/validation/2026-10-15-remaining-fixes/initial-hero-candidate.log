@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyPetHeroArtifact.py", line 642, in <module>
+    main()
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyPetHeroArtifact.py", line 613, in main
+    report = {'hero_visual_boundaries': verify_hero_visual_boundaries(script), 'catalog': verify_catalog(script), 'root_trial_snapshot': verify_root_snapshot(script),
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyPetHeroArtifact.py", line 588, in verify_hero_visual_boundaries
+    require(r.invoke('tdCombatVisualShortCount') == expected, 'Hero budget leak: ' + mode)
+  File "/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: Hero budget leak: native_failure

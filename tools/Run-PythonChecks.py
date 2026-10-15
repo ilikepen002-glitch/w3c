@@ -7,10 +7,14 @@ from collections import Counter
 from contextlib import ExitStack
 import hashlib
 import importlib
+import json
 import os
 from pathlib import Path
 import sys
+import tempfile
 import time
+import traceback
+from datetime import datetime, timezone
 import unittest
 from unittest.mock import patch
 
@@ -22,8 +26,12 @@ TEST_DIR = ROOT / 'tests/python'
 # New classes are unclassified until their inputs have been reviewed.
 CLASS_GROUPS = {
     'source': '''
+        test_ground_upgrade_runtime_source.GroundUpgradeRuntimeSourceTests
+        test_inventory_craft_runtime_source.InventoryCraftRuntimeSourceTests
+        test_inventory_craft_runtime_source.InventoryCraftSourceMutationTests
         test_upgrade_refund_artifact.UpgradeRefundSourceTests
         test_ambient_critter_source.AmbientCritterTests
+        test_pet_hero_feedback.HeroFeedbackTests
         test_inventory_range_source.InventoryRangeSourceTests
         test_spirit_skill_icons.SpiritSkillIconTests
         test_equipment_icon_refresh.EquipmentIconRefreshTests
@@ -62,6 +70,9 @@ CLASS_GROUPS = {
         test_verify_pet_ui_artifact.PetUISourceTests
     '''.split(),
     'regression': '''
+        test_inventory_craft_native_models.InventoryCraftNativeModelTests
+        test_python_check_results.PythonCheckResultTests
+        test_inventory_craft_control_flow.InventoryCraftControlFlowTests
         test_building_status_constants.BuildingStatusConstantsTests
         test_flower_full_roster_source.FlowerFullRosterSourceTests
         test_boss_pair_artifact.BossPairDeltaTests
@@ -122,6 +133,7 @@ CLASS_GROUPS = {
         test_wurst_linux.JavaProbeTests
     '''.split(),
     'map': '''
+        test_inventory_craft_artifact.InventoryCraftArtifactTests
         test_upgrade_refund_artifact.UpgradeRefundActualArtifactTests
         test_tower_target_priority_artifact.TowerTargetPriorityPackedTests
         test_pet_attack_phase_one.FinalPetAttackArtifactTests
@@ -202,52 +214,124 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def verification_manifest():
+    """Freeze Python verifier/test inputs; production and maps are separate."""
+    return {prefix + '/' + path.relative_to(home).as_posix(): digest(path)
+            for prefix, home in (('tools', ROOT / 'tools'), ('tests/python', TEST_DIR))
+            for path in sorted(home.rglob('*.py')) if '__pycache__' not in path.parts}
+
+
+def write_results_json(path, document):
+    """Atomic writes leave an explicit nonterminal report while tests run."""
+    path = path.resolve()
+    if path.suffix != '.json':
+        raise ValueError('--results-json must have a .json suffix')
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=path.parent,
+                                         prefix=path.name + '.', suffix='.tmp', delete=False) as handle:
+            temporary = Path(handle.name)
+            json.dump(document, handle, ensure_ascii=False, indent=2, sort_keys=True)
+            handle.write('\n')
+            handle.flush()
+            os.fsync(handle.fileno())
+        temporary.replace(path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
+def method_record(test, outcome='NOT_RUN', reason=None):
+    return dict(id=test.id(), group=group_for(test), outcome=outcome, executed=False,
+                duration_seconds=None, reason=reason, exceptions=[], subtests=[])
+
+
+def exception_record(result, test, err):
+    return dict(type=err[0].__module__ + '.' + err[0].__qualname__,
+                message=str(err[1]), traceback=result._exc_info_to_string(err, test))
+
+
 class TimedResult(unittest.TextTestResult):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.timings = []
         self.passed = set()
         self.outcome = 'PASS'
+        self.methods = {}
+        self.fixtures = []
 
     def startTest(self, test):
         super().startTest(test)
         self.started = time.perf_counter()
         self.outcome = 'PASS'
+        self.methods[test.id()] = method_record(test, 'RUNNING')
+        self.methods[test.id()]['executed'] = True
+        self.stream.writeln(f'START [{group_for(test)}] {test.id()}')
+        self.stream.flush()
+
+    def record_event(self, test, outcome, err=None, reason=None):
+        parent = getattr(test, 'test_case', test)
+        event = dict(id=test.id(), outcome=outcome, reason=reason,
+                     exception=exception_record(self, test, err) if err else None)
+        if parent.id() not in self.methods:
+            self.fixtures.append(event)
+            return
+        record = self.methods[parent.id()]
+        if parent is not test:
+            record['subtests'].append(event)
+        if err:
+            record['exceptions'].append(event['exception'])
+        if reason:
+            record['reason'] = reason
+        # A later failing subtest must not erase a preceding ERROR.
+        if record['outcome'] != 'ERROR' or outcome == 'ERROR':
+            record['outcome'] = outcome
 
     def addSuccess(self, test):
         super().addSuccess(test)
         self.passed.add(test.id())
+        self.record_event(test, 'PASS')
 
     def addFailure(self, test, err):
         super().addFailure(test, err)
         self.outcome = 'FAIL'
+        self.record_event(test, 'FAIL', err)
 
     def addError(self, test, err):
         super().addError(test, err)
         self.outcome = 'ERROR'
+        self.record_event(test, 'ERROR', err)
 
     def addSkip(self, test, reason):
         super().addSkip(test, reason)
         self.outcome = 'SKIP'
+        self.record_event(test, 'SKIP', reason=reason)
         self.stream.writeln('SKIP ' + test.id() + ': ' + reason)
+        self.stream.flush()
 
     def addExpectedFailure(self, test, err):
         super().addExpectedFailure(test, err)
         self.outcome = 'EXPECTED_FAILURE'
+        self.record_event(test, 'EXPECTED_FAILURE', err)
 
     def addUnexpectedSuccess(self, test):
         super().addUnexpectedSuccess(test)
         self.outcome = 'UNEXPECTED_SUCCESS'
+        self.record_event(test, 'UNEXPECTED_SUCCESS')
 
     def addSubTest(self, test, subtest, err):
         super().addSubTest(test, subtest, err)
         if err is not None:
             self.outcome = 'FAIL' if issubclass(err[0], test.failureException) else 'ERROR'
+            self.record_event(subtest, self.outcome, err)
 
     def stopTest(self, test):
         elapsed = time.perf_counter() - self.started
         self.timings.append((elapsed, test.id()))
+        self.methods[test.id()]['duration_seconds'] = elapsed
         self.stream.writeln(f'TEST {elapsed:.6f}s {self.outcome} [{group_for(test)}] {test.id()}')
+        self.stream.flush()
         super().stopTest(test)
 
 
@@ -256,10 +340,12 @@ def time_fixtures(tests, stack, timings):
     def timed(original, label):
         def call(*args, **kwargs):
             started = time.perf_counter()
+            print('FIXTURE START ' + label, flush=True)
             try:
                 return original(*args, **kwargs)
             finally:
                 timings.append((time.perf_counter() - started, label))
+                print('FIXTURE END ' + label, flush=True)
         return call
     for cls in dict.fromkeys(type(test) for test in tests):
         for name in ('setUpClass', 'tearDownClass'):
@@ -281,6 +367,9 @@ def main(argv=None):
     parser.add_argument('--list', action='store_true', help='list selected IDs and categories without running fixtures/tests')
     parser.add_argument('--candidate-map', type=Path, help='explicit current-map input; never inferred from the root map/environment')
     parser.add_argument('--candidate-sha256', help='optional independently frozen expected SHA-256')
+    parser.add_argument('--results-json', type=Path, help='atomic per-method result report, including failures and uncovered methods')
+    parser.add_argument('--run-label', choices=('baseline', 'candidate', 'unlabelled'), default='unlabelled',
+                        help='explicit artifact role for later comparison; does not grant map/build authorization')
     args = parser.parse_args(argv)
     if args.all == bool(args.selectors):
         parser.error('choose either explicit selectors or --all')
@@ -288,6 +377,45 @@ def main(argv=None):
         parser.error('--candidate-sha256 requires --candidate-map')
     stream = sys.stdout
     started = time.perf_counter()
+    document = dict(schema='python-check-results-v1', terminal=False, exit_code=None, status='RUNNING',
+                    run_label=args.run_label, started_at=datetime.now(timezone.utc).isoformat(),
+                    python_version=sys.version, artifact=dict(path=None, sha256=None),
+                    selection=dict(requested=dict(all=args.all, selectors=args.selectors,
+                                                  groups=sorted(set(args.group or []))), methods=[]),
+                    verification_manifest={}, methods=[], fixtures=[], issues=[], discovery_errors=[], summary={})
+    if args.results_json:
+        try:
+            if args.candidate_map and args.results_json.resolve() == args.candidate_map.resolve():
+                raise ValueError('Results must not overwrite the artifact input')
+            document['verification_manifest'] = verification_manifest()
+            keys = {key for values in CLASS_MAP_INPUTS.values() for key in values}
+            keys.update(key for values in PURE_BOSS_INPUTS.values() for key in values)
+            document['auxiliary_inputs'] = {}
+            for key in sorted(keys):
+                value = os.environ.get(key, '')
+                path = Path(value) if value else None
+                document['auxiliary_inputs'][key] = dict(value=value, sha256=digest(path) if path and path.is_file() else None)
+            write_results_json(args.results_json, document)
+        except (OSError, ValueError) as error:
+            print('RESULTS ERROR: ' + str(error), file=stream, flush=True)
+            return 1
+    def finish(code, status):
+        if not document['summary']:
+            document['summary'] = dict(selected=len(document['methods']), run=0, passed=0, failures=0,
+                                       errors=len(document['issues']), skipped=0, expected_failures=0,
+                                       unexpected_successes=0, not_covered=0, map_selected=0, map_passed=0)
+        document.update(terminal=True, exit_code=code, status=status,
+                        completed_at=datetime.now(timezone.utc).isoformat(),
+                        elapsed_seconds=time.perf_counter() - started)
+        if args.results_json:
+            try:
+                write_results_json(args.results_json, document)
+                print('RESULTS JSON ' + str(args.results_json.resolve()), file=stream, flush=True)
+            except (OSError, ValueError) as error:
+                print('RESULTS ERROR: ' + str(error), file=stream, flush=True)
+                print('STATUS FAILED (results recording error)', file=stream, flush=True)
+                return 1
+        return code
     phases = []
     failures = []
     candidate = None
@@ -298,14 +426,17 @@ def main(argv=None):
             if not candidate.is_file():
                 raise ValueError('Candidate map must be a file')
             candidate_sha = digest(candidate)
+            document['artifact'] = dict(path=str(candidate), sha256=candidate_sha)
             if args.candidate_sha256 and args.candidate_sha256.lower() != candidate_sha:
                 raise ValueError('Candidate SHA-256 mismatch')
-            print(f'CANDIDATE {candidate}\nSHA256 {candidate_sha}', file=stream)
+            print(f'CANDIDATE {candidate}\nSHA256 {candidate_sha}', file=stream, flush=True)
         phases.append((time.perf_counter() - started, 'candidate input'))
         selectors = [(p.stem, '') for p in sorted(TEST_DIR.glob('test_*.py'))] if args.all else [resolve_selector(v) for v in args.selectors]
+        document['selection']['requested']['selectors'] = sorted(set(module + ('.' + member if member else '') for module, member in selectors))
     except (OSError, ValueError) as error:
-        print('INPUT ERROR: ' + str(error), file=stream)
-        return 2
+        print('INPUT ERROR: ' + str(error), file=stream, flush=True)
+        document['issues'].append(str(error))
+        return finish(2, 'INPUT_ERROR')
     # All supported current-map interfaces receive one exact explicit path.
     # Historical/baseline/source parameters remain untouched.
     environment = {name: str(candidate) if candidate else '' for name in MAP_ENV}
@@ -324,16 +455,21 @@ def main(argv=None):
                         chosen.setdefault(test.id(), test)
                 except Exception as error:
                     failures.append(f'{module_name}: {type(error).__name__}: {error}')
+                    document['discovery_errors'].append(dict(module=module_name, type=type(error).__name__,
+                                                             message=str(error), traceback=traceback.format_exc()))
                 finally:
                     phases.append((time.perf_counter() - before, 'import/discovery ' + module_name))
             selected = [test for test in chosen.values() if not args.group or group_for(test) in args.group or group_for(test) == 'unclassified']
-            print('SELECTED ' + ', '.join(f'{key}={value}' for key, value in sorted(Counter(group_for(t) for t in selected).items())), file=stream)
+            document['selection']['methods'] = [dict(id=test.id(), group=group_for(test)) for test in selected]
+            document['methods'] = [method_record(test) for test in selected]
+            print('SELECTED ' + ', '.join(f'{key}={value}' for key, value in sorted(Counter(group_for(t) for t in selected).items())), file=stream, flush=True)
             if args.list:
                 for test in selected:
-                    print(f'[{group_for(test)}] {test.id()}', file=stream)
+                    print(f'[{group_for(test)}] {test.id()}', file=stream, flush=True)
                 for failure in failures + loader.errors:
-                    print('DISCOVERY ERROR: ' + failure, file=stream)
-                return 2 if failures or loader.errors else 0
+                    print('DISCOVERY ERROR: ' + failure, file=stream, flush=True)
+                document['issues'] = failures + loader.errors
+                return finish(2 if failures or loader.errors else 0, 'LISTED')
             executable, uncovered = [], []
             for test in selected:
                 group = group_for(test)
@@ -355,7 +491,8 @@ def main(argv=None):
                         reason = 'missing additional evidence: ' + ', '.join(missing)
                 if reason:
                     uncovered.append(test.id())
-                    print(f'NOT COVERED [{group}] {test.id()}: {reason}', file=stream)
+                    document['methods'][selected.index(test)].update(outcome='NOT_COVERED', reason=reason)
+                    print(f'NOT COVERED [{group}] {test.id()}: {reason}', file=stream, flush=True)
                 else:
                     executable.append(test)
             if not selected:
@@ -363,34 +500,63 @@ def main(argv=None):
             fixture_timings = []
             time_fixtures(executable, stack, fixture_timings)
             result = unittest.TextTestRunner(stream=stream, verbosity=0, resultclass=TimedResult).run(unittest.TestSuite(executable))
+            document['fixtures'] = result.fixtures
+            for index, test in enumerate(selected):
+                if test.id() in result.methods:
+                    document['methods'][index] = result.methods[test.id()]
+                elif test in executable:
+                    owner = test.id().rsplit('.', 1)[0]
+                    blocked = [event for event in result.fixtures if
+                               event['id'].startswith(('setUpClass (', 'setUpModule (')) and
+                               (owner == event['id'].split('(', 1)[1].rstrip(')') or
+                                owner.startswith(event['id'].split('(', 1)[1].rstrip(')') + '.'))]
+                    if blocked:
+                        row = document['methods'][index]
+                        row.update(outcome='FIXTURE_ERROR' if any(event['outcome'] != 'SKIP' for event in blocked) else 'FIXTURE_SKIP',
+                                   reason='; '.join(event['id'] + ': ' + (event['reason'] or event['outcome']) for event in blocked),
+                                   exceptions=[event['exception'] for event in blocked if event['exception']])
+                    else:
+                        failures.append('No terminal unittest outcome for ' + test.id())
             for failure in failures:
-                print('DISCOVERY ERROR: ' + failure, file=stream)
+                print('DISCOVERY ERROR: ' + failure, file=stream, flush=True)
             if candidate:
                 try:
                     if digest(candidate) != candidate_sha:
                         raise ValueError('Candidate bytes changed during tests')
                 except (OSError, ValueError) as error:
                     failures.append(str(error))
-                    print('INPUT ERROR: ' + failures[-1], file=stream)
+                    print('INPUT ERROR: ' + failures[-1], file=stream, flush=True)
+            if args.results_json:
+                final_manifest = verification_manifest()
+                if final_manifest != document['verification_manifest']:
+                    failures.append('Python verifier/test inputs changed during tests')
+                    document['verification_manifest_after'] = final_manifest
+                    print('INPUT ERROR: ' + failures[-1], file=stream, flush=True)
             map_ids = {t.id() for t in selected if group_for(t) == 'map'}
             map_passed = len(map_ids & result.passed)
-            print(f'MAP COVERAGE passed={map_passed} selected={len(map_ids)}; ' + ('NOT REQUESTED' if not map_ids else 'explicit candidate only; historical/fixture tests are not map acceptance'), file=stream)
+            print(f'MAP COVERAGE passed={map_passed} selected={len(map_ids)}; ' + ('NOT REQUESTED' if not map_ids else 'explicit candidate only; historical/fixture tests are not map acceptance'), file=stream, flush=True)
             for elapsed, label in phases:
-                print(f'PREP {elapsed:.6f}s {label}', file=stream)
+                print(f'PREP {elapsed:.6f}s {label}', file=stream, flush=True)
             for elapsed, label in fixture_timings:
-                print(f'FIXTURE {elapsed:.6f}s {label}', file=stream)
-            print('SLOWEST 10 (tests and preparation/fixtures):', file=stream)
+                print(f'FIXTURE {elapsed:.6f}s {label}', file=stream, flush=True)
+            print('SLOWEST 10 (tests and preparation/fixtures):', file=stream, flush=True)
             for elapsed, label in sorted(result.timings + phases + fixture_timings, reverse=True)[:10]:
-                print(f'  {elapsed:.6f}s {label}', file=stream)
-            print(f'SUMMARY selected={len(selected)} run={result.testsRun} passed={len(result.passed)} failures={len(result.failures)} errors={len(result.errors) + len(failures)} skipped={len(result.skipped)} expected_failures={len(result.expectedFailures)} unexpected_successes={len(result.unexpectedSuccesses)} not_covered={len(uncovered)} total={time.perf_counter() - started:.6f}s', file=stream)
+                print(f'  {elapsed:.6f}s {label}', file=stream, flush=True)
+            print(f'SUMMARY selected={len(selected)} run={result.testsRun} passed={len(result.passed)} failures={len(result.failures)} errors={len(result.errors) + len(failures)} skipped={len(result.skipped)} expected_failures={len(result.expectedFailures)} unexpected_successes={len(result.unexpectedSuccesses)} not_covered={len(uncovered)} total={time.perf_counter() - started:.6f}s', file=stream, flush=True)
+            document['issues'] = failures
+            document['summary'] = dict(selected=len(selected), run=result.testsRun, passed=len(result.passed),
+                                       failures=len(result.failures), errors=len(result.errors) + len(failures),
+                                       skipped=len(result.skipped), expected_failures=len(result.expectedFailures),
+                                       unexpected_successes=len(result.unexpectedSuccesses), not_covered=len(uncovered),
+                                       map_selected=len(map_ids), map_passed=map_passed)
             if not result.wasSuccessful() or failures:
-                print('STATUS FAILED', file=stream)
-                return 1
+                print('STATUS FAILED', file=stream, flush=True)
+                return finish(1, 'FAILED')
             if uncovered or map_passed != len(map_ids):
-                print('STATUS INCOMPLETE (selected checks not fully covered)', file=stream)
-                return 2
-            print('STATUS PASSED_SELECTED (no build or gameplay claim)', file=stream)
-            return 0
+                print('STATUS INCOMPLETE (selected checks not fully covered)', file=stream, flush=True)
+                return finish(2, 'INCOMPLETE')
+            print('STATUS PASSED_SELECTED (no build or gameplay claim)', file=stream, flush=True)
+            return finish(0, 'PASSED_SELECTED')
     finally:
         sys.path.remove(str(TEST_DIR))
 

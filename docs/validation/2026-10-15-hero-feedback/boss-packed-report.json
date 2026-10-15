@@ -1,0 +1,18 @@
+{
+  "baseline": "f0c5f45",
+  "map_sha256": "85122ec2ac7fc61d9eb8d945ffc3014369c53327dfbca9388b0e2130c29902ac",
+  "models": [
+    {
+      "rawcode": "uB24",
+      "model": "war3mapImported\\EclipseSpellweaver.mdx",
+      "scale": 8,
+      "sha256": "b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406"
+    },
+    {
+      "rawcode": "uB32",
+      "model": "war3mapImported\\UncrownedAbyssKing.mdx",
+      "scale": 7,
+      "sha256": "f736e64c9d238e60dfc7fb0fb5040fae5563aaa51df592f9cf9d4bc972ac974e"
+    }
+  ]
+}

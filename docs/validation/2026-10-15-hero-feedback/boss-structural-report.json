@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "models": [
+    {
+      "rawcode": "uB24",
+      "model": "EclipseSpellweaver",
+      "scale": 8,
+      "sha256": "b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406",
+      "bones": 25,
+      "geosetVertices": [
+        16962
+      ],
+      "maxRotationNormError": 2.978795499153364e-8,
+      "scaleKeyCount": 3150,
+      "scaleRange": [
+        0.2800000011920929,
+        1.024999976158142
+      ],
+      "roundtrip": true,
+      "boneHierarchyAndBindings": true
+    },
+    {
+      "rawcode": "uB32",
+      "model": "UncrownedAbyssKing",
+      "scale": 7,
+      "sha256": "f736e64c9d238e60dfc7fb0fb5040fae5563aaa51df592f9cf9d4bc972ac974e",
+      "bones": 27,
+      "geosetVertices": [
+        18318
+      ],
+      "maxRotationNormError": 2.9650242483469924e-8,
+      "scaleKeyCount": 3402,
+      "scaleRange": [
+        0.6499999761581421,
+        1
+      ],
+      "roundtrip": true,
+      "boneHierarchyAndBindings": true
+    }
+  ],
+  "conclusion": "No malformed bone hierarchy/index/finite transform found. No native renderer or animation-blending validation. Geoset split candidate remains unproven; production models unchanged."
+}

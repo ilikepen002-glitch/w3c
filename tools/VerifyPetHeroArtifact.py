@@ -33,6 +33,8 @@ SNAPSHOT_FIELDS = ('firstRevision', 'second', 'secondRevision', 'third',
 
 class HeroRuntime(PetAttackRuntime):
     def __init__(self, script):
+        self.hero_art_trace = []
+        self.fail_hero_art = False
         super().__init__(script)
         self.invoke('tdPetHeroSetup')
         self.invoke('tdPetSetupEffectScheduler')
@@ -43,6 +45,16 @@ class HeroRuntime(PetAttackRuntime):
         self.units[102]['userdata'] = 100
 
     def native(self, name, args):
+        # Only native renderer boundaries are modeled. Execute packed hero VFX,
+        # budget, adoption and cleanup code; never stub a gameplay/hero function.
+        if name in ('AddSpecialEffect', 'AddSpecialEffectTarget'):
+            if self.fail_hero_art:
+                # Native handle null is None in this interpreter; integer zero
+                # is reserved for Wurst class identities and is not JASS null.
+                return True, None
+            handled, result = super().native(name, args)
+            self.hero_art_trace.append((name, tuple(args), result))
+            return handled, result
         # Reject inherited Boss harness shortcuts for production hero eligibility.
         if name in ('tdTowerChoiceForUnitTypeId', 'tdTowerLevelForUnitTypeId',
                     'tdTowerBranchForUnitTypeId', 'tdEnemyLaneId', 'tdEnemyWave',
@@ -519,7 +531,18 @@ def verify_idle_storm_and_native_poison_death(script):
         expected = 6 if label == 'full_completion' else 0
         require(len(r.native_damage) == expected, 'Idle storm completion/cancel contract failed: ' + label)
         for hit in r.native_damage:
-            near(hit[2], 87.5, 'Original full storm one tail per-tick35 quality4')
+            near(hit[2], 437.5, 'Current full storm tail: 350 DPS x 0.5 tick x 2.5 quality4')
+        if 'tdPetHeroVisual' in r.functions:
+            require(len(r.hero_art_trace) == (5 if label == 'full_completion' else 0),
+                    'Storm tail/cancellation visual admission changed: ' + label)
+            if expected:
+                models = [args[0] for _, args, _ in r.hero_art_trace]
+                require(sum('GlaiveMissile' in model for model in models) == 4 and
+                        sum('TornadoElementalSmall' in model for model in models) == 1,
+                        'Storm completion lost its whirlwind/four blade silhouettes')
+                r.tick(.5)
+                require(not r.visual_handles and r.invoke('tdCombatVisualShortCount') == 0,
+                        'Storm cosmetic dwell leaked handles or budget')
         cases.append({'case': label, 'idle_tail_hits': expected})
     r = HeroRuntime(script)
     pet = r.setup_pet(45)
@@ -544,6 +567,44 @@ def verify_idle_storm_and_native_poison_death(script):
     return {'storm': cases, 'original_native_poison_death_idle_targets': 2,
             'weak_poison_total_ticks': 4, 'next_original_required': False}
 
+def verify_hero_visual_boundaries(script):
+    probe = HeroRuntime(script)
+    if 'tdPetHeroVisual' not in probe.functions:
+        return {'status': 'NOT_PRESENT', 'reason': 'Baseline predates hero feedback; no new-VFX claim'}
+    results = []
+    for mode in ('normal', 'budget_full', 'native_failure', 'host_removed'):
+        r = HeroRuntime(script)
+        r.setup_pet(42)
+        context = r.tuple_call('tdTrialCaptureContext', CONTEXT_FIELDS, 102)
+        if mode == 'budget_full':
+            r.globals['TDCombatVisualRuntime_creationWindow'] = int(r.now)
+            r.globals['TDCombatVisualRuntime_creationCount'] = 120
+        if mode == 'native_failure':
+            r.fail_hero_art = True
+        if mode == 'host_removed':
+            r.units[101]['type'] = 0
+        r.invoke('tdPetHeroVisual', 101, 0, 42, 0., 0., *context)
+        expected = 5 if mode == 'normal' else 0
+        require(len(r.visual_handles) == expected, 'Hero native-art boundary failed: ' + mode)
+        require(not r.native_damage, 'Cosmetic helper caused damage: ' + mode)
+        require(r.invoke('tdCombatVisualShortCount') == expected, 'Hero budget leak: ' + mode)
+        r.tick(.5)
+        require(not r.visual_handles and r.invoke('tdCombatVisualShortCount') == 0,
+                'Hero expiry/native-failure failed to release visual budget: ' + mode)
+        if mode == 'normal':
+            r.hero_art_trace.clear()
+            r.invoke('tdPetHeroVisualReady', 101, 0, *context)
+            require(len(r.hero_art_trace) == 1 and r.hero_art_trace[0][0] == 'AddSpecialEffectTarget'
+                    and r.hero_art_trace[0][1][1:] == (101, 'chest'),
+                    'Accepted charge must glow on the host chest, not on an enemy')
+            r.tick(.5)
+            require(not r.visual_handles and r.invoke('tdCombatVisualShortCount') == 0,
+                    'Ready glow leaked after its dwell')
+        results.append(mode)
+    return {'status': 'PASS', 'actual_packed_visual_boundaries': results,
+            'native_renderer': 'controlled create/fail/destroy handles; pixels not tested'}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('map', type=Path)
@@ -551,7 +612,7 @@ def main():
     args = parser.parse_args()
     data = args.map.read_bytes()
     script = Mpq(data).extract('war3map.j').decode('utf-8')
-    report = {'catalog': verify_catalog(script), 'root_trial_snapshot': verify_root_snapshot(script),
+    report = {'hero_visual_boundaries': verify_hero_visual_boundaries(script), 'catalog': verify_catalog(script), 'root_trial_snapshot': verify_root_snapshot(script),
               'judgement': verify_judgement(script), 'damage_school_and_no_pet_moon': verify_school_and_moon(script),
               'one_generation_secondary_deaths': verify_secondary_death_edges(script),
               'hunt_primary_lethal': verify_hunt(script),

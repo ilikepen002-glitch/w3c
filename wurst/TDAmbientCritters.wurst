@@ -2,6 +2,9 @@ package TDAmbientCritters
 
 // The editor map places these 21 decorative critters under Player 0. Correct
 // their ownership once, before gameplay creates any player-controlled units.
+// Use native Ghost Visible so decoration does not obstruct other units.
+// Keep their own terrain pathing and Wander ability: decoration stays visible
+// and selectable without wandering through cliffs or changing tower rules.
 boolean tdAmbientCritterOwnershipReady = false
 
 public function tdShouldNeutralizeAmbientCritter(int ownerId, int unitTypeId) returns boolean
@@ -18,5 +21,6 @@ public function tdSetupAmbientCritterOwnership()
 		GroupRemoveUnit(critters, candidate)
 		if tdShouldNeutralizeAmbientCritter(GetPlayerId(GetOwningPlayer(candidate)), GetUnitTypeId(candidate))
 			SetUnitOwner(candidate, Player(PLAYER_NEUTRAL_PASSIVE), true)
+			UnitAddAbility(candidate, 'Aeth')
 		candidate = FirstOfGroup(critters)
 	DestroyGroup(critters)

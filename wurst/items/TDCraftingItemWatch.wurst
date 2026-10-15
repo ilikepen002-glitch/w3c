@@ -1,0 +1,69 @@
+package TDCraftingItemWatch
+import TDConfig
+import TDState
+import HashMap
+
+// One observer per exact handle, shared by every backend and recovery owner.
+public class TDCraftPickupRecord
+	item material
+	int handleKey
+	int pickupSerial = 0
+	int refs = 1
+	unit lastHolder = null
+	construct(item material)
+		this.material = material
+		this.handleKey = GetHandleId(material)
+	ondestroy
+		material = null
+		lastHolder = null
+
+HashMap<int, TDCraftPickupRecord> tdCraftPickupRecords = new HashMap<int, TDCraftPickupRecord>()
+boolean tdCraftPickupWatchReady = false
+
+public function tdCraftWatchAcquire(item material) returns TDCraftPickupRecord
+	let key = GetHandleId(material)
+	if tdCraftPickupRecords.has(key)
+		let record = tdCraftPickupRecords.get(key)
+		record.refs += 1
+		return record
+	let createdRecord = new TDCraftPickupRecord(material)
+	tdCraftPickupRecords.put(key, createdRecord)
+	return createdRecord
+
+public function tdCraftWatchRelease(TDCraftPickupRecord record)
+	if record == null
+		return
+	record.refs -= 1
+	if record.refs == 0
+		tdCraftPickupRecords.remove(record.handleKey)
+		destroy record
+
+function tdCraftTrackPickup()
+	let material = GetManipulatedItem()
+	if material != null and tdCraftPickupRecords.has(GetHandleId(material))
+		let record = tdCraftPickupRecords.get(GetHandleId(material))
+		record.pickupSerial += 1
+		record.lastHolder = GetTriggerUnit()
+
+public function tdSetupCraftPickupWatch()
+	if tdCraftPickupWatchReady
+		return
+	tdCraftPickupWatchReady = true
+	let watch = CreateTrigger()
+	watch.registerAnyUnitEvent(EVENT_PLAYER_UNIT_PICKUP_ITEM)
+	watch.addAction(function tdCraftTrackPickup)
+
+public function tdCraftFarmerValid(unit farmer, player owner) returns boolean
+	return farmer != null and GetUnitTypeId(farmer) == TD_FARMER_UNIT_ID and farmer.isAlive() and GetOwningPlayer(farmer) == owner and not tdIsGameOver()
+
+public function tdCraftItemInInventory(unit farmer, item material) returns boolean
+	for slot = 0 to 5
+		if UnitItemInSlot(farmer, slot) == material
+			return true
+	return false
+
+public function tdCraftInventoryHasSpace(unit farmer) returns boolean
+	for slot = 0 to 5
+		if UnitItemInSlot(farmer, slot) == null
+			return true
+	return false

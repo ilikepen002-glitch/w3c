@@ -1,0 +1,650 @@
+{
+  "added_methods": [],
+  "baseline": {
+    "artifact": {
+      "path": "/workspace/shared/remaining-fixes-evidence-20261015/baseline.w3x",
+      "sha256": "85122ec2ac7fc61d9eb8d945ffc3014369c53327dfbca9388b0e2130c29902ac"
+    },
+    "exit_code": 1,
+    "status": "FAILED",
+    "summary": {
+      "errors": 1,
+      "expected_failures": 0,
+      "failures": 0,
+      "map_passed": 0,
+      "map_selected": 24,
+      "not_covered": 0,
+      "passed": 0,
+      "run": 0,
+      "selected": 24,
+      "skipped": 0,
+      "unexpected_successes": 0
+    }
+  },
+  "candidate": {
+    "artifact": {
+      "path": "/workspace/shared/w3c-remaining-fixes-integration/ExampleMap.w3x",
+      "sha256": "14fa7cd13acce82bf71f95c64de0c152aad0fad2102a83551a3dcd34596f8aae"
+    },
+    "exit_code": 0,
+    "status": "PASSED_SELECTED",
+    "summary": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "map_passed": 24,
+      "map_selected": 24,
+      "not_covered": 0,
+      "passed": 24,
+      "run": 24,
+      "selected": 24,
+      "skipped": 0,
+      "unexpected_successes": 0
+    }
+  },
+  "changed_groups": [],
+  "changed_methods": [
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_cf06_actual_catalog_ready_twice_no_loop_or_duplicate_registration"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_ground01_real_capture_plan_guaranteed_batches_leftovers_next_pile"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_front_three_pair_mixed_quality_purple_and_non_equipment_rejection"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv02_three_to_six_slots_zero_terrain_and_single_exact_detach"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_create_and_native_return_membership_contradictions_keep_originals"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_output_deleted_retyped_or_transferred_in_add_callback"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_each_source_changed_in_create_and_output_add_callbacks"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_at_create_or_output_add"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_cancel_return_other_backend_prepare_stays_blocked"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_same_backend_add_reentry_three_and_six_slots"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_create_and_add_same_and_different_batch_reentry_cannot_prepare"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_duplicate_keys_handles_and_stale_result_tokens_real_backend"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_pending_survives_actual_finish_destructor_then_returns_exact_once"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_synchronous_original_quality_pile_destination_feedback"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_original_holder_and_successful_return_callback_hide_retype_preserved"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_output_or_failed_return_callback_custody_changes_stop_later_native"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_registered_external_move_reveal_never_reclaimed"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_pending_player_continuation_other_player_and_ground_after_lock_release"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_real_four_record_limit_and_shared_watch_reference_lifetime"
+    },
+    {
+      "baseline": {
+        "exceptions": [
+          {
+            "message": "PENDING new candidate: required delivery/recovery functions absent",
+            "traceback": "Traceback (most recent call last):\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/Run-PythonChecks.py\", line 345, in call\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tests/python/test_inventory_craft_artifact.py\", line 25, in setUpClass\n    cls.preflight=InventoryCraftJassRuntime(cls.script)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/InventoryCraftJassRuntime.py\", line 32, in __init__\n    require(all(name in self.functions for name in self.REQUIRED),\n  File \"/workspace/shared/w3c-remaining-fixes-integration/tools/VerifyEquipmentAbilityArtifact.py\", line 21, in require\n    raise ValueError(message)\nValueError: PENDING new candidate: required delivery/recovery functions absent\n",
+            "type": "builtins.ValueError"
+          }
+        ],
+        "executed": false,
+        "outcome": "FIXTURE_ERROR",
+        "reason": "setUpClass (test_inventory_craft_artifact.InventoryCraftArtifactTests): ERROR",
+        "subtests": []
+      },
+      "candidate": {
+        "exceptions": [],
+        "executed": true,
+        "outcome": "PASS",
+        "reason": null,
+        "subtests": []
+      },
+      "id": "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv09_gameover_stops_retries_without_automatic_retry_promise"
+    }
+  ],
+  "claim": "Method comparison only; existing failures and uncovered checks remain failures/uncovered. No build or gameplay acceptance.",
+  "comparable": true,
+  "coverage_loss": [],
+  "deleted_methods": [],
+  "exit_code": 0,
+  "final_disk_manifest_delta": {
+    "added": [],
+    "changed": [],
+    "deleted": []
+  },
+  "new_discovery_errors": [],
+  "new_failures": [],
+  "new_fixture_errors": [],
+  "new_run_issues": [],
+  "persistent_failures": [],
+  "reasons": [],
+  "resolved_failures": [
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_cf06_actual_catalog_ready_twice_no_loop_or_duplicate_registration",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_ground01_real_capture_plan_guaranteed_batches_leftovers_next_pile",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_catalog_planner_four_players_fixed_and_every_mixed_roll",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv01_real_front_three_pair_mixed_quality_purple_and_non_equipment_rejection",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv02_three_to_six_slots_zero_terrain_and_single_exact_detach",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_create_and_native_return_membership_contradictions_keep_originals",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv03_output_deleted_retyped_or_transferred_in_add_callback",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_each_source_changed_in_create_and_output_add_callbacks",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_at_create_or_output_add",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_farmer_and_gameover_changed_in_drop_before_and_after_callbacks",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv04_remaining_sources_changed_in_drop_before_and_after_callbacks",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_cancel_return_other_backend_prepare_stays_blocked",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_actual_same_backend_add_reentry_three_and_six_slots",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_create_and_add_same_and_different_batch_reentry_cannot_prepare",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_drop_interleavings_transfer_repick_occupation_and_no_detach",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv05_duplicate_keys_handles_and_stale_result_tokens_real_backend",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_pending_survives_actual_finish_destructor_then_returns_exact_once",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv06_synchronous_original_quality_pile_destination_feedback",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_original_holder_and_successful_return_callback_hide_retype_preserved",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_output_or_failed_return_callback_custody_changes_stop_later_native",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv07_registered_external_move_reveal_never_reclaimed",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_pending_player_continuation_other_player_and_ground_after_lock_release",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv08_real_four_record_limit_and_shared_watch_reference_lifetime",
+    "test_inventory_craft_artifact.InventoryCraftArtifactTests.test_inv09_gameover_stops_retries_without_automatic_retry_promise"
+  ],
+  "same_artifact": false,
+  "schema": "python-check-comparison-v1",
+  "source_manifest_delta": {
+    "added": [],
+    "changed": [],
+    "deleted": []
+  },
+  "status": "COMPARABLE_NO_NEW_FAILURES"
+}

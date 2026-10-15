@@ -33,6 +33,12 @@ class CraftFixtureBackend implements TDCraftCommitBackend
 	boolean array[32] alive
 	boolean failCreation = false
 	boolean failConsumption = false
+	boolean failDelivery = false
+	int invalidateOnDelivery = 0
+	int deliveries = 0
+	TDCraftPlan reenterPlan = null
+	TDCraftCatalog reenterCatalog = null
+	int reenterResult = -1
 	int invalidateOnCreation = 0
 	int prepared = 0
 	int published = 0
@@ -52,12 +58,21 @@ class CraftFixtureBackend implements TDCraftCommitBackend
 			return 0
 		prepared += 1
 		resultId = rawcode
+		if reenterPlan != null
+			reenterResult = tdCommitCraftBatch(reenterPlan, 0, reenterCatalog, this, 1)
 		if invalidateOnCreation > 0
 			alive[invalidateOnCreation] = false
 		return 1000 + prepared
 
 	override function consumeThree(int first, int second, int third) returns boolean
 		if failConsumption or not alive[first] or not alive[second] or not alive[third]
+			return false
+		deliveries += 1
+		if failDelivery
+			return false
+		if invalidateOnDelivery > 0
+			alive[invalidateOnDelivery] = false
+		if not alive[first] or not alive[second] or not alive[third]
 			return false
 		alive[first] = false
 		alive[second] = false
@@ -308,4 +323,52 @@ function fixturePlan(TDCraftCatalog catalog, CraftFixtureBackend backend, int fi
 	plan.batchCount().assertEquals(66)
 	plan.leftoverCount().assertEquals(1)
 	destroy plan
+	destroy catalog
+
+// Protocol fixtures only. Real native output/slot/callback acceptance is exercised
+// by the dedicated current-source and (once built) current-map backend matrix.
+@Test function rejectedDeliveryPreservesThreeSourcesAndDiscardsOutput()
+	let catalog = fixtureCatalog()
+	let backend = new CraftFixtureBackend()
+	let plan = fixturePlan(catalog, backend, WHITE_A, WHITE_A, WHITE_A)
+	backend.failDelivery = true
+	tdCommitCraftBatch(plan, 0, catalog, backend, 1).assertEquals(TD_CRAFT_COMMIT_CANCELLED)
+	backend.deliveries.assertEquals(1)
+	backend.consumed.assertEquals(0)
+	backend.published.assertEquals(0)
+	backend.discarded.assertEquals(1)
+	for key = 1 to 3
+		backend.alive[key].assertTrue()
+	destroy plan
+	destroy backend
+	destroy catalog
+
+@Test function deliveryCallbackInvalidationPreventsIrreversibleConsumption()
+	let catalog = fixtureCatalog()
+	let backend = new CraftFixtureBackend()
+	let plan = fixturePlan(catalog, backend, WHITE_A, WHITE_A, WHITE_A)
+	backend.invalidateOnDelivery = 2
+	tdCommitCraftBatch(plan, 0, catalog, backend, 1).assertEquals(TD_CRAFT_COMMIT_CANCELLED)
+	backend.consumed.assertEquals(0)
+	backend.published.assertEquals(0)
+	backend.discarded.assertEquals(1)
+	backend.alive[1].assertTrue()
+	backend.alive[3].assertTrue()
+	destroy plan
+	destroy backend
+	destroy catalog
+
+@Test function preparationSameBatchReentryIsAlreadyAttempted()
+	let catalog = fixtureCatalog()
+	let backend = new CraftFixtureBackend()
+	let plan = fixturePlan(catalog, backend, WHITE_A, WHITE_A, WHITE_A)
+	backend.reenterPlan = plan
+	backend.reenterCatalog = catalog
+	tdCommitCraftBatch(plan, 0, catalog, backend, 1).assertEquals(TD_CRAFT_COMMIT_SUCCESS)
+	backend.reenterResult.assertEquals(TD_CRAFT_COMMIT_ALREADY_ATTEMPTED)
+	backend.prepared.assertEquals(1)
+	backend.consumed.assertEquals(3)
+	backend.published.assertEquals(1)
+	destroy plan
+	destroy backend
 	destroy catalog

@@ -34,6 +34,39 @@ class _Return(Exception):
         self.value = value
 
 
+def packaged_loop_bounds(name, lines):
+    """Validate block structure without evaluating inactive expressions.
+
+    Checking the complete body also keeps early returns and exitwhen jumps from
+    concealing malformed or unclosed inactive blocks.
+    """
+    blocks, ends = [], {}
+    for index, row in enumerate(lines):
+        line = row.split('//', 1)[0].strip()
+        if line.startswith('if ') and line.endswith(' then'):
+            blocks.append(['if', index, False])
+        elif (line.startswith('elseif ') and line.endswith(' then')) or line == 'else':
+            require(blocks and blocks[-1][0] == 'if' and not blocks[-1][2],
+                    f'{name}: illegal packaged control flow at {line}')
+            if line == 'else':
+                blocks[-1][2] = True
+        elif line == 'endif':
+            require(blocks and blocks[-1][0] == 'if',
+                    f'{name}: illegal packaged control flow at endif')
+            blocks.pop()
+        elif line == 'loop':
+            blocks.append(['loop', index, False])
+        elif line == 'endloop':
+            require(blocks and blocks[-1][0] == 'loop',
+                    f'{name}: illegal packaged control flow at endloop')
+            ends[blocks.pop()[1]] = index
+        elif line.startswith('exitwhen '):
+            require(any(block[0] == 'loop' for block in blocks),
+                    f'{name}: illegal packaged control flow at exitwhen')
+    require(not blocks, f'{name}: unclosed packaged control flow')
+    return ends
+
+
 class GroundJassRuntime(JassScalarEvaluator):
     """Minimal extension of the existing fail-closed scalar JASS evaluator."""
     def __init__(self, script):
@@ -103,6 +136,7 @@ class GroundJassRuntime(JassScalarEvaluator):
         require(name in self.functions, f'Missing packaged ground function {name}')
         signature, lines = self.functions[name]
         require(len(args) == len(signature), f'{name}: packaged argument count changed')
+        loop_ends = packaged_loop_bounds(name, lines)
         scope, branches, loops, active, index, steps = dict(zip(signature, args)), [], [], True, 0, 0
         try:
             while index < len(lines):
@@ -125,18 +159,21 @@ class GroundJassRuntime(JassScalarEvaluator):
                 elif line == 'endif':
                     active = branches.pop()[0]
                 elif line == 'loop':
-                    loops.append(index)
+                    loops.append((index, len(branches), active))
                 elif line == 'endloop':
-                    index = loops.pop()
-                    continue
+                    start, branch_depth, loop_active = loops.pop()
+                    require(len(branches) == branch_depth,
+                            f'{name}: illegal packaged control flow at endloop')
+                    active = loop_active
+                    if loop_active:
+                        index = start
+                        continue
                 elif active and line.startswith('exitwhen '):
                     if self.expression(line[9:], scope):
-                        depth = 1
-                        while depth:
-                            index += 1
-                            require(index < len(lines), 'Unclosed packaged loop')
-                            depth += (lines[index] == 'loop') - (lines[index] == 'endloop')
-                        loops.pop()
+                        start, branch_depth, loop_active = loops.pop()
+                        del branches[branch_depth:]
+                        active = loop_active
+                        index = loop_ends[start]
                 elif active and line.startswith('return'):
                     raise _Return(self.expression(line[7:], scope) if line != 'return' else None)
                 elif active and line.startswith('local '):
