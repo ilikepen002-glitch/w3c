@@ -1,0 +1,278 @@
+{
+  "status": "PASS",
+  "planSha256": "57632659170b6b0d118af7245b383b6e75b43803f1370471e41906ed4fb7cf09",
+  "verifiedInputs": [
+    "assets/source/elemental-spirits/display-animations.cjs",
+    "assets/source/elemental-spirits/models/BoulderArmGibbon/build_earth_gibbon.py",
+    "assets/source/elemental-spirits/models/BoulderArmGibbon/export_validate.cjs",
+    "assets/source/elemental-spirits/models/BoulderArmGibbon/original/atlas-refined-imagegen.png",
+    "assets/source/elemental-spirits/models/BoulderArmGibbon/primitives.py",
+    "assets/source/elemental-spirits/models/FrostFinManta/build_frostmanta.py",
+    "assets/source/elemental-spirits/models/FrostFinManta/export_validate.cjs",
+    "assets/source/elemental-spirits/models/FrostFinManta/original/atlas-refined-imagegen.png",
+    "assets/source/elemental-spirits/models/FrostFinManta/primitives.py",
+    "assets/source/elemental-spirits/models/RockShellTurtle/build_rockturtle.py",
+    "assets/source/elemental-spirits/models/RockShellTurtle/export_validate.cjs",
+    "assets/source/elemental-spirits/models/RockShellTurtle/original/atlas-refined-imagegen.png",
+    "assets/source/elemental-spirits/models/SandSpiralSnail/build_earth_snail.py",
+    "assets/source/elemental-spirits/models/SandSpiralSnail/export_validate.cjs",
+    "assets/source/elemental-spirits/models/SandSpiralSnail/original/atlas-refined-imagegen.png",
+    "assets/source/elemental-spirits/models/SandSpiralSnail/primitives.py",
+    "assets/source/elemental-spirits/models/SnowManeOtter/build_snowotter.py",
+    "assets/source/elemental-spirits/models/SnowManeOtter/export_validate.cjs",
+    "assets/source/elemental-spirits/models/SnowManeOtter/original/atlas-refined-imagegen.png",
+    "assets/source/elemental-spirits/models/SnowManeOtter/primitives.py",
+    "assets/source/elemental-spirits/models/TideWyrm/build_tidewyrm.py",
+    "assets/source/elemental-spirits/models/TideWyrm/export_validate.cjs",
+    "assets/source/elemental-spirits/models/TideWyrm/original/atlas-refined-imagegen.png",
+    "assets/source/elemental-spirits/models/TideWyrm/primitives.py",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/BrassPangolin/atlas-imagegen.png",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/BrassPangolin/input.blp",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/BrassPangolin/input.mdx",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/BrassPangolin/parts-source.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/BrassPangolin/texture-provenance.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/LeafwingSpirit/atlas-imagegen.png",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/LeafwingSpirit/input.blp",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/LeafwingSpirit/input.mdx",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/LeafwingSpirit/parts-source.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/LeafwingSpirit/texture-provenance.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/MosscapSprite/atlas-imagegen.png",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/MosscapSprite/input.blp",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/MosscapSprite/input.mdx",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/MosscapSprite/parts-source.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/MosscapSprite/texture-provenance.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/RootbudStag/atlas-imagegen.png",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/RootbudStag/input.blp",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/RootbudStag/input.mdx",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/RootbudStag/parts-source.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/RootbudStag/texture-provenance.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/SilverManeBeast/atlas-imagegen-preserved.png",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/SilverManeBeast/input.blp",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/SilverManeBeast/input.mdx",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/SilverManeBeast/parts-source.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/SilverManeBeast/texture-provenance.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/SteelwingFalcon/atlas-imagegen.png",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/SteelwingFalcon/input.blp",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/SteelwingFalcon/input.mdx",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/SteelwingFalcon/parts-source.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/SteelwingFalcon/texture-provenance.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/atlas-prompts.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/config.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-a/display-animations-pinned.cjs",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/fox/art/CinderFoxAtlas-imagegen-v1.png",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/fox/art/imagegen-prompt.txt",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/fox/source/CinderFoxAtlas.blp",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/fox/source/CinderTailFox.mdx",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/fox/source/source-pin.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/salamander/art/MoltenHornAtlas-imagegen-v1.png",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/salamander/art/imagegen-prompt.txt",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/salamander/source/MoltenHornAtlas.blp",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/salamander/source/MoltenHornSalamander.mdx",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/salamander/source/source-pin.json",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/tools/mdx_decode.py",
+    "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/tools/rebuild_fire_textures.py",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/apply_extents.cjs",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/audit_effects.py",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/audit_phoenix.py",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/build_compact.cjs",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/make_contact_sheet.py",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/mdx_decode.py",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/parser.cjs",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/rebuild.sh",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/render_contract.py",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/verify_compact.cjs",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/source/CREDITS.md",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/source/QiLingPhoenix-RefinedCandidate.mdx",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/source/display-contract.json",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/README.md",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/PhoenixBody.png",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/PhoenixHead.png",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/phoenix-body-imagegen-v1.png",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/phoenix-body-imagegen-v2.png",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/phoenix-body-imagegen-v3.png",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/phoenix-body-imagegen-v4.png",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/phoenix-head-imagegen-v1.png",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/body-v1-prompt.txt",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/body-v2-prompt.txt",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/body-v3-prompt.txt",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/body-v4-prompt.txt",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/head-v1-prompt.txt",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/original-model-readme.html",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/texture-provenance-original.json",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/provenance.json",
+    "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/scripts/rebuild_textures.py",
+    "assets/source/elemental-spirits/refinement-20261015/wild-phoenix.json",
+    "tools/BuildFireTextureRefinements.py",
+    "tools/BuildPhoenixRefinement.py",
+    "tools/BuildWaterEarthRefinements.py",
+    "tools/BuildWildPhoenixVariant.cjs",
+    "tools/EncodeWaterEarthAtlas.py",
+    "tools/RebuildMetalWoodRefinement.cjs",
+    "tools/RebuildMetalWoodRefinement.py"
+  ],
+  "outputs": [
+    {
+      "path": "imports/QiLingPhoenix/PhoenixBody.blp",
+      "sha256": "d5a9f8ee5bb4c666b88692e81ca0c17e33e394041771dedf136f06bcc5850c1b",
+      "bytes": 700230
+    },
+    {
+      "path": "imports/QiLingPhoenix/PhoenixHead.blp",
+      "sha256": "3631ae3bbd1c299fea419f9468278f9ebfd0eba5bd90805262bc7eb1ea4412c0",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/BoulderArmAtlas.blp",
+      "sha256": "f69b1112c994666f1bde1d28f432999f167a5378fce2a8dc266f4da220eb8a49",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/BrassPangolinAtlas.blp",
+      "sha256": "3d97d8231f45855b94f379196dbb915715c1ad0d0b68bfb4b019e72137cc004a",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/CinderFoxAtlasRefined.blp",
+      "sha256": "ac5f428016a304f9372218dbeb3268d8241e9cf6f135f8daf30d08b7eeddfbd9",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/FrostMantaAtlas.blp",
+      "sha256": "20f22cd0bda21f767a605eb05081370e5ba691b3c985bea1096a72fda5dbb923",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/LeafwingAtlas.blp",
+      "sha256": "0e42dbff34c8f5c241cd78352bcfd4855ed918b1f3af243c735a6a773b072e09",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/MoltenHornAtlasRefined.blp",
+      "sha256": "b78ce151a167c1c2b405b0c33b0a3f127a7fd786870c915dc605068345686634",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/MosscapAtlas.blp",
+      "sha256": "1018356b6848c118d65ca3a21824738a05e5cd7842764c463183251627fe71aa",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/RockTurtlePalette.blp",
+      "sha256": "31a198b634dff77a391b1e79ee419df71260b8f4b862edefadf1410a9452dfd3",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/RootbudAtlas.blp",
+      "sha256": "e74bc3916a1d8ee404b656eccca7a831972ea572a0e021745c91061187cc026b",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/SandSpiralAtlas.blp",
+      "sha256": "30f67608c7a8632040ab5d7d1e54eed4b33b1d5d4fb42bedb36a89f1ffecdcc5",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/SilverManeAtlas.blp",
+      "sha256": "af713ae301a3dd2b5c83e2b9a128101e901119901301978d8f10e8f04f4084b2",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/SnowOtterAtlas.blp",
+      "sha256": "89ebaa4560b719c9bd70aba2b189c38a2d3bad11f1eb24d760dcb9845d129405",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/SteelwingAtlas.blp",
+      "sha256": "4e355fb0f89e60776db08f1d542fe2e019f3641aef52a9bf9df8f9498e70c1ac",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/TideWyrmAtlas.blp",
+      "sha256": "e5349b89e0871238dbb40e509134df591b834f89672a9ff7701528203c0b825a",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/war3mapImported/BoulderArmGibbon.mdx",
+      "sha256": "50c03400fc4e41aa5dbefd03d4d781e058b1d7839f72df13065bcd31608c7c56",
+      "bytes": 326282
+    },
+    {
+      "path": "imports/war3mapImported/BrassPangolin.mdx",
+      "sha256": "bd6c40dfc279ac16fa89778c30aed64cd73659533fa83ef670da4c2e1a71e20b",
+      "bytes": 286592
+    },
+    {
+      "path": "imports/war3mapImported/CinderTailFox.mdx",
+      "sha256": "638d1a5a0357ca8129d50315a3a3697a142b939a46ce7a55640ed73884f1af30",
+      "bytes": 398240
+    },
+    {
+      "path": "imports/war3mapImported/EmberBird.mdx",
+      "sha256": "c4c41bd7f384f64e4dbf575681791f9ea08358ad3770b7ed3d47a341bf3f67a7",
+      "bytes": 124409
+    },
+    {
+      "path": "imports/war3mapImported/EmberBirdWild.mdx",
+      "sha256": "fb49e2a75d804715eb97392afcc4819d0b3c5554c223920949231d76769cb4d6",
+      "bytes": 94589
+    },
+    {
+      "path": "imports/war3mapImported/FrostFinManta.mdx",
+      "sha256": "68b30a548cebde083f109769295dc69f543ca02aa1536649375588cbd94e313b",
+      "bytes": 250730
+    },
+    {
+      "path": "imports/war3mapImported/LeafwingSpirit.mdx",
+      "sha256": "046de3d842fe97b5838c3142a9b9d56320c4e706878c6753adfc650d6ca7cbf2",
+      "bytes": 316376
+    },
+    {
+      "path": "imports/war3mapImported/MoltenHornSalamander.mdx",
+      "sha256": "6f4b8d8b6aadae57ba4a159df615ef5693058bfdd3f8740e810d1914a9503592",
+      "bytes": 367652
+    },
+    {
+      "path": "imports/war3mapImported/MosscapSprite.mdx",
+      "sha256": "9ad4bef1963a9f7afd0dbe8280863d9a1cd3ee785f8e391f6fc990a8b2a557ed",
+      "bytes": 251540
+    },
+    {
+      "path": "imports/war3mapImported/RockShellTurtle.mdx",
+      "sha256": "22b5df4b1cab01ecfc80d165583d3417900d79c62fd7ad9de10cafbfdfc597cf",
+      "bytes": 304524
+    },
+    {
+      "path": "imports/war3mapImported/RootbudStag.mdx",
+      "sha256": "c5d50f0f8b21af69f7f92aed21cc577b94c26ef778323732570deeda27552927",
+      "bytes": 233654
+    },
+    {
+      "path": "imports/war3mapImported/SandSpiralSnail.mdx",
+      "sha256": "b10586173fa61c6c35e128c62a84d68111b7b692c8b8dfd1d5ec5f4fe846a413",
+      "bytes": 300068
+    },
+    {
+      "path": "imports/war3mapImported/SilverManeBeast.mdx",
+      "sha256": "bf3626033ff16ae865ebd84a08573732e9666029d48d6fc2273c82d208bfc130",
+      "bytes": 421506
+    },
+    {
+      "path": "imports/war3mapImported/SnowManeOtter.mdx",
+      "sha256": "a57719a74b1d3fec4aee403f638320ee998bd0110a808ddceb356610c93b7c6d",
+      "bytes": 314102
+    },
+    {
+      "path": "imports/war3mapImported/SteelwingFalcon.mdx",
+      "sha256": "1f80c6d9fc4006d1229a6f97c3e88a02a4bdf8cf056fdf6f78bdec770219ce23",
+      "bytes": 236384
+    },
+    {
+      "path": "imports/war3mapImported/TideWyrm.mdx",
+      "sha256": "5540b3f152e38012d32a3935a4a5bed55ad4ec8b0433d9ec71ad2de0af903608",
+      "bytes": 308438
+    }
+  ],
+  "isolatedRebuild": true,
+  "updatedManifestHashes": false,
+  "wroteImports": false
+}

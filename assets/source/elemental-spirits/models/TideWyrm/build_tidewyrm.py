@@ -30,8 +30,9 @@ ellipsoid('pale jaw',(48,0,41.9),(13,6,3.5),5,1,n=10,k=4)
 ellipsoid('flat nose',(59,0,45),(2.4,4.3,2.5),1,1,n=8,k=3)
 for s in [-1,1]:
  ellipsoid('narrow aquatic eye '+str(s),(42,s*9.0,52),(4,1.2,2.2),0,1,n=8,k=3)
- ellipsoid('icy iris '+str(s),(43,s*9.8,52.1),(2.1,.45,1.45),14,1,n=8,k=3)
- ellipsoid('vertical eye slit '+str(s),(43.2,s*10.15,52.1),(.55,.15,1.18),13,1,n=6,k=3)
+ ellipsoid('icy iris '+str(s),(43,s*9.8,52.1),(2.8,.65,1.9),14,1,n=8,k=3)
+ ellipsoid('vertical eye slit '+str(s),(43.2,s*10.15,52.1),(.72,.18,1.38),13,1,n=6,k=3)
+ ellipsoid('ice eye catchlight '+str(s),(43.5,s*10.45,52.9),(.46,.16,.5),15,1,n=6,k=3)
  tube('low armored brow '+str(s),[(37,s*9,55),(42,s*9.7,55.1),(46,s*7.9,53.8)],[1.8,1.6,.8],4,1,n=6)
  tube('muzzle line '+str(s),[(57,s*3.4,43),(50,s*5.7,42),(44,s*7,44)],[.3,.32,.2],1,1,n=5)
  tube('swept ice horn '+str(s),[(31,s*5,57),(28,s*7,65),(20,s*8,71),(16,s*8,71)],[3.5,2.5,1.4,.1],11,1,n=7)
@@ -74,23 +75,7 @@ for bi,b in enumerate(bones):
    for tag,val in [('KGTR',tr),('KGRT',rot),('KGSC',sc)]:tracks[tag].append([t,val])
  b['tracks']=tracks
 (OUT/'tidewyrm-source.json').write_text(json.dumps(dict(name='TideWyrm_Original_v1',version=800,parts=parts,bones=bones,sequences=[dict(name=n,start=a,end=z,loop=lo) for n,a,z,lo in seqs],palette=colors)))
-rng=np.random.default_rng(8113);atlas=Image.new('RGB',(256,256));Y,X=np.mgrid[0:64,0:64];xx=X/63;yy=Y/63
-for k,base in enumerate(colors):
- noise=Image.fromarray(rng.integers(0,255,(8,8),dtype=np.uint8)).resize((64,64),Image.Resampling.BICUBIC).filter(ImageFilter.GaussianBlur(1));grain=(np.asarray(noise).astype(float)-128)/128;light=1.14-.26*yy-.1*xx+grain*.05
- if k in [8,10,11]:light=.7+.45*(1-yy)+.12*np.sin(xx*16)+grain*.03
- if k>=13:light=np.ones((64,64))
- tile=Image.fromarray(np.clip(np.array(base)[None,None,:]*light[:,:,None],0,255).astype(np.uint8));d=ImageDraw.Draw(tile)
- if k in [2,3,4,6,12]:
-  for y in range(5,62,11):
-   for x in range(-3+(y//11%2)*6,64,12):
-    pts=[(x,y),(x+6,y+6),(x+12,y)];d.line([(a,b+1) for a,b in pts],fill=tuple(min(255,int(v*1.22)) for v in base),width=1);d.line(pts,fill=tuple(int(v*.58) for v in base),width=1)
- elif k in [8,10,11]:
-  for x in [8,20,32,44,56]:d.line([(32,60),(x,7)],fill=tuple(int(v*.57) for v in base),width=1);d.line([(33,60),(x+1,7)],fill=tuple(min(255,int(v*1.24)) for v in base),width=1)
- elif k==5:
-  for y in [10,22,34,46,58]:d.arc((5,y-7,59,y+8),20,160,fill=tuple(int(v*.65) for v in base),width=1)
- atlas.paste(tile,((k%4)*64,(k//4)*64))
-atlas.save(OUT/'TideWyrmAtlas_source.png');quant=atlas.quantize(colors=256,method=Image.Quantize.MEDIANCUT);pal=quant.getpalette();offsets=[0]*16;sizes=[0]*16;blobs=[];off=1180
-for i in range(9):
- sz=max(1,256>>i);idx=atlas.resize((sz,sz),Image.Resampling.BOX).quantize(palette=quant,dither=Image.Dither.NONE).tobytes();offsets[i]=off;sizes[i]=len(idx);off+=len(idx);blobs.append(idx)
-(OUT/'TideWyrmAtlas.blp').write_bytes(b'BLP1'+struct.pack('<6I',1,0,256,256,5,1)+struct.pack('<16I',*offsets)+struct.pack('<16I',*sizes)+b''.join(bytes([pal[i*3+2],pal[i*3+1],pal[i*3],255]) for i in range(256))+b''.join(blobs))
-print(json.dumps({'triangles':sum(len(p['faces']) for p in parts),'bones':len(bones),'continuous_blended_spine':True}))
+
+# Refined atlas is the persisted built-in imagegen output. Resize/BLP encoding only.
+import runpy
+runpy.run_path(str(ROOT.parents[4]/'tools/EncodeWaterEarthAtlas.py'))['encode'](OUT/'atlas-refined-imagegen.png',OUT/'TideWyrmAtlas_source.png',OUT/'TideWyrmAtlas.blp')

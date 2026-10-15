@@ -1,0 +1,14 @@
+{
+  "generator": "built-in imagegen",
+  "generatedForThisPass": true,
+  "sourceImage": "atlas-imagegen.png",
+  "sourceImageSha256": "cba472d86a564b6b0d9de271f8da56c409b18eed2022440378c7c47f42dbaf86",
+  "sourceDimensions": [
+    1254,
+    1254
+  ],
+  "prompt": "Use case: stylized-concept. Asset type: production Warcraft III low-poly creature UV MATERIAL ATLAS, not concept artwork. Generate a square 1024x1024 flat, perfectly aligned 4x4 GRID of 16 equal square material swatches. Exactly no gaps, borders, labels, margins or gridlines. Each swatch fills its tile. No characters, eyes, body parts, props, compositions or objects. Each tile a hand-painted game material with 3 broad value bands, crisp expressive painterly shapes, readable at 64x64 per tile. No photorealism, NO airbrushed gradient or plastic sheen, no tiny micro-noise. Rich stylized contrast. Exact row-major assignments: For the existing walking woodland mushroom with scalloped brown cap, pale stem, root feet and leaf sprout. Preserve mushroom design, make warm chestnut-coral cap and cream stem pop with turquoise foliage and lilac shadows. Broad organic paint marks only. 0 solid deep navy #1c3345; 1 deep violet bark shadow #52415e; 2 warm light tan root wood #b48c72; 3 bright jade turquoise leaf #4bb3a4; 4 pale mint #a6d9bf; 5 pearl cream stem #f6e5ca; 6 deep blue teal stem #3d7e88; 7 dark lavender bark #725970; 8 pale dusty rose cap shadow #c48f96; 9 warm chestnut coral cap #ce8866; 10 deep turquoise green #397c81; 11 pale lilac leaf #bfa0d5; 12 pearl ivory spore patches #fff2dd; 13 solid dark navy #18233b; 14 solid bright aqua-mint #8af2d8; 15 solid ivory cream #fff3d4. Keep tile edges at 25%,50%,75%; no shadow gaps. Material-only flat front orthographic view. Opaque background.",
+  "conversion": "Pillow RGB resizing only to 256x256; 256-color palette BLP1; opaque; 9 mipmaps. No program-painted pixels.",
+  "date": "2026-10-15",
+  "outputTexturePath": "Textures\\MosscapAtlas.blp"
+}

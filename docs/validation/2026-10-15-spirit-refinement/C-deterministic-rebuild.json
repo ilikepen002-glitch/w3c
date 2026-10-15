@@ -1,0 +1,17 @@
+{
+  "pass": true,
+  "outputSha256": "c4c41bd7f384f64e4dbf575681791f9ea08358ad3770b7ed3d47a341bf3f67a7",
+  "independentRebuildSha256": "c4c41bd7f384f64e4dbf575681791f9ea08358ad3770b7ed3d47a341bf3f67a7",
+  "sourceOnlyInputs": [
+    "source/QiLingPhoenix-RefinedCandidate.mdx",
+    "source/PhoenixBody.blp",
+    "source/PhoenixHead.blp",
+    "source/display-contract.json"
+  ],
+  "command": "scripts/rebuild.sh",
+  "dependencyPins": {
+    "mdx-m3-viewer": "5.7.9",
+    "typescript": "4.9.5"
+  },
+  "noProductionWrites": true
+}

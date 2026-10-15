@@ -1,0 +1,11 @@
+{
+  "status": "REUSED_IDENTICAL_PACKED_RUNTIME",
+  "baselineCommit": "163b613d5d52a7190c9db3bf0b61b62658feaca7",
+  "finalMapSha256": "85122ec2ac7fc61d9eb8d945ffc3014369c53327dfbca9388b0e2130c29902ac",
+  "jassByteIdentical": true,
+  "jassSha256": "55731ea0f66390da225c745cfb6483afbb1b3b777dfd89d6b983f59392504f06",
+  "priorArcherEvidence": "docs/validation/2026-10-15-archer-native-flow/target-priority-archer-native.json",
+  "priorNativeAttackEvidence": "docs/validation/native-pet-attacks-20261015/artifact-report.json",
+  "freshRuntimeReplayStatus": "A redundant display replay was started, then stopped after byte identity was established; it is not reported as a new PASS. The chained archer replay was not started.",
+  "freshEvidence": "All final MDX/BLP, animation-index contracts, actual MPQ object/resource references and exact allowed umdl/usca deltas were freshly verified."
+}

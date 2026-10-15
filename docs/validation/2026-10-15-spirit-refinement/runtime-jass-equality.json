@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "jassByteIdentical": true,
+  "baselineSha256": "55731ea0f66390da225c745cfb6483afbb1b3b777dfd89d6b983f59392504f06",
+  "finalSha256": "55731ea0f66390da225c745cfb6483afbb1b3b777dfd89d6b983f59392504f06",
+  "baselineBytes": 2875451,
+  "finalBytes": 2875451
+}

@@ -1,0 +1,746 @@
+{
+  "version": 1,
+  "species": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "baseline": "163b613d5d52a7190c9db3bf0b61b62658feaca7",
+  "inputs": [
+    {
+      "path": "assets/source/elemental-spirits/display-animations.cjs",
+      "sha256": "b1fc2cf215fad3e15ad40a9147d82193f913302e5a69b5c3c2ecd90981b7e3f2",
+      "bytes": 13390
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/BoulderArmGibbon/build_earth_gibbon.py",
+      "sha256": "8deb58a53caa1948944ffe860f550952c3227bb9668e883ba6cef3f87f03867c",
+      "bytes": 5115
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/BoulderArmGibbon/export_validate.cjs",
+      "sha256": "4e87d25e9e7db0dca31b5c3f6bbec1dc78bbc4d5a0d1baba26707ad977b0b091",
+      "bytes": 8280
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/BoulderArmGibbon/original/atlas-refined-imagegen.png",
+      "sha256": "a71c536980b5a8022e7129fb5cbcb557ab9a4d9d416665f25d6ecb1bd95c6b22",
+      "bytes": 2406159
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/BoulderArmGibbon/primitives.py",
+      "sha256": "5c88b4141b5424bf3514f4985aacdf86a4873ed027b8ab7a53b8d06d43f42de6",
+      "bytes": 3139
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/FrostFinManta/build_frostmanta.py",
+      "sha256": "361020b74431766d0a6d2c70e0da3c0a581658be86b79775e31f0d02c002fd88",
+      "bytes": 5961
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/FrostFinManta/export_validate.cjs",
+      "sha256": "512385ecac1ac28c6be71c4c7fa907b315674cc1a3808c8e7457aca8a266fec1",
+      "bytes": 8550
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/FrostFinManta/original/atlas-refined-imagegen.png",
+      "sha256": "219bf0dfb7fa9c686077d36828980a6604a2b35c8ed3133ed6b9b701eff561f0",
+      "bytes": 2087662
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/FrostFinManta/primitives.py",
+      "sha256": "c67eee08657c9ad230afe09400c8d4dea1c43b204a3697bdd5799ac199a8725f",
+      "bytes": 3105
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/RockShellTurtle/build_rockturtle.py",
+      "sha256": "0b5476e19a713d3b1db7ede79a2e3a0fefc9a26ebad0fb775289fb2bd6610878",
+      "bytes": 9589
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/RockShellTurtle/export_validate.cjs",
+      "sha256": "f835fc664d7b2b36475435c19c9dfcdd56dfc63f12fc31d6f41c478a37179306",
+      "bytes": 8240
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/RockShellTurtle/original/atlas-refined-imagegen.png",
+      "sha256": "b6d179ad72af8d8db70ca196ed412c1d9fa267a4f9e2f8282e392398061c6e29",
+      "bytes": 2512184
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/SandSpiralSnail/build_earth_snail.py",
+      "sha256": "c7cb96a1bdc511d87bfa9ec4e7de010068381b247c46998dbe7adca9ac41b8b7",
+      "bytes": 4608
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/SandSpiralSnail/export_validate.cjs",
+      "sha256": "7acfad0a2732d3bcf2bf4b645be4d173a4d0a1a11a9e702faf2a02eaf8b408ce",
+      "bytes": 8275
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/SandSpiralSnail/original/atlas-refined-imagegen.png",
+      "sha256": "20fac46958e7155d398f1272eaa763b9929c4745ead817203c0f38e7da1a68a3",
+      "bytes": 2645317
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/SandSpiralSnail/primitives.py",
+      "sha256": "93830456d58a15c6a714d5573acf35b54de28d7e0826be05250fb3cd2bdb9054",
+      "bytes": 3113
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/SnowManeOtter/build_snowotter.py",
+      "sha256": "c4a11eb80fb0efa3bb29bb208087aed5da95f13557baedd44712a672e0947359",
+      "bytes": 5310
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/SnowManeOtter/export_validate.cjs",
+      "sha256": "b18c20ed8cf89aef8824328d927a7ed17a095a8fbe6d84bc41c2c231c57da733",
+      "bytes": 8545
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/SnowManeOtter/original/atlas-refined-imagegen.png",
+      "sha256": "9e30df0f12303eeb795865b8326c5c0ec8fcff98aa37b5ef71a7a27f309719fc",
+      "bytes": 2663546
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/SnowManeOtter/primitives.py",
+      "sha256": "7a5aa476c5800fcaf4bd09a32d919a20bdb180d15720e2b4b7b040d3c23effc0",
+      "bytes": 3089
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/TideWyrm/build_tidewyrm.py",
+      "sha256": "a0bf76b45dcbfcda3b671872b501f28670ee02a7b3cbf3d357e20d30613e2150",
+      "bytes": 5776
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/TideWyrm/export_validate.cjs",
+      "sha256": "5678ba07ee51b3bc46c5a3f36f084bbb3865785ec3c5d06efb3d5c8afeefd545",
+      "bytes": 8521
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/TideWyrm/original/atlas-refined-imagegen.png",
+      "sha256": "b35b9c3caef984a26aa05e351311d0e3a146893ca2efa4f6527fd63f4c2669fa",
+      "bytes": 2320208
+    },
+    {
+      "path": "assets/source/elemental-spirits/models/TideWyrm/primitives.py",
+      "sha256": "28befdb9d7673587d4d681962e134dfecd8c2a6c26117babd2cfe6b897b13a9a",
+      "bytes": 3115
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/BrassPangolin/atlas-imagegen.png",
+      "sha256": "8cb568e204f5d5aab290f6a372e42102081fc31853287466f9d3d7ec1c5f39fe",
+      "bytes": 2204142
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/BrassPangolin/input.blp",
+      "sha256": "3b5c0c69d621b60ad3a6452c28e41fac88bbb50bf2ec0848b01e95aae81982b5",
+      "bytes": 88561
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/BrassPangolin/input.mdx",
+      "sha256": "f8ba608398a59d2bd4a12d3363818dc11af76b7fca7ea03f69e68fe58f6b8514",
+      "bytes": 286592
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/BrassPangolin/parts-source.json",
+      "sha256": "eed311a038bb9cd8e410464f516d2156fc1f5c2bdf0cdbfd01796770c8ebe0c4",
+      "bytes": 168212
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/BrassPangolin/texture-provenance.json",
+      "sha256": "75c46c902c9b4d5d24624ddaad64b16c9dc6a5e7eedad4e6f6dfdebe400a56e2",
+      "bytes": 1871
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/LeafwingSpirit/atlas-imagegen.png",
+      "sha256": "e24a9f854f4685087722463a97143586beb7283ba877dc5bd605317da3be7dc3",
+      "bytes": 2046552
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/LeafwingSpirit/input.blp",
+      "sha256": "3aaa1f8c80611f1def57db646db97878e7405eecf41128ee34b539de312043f2",
+      "bytes": 88561
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/LeafwingSpirit/input.mdx",
+      "sha256": "015962f0bdd40391193fa207cee4d5b41cb358ccda78614eeadbebc9b305930d",
+      "bytes": 316376
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/LeafwingSpirit/parts-source.json",
+      "sha256": "3b909441f51d1c7538956650a68557bc62e4e2f7e177acc4cc853bfff0c963e1",
+      "bytes": 189542
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/LeafwingSpirit/texture-provenance.json",
+      "sha256": "8bf3cb8d1b86d0e773f04d7ff3fd9663bc44c0a8d5cffdd761278abaedceedb7",
+      "bytes": 1923
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/MosscapSprite/atlas-imagegen.png",
+      "sha256": "cba472d86a564b6b0d9de271f8da56c409b18eed2022440378c7c47f42dbaf86",
+      "bytes": 2085449
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/MosscapSprite/input.blp",
+      "sha256": "a0fe255bd0f7d3ef74ea7fa5e3c92a7603e4ef677fd948f6a3bcdbaff6ac4744",
+      "bytes": 88561
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/MosscapSprite/input.mdx",
+      "sha256": "9007639eb4f11095e4f2c0faa00eccdd4c206f9692066c853d7302bd33817ab9",
+      "bytes": 251540
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/MosscapSprite/parts-source.json",
+      "sha256": "baddbc5a971850dd5e5074410f41635ac8a864c2c29fbda5b7fa8762fe4fc523",
+      "bytes": 138726
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/MosscapSprite/texture-provenance.json",
+      "sha256": "b6ee446cd57a77cd39d21440c43f2fe2810ac43320b55261c9f9fd1b16ec8b19",
+      "bytes": 1974
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/RootbudStag/atlas-imagegen.png",
+      "sha256": "2046196a2291bed8427565c8c7552b261d6843b8fe19a6ab40674617f06014f2",
+      "bytes": 2131451
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/RootbudStag/input.blp",
+      "sha256": "937a3ec5a0541f0056cf1eb2297608ef1028a52ee550010b3539b5429b43fe4c",
+      "bytes": 88561
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/RootbudStag/input.mdx",
+      "sha256": "36aeedea98979a086be92f17995820d1a1c41c33d841b7d346745e6c56bcbcd0",
+      "bytes": 233654
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/RootbudStag/parts-source.json",
+      "sha256": "28ced63647e67f80f79ddda19797bb8c3bb5e28e11df1a1dc2eb1e9a79eec47a",
+      "bytes": 130764
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/RootbudStag/texture-provenance.json",
+      "sha256": "ddc174ab54d984a28c0598718f0e1c7ff6c46f4c288a0b312a3702fe3579ae67",
+      "bytes": 1923
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/SilverManeBeast/atlas-imagegen-preserved.png",
+      "sha256": "f7aa916784e040e01b7b871b2d8a7d6039c1fbbdde3918249d532b2f58d827cd",
+      "bytes": 1818669
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/SilverManeBeast/input.blp",
+      "sha256": "af713ae301a3dd2b5c83e2b9a128101e901119901301978d8f10e8f04f4084b2",
+      "bytes": 88561
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/SilverManeBeast/input.mdx",
+      "sha256": "7967acb75baacba9f14f71264dc11256674840927dd93134dd1d56983b89dbe4",
+      "bytes": 421506
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/SilverManeBeast/parts-source.json",
+      "sha256": "d0919f8605e9601e9e6db14239795c21b2aa1d17a8a6de11b6de6a749bf72cda",
+      "bytes": 313730
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/SilverManeBeast/texture-provenance.json",
+      "sha256": "9ef11fe702a6e1283acd47353b638377bdcbd4026866096615d57866ce02a95d",
+      "bytes": 568
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/SteelwingFalcon/atlas-imagegen.png",
+      "sha256": "73b658b0b646b44860608ab6a59a1a1ff051968bedcb0ce530c93ca91f5cfbe7",
+      "bytes": 2324019
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/SteelwingFalcon/input.blp",
+      "sha256": "76aea1a30bcc21f4eb828458afb53bdf24b1c77cae683e306fcd957d19f96e10",
+      "bytes": 88561
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/SteelwingFalcon/input.mdx",
+      "sha256": "9d08287cbfa64df2bc7b6cc5b32841fc0e40bd8ca1efd6f66b75484e7ce6455f",
+      "bytes": 236384
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/SteelwingFalcon/parts-source.json",
+      "sha256": "e532c7e8810ef3f1e8b157c5b414918486b7779715b19d054e0665b4ebfe0ce2",
+      "bytes": 149200
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/SteelwingFalcon/texture-provenance.json",
+      "sha256": "97112397787eaacef0b5443f3e40f9c49bc175abc008279a721fb4ba5dfd20c5",
+      "bytes": 1861
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/atlas-prompts.json",
+      "sha256": "f5bd7990779dbd257192a795df437e374e4ea71ecc9d4f9bb80de2130d696b08",
+      "bytes": 7482
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/config.json",
+      "sha256": "4113b1bef45c2ed429edf770a6ecd58b906a6c296c56433a74fe891a639b2420",
+      "bytes": 4540
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-a/display-animations-pinned.cjs",
+      "sha256": "b1fc2cf215fad3e15ad40a9147d82193f913302e5a69b5c3c2ecd90981b7e3f2",
+      "bytes": 13390
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/fox/art/CinderFoxAtlas-imagegen-v1.png",
+      "sha256": "358a490076ca8d108e0541f5ec90635cbf1037b1dad335bfe253fa201a965169",
+      "bytes": 2042098
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/fox/art/imagegen-prompt.txt",
+      "sha256": "d8541f1586dab7441604953c2158e3c846b1632c9ffaca2e87606aaa95d2a63d",
+      "bytes": 2086
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/fox/source/CinderFoxAtlas.blp",
+      "sha256": "c3008040004ce6a06d03b900ac7c040f3ce5b533a50b20da844aca77ebf03a99",
+      "bytes": 88561
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/fox/source/CinderTailFox.mdx",
+      "sha256": "4923fde2dc40d971cb320d1c63697986dde93c7b3b885a565c417045a66df914",
+      "bytes": 398240
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/fox/source/source-pin.json",
+      "sha256": "650cbaa3b78979e420099167c2830f9548cd22955117c57daa4a04fccfe5b303",
+      "bytes": 322
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/salamander/art/MoltenHornAtlas-imagegen-v1.png",
+      "sha256": "e8b88d41677a902e35fb28e758aac2b1cc1f2c5c8f6aa1c7cb2a8c6f836b4164",
+      "bytes": 2296321
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/salamander/art/imagegen-prompt.txt",
+      "sha256": "ba9e68248e338d871cc29792b832e94a31cd2fcd1d45356e94999810818befa6",
+      "bytes": 2233
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/salamander/source/MoltenHornAtlas.blp",
+      "sha256": "752a7c5fb18397e4cff06e30b9fc99ce52d555fd2388cf7b203c0accaa4fa676",
+      "bytes": 88561
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/salamander/source/MoltenHornSalamander.mdx",
+      "sha256": "bb9bc585505dc6849cc05574b7367ec361183502e204290d4ede9e981cfbc822",
+      "bytes": 367652
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/salamander/source/source-pin.json",
+      "sha256": "add8b9381205fb8d0aa2ee2e1e41b315cf882991c9bdd567974f249adc7eba73",
+      "bytes": 330
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/tools/mdx_decode.py",
+      "sha256": "0e8cadddfd64470e0415ef2d4ea73664045fe5e70954710c84902d4ca3f83842",
+      "bytes": 11450
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/batch-c-fire/tools/rebuild_fire_textures.py",
+      "sha256": "5a4e469eab8813beeb4e7427f99467193306f9c65960fa67b8e6c8a927ea5777",
+      "bytes": 4799
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/apply_extents.cjs",
+      "sha256": "d3481d8ccb70149052b18b064e64ec55e713cc1ebbf4b069ee9ed6dab00b0e0a",
+      "bytes": 2645
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/audit_effects.py",
+      "sha256": "310b75bad76d4b76573b96600456761e8dcb188707d83efc98f8825533d9d4ef",
+      "bytes": 8317
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/audit_phoenix.py",
+      "sha256": "a462d2a6903cec7d23ab68a5d2bad280b55e5acbd6dfedfa47952ba7616576ff",
+      "bytes": 11736
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/build_compact.cjs",
+      "sha256": "624602f5da0661c8d56d2a765876f8253c45133ec00c1bb38d574c1436303480",
+      "bytes": 5554
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/make_contact_sheet.py",
+      "sha256": "bbb0689bcbf073fdcb682287a65c3b1d8ca1d57d5ed8b7413627ad76f0968636",
+      "bytes": 1198
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/mdx_decode.py",
+      "sha256": "596d01c2cd341cc8a7f29fe35210517dfb788b96fe98ffdfe0611e465ae0cf14",
+      "bytes": 11396
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/parser.cjs",
+      "sha256": "56ea6bcd78e329629733f80c31031845dd04e77ec554634c121e122b98abb0ae",
+      "bytes": 1224
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/rebuild.sh",
+      "sha256": "cc2f5746e4b9f74e3d42dc8816931491ac6ac4fd16c7462becb349324be91752",
+      "bytes": 445
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/render_contract.py",
+      "sha256": "fd1a723744fa62caad4d7c883cce0b25baf86630b2d87c9e7fd9bbd0cc7fd5ab",
+      "bytes": 12036
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/scripts/verify_compact.cjs",
+      "sha256": "19aa70cd14620acddce0be5f99755cc80bc8ac38601fb4f2ac004a3448da127f",
+      "bytes": 4640
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/source/CREDITS.md",
+      "sha256": "c6496e8f2ba6206c786e89adb9c6f4c0109b21200285d78364df8fdb5e71f242",
+      "bytes": 2236
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/source/QiLingPhoenix-RefinedCandidate.mdx",
+      "sha256": "a06cdd7e302db85f7489f65592d01c0c519cde07b2118b4ef96a7d1ed5649a86",
+      "bytes": 138165
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/source/display-contract.json",
+      "sha256": "3b4f40214f80cce23ccd6f8231e59569080ab86e0b4d3f45566342678ed1b721",
+      "bytes": 3164
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/README.md",
+      "sha256": "7a75bced69abe252366cdad2430fcc57a93d7ddb96879da3cccb88c39d5938f9",
+      "bytes": 2427
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/PhoenixBody.png",
+      "sha256": "306e12f3fe856fbd9bedcedc93b87783f01f5c2dc056831dd32831a04709d49b",
+      "bytes": 363734
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/PhoenixHead.png",
+      "sha256": "931266c7d28e8e1a9d3298e31558cede45f825f9b8953b4f17b5d7702b83c228",
+      "bytes": 55428
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/phoenix-body-imagegen-v1.png",
+      "sha256": "f97fa9f130af2ba267383b82c06cac2cea4a7a924ee784498f383995433d2ddb",
+      "bytes": 1781234
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/phoenix-body-imagegen-v2.png",
+      "sha256": "b317aa05953b247dce19f6cbcfbe6ccb965ee95afa8d3cad79475f771956ef35",
+      "bytes": 1830593
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/phoenix-body-imagegen-v3.png",
+      "sha256": "0e606a444a79be5b4997b660875029e014b6351f157817f9de37171413278c93",
+      "bytes": 1794531
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/phoenix-body-imagegen-v4.png",
+      "sha256": "9ad0c27089ab77d1163ba816bbdf54bd11bf10ea400cd06c0b0eb3a2499226c5",
+      "bytes": 1825763
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/art/phoenix-head-imagegen-v1.png",
+      "sha256": "a1683e973eb67933fcd6dfb97fbec37057e0607c732c9efd50815c05fdb59435",
+      "bytes": 1352689
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/body-v1-prompt.txt",
+      "sha256": "75f85f229fded6030b0e342f7e3e7b4c286f05a0eaa2a4eb2c9357b104136941",
+      "bytes": 2305
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/body-v2-prompt.txt",
+      "sha256": "64a758f73736a3d21af89c48e9213614a364ab0a1391c2a044c66c192fdfda9a",
+      "bytes": 2289
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/body-v3-prompt.txt",
+      "sha256": "4c0b8ee64768f25c1aabc4bbf745463d803dcb18af8460c0a17ffd125eae7987",
+      "bytes": 2461
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/body-v4-prompt.txt",
+      "sha256": "015159f4eae97a87d89c4078e981adef1e7cb663a7d0289694af16cf2b7e2151",
+      "bytes": 1540
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/head-v1-prompt.txt",
+      "sha256": "ec95ec7bb65fdb271696230ebc23b76c70ec8addaa7d24cafea6bada5c7cc965",
+      "bytes": 2031
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/original-model-readme.html",
+      "sha256": "e32a56619617d5ba4fdfd3400c52b0e3fbaa70d84199d6743adc2664bcfc6527",
+      "bytes": 4385
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/texture-provenance-original.json",
+      "sha256": "4b6bc2812801aec14550714dc15ae466fdaf458ad4fd46464ed7aef683ffd704",
+      "bytes": 4421
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/provenance.json",
+      "sha256": "c64ad5419859c66a7f71a639134682f3796132bf61d99ecf91586bd843f40572",
+      "bytes": 3561
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/scripts/rebuild_textures.py",
+      "sha256": "4f9a94351494ed49d286246531e8f583a159b7c5359646c4ee8342094d53cc13",
+      "bytes": 4078
+    },
+    {
+      "path": "assets/source/elemental-spirits/refinement-20261015/wild-phoenix.json",
+      "sha256": "183a08cea2b9f8641fd64ef0f034d8e0c0b8452ecabf14b18e6e2041ead0e9d8",
+      "bytes": 1178
+    },
+    {
+      "path": "tools/BuildFireTextureRefinements.py",
+      "sha256": "fa672217591cc45e61456607496e94e06f3a7f01acee6ffef29294b54848bf22",
+      "bytes": 875
+    },
+    {
+      "path": "tools/BuildPhoenixRefinement.py",
+      "sha256": "368d5dcefe4da2c2c13f7e7fbd7c899563a4190f326c7b6040f64eb002899edd",
+      "bytes": 1195
+    },
+    {
+      "path": "tools/BuildWaterEarthRefinements.py",
+      "sha256": "8ca3700bcd9de4ac1eeb8cd5304fb891195ce38d55b0bc6897e05ab448ebd0a5",
+      "bytes": 1724
+    },
+    {
+      "path": "tools/BuildWildPhoenixVariant.cjs",
+      "sha256": "e7dd1dd43b41198338e4fe1c8a88968e9500065910ee724a8c27757a21f9bf1e",
+      "bytes": 7047
+    },
+    {
+      "path": "tools/EncodeWaterEarthAtlas.py",
+      "sha256": "f3c5bcc17beb331b5e638b172933181fc0d748fc11bffa783869f4cc2557127f",
+      "bytes": 806
+    },
+    {
+      "path": "tools/RebuildMetalWoodRefinement.cjs",
+      "sha256": "030ec54a5e8dc30c3de6e5a71158c21efb202cc22f9b9c7770242d0665476196",
+      "bytes": 8066
+    },
+    {
+      "path": "tools/RebuildMetalWoodRefinement.py",
+      "sha256": "953df54897b5b36f6f103115db82ffdf946bc6d2d884b491fc6436f57f39b674",
+      "bytes": 1797
+    }
+  ],
+  "commands": [
+    [
+      "python3",
+      "tools/RebuildMetalWoodRefinement.py"
+    ],
+    [
+      "node",
+      "tools/RebuildMetalWoodRefinement.cjs"
+    ],
+    [
+      "python3",
+      "tools/BuildWaterEarthRefinements.py"
+    ],
+    [
+      "python3",
+      "tools/BuildFireTextureRefinements.py"
+    ],
+    [
+      "python3",
+      "tools/BuildPhoenixRefinement.py"
+    ],
+    [
+      "node",
+      "tools/BuildWildPhoenixVariant.cjs"
+    ]
+  ],
+  "outputs": [
+    {
+      "path": "imports/QiLingPhoenix/PhoenixBody.blp",
+      "sha256": "d5a9f8ee5bb4c666b88692e81ca0c17e33e394041771dedf136f06bcc5850c1b",
+      "bytes": 700230
+    },
+    {
+      "path": "imports/QiLingPhoenix/PhoenixHead.blp",
+      "sha256": "3631ae3bbd1c299fea419f9468278f9ebfd0eba5bd90805262bc7eb1ea4412c0",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/BoulderArmAtlas.blp",
+      "sha256": "f69b1112c994666f1bde1d28f432999f167a5378fce2a8dc266f4da220eb8a49",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/BrassPangolinAtlas.blp",
+      "sha256": "3d97d8231f45855b94f379196dbb915715c1ad0d0b68bfb4b019e72137cc004a",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/CinderFoxAtlasRefined.blp",
+      "sha256": "ac5f428016a304f9372218dbeb3268d8241e9cf6f135f8daf30d08b7eeddfbd9",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/FrostMantaAtlas.blp",
+      "sha256": "20f22cd0bda21f767a605eb05081370e5ba691b3c985bea1096a72fda5dbb923",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/LeafwingAtlas.blp",
+      "sha256": "0e42dbff34c8f5c241cd78352bcfd4855ed918b1f3af243c735a6a773b072e09",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/MoltenHornAtlasRefined.blp",
+      "sha256": "b78ce151a167c1c2b405b0c33b0a3f127a7fd786870c915dc605068345686634",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/MosscapAtlas.blp",
+      "sha256": "1018356b6848c118d65ca3a21824738a05e5cd7842764c463183251627fe71aa",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/RockTurtlePalette.blp",
+      "sha256": "31a198b634dff77a391b1e79ee419df71260b8f4b862edefadf1410a9452dfd3",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/RootbudAtlas.blp",
+      "sha256": "e74bc3916a1d8ee404b656eccca7a831972ea572a0e021745c91061187cc026b",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/SandSpiralAtlas.blp",
+      "sha256": "30f67608c7a8632040ab5d7d1e54eed4b33b1d5d4fb42bedb36a89f1ffecdcc5",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/SilverManeAtlas.blp",
+      "sha256": "af713ae301a3dd2b5c83e2b9a128101e901119901301978d8f10e8f04f4084b2",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/SnowOtterAtlas.blp",
+      "sha256": "89ebaa4560b719c9bd70aba2b189c38a2d3bad11f1eb24d760dcb9845d129405",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/SteelwingAtlas.blp",
+      "sha256": "4e355fb0f89e60776db08f1d542fe2e019f3641aef52a9bf9df8f9498e70c1ac",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/Textures/TideWyrmAtlas.blp",
+      "sha256": "e5349b89e0871238dbb40e509134df591b834f89672a9ff7701528203c0b825a",
+      "bytes": 88561
+    },
+    {
+      "path": "imports/war3mapImported/BoulderArmGibbon.mdx",
+      "sha256": "50c03400fc4e41aa5dbefd03d4d781e058b1d7839f72df13065bcd31608c7c56",
+      "bytes": 326282
+    },
+    {
+      "path": "imports/war3mapImported/BrassPangolin.mdx",
+      "sha256": "bd6c40dfc279ac16fa89778c30aed64cd73659533fa83ef670da4c2e1a71e20b",
+      "bytes": 286592
+    },
+    {
+      "path": "imports/war3mapImported/CinderTailFox.mdx",
+      "sha256": "638d1a5a0357ca8129d50315a3a3697a142b939a46ce7a55640ed73884f1af30",
+      "bytes": 398240
+    },
+    {
+      "path": "imports/war3mapImported/EmberBird.mdx",
+      "sha256": "c4c41bd7f384f64e4dbf575681791f9ea08358ad3770b7ed3d47a341bf3f67a7",
+      "bytes": 124409
+    },
+    {
+      "path": "imports/war3mapImported/EmberBirdWild.mdx",
+      "sha256": "fb49e2a75d804715eb97392afcc4819d0b3c5554c223920949231d76769cb4d6",
+      "bytes": 94589
+    },
+    {
+      "path": "imports/war3mapImported/FrostFinManta.mdx",
+      "sha256": "68b30a548cebde083f109769295dc69f543ca02aa1536649375588cbd94e313b",
+      "bytes": 250730
+    },
+    {
+      "path": "imports/war3mapImported/LeafwingSpirit.mdx",
+      "sha256": "046de3d842fe97b5838c3142a9b9d56320c4e706878c6753adfc650d6ca7cbf2",
+      "bytes": 316376
+    },
+    {
+      "path": "imports/war3mapImported/MoltenHornSalamander.mdx",
+      "sha256": "6f4b8d8b6aadae57ba4a159df615ef5693058bfdd3f8740e810d1914a9503592",
+      "bytes": 367652
+    },
+    {
+      "path": "imports/war3mapImported/MosscapSprite.mdx",
+      "sha256": "9ad4bef1963a9f7afd0dbe8280863d9a1cd3ee785f8e391f6fc990a8b2a557ed",
+      "bytes": 251540
+    },
+    {
+      "path": "imports/war3mapImported/RockShellTurtle.mdx",
+      "sha256": "22b5df4b1cab01ecfc80d165583d3417900d79c62fd7ad9de10cafbfdfc597cf",
+      "bytes": 304524
+    },
+    {
+      "path": "imports/war3mapImported/RootbudStag.mdx",
+      "sha256": "c5d50f0f8b21af69f7f92aed21cc577b94c26ef778323732570deeda27552927",
+      "bytes": 233654
+    },
+    {
+      "path": "imports/war3mapImported/SandSpiralSnail.mdx",
+      "sha256": "b10586173fa61c6c35e128c62a84d68111b7b692c8b8dfd1d5ec5f4fe846a413",
+      "bytes": 300068
+    },
+    {
+      "path": "imports/war3mapImported/SilverManeBeast.mdx",
+      "sha256": "bf3626033ff16ae865ebd84a08573732e9666029d48d6fc2273c82d208bfc130",
+      "bytes": 421506
+    },
+    {
+      "path": "imports/war3mapImported/SnowManeOtter.mdx",
+      "sha256": "a57719a74b1d3fec4aee403f638320ee998bd0110a808ddceb356610c93b7c6d",
+      "bytes": 314102
+    },
+    {
+      "path": "imports/war3mapImported/SteelwingFalcon.mdx",
+      "sha256": "1f80c6d9fc4006d1229a6f97c3e88a02a4bdf8cf056fdf6f78bdec770219ce23",
+      "bytes": 236384
+    },
+    {
+      "path": "imports/war3mapImported/TideWyrm.mdx",
+      "sha256": "5540b3f152e38012d32a3935a4a5bed55ad4ec8b0433d9ec71ad2de0af903608",
+      "bytes": 308438
+    }
+  ]
+}

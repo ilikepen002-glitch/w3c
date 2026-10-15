@@ -16,8 +16,10 @@ ellipsoid('square short muzzle',(23,0,55),(8,9,6),4,2,n=8,k=4)
 ellipsoid('wide flat dark nose',(29,0,59),(2.6,6.5,3.2),0,2,n=8,k=3)
 tube('heavy continuous muzzle seam',[(27,-7,53),(30,0,52),(27,7,53)],[.5,.6,.5],0,2,n=5)
 for s in [-1,1]:
- ellipsoid('small inset eye '+str(s),(23,s*7.8,65),(2.2,1.8,1.2),0,2,n=8,k=3)
- ellipsoid('amber narrow iris '+str(s),(24.2,s*8,65),(.6,1.05,.7),14,2,n=6,k=3)
+ ellipsoid('small inset eye '+str(s),(23,s*7.8,65),(2.5,2.1,1.5),0,2,n=8,k=3)
+ ellipsoid('amber narrow iris '+str(s),(24.5,s*8,65),(.85,1.6,1.05),14,2,n=6,k=3)
+ ellipsoid('obsidian pupil '+str(s),(25.2,s*8,65.1),(.3,.7,.8),13,2,n=6,k=3)
+ ellipsoid('gold eye catchlight '+str(s),(25.48,s*8.2,65.55),(.18,.3,.3),15,2,n=6,k=3)
  tube('great crag brow '+str(s),[(22,s*2,69),(23,s*7,69),(18,s*12,67)],[3.2,3.6,2.4],3,2,n=6)
  ellipsoid('small round earth ear '+str(s),(8,s*13,63),(4,3.5,5),2,2,n=8,k=3)
  leaf('low crown stone '+str(s),(8,s*6,73),(2,s*10,80),4,10,2,bend=0,normal_hint=(1,0,0))
@@ -66,20 +68,7 @@ for bi,b in enumerate(bones):
    for tag,val in [('KGTR',tr),('KGRT',rot),('KGSC',sc)]:tracks[tag].append([t,val])
  b['tracks']=tracks
 (OUT/'earth_gibbon-source.json').write_text(json.dumps(dict(name='BoulderArmGibbon_Original_v1',version=800,parts=parts,bones=bones,sequences=[dict(name=n,start=a,end=z,loop=lo) for n,a,z,lo in seqs],palette=colors)))
-rng=np.random.default_rng(4527);atlas=Image.new('RGB',(256,256));Y,X=np.mgrid[0:64,0:64];xx=X/63;yy=Y/63
-for k,base in enumerate(colors):
- noise=Image.fromarray(rng.integers(0,255,(8,8),dtype=np.uint8)).resize((64,64),Image.Resampling.BICUBIC).filter(ImageFilter.GaussianBlur(1));grain=(np.asarray(noise).astype(float)-128)/128;light=1.17-.29*yy-.10*xx+grain*.075
- if k>=13:light=np.ones((64,64))
- tile=Image.fromarray(np.clip(np.array(base)[None,None,:]*light[:,:,None],0,255).astype(np.uint8));d=ImageDraw.Draw(tile)
- if k in [3,4,8,9,10,11,12]:
-  for pts in [[(7,17),(26,24),(31,43),(53,50)],[(26,24),(41,9)],[(31,43),(16,55)]]:
-   d.line(pts,fill=tuple(int(v*.55) for v in base),width=2);d.line([(x+1,y-2) for x,y in pts],fill=tuple(min(255,int(v*1.19)) for v in base),width=1)
- elif k in [1,2,5,6,7]:
-  for y in [8,25,42]:
-   for x in range(7,59,12):d.line([(x,y),(x-2,y+10),(x+1,y+14)],fill=tuple(int(v*.67) for v in base),width=1)
- atlas.paste(tile,((k%4)*64,(k//4)*64))
-atlas.save(OUT/'BoulderArmAtlas_source.png');quant=atlas.quantize(colors=256,method=Image.Quantize.MEDIANCUT);pal=quant.getpalette();offsets=[0]*16;sizes=[0]*16;blobs=[];off=1180
-for i in range(9):
- sz=max(1,256>>i);idx=atlas.resize((sz,sz),Image.Resampling.BOX).quantize(palette=quant,dither=Image.Dither.NONE).tobytes();offsets[i]=off;sizes[i]=len(idx);off+=len(idx);blobs.append(idx)
-(OUT/'BoulderArmAtlas.blp').write_bytes(b'BLP1'+struct.pack('<6I',1,0,256,256,5,1)+struct.pack('<16I',*offsets)+struct.pack('<16I',*sizes)+b''.join(bytes([pal[i*3+2],pal[i*3+1],pal[i*3],255]) for i in range(256))+b''.join(blobs))
-print(json.dumps({'triangles':sum(len(p['faces']) for p in parts),'bones':len(bones)}))
+
+# Refined atlas is the persisted built-in imagegen output. Resize/BLP encoding only.
+import runpy
+runpy.run_path(str(ROOT.parents[4]/'tools/EncodeWaterEarthAtlas.py'))['encode'](OUT/'atlas-refined-imagegen.png',OUT/'BoulderArmAtlas_source.png',OUT/'BoulderArmAtlas.blp')

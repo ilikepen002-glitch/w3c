@@ -263,8 +263,8 @@ function listCommand(AbilityDefinitionIllidanChannel listAbility, int cell, stri
 			..setIconGameInterface(tdPetSpeciesIconPath(species))
 			..setIconScoreScreen(tdPetSpeciesIconPath(species))
 			..setDescription("本路中立无敌停留180秒，仅可捕获。")
-			..setModelFile(tdPetModel(species))
-			..setScalingValue(2.55)
+			..setModelFile(species == 10 ? "war3mapImported\\EmberBirdWild.mdx" : tdPetModel(species))
+			..setScalingValue(species == 10 ? 1.375348 : 2.55)
 			// Calibrate the one-second Walk cycle for the large model at 120–150 move speed.
 			// Animation reference speeds are scale-1 values, not gameplay movement speeds.
 			..setAnimationWalkSpeed(50.0)

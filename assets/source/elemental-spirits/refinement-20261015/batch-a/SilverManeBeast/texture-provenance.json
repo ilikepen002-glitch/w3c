@@ -1,0 +1,14 @@
+{
+  "generator": "built-in imagegen",
+  "generatedForThisPass": false,
+  "sourceImage": "atlas-imagegen-preserved.png",
+  "sourceImageSha256": "f7aa916784e040e01b7b871b2d8a7d6039c1fbbdde3918249d532b2f58d827cd",
+  "sourceDimensions": [
+    1254,
+    1254
+  ],
+  "prompt": "Preserve approved original SilverManeAtlas_painted.png and original BLP byte-for-byte.",
+  "conversion": "Pillow RGB resizing only to 256x256; 256-color palette BLP1; opaque; 9 mipmaps. No program-painted pixels.",
+  "date": "2026-10-15",
+  "outputTexturePath": "Textures\\SilverManeAtlas.blp"
+}

@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "transaction": "/workspace/shared/w3c-spirit-refinement-integration/_build/linux-s7g2zpc2",
+  "mode": "build",
+  "parentCommit": "163b613d5d52a7190c9db3bf0b61b62658feaca7",
+  "compilerSha256": "7d8cff387b98a4d1b3ad42a4b9f1b0829849c1c68abe2e794b776f5b110abac5",
+  "grillSha256": "c5afe67aa5eeabfb98f0ec2f3f0831d8ffc2f4199c26b89eb7418f14319f9f87",
+  "stdlibTree": "90b45617eda50c15703e8cb2ec3241d3c7b61816",
+  "jdkRuntime": "27+35-2325",
+  "activeCooldownSourceGate": "PASS",
+  "nativeMapScript": {
+    "sourceTemplateSha256": "ad702b6b5faa154f9416a9a3650303abfbbad4f7ff64794cecbeb51082f42304",
+    "scriptSha256": "95cb24509ca5210908221ac0edf0614529fb8d1fb681578fbcc0b4e8689ab75e",
+    "origin": "read-only war3map.j from exact source template, not a stub or inherited built map"
+  },
+  "dependencyMapping": {
+    "original": "- file:///E:/WurstToolchain/WurstStdlib2-source:pre1.29",
+    "temporary": "- file:///workspace/shared/w3c-spirit-refinement-integration/_build/linux-s7g2zpc2/stdlib-source/WurstStdlib2-source:pre1.29"
+  },
+  "activeCooldownArtifactGate": "real MPQ/JASS PASS",
+  "startupArtifactGate": "pet registration/routing and gameplay bootstrap PASS",
+  "artifact": {
+    "sha256": "85122ec2ac7fc61d9eb8d945ffc3014369c53327dfbca9388b0e2130c29902ac",
+    "importsChecked": 413,
+    "displayName": "契灵守卫战 20261015-1711-UTC+8",
+    "gate": "real read-only Python MPQ/JASS/object tables/import bytes",
+    "candidate": "/workspace/shared/w3c-spirit-refinement-integration/_build/linux-s7g2zpc2/project/_build/MyFirstWurstMap.w3x.w3x",
+    "output": "/workspace/shared/w3c-spirit-refinement-integration/ExampleMap.w3x"
+  },
+  "inputCount": 1914,
+  "inputInventorySha256": "f13313e6aad0a486c1058c878dcb51af38fba470eedf5528a1512b135c3dc4dd"
+}

@@ -159,46 +159,7 @@ for bi,b in enumerate(bones):
 
 data=dict(name='RockShellTurtle_Original_v2',version=800,parts=parts,bones=bones,sequences=[dict(name=n,start=a,end=b,loop=loop) for n,a,b,loop in seqs],palette=colors)
 (OUT/'rockturtle-source.json').write_text(json.dumps(data))
-# Original painted-style material atlas: geometry UVs address the tiles, not a preview filter.
-# Dedicated rock tiles 6/9 have edge shadows and fracture highlights. Crystal tiles 10..12
-# have dark roots, mineral bands and chips. Skin tiles have sparse reptile-scale strokes.
-rng=np.random.default_rng(20261013);atlas=Image.new('RGB',(256,256))
-Y,X=np.mgrid[0:64,0:64];xx=X/63.;yy=Y/63.
-for k,base in enumerate(colors):
-    coarse=Image.fromarray(rng.integers(0,255,(8,8),dtype=np.uint8)).resize((64,64),Image.Resampling.BICUBIC).filter(ImageFilter.GaussianBlur(1))
-    grain=(np.asarray(coarse).astype(float)-128)/128
-    lighting=1.12-.28*yy-.08*xx+grain*.075
-    if k in [6,9]:
-        edge=np.minimum.reduce([xx,1-xx,yy,1-yy]);lighting*=.58+.42*np.clip(edge/.18,0,1)
-        lighting+=.12*np.exp(-((yy-.22)/.16)**2)
-    if k in [10,11,12]:lighting=.60+.67*(1-yy)+.09*np.sin(xx*22+yy*7)+grain*.035
-    if k>=13:lighting=np.ones((64,64))
-    arr=np.clip(np.array(base)[None,None,:]*lighting[:,:,None],0,255).astype(np.uint8)
-    tile=Image.fromarray(arr);d=ImageDraw.Draw(tile)
-    if k in [6,9]:
-        cracks=[[(8,15),(20,22),(27,20),(34,29),(37,40),(47,49),(53,54)],[(37,40),(28,45),(22,54)],[(34,29),(43,24),(51,25)],[(5,42),(12,38),(18,40)]]
-        for pts in cracks:
-            d.line([(x+1,y+1) for x,y in pts],fill=tuple(min(255,int(v*1.2)) for v in base),width=2)
-            d.line(pts,fill=tuple(int(v*.40) for v in base),width=2)
-        for x,y in [(15,11),(40,15),(11,47),(48,42),(27,33)]:d.line((x,y,x+6,y-2),fill=tuple(min(255,int(v*1.24)) for v in base),width=1)
-    elif k in [2,3,4]:
-        for y in range(10,60,14):
-            for x in range(3+(y//14%2)*7,61,15):
-                d.arc((x,y,x+12,y+9),10,155,fill=tuple(int(v*.65) for v in base),width=1)
-                d.arc((x,y-1,x+12,y+8),10,150,fill=tuple(min(255,int(v*1.1)) for v in base),width=1)
-    elif k in [10,11,12]:
-        for x in [13,31,48]:
-            d.line([(x,8),(x+2,24),(x-2,44),(x+1,57)],fill=tuple(int(v*.6) for v in base),width=1)
-            d.line([(x+1,8),(x+3,24),(x-1,44)],fill=tuple(min(255,int(v*1.3)) for v in base),width=1)
-        d.line([(7,44),(26,39),(41,42),(58,36)],fill=tuple(int(v*.58) for v in base),width=2)
-    elif k in [7,8]:
-        for x in [15,31,47]:d.line([(x,9),(x-3,35),(x+1,56)],fill=tuple(int(v*.75) for v in base),width=1)
-    atlas.paste(tile,((k%4)*64,(k//4)*64))
-atlas.save(OUT/'RockTurtlePalette_source.png');quant=atlas.quantize(colors=256,method=Image.Quantize.MEDIANCUT);pal=quant.getpalette();offsets=[0]*16;sizes=[0]*16;blobs=[];off=156+1024
-for level in range(9):
-    sz=max(1,256>>level);p=atlas.resize((sz,sz),Image.Resampling.BOX).quantize(palette=quant,dither=Image.Dither.NONE);idx=p.tobytes()
-    offsets[level]=off;sizes[level]=len(idx);blobs.append(idx);off+=len(idx)
-header=b'BLP1'+struct.pack('<6I',1,0,256,256,5,1)+struct.pack('<16I',*offsets)+struct.pack('<16I',*sizes)
-palette=b''.join(bytes([pal[i*3+2],pal[i*3+1],pal[i*3],255]) for i in range(256))
-(OUT/'RockTurtlePalette.blp').write_bytes(header+palette+b''.join(blobs))
-print(json.dumps({'parts':len(parts),'triangles':sum(len(x['faces']) for x in parts),'bones':len(bones),'source':str(OUT/'rockturtle-source.json')}))
+
+# Refined atlas is the persisted built-in imagegen output. Resize/BLP encoding only.
+import runpy
+runpy.run_path(str(ROOT.parents[4]/'tools/EncodeWaterEarthAtlas.py'))['encode'](OUT/'atlas-refined-imagegen.png',OUT/'RockTurtlePalette_source.png',OUT/'RockTurtlePalette.blp')

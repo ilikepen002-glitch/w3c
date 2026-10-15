@@ -1,0 +1,435 @@
+{
+  "status": "PASS",
+  "source": {
+    "baseline": "163b613d5d52a7190c9db3bf0b61b62658feaca7",
+    "byteIdenticalGameplayAndTestSources": 233,
+    "onlyAllowedObjectSourceChange": "Species 10 wild model path and scale",
+    "newRuntimeTimersOrPerFrameCode": false,
+    "nativeArcherAttackAndCancelledPossessionAttackLooksPreserved": true
+  },
+  "models": [
+    {
+      "species": 1,
+      "name": "银鬃灵兽",
+      "modelSha256": "bf3626033ff16ae865ebd84a08573732e9666029d48d6fc2273c82d208bfc130",
+      "textures": [
+        {
+          "path": "Textures\\SilverManeAtlas.blp",
+          "sha256": "af713ae301a3dd2b5c83e2b9a128101e901119901301978d8f10e8f04f4084b2",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "ATCH",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 2,
+      "name": "锋翼隼",
+      "modelSha256": "1f80c6d9fc4006d1229a6f97c3e88a02a4bdf8cf056fdf6f78bdec770219ce23",
+      "textures": [
+        {
+          "path": "Textures\\SteelwingAtlas.blp",
+          "sha256": "4e355fb0f89e60776db08f1d542fe2e019f3641aef52a9bf9df8f9498e70c1ac",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 3,
+      "name": "铜甲穿山灵",
+      "modelSha256": "bd6c40dfc279ac16fa89778c30aed64cd73659533fa83ef670da4c2e1a71e20b",
+      "textures": [
+        {
+          "path": "Textures\\BrassPangolinAtlas.blp",
+          "sha256": "3d97d8231f45855b94f379196dbb915715c1ad0d0b68bfb4b019e72137cc004a",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 38
+    },
+    {
+      "species": 4,
+      "name": "叶翼仙灵",
+      "modelSha256": "046de3d842fe97b5838c3142a9b9d56320c4e706878c6753adfc650d6ca7cbf2",
+      "textures": [
+        {
+          "path": "Textures\\LeafwingAtlas.blp",
+          "sha256": "0e42dbff34c8f5c241cd78352bcfd4855ed918b1f3af243c735a6a773b072e09",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 5,
+      "name": "树芽鹿",
+      "modelSha256": "c5d50f0f8b21af69f7f92aed21cc577b94c26ef778323732570deeda27552927",
+      "textures": [
+        {
+          "path": "Textures\\RootbudAtlas.blp",
+          "sha256": "e74bc3916a1d8ee404b656eccca7a831972ea572a0e021745c91061187cc026b",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 6,
+      "name": "菌伞灵",
+      "modelSha256": "9ad4bef1963a9f7afd0dbe8280863d9a1cd3ee785f8e391f6fc990a8b2a557ed",
+      "textures": [
+        {
+          "path": "Textures\\MosscapAtlas.blp",
+          "sha256": "1018356b6848c118d65ca3a21824738a05e5cd7842764c463183251627fe71aa",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 7,
+      "name": "潮尾灵蛟",
+      "modelSha256": "5540b3f152e38012d32a3935a4a5bed55ad4ec8b0433d9ec71ad2de0af903608",
+      "textures": [
+        {
+          "path": "Textures\\TideWyrmAtlas.blp",
+          "sha256": "e5349b89e0871238dbb40e509134df591b834f89672a9ff7701528203c0b825a",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 8,
+      "name": "霜鳍灵鲼",
+      "modelSha256": "68b30a548cebde083f109769295dc69f543ca02aa1536649375588cbd94e313b",
+      "textures": [
+        {
+          "path": "Textures\\FrostMantaAtlas.blp",
+          "sha256": "20f22cd0bda21f767a605eb05081370e5ba691b3c985bea1096a72fda5dbb923",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 9,
+      "name": "雪鬃水獭",
+      "modelSha256": "a57719a74b1d3fec4aee403f638320ee998bd0110a808ddceb356610c93b7c6d",
+      "textures": [
+        {
+          "path": "Textures\\SnowOtterAtlas.blp",
+          "sha256": "89ebaa4560b719c9bd70aba2b189c38a2d3bad11f1eb24d760dcb9845d129405",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 10,
+      "name": "赤翎火鸟",
+      "modelSha256": "c4c41bd7f384f64e4dbf575681791f9ea08358ad3770b7ed3d47a341bf3f67a7",
+      "textures": [
+        {
+          "path": "QiLingPhoenix\\PhoenixBody.blp",
+          "sha256": "d5a9f8ee5bb4c666b88692e81ca0c17e33e394041771dedf136f06bcc5850c1b",
+          "bytes": 700230
+        },
+        {
+          "path": "QiLingPhoenix\\PhoenixHead.blp",
+          "sha256": "3631ae3bbd1c299fea419f9468278f9ebfd0eba5bd90805262bc7eb1ea4412c0",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [],
+      "replacementPhoenix": true,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 11,
+      "name": "熔角火蜥",
+      "modelSha256": "6f4b8d8b6aadae57ba4a159df615ef5693058bfdd3f8740e810d1914a9503592",
+      "textures": [
+        {
+          "path": "Textures\\MoltenHornAtlasRefined.blp",
+          "sha256": "b78ce151a167c1c2b405b0c33b0a3f127a7fd786870c915dc605068345686634",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 12,
+      "name": "烬尾火狐",
+      "modelSha256": "638d1a5a0357ca8129d50315a3a3697a142b939a46ce7a55640ed73884f1af30",
+      "textures": [
+        {
+          "path": "Textures\\CinderFoxAtlasRefined.blp",
+          "sha256": "ac5f428016a304f9372218dbeb3268d8241e9cf6f135f8daf30d08b7eeddfbd9",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 13,
+      "name": "岩壳龟",
+      "modelSha256": "22b5df4b1cab01ecfc80d165583d3417900d79c62fd7ad9de10cafbfdfc597cf",
+      "textures": [
+        {
+          "path": "Textures\\RockTurtlePalette.blp",
+          "sha256": "31a198b634dff77a391b1e79ee419df71260b8f4b862edefadf1410a9452dfd3",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 14,
+      "name": "磐臂山魈",
+      "modelSha256": "50c03400fc4e41aa5dbefd03d4d781e058b1d7839f72df13065bcd31608c7c56",
+      "textures": [
+        {
+          "path": "Textures\\BoulderArmAtlas.blp",
+          "sha256": "f69b1112c994666f1bde1d28f432999f167a5378fce2a8dc266f4da220eb8a49",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    },
+    {
+      "species": 15,
+      "name": "砂环灵螺",
+      "modelSha256": "b10586173fa61c6c35e128c62a84d68111b7b692c8b8dfd1d5ec5f4fe846a413",
+      "textures": [
+        {
+          "path": "Textures\\SandSpiralAtlas.blp",
+          "sha256": "30f67608c7a8632040ab5d7d1e54eed4b33b1d5d4fb42bedb36a89f1ffecdcc5",
+          "bytes": 88561
+        }
+      ],
+      "preservedRigAnimationChunks": [
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "replacementPhoenix": false,
+      "packedUnitModelReferences": 37
+    }
+  ],
+  "packedModelPairsVerified": 15,
+  "packedUnitModelReferences": 556,
+  "modelBytes": 4440497,
+  "triangles": 29919,
+  "uniqueCustomTextureBytes": 2028645,
+  "nativeTextureBoundary": [
+    {
+      "species": 10,
+      "texture": {
+        "path": "Textures\\Yellow_Glow3.blp",
+        "replaceableId": 0,
+        "kind": "external-native-unverified"
+      }
+    },
+    {
+      "species": 10,
+      "texture": {
+        "path": "units\\Human\\Phoenix\\TeleportTarget.blp",
+        "replaceableId": 0,
+        "kind": "external-native-unverified"
+      }
+    },
+    {
+      "species": 10,
+      "texture": {
+        "path": "units\\Human\\Phoenix\\Egg1.blp",
+        "replaceableId": 0,
+        "kind": "external-native-unverified"
+      }
+    },
+    {
+      "species": 10,
+      "texture": {
+        "path": "Textures\\Red_Glow3.blp",
+        "replaceableId": 0,
+        "kind": "external-native-unverified"
+      }
+    },
+    {
+      "species": 10,
+      "texture": {
+        "path": "",
+        "replaceableId": 1,
+        "kind": "native-replaceable"
+      }
+    },
+    {
+      "species": 10,
+      "texture": {
+        "path": "units\\Human\\Phoenix\\RibbonNE1_Red.blp",
+        "replaceableId": 0,
+        "kind": "external-native-unverified"
+      }
+    },
+    {
+      "species": 10,
+      "texture": {
+        "path": "Textures\\Yellow_Glow2.blp",
+        "replaceableId": 0,
+        "kind": "external-native-unverified"
+      }
+    },
+    {
+      "species": 10,
+      "texture": {
+        "path": "Textures\\Shockwave1.blp",
+        "replaceableId": 0,
+        "kind": "external-native-unverified"
+      }
+    },
+    {
+      "species": 10,
+      "texture": {
+        "path": "Textures\\Red_star2.blp",
+        "replaceableId": 0,
+        "kind": "external-native-unverified"
+      }
+    },
+    {
+      "species": 10,
+      "texture": {
+        "path": "Textures\\Flame4.blp",
+        "replaceableId": 0,
+        "kind": "external-native-unverified"
+      }
+    }
+  ],
+  "boundary": "Source, final asset bytes, sampled poses and actual MPQ references only. Native Warcraft III 1.27a rendering, native dependencies, camera billboard behavior and FPS are not tested.",
+  "embeddedJohnwarCreditVerified": true,
+  "mapSha256": "85122ec2ac7fc61d9eb8d945ffc3014369c53327dfbca9388b0e2130c29902ac",
+  "mapBytes": 6769902,
+  "onlyAllowedObjectDifferences": {
+    "units": [
+      "p01A",
+      "p02A",
+      "p03A",
+      "p04A",
+      "p05A",
+      "p06A",
+      "p07A",
+      "p08A",
+      "p09A",
+      "p0AA",
+      "p0BA",
+      "p0CA",
+      "p0DA",
+      "p0EA",
+      "p0FA",
+      "p10A",
+      "p11A",
+      "p12A",
+      "p13A",
+      "p14A",
+      "p15A",
+      "p16A",
+      "p17A",
+      "p18A",
+      "p19A",
+      "p1AA",
+      "p1BA",
+      "p1CA",
+      "p1DA",
+      "p1EA",
+      "p1FA",
+      "p20A"
+    ],
+    "fields": [
+      "umdl",
+      "usca"
+    ]
+  },
+  "byteIdenticalObjectFiles": [
+    "war3map.w3a",
+    "war3map.w3t",
+    "war3map.w3h"
+  ]
+}

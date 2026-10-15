@@ -1,0 +1,543 @@
+{
+  "status": "PASS",
+  "sourceSha256": "c4c41bd7f384f64e4dbf575681791f9ea08358ad3770b7ed3d47a341bf3f67a7",
+  "outputSha256": "fb49e2a75d804715eb97392afcc4819d0b3c5554c223920949231d76769cb4d6",
+  "sourceBytes": 124409,
+  "outputBytes": 94589,
+  "zOffset": 73,
+  "wildScale": 1.375348,
+  "mainBodyGeosetIndices": [
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "changedCoordinateChunks": [
+    "MODL",
+    "SEQS",
+    "GEOS",
+    "GEOA",
+    "HELP",
+    "PIVT",
+    "PRE2",
+    "RIBB",
+    "CAMS"
+  ],
+  "unchangedChunkBytes": [
+    "VERS",
+    "GLBS",
+    "MTLS",
+    "TEXS",
+    "BONE",
+    "ATCH",
+    "EVTS",
+    "CLID"
+  ],
+  "retainedSequences": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "retainedStaticDataAndKeysTangentsExact": true,
+  "retainedTrackAudit": [
+    {
+      "path": "model.materials.1.layers.0",
+      "tag": "KMTA",
+      "before": 0,
+      "after": 0
+    },
+    {
+      "path": "model.geosetAnimations.0",
+      "tag": "KGAO",
+      "before": 10,
+      "after": 5
+    },
+    {
+      "path": "model.geosetAnimations.1",
+      "tag": "KGAO",
+      "before": 10,
+      "after": 5
+    },
+    {
+      "path": "model.geosetAnimations.2",
+      "tag": "KGAO",
+      "before": 10,
+      "after": 5
+    },
+    {
+      "path": "model.geosetAnimations.3",
+      "tag": "KGAO",
+      "before": 10,
+      "after": 5
+    },
+    {
+      "path": "model.geosetAnimations.4",
+      "tag": "KGAO",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.geosetAnimations.5",
+      "tag": "KGAO",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.geosetAnimations.6",
+      "tag": "KGAO",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.geosetAnimations.7",
+      "tag": "KGAO",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.geosetAnimations.8",
+      "tag": "KGAO",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.bones.1",
+      "tag": "KGTR",
+      "before": 0,
+      "after": 0
+    },
+    {
+      "path": "model.bones.1",
+      "tag": "KGRT",
+      "before": 0,
+      "after": 0
+    },
+    {
+      "path": "model.bones.1",
+      "tag": "KGSC",
+      "before": 0,
+      "after": 0
+    },
+    {
+      "path": "model.helpers.0",
+      "tag": "KGTR",
+      "before": 56,
+      "after": 29
+    },
+    {
+      "path": "model.helpers.0",
+      "tag": "KGRT",
+      "before": 25,
+      "after": 11
+    },
+    {
+      "path": "model.helpers.0",
+      "tag": "KGSC",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.helpers.1",
+      "tag": "KGRT",
+      "before": 28,
+      "after": 14
+    },
+    {
+      "path": "model.helpers.2",
+      "tag": "KGRT",
+      "before": 54,
+      "after": 30
+    },
+    {
+      "path": "model.helpers.3",
+      "tag": "KGRT",
+      "before": 51,
+      "after": 25
+    },
+    {
+      "path": "model.helpers.4",
+      "tag": "KGRT",
+      "before": 33,
+      "after": 17
+    },
+    {
+      "path": "model.helpers.5",
+      "tag": "KGRT",
+      "before": 78,
+      "after": 41
+    },
+    {
+      "path": "model.helpers.6",
+      "tag": "KGRT",
+      "before": 68,
+      "after": 35
+    },
+    {
+      "path": "model.helpers.7",
+      "tag": "KGRT",
+      "before": 69,
+      "after": 37
+    },
+    {
+      "path": "model.helpers.8",
+      "tag": "KGRT",
+      "before": 83,
+      "after": 43
+    },
+    {
+      "path": "model.helpers.9",
+      "tag": "KGRT",
+      "before": 0,
+      "after": 0
+    },
+    {
+      "path": "model.helpers.10",
+      "tag": "KGRT",
+      "before": 78,
+      "after": 41
+    },
+    {
+      "path": "model.helpers.11",
+      "tag": "KGRT",
+      "before": 68,
+      "after": 35
+    },
+    {
+      "path": "model.helpers.12",
+      "tag": "KGRT",
+      "before": 69,
+      "after": 37
+    },
+    {
+      "path": "model.helpers.13",
+      "tag": "KGRT",
+      "before": 69,
+      "after": 36
+    },
+    {
+      "path": "model.helpers.14",
+      "tag": "KGRT",
+      "before": 0,
+      "after": 0
+    },
+    {
+      "path": "model.helpers.15",
+      "tag": "KGRT",
+      "before": 24,
+      "after": 9
+    },
+    {
+      "path": "model.helpers.16",
+      "tag": "KGRT",
+      "before": 49,
+      "after": 25
+    },
+    {
+      "path": "model.helpers.17",
+      "tag": "KGRT",
+      "before": 62,
+      "after": 31
+    },
+    {
+      "path": "model.helpers.18",
+      "tag": "KGRT",
+      "before": 60,
+      "after": 29
+    },
+    {
+      "path": "model.helpers.19",
+      "tag": "KGRT",
+      "before": 63,
+      "after": 30
+    },
+    {
+      "path": "model.helpers.21",
+      "tag": "KGRT",
+      "before": 0,
+      "after": 0
+    },
+    {
+      "path": "model.helpers.22",
+      "tag": "KGRT",
+      "before": 0,
+      "after": 0
+    },
+    {
+      "path": "model.attachments.0",
+      "tag": "KGSC",
+      "before": 0,
+      "after": 0
+    },
+    {
+      "path": "model.attachments.0",
+      "tag": "KATV",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.attachments.1",
+      "tag": "KATV",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.attachments.2",
+      "tag": "KATV",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.attachments.3",
+      "tag": "KATV",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.attachments.4",
+      "tag": "KATV",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.attachments.5",
+      "tag": "KATV",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.attachments.6",
+      "tag": "KATV",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.particleEmitters2.0",
+      "tag": "KP2V",
+      "before": 10,
+      "after": 5
+    },
+    {
+      "path": "model.particleEmitters2.1",
+      "tag": "KP2V",
+      "before": 10,
+      "after": 5
+    },
+    {
+      "path": "model.particleEmitters2.2",
+      "tag": "KP2V",
+      "before": 10,
+      "after": 5
+    },
+    {
+      "path": "model.particleEmitters2.3",
+      "tag": "KP2V",
+      "before": 10,
+      "after": 5
+    },
+    {
+      "path": "model.particleEmitters2.4",
+      "tag": "KP2V",
+      "before": 10,
+      "after": 5
+    },
+    {
+      "path": "model.particleEmitters2.5",
+      "tag": "KP2V",
+      "before": 11,
+      "after": 6
+    },
+    {
+      "path": "model.particleEmitters2.6",
+      "tag": "KP2V",
+      "before": 11,
+      "after": 6
+    },
+    {
+      "path": "model.particleEmitters2.7",
+      "tag": "KP2V",
+      "before": 10,
+      "after": 5
+    },
+    {
+      "path": "model.ribbonEmitters.0",
+      "tag": "KRVS",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.ribbonEmitters.1",
+      "tag": "KRVS",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "path": "model.ribbonEmitters.2",
+      "tag": "KRVS",
+      "before": 10,
+      "after": 5
+    },
+    {
+      "path": "model.ribbonEmitters.3",
+      "tag": "KRVS",
+      "before": 10,
+      "after": 5
+    }
+  ],
+  "maxSampledWorldTranslationError": 0.000030517578125,
+  "sequences": [
+    {
+      "index": 0,
+      "name": "Stand",
+      "samples": 257,
+      "visibleBodySamples": 1285,
+      "bounds": {
+        "min": [
+          -150.82850646972656,
+          -112.111083984375,
+          1.1175576448440552
+        ],
+        "max": [
+          74.14946746826172,
+          109.96118927001953,
+          183.52145385742188
+        ]
+      },
+      "scaledBounds": {
+        "min": [
+          -207.44168471612548,
+          -154.1917551357422,
+          1.5370306717209816
+        ],
+        "max": [
+          101.98132178353882,
+          151.23490174014282,
+          252.40586451989748
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "name": "Walk",
+      "samples": 257,
+      "visibleBodySamples": 1285,
+      "bounds": {
+        "min": [
+          -150.3404998779297,
+          -106.00833892822266,
+          22.64117431640625
+        ],
+        "max": [
+          74.85015869140625,
+          104.77562713623047,
+          172.71112060546875
+        ]
+      },
+      "scaledBounds": {
+        "min": [
+          -206.77050582611085,
+          -145.79835692825318,
+          31.139493813720705
+        ],
+        "max": [
+          102.9450160559082,
+          144.1029492305603,
+          237.53789430249023
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "name": "Attack",
+      "samples": 257,
+      "visibleBodySamples": 1285,
+      "bounds": {
+        "min": [
+          -159.26907348632812,
+          -124.18916320800781,
+          -48.68933868408203
+        ],
+        "max": [
+          112.89986419677734,
+          120.90753936767578,
+          199.61253356933594
+        ]
+      },
+      "scaledBounds": {
+        "min": [
+          -219.05040168127442,
+          -170.80331723980714,
+          -66.96478458047486
+        ],
+        "max": [
+          155.27660242330933,
+          166.28994245425415,
+          274.5366988195191
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "name": "Death",
+      "samples": 257,
+      "visibleBodySamples": 1280,
+      "bounds": {
+        "min": [
+          -136.2663116455078,
+          -91.38504791259766,
+          -86.48824310302734
+        ],
+        "max": [
+          68.02616882324219,
+          102.87324523925781,
+          198.70103454589844
+        ]
+      },
+      "scaledBounds": {
+        "min": [
+          -187.4135991890259,
+          -125.68624287649536,
+          -118.95143217526245
+        ],
+        "max": [
+          93.5596552387085,
+          141.48651209332274,
+          273.2830704606323
+        ]
+      }
+    },
+    {
+      "index": 4,
+      "name": "Portrait",
+      "samples": 257,
+      "visibleBodySamples": 1285,
+      "bounds": {
+        "min": [
+          -152.18099975585938,
+          -112.83942413330078,
+          -1.874740719795227
+        ],
+        "max": [
+          70.62711334228516,
+          110.4513168334961,
+          174.0294647216797
+        ]
+      },
+      "scaledBounds": {
+        "min": [
+          -209.3018336522217,
+          -155.19347630288698,
+          -2.578420899488926
+        ],
+        "max": [
+          97.1368590810852,
+          151.9089977043152,
+          239.3510762460327
+        ]
+      }
+    }
+  ],
+  "boundary": "Offline 257-phase model-coordinate audit. Native terrain/renderer, particles, billboards and game engine behavior untested."
+}

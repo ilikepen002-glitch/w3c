@@ -142,6 +142,19 @@ def source_check(root=ROOT):
 
 
 def main():
+    # Active refinements have a different honest contract: preserve gameplay and
+    # original rigs, validate intentional art changes and the replacement phoenix.
+    # Never relax or rewrite the historical immutable-geometry assertions above.
+    if json.loads((ROOT / MANIFEST).read_text()).get('refinementRevision'):
+        import sys
+        import tempfile
+        with tempfile.TemporaryDirectory(prefix='spirit-display-verify-') as tmp:
+            inspection = Path(tmp) / 'inspection.json'
+            subprocess.run(['node', str(ROOT / 'tools/InspectSpiritRefinementModels.cjs'),
+                            '--output', str(inspection)], check=True)
+            subprocess.run([sys.executable, str(ROOT / 'tools/VerifySpiritRefinementArtifact.py'),
+                            '--inspection', str(inspection), *sys.argv[1:]], check=True)
+        return
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--map', type=Path)
     p.add_argument('--output', type=Path)

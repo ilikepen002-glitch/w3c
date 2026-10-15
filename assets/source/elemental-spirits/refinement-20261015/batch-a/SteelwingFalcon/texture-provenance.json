@@ -1,0 +1,14 @@
+{
+  "generator": "built-in imagegen",
+  "generatedForThisPass": true,
+  "sourceImage": "atlas-imagegen.png",
+  "sourceImageSha256": "73b658b0b646b44860608ab6a59a1a1ff051968bedcb0ce530c93ca91f5cfbe7",
+  "sourceDimensions": [
+    1254,
+    1254
+  ],
+  "prompt": "Use case: stylized-concept. Asset type: production Warcraft III low-poly creature UV MATERIAL ATLAS, not concept artwork. Generate a square 1024x1024 flat, perfectly aligned 4x4 GRID of 16 equal square material swatches. Exactly no gaps, borders, labels, margins or gridlines. Each swatch fills its tile. No characters, eyes, body parts, props, compositions or objects. Each tile a hand-painted game material with 3 broad value bands, crisp expressive painterly shapes, readable at 64x64 per tile. No photorealism, NO airbrushed gradient or plastic sheen, no tiny micro-noise. Rich stylized contrast. Exact row-major assignments: For a steel falcon with existing plated wing silhouette. Tile materials express silver-white steel and bright gold, shadow accents cool blue-violet. 0 solid near-black navy #13213e; 1 deep blue-violet matte shadow #323458; 2 dark indigo steel #455b89; 3 mid cobalt-silver steel #759cce; 4 bright pearl silver #d9edff; 5 warm cream ivory #fff0cf; 6 lavender gray #9d8cac; 7 dark violet #3b3153; 8 warm rich bronze #b77b33; 9 bright gold #f7c248; 10 saturated cobalt blue steel #506cca; 11 light blue silver #a6cced; 12 brightest silver ivory #f1f4ff; 13 solid very dark navy #11182e; 14 solid vibrant amber #ffbf38; 15 solid pale golden-white #fff3bb. Keep tile edges at 25%,50%,75%; no shadow gaps. Material-only flat front orthographic view. Opaque background.",
+  "conversion": "Pillow RGB resizing only to 256x256; 256-color palette BLP1; opaque; 9 mipmaps. No program-painted pixels.",
+  "date": "2026-10-15",
+  "outputTexturePath": "Textures\\SteelwingAtlas.blp"
+}

@@ -1,0 +1,13 @@
+Phoenix (Re-Classic) model: johnwar
+Source: https://www.hiveworkshop.com/threads/phoenix-re-classic.353829/
+Author permission: "Anyone can edit my models as long as you give proper credits."
+
+This map's EmberBird / QiLingPhoenix is an adapted model based on johnwar's
+mesh, rig and mature animation work. New imagegen-authored body/head textures,
+UV and tail-feather adjustments, fixed animation-index aliases and the separate
+wild-unit origin variant were prepared for this map. The original model is not
+claimed as original work by this project's author.
+
+Referenced Warcraft III native textures, team color and native event assets
+remain Blizzard assets. Their original files are not redistributed here.
+MDX800/offline packaging checks are not a Warcraft III 1.27a runtime test.

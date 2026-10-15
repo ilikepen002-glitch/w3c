@@ -1,0 +1,106 @@
+{
+  "tool": "Built-in image_gen",
+  "date": "2026-10-15",
+  "bodyFinal": "art/phoenix-body-imagegen-v4.png",
+  "headFinal": "art/phoenix-head-imagegen-v1.png",
+  "bodyHistory": [
+    "art/phoenix-body-imagegen-v1.png",
+    "art/phoenix-body-imagegen-v2.png",
+    "art/phoenix-body-imagegen-v3.png",
+    "art/phoenix-body-imagegen-v4.png"
+  ],
+  "newRasterPaintingOutsideImagegen": false,
+  "determinism": "Image generation is not promised deterministic. Locked accepted source PNGs produce byte-identical approved BLP1 through scripts/rebuild_textures.py (Pillow 12.3.0).",
+  "files": [
+    {
+      "path": "art/PhoenixBody.png",
+      "bytes": 363734,
+      "sha256": "306e12f3fe856fbd9bedcedc93b87783f01f5c2dc056831dd32831a04709d49b"
+    },
+    {
+      "path": "art/PhoenixHead.png",
+      "bytes": 55428,
+      "sha256": "931266c7d28e8e1a9d3298e31558cede45f825f9b8953b4f17b5d7702b83c228"
+    },
+    {
+      "path": "art/phoenix-body-imagegen-v1.png",
+      "bytes": 1781234,
+      "sha256": "f97fa9f130af2ba267383b82c06cac2cea4a7a924ee784498f383995433d2ddb"
+    },
+    {
+      "path": "art/phoenix-body-imagegen-v2.png",
+      "bytes": 1830593,
+      "sha256": "b317aa05953b247dce19f6cbcfbe6ccb965ee95afa8d3cad79475f771956ef35"
+    },
+    {
+      "path": "art/phoenix-body-imagegen-v3.png",
+      "bytes": 1794531,
+      "sha256": "0e606a444a79be5b4997b660875029e014b6351f157817f9de37171413278c93"
+    },
+    {
+      "path": "art/phoenix-body-imagegen-v4.png",
+      "bytes": 1825763,
+      "sha256": "9ad0c27089ab77d1163ba816bbdf54bd11bf10ea400cd06c0b0eb3a2499226c5"
+    },
+    {
+      "path": "art/phoenix-head-imagegen-v1.png",
+      "bytes": 1352689,
+      "sha256": "a1683e973eb67933fcd6dfb97fbec37057e0607c732c9efd50815c05fdb59435"
+    },
+    {
+      "path": "prompts/body-v1-prompt.txt",
+      "bytes": 2305,
+      "sha256": "75f85f229fded6030b0e342f7e3e7b4c286f05a0eaa2a4eb2c9357b104136941"
+    },
+    {
+      "path": "prompts/body-v2-prompt.txt",
+      "bytes": 2289,
+      "sha256": "64a758f73736a3d21af89c48e9213614a364ab0a1391c2a044c66c192fdfda9a"
+    },
+    {
+      "path": "prompts/body-v3-prompt.txt",
+      "bytes": 2461,
+      "sha256": "4c0b8ee64768f25c1aabc4bbf745463d803dcb18af8460c0a17ffd125eae7987"
+    },
+    {
+      "path": "prompts/body-v4-prompt.txt",
+      "bytes": 1540,
+      "sha256": "015159f4eae97a87d89c4078e981adef1e7cb663a7d0289694af16cf2b7e2151"
+    },
+    {
+      "path": "prompts/head-v1-prompt.txt",
+      "bytes": 2031,
+      "sha256": "ec95ec7bb65fdb271696230ebc23b76c70ec8addaa7d24cafea6bada5c7cc965"
+    },
+    {
+      "path": "prompts/original-model-readme.html",
+      "bytes": 4385,
+      "sha256": "e32a56619617d5ba4fdfd3400c52b0e3fbaa70d84199d6743adc2664bcfc6527"
+    },
+    {
+      "path": "rebuilt/PhoenixBody.png",
+      "bytes": 363734,
+      "sha256": "306e12f3fe856fbd9bedcedc93b87783f01f5c2dc056831dd32831a04709d49b"
+    },
+    {
+      "path": "rebuilt/PhoenixHead.png",
+      "bytes": 55428,
+      "sha256": "931266c7d28e8e1a9d3298e31558cede45f825f9b8953b4f17b5d7702b83c228"
+    },
+    {
+      "path": "scripts/rebuild_textures.py",
+      "bytes": 4078,
+      "sha256": "4f9a94351494ed49d286246531e8f583a159b7c5359646c4ee8342094d53cc13"
+    },
+    {
+      "path": "technical/PhoenixBody-blp1-roundtrip.png",
+      "bytes": 301703,
+      "sha256": "d566544f380616f1f9213a93bbffab192ec52b9b6f4f87fcc32b975a8c2dfea2"
+    },
+    {
+      "path": "technical/PhoenixHead-blp1-roundtrip.png",
+      "bytes": 27136,
+      "sha256": "46231d2b936425231839d0353a7562c4b008d67302084daea08911510a16a4fc"
+    }
+  ]
+}

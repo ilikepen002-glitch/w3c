@@ -1,0 +1,4391 @@
+{
+  "sourceFinalMdxSha256": "c4c41bd7f384f64e4dbf575681791f9ea08358ad3770b7ed3d47a341bf3f67a7",
+  "pass": true,
+  "method": "Exact piecewise visibility integration from local step keys; emission rates and lifespans are static on all 12 emitters. rate \u00d7 lifespan is a steady-state live particle / ribbon-segment estimate, not a draw-call or GPU measurement. Visibility uses None interpolation with default 1 when the interval contains no keys, matching the pinned viewer semantics.",
+  "emitters": [
+    {
+      "kind": "PRE2",
+      "index": 0,
+      "objectId": 67,
+      "name": "BlizParticle03magicbody",
+      "parentChain": [
+        {
+          "id": 67,
+          "name": "BlizParticle03magicbody"
+        },
+        {
+          "id": 35,
+          "name": "Bone00_root"
+        }
+      ],
+      "textures": [
+        "Textures\\Yellow_Glow2.blp"
+      ],
+      "emissionRatePerSecond": 20,
+      "lifeSeconds": 1.2999999523162842,
+      "nominalSteadyCount": 25.999999046325684,
+      "staticParameters": {
+        "speed": 40,
+        "variation": 0.10999999940395355,
+        "latitude": 12,
+        "gravity": 0,
+        "width": 26.6560001373291,
+        "length": 65.75,
+        "filterMode": 1,
+        "headOrTail": 0,
+        "tailLength": 1,
+        "squirt": 0,
+        "segmentColors": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "segmentAlphas": [
+          255,
+          175,
+          0
+        ],
+        "segmentScaling": [
+          13.199999809265137,
+          8.800000190734863,
+          1.2999999523162842
+        ]
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2999999523162842,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2999999523162842,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2999999523162842,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 5400,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2999999523162842,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2999999523162842,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2999999523162842,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2999999523162842,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2999999523162842,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2999999523162842,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2999999523162842,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [],
+      "eggOrMorphOnly": false
+    },
+    {
+      "kind": "PRE2",
+      "index": 1,
+      "objectId": 68,
+      "name": "BlizParticle02fire",
+      "parentChain": [
+        {
+          "id": 68,
+          "name": "BlizParticle02fire"
+        },
+        {
+          "id": 35,
+          "name": "Bone00_root"
+        }
+      ],
+      "textures": [
+        "Textures\\Yellow_Glow3.blp"
+      ],
+      "emissionRatePerSecond": 60,
+      "lifeSeconds": 1.2000000476837158,
+      "nominalSteadyCount": 72.00000286102295,
+      "staticParameters": {
+        "speed": 40,
+        "variation": 0.20999999344348907,
+        "latitude": 180,
+        "gravity": 0,
+        "width": 47.599998474121094,
+        "length": 41.5,
+        "filterMode": 1,
+        "headOrTail": 0,
+        "tailLength": 1,
+        "squirt": 0,
+        "segmentColors": [
+          [
+            1,
+            0.8705880045890808,
+            0
+          ],
+          [
+            1,
+            0.5176470279693604,
+            0
+          ],
+          [
+            1,
+            0.019607799127697945,
+            0.4588240087032318
+          ]
+        ],
+        "segmentAlphas": [
+          100,
+          128,
+          0
+        ],
+        "segmentScaling": [
+          13.5,
+          7.5,
+          3.5
+        ]
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 5400,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [],
+      "eggOrMorphOnly": false
+    },
+    {
+      "kind": "PRE2",
+      "index": 2,
+      "objectId": 69,
+      "name": "BlizParticle03magicbody01",
+      "parentChain": [
+        {
+          "id": 69,
+          "name": "BlizParticle03magicbody01"
+        },
+        {
+          "id": 35,
+          "name": "Bone00_root"
+        }
+      ],
+      "textures": [
+        "Textures\\Yellow_Glow2.blp"
+      ],
+      "emissionRatePerSecond": 20,
+      "lifeSeconds": 0.6000000238418579,
+      "nominalSteadyCount": 12.000000476837158,
+      "staticParameters": {
+        "speed": 40,
+        "variation": 0.10999999940395355,
+        "latitude": 12,
+        "gravity": 0,
+        "width": 26.6560001373291,
+        "length": 65.75,
+        "filterMode": 1,
+        "headOrTail": 0,
+        "tailLength": 1,
+        "squirt": 0,
+        "segmentColors": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "segmentAlphas": [
+          255,
+          175,
+          0
+        ],
+        "segmentScaling": [
+          12.699999809265137,
+          8.399999618530273,
+          1.2999999523162842
+        ]
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 5400,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 0.0,
+              "ratePerSecond": 20.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [],
+      "eggOrMorphOnly": false
+    },
+    {
+      "kind": "PRE2",
+      "index": 3,
+      "objectId": 70,
+      "name": "BlizParticle02fire01",
+      "parentChain": [
+        {
+          "id": 70,
+          "name": "BlizParticle02fire01"
+        },
+        {
+          "id": 35,
+          "name": "Bone00_root"
+        }
+      ],
+      "textures": [
+        "Textures\\Yellow_Glow3.blp"
+      ],
+      "emissionRatePerSecond": 60,
+      "lifeSeconds": 0.6000000238418579,
+      "nominalSteadyCount": 36.000001430511475,
+      "staticParameters": {
+        "speed": 40,
+        "variation": 0.20999999344348907,
+        "latitude": 180,
+        "gravity": 0,
+        "width": 47.599998474121094,
+        "length": 41.5,
+        "filterMode": 1,
+        "headOrTail": 0,
+        "tailLength": 1,
+        "squirt": 0,
+        "segmentColors": [
+          [
+            1,
+            0.8705880045890808,
+            0
+          ],
+          [
+            1,
+            0.5176470279693604,
+            0
+          ],
+          [
+            1,
+            0.019607799127697945,
+            0.4588240087032318
+          ]
+        ],
+        "segmentAlphas": [
+          100,
+          128,
+          0
+        ],
+        "segmentScaling": [
+          15.199999809265137,
+          8.699999809265137,
+          3.5
+        ]
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 5400,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 0.0,
+              "ratePerSecond": 60.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.6000000238418579,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [],
+      "eggOrMorphOnly": false
+    },
+    {
+      "kind": "PRE2",
+      "index": 4,
+      "objectId": 71,
+      "name": "BlizParticle02firedeath",
+      "parentChain": [
+        {
+          "id": 71,
+          "name": "BlizParticle02firedeath"
+        },
+        {
+          "id": 35,
+          "name": "Bone00_root"
+        }
+      ],
+      "textures": [
+        "Textures\\Yellow_Glow3.blp"
+      ],
+      "emissionRatePerSecond": 100,
+      "lifeSeconds": 0.8999999761581421,
+      "nominalSteadyCount": 89.99999761581421,
+      "staticParameters": {
+        "speed": 240,
+        "variation": 0.20999999344348907,
+        "latitude": 109,
+        "gravity": 265,
+        "width": 0,
+        "length": 0,
+        "filterMode": 1,
+        "headOrTail": 0,
+        "tailLength": 1,
+        "squirt": 0,
+        "segmentColors": [
+          [
+            1,
+            0.8705880045890808,
+            0
+          ],
+          [
+            1,
+            0.3294120132923126,
+            0
+          ],
+          [
+            1,
+            0.019607799127697945,
+            0.4588240087032318
+          ]
+        ],
+        "segmentAlphas": [
+          255,
+          255,
+          0
+        ],
+        "segmentScaling": [
+          32.29999923706055,
+          15.100000381469727,
+          3.5
+        ]
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 0.0,
+              "ratePerSecond": 100.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 0.0,
+              "ratePerSecond": 100.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 0.0,
+              "ratePerSecond": 100.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 5400,
+              "visibility": 0.0,
+              "ratePerSecond": 100.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 0.0,
+              "ratePerSecond": 100.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 0.0,
+              "ratePerSecond": 100.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 0.0,
+              "ratePerSecond": 100.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 0.0,
+              "ratePerSecond": 100.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 0.0,
+              "ratePerSecond": 100.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 0.0,
+              "ratePerSecond": 100.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [],
+      "eggOrMorphOnly": false
+    },
+    {
+      "kind": "PRE2",
+      "index": 5,
+      "objectId": 72,
+      "name": "BlizParticle08shockwaves",
+      "parentChain": [
+        {
+          "id": 72,
+          "name": "BlizParticle08shockwaves"
+        }
+      ],
+      "textures": [
+        "Textures\\Shockwave1.blp"
+      ],
+      "emissionRatePerSecond": 28.600000381469727,
+      "lifeSeconds": 0.5,
+      "nominalSteadyCount": 14.300000190734863,
+      "staticParameters": {
+        "speed": -20,
+        "variation": 0.5199999809265137,
+        "latitude": 1,
+        "gravity": 0,
+        "width": 0,
+        "length": 0,
+        "filterMode": 1,
+        "headOrTail": 0,
+        "tailLength": 1,
+        "squirt": 0,
+        "segmentColors": [
+          [
+            1,
+            0.8470590114593506,
+            0
+          ],
+          [
+            1,
+            0.4745100140571594,
+            0.1254899948835373
+          ],
+          [
+            1,
+            0.02745099924504757,
+            0.48627498745918274
+          ]
+        ],
+        "segmentAlphas": [
+          255,
+          180,
+          0
+        ],
+        "segmentScaling": [
+          31.700000762939453,
+          93.4000015258789,
+          164.39999389648438
+        ]
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 0.0,
+              "ratePerSecond": 28.600000381469727,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 0.0,
+              "ratePerSecond": 28.600000381469727,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 0.0,
+              "ratePerSecond": 28.600000381469727,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 0.23714285714285716,
+          "peakEffectiveRatePerSecond": 28.600000381469727,
+          "meanEffectiveRatePerSecond": 6.782285804748535,
+          "peakSteadyCountIfHeld": 14.300000190734863,
+          "meanSteadyCountIfHeld": 3.3911429023742676,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 4332,
+              "visibility": 1.0,
+              "ratePerSecond": 28.600000381469727,
+              "effectiveRatePerSecond": 28.600000381469727,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 14.300000190734863
+            },
+            {
+              "from": 4332,
+              "to": 5400,
+              "visibility": 0.0,
+              "ratePerSecond": 28.600000381469727,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 0.0,
+              "ratePerSecond": 28.600000381469727,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 0.0,
+              "ratePerSecond": 28.600000381469727,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 0.0,
+              "ratePerSecond": 28.600000381469727,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 0.0,
+              "ratePerSecond": 28.600000381469727,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 0.0,
+              "ratePerSecond": 28.600000381469727,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 0.0,
+              "ratePerSecond": 28.600000381469727,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [
+        3
+      ],
+      "eggOrMorphOnly": false
+    },
+    {
+      "kind": "PRE2",
+      "index": 6,
+      "objectId": 73,
+      "name": "BlizParticle08shockrays",
+      "parentChain": [
+        {
+          "id": 73,
+          "name": "BlizParticle08shockrays"
+        }
+      ],
+      "textures": [
+        "Textures\\Red_star2.blp"
+      ],
+      "emissionRatePerSecond": 82.5999984741211,
+      "lifeSeconds": 0.5,
+      "nominalSteadyCount": 41.29999923706055,
+      "staticParameters": {
+        "speed": 100,
+        "variation": 0.1899999976158142,
+        "latitude": 180,
+        "gravity": 0,
+        "width": 0,
+        "length": 0,
+        "filterMode": 1,
+        "headOrTail": 1,
+        "tailLength": 3.200000047683716,
+        "squirt": 0,
+        "segmentColors": [
+          [
+            1,
+            0.8470590114593506,
+            0
+          ],
+          [
+            1,
+            0.4745100140571594,
+            0.1254899948835373
+          ],
+          [
+            1,
+            0.02745099924504757,
+            0.48627498745918274
+          ]
+        ],
+        "segmentAlphas": [
+          255,
+          180,
+          0
+        ],
+        "segmentScaling": [
+          4.5,
+          3.5999999046325684,
+          1
+        ]
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 0.0,
+              "ratePerSecond": 82.5999984741211,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 0.0,
+              "ratePerSecond": 82.5999984741211,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 0.0,
+              "ratePerSecond": 82.5999984741211,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 0.23714285714285716,
+          "peakEffectiveRatePerSecond": 82.5999984741211,
+          "meanEffectiveRatePerSecond": 19.587999638148716,
+          "peakSteadyCountIfHeld": 41.29999923706055,
+          "meanSteadyCountIfHeld": 9.793999819074358,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 4332,
+              "visibility": 1.0,
+              "ratePerSecond": 82.5999984741211,
+              "effectiveRatePerSecond": 82.5999984741211,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 41.29999923706055
+            },
+            {
+              "from": 4332,
+              "to": 5400,
+              "visibility": 0.0,
+              "ratePerSecond": 82.5999984741211,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 0.0,
+              "ratePerSecond": 82.5999984741211,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 0.0,
+              "ratePerSecond": 82.5999984741211,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 0.0,
+              "ratePerSecond": 82.5999984741211,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 0.0,
+              "ratePerSecond": 82.5999984741211,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 0.0,
+              "ratePerSecond": 82.5999984741211,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 0.0,
+              "ratePerSecond": 82.5999984741211,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.5,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [
+        3
+      ],
+      "eggOrMorphOnly": false
+    },
+    {
+      "kind": "PRE2",
+      "index": 7,
+      "objectId": 74,
+      "name": "BlizParticle02tails",
+      "parentChain": [
+        {
+          "id": 74,
+          "name": "BlizParticle02tails"
+        }
+      ],
+      "textures": [
+        "Textures\\Flame4.blp"
+      ],
+      "emissionRatePerSecond": 40,
+      "lifeSeconds": 1.2000000476837158,
+      "nominalSteadyCount": 48.00000190734863,
+      "staticParameters": {
+        "speed": 26,
+        "variation": 0.05999999865889549,
+        "latitude": 55,
+        "gravity": -70,
+        "width": 22.57469940185547,
+        "length": 39.51639938354492,
+        "filterMode": 1,
+        "headOrTail": 1,
+        "tailLength": 0.6499999761581421,
+        "squirt": 0,
+        "segmentColors": [
+          [
+            0.9725490212440491,
+            0.8117650151252747,
+            0.17254899442195892
+          ],
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            0.7686280012130737,
+            0.282353013753891,
+            0.282353013753891
+          ]
+        ],
+        "segmentAlphas": [
+          81,
+          226,
+          0
+        ],
+        "segmentScaling": [
+          3.9010000228881836,
+          13.5,
+          3.799999952316284
+        ]
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 0.0,
+              "ratePerSecond": 40.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 0.0,
+              "ratePerSecond": 40.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 0.0,
+              "ratePerSecond": 40.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 5400,
+              "visibility": 0.0,
+              "ratePerSecond": 40.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 0.0,
+              "ratePerSecond": 40.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 0.0,
+              "ratePerSecond": 40.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 0.0,
+              "ratePerSecond": 40.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 0.0,
+              "ratePerSecond": 40.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 0.0,
+              "ratePerSecond": 40.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 0.0,
+              "ratePerSecond": 40.0,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 1.2000000476837158,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [],
+      "eggOrMorphOnly": false
+    },
+    {
+      "kind": "RIBB",
+      "index": 0,
+      "objectId": 75,
+      "name": "BlizRibbon02",
+      "parentChain": [
+        {
+          "id": 75,
+          "name": "BlizRibbon02"
+        },
+        {
+          "id": 44,
+          "name": "Dummy03"
+        },
+        {
+          "id": 42,
+          "name": "Bone13"
+        },
+        {
+          "id": 41,
+          "name": "Bone12"
+        },
+        {
+          "id": 40,
+          "name": "Bone11"
+        },
+        {
+          "id": 36,
+          "name": "Bone01"
+        },
+        {
+          "id": 35,
+          "name": "Bone00_root"
+        }
+      ],
+      "textures": [
+        "units\\Human\\Phoenix\\RibbonNE1_Red.blp"
+      ],
+      "emissionRatePerSecond": 10,
+      "lifeSeconds": 0.25,
+      "nominalSteadyCount": 2.5,
+      "staticParameters": {
+        "heightAbove": 4,
+        "heightBelow": 4,
+        "alpha": 0.30000001192092896,
+        "color": [
+          1,
+          0.003921569790691137,
+          0.2862749993801117
+        ],
+        "gravity": 0,
+        "materialId": 7
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 5400,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "eggOrMorphOnly": false
+    },
+    {
+      "kind": "RIBB",
+      "index": 1,
+      "objectId": 76,
+      "name": "BlizRibbon03",
+      "parentChain": [
+        {
+          "id": 76,
+          "name": "BlizRibbon03"
+        },
+        {
+          "id": 49,
+          "name": "Dummy04"
+        },
+        {
+          "id": 47,
+          "name": "Bone17"
+        },
+        {
+          "id": 46,
+          "name": "Bone16"
+        },
+        {
+          "id": 45,
+          "name": "Bone15"
+        },
+        {
+          "id": 36,
+          "name": "Bone01"
+        },
+        {
+          "id": 35,
+          "name": "Bone00_root"
+        }
+      ],
+      "textures": [
+        "units\\Human\\Phoenix\\RibbonNE1_Red.blp"
+      ],
+      "emissionRatePerSecond": 10,
+      "lifeSeconds": 0.25,
+      "nominalSteadyCount": 2.5,
+      "staticParameters": {
+        "heightAbove": 4,
+        "heightBelow": 4,
+        "alpha": 0.30000001192092896,
+        "color": [
+          0.9882349967956543,
+          0.003921569790691137,
+          0.23529399931430817
+        ],
+        "gravity": 0,
+        "materialId": 7
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 5400,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 1.0,
+          "visibilityEnd": 1.0,
+          "visibilityMin": 1.0,
+          "visibilityMax": 1.0,
+          "activeFraction": 1.0,
+          "peakEffectiveRatePerSecond": 10,
+          "meanEffectiveRatePerSecond": 10.0,
+          "peakSteadyCountIfHeld": 2.5,
+          "meanSteadyCountIfHeld": 2.5,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 1.0,
+              "ratePerSecond": 10,
+              "effectiveRatePerSecond": 10,
+              "lifeSeconds": 0.25,
+              "steadyCountIfHeld": 2.5
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "eggOrMorphOnly": false
+    },
+    {
+      "kind": "RIBB",
+      "index": 2,
+      "objectId": 77,
+      "name": "BlizRibbon04",
+      "parentChain": [
+        {
+          "id": 77,
+          "name": "BlizRibbon04"
+        },
+        {
+          "id": 56,
+          "name": "Dummy05"
+        },
+        {
+          "id": 55,
+          "name": "Dummy06spin"
+        },
+        {
+          "id": 35,
+          "name": "Bone00_root"
+        }
+      ],
+      "textures": [
+        "units\\Human\\Phoenix\\RibbonNE1_Red.blp"
+      ],
+      "emissionRatePerSecond": 15,
+      "lifeSeconds": 0.8999999761581421,
+      "nominalSteadyCount": 13.499999642372131,
+      "staticParameters": {
+        "heightAbove": 12,
+        "heightBelow": 12,
+        "alpha": 0.5,
+        "color": [
+          0.992156982421875,
+          0.5607839822769165,
+          0.003921569790691137
+        ],
+        "gravity": 0,
+        "materialId": 7
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 0.0,
+              "ratePerSecond": 15,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 0.0,
+              "ratePerSecond": 15,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 0.0,
+              "ratePerSecond": 15,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 5400,
+              "visibility": 0.0,
+              "ratePerSecond": 15,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 0.0,
+              "ratePerSecond": 15,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 0.0,
+              "ratePerSecond": 15,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 0.0,
+              "ratePerSecond": 15,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 0.0,
+              "ratePerSecond": 15,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 0.0,
+              "ratePerSecond": 15,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 0.0,
+              "ratePerSecond": 15,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.8999999761581421,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [],
+      "eggOrMorphOnly": false
+    },
+    {
+      "kind": "RIBB",
+      "index": 3,
+      "objectId": 78,
+      "name": "BlizRibbon01",
+      "parentChain": [
+        {
+          "id": 78,
+          "name": "BlizRibbon01"
+        },
+        {
+          "id": 57,
+          "name": "Dummy02"
+        },
+        {
+          "id": 35,
+          "name": "Bone00_root"
+        }
+      ],
+      "textures": [
+        "units\\Human\\Phoenix\\RibbonNE1_Red.blp"
+      ],
+      "emissionRatePerSecond": 20,
+      "lifeSeconds": 0.800000011920929,
+      "nominalSteadyCount": 16.00000023841858,
+      "staticParameters": {
+        "heightAbove": 50,
+        "heightBelow": 50,
+        "alpha": 0.5,
+        "color": [
+          0.992156982421875,
+          0.003921569790691137,
+          0.23529399931430817
+        ],
+        "gravity": 0,
+        "materialId": 7
+      },
+      "sequences": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 0,
+              "to": 2000,
+              "visibility": 0.0,
+              "ratePerSecond": 20,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.800000011920929,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 2100,
+              "to": 3100,
+              "visibility": 0.0,
+              "ratePerSecond": 20,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.800000011920929,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 3200,
+              "to": 3900,
+              "visibility": 0.0,
+              "ratePerSecond": 20,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.800000011920929,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 4000,
+              "to": 5400,
+              "visibility": 0.0,
+              "ratePerSecond": 20,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.800000011920929,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 5500,
+              "to": 7500,
+              "visibility": 0.0,
+              "ratePerSecond": 20,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.800000011920929,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 8000,
+              "to": 10000,
+              "visibility": 0.0,
+              "ratePerSecond": 20,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.800000011920929,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 10100,
+              "to": 10900,
+              "visibility": 0.0,
+              "ratePerSecond": 20,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.800000011920929,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 11000,
+              "to": 12200,
+              "visibility": 0.0,
+              "ratePerSecond": 20,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.800000011920929,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 12300,
+              "to": 15300,
+              "visibility": 0.0,
+              "ratePerSecond": 20,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.800000011920929,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "visibilityStart": 0.0,
+          "visibilityEnd": 0.0,
+          "visibilityMin": 0.0,
+          "visibilityMax": 0.0,
+          "activeFraction": 0.0,
+          "peakEffectiveRatePerSecond": 0,
+          "meanEffectiveRatePerSecond": 0.0,
+          "peakSteadyCountIfHeld": 0,
+          "meanSteadyCountIfHeld": 0.0,
+          "intervals": [
+            {
+              "from": 15400,
+              "to": 16600,
+              "visibility": 0.0,
+              "ratePerSecond": 20,
+              "effectiveRatePerSecond": 0,
+              "lifeSeconds": 0.800000011920929,
+              "steadyCountIfHeld": 0
+            }
+          ]
+        }
+      ],
+      "activeSequenceIndices": [],
+      "eggOrMorphOnly": false
+    }
+  ],
+  "sequenceTotals": [
+    {
+      "index": 0,
+      "name": "Stand",
+      "durationSeconds": 2.0,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "intervals": [
+        {
+          "from": 0,
+          "to": 2000,
+          "particleRate": 0,
+          "particleCount": 0,
+          "ribbonRate": 20,
+          "ribbonSegments": 5.0,
+          "activePRE2": [],
+          "activeRIBB": [
+            75,
+            76
+          ]
+        }
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    },
+    {
+      "index": 1,
+      "name": "Walk",
+      "durationSeconds": 1.0,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "intervals": [
+        {
+          "from": 2100,
+          "to": 3100,
+          "particleRate": 0,
+          "particleCount": 0,
+          "ribbonRate": 20,
+          "ribbonSegments": 5.0,
+          "activePRE2": [],
+          "activeRIBB": [
+            75,
+            76
+          ]
+        }
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    },
+    {
+      "index": 2,
+      "name": "Attack",
+      "durationSeconds": 0.7,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "intervals": [
+        {
+          "from": 3200,
+          "to": 3900,
+          "particleRate": 0,
+          "particleCount": 0,
+          "ribbonRate": 20,
+          "ribbonSegments": 5.0,
+          "activePRE2": [],
+          "activeRIBB": [
+            75,
+            76
+          ]
+        }
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    },
+    {
+      "index": 3,
+      "name": "Death",
+      "durationSeconds": 1.4,
+      "activePRE2": [
+        72,
+        73
+      ],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "intervals": [
+        {
+          "from": 4000,
+          "to": 4332,
+          "particleRate": 111.19999885559082,
+          "particleCount": 55.59999942779541,
+          "ribbonRate": 20,
+          "ribbonSegments": 5.0,
+          "activePRE2": [
+            72,
+            73
+          ],
+          "activeRIBB": [
+            75,
+            76
+          ]
+        },
+        {
+          "from": 4332,
+          "to": 5400,
+          "particleRate": 0,
+          "particleCount": 0,
+          "ribbonRate": 20,
+          "ribbonSegments": 5.0,
+          "activePRE2": [],
+          "activeRIBB": [
+            75,
+            76
+          ]
+        }
+      ],
+      "particleRatePeak": 111.19999885559082,
+      "particleRateMean": 26.370285442897252,
+      "particleCountPeak": 55.59999942779541,
+      "particleCountMean": 13.185142721448626,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    },
+    {
+      "index": 4,
+      "name": "Portrait",
+      "durationSeconds": 2.0,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "intervals": [
+        {
+          "from": 5500,
+          "to": 7500,
+          "particleRate": 0,
+          "particleCount": 0,
+          "ribbonRate": 20,
+          "ribbonSegments": 5.0,
+          "activePRE2": [],
+          "activeRIBB": [
+            75,
+            76
+          ]
+        }
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    },
+    {
+      "index": 5,
+      "name": "Display Float",
+      "durationSeconds": 2.0,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "intervals": [
+        {
+          "from": 8000,
+          "to": 10000,
+          "particleRate": 0,
+          "particleCount": 0,
+          "ribbonRate": 20,
+          "ribbonSegments": 5.0,
+          "activePRE2": [],
+          "activeRIBB": [
+            75,
+            76
+          ]
+        }
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    },
+    {
+      "index": 6,
+      "name": "Display Jump",
+      "durationSeconds": 0.8,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "intervals": [
+        {
+          "from": 10100,
+          "to": 10900,
+          "particleRate": 0,
+          "particleCount": 0,
+          "ribbonRate": 20,
+          "ribbonSegments": 5.0,
+          "activePRE2": [],
+          "activeRIBB": [
+            75,
+            76
+          ]
+        }
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    },
+    {
+      "index": 7,
+      "name": "Display Spin",
+      "durationSeconds": 1.2,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "intervals": [
+        {
+          "from": 11000,
+          "to": 12200,
+          "particleRate": 0,
+          "particleCount": 0,
+          "ribbonRate": 20,
+          "ribbonSegments": 5.0,
+          "activePRE2": [],
+          "activeRIBB": [
+            75,
+            76
+          ]
+        }
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    },
+    {
+      "index": 8,
+      "name": "Display Sleep",
+      "durationSeconds": 3.0,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "intervals": [
+        {
+          "from": 12300,
+          "to": 15300,
+          "particleRate": 0,
+          "particleCount": 0,
+          "ribbonRate": 20,
+          "ribbonSegments": 5.0,
+          "activePRE2": [],
+          "activeRIBB": [
+            75,
+            76
+          ]
+        }
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    },
+    {
+      "index": 9,
+      "name": "Display Cast",
+      "durationSeconds": 1.2,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "intervals": [
+        {
+          "from": 15400,
+          "to": 16600,
+          "particleRate": 0,
+          "particleCount": 0,
+          "ribbonRate": 20,
+          "ribbonSegments": 5.0,
+          "activePRE2": [],
+          "activeRIBB": [
+            75,
+            76
+          ]
+        }
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    }
+  ],
+  "nonBodyGeosets": [
+    {
+      "geoset": 0,
+      "triangleCount": 30,
+      "matrixGroupCount": 15,
+      "materialId": 0,
+      "layers": [
+        {
+          "texture": "Textures\\Yellow_Glow3.blp",
+          "filterMode": 3,
+          "staticLayerAlpha": 0.5400000214576721
+        }
+      ],
+      "rawStaticGeosetColor": [
+        1,
+        0,
+        0
+      ],
+      "geosetColorFlags": 2,
+      "states": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        }
+      ]
+    },
+    {
+      "geoset": 1,
+      "triangleCount": 2,
+      "matrixGroupCount": 1,
+      "materialId": 1,
+      "layers": [
+        {
+          "texture": "units\\Human\\Phoenix\\TeleportTarget.blp",
+          "filterMode": 4,
+          "staticLayerAlpha": 1
+        }
+      ],
+      "rawStaticGeosetColor": [
+        1,
+        0.47058799862861633,
+        0
+      ],
+      "geosetColorFlags": 2,
+      "states": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        }
+      ]
+    },
+    {
+      "geoset": 2,
+      "triangleCount": 48,
+      "matrixGroupCount": 1,
+      "materialId": 2,
+      "layers": [
+        {
+          "texture": "units\\Human\\Phoenix\\Egg1.blp",
+          "filterMode": 0,
+          "staticLayerAlpha": 1
+        }
+      ],
+      "rawStaticGeosetColor": [
+        1,
+        1,
+        1
+      ],
+      "geosetColorFlags": 0,
+      "states": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        }
+      ]
+    },
+    {
+      "geoset": 3,
+      "triangleCount": 96,
+      "matrixGroupCount": 2,
+      "materialId": 3,
+      "layers": [
+        {
+          "texture": "Textures\\Red_Glow3.blp",
+          "filterMode": 3,
+          "staticLayerAlpha": 0.6499999761581421
+        }
+      ],
+      "rawStaticGeosetColor": [
+        0.9568629860877991,
+        0.992156982421875,
+        0
+      ],
+      "geosetColorFlags": 2,
+      "states": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "geosetVisibilityMin": 0.0,
+          "geosetVisibilityMax": 0.0
+        }
+      ]
+    }
+  ],
+  "baselineFindingsBeforeApprovedReduction": [
+    "Display Float has 2 continuously active PRE2 (67 and 68), not all 8: 80/s and approximately 98 steady-state particles.",
+    "Walk has 2 continuously active PRE2 (69 and 70): 80/s and approximately 48 steady-state particles.",
+    "Display Cast has no active PRE2; all 4 ribbons remain active.",
+    "Float, Walk and Cast each retain 4 ribbons: 65 segments/s and approximately 50.5 live segments at steady state.",
+    "PRE2 74 using Flame4 is the only emitter restricted to egg/morph states. PRE2 71/72/73 are birth/death/morph bursts, not continuous idle emitters.",
+    "Geoset 0 uses Yellow_Glow3 additive layer alpha 0.54, with 15 billboard groups / 30 triangles and geoset visibility 1 in Float, Walk and Cast. It is omitted from the body-only previews and can materially alter the visible color/brightness."
+  ],
+  "limitations": [
+    "Native texture pixels were not loaded; names and modulation values alone do not prove exact displayed colors.",
+    "No particles/ribbons were rendered, no Warcraft III runtime or frame-rate testing performed.",
+    "Steady-state estimates do not model warm-up, emitter history across sequence transitions, particle tails, occlusion, screen coverage, overdraw or burst overlap beyond sampled visibility.",
+    "Ribbon segment rate/count is a distinct quantity from PRE2 particle count; do not claim their sum is draw calls.",
+    "Existing emitted particles can remain alive after visibility turns off; instantaneous state estimates are not a transient particle simulation."
+  ],
+  "currentTotalsForKeyActions": [
+    {
+      "index": 1,
+      "name": "Walk",
+      "durationSeconds": 1.0,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    },
+    {
+      "index": 5,
+      "name": "Display Float",
+      "durationSeconds": 2.0,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    },
+    {
+      "index": 9,
+      "name": "Display Cast",
+      "durationSeconds": 1.2,
+      "activePRE2": [],
+      "activeRIBB": [
+        75,
+        76
+      ],
+      "particleRatePeak": 0,
+      "particleRateMean": 0.0,
+      "particleCountPeak": 0,
+      "particleCountMean": 0.0,
+      "ribbonRatePeak": 20,
+      "ribbonRateMean": 20.0,
+      "ribbonSegmentsPeak": 5.0,
+      "ribbonSegmentsMean": 5.0
+    }
+  ]
+}

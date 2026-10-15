@@ -1,0 +1,14 @@
+{
+  "generator": "built-in imagegen",
+  "generatedForThisPass": true,
+  "sourceImage": "atlas-imagegen.png",
+  "sourceImageSha256": "2046196a2291bed8427565c8c7552b261d6843b8fe19a6ab40674617f06014f2",
+  "sourceDimensions": [
+    1254,
+    1254
+  ],
+  "prompt": "Use case: stylized-concept. Asset type: production Warcraft III low-poly creature UV MATERIAL ATLAS, not concept artwork. Generate a square 1024x1024 flat, perfectly aligned 4x4 GRID of 16 equal square material swatches. Exactly no gaps, borders, labels, margins or gridlines. Each swatch fills its tile. No characters, eyes, body parts, props, compositions or objects. Each tile a hand-painted game material with 3 broad value bands, crisp expressive painterly shapes, readable at 64x64 per tile. No photorealism, NO airbrushed gradient or plastic sheen, no tiny micro-noise. Rich stylized contrast. Exact row-major assignments: For a slender wooden stag with branch antlers and leaf sprouts. Preserve warm wood body, lighten it into honey birch; make leaves turquoise with pink-lilac bud highlights to read against grass. Broad wood grain, no microdetail. 0 solid deep navy teal #193441; 1 dark violet bark #514365; 2 honey birch wood #b78250; 3 deep turquoise leaf #349f9c; 4 light pearly mint #afe3d1; 5 pearl ivory bark #f4e6cc; 6 deep blue teal #366e88; 7 dark aubergine bark #67506e; 8 warm light ivory wood #e7cfa5; 9 rich amber branch bark #bc8153; 10 forest teal #377d86; 11 pink lavender leaf buds #d1a4d7; 12 pale pearl green #d8f2da; 13 solid dark midnight navy #142337; 14 solid bright amber #ffcd66; 15 solid ivory cream #fff5d6. Keep tile edges at 25%,50%,75%; no shadow gaps. Material-only flat front orthographic view. Opaque background.",
+  "conversion": "Pillow RGB resizing only to 256x256; 256-color palette BLP1; opaque; 9 mipmaps. No program-painted pixels.",
+  "date": "2026-10-15",
+  "outputTexturePath": "Textures\\RootbudAtlas.blp"
+}

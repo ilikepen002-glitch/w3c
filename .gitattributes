@@ -12,3 +12,6 @@
 # Map archives and imported textures must never undergo text conversion.
 *.w3x binary
 *.tga binary
+
+# Preserve the author's original HTML evidence bytes, including original CRLF.
+assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/original-model-readme.html -diff -text

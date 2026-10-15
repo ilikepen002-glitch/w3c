@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "method": "Human-readable inspection of final MDX poses rendered by Blender using decoded final BLP; no concept-art substitution",
+  "viewsReviewed": [
+    "all 6 Stand before/after",
+    "all 6 Walk and Float/Jump/Spin/Sleep/Cast key-pose sheets"
+  ],
+  "notes": [
+    "SilverMane approved painted BLP preserved exactly",
+    "No topology or animation edits",
+    "Mosscap top face tile remap removes alternating patchwork",
+    "Rootbud lower legs remain dark by design; whole silhouette and buds readable",
+    "Mosscap brim masks eyes at high camera angle; silhouette unchanged"
+  ],
+  "gameEngineTested": false
+}

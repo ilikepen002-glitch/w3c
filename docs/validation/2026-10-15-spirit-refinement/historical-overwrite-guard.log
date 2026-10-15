@@ -1,0 +1,15 @@
+/workspace/shared/w3c-spirit-refinement-integration/tools/BuildPetDisplayModels.cjs:11
+if(manifest.refinementRevision)throw Error('Refined assets are active. Historical BASE append would overwrite approved geometry/textures. Use python3 tools/BuildSpiritRefinementAssets.py [--write] for the verified isolated rebuild.');
+                               ^
+
+Error: Refined assets are active. Historical BASE append would overwrite approved geometry/textures. Use python3 tools/BuildSpiritRefinementAssets.py [--write] for the verified isolated rebuild.
+    at Object.<anonymous> (/workspace/shared/w3c-spirit-refinement-integration/tools/BuildPetDisplayModels.cjs:11:38)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v24.19.0

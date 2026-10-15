@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "files": 12,
+  "sameBytesAfterRepeatRebuild": true,
+  "sha256": {
+    "imports/Textures/BrassPangolinAtlas.blp": "3d97d8231f45855b94f379196dbb915715c1ad0d0b68bfb4b019e72137cc004a",
+    "imports/Textures/LeafwingAtlas.blp": "0e42dbff34c8f5c241cd78352bcfd4855ed918b1f3af243c735a6a773b072e09",
+    "imports/Textures/MosscapAtlas.blp": "1018356b6848c118d65ca3a21824738a05e5cd7842764c463183251627fe71aa",
+    "imports/Textures/RootbudAtlas.blp": "e74bc3916a1d8ee404b656eccca7a831972ea572a0e021745c91061187cc026b",
+    "imports/Textures/SilverManeAtlas.blp": "af713ae301a3dd2b5c83e2b9a128101e901119901301978d8f10e8f04f4084b2",
+    "imports/Textures/SteelwingAtlas.blp": "4e355fb0f89e60776db08f1d542fe2e019f3641aef52a9bf9df8f9498e70c1ac",
+    "imports/war3mapImported/BrassPangolin.mdx": "bd6c40dfc279ac16fa89778c30aed64cd73659533fa83ef670da4c2e1a71e20b",
+    "imports/war3mapImported/LeafwingSpirit.mdx": "046de3d842fe97b5838c3142a9b9d56320c4e706878c6753adfc650d6ca7cbf2",
+    "imports/war3mapImported/MosscapSprite.mdx": "9ad4bef1963a9f7afd0dbe8280863d9a1cd3ee785f8e391f6fc990a8b2a557ed",
+    "imports/war3mapImported/RootbudStag.mdx": "c5d50f0f8b21af69f7f92aed21cc577b94c26ef778323732570deeda27552927",
+    "imports/war3mapImported/SilverManeBeast.mdx": "bf3626033ff16ae865ebd84a08573732e9666029d48d6fc2273c82d208bfc130",
+    "imports/war3mapImported/SteelwingFalcon.mdx": "1f80c6d9fc4006d1229a6f97c3e88a02a4bdf8cf056fdf6f78bdec770219ce23"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "sourceModel": "MoltenHornSalamander.mdx",
+  "sourceModelSha256": "bb9bc585505dc6849cc05574b7367ec361183502e204290d4ede9e981cfbc822",
+  "sourceBlp": "MoltenHornAtlas.blp",
+  "sourceBlpSha256": "752a7c5fb18397e4cff06e30b9fc99ce52d555fd2388cf7b203c0accaa4fa676",
+  "textureWidth": 256,
+  "textureHeight": 256,
+  "alphaBits": 0
+}

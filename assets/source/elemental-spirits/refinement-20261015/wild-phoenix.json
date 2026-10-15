@@ -1,0 +1,48 @@
+{
+  "source": "imports/war3mapImported/EmberBird.mdx",
+  "sourceSha256": "c4c41bd7f384f64e4dbf575681791f9ea08358ad3770b7ed3d47a341bf3f67a7",
+  "output": "imports/war3mapImported/EmberBirdWild.mdx",
+  "zOffset": 73,
+  "wildScale": 1.375348,
+  "mainBodyGeosetIndices": [
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "calibration": {
+    "samples": 1001,
+    "sequence": "Walk",
+    "oldEmberBird": {
+      "min": [
+        -75.83793640136719,
+        -60.72853469848633,
+        2.2895169258117676
+      ],
+      "max": [
+        30.5999755859375,
+        60.72853469848633,
+        109.89356231689453
+      ],
+      "maxAxis": 121.45706939697266
+    },
+    "finalPhoenix": {
+      "min": [
+        -150.340576171875,
+        -106.01981353759766,
+        -50.36219024658203
+      ],
+      "max": [
+        74.85015869140625,
+        104.78693389892578,
+        99.71660614013672
+      ],
+      "maxAxis": 225.19073486328125
+    },
+    "oldWildScale": 2.55,
+    "oldLongestWorldAxis": 309.71552696228025,
+    "newLongestWorldAxis": 309.7156268127441
+  },
+  "deathBoundary": "Original death sinking retained; no death root key correction. Stand/Walk low-hover origin takes priority."
+}

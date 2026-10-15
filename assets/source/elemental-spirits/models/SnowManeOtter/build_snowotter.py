@@ -23,9 +23,10 @@ tube('otter mouth crease',[(44,-5,22.5),(45,0,21.7),(44,5,22.5)],[.28,.35,.28],1
 for s in [-1,1]:
  ellipsoid('small rounded ear '+str(s),(25,s*10,35.7),(3.6,3.4,4.2),2,2,n=8,k=4)
  ellipsoid('pale ear inner '+str(s),(27,s*10.9,36.3),(1.5,1.6,2.4),8,2,n=7,k=3)
- ellipsoid('small dark eye socket '+str(s),(36,s*10.5,31.3),(2.6,1.7,2.1),0,2,n=8,k=3)
- ellipsoid('muted teal eye '+str(s),(37,s*11.2,31.9),(1.1,.6,1.1),14,2,n=7,k=3)
- ellipsoid('dark tiny pupil '+str(s),(37.3,s*11.6,31.9),(.48,.22,.8),13,2,n=6,k=3)
+ ellipsoid('small dark eye socket '+str(s),(36,s*10.5,31.3),(3.1,1.9,2.5),0,2,n=8,k=3)
+ ellipsoid('muted teal eye '+str(s),(37,s*11.2,31.9),(1.65,.8,1.5),14,2,n=7,k=3)
+ ellipsoid('dark tiny pupil '+str(s),(37.3,s*11.6,31.9),(.6,.26,1.0),13,2,n=6,k=3)
+ ellipsoid('snow eye catchlight '+str(s),(37.7,s*11.95,32.5),(.35,.12,.4),15,2,n=6,k=3)
  tube('lowered snowy brow '+str(s),[(31,s*10,34),(35,s*11,34.4),(39,s*9.2,33.5)],[1.7,1.4,.65],5,2,n=6)
  for j in [-1,1]:tube('cream otter whisker '+str(s)+' '+str(j),[(41,s*7,25),(40-j*2,s*14,26+j),(36-j*3,s*20,28+j*2)],[.45,.32,.07],11,2,n=5)
 # Thick tapered muscular tail, very different from the water wyrm's finned tail.
@@ -70,18 +71,7 @@ for bi,b in enumerate(bones):
    for tag,val in [('KGTR',tr),('KGRT',rot),('KGSC',sc)]:tracks[tag].append([t,val])
  b['tracks']=tracks
 (OUT/'snowotter-source.json').write_text(json.dumps(dict(name='SnowManeOtter_Original_v1',version=800,parts=parts,bones=bones,sequences=[dict(name=n,start=a,end=z,loop=lo) for n,a,z,lo in seqs],palette=colors)))
-rng=np.random.default_rng(9518);atlas=Image.new('RGB',(256,256));Y,X=np.mgrid[0:64,0:64];xx=X/63;yy=Y/63
-for k,base in enumerate(colors):
- noise=Image.fromarray(rng.integers(0,255,(8,8),dtype=np.uint8)).resize((64,64),Image.Resampling.BICUBIC).filter(ImageFilter.GaussianBlur(1));grain=(np.asarray(noise).astype(float)-128)/128;light=1.13-.22*yy-.07*xx+grain*.045
- if k>=13:light=np.ones((64,64))
- tile=Image.fromarray(np.clip(np.array(base)[None,None,:]*light[:,:,None],0,255).astype(np.uint8));d=ImageDraw.Draw(tile)
- if k in [2,3,4,5,8,11,12]:
-  for y in [6,18,30,42,54]:
-   for x in range(5+(y//12%2)*5,61,12):
-    d.line([(x,y),(x-2,y+6),(x,y+9)],fill=tuple(int(v*.77) for v in base),width=1);d.line([(x+2,y),(x+1,y+5)],fill=tuple(min(255,int(v*1.16)) for v in base),width=1)
- atlas.paste(tile,((k%4)*64,(k//4)*64))
-atlas.save(OUT/'SnowOtterAtlas_source.png');quant=atlas.quantize(colors=256,method=Image.Quantize.MEDIANCUT);pal=quant.getpalette();offsets=[0]*16;sizes=[0]*16;blobs=[];off=1180
-for i in range(9):
- sz=max(1,256>>i);idx=atlas.resize((sz,sz),Image.Resampling.BOX).quantize(palette=quant,dither=Image.Dither.NONE).tobytes();offsets[i]=off;sizes[i]=len(idx);off+=len(idx);blobs.append(idx)
-(OUT/'SnowOtterAtlas.blp').write_bytes(b'BLP1'+struct.pack('<6I',1,0,256,256,5,1)+struct.pack('<16I',*offsets)+struct.pack('<16I',*sizes)+b''.join(bytes([pal[i*3+2],pal[i*3+1],pal[i*3],255]) for i in range(256))+b''.join(blobs))
-print(json.dumps({'triangles':sum(len(p['faces']) for p in parts),'bones':len(bones)}))
+
+# Refined atlas is the persisted built-in imagegen output. Resize/BLP encoding only.
+import runpy
+runpy.run_path(str(ROOT.parents[4]/'tools/EncodeWaterEarthAtlas.py'))['encode'](OUT/'atlas-refined-imagegen.png',OUT/'SnowOtterAtlas_source.png',OUT/'SnowOtterAtlas.blp')

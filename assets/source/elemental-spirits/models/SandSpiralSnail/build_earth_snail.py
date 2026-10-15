@@ -27,7 +27,9 @@ for s in [-1,1]:
  bi=4 if s==1 else 5
  tube('long curved eye stalk '+str(s),[(40,s*6,23),(42,s*9,33),(40,s*12,44)],[2.8,2.25,1.7],6,bi,n=7)
  ellipsoid('small dark eye tip '+str(s),(40,s*12,45),(3.2,3.3,3.8),0,bi,n=8,k=4)
- ellipsoid('small amber eye glint '+str(s),(42.3,s*12,45.6),(.7,1.2,1.3),14,bi,n=6,k=3)
+ ellipsoid('small amber eye glint '+str(s),(42.8,s*12,45.6),(1.05,1.8,1.9),14,bi,n=6,k=3)
+ ellipsoid('obsidian eye pupil '+str(s),(43.7,s*12,45.7),(.25,.75,1.1),13,bi,n=6,k=3)
+ ellipsoid('gold eye catchlight '+str(s),(43.95,s*12.3,46.35),(.15,.32,.36),15,bi,n=6,k=3)
  tube('short feeler '+str(s),[(46,s*7,18),(54,s*12,20),(57,s*15,21)],[1.3,.9,.12],6,3,n=6)
  for x in [-18,-4,10,24]:
   # A scalloped soft foot edge makes the crawling silhouette clear.
@@ -66,21 +68,7 @@ for bi,b in enumerate(bones):
    for tag,val in [('KGTR',tr),('KGRT',rot),('KGSC',sc)]:tracks[tag].append([t,val])
  b['tracks']=tracks
 (OUT/'earth_snail-source.json').write_text(json.dumps(dict(name='SandSpiralSnail_Original_v1',version=800,parts=parts,bones=bones,sequences=[dict(name=n,start=a,end=z,loop=lo) for n,a,z,lo in seqs],palette=colors)))
-rng=np.random.default_rng(3250);atlas=Image.new('RGB',(256,256));Y,X=np.mgrid[0:64,0:64];xx=X/63;yy=Y/63
-for k,base in enumerate(colors):
- noise=Image.fromarray(rng.integers(0,255,(8,8),dtype=np.uint8)).resize((64,64),Image.Resampling.BICUBIC).filter(ImageFilter.GaussianBlur(1));grain=(np.asarray(noise).astype(float)-128)/128;light=1.16-.30*yy-.07*xx+grain*.055
- if k>=13:light=np.ones((64,64))
- tile=Image.fromarray(np.clip(np.array(base)[None,None,:]*light[:,:,None],0,255).astype(np.uint8));d=ImageDraw.Draw(tile)
- if k in [1,2,3,8,9,10,11,12]:
-  for y in [11,28,46]:
-   pts=[(6,y),(20,y+3),(33,y-2),(47,y+4),(58,y+2)];d.line(pts,fill=tuple(int(v*.64) for v in base),width=2);d.line([(x,y-2) for x,y in pts],fill=tuple(min(255,int(v*1.18)) for v in base),width=1)
-  d.line([(14,6),(21,22),(17,34)],fill=tuple(int(v*.62) for v in base),width=1)
- elif k in [4,5,6,7]:
-  for y in range(10,58,13):
-   for x in range(8+(y//13%2)*5,58,14):d.arc((x,y,x+9,y+7),0,170,fill=tuple(int(v*.75) for v in base),width=1)
- atlas.paste(tile,((k%4)*64,(k//4)*64))
-atlas.save(OUT/'SandSpiralAtlas_source.png');quant=atlas.quantize(colors=256,method=Image.Quantize.MEDIANCUT);pal=quant.getpalette();offsets=[0]*16;sizes=[0]*16;blobs=[];off=1180
-for i in range(9):
- sz=max(1,256>>i);idx=atlas.resize((sz,sz),Image.Resampling.BOX).quantize(palette=quant,dither=Image.Dither.NONE).tobytes();offsets[i]=off;sizes[i]=len(idx);off+=len(idx);blobs.append(idx)
-(OUT/'SandSpiralAtlas.blp').write_bytes(b'BLP1'+struct.pack('<6I',1,0,256,256,5,1)+struct.pack('<16I',*offsets)+struct.pack('<16I',*sizes)+b''.join(bytes([pal[i*3+2],pal[i*3+1],pal[i*3],255]) for i in range(256))+b''.join(blobs))
-print(json.dumps({'triangles':sum(len(p['faces']) for p in parts),'bones':len(bones)}))
+
+# Refined atlas is the persisted built-in imagegen output. Resize/BLP encoding only.
+import runpy
+runpy.run_path(str(ROOT.parents[4]/'tools/EncodeWaterEarthAtlas.py'))['encode'](OUT/'atlas-refined-imagegen.png',OUT/'SandSpiralAtlas_source.png',OUT/'SandSpiralAtlas.blp')

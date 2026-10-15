@@ -1,0 +1,14 @@
+{
+  "generator": "built-in imagegen",
+  "generatedForThisPass": true,
+  "sourceImage": "atlas-imagegen.png",
+  "sourceImageSha256": "e24a9f854f4685087722463a97143586beb7283ba877dc5bd605317da3be7dc3",
+  "sourceDimensions": [
+    1254,
+    1254
+  ],
+  "prompt": "Use case: stylized-concept. Asset type: production Warcraft III low-poly creature UV MATERIAL ATLAS, not concept artwork. Generate a square 1024x1024 flat, perfectly aligned 4x4 GRID of 16 equal square material swatches. Exactly no gaps, borders, labels, margins or gridlines. Each swatch fills its tile. No characters, eyes, body parts, props, compositions or objects. Each tile a hand-painted game material with 3 broad value bands, crisp expressive painterly shapes, readable at 64x64 per tile. No photorealism, NO airbrushed gradient or plastic sheen, no tiny micro-noise. Rich stylized contrast. Exact row-major assignments: For the existing wood-element fairy with leaf wings, keep organic leaves and bark, make turquoise leaf planes with lilac and pearl accents readable over grass. Broad leaf vein strokes on green/teal tiles and broad bark strokes on browns, no repetitive fine linework. 0 solid deep blue-green #153942; 1 deep forest teal #285759; 2 jade teal #309689; 3 bright mint teal #64c8b1; 4 luminous pale mint #afe6c8; 5 pearl ivory #f4e8d3; 6 warm tan bark #a07869; 7 dark muted plum bark #685064; 8 pale lavender bark #c0a4cb; 9 peach pearl #edc0a8; 10 deep blue teal leaf #367b96; 11 violet-lilac leaf #af91d1; 12 pale pearl lilac #e4d5fa; 13 solid dark navy #172138; 14 solid golden amber #ffcc67; 15 solid ivory #fff7dd. Keep tile edges at 25%,50%,75%; no shadow gaps. Material-only flat front orthographic view. Opaque background.",
+  "conversion": "Pillow RGB resizing only to 256x256; 256-color palette BLP1; opaque; 9 mipmaps. No program-painted pixels.",
+  "date": "2026-10-15",
+  "outputTexturePath": "Textures\\LeafwingAtlas.blp"
+}

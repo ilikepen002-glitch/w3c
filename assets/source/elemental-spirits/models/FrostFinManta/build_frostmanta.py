@@ -40,8 +40,9 @@ ellipsoid('pale blunt mouth',(30,0,32),(8,9,2.9),5,8,n=10,k=4)
 tube('mouth crease',[(35,-6,33),(36,0,32),(35,6,33)],[.35,.45,.35],0,8,n=5)
 for s in [-1,1]:
  ellipsoid('raised eye socket '+str(s),(25,s*9.5,41),(4.1,3.5,2.3),0,8,n=8,k=3)
- ellipsoid('turquoise eye '+str(s),(27,s*10.5,42),(2.1,1.75,1.2),14,8,n=8,k=3)
- ellipsoid('narrow eye pupil '+str(s),(27.5,s*10.8,42.9),(.65,.95,.4),13,8,n=6,k=3)
+ ellipsoid('turquoise eye '+str(s),(27,s*10.5,42),(2.6,2.1,1.45),14,8,n=8,k=3)
+ ellipsoid('narrow eye pupil '+str(s),(27.5,s*10.8,42.9),(.8,1.05,.5),13,8,n=6,k=3)
+ ellipsoid('ice eye catchlight '+str(s),(27.8,s*10.9,43.4),(.38,.4,.22),15,8,n=6,k=3)
  tube('ice brow '+str(s),[(20,s*10,43),(24,s*11,44),(29,s*9,43)],[1.4,1.5,.7],11,8,n=6)
  tube('curled cephalic lobe '+str(s),[(28,s*9,35),(37,s*11,35),(43,s*8,37),(42,s*5,38)],[3.6,3,1.9,.5],4,8,n=7)
  for j in range(3):tube('gill slit '+str(s)+' '+str(j),[(11-j*5,s*13.5,32),(8-j*5,s*14,34)],[.45,.3],1,1,n=5)
@@ -81,21 +82,7 @@ for bi,b in enumerate(bones):
    for tag,val in [('KGTR',tr),('KGRT',rot),('KGSC',sc)]:tracks[tag].append([t,val])
  b['tracks']=tracks
 (OUT/'frostmanta-source.json').write_text(json.dumps(dict(name='FrostFinManta_Original_v1',version=800,parts=parts,bones=bones,sequences=[dict(name=n,start=a,end=z,loop=lo) for n,a,z,lo in seqs],palette=colors)))
-# Painted fin rays and restrained icy mottling, 16 authored UV tiles.
-rng=np.random.default_rng(8407);atlas=Image.new('RGB',(256,256));Y,X=np.mgrid[0:64,0:64];xx=X/63;yy=Y/63
-for k,base in enumerate(colors):
- noise=Image.fromarray(rng.integers(0,255,(8,8),dtype=np.uint8)).resize((64,64),Image.Resampling.BICUBIC).filter(ImageFilter.GaussianBlur(1));grain=(np.asarray(noise).astype(float)-128)/128;light=1.13-.25*yy-.08*xx+grain*.05
- if k in [8,10,11]:light=.78+.35*(1-yy)+.08*np.sin(xx*12)+grain*.03
- if k>=13:light=np.ones((64,64))
- tile=Image.fromarray(np.clip(np.array(base)[None,None,:]*light[:,:,None],0,255).astype(np.uint8));d=ImageDraw.Draw(tile)
- if k in [2,3,4,8,10,11]:
-  for x in [6,17,29,41,53]:
-   d.line([(31,2),(x,57)],fill=tuple(int(v*.67) for v in base),width=1);d.line([(32,2),(x+1,57)],fill=tuple(min(255,int(v*1.18)) for v in base),width=1)
-  if k in [3,4]:
-   for x,y in [(11,20),(38,27),(24,44),(48,48)]:d.ellipse((x,y,x+3,y+2),fill=tuple(min(255,int(v*1.24)) for v in base))
- atlas.paste(tile,((k%4)*64,(k//4)*64))
-atlas.save(OUT/'FrostMantaAtlas_source.png');quant=atlas.quantize(colors=256,method=Image.Quantize.MEDIANCUT);pal=quant.getpalette();offsets=[0]*16;sizes=[0]*16;blobs=[];off=1180
-for i in range(9):
- sz=max(1,256>>i);idx=atlas.resize((sz,sz),Image.Resampling.BOX).quantize(palette=quant,dither=Image.Dither.NONE).tobytes();offsets[i]=off;sizes[i]=len(idx);off+=len(idx);blobs.append(idx)
-(OUT/'FrostMantaAtlas.blp').write_bytes(b'BLP1'+struct.pack('<6I',1,0,256,256,5,1)+struct.pack('<16I',*offsets)+struct.pack('<16I',*sizes)+b''.join(bytes([pal[i*3+2],pal[i*3+1],pal[i*3],255]) for i in range(256))+b''.join(blobs))
-print(json.dumps({'triangles':sum(len(p['faces']) for p in parts),'bones':len(bones),'continuous_blended_fins':True}))
+
+# Refined atlas is the persisted built-in imagegen output. Resize/BLP encoding only.
+import runpy
+runpy.run_path(str(ROOT.parents[4]/'tools/EncodeWaterEarthAtlas.py'))['encode'](OUT/'atlas-refined-imagegen.png',OUT/'FrostMantaAtlas_source.png',OUT/'FrostMantaAtlas.blp')

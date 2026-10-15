@@ -1,0 +1,594 @@
+{
+  "status": "PASS",
+  "game127aTested": false,
+  "models": [
+    {
+      "model": "TideWyrm",
+      "modelImportPath": "war3mapImported\\TideWyrm.mdx",
+      "requiredTextureImportPath": "Textures\\TideWyrmAtlas.blp",
+      "modelSha256": "5540b3f152e38012d32a3935a4a5bed55ad4ec8b0433d9ec71ad2de0af903608",
+      "textureSha256": "e5349b89e0871238dbb40e509134df591b834f89672a9ff7701528203c0b825a",
+      "source": "assets/source/elemental-spirits/models/TideWyrm/original/tidewyrm-source.json",
+      "game127aTested": false,
+      "version": 800,
+      "bones": 12,
+      "trianglesBefore": 1834,
+      "trianglesAfter": 1882,
+      "bonesEqual": true,
+      "pivotsEqual": true,
+      "sequencesEqual": true,
+      "animations": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "samples": 65,
+          "maxCoordinateChange": 21.61209201812744,
+          "loopEndpointDelta": 5.030660493245706e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "samples": 65,
+          "maxCoordinateChange": 47.42733192443848,
+          "loopEndpointDelta": 1.1067453191019672e-15,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "samples": 65,
+          "maxCoordinateChange": 14.877960205078125,
+          "loopEndpointDelta": 0,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "samples": 65,
+          "maxCoordinateChange": 51.383113861083984,
+          "loopEndpointDelta": 51.383113861083984,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "samples": 65,
+          "maxCoordinateChange": 21.61209201812744,
+          "loopEndpointDelta": 5.030660493245706e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "samples": 65,
+          "maxCoordinateChange": 23.739218711853027,
+          "loopEndpointDelta": 5.231886934151358e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "samples": 65,
+          "maxCoordinateChange": 22.613406896591187,
+          "loopEndpointDelta": 1.1089407994146066e-31,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "samples": 65,
+          "maxCoordinateChange": 74.31809616088867,
+          "loopEndpointDelta": 7.23898751272406e-15,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "samples": 65,
+          "maxCoordinateChange": 11.867569923400879,
+          "loopEndpointDelta": 2.615771413508268e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "samples": 65,
+          "maxCoordinateChange": 16.33230209350586,
+          "loopEndpointDelta": 8.009017407102982e-32,
+          "outsideSequenceExtent": 0
+        }
+      ]
+    },
+    {
+      "model": "FrostFinManta",
+      "modelImportPath": "war3mapImported\\FrostFinManta.mdx",
+      "requiredTextureImportPath": "Textures\\FrostMantaAtlas.blp",
+      "modelSha256": "68b30a548cebde083f109769295dc69f543ca02aa1536649375588cbd94e313b",
+      "textureSha256": "20f22cd0bda21f767a605eb05081370e5ba691b3c985bea1096a72fda5dbb923",
+      "source": "assets/source/elemental-spirits/models/FrostFinManta/original/frostmanta-source.json",
+      "game127aTested": false,
+      "version": 800,
+      "bones": 9,
+      "trianglesBefore": 1542,
+      "trianglesAfter": 1590,
+      "bonesEqual": true,
+      "pivotsEqual": true,
+      "sequencesEqual": true,
+      "animations": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "samples": 65,
+          "maxCoordinateChange": 21.280433177947998,
+          "loopEndpointDelta": 0,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "samples": 65,
+          "maxCoordinateChange": 21.280433177947998,
+          "loopEndpointDelta": 0,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "samples": 65,
+          "maxCoordinateChange": 25.040135383605957,
+          "loopEndpointDelta": 3.9677318179282895e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "samples": 65,
+          "maxCoordinateChange": 33.82987117767334,
+          "loopEndpointDelta": 33.829872131347656,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "samples": 65,
+          "maxCoordinateChange": 21.280433177947998,
+          "loopEndpointDelta": 0,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "samples": 65,
+          "maxCoordinateChange": 14.807059288024902,
+          "loopEndpointDelta": 3.5709582920283257e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "samples": 65,
+          "maxCoordinateChange": 31.12258529663086,
+          "loopEndpointDelta": 2.3806387731196185e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "samples": 65,
+          "maxCoordinateChange": 66.17261028289795,
+          "loopEndpointDelta": 4.717053214909261e-15,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "samples": 65,
+          "maxCoordinateChange": 3.8984679877758026,
+          "loopEndpointDelta": 0,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "samples": 65,
+          "maxCoordinateChange": 25.77255630493164,
+          "loopEndpointDelta": 9.522556151269658e-16,
+          "outsideSequenceExtent": 0
+        }
+      ]
+    },
+    {
+      "model": "SnowManeOtter",
+      "modelImportPath": "war3mapImported\\SnowManeOtter.mdx",
+      "requiredTextureImportPath": "Textures\\SnowOtterAtlas.blp",
+      "modelSha256": "a57719a74b1d3fec4aee403f638320ee998bd0110a808ddceb356610c93b7c6d",
+      "textureSha256": "89ebaa4560b719c9bd70aba2b189c38a2d3bad11f1eb24d760dcb9845d129405",
+      "source": "assets/source/elemental-spirits/models/SnowManeOtter/original/snowotter-source.json",
+      "game127aTested": false,
+      "version": 800,
+      "bones": 9,
+      "trianglesBefore": 2146,
+      "trianglesAfter": 2194,
+      "bonesEqual": true,
+      "pivotsEqual": true,
+      "sequencesEqual": true,
+      "animations": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "samples": 65,
+          "maxCoordinateChange": 6.669477939605713,
+          "loopEndpointDelta": 2.663429986983327e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "samples": 65,
+          "maxCoordinateChange": 10.158940315246582,
+          "loopEndpointDelta": 1.8538724242935173e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "samples": 65,
+          "maxCoordinateChange": 12.787273406982422,
+          "loopEndpointDelta": 7.536083895457032e-17,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "samples": 65,
+          "maxCoordinateChange": 14.740915775299072,
+          "loopEndpointDelta": 14.740915298461914,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "samples": 65,
+          "maxCoordinateChange": 6.669477939605713,
+          "loopEndpointDelta": 2.663429986983327e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "samples": 65,
+          "maxCoordinateChange": 7.4109742641448975,
+          "loopEndpointDelta": 4.76837158203125e-7,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "samples": 65,
+          "maxCoordinateChange": 16.164162635803223,
+          "loopEndpointDelta": 5.652060274614814e-17,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "samples": 65,
+          "maxCoordinateChange": 46.709867000579834,
+          "loopEndpointDelta": 4.7773094447110375e-15,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "samples": 65,
+          "maxCoordinateChange": 2.2989120483398438,
+          "loopEndpointDelta": 0,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "samples": 65,
+          "maxCoordinateChange": 21.25729274749756,
+          "loopEndpointDelta": 2.2608262274282937e-16,
+          "outsideSequenceExtent": 0
+        }
+      ]
+    },
+    {
+      "model": "RockShellTurtle",
+      "modelImportPath": "war3mapImported\\RockShellTurtle.mdx",
+      "requiredTextureImportPath": "Textures\\RockTurtlePalette.blp",
+      "modelSha256": "22b5df4b1cab01ecfc80d165583d3417900d79c62fd7ad9de10cafbfdfc597cf",
+      "textureSha256": "31a198b634dff77a391b1e79ee419df71260b8f4b862edefadf1410a9452dfd3",
+      "source": "assets/source/elemental-spirits/models/RockShellTurtle/original/rockturtle-source.json",
+      "game127aTested": false,
+      "version": 800,
+      "bones": 8,
+      "trianglesBefore": 2252,
+      "trianglesAfter": 2252,
+      "bonesEqual": true,
+      "pivotsEqual": true,
+      "sequencesEqual": true,
+      "animations": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "samples": 65,
+          "maxCoordinateChange": 3.0439987182617188,
+          "loopEndpointDelta": 1.595314028957366e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "samples": 65,
+          "maxCoordinateChange": 6.527761459350586,
+          "loopEndpointDelta": 3.306546369631055e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "samples": 65,
+          "maxCoordinateChange": 11.29311752319336,
+          "loopEndpointDelta": 3.0616175285096137e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "samples": 65,
+          "maxCoordinateChange": 32.51592254638672,
+          "loopEndpointDelta": 32.51592254638672,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "samples": 65,
+          "maxCoordinateChange": 3.0439987182617188,
+          "loopEndpointDelta": 1.595314028957366e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "samples": 65,
+          "maxCoordinateChange": 2.7167434692382812,
+          "loopEndpointDelta": 2.051117810347074e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "samples": 65,
+          "maxCoordinateChange": 15.104443550109863,
+          "loopEndpointDelta": 3.894376647113699e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "samples": 65,
+          "maxCoordinateChange": 26.659741640090942,
+          "loopEndpointDelta": 6.688114553279542e-15,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "samples": 65,
+          "maxCoordinateChange": 1.8095207214355469,
+          "loopEndpointDelta": 1.9471883235568495e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "samples": 65,
+          "maxCoordinateChange": 14.986783981323242,
+          "loopEndpointDelta": 5.469648553050048e-16,
+          "outsideSequenceExtent": 0
+        }
+      ]
+    },
+    {
+      "model": "BoulderArmGibbon",
+      "modelImportPath": "war3mapImported\\BoulderArmGibbon.mdx",
+      "requiredTextureImportPath": "Textures\\BoulderArmAtlas.blp",
+      "modelSha256": "50c03400fc4e41aa5dbefd03d4d781e058b1d7839f72df13065bcd31608c7c56",
+      "textureSha256": "f69b1112c994666f1bde1d28f432999f167a5378fce2a8dc266f4da220eb8a49",
+      "source": "assets/source/elemental-spirits/models/BoulderArmGibbon/original/earth_gibbon-source.json",
+      "game127aTested": false,
+      "version": 800,
+      "bones": 9,
+      "trianglesBefore": 2214,
+      "trianglesAfter": 2310,
+      "bonesEqual": true,
+      "pivotsEqual": true,
+      "sequencesEqual": true,
+      "animations": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "samples": 65,
+          "maxCoordinateChange": 1.2511301040649414,
+          "loopEndpointDelta": 2.0789806944492082e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "samples": 65,
+          "maxCoordinateChange": 5.868027687072754,
+          "loopEndpointDelta": 3.6931592059331116e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "samples": 65,
+          "maxCoordinateChange": 30.85071563720703,
+          "loopEndpointDelta": 1.2246471172829639e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "samples": 65,
+          "maxCoordinateChange": 13.728225708007812,
+          "loopEndpointDelta": 13.728225708007812,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "samples": 65,
+          "maxCoordinateChange": 1.2511301040649414,
+          "loopEndpointDelta": 2.0789806944492082e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "samples": 65,
+          "maxCoordinateChange": 3.627187728881836,
+          "loopEndpointDelta": 0,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "samples": 65,
+          "maxCoordinateChange": 17.536741256713867,
+          "loopEndpointDelta": 3.7964048459673263e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "samples": 65,
+          "maxCoordinateChange": 22.687880754470825,
+          "loopEndpointDelta": 3.214869082073966e-15,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "samples": 65,
+          "maxCoordinateChange": 1.84281587600708,
+          "loopEndpointDelta": 1.8982024229836632e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "samples": 65,
+          "maxCoordinateChange": 58.411468505859375,
+          "loopEndpointDelta": 3.0371239826529795e-16,
+          "outsideSequenceExtent": 0
+        }
+      ]
+    },
+    {
+      "model": "SandSpiralSnail",
+      "modelImportPath": "war3mapImported\\SandSpiralSnail.mdx",
+      "requiredTextureImportPath": "Textures\\SandSpiralAtlas.blp",
+      "modelSha256": "b10586173fa61c6c35e128c62a84d68111b7b692c8b8dfd1d5ec5f4fe846a413",
+      "textureSha256": "30f67608c7a8632040ab5d7d1e54eed4b33b1d5d4fb42bedb36a89f1ffecdcc5",
+      "source": "assets/source/elemental-spirits/models/SandSpiralSnail/original/earth_snail-source.json",
+      "game127aTested": false,
+      "version": 800,
+      "bones": 7,
+      "trianglesBefore": 2136,
+      "trianglesAfter": 2232,
+      "bonesEqual": true,
+      "pivotsEqual": true,
+      "sequencesEqual": true,
+      "animations": [
+        {
+          "index": 0,
+          "name": "Stand",
+          "samples": 65,
+          "maxCoordinateChange": 2.4422073364257812,
+          "loopEndpointDelta": 2.614208637720584e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 1,
+          "name": "Walk",
+          "samples": 65,
+          "maxCoordinateChange": 4.813571929931641,
+          "loopEndpointDelta": 3.089343034455615e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 2,
+          "name": "Attack",
+          "samples": 65,
+          "maxCoordinateChange": 7.564823150634766,
+          "loopEndpointDelta": 0,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 3,
+          "name": "Death",
+          "samples": 65,
+          "maxCoordinateChange": 20.086761474609375,
+          "loopEndpointDelta": 20.086761474609375,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 4,
+          "name": "Portrait",
+          "samples": 65,
+          "maxCoordinateChange": 2.4422073364257812,
+          "loopEndpointDelta": 2.614208637720584e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 5,
+          "name": "Display Float",
+          "samples": 65,
+          "maxCoordinateChange": 2.937091827392578,
+          "loopEndpointDelta": 5.055288505582717e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 6,
+          "name": "Display Jump",
+          "samples": 65,
+          "maxCoordinateChange": 7.950847625732422,
+          "loopEndpointDelta": 3.3701924252877433e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 7,
+          "name": "Display Spin",
+          "samples": 65,
+          "maxCoordinateChange": 24.57486343383789,
+          "loopEndpointDelta": 6.260030878000797e-15,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 8,
+          "name": "Display Sleep",
+          "samples": 65,
+          "maxCoordinateChange": 1.5698261260986328,
+          "loopEndpointDelta": 1.396097438416871e-16,
+          "outsideSequenceExtent": 0
+        },
+        {
+          "index": 9,
+          "name": "Display Cast",
+          "samples": 65,
+          "maxCoordinateChange": 13.677370071411133,
+          "loopEndpointDelta": 1.3480769701150973e-15,
+          "outsideSequenceExtent": 0
+        }
+      ]
+    }
+  ]
+}

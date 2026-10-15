@@ -1,0 +1,687 @@
+{
+  "pass": true,
+  "outputSha256": "c4c41bd7f384f64e4dbf575681791f9ea08358ad3770b7ed3d47a341bf3f67a7",
+  "bytes": 124409,
+  "runtimeSequenceCount": 10,
+  "sourceRestorationSha256": "a06cdd7e302db85f7489f65592d01c0c519cde07b2118b4ef96a7d1ed5649a86",
+  "geometryScale": 1,
+  "geometryTranslation": [
+    0,
+    0,
+    0
+  ],
+  "maxKeyTimeRoundingMs": 0.49579831932715024,
+  "maxSampledVertexError": 0.8262139111271631,
+  "maxErrorPercentOfFloatSpan": 0.3672592705486931,
+  "maxQuaternionErrorDegrees": 0.3803828513733525,
+  "tracks": [
+    {
+      "path": "materials.1.layers.0.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 0,
+      "interpolationType": 3
+    },
+    {
+      "path": "geosetAnimations.0.animations[0]",
+      "status": "approved-disabled-each-sequence"
+    },
+    {
+      "path": "geosetAnimations.1.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 10,
+      "interpolationType": 0
+    },
+    {
+      "path": "geosetAnimations.2.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 10,
+      "interpolationType": 0
+    },
+    {
+      "path": "geosetAnimations.3.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 10,
+      "interpolationType": 0
+    },
+    {
+      "path": "geosetAnimations.4.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "geosetAnimations.5.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "geosetAnimations.6.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "geosetAnimations.7.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "geosetAnimations.8.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "bones.0.animations[0]",
+      "status": "global-exact",
+      "keys": 3
+    },
+    {
+      "path": "bones.1.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 0,
+      "interpolationType": 1
+    },
+    {
+      "path": "bones.1.animations[1]",
+      "status": "sparse-native-controls-exact",
+      "keys": 0,
+      "interpolationType": 2
+    },
+    {
+      "path": "bones.1.animations[2]",
+      "status": "sparse-native-controls-exact",
+      "keys": 0,
+      "interpolationType": 1
+    },
+    {
+      "path": "bones.33.animations[0]",
+      "status": "global-exact",
+      "keys": 3
+    },
+    {
+      "path": "bones.34.animations[0]",
+      "status": "global-exact",
+      "keys": 3
+    },
+    {
+      "path": "helpers.0.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 56,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.0.animations[1]",
+      "status": "sparse-native-controls-exact",
+      "keys": 25,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.0.animations[2]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 3
+    },
+    {
+      "path": "helpers.1.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 28,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.2.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 54,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.3.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 51,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.4.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 33,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.5.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 78,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.6.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 68,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.7.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 69,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.8.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 83,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.9.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 0,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.10.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 78,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.11.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 68,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.12.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 69,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.13.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 69,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.14.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 0,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.15.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 24,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.16.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 49,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.17.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 62,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.18.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 60,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.19.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 63,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.20.animations[0]",
+      "status": "global-exact",
+      "keys": 13
+    },
+    {
+      "path": "helpers.21.animations[0]",
+      "status": "global-exact",
+      "keys": 9
+    },
+    {
+      "path": "helpers.21.animations[1]",
+      "status": "sparse-native-controls-exact",
+      "keys": 0,
+      "interpolationType": 2
+    },
+    {
+      "path": "helpers.22.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 0,
+      "interpolationType": 2
+    },
+    {
+      "path": "attachments.0.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 0,
+      "interpolationType": 3
+    },
+    {
+      "path": "attachments.0.animations[1]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "attachments.1.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "attachments.2.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "attachments.3.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "attachments.4.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "attachments.5.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "attachments.6.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "particleEmitters2.0.animations[0]",
+      "status": "approved-disabled-each-sequence"
+    },
+    {
+      "path": "particleEmitters2.1.animations[0]",
+      "status": "approved-disabled-each-sequence"
+    },
+    {
+      "path": "particleEmitters2.2.animations[0]",
+      "status": "approved-disabled-each-sequence"
+    },
+    {
+      "path": "particleEmitters2.3.animations[0]",
+      "status": "approved-disabled-each-sequence"
+    },
+    {
+      "path": "particleEmitters2.4.animations[0]",
+      "status": "approved-disabled-each-sequence"
+    },
+    {
+      "path": "particleEmitters2.5.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 11,
+      "interpolationType": 0
+    },
+    {
+      "path": "particleEmitters2.6.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 11,
+      "interpolationType": 0
+    },
+    {
+      "path": "particleEmitters2.7.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 10,
+      "interpolationType": 0
+    },
+    {
+      "path": "ribbonEmitters.0.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "ribbonEmitters.1.animations[0]",
+      "status": "sparse-native-controls-exact",
+      "keys": 2,
+      "interpolationType": 0
+    },
+    {
+      "path": "ribbonEmitters.2.animations[0]",
+      "status": "approved-disabled-each-sequence"
+    },
+    {
+      "path": "ribbonEmitters.3.animations[0]",
+      "status": "approved-disabled-each-sequence"
+    }
+  ],
+  "events": [
+    {
+      "name": "SNDXDPHX",
+      "tracks": [
+        4000
+      ]
+    },
+    {
+      "name": "SNDXAPHX",
+      "tracks": []
+    },
+    {
+      "name": "SNDXAPXB",
+      "tracks": []
+    }
+  ],
+  "approvedFx": {
+    "hideGeoset0": true,
+    "disabledPRE2": [
+      67,
+      68,
+      69,
+      70,
+      71
+    ],
+    "disabledRibbons": [
+      77,
+      78
+    ],
+    "ribbonChanges": [
+      {
+        "objectId": 75,
+        "name": "BlizRibbon02",
+        "parentId": 44,
+        "active": true,
+        "before": {
+          "emissionRate": 15,
+          "lifeSpan": 0.699999988079071,
+          "alpha": 0.5,
+          "heightAbove": 12,
+          "heightBelow": 12
+        },
+        "after": {
+          "emissionRate": 10,
+          "lifeSpan": 0.25,
+          "alpha": 0.3,
+          "heightAbove": 4,
+          "heightBelow": 4
+        },
+        "steadySegments": 2.5
+      },
+      {
+        "objectId": 76,
+        "name": "BlizRibbon03",
+        "parentId": 49,
+        "active": true,
+        "before": {
+          "emissionRate": 15,
+          "lifeSpan": 0.699999988079071,
+          "alpha": 0.5,
+          "heightAbove": 12,
+          "heightBelow": 12
+        },
+        "after": {
+          "emissionRate": 10,
+          "lifeSpan": 0.25,
+          "alpha": 0.3,
+          "heightAbove": 4,
+          "heightBelow": 4
+        },
+        "steadySegments": 2.5
+      },
+      {
+        "objectId": 77,
+        "name": "BlizRibbon04",
+        "parentId": 56,
+        "active": false,
+        "before": {
+          "emissionRate": 15,
+          "lifeSpan": 0.8999999761581421,
+          "alpha": 0.5,
+          "heightAbove": 12,
+          "heightBelow": 12
+        },
+        "after": {
+          "emissionRate": 15,
+          "lifeSpan": 0.8999999761581421,
+          "alpha": 0.5,
+          "heightAbove": 12,
+          "heightBelow": 12
+        },
+        "steadySegments": 0
+      },
+      {
+        "objectId": 78,
+        "name": "BlizRibbon01",
+        "parentId": 57,
+        "active": false,
+        "before": {
+          "emissionRate": 20,
+          "lifeSpan": 0.800000011920929,
+          "alpha": 0.5,
+          "heightAbove": 50,
+          "heightBelow": 50
+        },
+        "after": {
+          "emissionRate": 20,
+          "lifeSpan": 0.800000011920929,
+          "alpha": 0.5,
+          "heightAbove": 50,
+          "heightBelow": 50
+        },
+        "steadySegments": 0
+      }
+    ]
+  },
+  "retainedDeathBursts": [
+    72,
+    73
+  ],
+  "sequencePose": [
+    {
+      "index": 0,
+      "name": "Stand",
+      "maxVertexError": 0.2784226452165195,
+      "rmsVertexError": 0.017713950658876043,
+      "bodyLoopSeamMaxVertexDistance": 0.00009553836629245899,
+      "bodyBounds": [
+        [
+          -150.8180542694756,
+          -112.09057673514064,
+          -71.8827985222899
+        ],
+        [
+          74.1494216754562,
+          109.94392054676264,
+          110.49568793860291
+        ]
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Walk",
+      "maxVertexError": 0.5883481912884,
+      "rmsVertexError": 0.019117633161829902,
+      "bodyLoopSeamMaxVertexDistance": 0.000013298591171238017,
+      "bodyBounds": [
+        [
+          -150.3404071553078,
+          -106.01469082737036,
+          -50.35880606710907
+        ],
+        [
+          74.85015617918695,
+          104.78507338685067,
+          99.71494774539333
+        ]
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Attack",
+      "maxVertexError": 0.8262139111271631,
+      "rmsVertexError": 0.05453319696454755,
+      "bodyLoopSeamMaxVertexDistance": 0.0001571191093933129,
+      "bodyBounds": [
+        [
+          -159.2701574177323,
+          -124.18989842043784,
+          -121.69328000937523
+        ],
+        [
+          112.89611928308986,
+          120.88643499988017,
+          126.64840744411617
+        ]
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Death",
+      "maxVertexError": 0,
+      "rmsVertexError": 0,
+      "bodyLoopSeamMaxVertexDistance": 208.69181874925707,
+      "bodyBounds": [
+        [
+          -136.26565852394563,
+          -91.38503309856391,
+          -160.5638616093685
+        ],
+        [
+          68.02925678158905,
+          102.87003620759917,
+          125.70561375451635
+        ]
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Portrait",
+      "maxVertexError": 0.6114810770446956,
+      "rmsVertexError": 0.0384308418585684,
+      "bodyLoopSeamMaxVertexDistance": 0.000018112793133277983,
+      "bodyBounds": [
+        [
+          -152.17310648219808,
+          -112.94519159582859,
+          -74.85128023629076
+        ],
+        [
+          70.62727555590827,
+          110.52660268267215,
+          101.07047445693216
+        ]
+      ]
+    },
+    {
+      "index": 5,
+      "name": "Display Float",
+      "maxVertexError": 0.2784226452165195,
+      "rmsVertexError": 0.017713950658877497,
+      "bodyLoopSeamMaxVertexDistance": 0.00009553836629245899,
+      "bodyBounds": [
+        [
+          -150.8180542694756,
+          -112.09057673514064,
+          -71.8827985222899
+        ],
+        [
+          74.1494216754562,
+          109.94392054676264,
+          110.49568793860291
+        ]
+      ]
+    },
+    {
+      "index": 6,
+      "name": "Display Jump",
+      "maxVertexError": 0.6032445646084142,
+      "rmsVertexError": 0.029680527680769956,
+      "bodyLoopSeamMaxVertexDistance": 0.000013298591171238017,
+      "bodyBounds": [
+        [
+          -150.33990557833295,
+          -106.00833267319587,
+          -50.343740438073475
+        ],
+        [
+          74.85015617918695,
+          104.78070198434042,
+          99.73433956122673
+        ]
+      ]
+    },
+    {
+      "index": 7,
+      "name": "Display Spin",
+      "maxVertexError": 0.3541622451542616,
+      "rmsVertexError": 0.02631844393484567,
+      "bodyLoopSeamMaxVertexDistance": 0.000018853167992051697,
+      "bodyBounds": [
+        [
+          -151.30854548695856,
+          -112.81789352248069,
+          -101.46636479837537
+        ],
+        [
+          74.4791033801504,
+          110.34560982974436,
+          114.25788017810332
+        ]
+      ]
+    },
+    {
+      "index": 8,
+      "name": "Display Sleep",
+      "maxVertexError": 0.2031533477845076,
+      "rmsVertexError": 0.012359319186075603,
+      "bodyLoopSeamMaxVertexDistance": 0.00009553836629245899,
+      "bodyBounds": [
+        [
+          -150.81790916162294,
+          -112.09399841615729,
+          -71.88924173026471
+        ],
+        [
+          74.14944062598407,
+          109.94955861570239,
+          110.5260068827591
+        ]
+      ]
+    },
+    {
+      "index": 9,
+      "name": "Display Cast",
+      "maxVertexError": 0.6551396889297012,
+      "rmsVertexError": 0.03636790302231376,
+      "bodyLoopSeamMaxVertexDistance": 1.302515968863032,
+      "bodyBounds": [
+        [
+          -136.56636427990628,
+          -108.00077673949062,
+          -102.48889852488318
+        ],
+        [
+          103.4973729088423,
+          110.18539548909794,
+          100.10648705375931
+        ]
+      ]
+    }
+  ],
+  "limitations": [
+    "Integer millisecond timing induces measured sub-unit pose deviations; original Hermite/Bezier controls preserved.",
+    "Only original ten runtime aliases are in this model. Complete original thirteen source sequences remain recoverable in the pinned source MDX.",
+    "No Warcraft runtime test; native ribbon low-segment visual continuity and native Death bursts not rendered in the body-only preview."
+  ]
+}

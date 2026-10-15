@@ -8,6 +8,7 @@ const ts=require(runtime+'/typescript');require.extensions['.ts']=(m,f)=>m._comp
 const helper=require('../assets/source/elemental-spirits/display-animations.cjs'),{Model}=helper.api(runtime);
 const args=process.argv.slice(2),write=args.includes('--write'),pi=args.indexOf('--preview-dir'),preview=pi>=0?path.resolve(args[pi+1]):null;
 const manifestPath=path.join(ROOT,'assets/source/elemental-spirits/import-manifest.json'),manifest=JSON.parse(fs.readFileSync(manifestPath)),reports=[];
+if(manifest.refinementRevision)throw Error('Refined assets are active. Historical BASE append would overwrite approved geometry/textures. Use python3 tools/BuildSpiritRefinementAssets.py [--write] for the verified isolated rebuild.');
 function sha(bytes){return crypto.createHash('sha256').update(bytes).digest('hex');}
 for(const entry of manifest.models.slice(1)){
   const relative='imports/'+entry.modelImportPath.replaceAll('\\','/'),model=path.basename(relative,'.mdx');

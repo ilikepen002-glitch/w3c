@@ -1,0 +1,164 @@
+{
+  "contract": [
+    {
+      "index": 0,
+      "name": "Stand",
+      "interval": [
+        0,
+        2000
+      ],
+      "sourceName": "Stand",
+      "sourceInterval": [
+        167,
+        1833
+      ],
+      "sourceIndex": 0,
+      "flags": 0,
+      "semantic": "Native flight idle, stretched from 1.666s to 2s"
+    },
+    {
+      "index": 1,
+      "name": "Walk",
+      "interval": [
+        2100,
+        3100
+      ],
+      "sourceName": "Walk",
+      "sourceInterval": [
+        12667,
+        13333
+      ],
+      "sourceIndex": 4,
+      "flags": 0,
+      "semantic": "Native forward flight wingbeat, 1s"
+    },
+    {
+      "index": 2,
+      "name": "Attack",
+      "interval": [
+        3200,
+        3900
+      ],
+      "sourceName": "Attack",
+      "sourceInterval": [
+        16333,
+        17333
+      ],
+      "sourceIndex": 6,
+      "flags": 1,
+      "semantic": "Native attack, 0.7s"
+    },
+    {
+      "index": 3,
+      "name": "Death",
+      "interval": [
+        4000,
+        5400
+      ],
+      "sourceName": "Death",
+      "sourceInterval": [
+        24167,
+        24867
+      ],
+      "sourceIndex": 9,
+      "flags": 1,
+      "semantic": "Native death fade, 1.4s; not an idle"
+    },
+    {
+      "index": 4,
+      "name": "Portrait",
+      "interval": [
+        5500,
+        7500
+      ],
+      "sourceName": "Stand - 4",
+      "sourceInterval": [
+        9000,
+        12333
+      ],
+      "sourceIndex": 3,
+      "flags": 0,
+      "semantic": "Native alert head/neck idle portrait, 2s"
+    },
+    {
+      "index": 5,
+      "name": "Display Float",
+      "interval": [
+        8000,
+        10000
+      ],
+      "sourceName": "Stand",
+      "sourceInterval": [
+        167,
+        1833
+      ],
+      "sourceIndex": 0,
+      "flags": 0,
+      "semantic": "Native looped flight idle, 2s"
+    },
+    {
+      "index": 6,
+      "name": "Display Jump",
+      "interval": [
+        10100,
+        10900
+      ],
+      "sourceName": "Walk",
+      "sourceInterval": [
+        12667,
+        13333
+      ],
+      "sourceIndex": 4,
+      "flags": 1,
+      "semantic": "Aerial alias: native wingbeat and vertical bob, 0.8s; not a ground leap"
+    },
+    {
+      "index": 7,
+      "name": "Display Spin",
+      "interval": [
+        11000,
+        12200
+      ],
+      "sourceName": "Stand - 5",
+      "sourceInterval": [
+        5500,
+        8833
+      ],
+      "sourceIndex": 2,
+      "flags": 1,
+      "semantic": "Bounded native pitch/neck sway, 1.2s; not a 360-degree rotation"
+    },
+    {
+      "index": 8,
+      "name": "Display Sleep",
+      "interval": [
+        12300,
+        15300
+      ],
+      "sourceName": "Stand",
+      "sourceInterval": [
+        167,
+        1833
+      ],
+      "sourceIndex": 0,
+      "flags": 0,
+      "semantic": "Conservative rest alias: slow native flight idle, 3s; no egg or death state"
+    },
+    {
+      "index": 9,
+      "name": "Display Cast",
+      "interval": [
+        15400,
+        16600
+      ],
+      "sourceName": "Spell",
+      "sourceInterval": [
+        17833,
+        19167
+      ],
+      "sourceIndex": 7,
+      "flags": 1,
+      "semantic": "Native spell gesture, 1.2s"
+    }
+  ]
+}
