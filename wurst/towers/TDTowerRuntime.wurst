@@ -753,9 +753,28 @@ function tdHandleArcherSplitArrowAttack(unit source, unit target)
 		return
 	tdQueueArcherSplitArrowVolley(source, target)
 
+// Read existing lifecycle state only. Native archer starts have no priority token.
+function tdArcherNativeAttackAllowed(unit source) returns boolean
+	if source == null or GetUnitTypeId(source) == 0 or not source.isAlive()
+		return false
+	let owner = GetPlayerId(GetOwningPlayer(source))
+	if not tdIsLaneActive(owner) or not tdTrialLaneContinues(owner) or tdPetBusyTowers.hasBoolean(source.getHandleId())
+		return false
+	let key = source.getHandleId()
+	if tdTowerSaleStates.hasInt(key)
+		let sale = tdTowerSaleStates.loadInt(key) castTo TDTowerSaleState
+		if not sale.canSell()
+			return false
+	let lifecycle = tdTargetPriorityStateFor(source)
+	return lifecycle == null or (lifecycle.owner == owner and lifecycle.epoch == tdFlowEpoch() and not lifecycle.working and not lifecycle.casting)
+
 function tdHandleTowerAttackStarted()
 	let source = GetAttacker()
 	let target = GetTriggerUnit()
+	if tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) == TD_TOWER_CHOICE_ARCHER
+		if tdArcherNativeAttackAllowed(source)
+			tdHandleArcherSplitArrowAttack(source, target)
+		return
 	if not tdTargetPriorityAcceptAttack(source, target)
 		return
 	// Exactly one accepted native attack start owns its split-arrow registration.

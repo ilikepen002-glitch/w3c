@@ -103,6 +103,8 @@ function tdTargetPriorityBest(TDTowerTargetPriorityState record, unit currentTar
 // cancelled branch register a second volley, even if native returns false.
 function tdTargetPriorityRedirect(TDTowerTargetPriorityState record, unit candidate) returns boolean
 	let source = record.source
+	if not tdTargetPriorityUsesScriptedPriority(tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)))
+		return false
 	let serial = record.serial
 	let intent = record.intentRevision
 	let redirect = record.beginRedirect(candidate)
@@ -127,6 +129,8 @@ function tdTargetPriorityRedirect(TDTowerTargetPriorityState record, unit candid
 	return false
 
 function tdTargetPriorityPark(TDTowerTargetPriorityState record)
+	if not tdTargetPriorityUsesScriptedPriority(tdTowerChoiceForUnitTypeId(GetUnitTypeId(record.source)))
+		return
 	if record.parked or record.manualTarget != null or not tdTargetPriorityAutomaticAllowed(record)
 		return
 	let source = record.source
@@ -153,6 +157,8 @@ function tdTargetPriorityPark(TDTowerTargetPriorityState record)
 		tdTargetPriorityStartRecovery()
 
 public function tdTargetPriorityAcceptAttack(unit source, unit target) returns boolean
+	if source == null or not tdTargetPriorityUsesScriptedPriority(tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)))
+		return true
 	let record = tdTargetPriorityGet(source)
 	if record == null
 		return true
@@ -207,6 +213,14 @@ function tdTargetPriorityRecoveryTick()
 		if not tdTargetPrioritySourceValid(record)
 			tdTargetPriorityForget(record.source)
 			continue
+		if not tdTargetPriorityUsesScriptedPriority(tdTowerChoiceForUnitTypeId(GetUnitTypeId(record.source)))
+			// A stale queued archer must recover native acquisition without orders.
+			record.cancelPending()
+			tdTargetPriorityUnpark(record)
+			let nativeRange = tdTowerEffectiveRangeForTower(record.source)
+			if GetUnitAcquireRange(record.source) != nativeRange
+				SetUnitAcquireRange(record.source, nativeRange)
+			continue
 		tdTargetPriorityParked.add(record)
 		if not tdTargetPriorityRecoveryDue(now, record.lastRecoveryQuery)
 			continue
@@ -242,6 +256,8 @@ function tdTargetPriorityStartRecovery()
 
 function tdTargetPriorityHandleOrder()
 	let source = GetTriggerUnit()
+	if source == null or not tdTargetPriorityUsesScriptedPriority(tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)))
+		return
 	let record = tdTargetPriorityGet(source)
 	if record == null
 		return

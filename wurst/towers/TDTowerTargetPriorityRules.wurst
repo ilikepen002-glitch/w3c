@@ -16,6 +16,10 @@ public function tdTargetPriorityPolicy(int towerChoice) returns int
 		return TD_TARGET_PRIORITY_RANK
 	return 0
 
+// Archers retain native target selection and uninterrupted attack starts.
+public function tdTargetPriorityUsesScriptedPriority(int towerChoice) returns boolean
+	return towerChoice != TD_TOWER_CHOICE_ARCHER and tdTargetPriorityPolicy(towerChoice) != 0
+
 public function tdTargetPriorityRank(int unitTypeId) returns int
 	if tdIsBossUnitTypeId(unitTypeId)
 		return 2

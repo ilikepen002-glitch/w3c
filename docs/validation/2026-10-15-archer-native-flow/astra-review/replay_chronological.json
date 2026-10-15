@@ -1,0 +1,549 @@
+{
+  "map_sha256": "c0f210f906b9d3437d5040be09373797387147e4acf224565ffbc3dcf657d67f",
+  "status": "PASS",
+  "boundary": "Actual packed registration/queue/consume/damage/expiry. Native clock/order/render delivery is controlled. Main arrival 0.25s is an assumed input within unchanged .55s expiry, not a Warcraft attack-point measurement. 0.07s start spacing deliberately stresses overlapping shots.",
+  "cases": [
+    {
+      "changing_primary": false,
+      "rows": [
+        {
+          "shot": 1,
+          "start": 0.0,
+          "primary": 102,
+          "victims": [
+            300,
+            301
+          ],
+          "amount": 11.0,
+          "visuals": 2,
+          "hit": 0.25,
+          "damage_segments": 2
+        },
+        {
+          "shot": 2,
+          "start": 0.07,
+          "primary": 102,
+          "victims": [
+            302,
+            303
+          ],
+          "amount": 12.0,
+          "visuals": 2,
+          "hit": 0.32,
+          "damage_segments": 2
+        },
+        {
+          "shot": 3,
+          "start": 0.14,
+          "primary": 102,
+          "victims": [
+            304,
+            305
+          ],
+          "amount": 13.0,
+          "visuals": 2,
+          "hit": 0.39,
+          "damage_segments": 2
+        },
+        {
+          "shot": 4,
+          "start": 0.21,
+          "primary": 102,
+          "victims": [
+            306,
+            307
+          ],
+          "amount": 14.0,
+          "visuals": 2,
+          "hit": 0.46,
+          "damage_segments": 2
+        },
+        {
+          "shot": 5,
+          "start": 0.28,
+          "primary": 102,
+          "victims": [
+            308,
+            309
+          ],
+          "amount": 15.0,
+          "visuals": 2,
+          "hit": 0.53,
+          "damage_segments": 2
+        },
+        {
+          "shot": 6,
+          "start": 0.35,
+          "primary": 102,
+          "victims": [
+            310,
+            311
+          ],
+          "amount": 16.0,
+          "visuals": 2,
+          "hit": 0.6,
+          "damage_segments": 2
+        },
+        {
+          "shot": 7,
+          "start": 0.42,
+          "primary": 102,
+          "victims": [
+            312,
+            313
+          ],
+          "amount": 17.0,
+          "visuals": 2,
+          "hit": 0.67,
+          "damage_segments": 2
+        },
+        {
+          "shot": 8,
+          "start": 0.49,
+          "primary": 102,
+          "victims": [
+            314,
+            315
+          ],
+          "amount": 18.0,
+          "visuals": 2,
+          "hit": 0.74,
+          "damage_segments": 2
+        },
+        {
+          "shot": 9,
+          "start": 0.56,
+          "primary": 102,
+          "victims": [
+            316,
+            317
+          ],
+          "amount": 19.0,
+          "visuals": 2,
+          "hit": 0.81,
+          "damage_segments": 2
+        },
+        {
+          "shot": 10,
+          "start": 0.63,
+          "primary": 102,
+          "victims": [
+            318,
+            319
+          ],
+          "amount": 20.0,
+          "visuals": 2,
+          "hit": 0.88,
+          "damage_segments": 2
+        },
+        {
+          "shot": 11,
+          "start": 0.7,
+          "primary": 102,
+          "victims": [
+            320,
+            321
+          ],
+          "amount": 21.0,
+          "visuals": 2,
+          "hit": 0.95,
+          "damage_segments": 2
+        },
+        {
+          "shot": 12,
+          "start": 0.77,
+          "primary": 102,
+          "victims": [
+            322,
+            323
+          ],
+          "amount": 22.0,
+          "visuals": 2,
+          "hit": 1.02,
+          "damage_segments": 2
+        },
+        {
+          "shot": 13,
+          "start": 0.84,
+          "primary": 102,
+          "victims": [
+            324,
+            325
+          ],
+          "amount": 23.0,
+          "visuals": 2,
+          "hit": 1.09,
+          "damage_segments": 2
+        },
+        {
+          "shot": 14,
+          "start": 0.91,
+          "primary": 102,
+          "victims": [
+            326,
+            327
+          ],
+          "amount": 24.0,
+          "visuals": 2,
+          "hit": 1.16,
+          "damage_segments": 2
+        },
+        {
+          "shot": 15,
+          "start": 0.98,
+          "primary": 102,
+          "victims": [
+            328,
+            329
+          ],
+          "amount": 25.0,
+          "visuals": 2,
+          "hit": 1.23,
+          "damage_segments": 2
+        },
+        {
+          "shot": 16,
+          "start": 1.05,
+          "primary": 102,
+          "victims": [
+            330,
+            331
+          ],
+          "amount": 26.0,
+          "visuals": 2,
+          "hit": 1.3,
+          "damage_segments": 2
+        },
+        {
+          "shot": 17,
+          "start": 1.12,
+          "primary": 102,
+          "victims": [
+            332,
+            333
+          ],
+          "amount": 27.0,
+          "visuals": 2,
+          "hit": 1.37,
+          "damage_segments": 2
+        },
+        {
+          "shot": 18,
+          "start": 1.19,
+          "primary": 102,
+          "victims": [
+            334,
+            335
+          ],
+          "amount": 28.0,
+          "visuals": 2,
+          "hit": 1.44,
+          "damage_segments": 2
+        },
+        {
+          "shot": 19,
+          "start": 1.26,
+          "primary": 102,
+          "victims": [
+            336,
+            337
+          ],
+          "amount": 29.0,
+          "visuals": 2,
+          "hit": 1.51,
+          "damage_segments": 2
+        },
+        {
+          "shot": 20,
+          "start": 1.33,
+          "primary": 102,
+          "victims": [
+            338,
+            339
+          ],
+          "amount": 30.0,
+          "visuals": 2,
+          "hit": 1.58,
+          "damage_segments": 2
+        }
+      ],
+      "peak_pending_volleys": 4,
+      "side_damage_segments": 40,
+      "expiry_callbacks": 20,
+      "final_live_volleys": 0,
+      "scripted_orders": 0,
+      "acquisition_writes": 0
+    },
+    {
+      "changing_primary": true,
+      "rows": [
+        {
+          "shot": 1,
+          "start": 0.0,
+          "primary": 102,
+          "victims": [
+            300,
+            301
+          ],
+          "amount": 11.0,
+          "visuals": 2,
+          "hit": 0.25,
+          "damage_segments": 2
+        },
+        {
+          "shot": 2,
+          "start": 0.07,
+          "primary": 103,
+          "victims": [
+            302,
+            303
+          ],
+          "amount": 12.0,
+          "visuals": 2,
+          "hit": 0.32,
+          "damage_segments": 2
+        },
+        {
+          "shot": 3,
+          "start": 0.14,
+          "primary": 102,
+          "victims": [
+            304,
+            305
+          ],
+          "amount": 13.0,
+          "visuals": 2,
+          "hit": 0.39,
+          "damage_segments": 2
+        },
+        {
+          "shot": 4,
+          "start": 0.21,
+          "primary": 102,
+          "victims": [
+            306,
+            307
+          ],
+          "amount": 14.0,
+          "visuals": 2,
+          "hit": 0.46,
+          "damage_segments": 2
+        },
+        {
+          "shot": 5,
+          "start": 0.28,
+          "primary": 103,
+          "victims": [
+            308,
+            309
+          ],
+          "amount": 15.0,
+          "visuals": 2,
+          "hit": 0.53,
+          "damage_segments": 2
+        },
+        {
+          "shot": 6,
+          "start": 0.35,
+          "primary": 102,
+          "victims": [
+            310,
+            311
+          ],
+          "amount": 16.0,
+          "visuals": 2,
+          "hit": 0.6,
+          "damage_segments": 2
+        },
+        {
+          "shot": 7,
+          "start": 0.42,
+          "primary": 102,
+          "victims": [
+            312,
+            313
+          ],
+          "amount": 17.0,
+          "visuals": 2,
+          "hit": 0.67,
+          "damage_segments": 2
+        },
+        {
+          "shot": 8,
+          "start": 0.49,
+          "primary": 103,
+          "victims": [
+            314,
+            315
+          ],
+          "amount": 18.0,
+          "visuals": 2,
+          "hit": 0.74,
+          "damage_segments": 2
+        },
+        {
+          "shot": 9,
+          "start": 0.56,
+          "primary": 102,
+          "victims": [
+            316,
+            317
+          ],
+          "amount": 19.0,
+          "visuals": 2,
+          "hit": 0.81,
+          "damage_segments": 2
+        },
+        {
+          "shot": 10,
+          "start": 0.63,
+          "primary": 102,
+          "victims": [
+            318,
+            319
+          ],
+          "amount": 20.0,
+          "visuals": 2,
+          "hit": 0.88,
+          "damage_segments": 2
+        },
+        {
+          "shot": 11,
+          "start": 0.7,
+          "primary": 103,
+          "victims": [
+            320,
+            321
+          ],
+          "amount": 21.0,
+          "visuals": 2,
+          "hit": 0.95,
+          "damage_segments": 2
+        },
+        {
+          "shot": 12,
+          "start": 0.77,
+          "primary": 102,
+          "victims": [
+            322,
+            323
+          ],
+          "amount": 22.0,
+          "visuals": 2,
+          "hit": 1.02,
+          "damage_segments": 2
+        },
+        {
+          "shot": 13,
+          "start": 0.84,
+          "primary": 102,
+          "victims": [
+            324,
+            325
+          ],
+          "amount": 23.0,
+          "visuals": 2,
+          "hit": 1.09,
+          "damage_segments": 2
+        },
+        {
+          "shot": 14,
+          "start": 0.91,
+          "primary": 103,
+          "victims": [
+            326,
+            327
+          ],
+          "amount": 24.0,
+          "visuals": 2,
+          "hit": 1.16,
+          "damage_segments": 2
+        },
+        {
+          "shot": 15,
+          "start": 0.98,
+          "primary": 102,
+          "victims": [
+            328,
+            329
+          ],
+          "amount": 25.0,
+          "visuals": 2,
+          "hit": 1.23,
+          "damage_segments": 2
+        },
+        {
+          "shot": 16,
+          "start": 1.05,
+          "primary": 102,
+          "victims": [
+            330,
+            331
+          ],
+          "amount": 26.0,
+          "visuals": 2,
+          "hit": 1.3,
+          "damage_segments": 2
+        },
+        {
+          "shot": 17,
+          "start": 1.12,
+          "primary": 103,
+          "victims": [
+            332,
+            333
+          ],
+          "amount": 27.0,
+          "visuals": 2,
+          "hit": 1.37,
+          "damage_segments": 2
+        },
+        {
+          "shot": 18,
+          "start": 1.19,
+          "primary": 102,
+          "victims": [
+            334,
+            335
+          ],
+          "amount": 28.0,
+          "visuals": 2,
+          "hit": 1.44,
+          "damage_segments": 2
+        },
+        {
+          "shot": 19,
+          "start": 1.26,
+          "primary": 102,
+          "victims": [
+            336,
+            337
+          ],
+          "amount": 29.0,
+          "visuals": 2,
+          "hit": 1.51,
+          "damage_segments": 2
+        },
+        {
+          "shot": 20,
+          "start": 1.33,
+          "primary": 103,
+          "victims": [
+            338,
+            339
+          ],
+          "amount": 30.0,
+          "visuals": 2,
+          "hit": 1.58,
+          "damage_segments": 2
+        }
+      ],
+      "peak_pending_volleys": 4,
+      "side_damage_segments": 40,
+      "expiry_callbacks": 20,
+      "final_live_volleys": 0,
+      "scripted_orders": 0,
+      "acquisition_writes": 0
+    }
+  ]
+}

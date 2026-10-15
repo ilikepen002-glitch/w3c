@@ -1,0 +1,35 @@
+{"attempts": 1120, "peak": 1120, "cancel": false, "native_effect_failure": false, "cleanup": true}
+{"attempts": 7, "peak": 7, "cancel": true, "native_effect_failure": false, "cleanup": true}
+{"attempts": 7, "peak": 7, "cancel": false, "native_effect_failure": true, "cleanup": true}
+{
+  "source": "PASS",
+  "visuals": [
+    {
+      "attempts": 1120,
+      "peak": 1120,
+      "cancel": false,
+      "native_effect_failure": false,
+      "cleanup": true
+    },
+    {
+      "attempts": 7,
+      "peak": 7,
+      "cancel": true,
+      "native_effect_failure": false,
+      "cleanup": true
+    },
+    {
+      "attempts": 7,
+      "peak": 7,
+      "cancel": false,
+      "native_effect_failure": true,
+      "cleanup": true
+    }
+  ],
+  "combat": {
+    "shots": 6,
+    "launches": 6,
+    "damage_events": 6
+  },
+  "status": "PASS"
+}

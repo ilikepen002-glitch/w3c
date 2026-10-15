@@ -8,16 +8,34 @@ import TDTrialRules
 
 @Test function targetPriorityCoversAll35TowerTypesAndBothUltimateBranches()
 	var uniqueTypes = 0
+	var nativeArchers = 0
+	var scriptedTypes = 0
 	for choice = 1 to TD_TOWER_CHOICE_COUNT
 		for level = 1 to TD_MAX_TOWER_LEVEL
 			let typeId = tdTowerUnitIdForLevel(choice, level)
 			let policy = choice == TD_TOWER_CHOICE_ARCHER or choice == TD_TOWER_CHOICE_DRYAD ? TD_TARGET_PRIORITY_HP : TD_TARGET_PRIORITY_RANK
 			tdTargetPriorityPolicy(tdTowerChoiceForUnitTypeId(typeId)).assertEquals(policy)
+			if choice == TD_TOWER_CHOICE_ARCHER
+				tdTargetPriorityUsesScriptedPriority(tdTowerChoiceForUnitTypeId(typeId)).assertFalse()
+				nativeArchers += 1
+			else
+				tdTargetPriorityUsesScriptedPriority(tdTowerChoiceForUnitTypeId(typeId)).assertTrue()
+				scriptedTypes += 1
 			uniqueTypes += 1
 		let ultimateB = tdTowerUnitIdForLevelBranch(choice, TD_MAX_TOWER_LEVEL, TD_TOWER_BRANCH_B)
 		tdTargetPriorityPolicy(tdTowerChoiceForUnitTypeId(ultimateB)).assertEquals(tdTargetPriorityPolicy(choice))
+		if choice == TD_TOWER_CHOICE_ARCHER
+			tdTargetPriorityUsesScriptedPriority(tdTowerChoiceForUnitTypeId(ultimateB)).assertFalse()
+			nativeArchers += 1
+		else
+			tdTargetPriorityUsesScriptedPriority(tdTowerChoiceForUnitTypeId(ultimateB)).assertTrue()
+			scriptedTypes += 1
 		uniqueTypes += 1
 	uniqueTypes.assertEquals(35)
+	nativeArchers.assertEquals(7)
+	scriptedTypes.assertEquals(28)
+	tdTargetPriorityUsesScriptedPriority(0).assertFalse()
+	tdTargetPriorityUsesScriptedPriority(TD_TOWER_CHOICE_COUNT + 1).assertFalse()
 	tdTargetPriorityPolicy(0).assertEquals(0)
 
 @Test function rangedPriorityReadsAbsoluteHpWithoutBossOrPercentOverride()
@@ -89,3 +107,10 @@ import TDTrialRules
 	tdTargetPriorityReplace(TD_TARGET_PRIORITY_RANK, 1.0, 0, 5, 50000.0, 2, 10, true).assertFalse()
 	tdTargetPriorityReplace(TD_TARGET_PRIORITY_RANK, 50000.0, 2, 20, 1.0, 0, 10, true).assertTrue()
 	tdTargetPriorityReplace(TD_TARGET_PRIORITY_RANK, 1.0, 0, 5, 50000.0, 0, 10, true).assertFalse()
+
+@Test function nativeArcherRoutingPreservesDryadAndEveryMeleeFamily()
+	tdTargetPriorityUsesScriptedPriority(TD_TOWER_CHOICE_ARCHER).assertFalse()
+	tdTargetPriorityUsesScriptedPriority(TD_TOWER_CHOICE_DRYAD).assertTrue()
+	tdTargetPriorityUsesScriptedPriority(TD_TOWER_CHOICE_ORC).assertTrue()
+	tdTargetPriorityUsesScriptedPriority(TD_TOWER_CHOICE_FOOTMAN).assertTrue()
+	tdTargetPriorityUsesScriptedPriority(TD_TOWER_CHOICE_GHOUL).assertTrue()

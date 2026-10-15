@@ -8,15 +8,29 @@ from VerifyCombatVisualArtifact import VisualRuntime
 from VerifyLocalCombatHotpathArtifact import split_traces, archive_delta, CountedRuntime, shot_trace
 from VerifyTowerTargetPriorityArtifact import register_actual_split_listener
 from VerifyBuilderControlDelta import allocations
+from VerifyPetManagerSource import function_body
 
 ROOT = Path(__file__).resolve().parents[1]
 PATH = 'wurst/towers/TDTowerRuntime.wurst'
 
 def source_gate():
     source = (ROOT / PATH).read_text()
-    prior = subprocess.check_output(['git','show','d08fb2db50c2325722de41efa7500fe6272f7902:'+PATH],cwd=ROOT,text=True)
-    require(source.split('// Every selected extra shot')[0] == prior.split('// The shared recycler')[0].replace('import GameTimer\n',''), 'Unrelated leading gameplay changed')
-    require(source.split('function tdFindFarthestArcherSplitArrowShot')[1] == prior.split('function tdFindFarthestArcherSplitArrowShot')[1], 'Target/damage/flight gameplay changed')
+    prior = subprocess.check_output(['git','show','bbe7ad67d3e66272b2da2822b70022f307c12fa5:'+PATH],cwd=ROOT,text=True)
+    require(source.split('// Every selected extra shot')[0] == prior.split('// Every selected extra shot')[0], 'Unrelated leading gameplay changed')
+    require(source.split('// Every selected extra shot')[1].split('function tdFindFarthestArcherSplitArrowShot')[0] ==
+            prior.split('// Every selected extra shot')[1].split('function tdFindFarthestArcherSplitArrowShot')[0],
+            'Released full-arrow renderer changed')
+    # The historical visual-only release also froze the attack wrapper. The
+    # archer-native restoration deliberately changes that wrapper, while these
+    # split targeting, timing and damage helpers must remain byte-equivalent.
+    for helper in ('tdFindFarthestArcherSplitArrowShot', 'tdTryAddArcherSplitArrowShot',
+                   'tdArcherSplitArrowVolleyExpireDelay', 'tdCreateArcherSplitArrowVolley',
+                   'tdExpireArcherSplitArrowVolley', 'tdQueueArcherSplitArrowVolley',
+                   'tdConsumeArcherSplitArrowVolley', 'tdHandleArcherSplitArrowAttack',
+                   'tdArcherSplitArrowNativeAttackType', 'tdDealArcherSplitArrowAttackDamage',
+                   'tdHandleArcherSplitArrowDamage'):
+        require(function_body(source, helper) == function_body(prior, helper),
+                'Target/damage/flight helper changed: ' + helper)
     launch = source.split('function tdLaunchArcherSplitArrowVisual',1)[1].split('function tdFindFarthest',1)[0]
     before_alloc = launch.split('tdArcherArrowVisuals.add(new TDArcherArrowVisual')[0]
     require(before_alloc.count('if ') == 1 and 'source == null or target == null' in before_alloc, 'Launch admission must only reject null handles')

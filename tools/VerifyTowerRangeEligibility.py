@@ -13,7 +13,7 @@ from VerifyPetManagerSource import function_body
 from GenerateTowerTerrainMask import Mpq
 
 ROOT = Path(__file__).resolve().parents[1]
-BASELINE = 'bfd59de'
+BASELINE = 'bbe7ad67d3e66272b2da2822b70022f307c12fa5'
 PATH = 'wurst/items/TDInventoryRuntime.wurst'
 
 
@@ -58,30 +58,25 @@ def source_check():
             require(actual == base + (bonus if choice in ranged else 0.), 'Source family/range matrix failed')
     text = (ROOT / PATH).read_text()
     before = subprocess.check_output(['git', 'show', BASELINE + ':' + PATH], cwd=ROOT).decode()
-    current_body = function_body(text, 'tdTowerEffectiveRangeForLoadout')[1]
-    old_body = function_body(before, 'tdTowerEffectiveRangeForLoadout')[1]
-    current_body = '\n'.join('\t' + line for line in current_body.splitlines())
-    old_body = '\n'.join('\t' + line for line in old_body.splitlines())
-    normalized = text.replace(current_body, old_body, 1)
-    projected = 'tdTargetPriorityProjectedAcquireRange(tower, tdTowerEffectiveRangeForLoadout('
-    if projected in normalized:
-        # The reviewed targeting state may project parked acquisition to zero;
-        # exact normalization allows only that wrapper and its low-layer import.
-        require(normalized.count(projected) == 1, 'Multiple acquisition projections')
-        line = next(line for line in normalized.splitlines() if projected in line)
-        require(line.endswith('item1, item2, item3)))'), 'Unknown acquisition projection shape')
-        plain = line.replace(projected, 'tdTowerEffectiveRangeForLoadout(', 1)[:-1]
-        normalized = normalized.replace(line, plain, 1).replace('import TDTowerTargetPriorityState\n', '', 1)
+    # Freeze the released inventory byte-for-byte except the explicit archer
+    # native-acquisition branch. The range formula itself is unchanged.
+    require(function_body(text, 'tdTowerEffectiveRangeForLoadout') ==
+            function_body(before, 'tdTowerEffectiveRangeForLoadout'), 'Effective range formula changed')
+    native = ('\tlet effectiveRange = tdTowerEffectiveRangeForLoadout(choice, level, branch, item1, item2, item3)\n'
+              '\tlet projectedRange = tdTargetPriorityUsesScriptedPriority(choice) ? tdTargetPriorityProjectedAcquireRange(tower, effectiveRange) : effectiveRange')
+    prior = '\tlet projectedRange = tdTargetPriorityProjectedAcquireRange(tower, tdTowerEffectiveRangeForLoadout(choice, level, branch, item1, item2, item3))'
+    require(text.count(native) == 1, 'Native archer acquisition branch missing/duplicated')
+    normalized = text.replace(native, prior, 1).replace('import TDTowerTargetPriorityRules\n', '', 1)
     require(normalized == before, 'Range change modified another inventory rule')
     require('tdTowerEffectiveRangeForLoadout(towerChoice, level, branch, item1, item2, item3)' in text, 'Tower query bypasses central rule')
-    require('SetUnitAcquireRange(tower, tdTowerEffectiveRangeForLoadout(' in text or
-            'SetUnitAcquireRange(tower, ' + projected in text, 'Acquire range bypasses central rule')
+    require('if GetUnitAcquireRange(tower) != projectedRange\n\t\tSetUnitAcquireRange(tower, projectedRange)' in text,
+            'Acquire range lost change-only central projection')
     runtime = (ROOT / 'wurst/towers/TDTowerRuntime.wurst').read_text()
     require('let diameter = tdTowerEffectiveRangeForTower(tower) * 2.0' in runtime and 'let searchRange = tdTowerEffectiveRangeForTower(source)' in runtime, 'Indicator/targeting bypasses central rule')
     require(runtime.count('tdRefreshTowerEquipmentBonuses(tower)') >= 3, 'Construct/upgrade paths lost equipment refresh')
     require('tdRefreshTowerEquipmentBonuses(tower)' in (ROOT / 'wurst/towers/TDTowerEvolutionRuntime.wurst').read_text(), 'Evolution path lost equipment refresh')
     require('tdRefreshTowerEquipmentBonuses(tower)' in (ROOT / 'wurst/pets/TDPetCombat.wurst').read_text(), 'Spirit refresh path lost equipment refresh')
-    print('PASS RANGE SOURCE: all 35 tower identities × 7 loadouts; ARCHER/DRYAD only; exact parked-projection allowance; other inventory code byte-identical')
+    print('PASS RANGE SOURCE: all 35 tower identities × 7 loadouts; ARCHER/DRYAD range bonuses; archer native acquisition; other inventory code byte-identical')
     return evaluator
 
 
@@ -122,7 +117,8 @@ def replay(script, evaluator):
                 record = r.invoke('tdTargetPriorityGet', 101)
                 r.globals['TDTowerTargetPriorityState_parked'][record] = True
                 r.invoke(refresh, 101)
-                require(r.units[101]['acquireRange'] == 0. and
+                scripted = r.invoke('tdTargetPriorityUsesScriptedPriority', choice)
+                require(r.units[101]['acquireRange'] == (0. if scripted else expected) and
                         r.invoke('tdTowerEffectiveRangeForTower', 101) == expected,
                         'Parked acquisition bypassed projection or lost current effective range')
                 r.globals['TDTowerTargetPriorityState_parked'][record] = False

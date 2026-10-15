@@ -1,0 +1,34 @@
+SELECTED source=10
+======================================================================
+ERROR: setUpClass (test_equipment_inheritance_source.CurrentEquipmentInheritanceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/shared/w3c-native-attacks/tools/Run-PythonChecks.py", line 260, in call
+    return original(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-native-attacks/tests/python/test_equipment_inheritance_source.py", line 17, in setUpClass
+    cls.proof = gate.verify(ROOT)
+                ^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-native-attacks/tools/VerifyEquipmentInheritanceSource.py", line 169, in verify
+    return {'damage_hp': verify_damage_and_hp(root), 'manager': verify_manager(root)}
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/shared/w3c-native-attacks/tools/VerifyEquipmentInheritanceSource.py", line 142, in verify_damage_and_hp
+    require(damage == expected_inventory(DAMAGE_SITES), 'current40 exact production damage inventory changed: ' + repr(damage))
+  File "/workspace/shared/w3c-native-attacks/tools/VerifyEquipmentAbilityArtifact.py", line 21, in require
+    raise ValueError(message)
+ValueError: current40 exact production damage inventory changed: Counter({('items/TDEquipmentCombat.wurst', 'tdCaptureEquipmentAdditionalDamage', 'source . damageTarget ( target , additional )'): 1, ('items/TDEquipmentCombat.wurst', 'tdTickEquipmentDebuffs', 'source . damageTarget ( target , tdEnemyMechanicScaleSpellDamage ( target , amount ) )'): 1, ('items/TDEquipmentSpecialRuntime.wurst', 'tdDealSpecialSpell', 'source . damageTarget ( victim , tdEnemyMechanicScaleSpellDamage ( victim , amount ) )'): 1, ('pets/TDPetCombatSource.wurst', '<unapproved function: tdPetDamage>', 'host . damageTarget ( target , amount )'): 1, ('towers/TDTowerRuntime.wurst', 'tdPulseOrcBladestorm', 'tower . damageTarget ( victim , tdEnemyMechanicScaleSpellDamage ( victim , damagePerTick ) )'): 1, ('towers/TDTowerRuntime.wurst', 'tdHandleGhoulCorpseExplosionDamage', 'source . damageTarget ( victim , tdEnemyMechanicScaleSpellDamage ( victim , tdGhoulCorpseExplosionDamageForBranch ( tdTowerLevelForUnitTypeId ( GetUnitTypeId ( source ) ) , tdTowerBranchForUnitTypeId ( GetUnitTypeId ( source ) ) , tdTowerIsEvolved ( source ) ) ) )'): 1, ('towers/TDTowerRuntime.wurst', 'tdDealArcherSplitArrowAttackDamage', 'source . damageTarget ( target , amount , true , true , tdArcherSplitArrowNativeAttackType ( ) , DAMAGE_TYPE_NORMAL , WEAPON_TYPE_WHOKNOWS )'): 1})
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.240s
+
+FAILED (errors=1)
+MAP COVERAGE passed=0 selected=0; NOT REQUESTED
+PREP 0.000001s candidate input
+PREP 0.005906s import/discovery test_equipment_inheritance_source
+FIXTURE 0.238912s test_equipment_inheritance_source.CurrentEquipmentInheritanceTests.setUpClass
+SLOWEST 10 (tests and preparation/fixtures):
+  0.238912s test_equipment_inheritance_source.CurrentEquipmentInheritanceTests.setUpClass
+  0.005906s import/discovery test_equipment_inheritance_source
+  0.000001s candidate input
+SUMMARY selected=10 run=0 passed=0 failures=0 errors=1 skipped=0 expected_failures=0 unexpected_successes=0 not_covered=0 total=0.246101s
+STATUS FAILED

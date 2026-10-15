@@ -19,6 +19,9 @@ class TowerTargetPrioritySourceTests(unittest.TestCase):
         self.assertTrue(report['unique_attacked_wrapper'])
         self.assertEqual(report['local_selector_count'], 1)
         self.assertEqual(report['shared_recovery_timer_count'], 1)
+        self.assertEqual(len(report['native_archer_types']), 7)
+        self.assertEqual(len(report['scripted_priority_types']), 28)
+        self.assertTrue(report['historical_ttl_unchanged'])
 
     def test_real_source_scalar_rules_absolute_hp_and_strict_ties(self):
         namespace = gate.source_scalar_namespace(self.sources)
@@ -37,7 +40,11 @@ class TowerTargetPrioritySourceTests(unittest.TestCase):
 
     def test_source_mutations_fail_closed(self):
         rejected = gate.verify_source_mutations(self.sources)
-        self.assertGreaterEqual(len(rejected), 16)
+        self.assertGreaterEqual(len(rejected), 26)
+        for label in ('archer accept restored', 'uA6B native branch omitted', 'archer recovery resend',
+                      'archer acquire zero', 'global priority setup removed', 'visual budget restored',
+                      'consume destroys volley', 'Tspl recursion filter removed', 'mutable split damage basis'):
+            self.assertIn(label, rejected)
         self.assertIn('queue before verdict', rejected)
         self.assertIn('recovery floor lost', rejected)
 
@@ -79,7 +86,17 @@ class TowerTargetPriorityPackedTests(unittest.TestCase):
         self.assertEqual(len(report['packed_catalog_rawcodes']), 35)
         self.assertFalse(report['base_policy_without_route_override']['route_progress_or_speed_priority'])
         self.assertTrue(all(case['route_or_speed_reads']==0 for case in report['base_policy_without_route_override']['cases']))
-        self.assertEqual(len(report['packed_mutations_rejected']),9)
+        self.assertEqual(len(report['packed_mutations_rejected']),18)
+        labels = {item['label'] for item in report['packed_mutations_rejected']}
+        self.assertTrue({'archer accept restored', 'uA6B native branch omitted', 'archer recovery resend',
+                         'archer acquire zero', 'global priority setup removed', 'visual budget restored',
+                         'consume destroys volley', 'Tspl recursion filter removed',
+                         'mutable split damage basis'} <= labels)
+        self.assertEqual(len(report['archer_native_restoration']['seven_catalog_types']), 7)
+        self.assertEqual(report['archer_native_restoration']['native_starts_executed'], 252)
+        self.assertEqual(len(report['source_contract']['scripted_priority_types']), 28)
+        self.assertTrue(report['archer_inflight_reuse_filters']['consume_then_allocate_before_old_expiry'])
+        self.assertTrue(report['archer_deferred_context']['trial_reused_handle_revision_rejected'])
         self.assertEqual(report['sparse_recovery']['parked_sources'], 40)
         self.assertEqual(report['sparse_recovery']['max_queries_per_tick'], 4)
 

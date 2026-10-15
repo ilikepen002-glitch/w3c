@@ -1,0 +1,3 @@
+PASS RANGE SOURCE: all 35 tower identities × 7 loadouts; ARCHER/DRYAD range bonuses; archer native acquisition; other inventory code byte-identical
+PASS RANGE REPLAY: 245 real loadout/inventory/refresh cases, acquisition + other item attributes; identity changes recompute from current family
+MAP SHA256: c0f210f906b9d3437d5040be09373797387147e4acf224565ffbc3dcf657d67f

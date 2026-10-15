@@ -1,0 +1,30 @@
+{
+  "status": "PREEXISTING_FAILURES_REPRODUCED",
+  "baseline_commit": "1c9ec8ac333d6e7e794d2f375c7e63e121098345",
+  "equivalent_published_commit": "bbe7ad67d3e66272b2da2822b70022f307c12fa5",
+  "current_summary": "SUMMARY selected=328 run=222 passed=203 failures=10 errors=14 skipped=0 expected_failures=0 unexpected_successes=0 not_covered=96 total=305.914980s",
+  "current_failing_test_methods": {
+    "test_build_semantic_icons.SemanticSourceTests.test_thirteen_pet_ui_pairs_remain_byte_locked": "ERROR",
+    "test_combined_visual_text_artifact.CombinedSourceTextTests.test_source_numbers_and_all_active_scope": "FAIL",
+    "test_equipment_phase_a.EquipmentPhaseATests.test_all_primary_secondary_stats_and_unlisted_values_are_exact": "FAIL",
+    "test_equipment_phase_a.EquipmentPhaseATests.test_current_source_boundary_and_existing_asset_resolution": "ERROR",
+    "test_equipment_phase_b.EquipmentPhaseB.test_shared_cooldown_and_pet_host_only_no_old_world_loop": "FAIL",
+    "test_equipment_phase_b.EquipmentPhaseB.test_stable_identities_and_bounded_real_buff_variants": "FAIL",
+    "test_equipment_phase_c.EquipmentPhaseC.test_existing_split_workflow_adds_one_arrow": "FAIL",
+    "test_equipment_phase_c.EquipmentPhaseC.test_shield_shared_reservation_rollback_then_bounded_spread": "ERROR",
+    "test_equipment_trial_integration.EquipmentTrialIntegration.test_true_boss_identity_separate_from_current_trial_bonus": "FAIL",
+    "test_pet_ui_workflow.AtomicContinueSourceTests.test_actual_guard_failures_preserve_candidate_balance_and_do_not_draw": "ERROR",
+    "test_pet_ui_workflow.AtomicContinueSourceTests.test_actual_missing_record_replacement_and_empty_pool_preserve_candidate": "ERROR",
+    "test_pet_ui_workflow.AtomicContinueSourceTests.test_actual_success_charges_and_versions_once_with_owned_state_unchanged": "ERROR",
+    "test_pet_ui_workflow.CurrentSourceWorkflowTests.test_real_610_ids_all_invalid_counts_pages_hotkeys_and_current_wiring": "ERROR",
+    "test_player_selected_item_description.SelectedItemDescriptionSourceTests.test_poison_catalog_and_formatter_keep_damage_duration_and_stacking": "FAIL",
+    "test_runtime_hotpath_replay.HotpathSourceContracts.test_aura_target_snapshot_is_local_and_inside_try": "ERROR",
+    "test_trial_delta.TrialCurrentManagerTests.test_actual_current_manager_mutations_are_rejected": "ERROR",
+    "test_trial_delta.TrialCurrentManagerTests.test_actual_current_manager_stays_guarded_under_trial": "ERROR",
+    "test_trial_static_contracts.TrialStaticContracts.test_formal_game_scheduler_wave_economy_and_build_contract_are_preserved": "FAIL",
+    "test_trial_static_contracts.TrialStaticContracts.test_object_identity_and_inherited_effects_are_explicit": "ERROR"
+  },
+  "all_methods_same_baseline_outcome": true,
+  "inheritance_setup_failure_reproduced": true,
+  "source_suite_claim": "NOT_PASS; bounded new routing/arrow/range tests and official Wurst checks pass separately"
+}

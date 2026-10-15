@@ -1,0 +1,36 @@
+SELECTED source=10
+TEST 0.000269s PASS [source] test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_jass_or_binds_above_and_per_group_and_argument
+TEST 0.000077s PASS [source] test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_mutation_interpreter_faults_are_never_rejection_evidence
+TEST 0.005851s PASS [source] test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_real_source_scalar_rules_absolute_hp_and_strict_ties
+TEST 0.038613s PASS [source] test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_retired_route_priority_has_no_active_source_symbols
+TEST 0.342281s PASS [source] test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_source_mutations_fail_closed
+TEST 0.438043s PASS [source] test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_source_only_cannot_claim_an_actual_map
+TEST 0.036696s PASS [source] test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_unique_attacked_and_sparse_source_contract
+TEST 0.000116s PASS [source] test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_unverified_baseline_rejected_before_replay
+TEST 0.000162s PASS [source] test_inventory_range_source.InventoryRangeSourceTests.test_farmer_and_tower_inventory_capacities_and_native_flags_unchanged
+TEST 0.000843s PASS [source] test_inventory_range_source.InventoryRangeSourceTests.test_inventory_and_building_display_constants_are_preserved
+----------------------------------------------------------------------
+Ran 10 tests in 0.873s
+
+OK
+MAP COVERAGE passed=0 selected=0; NOT REQUESTED
+PREP 0.000000s candidate input
+PREP 0.034484s import/discovery test_tower_target_priority_artifact
+PREP 0.001357s import/discovery test_inventory_range_source
+FIXTURE 0.009358s test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.setUpClass
+FIXTURE 0.000001s test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.tearDownClass
+FIXTURE 0.000001s test_inventory_range_source.InventoryRangeSourceTests.setUpClass
+FIXTURE 0.000001s test_inventory_range_source.InventoryRangeSourceTests.tearDownClass
+SLOWEST 10 (tests and preparation/fixtures):
+  0.438043s test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_source_only_cannot_claim_an_actual_map
+  0.342281s test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_source_mutations_fail_closed
+  0.038613s test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_retired_route_priority_has_no_active_source_symbols
+  0.036696s test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_unique_attacked_and_sparse_source_contract
+  0.034484s import/discovery test_tower_target_priority_artifact
+  0.009358s test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.setUpClass
+  0.005851s test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_real_source_scalar_rules_absolute_hp_and_strict_ties
+  0.001357s import/discovery test_inventory_range_source
+  0.000843s test_inventory_range_source.InventoryRangeSourceTests.test_inventory_and_building_display_constants_are_preserved
+  0.000269s test_tower_target_priority_artifact.TowerTargetPrioritySourceTests.test_jass_or_binds_above_and_per_group_and_argument
+SUMMARY selected=10 run=10 passed=10 failures=0 errors=0 skipped=0 expected_failures=0 unexpected_successes=0 not_covered=0 total=0.908932s
+STATUS PASSED_SELECTED (no build or gameplay claim)

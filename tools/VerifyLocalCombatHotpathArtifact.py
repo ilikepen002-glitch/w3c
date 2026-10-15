@@ -28,6 +28,9 @@ class CountedRuntime(TowerTargetRuntime):
         self.hash_values = {}
         self.spell_ability = 0
         super().__init__(script)
+        # This fixture measures split selection, independently of the default
+        # non-archer scripted-priority transaction fixture in the base class.
+        self.units[101]['type'] = rawcode('uA6B')
 
     def expression(self, text, scope):
         self.expressions += 1

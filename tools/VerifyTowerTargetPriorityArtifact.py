@@ -36,6 +36,8 @@ FAMILIES = {'A': 1, 'O': 2, 'H': 3, 'D': 4, 'G': 5}
 TOWERS = tuple('u' + family + suffix for family in FAMILIES
                for suffix in ('11', '12', '13', '14', '15', '6A', '6B'))
 BASELINE_SHA256 = '59a519fbb47761840320241f08a3b95e8a717cd38fb603e5da0911abf9a3a8eb'
+ARCHERS = tuple(t for t in TOWERS if t[1] == 'A')
+SCRIPTED_TOWERS = tuple(t for t in TOWERS if t[1] != 'A')
 BOUNDARY = ('Offline execution of actual source/packed JASS with controlled native '
             'order results, callback interleavings, visibility, handles/groups and clock. '
             'No Warcraft launch, native attack-point/turning timings, client DPS, FPS '
@@ -101,10 +103,42 @@ def verify_source_contract(files):
     require(all_code.count('GetAttacker()') == 1, 'Extra attacker/ATTACKED side-effect listener')
     wrapper = body(tower, 'tdHandleTowerAttackStarted')
     ordered(wrapper, ('let source = GetAttacker()', 'let target = GetTriggerUnit()',
+                     'tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) == TD_TOWER_CHOICE_ARCHER',
+                     'if tdArcherNativeAttackAllowed(source)',
+                     'tdHandleArcherSplitArrowAttack(source, target)', 'return',
                      'if not tdTargetPriorityAcceptAttack(source, target)', 'return',
-                     'tdHandleArcherSplitArrowAttack(source, target)'), 'ATTACKED wrapper')
+                     'tdHandleArcherSplitArrowAttack(source, target)'), 'ARCHER native ATTACKED wrapper')
+    require(re.search(r"if tdTowerChoiceForUnitTypeId\(GetUnitTypeId\(source\)\) == TD_TOWER_CHOICE_ARCHER\s*$", wrapper, re.M),
+            'ARCHER catalog branch has a rawcode omission or extra priority condition')
+    archer_branch = wrapper[:wrapper.index('if not tdTargetPriorityAcceptAttack')]
+    require(not re.search(r'tdTargetPriority(?:Accept|Best|Redirect|Park)|consumePending|Issue\w*Order', archer_branch),
+            'ARCHER native start re-enters priority transaction')
     require('tdQueueArcherSplitArrowVolley' not in wrapper and
-            wrapper.count('tdHandleArcherSplitArrowAttack(') == 1, 'Wrapper queues before verdict or twice')
+            wrapper.count('tdHandleArcherSplitArrowAttack(') == 2,
+            'Wrapper must have exactly one split call per family branch')
+    allowed = body(tower, 'tdArcherNativeAttackAllowed')
+    for token in ('source.isAlive()', 'tdIsLaneActive(owner)', 'tdTrialLaneContinues(owner)',
+                  'tdPetBusyTowers.hasBoolean(', 'tdTowerSaleStates.hasInt(', 'sale.canSell()',
+                  'tdTargetPriorityStateFor(source)', 'lifecycle.owner == owner',
+                  'lifecycle.epoch == tdFlowEpoch()', 'not lifecycle.working', 'not lifecycle.casting'):
+        require(token in allowed, 'Native ARCHER safety missing: ' + token)
+    require(not re.search(r'tdTargetPriorityGet|tdGetTowerSaleState|manualTarget|playerHold|pendingRevision|Issue|\.newIntent|\.consumePending', allowed),
+            'Native ARCHER safety mutates or rebuilds a priority token')
+    uses = body(rules, 'tdTargetPriorityUsesScriptedPriority')
+    require('towerChoice != TD_TOWER_CHOICE_ARCHER' in uses and 'tdTargetPriorityPolicy(towerChoice) != 0' in uses,
+            'Scripted priority must exclude exactly the ARCHER family')
+    for fn in ('tdTargetPriorityRedirect', 'tdTargetPriorityPark', 'tdTargetPriorityHandleOrder'):
+        guarded = body(runtime, fn)
+        require('not tdTargetPriorityUsesScriptedPriority(' in guarded and
+                guarded.index('not tdTargetPriorityUsesScriptedPriority(') <
+                min((guarded.index(t) for t in ('record.beginRedirect(', 'record.newIntent()', 'record.parked = true') if t in guarded), default=len(guarded)),
+                'ARCHER priority control guard missing/late: ' + fn)
+    for lifecycle_fn in ('tdHandleTowerSellCast', 'tdHandleTowerDeath',
+                         'tdHandleTowerConstructionCancelled', 'tdRejectTowerConstruction'):
+        require('tdClearTowerSaleState(tower)' in body(tower, lifecycle_fn),
+                'Supported tower removal left stale sale state: ' + lifecycle_fn)
+    setup = body(tower, 'tdSetupDialogTrigger')
+    require('tdSetupTargetPriorityOrders()' in setup, 'Global priority order setup removed')
     require('tdTowerAttackTrigger.addAction(function tdHandleTowerAttackStarted)' in tower,
             'Native ATTACKED trigger bypasses verdict wrapper')
     helper = body(tower, 'tdHandleArcherSplitArrowAttack')
@@ -163,8 +197,37 @@ def verify_source_contract(files):
     start = body(runtime, 'tdTargetPriorityStartRecovery')
     require('tdTargetPriorityParked.isEmpty()' in start and 'destroy cb' in start and
             'tdTargetPriorityRecoveryRunning = false' in start, 'Empty recovery cannot stop shared timer')
-    require('tdTargetPriorityProjectedAcquireRange(tower, tdTowerEffectiveRangeForLoadout(' in
-            code(files[INVENTORY]), 'Inventory bypasses acquisition pause projection')
+    inventory = code(files[INVENTORY])
+    require('tdTargetPriorityUsesScriptedPriority(choice) ? tdTargetPriorityProjectedAcquireRange(tower, effectiveRange) : effectiveRange' in inventory,
+            'ARCHER equipment range must bypass acquisition pause projection')
+    require('if GetUnitAcquireRange(tower) != projectedRange' in inventory and
+            'targetState != null and targetState.working' in inventory,
+            'Inventory range write optimization or aura working lifecycle lost')
+    native_recovery = recovery[recovery.index('if not tdTargetPriorityUsesScriptedPriority('):recovery.index('tdTargetPriorityParked.add(record)')]
+    ordered(native_recovery, ('record.cancelPending()', 'tdTargetPriorityUnpark(record)',
+                             'tdTowerEffectiveRangeForTower(record.source)',
+                             'GetUnitAcquireRange(record.source) != nativeRange',
+                             'SetUnitAcquireRange(record.source, nativeRange)', 'continue'),
+            'ARCHER stale recovery escape')
+    require(not re.search(r'tdTargetPriorityBest|tdTargetPriorityRedirect|Issue\w*Order|SetUnitAcquireRange\([^,]+, 0', native_recovery),
+            'ARCHER recovery performs automatic control')
+    create = body(tower, 'tdCreateArcherSplitArrowVolley')
+    ordered(create, ('tdEquipmentArcherAdditionalArrows(source)', 'for shot in extraShots',
+                     'tdLaunchArcherSplitArrowVisual(source, shot.target, shot.flightTime)',
+                     'return new TDArcherSplitArrowVolley'), 'Immediate all-arrow launch')
+    damage = body(tower, 'tdHandleArcherSplitArrowDamage')
+    require('DamageEvent.getUnreducedOriginalAmount()' in damage and
+            'DamageEvent.isSpell() or DamageEvent.isCode() or DamageEvent.getId() == TD_ARCHER_SPLIT_ARROW_DAMAGE_EVENT_ID' in damage,
+            'Split immutable basis or spell/code/Tspl recursion guard lost')
+    for token in ('let victim = shot.target', 'let context = shot.context', 'let revision = shot.targetRevision',
+                  'tdDealArcherSplitArrowAttackDamage(source, victim, attackDamage, context, revision)'):
+        require(token in damage, 'Deferred split lost copied data: ' + token)
+    require(body(tower, 'tdLaunchArcherSplitArrowVisual').count('doPeriodically(0.03)') == 1 and
+            'tdArcherVisualTimerRunning' in body(tower, 'tdLaunchArcherSplitArrowVisual') and
+            not re.search(r'(?i)(budget|admission|visualcap|visualcount|tokens)', create + body(tower, 'tdLaunchArcherSplitArrowVisual')),
+            'All-arrow shared renderer restored an admission budget')
+    expiry_delay = body(tower, 'tdArcherSplitArrowVolleyExpireDelay')
+    require(expiry_delay.count('0.35') == 4, 'Historical split TTL changed')
     for fn, token in (('tdHandleTowerUpgradeStarted', 'tdTargetPriorityWorkStarted(tower)'),
                       ('tdHandleTowerConstructionStarted', 'tdTargetPriorityWorkStarted(tower)'),
                       ('tdHandleTowerConstructionFinished', 'tdTargetPriorityWorkFinished(tower)'),
@@ -201,6 +264,8 @@ def verify_source_contract(files):
     return {'unique_attacked_wrapper': True, 'local_selector_count': 1,
             'shared_recovery_timer_count': 1, 'damage_selection_bridge_count': 0,
             'route_progress_or_speed_priority': False,
+            'native_archer_types': list(ARCHERS), 'scripted_priority_types': list(SCRIPTED_TOWERS),
+            'historical_ttl_unchanged': True,
             'source_files_sha256': {p: sha(files[p].encode()) for p in (RULES, STATE, RUNTIME, TOWER, INVENTORY,'enemies/TDEnemyControlRuntime.wurst','TDConfig.wurst')}}
 
 
@@ -217,7 +282,8 @@ def source_scalar_namespace(files):
     for name in ('tdIsBossUnitTypeId', 'tdIsBossGuardUnitTypeId'):
         compile_source_helper(files['TDWaves.wurst'], name, namespace)
     for name in ('tdTargetPriorityPolicy', 'tdTargetPriorityRank', 'tdTargetPriorityStrictlyBetter',
-                 'tdTargetPriorityEqual', 'tdTargetPriorityReplace', 'tdTargetPriorityRecoveryDue'):
+                 'tdTargetPriorityEqual', 'tdTargetPriorityReplace', 'tdTargetPriorityRecoveryDue',
+                 'tdTargetPriorityUsesScriptedPriority'):
         compile_source_helper(files[RULES], name, namespace)
     return namespace
 
@@ -235,6 +301,8 @@ def verify_rules(invoke):
         count += 1
     require([invoke('tdTargetPriorityPolicy', i) for i in range(6)] == [0, 1, 2, 2, 1, 2],
             'Family policy mismatch')
+    require([invoke('tdTargetPriorityUsesScriptedPriority', i) for i in range(7)] ==
+            [False, False, True, True, True, True, False], 'Scripted/native family boundary changed')
     for wave in (8, 16, 24, 32):
         require(invoke('tdTargetPriorityRank', rawcode(f'uB{wave:02d}')) == 2, 'Boss priority mismatch')
         require(invoke('tdTargetPriorityRank', rawcode(f'uG{wave:02d}')) == 1, 'Guard priority mismatch')
@@ -268,6 +336,22 @@ def verify_source_mutations(files):
         (TOWER, 'function tdHandleArcherSplitArrowDamage()\n',
          'function tdHandleArcherSplitArrowDamage()\n\ttdTargetPriorityAcceptAttack(null, null)\n', 'damage selection bridge'),
     ]
+    cases.extend([
+        (RULES, 'towerChoice != TD_TOWER_CHOICE_ARCHER and', 'true and', 'archer priority restored'),
+        (TOWER, 'if tdArcherNativeAttackAllowed(source)',
+         'if tdArcherNativeAttackAllowed(source) and tdTargetPriorityAcceptAttack(source, target)', 'archer accept restored'),
+        (TOWER, 'if tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) == TD_TOWER_CHOICE_ARCHER',
+         "if tdTowerChoiceForUnitTypeId(GetUnitTypeId(source)) == TD_TOWER_CHOICE_ARCHER and GetUnitTypeId(source) != 'uA6B'", 'uA6B native branch omitted'),
+        (RUNTIME, 'record.cancelPending()\n\t\t\ttdTargetPriorityUnpark(record)',
+         'record.cancelPending()\n\t\t\ttdTargetPriorityRedirect(record, null)\n\t\t\ttdTargetPriorityUnpark(record)', 'archer recovery resend'),
+        (INVENTORY, ': effectiveRange', ': 0.0', 'archer acquire zero'),
+        (TOWER, '\ttdSetupTargetPriorityOrders()', '\t// removed priority setup', 'global priority setup removed'),
+        (TOWER, 'function tdLaunchArcherSplitArrowVisual(unit source, unit target, real duration)',
+         'function tdLaunchArcherSplitArrowVisual(unit source, unit target, real duration)\n\tlet visualBudget = 6\n\tif tdArcherArrowVisuals.size() >= visualBudget\n\t\treturn', 'visual budget restored'),
+        (TOWER, '\t\t\treturn volley', '\t\t\tdestroy volley\n\t\t\treturn volley', 'consume destroys volley'),
+        (TOWER, ' or DamageEvent.getId() == TD_ARCHER_SPLIT_ARROW_DAMAGE_EVENT_ID', '', 'Tspl recursion filter removed'),
+        (TOWER, 'DamageEvent.getUnreducedOriginalAmount()', 'DamageEvent.getAmount()', 'mutable split damage basis'),
+    ])
     rejected = []
     for path, old, new, label in cases:
         require(old in files[path], 'Mutation anchor missing: ' + label)
@@ -327,7 +411,7 @@ def jass_boolean_expression(expression):
 
 class TowerTargetRuntime(PetAttackRuntime):
     """Actual packed gameplay, extending only the existing native boundaries."""
-    def __init__(self, script):
+    def __init__(self, script, tower_type='uD6B'):
         self.priority_ready = False
         self.priority_available = 'function tdTargetPriorityAcceptAttack takes ' in script
         self.priority_initialized = False
@@ -357,7 +441,7 @@ class TowerTargetRuntime(PetAttackRuntime):
         self.priority_ready = True
         if self.priority_available:
             self.invoke('tdSetupTargetPriorityOrders')
-        self.units[101].update(type=rawcode('uA6B'), x=0., y=1000., order=0, owner=0,
+        self.units[101].update(type=rawcode(tower_type), x=0., y=1000., order=0, owner=0,
                                abilities={self.globals['TDTowerCatalogData_TD_ARCHER_SPLIT_ARROW_ABILITY_ID']: 1},
                                inventory={})
         self.enemy(102, life=100.)
@@ -392,7 +476,7 @@ class TowerTargetRuntime(PetAttackRuntime):
         self.tables[self.globals['TDSpawn_tdEnemyMatchEpochs']][handle] = self.invoke('tdFlowEpoch')
         return handle
 
-    def tower(self, handle, type_='uA11', lane=0):
+    def tower(self, handle, type_='uD11', lane=0):
         self.units[handle] = dict(self.units[101], type=rawcode(type_), owner=lane,
                                  abilities={}, inventory={}, x=0., y=1000., order=0)
         return handle
@@ -435,6 +519,9 @@ class TowerTargetRuntime(PetAttackRuntime):
             return True, self.units.get(args[0], {}).get('paused', False)
         if name == 'ModuloReal':
             return True, args[0] % args[1]
+        if name == 'KillUnit':
+            self.units[args[0]].update(alive=False, life=0.)
+            return True, None
         if name == 'GetKillingUnit':
             return True, self.event_source
         if name == 'GetAttacker':
@@ -467,6 +554,8 @@ class TowerTargetRuntime(PetAttackRuntime):
             if self.stop_callback is not None:
                 self.stop_callback(self, args[0])
             return True, True
+        if name == 'GetUnitAcquireRange':
+            return True, self.units.get(args[0], {}).get('acquireRange', 0.)
         if name == 'SetUnitAcquireRange':
             self.acquisition.append(tuple(args[:2]))
         if name == 'group_enumUnitsInRange' and self.priority_ready:
@@ -544,10 +633,17 @@ def verify_packed_structure(script):
                  'tdTargetPriorityHandleOrder', 'tdTargetPriorityRecoveryTick'):
         require(name in packed, 'Missing actual packed priority function: ' + name)
     wrapper = packed['tdHandleTowerAttackStarted'][4]
-    ordered(wrapper, ('GetAttacker()', 'GetTriggerUnit()', 'tdTargetPriorityAcceptAttack(',
-                     'return', 'tdHandleArcherSplitArrowAttack('), 'Packed ATTACKED wrapper')
-    require(wrapper.count('tdHandleArcherSplitArrowAttack(') == 1 and
-            'tdQueueArcherSplitArrowVolley(' not in wrapper, 'Packed wrapper queues before verdict/twice')
+    ordered(wrapper, ('GetAttacker()', 'GetTriggerUnit()', 'tdTowerChoiceForUnitTypeId(',
+                     'tdArcherNativeAttackAllowed(', 'tdHandleArcherSplitArrowAttack(', 'return',
+                     'tdTargetPriorityAcceptAttack(', 'return', 'tdHandleArcherSplitArrowAttack('),
+            'Packed ARCHER native ATTACKED wrapper')
+    require(wrapper.count('tdHandleArcherSplitArrowAttack(') == 2 and
+            'tdQueueArcherSplitArrowVolley(' not in wrapper, 'Packed wrapper duplicate/missing family registration')
+    renderer = packed['tdLaunchArcherSplitArrowVisual'][4]
+    require(len(re.findall(r'^\s*if ', renderer, re.M)) == 3 and renderer.count('doPeriodically(0.03,') == 1,
+            'Packed all-arrow renderer restored admission control')
+    setup = packed['tdSetupDialogTrigger'][4]
+    require('tdSetupTargetPriorityOrders(' in setup, 'Packed global priority order setup removed')
     for name, function in packed.items():
         if name.startswith('tdTargetPriority') or name.startswith('TDTowerTargetPriorityState_'):
             require(not re.search(r'GetRandom|GetLocalPlayer|UnitDamageTarget|DamageEvent_|doAfter\(', function[4]),
@@ -579,7 +675,7 @@ def verify_transaction_replay(script):
         else:
             require(r.accepted == [(101, 102)] and r.field('pendingRevision') == -1,
                     'Native false did not roll back to one legal original start')
-        require(len(r.lists[r.globals['TDTowerRuntime_tdArcherSplitArrowVolleys']]) == 1, 'Accepted transaction must own exactly one actual split volley')
+        require(not r.lists[r.globals['TDTowerRuntime_tdArcherSplitArrowVolleys']], 'Non-ARCHER priority transaction registered split volley')
         require(r.field('scriptOrderDepth') == 0 and not r.priority_rng and not r.live_groups,
                 'Order provenance/group cleanup/RNG contract failed')
         cases.append({'sync_attacked': synchronous, 'native_order_result': result,
@@ -732,6 +828,11 @@ def verify_catalog_selection(script):
     rows = []
     for index, type_ in enumerate(TOWERS):
         source = r.tower(2000 + index, type_)
+        scripted = r.invoke('tdTargetPriorityUsesScriptedPriority', FAMILIES[type_[1]])
+        require(scripted == (type_[1] != 'A'), 'Wrong native/scripted family for ' + type_)
+        if not scripted:
+            rows.append({'rawcode': type_, 'family': 1, 'native_archer': True})
+            continue
         record = r.invoke('tdTargetPriorityGet', source)
         range_ = r.invoke('tdTowerEffectiveRangeForTower', source)
         best = r.invoke('tdTargetPriorityBest', record, 102, range_)
@@ -747,7 +848,7 @@ def verify_catalog_selection(script):
         r.visible_units = [102, 103, 104]
         rows.append({'rawcode': type_, 'family': FAMILIES[type_[1]], 'best_target': best})
     require(not r.priority_rng and not r.live_groups, 'Catalog selection used RNG or leaked groups')
-    return {'35_rawcodes_actual_selectors': rows, 'hp_percent_adversary': True,
+    return {'35_rawcodes_routing_and_28_actual_selectors': rows, 'hp_percent_adversary': True,
             'same_rank_no_hp_tiebreak': True, 'evolution_policy': 'Evolution retains these native rawcodes; family policy is independent of evolution state.'}
 
 
@@ -822,7 +923,7 @@ def verify_split_immutable_basis(script):
 
 
 def verify_split_inflight(script):
-    r = TowerTargetRuntime(script)
+    r = TowerTargetRuntime(script, 'uA6B')
     register_actual_split_listener(r)
     for handle in (102, 103, 104):
         r.units[handle].update(life=10000., maxLife=10000.)
@@ -852,7 +953,311 @@ def verify_split_inflight(script):
     return {'actual_native_primary_sequence': ['A', 'B', 'A'], 'original_hits': 3,
             'split_segments': 6, 'old_expiry_new_volley_preserved': True,
             'damage_side_target_queries': 0, 'automatic_orders': 0,
-            'render_boundary': 'Real visual admission budget saturated (6 new/sec) in the controlled fixture; renderer and dummy recycling are not measured.'}
+            'render_boundary': 'Every production launch is recorded immediately; full-arrow artifact gate separately executes renderer and dummy recycling.'}
+
+
+def archer_runtime(script, type_='uA6B'):
+    r = TowerTargetRuntime(script, type_)
+    register_actual_split_listener(r)
+    for handle in (102, 103, 104, *range(110, 126)):
+        r.enemy(handle, life=1000000.)
+    return r
+
+
+def split_queue(r):
+    return r.lists[r.globals['TDTowerRuntime_tdArcherSplitArrowVolleys']]
+
+
+def volley_targets(r, volley):
+    shots = r.globals['TDArcherSplitArrowVolley_extraShots'][volley]
+    return [r.globals['TDArcherSplitArrowShot_target'][shot] for shot in r.lists[shots]]
+
+
+def assert_archer_uncontrolled(r, label):
+    require(not r.script_orders and not r.stop_orders and
+            r.calls['tdTargetPriorityBest'] == 0 and r.calls['tdTargetPriorityRedirect'] == 0 and
+            r.calls['tdTargetPriorityAcceptAttack'] == 0,
+            'ARCHER native attack was selected/redirected/stopped: ' + label)
+    require(all(value != 0. for _, value in r.acquisition),
+            'ARCHER native acquisition was projected to zero: ' + label)
+
+
+def start_archer_volley(r, target=102, source=101):
+    before = list(split_queue(r)); visual_before = len(r.split_visual_launches)
+    scheduled_before = len(r.scheduled)
+    absent_record = r.record(source) == 0
+    r.attack(target, source)
+    require(not absent_record or r.record(source) == 0, 'ARCHER legal native start created priority state')
+    require(len(split_queue(r)) == len(before) + 1 and split_queue(r)[:-1] == before,
+            'ARCHER native ATTACKED lost/duplicated one volley')
+    volley = split_queue(r)[-1]
+    targets = volley_targets(r, volley)
+    launches = r.split_visual_launches[visual_before:]
+    require(targets and [(launch[0], launch[1]) for launch in launches] == [(source, t) for t in targets],
+            'ARCHER ATTACKED did not immediately launch every selected visible arrow')
+    require(len(r.scheduled) == scheduled_before + 1,
+            'ARCHER volley must own one expiry, no delayed launch timers')
+    assert_archer_uncontrolled(r, 'start')
+    return volley, targets, r.scheduled[-1][1]
+
+
+def hit_archer_volley(r, volley, targets, amount, source=101, target=102):
+    before = len(r.native_damage)
+    r.emit(amount, source=source, target=target)
+    hits = r.native_damage[before:]
+    require([hit[1] for hit in hits] == targets and all(hit[0] == source for hit in hits),
+            'ARCHER real primary consumed another volley target snapshot')
+    multiplier = r.invoke('tdArcherSplitArrowDamageMultiplier',
+                          r.invoke('tdTowerLevelForUnitTypeId', r.units[source]['type']),
+                          r.invoke('tdTowerBranchForUnitTypeId', r.units[source]['type']),
+                          r.invoke('tdTowerIsEvolved', source))
+    for hit in hits:
+        near(hit[2], amount * multiplier, 'ARCHER per-hit immutable split damage')
+    require(volley not in split_queue(r), 'ARCHER primary failed to dequeue its volley')
+    require(r.globals['TDArcherSplitArrowVolley_typeId'][volley] != 0,
+            'ARCHER consume destroyed volley before its unique expiry')
+    assert_archer_uncontrolled(r, 'impact')
+
+
+def verify_archer_native_restoration(script):
+    rows = []
+    for type_ in ARCHERS:
+        for changing, count in ((False, 6), (True, 30)):
+            r = archer_runtime(script, type_)
+            level = r.invoke('tdTowerLevelForUnitTypeId', rawcode(type_))
+            for index in range(count):
+                target = (102, 103, 102)[index % 3] if changing else 102
+                extras = list(range(110 + (index % 3 if changing else 0), 120 + (index % 3 if changing else 0)))
+                r.visible_units = [target, *extras]
+                # Adversarial HP changes used to redirect or alternate swallowed starts.
+                r.units[target]['life'] = 1000000. + index
+                for victim in extras:
+                    r.units[victim]['life'] = 1000000. - index * 13.
+                volley, targets, expiry = start_archer_volley(r, target)
+                require(len(targets) == level, 'ARCHER catalog split count lost: ' + type_)
+                hit_archer_volley(r, volley, targets, (11., 23., 37.)[index % 3], target=target)
+                r.run_timer(expiry)
+                require(not split_queue(r) and sum(value != 0 for value in r.globals['TDArcherSplitArrowVolley_typeId'].values()) == 0,
+                        'ARCHER repeated attack expiry leaked live/pending volley')
+                r.now += .05
+            require(len(r.accepted) == count and not r.live_groups,
+                    'ARCHER repeated actual starts dropped/duplicated or leaked groups')
+            rows.append({'rawcode': type_, 'changing_hp_and_primary': changing,
+                         'native_starts': count, 'per_start_immediate_visible_arrows': level,
+                         'per_hit_damage_and_target_snapshot_checked': True,
+                         'best_redirect_stop_orders': 0})
+    return {'seven_catalog_types': list(ARCHERS), 'cases': rows,
+            'native_starts_executed': sum(row['native_starts'] for row in rows),
+            'historical_ttl': 'Unchanged .35 + maximum captured flight; deliveries remain inside this historical window. No native attack-point claim.'}
+
+
+def verify_archer_native_orders_and_recovery(script):
+    rows = []
+    for type_ in ARCHERS:
+        for order in (851983, 851971, 851972, 851993, 852600):
+            r = archer_runtime(script, type_); r.visible_units = [102, 103, 104]
+            r.command(order, 102 if order in (851983, 851971) else None)
+            require(r.record() == 0 and not r.acquisition,
+                    'ARCHER native command created priority/manual state or changed acquisition')
+            volley, targets, expiry = start_archer_volley(r)
+            hit_archer_volley(r, volley, targets, 23.)
+            r.run_timer(expiry)
+        r = archer_runtime(script, type_); r.visible_units = []
+        r.attack(None)
+        require(not split_queue(r), 'ARCHER empty native callback queued ghost volley')
+        assert_archer_uncontrolled(r, 'empty field')
+        r.visible_units = [102, 103]
+        volley, targets, expiry = start_archer_volley(r)
+        # Cancellation has no real main hit and therefore no invented split damage.
+        r.command(851972); r.run_timer(expiry)
+        require(not r.native_damage and not split_queue(r), 'ARCHER cancelled attempt invented split damage')
+        r.units[102]['alive'] = False; r.attack(102)
+        require(not split_queue(r), 'ARCHER dead primary registered volley')
+        r.units[102]['alive'] = True
+        volley, targets, expiry = start_archer_volley(r, 103)
+        hit_archer_volley(r, volley, targets, 37., target=103); r.run_timer(expiry)
+        # Stale state injection models a record surviving an earlier implementation.
+        record = r.invoke('tdTargetPriorityGet', 101)
+        r.invoke('TDTowerTargetPriorityState_beginRedirect', record, 102)
+        r.globals['TDTowerTargetPriorityState_parked'][record] = True
+        parked = r.lists[r.globals['TDTowerTargetPriorityState_tdTargetPriorityParked']]
+        parked.append(record); r.units[101]['acquireRange'] = 0.
+        r.invoke('tdTargetPriorityStartRecovery'); r.clear_trace(); r.recovery_tick()
+        require(record not in parked and not r.field('parked') and r.field('pendingRevision') == -1,
+                'ARCHER stale recovery retained parked/pending state')
+        near(r.units[101]['acquireRange'], r.invoke('tdTowerEffectiveRangeForTower', 101),
+             'ARCHER stale recovery did not restore effective range')
+        assert_archer_uncontrolled(r, 'stale recovery')
+        volley, targets, expiry = start_archer_volley(r)
+        hit_archer_volley(r, volley, targets, 11.); r.run_timer(expiry)
+        # Defensive direct entry points must also be harmless for archers.
+        previous = (len(r.script_orders), len(r.stop_orders), r.calls['tdTargetPriorityBest'], len(r.acquisition))
+        r.invoke('tdTargetPriorityRedirect', record, 103); r.invoke('tdTargetPriorityPark', record)
+        require(previous == (len(r.script_orders), len(r.stop_orders), r.calls['tdTargetPriorityBest'], len(r.acquisition)),
+                'ARCHER direct guarded entry changed orders/range or queried Best')
+        rows.append({'rawcode': type_, 'native_manual_orders': 5, 'empty_reacquisition': True,
+                     'cancel_without_primary_damage': True, 'stale_parked_recovery': True})
+    # A mixed queue retains the ordinary Dryad recovery next to an Archer escape.
+    r = archer_runtime(script); record = r.invoke('tdTargetPriorityGet', 101)
+    r.globals['TDTowerTargetPriorityState_parked'][record] = True
+    parked = r.lists[r.globals['TDTowerTargetPriorityState_tdTargetPriorityParked']]; parked.append(record)
+    r.units[101]['acquireRange'] = 0.; r.tower(202, 'uD6B'); r.visible_units = []
+    r.attack(None, 202); r.clear_trace(); r.visible_units = [102]; r.now = 10.5; r.recovery_tick()
+    require(record not in parked and all(order[0] != 101 for order in r.script_orders) and
+            any(order[0] == 202 for order in r.script_orders), 'Mixed recovery changed non-ARCHER priority')
+    return {'cases': rows, 'mixed_archer_dryad_recovery': True}
+
+
+def verify_archer_inflight_reuse_and_filters(script):
+    r = archer_runtime(script)
+    shots = []
+    for index, target in enumerate((102, 103, 102)):
+        r.visible_units = [target, 110 + index, 114 + index]
+        shots.append((target, *start_archer_volley(r, target)))
+    first, second, third = shots
+    hit_archer_volley(r, first[1], first[2], 11., target=first[0])
+    # Allocate after consume, before the old timer: early destroy would reuse its ID.
+    r.visible_units = [104, 120, 121]
+    newer = start_archer_volley(r, 104)
+    require(newer[0] not in [item[1] for item in shots], 'ARCHER consumed volley identity reused before old expiry')
+    r.run_timer(first[3])
+    require(split_queue(r) == [second[1], third[1], newer[0]] and
+            r.globals['TDArcherSplitArrowVolley_typeId'][newer[0]] != 0,
+            'ARCHER old expiry destroyed a newer in-flight volley')
+    for item, amount in ((second, 23.), (third, 37.)):
+        hit_archer_volley(r, item[1], item[2], amount, target=item[0]); r.run_timer(item[3])
+    hit_archer_volley(r, newer[0], newer[1], 41., target=104); r.run_timer(newer[2])
+    require(sum(value != 0 for value in r.globals['TDArcherSplitArrowVolley_typeId'].values()) == 0 and not split_queue(r),
+            'ARCHER all expiries failed to return live/pending to baseline')
+    # Two archers share a primary but must consume only their own queued snapshots.
+    r = archer_runtime(script); r.tower(202, 'uA6A')
+    r.units[202]['abilities'] = dict(r.units[101]['abilities']); r.visible_units = [102, 110, 111]
+    one = start_archer_volley(r); two = start_archer_volley(r, source=202)
+    hit_archer_volley(r, two[0], two[1], 23., source=202)
+    hit_archer_volley(r, one[0], one[1], 11.)
+    r.run_timer(one[2]); r.run_timer(two[2])
+    # Code/spell/tagged native inputs cannot consume an otherwise pending volley.
+    for kind in ('code', 'spell', 'Tspl'):
+        r = archer_runtime(script); r.visible_units = [102, 110]
+        volley, targets, expiry = start_archer_volley(r)
+        if kind == 'code': r.invoke('DamageEvent_setNextDamageFromCode')
+        elif kind == 'Tspl': r.invoke('DamageEvent_setNextDamageId', rawcode('Tspl'))
+        r.emit(-11. if kind == 'spell' else 11.)
+        require(split_queue(r) == [volley] and not r.native_damage,
+                'ARCHER recursive code/spell/Tspl consumed a new volley')
+        hit_archer_volley(r, volley, targets, 37.); r.run_timer(expiry)
+    return {'different_primary_sequence': ['A', 'B', 'A'], 'different_native_damage': [11, 23, 37, 41],
+            'consume_then_allocate_before_old_expiry': True, 'two_sources_same_primary': True,
+            'code_spell_Tspl_not_consumed': True, 'live_pending_after_expiry': 0}
+
+
+def verify_archer_safety_and_equipment(script):
+    rows = []
+    for exclusion in ('working', 'casting', 'pet_busy', 'sale_busy', 'selling', 'owner', 'epoch', 'removed', 'dead'):
+        r = archer_runtime(script); r.visible_units = [102, 103]
+        if exclusion in ('working', 'casting', 'owner', 'epoch'):
+            record = r.invoke('tdTargetPriorityGet', 101)
+            if exclusion in ('working', 'casting'):
+                r.globals['TDTowerTargetPriorityState_' + exclusion][record] = True
+            elif exclusion == 'owner': r.units[101]['owner'] = 1
+            else: r.globals['TDTowerTargetPriorityState_epoch'][record] -= 1
+        elif exclusion == 'pet_busy': r.tables[r.globals['TDPetState_tdPetBusyTowers']][101] = True
+        elif exclusion in ('sale_busy', 'selling'):
+            state = r.invoke('tdGetTowerSaleState', 101)
+            r.invoke('TDTowerSaleState_startWork' if exclusion == 'sale_busy' else 'TDTowerSaleState_beginSale', state)
+        elif exclusion == 'removed': r.units[101]['type'] = 0
+        else: r.units[101]['alive'] = False
+        r.attack()
+        require(not split_queue(r) and not r.split_visual_launches,
+                'ARCHER unsafe source registered ghost arrows: ' + exclusion)
+        if exclusion != 'removed':
+            assert_archer_uncontrolled(r, exclusion)
+        else:
+            require(not r.script_orders and not r.stop_orders and r.calls['tdTargetPriorityBest'] == 0,
+                    'Removed source changed priority control')
+        rows.append(exclusion)
+    r = archer_runtime(script); r.visible_units = [102, *range(110, 126)]
+    base = start_archer_volley(r); base_count = len(base[1]); r.run_timer(base[2])
+    candidates = [r.invoke('tdConfiguredEquipment', i) for i in range(1, 41)]
+    arrow_items = [item for item in candidates if r.invoke('tdItemSpecialization', item) == r.globals['TDItemCatalogSchema_TD_ITEM_SPECIAL_ARCHER_ARROW']]
+    require(arrow_items, 'ARCHER equipment additional-arrow fixture has no catalog item')
+    r.units[101]['inventory'] = {0: 4242}; r.inventory_items[4242] = arrow_items[-1]
+    equipped = start_archer_volley(r)
+    expected = base_count + r.invoke('tdEquipmentArcherAdditionalArrows', 101)
+    require(len(equipped[1]) == expected > base_count, 'ARCHER equipment extra arrows disappeared')
+    hit_archer_volley(r, equipped[0], equipped[1], 23.); r.run_timer(equipped[2])
+    # All existing equipment update work executes, including the family range branch.
+    record = r.invoke('tdTargetPriorityGet', 101); r.globals['TDTowerTargetPriorityState_parked'][record] = True
+    r.units[101]['acquireRange'] = 0.; r.clear_trace()
+    refresh = next(name for name, definition in r.functions.items()
+                   if name.startswith('tdRefreshTowerEquipmentBonuses') and len(definition[0]) >= 2 and definition[0][1] == 'excludedItem')
+    r.invoke(refresh, 101, None)
+    near(r.units[101]['acquireRange'], r.invoke('tdTowerEffectiveRangeForTower', 101),
+         'ARCHER inventory refresh projected parked range to zero')
+    assert_archer_uncontrolled(r, 'inventory refresh')
+    return {'unsafe_source_exclusions': rows, 'equipment_arrow_counts': [base_count, expected],
+            'actual_inventory_refresh_native_range': True}
+
+
+def verify_archer_deferred_context(script):
+    cases = []
+    for invalid in ('dead', 'removed', 'leaked', 'trial_generation', 'match_reset'):
+        r = archer_runtime(script); r.units[110]['x'] = 220.; r.visible_units = [102, 110]
+        volley, targets, expiry = start_archer_volley(r)
+        r.emit(11.)
+        require(not r.native_damage and volley not in split_queue(r),
+                'ARCHER farther extra shot did not defer real damage')
+        delayed = [(delay, cb) for delay, cb in r.scheduled if cb != expiry]
+        require(len(delayed) == 1 and delayed[0][0] > .03,
+                'ARCHER deferred impact did not capture its own callback')
+        if invalid == 'dead': r.units[110]['alive'] = False
+        elif invalid == 'removed': r.call('RemoveUnit', [110])
+        elif invalid == 'leaked':
+            r.invoke('tdHandleEnemyLeak', 110)
+            require(not r.units[110]['alive'], 'ARCHER leak fixture did not actually kill the leaked target')
+        elif invalid == 'trial_generation': r.state_call('reset')
+        else: r.invoke('tdStartGame')
+        r.run_timer(delayed[0][1]); r.run_timer(expiry)
+        require(not r.native_damage and not split_queue(r),
+                'ARCHER deferred callback damaged a dead/removed/new-context target: ' + invalid)
+        cases.append(invalid)
+    # Real trial targets: in-flight snapshot cannot hit an adversarial reused handle.
+    r = archer_runtime(script); r.units[101].update(x=0., y=0.); r.enter(8)
+    primary, victim = r.target(0), r.target(1)
+    r.units[primary].update(x=0., y=0., life=1000000.)
+    r.units[victim].update(x=220., y=0., life=1000000.)
+    r.visible_units = [primary, victim]
+    previous_callbacks = {cb for _, cb in r.scheduled}
+    volley, targets, expiry = start_archer_volley(r, primary)
+    r.emit(23., target=primary)
+    delayed = [(delay, cb) for delay, cb in r.scheduled if cb != expiry and cb not in previous_callbacks and delay > .03]
+    require(len(delayed) == 1 and not r.native_damage, 'ARCHER trial deferred callback fixture failed')
+    r.units[victim]['alive'] = False; r.event_target = victim; r.invoke('tdTrialOnTargetDeath')
+    replacement = r.adversarial_rebind(1, True)
+    require(replacement == victim, 'ARCHER trial registry adversary failed actual handle reuse')
+    r.run_timer(delayed[0][1]); r.run_timer(expiry)
+    require(not r.native_damage and r.units[replacement]['life'] == 1000000.,
+            'ARCHER old trial split damaged a rebound revision')
+    # A lethal native primary still confirms its already-visible secondary arrows.
+    r = archer_runtime(script); r.units[102]['life'] = 1.; r.visible_units = [102, 110, 111]
+    volley, targets, expiry = start_archer_volley(r)
+    hit_archer_volley(r, volley, targets, 37.); r.run_timer(expiry)
+    require(not r.units[102]['alive'], 'ARCHER lethal-primary fixture was not lethal')
+    # Lifetime adversary: release the consumed volley before its copied impact.
+    # Native chronological deadlines are tested separately; this deliberately
+    # reverses callback delivery to exercise capture ownership only.
+    r = archer_runtime(script); r.units[110]['x'] = 220.; r.visible_units = [102, 110]
+    volley, targets, expiry = start_archer_volley(r); r.emit(23.)
+    impact = next(cb for delay, cb in r.scheduled if cb != expiry and delay > .03)
+    r.run_timer(expiry)
+    r.visible_units = [103, 111]; newer = start_archer_volley(r, 103)
+    r.run_timer(impact)
+    require(r.native_damage and r.native_damage[-1][1] == 110, 'ARCHER deferred capture retargeted after volley reuse')
+    near(r.native_damage[-1][2], 23., 'ARCHER deferred capture changed amount after volley reuse')
+    r.run_timer(newer[2])
+    return {'deferred_invalidations': cases, 'trial_reused_handle_revision_rejected': True,
+            'trial_registry_adversary': 'Synthetic rebind only after actual production trial death; no ACTIVE replenishment claim.',
+            'lethal_native_primary_confirms_split': True, 'copied_deferred_values_survive_volley_expiry': True}
 
 
 def verify_recovery_failures_and_range(script):
@@ -897,7 +1302,30 @@ def verify_recovery_failures_and_range(script):
             'new_player_commands_cancel_recovery': 5}
 
 
-PACKED_MUTATION_ASSERTIONS = {'missing verdict': 'Packed ATTACKED wrapper: missing/out-of-order tdTargetPriorityAcceptAttack(', 'HP tie change': 'Actual comparator violates strict/current/tie rule', 'rank tie change': 'Actual comparator violates strict/current/tie rule', 'range inflation': 'Invalid better candidate selected: range', 'synchronous native-false old duplicate': 'Cancelled old start registered ghost split volley', 'unbounded recovery': 'Recovery exceeded four-query tick budget', 'old trial snapshot revision': 'Fresh manual trial identity rejected', 'stale restoration range': 'Recovery used stale pre-equipment range', 'duplicate accepted registration': 'Packed wrapper queues before verdict/twice'}
+PACKED_MUTATION_ASSERTIONS = {'missing verdict': 'Packed ARCHER native ATTACKED wrapper: missing/out-of-order tdTargetPriorityAcceptAttack(', 'HP tie change': 'Actual comparator violates strict/current/tie rule', 'rank tie change': 'Actual comparator violates strict/current/tie rule', 'range inflation': 'Invalid better candidate selected: range', 'synchronous native-false old duplicate': 'Cancelled old start registered ghost split volley', 'unbounded recovery': 'Recovery exceeded four-query tick budget', 'old trial snapshot revision': 'Fresh manual trial identity rejected', 'stale restoration range': 'Recovery used stale pre-equipment range', 'duplicate accepted registration': 'Packed wrapper duplicate/missing family registration'}
+
+
+def verify_archer_routing_probe(script):
+    for type_ in ARCHERS:
+        r = archer_runtime(script, type_); r.visible_units = [102, 103, 104]
+        start_archer_volley(r)
+
+
+def verify_archer_consume_lifetime_probe(script):
+    r = archer_runtime(script); r.visible_units = [102, 103]
+    volley, _, _ = start_archer_volley(r)
+    require(r.invoke('tdConsumeArcherSplitArrowVolley', 101, 102) == volley and
+            r.globals['TDArcherSplitArrowVolley_typeId'][volley] != 0,
+            'ARCHER consume destroyed volley before its unique expiry')
+
+
+def verify_archer_recovery_probe(script):
+    r = archer_runtime(script); record = r.invoke('tdTargetPriorityGet', 101)
+    r.globals['TDTowerTargetPriorityState_parked'][record] = True
+    r.lists[r.globals['TDTowerTargetPriorityState_tdTargetPriorityParked']].append(record)
+    r.units[101]['acquireRange'] = 0.
+    r.invoke('tdTargetPriorityStartRecovery'); r.recovery_tick()
+    assert_archer_uncontrolled(r, 'mutation stale recovery')
 
 
 def mutation_failure_evidence(label, error, expected_assertions):
@@ -933,6 +1361,57 @@ def verify_packed_mutations(script):
     registration = next(line for line in wrapper.splitlines() if 'call tdHandleArcherSplitArrowAttack(' in line)
     cases.append(('tdHandleTowerAttackStarted', registration, registration + '\n' + registration,
                   'duplicate accepted registration', verify_packed_structure))
+    source = re.search(r'set (\w+) = GetAttacker\(\)', wrapper)[1]
+    target = re.search(r'set (\w+) = GetTriggerUnit\(\)', wrapper)[1]
+    allowed_line = next(line for line in wrapper.splitlines() if 'if tdArcherNativeAttackAllowed(' in line)
+    accept_call = next(line.strip()[len('if  not '):-len(' then')] for line in wrapper.splitlines()
+                       if 'if  not tdTargetPriorityAcceptAttack(' in line)
+    family_line = next(line for line in wrapper.splitlines() if 'if tdTowerChoiceForUnitTypeId(' in line)
+    recovery = packed['tdTargetPriorityRecoveryTick'][0]
+    unpark_line = next(line for line in recovery.splitlines() if 'call tdTargetPriorityUnpark(' in line)
+    record = re.search(r'tdTargetPriorityUnpark\((\w+),', unpark_line)[1]
+    consume = packed['tdConsumeArcherSplitArrowVolley'][0]
+    returned = re.search(r'return (\w+)', consume)[1]
+    return_line = next(line for line in consume.splitlines() if 'return ' + returned in line)
+    inventory_name = next(name for name, definition in packed.items()
+                          if name.startswith('tdRefreshTowerEquipmentBonuses') and 'set cond_result = effectiveRange' in definition[0])
+    renderer = packed['tdLaunchArcherSplitArrowVisual'][0]
+    renderer_guard = next(line for line in renderer.splitlines() if 'if ' in line)
+    setup_line = next(line for line in packed['tdSetupDialogTrigger'][0].splitlines() if 'call tdSetupTargetPriorityOrders(' in line)
+    cases.extend([
+        ('tdHandleTowerAttackStarted', allowed_line, allowed_line[:-len(' then')] + ' and ' + accept_call + ' then',
+         'archer accept restored', verify_archer_routing_probe),
+        ('tdHandleTowerAttackStarted', family_line, family_line[:-len(' then')] +
+         ' and GetUnitTypeId(' + source + ') != ' + str(rawcode('uA6B')) + ' then',
+         'uA6B native branch omitted', verify_archer_routing_probe),
+        ('tdTargetPriorityRecoveryTick', unpark_line,
+         unpark_line + '\n\tcall IssueTargetOrderById(TDTowerTargetPriorityState_source[' + record + '], 851983, null)',
+         'archer recovery resend', verify_archer_recovery_probe),
+        (inventory_name, 'set cond_result = effectiveRange', 'set cond_result = 0.0',
+         'archer acquire zero', verify_archer_safety_and_equipment),
+        ('tdSetupDialogTrigger', setup_line, '', 'global priority setup removed', verify_packed_structure),
+        ('tdLaunchArcherSplitArrowVisual', renderer_guard,
+         '\tif true then\n\t\treturn\n\tendif\n' + renderer_guard,
+         'visual budget restored', verify_packed_structure),
+        ('tdConsumeArcherSplitArrowVolley', return_line,
+         '\tcall dispatch_TDArcherSplitArrowVolley_destroyTDArcherSplitArrowVolley(' + returned + ', "mutation consume")\n' + return_line,
+         'consume destroys volley', verify_archer_consume_lifetime_probe),
+        ('tdHandleArcherSplitArrowDamage', ' or DamageEvent_getId() == TDTowerRuntime_TD_ARCHER_SPLIT_ARROW_DAMAGE_EVENT_ID', '',
+         'Tspl recursion filter removed', verify_archer_inflight_reuse_and_filters),
+        ('tdHandleArcherSplitArrowDamage', 'DamageEvent_getUnreducedOriginalAmount()', 'DamageEvent_getAmount()',
+         'mutable split damage basis', verify_split_immutable_basis),
+    ])
+    PACKED_MUTATION_ASSERTIONS.update({
+        'archer accept restored': 'ARCHER native attack was selected/redirected/stopped',
+        'uA6B native branch omitted': 'ARCHER native attack was selected/redirected/stopped',
+        'archer recovery resend': 'ARCHER native attack was selected/redirected/stopped',
+        'archer acquire zero': 'ARCHER inventory refresh projected parked range to zero',
+        'global priority setup removed': 'Packed global priority order setup removed',
+        'visual budget restored': 'Packed all-arrow renderer restored admission control',
+        'consume destroys volley': 'ARCHER consume destroyed volley before its unique expiry',
+        'Tspl recursion filter removed': 'ARCHER recursive code/spell/Tspl consumed a new volley',
+        'mutable split damage basis': 'Packed split uses immutable original100, not modified210',
+    })
     rejected = []
     for name, old, new, label, oracle in cases:
         require(old in packed[name][0], 'Packed mutation anchor missing: ' + label)
@@ -1067,7 +1546,7 @@ def verify_base_policy_independent_of_route(script):
     # Legal current/candidates stay inside real tower range. Position/velocity
     # are native fixture inputs; the selector must not read route or speed.
     rows=[]
-    for type_,expected in (('uO6B',102),('uA6B',103)):
+    for type_,expected in (('uO6B',102),('uD6B',103)):
         r=TowerTargetRuntime(script)
         r.units[101].update(type=rawcode(type_),x=-500.,y=0.)
         r.units[102].update(type=rawcode('uB08'),life=1000.,x=-380.,y=0.,speed=10000.,order=851986,userdata=105)
@@ -1131,6 +1610,11 @@ def verify_artifact(map_path, source=ROOT / 'wurst', source_only=False, mutation
     report['catalog_selection'] = verify_catalog_selection(script)
     report['trial_identity'] = verify_trial_identity(script)
     report['split_inflight'] = verify_split_inflight(script)
+    report['archer_native_restoration'] = verify_archer_native_restoration(script)
+    report['archer_native_orders_recovery'] = verify_archer_native_orders_and_recovery(script)
+    report['archer_inflight_reuse_filters'] = verify_archer_inflight_reuse_and_filters(script)
+    report['archer_safety_equipment'] = verify_archer_safety_and_equipment(script)
+    report['archer_deferred_context'] = verify_archer_deferred_context(script)
     report['sparse_recovery'] = verify_recovery(script)
     report['recovery_failures_range_commands'] = verify_recovery_failures_and_range(script)
     report['existing_split_original_basis'] = verify_split_immutable_basis(script)
@@ -1138,7 +1622,7 @@ def verify_artifact(map_path, source=ROOT / 'wurst', source_only=False, mutation
         report['packed_mutations_rejected'] = verify_packed_mutations(script)
     report.update(status='PASS_COMPILED_SCRIPT_ONLY' if compiled_script else 'PASS',
                   actual_mpq_executed=compiled_script is None, jass_sha256=sha(script.encode()),
-                  native_event_observation='A legal native ATTACKED delivered under stop/hold/nonattack order may still register its original contract. Warcraft 1.28 supplies no per-event order token. The gate proves no automatic order override and no old outer registration after observable synchronous intent changes.')
+                  native_event_observation='Controlled replay has no native projectile/order token; no client event timing was measured.')
     report['compiled_script_sha256' if compiled_script else 'map_sha256'] = sha(data)
     return report
 
