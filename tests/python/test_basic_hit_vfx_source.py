@@ -40,15 +40,37 @@ class BasicHitVfxSourceTests(unittest.TestCase):
         self.assertNotIn('creationCount',finisher)
         self.assertEqual(finisher.split('\n',1)[1].strip(),'return')
 
-    def test_existing_admission_caps_and_on_hit_only_entry(self):
+    def test_existing_admission_caps(self):
         source=(ROOT/'wurst/visuals/TDCombatVisualData.wurst').read_text()
         for key,value in [('SHORT_LIMIT',128),('HIT_LIMIT',32),('NEW_PER_SECOND',120),('MOVING_LIMIT',8)]:
             self.assertRegex(source, rf'TD_VISUAL_{key} = {value}\b')
         self.assertIn('sourceCount < 2',source)
         self.assertIn('laneGroups < TD_VISUAL_LANE_GROUPS_PER_SECOND',source)
+
+    def test_possession_keeps_native_attack_art_and_skill_effects(self):
         combat=(ROOT/'wurst/pets/TDPetCombat.wurst').read_text()
-        self.assertEqual(combat.count('tdCombatVisualHit('),1)
-        self.assertIn('tdCombatVisualHit(host, host.getPos(), center, tdPetSpeciesElement(pet.species), pet.lane,',combat)
+        # The legacy elemental renderer remains available, but no production
+        # caller may decorate a basic hit with it (including its gold beam).
+        for path in (ROOT/'wurst').rglob('*.wurst'):
+            source=path.read_text()
+            calls=re.sub(r'public function tdCombatVisualHit\([^\n]*', '', source)
+            self.assertNotIn('tdCombatVisualHit(', calls, str(path))
+        # Visual removal must not bypass the decisive multiplier, queued damage,
+        # hero passives, active spells, buff feedback, or companion cast motion.
+        for entry in (
+            'DamageEvent.setAmount(DamageEvent.getAmount() * resolve)',
+            'pet.resolveRotation = tdPetNextAttackCount(pet.resolveRotation, 5)',
+            'tdPetApplyAttackDebuffs(', 'tdPetHeroCapturePrimary(',
+            'tdPetQueueAttack(', 'tdPetStartElementActive(',
+            'tdCombatVisualStartPetBuff(', 'tdPetDisplayCast(',
+        ):
+            self.assertIn(entry, combat)
+        for passive in ('comboSnapshot', 'chargeSnapshot', 'pursuitSnapshot', 'heavySnapshot'):
+            self.assertIn('tdPetDamage(pet, host, generation, target, base * ' + passive + ')', combat)
+        towers=(ROOT/'wurst/towers/TDTowerRuntime.wurst').read_text()
+        self.assertIn('tdLaunchArcherSplitArrowVisual(source, shot.target, shot.flightTime)', towers)
+        objects=(ROOT/'wurst/towers/TDTowerObjectGen.wurst').read_text()
+        self.assertIn('setAttack1ProjectileArt(tdTowerProjectileArt(towerChoice))', objects)
 
 if __name__ == '__main__':
     unittest.main()

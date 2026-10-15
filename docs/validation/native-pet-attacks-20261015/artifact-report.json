@@ -1,0 +1,457 @@
+{
+  "sha256": "3b8c5c35fa03120108b416d5db80ab26d7d9236d02367a3c7827c62d25a2a7c5",
+  "archive_delta": {
+    "members": 427,
+    "changed": [
+      "war3map.j",
+      "war3map.w3i"
+    ],
+    "all_other_bytes_identical": true
+  },
+  "basic_hits": [
+    {
+      "element": 1,
+      "attacks": 5,
+      "visuals": 0
+    },
+    {
+      "element": 2,
+      "attacks": 5,
+      "visuals": 0
+    },
+    {
+      "element": 3,
+      "attacks": 5,
+      "visuals": 0
+    },
+    {
+      "element": 4,
+      "attacks": 5,
+      "visuals": 0
+    },
+    {
+      "element": 5,
+      "attacks": 5,
+      "visuals": 0
+    }
+  ],
+  "gameplay": [
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 2
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          1
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 0
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          38,
+          4
+        ]
+      ],
+      "visual_mode": "normal",
+      "identical": true,
+      "native_segments": 3
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          38,
+          4
+        ]
+      ],
+      "visual_mode": "null",
+      "identical": true,
+      "native_segments": 3
+    },
+    {
+      "skills": [
+        [
+          0,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          38,
+          4
+        ]
+      ],
+      "visual_mode": "exhausted",
+      "identical": true,
+      "native_segments": 3
+    }
+  ],
+  "split_arrow_traces": "IDENTICAL",
+  "status": "PASS",
+  "boundary": "Actual packed JASS replay; engine native rendering, clocks and armor are modeled. Not an in-game visual/FPS claim."
+}
