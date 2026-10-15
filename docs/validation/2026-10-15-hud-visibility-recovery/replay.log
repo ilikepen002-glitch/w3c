@@ -1,0 +1,7 @@
+PASS: baseline hidden-visibility defect rejected
+PASS: candidate local 0 cases 66
+PASS: candidate local 1 cases 66
+PASS: candidate local 2 cases 66
+PASS: candidate local 3 cases 66
+PASS: candidate local 15 cases 66
+PASS: all five clients retain identical synchronized handle traces

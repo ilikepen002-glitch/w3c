@@ -10,8 +10,8 @@
       "role": "model",
       "sourceRelative": "original/EclipseSpellweaver.mdx",
       "importPath": "war3mapImported\\EclipseSpellweaver.mdx",
-      "sha256": "b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406",
-      "bytes": 763754,
+      "sha256": "2288297e8d635279f2b9459d0845b62fba94e491991814398aa1d77cbf5159bd",
+      "bytes": 562382,
       "repositoryImportPath": "imports/war3mapImported/EclipseSpellweaver.mdx"
     },
     {
@@ -23,7 +23,7 @@
       "repositoryImportPath": "imports/Textures/EclipseSpellweaverAtlas.blp"
     }
   ],
-  "rawAssetBytes": 1114459,
+  "rawAssetBytes": 913087,
   "format": 800,
   "triangles": 5654,
   "bones": 25,
@@ -113,7 +113,7 @@
     "baseCommit": "2528a3b356c31350b966078d62aa639d640b44b2",
     "unit": "uB24",
     "modelPath": "war3mapImported\\EclipseSpellweaver.mdx",
-    "scale": 8.0,
+    "scale": 8,
     "scope": "Only uB24 visualScalingValue from 1.50 to 8.00; model/assets, all other fields and JASS unchanged"
   },
   "sourceHashes": {
@@ -154,5 +154,11 @@
       "bytes": 852
     }
   },
-  "visualScaleSuggestionStatus": "Historical offline suggestion only; user-approved production scale is 8.00"
+  "visualScaleSuggestionStatus": "Historical offline suggestion only; user-approved production scale is 8.00",
+  "classicMeshCompatibility": {
+    "strategy": "Exact attribute deduplication and triangle-order-preserving batches",
+    "maxVerticesPerGeoset": 3000,
+    "baselineSha256": "b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406",
+    "nativeEngineVerified": false
+  }
 }

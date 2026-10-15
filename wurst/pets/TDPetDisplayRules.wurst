@@ -43,42 +43,41 @@ public function tdPetDisplayHeight(int towerType) returns real
 	let choice = tdTowerChoiceForUnitTypeId(towerType)
 	let level = tdTowerLevelForUnitTypeId(towerType)
 	if choice == 0 or level < 1 or level > 6
-		return 160.0
-	return tdPetDisplayModelHeight(choice, level) * (0.95 + 0.03 * level) + 24.0
+		return 270.0
+	return tdPetDisplayModelHeight(choice, level) * (0.95 + 0.03 * level) + 110.0
 
-// Attached-only art scale. Rounded from 130 / longest Display Float extent
-// for the current 15 MDX models; keeps silhouettes comparable without growing
-// wings/tails to wild-unit size. Geometry, wild/collection scales and scheduling
-// remain independent. Height stays tower-relative, not multiplied by this scale.
+// Attached-only art scale: roughly 230 world units for the 14 authored rigs.
+// The replacement native phoenix already exceeds this and retains its 1.04 scale.
+// Wild and collection object scales are intentionally independent.
 public function tdPetDisplayScale(int species) returns real
 	if species == 1
-		return 0.83
-	if species == 2
-		return 0.78
-	if species == 3
-		return 0.79
-	if species == 4
-		return 1.07
-	if species == 5
-		return 1.21
-	if species == 6
 		return 1.46
+	if species == 2
+		return 1.38
+	if species == 3
+		return 1.39
+	if species == 4
+		return 1.90
+	if species == 5
+		return 2.14
+	if species == 6
+		return 2.57
 	if species == 7
-		return 0.81
+		return 1.43
 	if species == 8
-		return 0.88
+		return 1.56
 	if species == 9
-		return 0.98
+		return 1.74
 	if species == 10
 		return 1.04
 	if species == 11
-		return 0.82
+		return 1.45
 	if species == 12
-		return 0.99
+		return 1.75
 	if species == 13
-		return 1.06
+		return 1.87
 	if species == 14
-		return 1.50
+		return 2.66
 	if species == 15
-		return 1.17
+		return 2.07
 	return 1.0

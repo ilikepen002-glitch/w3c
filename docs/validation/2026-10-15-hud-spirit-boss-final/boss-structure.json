@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "models": [
+    {
+      "rawcode": "uB24",
+      "model": "EclipseSpellweaver",
+      "scale": 8,
+      "sha256": "2288297e8d635279f2b9459d0845b62fba94e491991814398aa1d77cbf5159bd",
+      "bones": 25,
+      "geosetVertices": [
+        2998,
+        3000,
+        3000,
+        1816
+      ],
+      "maxRotationNormError": 2.978795499153364e-8,
+      "scaleKeyCount": 3150,
+      "scaleRange": [
+        0.2800000011920929,
+        1.024999976158142
+      ],
+      "roundtrip": true,
+      "boneHierarchyAndBindings": true
+    },
+    {
+      "rawcode": "uB32",
+      "model": "UncrownedAbyssKing",
+      "scale": 7,
+      "sha256": "f7000998df4c40dd9448368365766a98549a87cca07a0e7eefe67b6f24de0598",
+      "bones": 27,
+      "geosetVertices": [
+        3000,
+        2999,
+        2998,
+        1950
+      ],
+      "maxRotationNormError": 2.9650242483469924e-8,
+      "scaleKeyCount": 3402,
+      "scaleRange": [
+        0.6499999761581421,
+        1
+      ],
+      "roundtrip": true,
+      "boneHierarchyAndBindings": true
+    }
+  ],
+  "conclusion": "No malformed bone hierarchy/index/finite transform found. No native renderer or animation-blending validation. Classic mesh compatibility candidate remains unproven in the native engine; inspect the production manifest for batching provenance."
+}

@@ -1,0 +1,359 @@
+{
+  "status": "PASS",
+  "nativeEngineVerified": false,
+  "scope": "Asset-local compatibility candidate, not a proven root-cause fix. No scale, gameplay, texture or animation edits.",
+  "reports": [
+    {
+      "name": "EclipseSpellweaver",
+      "beforeSha256": "b19878db04cfef6dc053d6443281e312f95ff1375dd3f4a38007a29c7ea90406",
+      "afterSha256": "2288297e8d635279f2b9459d0845b62fba94e491991814398aa1d77cbf5159bd",
+      "beforeBytes": 763754,
+      "afterBytes": 562382,
+      "before": {
+        "bones": 25,
+        "tracks": 75,
+        "globalSequences": 0,
+        "vertexCounts": [
+          16962
+        ],
+        "matrixGroupCounts": [
+          25
+        ],
+        "maxBonesPerGroup": 1,
+        "maxFaceIndex": 16961,
+        "maxTranslation": 76.16429609731846,
+        "minScale": 0.2800000011920929,
+        "maxScale": 1.024999976158142,
+        "maxQuaternionError": 2.978795499153364e-8,
+        "sequences": [
+          {
+            "name": "Stand",
+            "interval": [
+              0,
+              2400
+            ],
+            "rarity": 0,
+            "flags": 0
+          },
+          {
+            "name": "Walk",
+            "interval": [
+              2500,
+              3700
+            ],
+            "rarity": 0,
+            "flags": 0
+          },
+          {
+            "name": "Spell",
+            "interval": [
+              3800,
+              5300
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Stand Hit",
+            "interval": [
+              5400,
+              6000
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Death",
+            "interval": [
+              6100,
+              8100
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Portrait",
+            "interval": [
+              8200,
+              10600
+            ],
+            "rarity": 0,
+            "flags": 0
+          }
+        ],
+        "ribbonEmitters": 0
+      },
+      "after": {
+        "bones": 25,
+        "tracks": 75,
+        "globalSequences": 0,
+        "vertexCounts": [
+          2998,
+          3000,
+          3000,
+          1816
+        ],
+        "matrixGroupCounts": [
+          25,
+          25,
+          25,
+          25
+        ],
+        "maxBonesPerGroup": 1,
+        "maxFaceIndex": 2999,
+        "maxTranslation": 76.16429609731846,
+        "minScale": 0.2800000011920929,
+        "maxScale": 1.024999976158142,
+        "maxQuaternionError": 2.978795499153364e-8,
+        "sequences": [
+          {
+            "name": "Stand",
+            "interval": [
+              0,
+              2400
+            ],
+            "rarity": 0,
+            "flags": 0
+          },
+          {
+            "name": "Walk",
+            "interval": [
+              2500,
+              3700
+            ],
+            "rarity": 0,
+            "flags": 0
+          },
+          {
+            "name": "Spell",
+            "interval": [
+              3800,
+              5300
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Stand Hit",
+            "interval": [
+              5400,
+              6000
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Death",
+            "interval": [
+              6100,
+              8100
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Portrait",
+            "interval": [
+              8200,
+              10600
+            ],
+            "rarity": 0,
+            "flags": 0
+          }
+        ],
+        "ribbonEmitters": 0
+      },
+      "orderedCorners": 16962,
+      "orderedCornerSignature": "747e8e2bd590a305cf754805a2abcb73c2eed98d8ea1cb2ceb91a99ceaa89bed",
+      "sampledPoses": 294,
+      "maxPoseCornerDifference": 0,
+      "unchangedNonGeosChunks": [
+        "VERS",
+        "MODL",
+        "SEQS",
+        "MTLS",
+        "TEXS",
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "negativeCases": 7
+    },
+    {
+      "name": "UncrownedAbyssKing",
+      "beforeSha256": "f736e64c9d238e60dfc7fb0fb5040fae5563aaa51df592f9cf9d4bc972ac974e",
+      "afterSha256": "f7000998df4c40dd9448368365766a98549a87cca07a0e7eefe67b6f24de0598",
+      "beforeBytes": 824674,
+      "afterBytes": 583027,
+      "before": {
+        "bones": 27,
+        "tracks": 81,
+        "globalSequences": 0,
+        "vertexCounts": [
+          18318
+        ],
+        "matrixGroupCounts": [
+          28
+        ],
+        "maxBonesPerGroup": 2,
+        "maxFaceIndex": 18317,
+        "maxTranslation": 20.39607805437114,
+        "minScale": 0.6499999761581421,
+        "maxScale": 1,
+        "maxQuaternionError": 2.9650242483469924e-8,
+        "sequences": [
+          {
+            "name": "Stand",
+            "interval": [
+              0,
+              2400
+            ],
+            "rarity": 0,
+            "flags": 0
+          },
+          {
+            "name": "Walk",
+            "interval": [
+              2500,
+              3700
+            ],
+            "rarity": 0,
+            "flags": 0
+          },
+          {
+            "name": "Attack",
+            "interval": [
+              3800,
+              5300
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Stand Hit",
+            "interval": [
+              5400,
+              6000
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Death",
+            "interval": [
+              6100,
+              8100
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Portrait",
+            "interval": [
+              8200,
+              10600
+            ],
+            "rarity": 0,
+            "flags": 0
+          }
+        ],
+        "ribbonEmitters": 0
+      },
+      "after": {
+        "bones": 27,
+        "tracks": 81,
+        "globalSequences": 0,
+        "vertexCounts": [
+          3000,
+          2999,
+          2998,
+          1950
+        ],
+        "matrixGroupCounts": [
+          28,
+          28,
+          28,
+          28
+        ],
+        "maxBonesPerGroup": 2,
+        "maxFaceIndex": 2999,
+        "maxTranslation": 20.39607805437114,
+        "minScale": 0.6499999761581421,
+        "maxScale": 1,
+        "maxQuaternionError": 2.9650242483469924e-8,
+        "sequences": [
+          {
+            "name": "Stand",
+            "interval": [
+              0,
+              2400
+            ],
+            "rarity": 0,
+            "flags": 0
+          },
+          {
+            "name": "Walk",
+            "interval": [
+              2500,
+              3700
+            ],
+            "rarity": 0,
+            "flags": 0
+          },
+          {
+            "name": "Attack",
+            "interval": [
+              3800,
+              5300
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Stand Hit",
+            "interval": [
+              5400,
+              6000
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Death",
+            "interval": [
+              6100,
+              8100
+            ],
+            "rarity": 0,
+            "flags": 1
+          },
+          {
+            "name": "Portrait",
+            "interval": [
+              8200,
+              10600
+            ],
+            "rarity": 0,
+            "flags": 0
+          }
+        ],
+        "ribbonEmitters": 0
+      },
+      "orderedCorners": 18318,
+      "orderedCornerSignature": "28be09783c838c05e69d0e3b5b6acf2bb25ca58e2be2749d2ffc0c6954e8d73f",
+      "sampledPoses": 294,
+      "maxPoseCornerDifference": 0,
+      "unchangedNonGeosChunks": [
+        "VERS",
+        "MODL",
+        "SEQS",
+        "MTLS",
+        "TEXS",
+        "BONE",
+        "PIVT",
+        "CAMS"
+      ],
+      "negativeCases": 7
+    }
+  ]
+}

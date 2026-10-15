@@ -38,7 +38,7 @@ import TDConfig
 				let typeId = tdTowerUnitIdForLevelBranch(choice, level, branch)
 				tdTowerChoiceForUnitTypeId(typeId).assertEquals(choice)
 				tdTowerLevelForUnitTypeId(typeId).assertEquals(level)
-				tdPetDisplayHeight(typeId).assertEquals(tdPetDisplayModelHeight(choice, level) * (0.95 + level * 0.03) + 24.0)
+				tdPetDisplayHeight(typeId).assertEquals(tdPetDisplayModelHeight(choice, level) * (0.95 + level * 0.03) + 110.0)
 	tdPetDisplayModelHeight(TD_TOWER_CHOICE_ARCHER, 4).assertEquals(110.0)
 	tdPetDisplayModelHeight(TD_TOWER_CHOICE_ARCHER, 5).assertEquals(160.0)
 	tdPetDisplayModelHeight(TD_TOWER_CHOICE_ORC, 4).assertEquals(135.0)
@@ -49,13 +49,14 @@ import TDConfig
 	tdPetDisplayModelHeight(TD_TOWER_CHOICE_DRYAD, 5).assertEquals(180.0)
 	tdPetDisplayModelHeight(TD_TOWER_CHOICE_GHOUL, 4).assertEquals(105.0)
 	tdPetDisplayModelHeight(TD_TOWER_CHOICE_GHOUL, 5).assertEquals(185.0)
-	tdPetDisplayHeight(0).assertEquals(160.0)
+	tdPetDisplayHeight(0).assertEquals(270.0)
 
 @Test function displayInvalidationClearsOnlyCosmeticDeadlineAndCycle()
 	let pet = new TDPet(0, 1, 1)
 	pet.visualAction.assertEquals(-1)
 	pet.visualNextAt.assertEquals(0.0)
 	pet.visualCycle.assertEquals(0)
+	(pet.visualLink == null).assertTrue()
 	pet.readyAt = 99.0
 	pet.visualAction = 9
 	pet.visualNextAt = 12.0
@@ -64,11 +65,13 @@ import TDConfig
 	pet.visualAction.assertEquals(-1)
 	pet.visualNextAt.assertEquals(0.0)
 	pet.visualCycle.assertEquals(0)
+	(pet.visualLink == null).assertTrue()
 	pet.readyAt.assertEquals(99.0)
 	pet.generation.assertEquals(1)
 	tdPetDisplayCast(pet, null, 1, 100.0)
 	tdPetDisplayTick(pet, 0, 100.0)
 	pet.visualAction.assertEquals(-1)
+	(pet.visualLink == null).assertTrue()
 	pet.readyAt.assertEquals(99.0)
 	pet.generation.assertEquals(1)
 	destroy pet
@@ -76,9 +79,9 @@ import TDConfig
 @Test function displayScaleIsBoundedAndSpeciesSpecific()
 	for species = 1 to 15
 		let scale = tdPetDisplayScale(species)
-		(scale >= 0.75 and scale <= 1.50).assertTrue()
-	tdPetDisplayScale(1).assertEquals(0.83)
-	tdPetDisplayScale(2).assertEquals(0.78)
-	tdPetDisplayScale(14).assertEquals(1.50)
+		(scale >= 1.0 and scale <= 2.70).assertTrue()
+	tdPetDisplayScale(1).assertEquals(1.46)
+	tdPetDisplayScale(2).assertEquals(1.38)
+	tdPetDisplayScale(14).assertEquals(2.66)
 	tdPetDisplayScale(0).assertEquals(1.0)
 	tdPetDisplayScale(16).assertEquals(1.0)

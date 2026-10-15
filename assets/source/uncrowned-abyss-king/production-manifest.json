@@ -11,8 +11,8 @@
       "role": "model",
       "sourceRelative": "original/UncrownedAbyssKing.mdx",
       "importPath": "war3mapImported\\UncrownedAbyssKing.mdx",
-      "sha256": "f736e64c9d238e60dfc7fb0fb5040fae5563aaa51df592f9cf9d4bc972ac974e",
-      "bytes": 824674,
+      "sha256": "f7000998df4c40dd9448368365766a98549a87cca07a0e7eefe67b6f24de0598",
+      "bytes": 583027,
       "repositoryImportPath": "imports/war3mapImported/UncrownedAbyssKing.mdx"
     },
     {
@@ -24,7 +24,7 @@
       "repositoryImportPath": "imports/Textures/UncrownedAbyssKingAtlas.blp"
     }
   ],
-  "rawAssetBytes": 1175379,
+  "rawAssetBytes": 933732,
   "format": 800,
   "triangles": 6106,
   "bones": 27,
@@ -132,7 +132,7 @@
       "eclipseCurrentVisualScale": 8,
       "eclipseReferencedStandTopWorld": 1119.84,
       "abyssTopMatchedScale": 7.0424721080913955,
-      "recommendedVisualScale": 7.0,
+      "recommendedVisualScale": 7,
       "atScale7": {
         "standTopWorld": 1113.086410522461,
         "standBodyHeight": 1089.986410856247,
@@ -151,7 +151,7 @@
       "basis": "Match approved Eclipse*8 top silhouette approximately; final scale is integration decision and needs game-camera validation."
     }
   },
-  "visualScaleSuggestion": 7.0,
+  "visualScaleSuggestion": 7,
   "visualScaleBasis": "Current Eclipse scale8 Stand top ≈1119.84. Abyss Stand initial top159.0123 ×7≈1113.09. Same top silhouette scale, not a blanket multiplier; actual broad cape/shoulders are wider. Final integration decision and game-camera validation needed.",
   "allowedObjectChanges": [
     "modelFile",
@@ -192,7 +192,7 @@
   "integration": {
     "baseCommit": "29c534a77a07b52ebd35dea57b629bdba12e6e16",
     "modelPath": "war3mapImported\\UncrownedAbyssKing.mdx",
-    "scale": 7.0,
+    "scale": 7,
     "scope": "Only uB32 modelFile and visualScalingValue; all other fields and JASS inherited"
   },
   "sourceHashes": {
@@ -264,5 +264,11 @@
     },
     "acceptedStaticMdxShaUnchanged": true,
     "deathStyle": "compressed descending collapse; no particle dissolve"
+  },
+  "classicMeshCompatibility": {
+    "strategy": "Exact attribute deduplication and triangle-order-preserving batches",
+    "maxVerticesPerGeoset": 3000,
+    "baselineSha256": "f736e64c9d238e60dfc7fb0fb5040fae5563aaa51df592f9cf9d4bc972ac974e",
+    "nativeEngineVerified": false
   }
 }

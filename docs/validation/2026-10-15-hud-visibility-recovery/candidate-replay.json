@@ -1,0 +1,1870 @@
+{
+  "status": "PASS",
+  "map": {
+    "path": "/workspace/shared/w3c-hud-visibility-recovery/ExampleMap.w3x",
+    "map_sha256": "e131109bb9cc221cccf9d3189fd214cc52ac677deb52094c95894772f7da6029",
+    "jass_sha256": "1d78ccfa50a26371e924a0f0ae580a38fa5aebafc6fb6906c03187f1bc3df94f"
+  },
+  "clients": [
+    0,
+    1,
+    2,
+    3,
+    15
+  ],
+  "cases_per_client": 66,
+  "handle_skeletons_equal": true,
+  "cases": {
+    "one_first": {
+      "native_calls": {
+        "MultiboardSetRowCount": 1,
+        "MultiboardSetItemsStyle": 1,
+        "MultiboardSetItemsValue": 1,
+        "MultiboardSetItemsIcon": 1,
+        "MultiboardGetItem": 25,
+        "MultiboardSetItemWidth": 15,
+        "MultiboardReleaseItem": 25,
+        "MultiboardSetItemValue": 10,
+        "MultiboardSetTitleText": 1,
+        "MultiboardDisplay": 3,
+        "MultiboardMinimize": 1
+      },
+      "total_native_calls": 84,
+      "interpreter_steps": 3353,
+      "evaluated_expressions": 2846,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "51c97300682649f16bbaf1a71c06d94ea216929f811dae2b2241ef20b42e4dc7"
+    },
+    "one_unchanged": {
+      "native_calls": {},
+      "total_native_calls": 0,
+      "interpreter_steps": 1156,
+      "evaluated_expressions": 417,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "51c97300682649f16bbaf1a71c06d94ea216929f811dae2b2241ef20b42e4dc7"
+    },
+    "one_full_first": {
+      "native_calls": {
+        "MultiboardSetRowCount": 1,
+        "MultiboardSetItemsStyle": 1,
+        "MultiboardSetItemsValue": 1,
+        "MultiboardSetItemsIcon": 1,
+        "MultiboardGetItem": 80,
+        "MultiboardSetItemWidth": 50,
+        "MultiboardReleaseItem": 80,
+        "MultiboardSetItemValue": 26,
+        "MultiboardSetTitleText": 1,
+        "MultiboardSetItemIcon": 2,
+        "MultiboardSetItemStyle": 2,
+        "MultiboardDisplay": 3,
+        "MultiboardMinimize": 1
+      },
+      "total_native_calls": 249,
+      "interpreter_steps": 8548,
+      "evaluated_expressions": 6147,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "edc5c371ac342f5d1dcd3631889eed7c69d4d38a04a25fe63aae62b0bc53c988"
+    },
+    "one_full_unchanged": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4725,
+      "evaluated_expressions": 2124,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "edc5c371ac342f5d1dcd3631889eed7c69d4d38a04a25fe63aae62b0bc53c988"
+    },
+    "all_compact_again": {
+      "native_calls": {
+        "MultiboardDisplay": 3,
+        "MultiboardMinimize": 1
+      },
+      "total_native_calls": 4,
+      "interpreter_steps": 1162,
+      "evaluated_expressions": 428,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "edc5c371ac342f5d1dcd3631889eed7c69d4d38a04a25fe63aae62b0bc53c988"
+    },
+    "four_compact": {
+      "native_calls": {
+        "MultiboardSetRowCount": 1,
+        "MultiboardSetItemsStyle": 1,
+        "MultiboardSetItemsValue": 1,
+        "MultiboardSetItemsIcon": 1,
+        "MultiboardGetItem": 49,
+        "MultiboardSetItemWidth": 27,
+        "MultiboardReleaseItem": 49,
+        "MultiboardSetItemValue": 22,
+        "MultiboardSetTitleText": 1
+      },
+      "total_native_calls": 152,
+      "interpreter_steps": 3899,
+      "evaluated_expressions": 3216,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "a34220019c143e086839b901f6b085d996c1f51395ec24d2e9587f5d652b710a"
+    },
+    "four_compact_unchanged": {
+      "native_calls": {},
+      "total_native_calls": 0,
+      "interpreter_steps": 1348,
+      "evaluated_expressions": 546,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "a34220019c143e086839b901f6b085d996c1f51395ec24d2e9587f5d652b710a"
+    },
+    "compact_rankings": {
+      "native_calls": {
+        "MultiboardGetItem": 4,
+        "MultiboardSetItemValue": 4,
+        "MultiboardReleaseItem": 4
+      },
+      "total_native_calls": 12,
+      "interpreter_steps": 4071,
+      "evaluated_expressions": 1338,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "dispatch_LinkedList_LinkedList_sortWith",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "09c641ceaf35c1303cf05b50a6ec016f527a48253fa0448a54fa173c9a161a6b"
+    },
+    "compact_rankings_unchanged": {
+      "native_calls": {},
+      "total_native_calls": 0,
+      "interpreter_steps": 1380,
+      "evaluated_expressions": 554,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "09c641ceaf35c1303cf05b50a6ec016f527a48253fa0448a54fa173c9a161a6b"
+    },
+    "mixed_full_first": {
+      "native_calls": {
+        "MultiboardSetRowCount": 1,
+        "MultiboardSetItemsStyle": 1,
+        "MultiboardSetItemsValue": 1,
+        "MultiboardSetItemsIcon": 1,
+        "MultiboardGetItem": 222,
+        "MultiboardSetItemWidth": 127,
+        "MultiboardReleaseItem": 222,
+        "MultiboardSetItemValue": 91,
+        "MultiboardSetTitleText": 1,
+        "MultiboardSetItemIcon": 2,
+        "MultiboardSetItemStyle": 2
+      },
+      "total_native_calls": 671,
+      "interpreter_steps": 13161,
+      "evaluated_expressions": 9303,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "a469c1ada05a75875839f92a4b8c4e75e4a7403502356fe154543f90525383bb"
+    },
+    "mixed_full_unchanged": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 7271,
+      "evaluated_expressions": 3658,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "a469c1ada05a75875839f92a4b8c4e75e4a7403502356fe154543f90525383bb"
+    },
+    "boss_countdown": {
+      "native_calls": {
+        "MultiboardGetItem": 15,
+        "MultiboardSetItemValue": 13,
+        "MultiboardReleaseItem": 15,
+        "MultiboardSetTitleText": 2,
+        "MultiboardSetItemIcon": 1,
+        "MultiboardSetItemStyle": 1
+      },
+      "total_native_calls": 47,
+      "interpreter_steps": 7982,
+      "evaluated_expressions": 4062,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "39351600689429559399125bf90957c295cadd5ca4ca3e4cde3f3e96739bc666"
+    },
+    "pet_detail": {
+      "native_calls": {
+        "MultiboardGetItem": 15,
+        "MultiboardSetItemValue": 13,
+        "MultiboardReleaseItem": 15,
+        "MultiboardSetTitleText": 2,
+        "MultiboardSetItemIcon": 1,
+        "MultiboardSetItemStyle": 1
+      },
+      "total_native_calls": 47,
+      "interpreter_steps": 6827,
+      "evaluated_expressions": 3455,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "d4b9f3214f391cbff0f1f844f37c8ae2460294692e75e91e58166d570fd85eba"
+    },
+    "pet_only_one_local_changed": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 6549,
+      "evaluated_expressions": 3236,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "3a8e7e268c645d26cf509d424970a565f1c8255cf93098ceca7b428506ed6b31"
+    },
+    "pet_unchanged": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 6549,
+      "evaluated_expressions": 3236,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "3a8e7e268c645d26cf509d424970a565f1c8255cf93098ceca7b428506ed6b31"
+    },
+    "trial_active": {
+      "native_calls": {
+        "MultiboardSetRowCount": 2,
+        "MultiboardSetItemsStyle": 2,
+        "MultiboardSetItemsValue": 2,
+        "MultiboardSetItemsIcon": 2,
+        "MultiboardGetItem": 358,
+        "MultiboardSetItemWidth": 213,
+        "MultiboardReleaseItem": 358,
+        "MultiboardSetItemValue": 139,
+        "MultiboardSetTitleText": 2,
+        "MultiboardSetItemIcon": 3,
+        "MultiboardSetItemStyle": 3
+      },
+      "total_native_calls": 1084,
+      "interpreter_steps": 25913,
+      "evaluated_expressions": 14601,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "61e501b9f7f754b36c82a36d579308010f6499d9f968c08bfe9efc8582c33f3e"
+    },
+    "trial_unchanged": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 17706,
+      "evaluated_expressions": 6948,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "61e501b9f7f754b36c82a36d579308010f6499d9f968c08bfe9efc8582c33f3e"
+    },
+    "trial_second": {
+      "native_calls": {
+        "MultiboardGetItem": 3,
+        "MultiboardSetItemValue": 3,
+        "MultiboardReleaseItem": 3
+      },
+      "total_native_calls": 9,
+      "interpreter_steps": 17746,
+      "evaluated_expressions": 6978,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "fb9fa785d7e81d2b42edb255242f9c7edfc49da9bf02ded31e0747b3fceae5db"
+    },
+    "trial_withdrawn": {
+      "native_calls": {
+        "MultiboardGetItem": 2,
+        "MultiboardSetItemValue": 2,
+        "MultiboardReleaseItem": 2
+      },
+      "total_native_calls": 6,
+      "interpreter_steps": 17521,
+      "evaluated_expressions": 6909,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "9fff744a87f5969a0c5581cb553e9b1bf99ed9e6713d1a94b8c965e9f3aeb1bf"
+    },
+    "trial_settled": {
+      "native_calls": {
+        "MultiboardSetRowCount": 1,
+        "MultiboardSetItemsStyle": 1,
+        "MultiboardSetItemsValue": 1,
+        "MultiboardSetItemsIcon": 1,
+        "MultiboardGetItem": 57,
+        "MultiboardSetItemWidth": 27,
+        "MultiboardReleaseItem": 57,
+        "MultiboardSetItemValue": 30,
+        "MultiboardSetTitleText": 1
+      },
+      "total_native_calls": 176,
+      "interpreter_steps": 19281,
+      "evaluated_expressions": 9000,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "b864d0738ae9e070cd22fbc7bdbb7e75ea5ce3dd02d7ee214b04db20ba34d9a4"
+    },
+    "trial_reset": {
+      "native_calls": {
+        "MultiboardSetRowCount": 1,
+        "MultiboardSetItemsStyle": 1,
+        "MultiboardSetItemsValue": 1,
+        "MultiboardSetItemsIcon": 1,
+        "MultiboardGetItem": 222,
+        "MultiboardSetItemWidth": 127,
+        "MultiboardReleaseItem": 222,
+        "MultiboardSetItemValue": 91,
+        "MultiboardSetTitleText": 1,
+        "MultiboardSetItemIcon": 2,
+        "MultiboardSetItemStyle": 2
+      },
+      "total_native_calls": 671,
+      "interpreter_steps": 11529,
+      "evaluated_expressions": 7827,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "3a8e7e268c645d26cf509d424970a565f1c8255cf93098ceca7b428506ed6b31"
+    },
+    "tower_tail_shrink": {
+      "native_calls": {
+        "MultiboardGetItem": 154,
+        "MultiboardSetItemValue": 59,
+        "MultiboardReleaseItem": 154,
+        "MultiboardSetRowCount": 1,
+        "MultiboardSetItemsStyle": 1,
+        "MultiboardSetItemsValue": 1,
+        "MultiboardSetItemsIcon": 1,
+        "MultiboardSetItemWidth": 91,
+        "MultiboardSetTitleText": 1,
+        "MultiboardSetItemIcon": 2,
+        "MultiboardSetItemStyle": 2
+      },
+      "total_native_calls": 467,
+      "interpreter_steps": 9673,
+      "evaluated_expressions": 6746,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "dispatch_LinkedList_LinkedList_sortWith",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "95fc3d8a8512404afd1c8f692888935b1a1273fb4cfae4b0a50c2d04cb39a40d"
+    },
+    "lane_shrink": {
+      "native_calls": {
+        "MultiboardSetRowCount": 2,
+        "MultiboardSetItemsStyle": 2,
+        "MultiboardSetItemsValue": 2,
+        "MultiboardSetItemsIcon": 2,
+        "MultiboardGetItem": 121,
+        "MultiboardSetItemWidth": 73,
+        "MultiboardReleaseItem": 121,
+        "MultiboardSetItemValue": 44,
+        "MultiboardSetTitleText": 2,
+        "MultiboardSetItemIcon": 2,
+        "MultiboardSetItemStyle": 2
+      },
+      "total_native_calls": 373,
+      "interpreter_steps": 11099,
+      "evaluated_expressions": 8791,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "0bdff311a9997aa2aeb37ac66963b1d4bd1f847b994139e6b5ea77b95c25d6a6"
+    },
+    "hide_last_full": {
+      "native_calls": {},
+      "total_native_calls": 0,
+      "interpreter_steps": 1169,
+      "evaluated_expressions": 422,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "0bdff311a9997aa2aeb37ac66963b1d4bd1f847b994139e6b5ea77b95c25d6a6"
+    },
+    "hidden_full_stale": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 1189,
+      "evaluated_expressions": 435,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "eb95c3cf68144d106e9edca1f64c2ff3fff2a9e7eae3524134cbb21820704ce6"
+    },
+    "observer_first_full": {
+      "native_calls": {
+        "MultiboardGetItem": 2,
+        "MultiboardSetItemValue": 2,
+        "MultiboardReleaseItem": 2
+      },
+      "total_native_calls": 6,
+      "interpreter_steps": 4969,
+      "evaluated_expressions": 2262,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_0": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1,
+        "MultiboardDisplay": 3,
+        "MultiboardMinimize": 1
+      },
+      "total_native_calls": 7,
+      "interpreter_steps": 4850,
+      "evaluated_expressions": 2211,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_1": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4844,
+      "evaluated_expressions": 2202,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_2": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4844,
+      "evaluated_expressions": 2202,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_3": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4844,
+      "evaluated_expressions": 2202,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_4": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4844,
+      "evaluated_expressions": 2202,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_5": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1,
+        "MultiboardDisplay": 3,
+        "MultiboardMinimize": 1
+      },
+      "total_native_calls": 7,
+      "interpreter_steps": 4857,
+      "evaluated_expressions": 2214,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_6": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4858,
+      "evaluated_expressions": 2208,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_7": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4865,
+      "evaluated_expressions": 2211,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_8": {
+      "native_calls": {},
+      "total_native_calls": 0,
+      "interpreter_steps": 1169,
+      "evaluated_expressions": 422,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_9": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4949,
+      "evaluated_expressions": 2247,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_10": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1,
+        "MultiboardDisplay": 3,
+        "MultiboardMinimize": 1
+      },
+      "total_native_calls": 7,
+      "interpreter_steps": 4850,
+      "evaluated_expressions": 2211,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_11": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4844,
+      "evaluated_expressions": 2202,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_12": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4844,
+      "evaluated_expressions": 2202,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_13": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4844,
+      "evaluated_expressions": 2202,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_14": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4844,
+      "evaluated_expressions": 2202,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_15": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1,
+        "MultiboardDisplay": 3,
+        "MultiboardMinimize": 1
+      },
+      "total_native_calls": 7,
+      "interpreter_steps": 4857,
+      "evaluated_expressions": 2214,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_16": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4858,
+      "evaluated_expressions": 2208,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_17": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4865,
+      "evaluated_expressions": 2211,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_18": {
+      "native_calls": {},
+      "total_native_calls": 0,
+      "interpreter_steps": 1169,
+      "evaluated_expressions": 422,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "toggle_19": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4949,
+      "evaluated_expressions": 2247,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "invalid_command": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 4949,
+      "evaluated_expressions": 2245,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "340468fc38deaf8b1d52499b149fc3f144f34f01b23f92dbdba1954b920d7301"
+    },
+    "same_size_before": {
+      "native_calls": {
+        "MultiboardSetRowCount": 2,
+        "MultiboardSetItemsStyle": 2,
+        "MultiboardSetItemsValue": 2,
+        "MultiboardSetItemsIcon": 2,
+        "MultiboardGetItem": 271,
+        "MultiboardSetItemWidth": 154,
+        "MultiboardReleaseItem": 271,
+        "MultiboardSetItemValue": 113,
+        "MultiboardSetTitleText": 2,
+        "MultiboardSetItemIcon": 2,
+        "MultiboardSetItemStyle": 2
+      },
+      "total_native_calls": 823,
+      "interpreter_steps": 18452,
+      "evaluated_expressions": 12704,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "dispatch_LinkedList_LinkedList_sortWith",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "same_size_active": {
+      "native_calls": {
+        "MultiboardSetRowCount": 2,
+        "MultiboardSetItemsStyle": 2,
+        "MultiboardSetItemsValue": 2,
+        "MultiboardSetItemsIcon": 2,
+        "MultiboardGetItem": 310,
+        "MultiboardSetItemWidth": 189,
+        "MultiboardReleaseItem": 310,
+        "MultiboardSetItemValue": 115,
+        "MultiboardSetTitleText": 2,
+        "MultiboardSetItemIcon": 3,
+        "MultiboardSetItemStyle": 3
+      },
+      "total_native_calls": 940,
+      "interpreter_steps": 25938,
+      "evaluated_expressions": 14555,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "dispatch_LinkedList_LinkedList_sortWith",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "27906e9cd7511daa0cec545627473a38423d6efb20ed2a21bb56726c852bb6aa"
+    },
+    "same_size_after": {
+      "native_calls": {
+        "MultiboardSetRowCount": 2,
+        "MultiboardSetItemsStyle": 2,
+        "MultiboardSetItemsValue": 2,
+        "MultiboardSetItemsIcon": 2,
+        "MultiboardGetItem": 271,
+        "MultiboardSetItemWidth": 154,
+        "MultiboardReleaseItem": 271,
+        "MultiboardSetItemValue": 113,
+        "MultiboardSetTitleText": 2,
+        "MultiboardSetItemIcon": 2,
+        "MultiboardSetItemStyle": 2
+      },
+      "total_native_calls": 823,
+      "interpreter_steps": 18547,
+      "evaluated_expressions": 11929,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "dispatch_LinkedList_LinkedList_sortWith",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "compact_recovery_mode": {
+      "native_calls": {
+        "MultiboardDisplay": 3,
+        "MultiboardMinimize": 1
+      },
+      "total_native_calls": 4,
+      "interpreter_steps": 1399,
+      "evaluated_expressions": 574,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "compact_manual_fold_False": {
+      "native_calls": {},
+      "total_native_calls": 0,
+      "interpreter_steps": 1393,
+      "evaluated_expressions": 555,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "compact_recover_hidden_False": {
+      "native_calls": {
+        "MultiboardDisplay": 1
+      },
+      "total_native_calls": 1,
+      "interpreter_steps": 1395,
+      "evaluated_expressions": 558,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "compact_recovered_stable_False": {
+      "native_calls": {},
+      "total_native_calls": 0,
+      "interpreter_steps": 1393,
+      "evaluated_expressions": 555,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "compact_manual_fold_True": {
+      "native_calls": {},
+      "total_native_calls": 0,
+      "interpreter_steps": 1393,
+      "evaluated_expressions": 555,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "compact_recover_hidden_True": {
+      "native_calls": {
+        "MultiboardDisplay": 1
+      },
+      "total_native_calls": 1,
+      "interpreter_steps": 1395,
+      "evaluated_expressions": 558,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "compact_recovered_stable_True": {
+      "native_calls": {},
+      "total_native_calls": 0,
+      "interpreter_steps": 1393,
+      "evaluated_expressions": 555,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "full_recovery_mode": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1,
+        "MultiboardDisplay": 3,
+        "MultiboardMinimize": 1
+      },
+      "total_native_calls": 7,
+      "interpreter_steps": 7301,
+      "evaluated_expressions": 3639,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "full_manual_fold_False": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 7295,
+      "evaluated_expressions": 3620,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "full_recover_hidden_False": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1,
+        "MultiboardDisplay": 1
+      },
+      "total_native_calls": 4,
+      "interpreter_steps": 7297,
+      "evaluated_expressions": 3623,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "full_recovered_stable_False": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 7295,
+      "evaluated_expressions": 3620,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "full_manual_fold_True": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 7295,
+      "evaluated_expressions": 3620,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "full_recover_hidden_True": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1,
+        "MultiboardDisplay": 1
+      },
+      "total_native_calls": 4,
+      "interpreter_steps": 7297,
+      "evaluated_expressions": 3623,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "full_recovered_stable_True": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1
+      },
+      "total_native_calls": 3,
+      "interpreter_steps": 7295,
+      "evaluated_expressions": 3620,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "31355622dca1c440d469bd1627dfe7e88315952ca50d4c157e01bccadb709a9f"
+    },
+    "game_over": {
+      "native_calls": {
+        "MultiboardGetItem": 5,
+        "MultiboardSetItemValue": 5,
+        "MultiboardReleaseItem": 5,
+        "MultiboardSetTitleText": 2
+      },
+      "total_native_calls": 17,
+      "interpreter_steps": 7188,
+      "evaluated_expressions": 3677,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "257df93df46817a4040c707c34cd0b5b79f4066162c4c8fbdf394f31a149c0a7"
+    },
+    "game_over_switch": {
+      "native_calls": {
+        "MultiboardGetItem": 1,
+        "MultiboardSetItemValue": 1,
+        "MultiboardReleaseItem": 1,
+        "MultiboardDisplay": 3,
+        "MultiboardMinimize": 1
+      },
+      "total_native_calls": 7,
+      "interpreter_steps": 7104,
+      "evaluated_expressions": 3616,
+      "preparation_trace": [
+        "tdDamageRefreshCatalog",
+        "TDDamageLedger_refreshOrder",
+        "tdTrialPrepareHud",
+        "tdDamagePrepareHud",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "TDDamageLedger_refreshOrder",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane",
+        "tdPetDetailHudTextForLane"
+      ],
+      "final_board_sha256": "257df93df46817a4040c707c34cd0b5b79f4066162c4c8fbdf394f31a149c0a7"
+    }
+  },
+  "boundary": "Actual candidate packed JASS; modeled native multiboard rendering and game fixtures. No Warcraft 1.27a render or network test."
+}

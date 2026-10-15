@@ -33,6 +33,7 @@ public class TDPet
 	int pendingSerial = 0
 	unit host = null
 	unit visual = null
+	effect visualLink = null
 	int visualAction = -1
 	real visualNextAt = 0.0
 	int visualCycle = 0
@@ -134,7 +135,13 @@ public class TDPet
 		skillCount = IMaxBJ(skillCount, slot + 1)
 		revision += 1
 
+	function clearVisualLink()
+		if visualLink != null
+			DestroyEffect(visualLink)
+			visualLink = null
+
 	function invalidateCombat()
+		clearVisualLink()
 		tdCombatVisualClearPet(host)
 		visualAction = -1
 		visualNextAt = 0.0
@@ -196,6 +203,7 @@ public class TDPet
 		return tdPetQualityName(quality()) + " " + tdPetElementName(tdPetSpeciesElement(species)) + " · " + tdPetSpeciesName(species) + " · " + skillCount.toString() + "技能 · 共鸣Lv" + level.toString() + (host == null ? " [收藏]" : " [上阵]")
 
 	ondestroy
+		clearVisualLink()
 		tdCombatVisualClearPet(host)
 		tdPetCancelQueuedAttacks(this castTo int)
 		tdPetCancelEffectTasks(this castTo int)

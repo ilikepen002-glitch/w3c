@@ -1,0 +1,335 @@
+{
+  "status": "PASS",
+  "species": [
+    {
+      "species": 1,
+      "attachedScale": 1.46,
+      "floatEnvelopeLongest": 229.91261779785157
+    },
+    {
+      "species": 2,
+      "attachedScale": 1.38,
+      "floatEnvelopeLongest": 230.24121643066405
+    },
+    {
+      "species": 3,
+      "attachedScale": 1.39,
+      "floatEnvelopeLongest": 229.6484949493408
+    },
+    {
+      "species": 4,
+      "attachedScale": 1.9,
+      "floatEnvelopeLongest": 230.0971725463867
+    },
+    {
+      "species": 5,
+      "attachedScale": 2.14,
+      "floatEnvelopeLongest": 229.57708815574648
+    },
+    {
+      "species": 6,
+      "attachedScale": 2.57,
+      "floatEnvelopeLongest": 229.626692199707
+    },
+    {
+      "species": 7,
+      "attachedScale": 1.43,
+      "floatEnvelopeLongest": 230.72591014862059
+    },
+    {
+      "species": 8,
+      "attachedScale": 1.56,
+      "floatEnvelopeLongest": 229.40158721923828
+    },
+    {
+      "species": 9,
+      "attachedScale": 1.74,
+      "floatEnvelopeLongest": 230.48011299133302
+    },
+    {
+      "species": 10,
+      "attachedScale": 1.04,
+      "floatEnvelopeLongest": 373.48587402343753
+    },
+    {
+      "species": 11,
+      "attachedScale": 1.45,
+      "floatEnvelopeLongest": 230.5900466918945
+    },
+    {
+      "species": 12,
+      "attachedScale": 1.75,
+      "floatEnvelopeLongest": 229.84451293945312
+    },
+    {
+      "species": 13,
+      "attachedScale": 1.87,
+      "floatEnvelopeLongest": 229.99734519958497
+    },
+    {
+      "species": 14,
+      "attachedScale": 2.66,
+      "floatEnvelopeLongest": 229.8793501186371
+    },
+    {
+      "species": 15,
+      "attachedScale": 2.07,
+      "floatEnvelopeLongest": 230.0802030944824
+    }
+  ],
+  "towerProfiles": [
+    {
+      "choice": 1,
+      "level": 1,
+      "branch": 1,
+      "petBase": 217.8,
+      "linkTopMinimum": 303.8
+    },
+    {
+      "choice": 1,
+      "level": 2,
+      "branch": 1,
+      "petBase": 221.1,
+      "linkTopMinimum": 313.1
+    },
+    {
+      "choice": 1,
+      "level": 3,
+      "branch": 1,
+      "petBase": 224.4,
+      "linkTopMinimum": 322.40000000000003
+    },
+    {
+      "choice": 1,
+      "level": 4,
+      "branch": 1,
+      "petBase": 227.7,
+      "linkTopMinimum": 331.69999999999993
+    },
+    {
+      "choice": 1,
+      "level": 5,
+      "branch": 1,
+      "petBase": 286.0,
+      "linkTopMinimum": 340.99999999999994
+    },
+    {
+      "choice": 1,
+      "level": 6,
+      "branch": 1,
+      "petBase": 290.79999999999995,
+      "linkTopMinimum": 350.29999999999995
+    },
+    {
+      "choice": 1,
+      "level": 6,
+      "branch": 2,
+      "petBase": 290.79999999999995,
+      "linkTopMinimum": 350.29999999999995
+    },
+    {
+      "choice": 2,
+      "level": 1,
+      "branch": 1,
+      "petBase": 242.3,
+      "linkTopMinimum": 303.8
+    },
+    {
+      "choice": 2,
+      "level": 2,
+      "branch": 1,
+      "petBase": 246.35,
+      "linkTopMinimum": 313.1
+    },
+    {
+      "choice": 2,
+      "level": 3,
+      "branch": 1,
+      "petBase": 250.4,
+      "linkTopMinimum": 322.40000000000003
+    },
+    {
+      "choice": 2,
+      "level": 4,
+      "branch": 1,
+      "petBase": 254.45,
+      "linkTopMinimum": 331.69999999999993
+    },
+    {
+      "choice": 2,
+      "level": 5,
+      "branch": 1,
+      "petBase": 269.5,
+      "linkTopMinimum": 340.99999999999994
+    },
+    {
+      "choice": 2,
+      "level": 6,
+      "branch": 1,
+      "petBase": 273.85,
+      "linkTopMinimum": 350.29999999999995
+    },
+    {
+      "choice": 2,
+      "level": 6,
+      "branch": 2,
+      "petBase": 273.85,
+      "linkTopMinimum": 350.29999999999995
+    },
+    {
+      "choice": 3,
+      "level": 1,
+      "branch": 1,
+      "petBase": 222.7,
+      "linkTopMinimum": 303.8
+    },
+    {
+      "choice": 3,
+      "level": 2,
+      "branch": 1,
+      "petBase": 226.15,
+      "linkTopMinimum": 313.1
+    },
+    {
+      "choice": 3,
+      "level": 3,
+      "branch": 1,
+      "petBase": 229.60000000000002,
+      "linkTopMinimum": 322.40000000000003
+    },
+    {
+      "choice": 3,
+      "level": 4,
+      "branch": 1,
+      "petBase": 233.04999999999998,
+      "linkTopMinimum": 331.69999999999993
+    },
+    {
+      "choice": 3,
+      "level": 5,
+      "branch": 1,
+      "petBase": 269.5,
+      "linkTopMinimum": 340.99999999999994
+    },
+    {
+      "choice": 3,
+      "level": 6,
+      "branch": 1,
+      "petBase": 273.85,
+      "linkTopMinimum": 350.29999999999995
+    },
+    {
+      "choice": 3,
+      "level": 6,
+      "branch": 2,
+      "petBase": 273.85,
+      "linkTopMinimum": 350.29999999999995
+    },
+    {
+      "choice": 4,
+      "level": 1,
+      "branch": 1,
+      "petBase": 261.9,
+      "linkTopMinimum": 303.8
+    },
+    {
+      "choice": 4,
+      "level": 2,
+      "branch": 1,
+      "petBase": 266.55,
+      "linkTopMinimum": 313.1
+    },
+    {
+      "choice": 4,
+      "level": 3,
+      "branch": 1,
+      "petBase": 271.20000000000005,
+      "linkTopMinimum": 322.40000000000003
+    },
+    {
+      "choice": 4,
+      "level": 4,
+      "branch": 1,
+      "petBase": 275.84999999999997,
+      "linkTopMinimum": 331.69999999999993
+    },
+    {
+      "choice": 4,
+      "level": 5,
+      "branch": 1,
+      "petBase": 308.0,
+      "linkTopMinimum": 340.99999999999994
+    },
+    {
+      "choice": 4,
+      "level": 6,
+      "branch": 1,
+      "petBase": 313.4,
+      "linkTopMinimum": 350.29999999999995
+    },
+    {
+      "choice": 4,
+      "level": 6,
+      "branch": 2,
+      "petBase": 313.4,
+      "linkTopMinimum": 350.29999999999995
+    },
+    {
+      "choice": 5,
+      "level": 1,
+      "branch": 1,
+      "petBase": 212.89999999999998,
+      "linkTopMinimum": 303.8
+    },
+    {
+      "choice": 5,
+      "level": 2,
+      "branch": 1,
+      "petBase": 216.05,
+      "linkTopMinimum": 313.1
+    },
+    {
+      "choice": 5,
+      "level": 3,
+      "branch": 1,
+      "petBase": 219.2,
+      "linkTopMinimum": 322.40000000000003
+    },
+    {
+      "choice": 5,
+      "level": 4,
+      "branch": 1,
+      "petBase": 222.34999999999997,
+      "linkTopMinimum": 331.69999999999993
+    },
+    {
+      "choice": 5,
+      "level": 5,
+      "branch": 1,
+      "petBase": 313.5,
+      "linkTopMinimum": 340.99999999999994
+    },
+    {
+      "choice": 5,
+      "level": 6,
+      "branch": 1,
+      "petBase": 319.04999999999995,
+      "linkTopMinimum": 350.29999999999995
+    },
+    {
+      "choice": 5,
+      "level": 6,
+      "branch": 2,
+      "petBase": 319.04999999999995,
+      "linkTopMinimum": 350.29999999999995
+    }
+  ],
+  "starBudget": {
+    "handlesPerPet": 1,
+    "movingStars": 12,
+    "triangles": 48,
+    "newTimers": 0
+  },
+  "currentMap": "ExampleMap.w3x",
+  "boundary": "Offline only; native origin anchor positioning, occlusion and frame rate need gameplay observation."
+}

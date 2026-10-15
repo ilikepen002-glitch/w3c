@@ -39,6 +39,9 @@ class CompactRuntime(HudRuntime):
             self.make_board(self.board_serial)
             self.ui.append((name, (self.board_serial,)))
             return True, self.board_serial
+        if name == 'IsMultiboardDisplayed':
+            # A local read, not a handle acquisition or a native UI write.
+            return True, self.boards[args[0]]['visible']
         if name == 'GetEventPlayerChatString': return True, self.chat_text
         if name == 'TriggerRegisterPlayerChatEvent':
             self.chat_events.append(tuple(args)); return True, None
@@ -177,6 +180,28 @@ def scenarios(script, local):
     r.state_call('reset'); r.add_rankings(); draw('same_size_after')
     require(r.boards[full]['rows'] == 25 and r.boards[full]['cells'][(19, 0)]['style'] == (True, False)
             and r.boards[full]['cells'][(19, 0)]['icon'] == '', 'Old trial icon/style leaked into a tower row')
+    # Identical commands on every client; visibility and fold state stay local.
+    for mode, selected, other in (('compact', compact, full), ('full', full, compact)):
+        for viewer in (0, 1, 2, 3, 15):
+            r.chat(viewer, '-hud ' + mode)
+        draw(mode + '_recovery_mode')
+        for folded in (False, True):
+            r.boards[selected]['minimized'] = folded
+            snapshot = draw(mode + '_manual_fold_' + str(folded))
+            require(r.boards[selected]['minimized'] == folded, 'Refresh changed manual fold state')
+            require(not any(name == 'MultiboardMinimize' for name, _ in snapshot['calls']),
+                    'Normal refresh forced the board open')
+            steady_calls = snapshot['calls']
+            r.boards[selected]['visible'] = False
+            snapshot = draw(mode + '_recover_hidden_' + str(folded))
+            require(r.boards[selected]['visible'] and not r.boards[other]['visible'],
+                    'Refresh failed to restore the selected HUD mode')
+            require(r.boards[selected]['minimized'] == folded, 'Recovery changed manual fold state')
+            require([call for call in snapshot['calls'] if call[0] != 'MultiboardDisplay'] == steady_calls
+                    and sum(name == 'MultiboardDisplay' for name, _ in snapshot['calls']) == 1,
+                    'Visibility recovery allocated extra handles or rewrote the board')
+            snapshot = draw(mode + '_recovered_stable_' + str(folded))
+            require(snapshot['calls'] == steady_calls, 'Recovered board added repeated native UI writes')
     r.invoke('tdSetGameOver', True); draw('game_over')
     r.chat(0, '-hud full'); draw('game_over_switch')
     require(len(r.boards) == 2 and not r.items, 'Repeated switching leaked native handles')

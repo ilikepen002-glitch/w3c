@@ -1,0 +1,9 @@
+{
+  "status": "EXPECTED_FAILURE",
+  "error": "Refresh failed to restore the selected HUD mode",
+  "map": {
+    "path": "/tmp/hud-visibility-baseline.w3x",
+    "map_sha256": "14fa7cd13acce82bf71f95c64de0c152aad0fad2102a83551a3dcd34596f8aae",
+    "jass_sha256": "212f78ff6fc21bf354a01117bedb422430235698ed2059e69f470caa0d7e6ef4"
+  }
+}

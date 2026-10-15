@@ -1,0 +1,13 @@
+'use strict';
+const fs=require('fs'),path=require('path');
+const modules=process.env.MDX_PARSER_MODULES||path.resolve(__dirname,'asset-converter/node_modules');
+const ts=require(modules+'/typescript');
+require.extensions['.ts']=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2018}}).outputText,f);
+const Model=require(modules+'/mdx-m3-viewer/src/parsers/mdlx/model.ts').default;
+const root=path.resolve(__dirname,'..'),m=new Model();
+m.load(fs.readFileSync(root+'/assets/source/pet-possession/TDPetPossessionStars.mdl','utf8'));
+const bytes=Buffer.from(m.saveMdx()),check=new Model();check.load(bytes);
+if(check.version!==800||check.bones.length!==12||check.geosets.length!==1||check.geosets[0].faces.length!==144||check.sequences[0].flags!==0||check.textures[0].path!=='war3mapImported\\TDPetPossessionStars.blp')throw Error('Star link contract failed');
+if(check.particleEmitters2.length||check.ribbonEmitters.length)throw Error('Unexpected emitter budget');
+fs.writeFileSync(root+'/imports/war3mapImported/TDPetPossessionStars.mdx',bytes);
+console.log('PASS: MDX800, looping Stand, 12 moving stars, 48 triangles, 1 geoset; '+bytes.length+' bytes');

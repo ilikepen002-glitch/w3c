@@ -30,6 +30,10 @@ public function tdPetDisplayInitialize(TDPet pet, int slot, real now)
 	if not tdPetDisplayOwnerValid(pet, pet == null ? null : pet.host, pet == null ? -1 : pet.generation)
 		return
 	tdPetDisplayPosition(pet)
+	// Origin is the universal fallback: no native overhead attachment is required.
+	// One host-mounted loop; model animation supplies motion without another timer.
+	if pet.visualLink == null
+		pet.visualLink = AddSpecialEffectTarget("war3mapImported\\TDPetPossessionStars.mdx", pet.host, "origin")
 	pet.visualCycle = 0
 	tdPetDisplayAction(pet, tdPetDisplaySupported(pet.species) ? TD_PET_DISPLAY_FLOAT : 0, now + tdPetDisplayIdleGap(pet.lane, slot, pet.species))
 

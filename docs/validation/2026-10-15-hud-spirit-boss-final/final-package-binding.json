@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "baselineCommit": "0d53371d50b4d3da240e7f7e518486f3afc71153",
+  "baselineMapSha256": "2e029be78c17d918b11dc8cd708f0781c98bebf8d141a9a9b5716180975e1718",
+  "finalMapSha256": "dee650e09b720eb51c5c218c093ec3ca36ce5f6ba13ce6c7a3b8905132b660a5",
+  "sourceAndConfigUnchanged": true,
+  "unchangedPackedEntries": {
+    "war3map.j": {
+      "byteIdentical": true,
+      "sha256": "aa34387239d18fbc3d3b87a08bdfcaff93feb984d434e528ebda6d486b26593b",
+      "bytes": 2947957
+    },
+    "war3map.w3u": {
+      "byteIdentical": true,
+      "sha256": "f84c0b03ffd9f64fe8efc335a51658d62d4a7dbea3b86f24a69ad528325855cb",
+      "bytes": 377754
+    },
+    "war3mapImported\\TDPetPossessionStars.mdx": {
+      "byteIdentical": true,
+      "sha256": "d8e61ad571c75faa176ec92110d33959ee2dddf7bc2395290923a161126b8a63",
+      "bytes": 7536
+    },
+    "war3mapImported\\TDPetPossessionStars.blp": {
+      "byteIdentical": true,
+      "sha256": "eb43293b6fa686c9958f6013ce99589064f9c3ee5d4a8eba25b3df274490935f",
+      "bytes": 1350
+    }
+  },
+  "bossModels": {
+    "EclipseSpellweaver.mdx": {
+      "sha256": "2288297e8d635279f2b9459d0845b62fba94e491991814398aa1d77cbf5159bd",
+      "bytes": 562382,
+      "matchesSourceAndExpected": true
+    },
+    "UncrownedAbyssKing.mdx": {
+      "sha256": "f7000998df4c40dd9448368365766a98549a87cca07a0e7eefe67b6f24de0598",
+      "bytes": 583027,
+      "matchesSourceAndExpected": true
+    }
+  },
+  "reusedTests": "HUD five clients x66, PetDisplay full525 profiles/mutations, link lifecycle and presence from the byte-identical prior JASS/objects"
+}

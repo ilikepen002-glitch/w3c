@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "map_sha256": "2e029be78c17d918b11dc8cd708f0781c98bebf8d141a9a9b5716180975e1718",
+  "cases": [
+    "deploy_host_origin",
+    "initialize_idempotent",
+    "invalidate_releases",
+    "tick_recreates",
+    "rebind_releases_old_and_attaches_new",
+    "recall_releases",
+    "repeated_recall_safe",
+    "destructor_releases"
+  ],
+  "boundary": "Actual packed JASS; native effects modeled with strict unknown/double destroy rejection. No Warcraft render test."
+}
