@@ -1,0 +1,40 @@
+{
+    "describe": -1946988482, 
+    "editor_res": false, 
+    "key": 101001, 
+    "map_name": "H12\u5929\u4e0bX\u5929\u4e0b", 
+    "model_id": 101001, 
+    "name": 2083589856, 
+    "offical_tags": {
+        "__tuple__": true, 
+        "items": [
+            "code_Cartoon", 
+            "code_Magical", 
+            "code_Middle ages", 
+            "code_Buildings", 
+            "code_Building components", 
+            "code_Yellow", 
+            "code_Brick", 
+            "code_Massif", 
+            "P11(\u56fd\u98ce\u7384\u5e7b\u7cfb\u5217)"
+        ]
+    }, 
+    "pickbound": {
+        "__tuple__": true, 
+        "items": [
+            3.0, 
+            5.0
+        ]
+    }, 
+    "preview_icon": "UP1ModelPreview/101001", 
+    "release_delete": {
+        "__tuple__": true, 
+        "items": []
+    }, 
+    "res_identify": "all", 
+    "select_effect_scale": 0.01, 
+    "size": 0.1, 
+    "socket_info": {}, 
+    "source": "code_Source_Import", 
+    "uid": "editor_model_101001"
+}

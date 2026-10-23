@@ -1,0 +1,4 @@
+interface:
+  display_name: "Y3 原生界面"
+  short_description: "复用官方转换器和模板设计原生界面，检查布局、节点路径和实际交互"
+  default_prompt: "使用 $y3-ui-pipeline 完成本项目相关开发并说明验证证据。"

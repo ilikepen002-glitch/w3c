@@ -1,0 +1,4 @@
+interface:
+  display_name: "Y3 物编"
+  short_description: "复用官方物编脚本创建修改对象，核对类型、元组与资源引用并读回验证"
+  default_prompt: "使用 $y3-obj-edit 完成本项目相关开发并说明验证证据。"

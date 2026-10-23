@@ -1,16 +1,26 @@
-/_build/
-wurst.dependencies
-wurst/war3map.j
-wurst/_tests/
-/.vscode/*
-!/.vscode/settings.json
-
-# Python source-map generation and verification helpers
+# Machine/runtime data; keep original resources, metadata and native map data.
+/lock/
+/archive/
+**/.log/
 **/__pycache__/
-
-# Third-party King Leoric: author permits map use; standalone redistribution
-# has not been established. Restore unchanged bytes with RestoreKingLeoricAssets.py.
-/imports/Leoric.blp
-/imports/war3mapImported/Leoric.mdx
-/imports/war3mapImported/Leoric_Portrait.mdx
-/imports/KingLeoric-original-readme.html
+*.pyc
+*.tmp
+*.log
+*.lock
+custom/CustomImportRepo.local/
+# Obsolete loose copies; authored originals and native .package imports are tracked.
+custom/OriginalRes/icon/spirit/
+development/docs/official/
+development/tools/*.results.json
+development/tools/resource-catalog.json
+development/tools/editor-tools.json
+development/tools/preview-models.json
+development/tools/Start-Game.ps1
+development/.venv/
+development/output/
+development/*.results.txt
+.codex/.cache/
+.vscode/*.local.json
+.env
+.env.*
+!.env.example

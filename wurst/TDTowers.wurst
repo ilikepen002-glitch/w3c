@@ -1,7 +1,0 @@
-package TDTowers
-import public TDTowerData
-import public TDTowerRuntime
-import public TDTowerObjectGen
-
-import public TDTowerEvolutionState
-import public TDTowerEvolutionRuntime

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Y3 Lua 开发与审查"
+  short_description: "实现与审查 Lua 玩法及交互，核验真实 API、事件、同步与生命周期"
+  default_prompt: "使用 $y3-lua-pipeline 完成本项目相关开发并说明验证证据。"

@@ -1,0 +1,7 @@
+include 'clicli-helper.meta.unitAttrs'
+include 'clicli-helper.meta.playerAttrs'
+include 'clicli-helper.meta.customEvents'
+include 'clicli-helper.meta.ui'
+include 'clicli-helper.meta.uiAnim'
+include 'clicli-helper.meta.jumpword'
+include 'clicli-helper.meta.font'

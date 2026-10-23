@@ -1,7 +1,0 @@
-package Hello
-import TDInit
-import ClosureTimers
-
-init
-	doAfter(0.00) ->
-		tdStartGame()

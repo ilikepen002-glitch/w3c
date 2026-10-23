@@ -1,6 +1,9 @@
-# Project-scoped Codex configuration; collaboration follows AGENTS.md risk tiers.
+# Local services require the editor/helper to open this same project.
+[mcp_servers.y3-helper]
+url = "http://127.0.0.1:8766/mcp"
 
-[agents]
-max_threads = 2
-max_depth = 1
+[mcp_servers.y3editor]
+url = "http://127.0.0.1:8765/mcp"
 
+[mcp_servers.y3runtime]
+url = "http://127.0.0.1:8767/mcp"

@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-23T16:05:07.395767+00:00",
+  "organization": "https://github.com/y3-editor",
+  "inventory_scope": "5 public repositories returned by cached organization API inventory; not a guarantee of all future/private repositories",
+  "inventory_source_local_cache": "D:/Y3Projects/tooling/y3-repositories.json",
+  "policy": "Local cache paths are provenance only. Runtime/deploy uses project-relative vendored copies; source download does not mean installed or enabled.",
+  "repositories": [
+    {
+      "name": "y3-lualib",
+      "url": "https://github.com/y3-editor/y3-lualib",
+      "commit": "000437857cd501d4a318a7355cf43af3b54cc3cc",
+      "local_cache": "D:/Y3Projects/tooling/y3-lualib",
+      "cache_is_runtime_dependency": false,
+      "retrieval": "git_checkout",
+      "source_downloaded": true,
+      "role": "runtime_dependency",
+      "installation_status": "已复用为 maps/EntryMap/script/y3；不修改依赖拷贝",
+      "inspected_source_files": [
+        {
+          "path": "README.md",
+          "sha256": "7c4c8aa6580d2237dccf9224d1798eac5fae81ae67e470e8736755e1dd7ebf57"
+        },
+        {
+          "path": "init.lua",
+          "sha256": "9934161264003565ae36c9065244f0d4f6384abf8ee557b628ec8671a49bd9cc"
+        }
+      ],
+      "verification": {
+        "method": "sha256_all_cached_upstream_lua_files_against_project_copy",
+        "lua_files": 226,
+        "mismatches": [],
+        "engine_verification": "not_performed_in_this_audit"
+      }
+    },
+    {
+      "name": "y3-helper",
+      "url": "https://github.com/y3-editor/y3-helper",
+      "commit": "58c7dd7f4269c8c45435db79f6d25a4db0aa3d28",
+      "local_cache": "D:/Y3Projects/tooling/y3-helper",
+      "cache_is_runtime_dependency": false,
+      "retrieval": "git_checkout",
+      "source_downloaded": true,
+      "role": "development_tool_and_template",
+      "installation_status": "VS Code 扩展 2.4.0 已安装；源码缓存 2.4.1；MCP 8766 检查时无监听；unit.json 已用于部署",
+      "inspected_source_files": [
+        {
+          "path": "package.json",
+          "sha256": "97e2263307cde30fedee1076a4a3573b5b4790d50ca260bdf9655b42154fe266"
+        },
+        {
+          "path": "src/mcp/mcpInfo.ts",
+          "sha256": "0a5c97fb30d75c2fceaa6b1054d6f9350c1e4ee58e37422c90ad2a2fb2eacba2"
+        },
+        {
+          "path": "src/mcp/tcpServer.ts",
+          "sha256": "bc60d4d9eca3aacd10f82e9765a402b39eb95cc81584e5be2f816b9487f83c22"
+        }
+      ],
+      "verification": {
+        "extension_list": "sumneko.y3-helper@2.4.0",
+        "source_package_version": "2.4.1",
+        "mcp_listener_8766": "not_listening_at_inspection",
+        "end_to_end_mcp": "not_verified"
+      }
+    },
+    {
+      "name": "y3-maker-config",
+      "url": "https://github.com/y3-editor/y3-maker-config",
+      "commit": "b9253889d74f07145bb2bd56721f8dfc406c263c",
+      "local_cache": "D:/Y3Projects/tooling/y3-maker-config",
+      "cache_is_runtime_dependency": false,
+      "retrieval": "git_checkout",
+      "source_downloaded": true,
+      "role": "adapted_skills_and_knowledge",
+      "installation_status": "4 条官方 Codex 技能与 35 篇知识已适配；UI generator、Lua review 为内部资源",
+      "inspected_source_files": [
+        {
+          "path": "skills/y3-obj-edit/scripts/y3_obj_edit.py",
+          "sha256": "872d04330e9bb672ef652326ed82b686f3bec57b1704ee60399f93ec7a598df9"
+        },
+        {
+          "path": "skills/y3-ui-generator/scripts/html_to_y3_ui.py",
+          "sha256": "c1cd4e323b81f205221edee41b310fd30b66045c8ea4c10d2658204b8e274540"
+        }
+      ],
+      "verification": {
+        "static_validation": "4 skill entrypoints passed",
+        "isolated_tests": [
+          "object create/edit/language linkage",
+          "simple UI canvas/prefab conversion",
+          "UI tree extraction"
+        ],
+        "known_limitation": "card template half-scale test reported 15 bounds violations; not engine verified",
+        "details": "../../.codex/skills-installation.md"
+      }
+    },
+    {
+      "name": "y3-tools",
+      "url": "https://github.com/y3-editor/y3-tools",
+      "commit": "8eb7b33e32f3335146dc345caf65c40583eeb2c1",
+      "local_cache": "D:/Y3Projects/tooling/y3-tools-snapshot",
+      "cache_is_runtime_dependency": false,
+      "retrieval": "github_archive_snapshot",
+      "source_downloaded": true,
+      "role": "reference_only",
+      "installation_status": "3 个 Python 2.7 工具仅下载/读源码，未运行或接入；当前单地图无需覆盖迁移",
+      "inspected_source_files": [
+        {
+          "path": "readme.md",
+          "sha256": "cae59989c9d349c8d9b56700b4b4aef0de5a6256cebb53ad32f10b7071fb31e1"
+        },
+        {
+          "path": "物编json表格生成工具/main.py",
+          "sha256": "8670cc340525be2781034b9713970c640c4494cb5b4814dfeb69fcccf65becfa"
+        },
+        {
+          "path": "多场景物编转移工具/main.py",
+          "sha256": "9a8dd74a6f7b54e22e323b646b770e7210c2c730699dc7bda0e86f5f8591db0e"
+        },
+        {
+          "path": "美术与程序拆分开发工具/main.py",
+          "sha256": "3af32f41684255d5d9afe2178dc2b09dffd6dfac7ef7d89dc004aebd5cefbd5b"
+        }
+      ],
+      "verification": {
+        "readmes_read": 3,
+        "main_sources_reviewed": 3,
+        "tools_executed": false,
+        "python2_installed_for_these_tools": false
+      }
+    },
+    {
+      "name": "y3-Plugin-RuntimeAttributePanel",
+      "url": "https://github.com/y3-editor/y3-Plugin-RuntimeAttributePanel",
+      "commit": "44b911db66e8f735a0b0b6d26dc3e642643a83e4",
+      "local_cache": "D:/Y3Projects/tooling/y3-Plugin-RuntimeAttributePanel-snapshot",
+      "cache_is_runtime_dependency": false,
+      "retrieval": "github_archive_snapshot",
+      "source_downloaded": true,
+      "role": "optional_editor_debug_plugin",
+      "installation_status": "源码已下载；未安装启用、未拷入地图；现阶段优先官方开发助手调试",
+      "inspected_source_files": [
+        {
+          "path": "README.md",
+          "sha256": "7d35e900c6a42d88cbf1c8bb300fd0e29c69ea32fc3811cf664101e198260c78"
+        },
+        {
+          "path": "config.json",
+          "sha256": "1e78c4446c5f537a63841a34fda314a55c58ee8cf3e37afbf4be5eadb6552de9"
+        },
+        {
+          "path": "Script/EditorPlugin/main.py",
+          "sha256": "04c81f1b868f24ec516f71d8dbfb97cc642afd83a8cd33f2ccfc5b643b860bea"
+        }
+      ],
+      "verification": {
+        "readme_and_main_reviewed": true,
+        "installed_or_enabled": false,
+        "engine_verified": false
+      }
+    }
+  ]
+}

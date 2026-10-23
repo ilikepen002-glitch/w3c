@@ -1,0 +1,4 @@
+interface:
+  display_name: "Y3 资源导入"
+  short_description: "查询导入模型特效图标声音，确认异步完成、真实资源 ID 与依赖"
+  default_prompt: "使用 $y3-resource-import 完成本项目相关开发并说明验证证据。"

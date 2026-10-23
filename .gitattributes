@@ -1,17 +1,16 @@
-# Deterministic generator outputs are compared byte for byte on every platform.
-/wurst/towers/TDTowerTerrainMask.wurst text eol=lf
-/maps/tower-terrain-mask.json text eol=lf
-
-# The compiler lock hashes this reviewed patch byte for byte.
-/tools/compiler/legacy-jass-array-capacity.patch text eol=lf
-
-# Pet UI source assets and the preserved renderer have byte-exact contracts.
-/assets/source/pet-ui/*.svg text eol=lf
-/wurst/pets/TDPetUIView.wurst text eol=lf
-
-# Map archives and imported textures must never undergo text conversion.
-*.w3x binary
-*.tga binary
-
-# Preserve the author's original HTML evidence bytes, including original CRLF.
-assets/source/elemental-spirits/refinement-20261015/phoenix/texture-source/prompts/original-model-readme.html -diff -text
+* text=auto
+*.lua text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.png binary
+*.gmp binary
+*.data binary
+*.package binary
+maps/*/terrain.json binary
+maps/*/texture.json binary
+maps/*/texturefoliage.json binary

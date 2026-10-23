@@ -1,0 +1,447 @@
+{
+  "repository": "https://github.com/y3-editor/y3-maker-config",
+  "commit": "b9253889d74f07145bb2bd56721f8dfc406c263c",
+  "adapted_for": "Codex / SpiritDefense",
+  "upstream_files": [
+    {
+      "path": "knowledge/README.md",
+      "sha256": "a46240e8a3741a9894ab51b34b36d5ef205531ca42f2179d9ad7bf73a321d4c5"
+    },
+    {
+      "path": "knowledge/UI系统/01-字段规范.md",
+      "sha256": "780442be893eecae6b307572e18ae1c85f3a896a35e1e1301669ec06aedc520c"
+    },
+    {
+      "path": "knowledge/UI系统/02-属性绑定.md",
+      "sha256": "64438e4b7e59201bce79995a068d87de25ed604fc6c0604ce0d37eba008ee4ca"
+    },
+    {
+      "path": "knowledge/UI系统/03-官方组件.md",
+      "sha256": "b7a8a2acda24d111acd8c79e3a7d38f6fb6d27d43aa62f02c18e9efcde4d1b6a"
+    },
+    {
+      "path": "knowledge/UI系统/04-自定义UI元件.md",
+      "sha256": "f15e9080c654725154a1b0bd1f9324131baad7efa54d265ab2b025159ed7fb46"
+    },
+    {
+      "path": "knowledge/UI系统/05-场景UI.md",
+      "sha256": "238683119c4449d66631c18b8b96e90e969b0ea76c9d2cbca545555e8f4506d6"
+    },
+    {
+      "path": "knowledge/UI系统/06-时间轴动画.md",
+      "sha256": "90b50fcf933ea8a8cd3c7082b2aafefc1303c4074c8698dfadc89a55279924e8"
+    },
+    {
+      "path": "knowledge/UI系统/07-控件适配规则.md",
+      "sha256": "55ef4b08ed905ac5eade48622c18d776ed0f0c481f836de0e6b9d4d24d0575cd"
+    },
+    {
+      "path": "knowledge/UI系统/08-UI接入实战手册.md",
+      "sha256": "6519a83efa36ab0d17a5a705b0227099d7dbf26048f088878e1d8ba6e6a37dc9"
+    },
+    {
+      "path": "knowledge/其他/01-镜头动画.md",
+      "sha256": "361e83e61d09d4f08bd6f6f252d1d16041d0db13643ddcbfe10599009c27958a"
+    },
+    {
+      "path": "knowledge/实战工程参考/塔防工程实战知识库.md",
+      "sha256": "a02076d0764ef4d3cc43df478301dc4aff8b5d006d38ee2414167f72803b7832"
+    },
+    {
+      "path": "knowledge/实战工程参考/存档系统架构设计指南.md",
+      "sha256": "163e1cab119f54ccef01803fc69d46df1560120aa9c744450718f2e7d8a62e27"
+    },
+    {
+      "path": "knowledge/核心系统/01-属性系统.md",
+      "sha256": "b01e0ae1ed03a911d0de7ea7ac6f13b315bb94da7bccb38cecb6da8669b09ae1"
+    },
+    {
+      "path": "knowledge/核心系统/02-属性计算公式.md",
+      "sha256": "fad8bf1d0879cc8d0afa3bbe9f5c651885cc6cdb9c39a121365edb3f0554527c"
+    },
+    {
+      "path": "knowledge/核心系统/03-KV系统.md",
+      "sha256": "bf9b011a6b41cf1dadfb1016b48e3cb17f3d43df2f4c5f74b8ae5ad2b25de90c"
+    },
+    {
+      "path": "knowledge/核心系统/04-存档系统.md",
+      "sha256": "dd951f8c43785e832b97958789bc400044e933a2eb7d1e77c425ae62f722dfe7"
+    },
+    {
+      "path": "knowledge/核心系统/05-阵营系统.md",
+      "sha256": "e60c15193ee86c2dbad0d85caa2d2fbc80b95ed41f0dae1fa3695c80fd378cd3"
+    },
+    {
+      "path": "knowledge/核心系统/06-事件系统.md",
+      "sha256": "daa79848e4d30ea9a422c437c919d97e7bdbbee1af89f5cd23c604537d772616"
+    },
+    {
+      "path": "knowledge/核心系统/07-伤害类型.md",
+      "sha256": "1584ad049e783d0a81b42309a289253360f5ba4afd7f25e7466c16df18e43101"
+    },
+    {
+      "path": "knowledge/核心系统/08-游戏运行模式.md",
+      "sha256": "9456e5fed0063a598733bf94035d60c6c26749195701300f3260c2b14136fb6b"
+    },
+    {
+      "path": "knowledge/核心系统/09-地形系统.md",
+      "sha256": "5211bce1c1d2eded662e6a67e31a173841e6a492b3d2f1b0ea4f0bee8d790eda"
+    },
+    {
+      "path": "knowledge/核心系统/10-玩家操作.md",
+      "sha256": "1c389b9bb85c576db119ae980683d162013ad053f267b4fc0e429b9bd5775c27"
+    },
+    {
+      "path": "knowledge/核心系统/11-地图逻辑资源.md",
+      "sha256": "bda066afe1b87591851d7185493ff02ea4183912a1c9f37d4a9d6851ddff67cb"
+    },
+    {
+      "path": "knowledge/核心系统/12-ECA系统.md",
+      "sha256": "34e966109b3e2033565042f2670ad530df1d702a9ddfc9eb8ffba692375bd6fb"
+    },
+    {
+      "path": "knowledge/核心系统/13-编辑器表格系统.md",
+      "sha256": "57e7828419d81b7f7a55d6151bf2e651c8099031d074c225c22b1b9459cbf698"
+    },
+    {
+      "path": "knowledge/物编系统/01-概述.md",
+      "sha256": "68f59391bb987678563cc979ce35218cecdd3686ada3286b596da56cb1ed4fa5"
+    },
+    {
+      "path": "knowledge/物编系统/02-魔法效果.md",
+      "sha256": "ec67a6cde99e21e55c4103288390c07203be6c0532c5ae114393af0515602f16"
+    },
+    {
+      "path": "knowledge/物编系统/03-投射物.md",
+      "sha256": "859106a82da1c85a31b7538e2d7be5e1bd659fae0de2df902fad12b45eac7406"
+    },
+    {
+      "path": "knowledge/物编系统/04-可破坏物.md",
+      "sha256": "d91f7ad5b060f700c60775f65857dbcc56a11b8445c1717e16e4d1245b099d15"
+    },
+    {
+      "path": "knowledge/物编系统/05-声音.md",
+      "sha256": "a960ccf0a6141ba711fe973ee4dbb16b94a0c23df149e12bfe5573cb5e86305d"
+    },
+    {
+      "path": "knowledge/物编系统/06-技能.md",
+      "sha256": "5bbe011ba638f53645d2cd37b600ed3a19460ea8d1fd2afca475765d600b9439"
+    },
+    {
+      "path": "knowledge/物编系统/07-物品.md",
+      "sha256": "9c35669615593fa16901386ba6daad1f270a1fefdd5cf258fec60590594598c3"
+    },
+    {
+      "path": "knowledge/物编系统/08-单位.md",
+      "sha256": "afa1304e199e5b07e237dff0b1aa7d797d46b25252ec2a6b4fddd07613ab25e7"
+    },
+    {
+      "path": "knowledge/物编系统/09-建造系统.md",
+      "sha256": "cf526a2e99d6b2f1c2c7ea2710a5d1c630b32c05358dd83b55c2e99a246fa202"
+    },
+    {
+      "path": "knowledge/项目结构说明.md",
+      "sha256": "65e6120897823280cd73d6d9da8403eaaa8b2bde026060a87315fb127e0d9081"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/jn.json",
+      "sha256": "9090d0fce7ea04590a57cce492258a99743d45b7cad68f5722d9d5a87432c702"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/jz.json",
+      "sha256": "3f8d14c6b6ef9124e01da89de5c806560301ecc81b0b4b32c78c441df8403ea6"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/jzboss.json",
+      "sha256": "7055e7869f22c3f28dd93dc8fb65ef6581007c6ecf00677f1253d7e3fe461f6d"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/jzxg.json",
+      "sha256": "c3ef53b525b2d4c1f420fb1c38057ddd619bf9b224085aec8f9722a3903ed093"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/jzyx.json",
+      "sha256": "5fbe9e2a5e04fadec80abfccfd65957ee916d9fbfce888c07dd93840e4139505"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/mfxg.json",
+      "sha256": "9f8027ddd4b85391386061268c2ce46a37c5e7d3580e25f11f458a9ea492bd71"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/tsw.json",
+      "sha256": "8bd9b2513c672ad493de75628a1bcd8f87521f4404cbddfa347a38b98c22028c"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/wp.json",
+      "sha256": "fb9a050003c4777621a8b2bbca0e7b17d23a54efea82c0659f4031839f8c5e26"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/ycboss.json",
+      "sha256": "a421ccd328f730c571a47e3ff84530da6e403f810a3a050c07674d6db14937a2"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/ycxg.json",
+      "sha256": "861c18a048380c64a9816f1eb97e435169402417e85f6ddff15a53161fdcf787"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/ycyx.json",
+      "sha256": "d3541095a95a44a53b6ab742a58df20366d8838eee0ddb1cdbb4214bcae4c631"
+    },
+    {
+      "path": "skills/y3-obj-edit/excels/resources.csv",
+      "sha256": "07c6a548831414f23201df9b81d241e7c1d54003de02020775b0f6e5d9aa13dd"
+    },
+    {
+      "path": "skills/y3-obj-edit/reference/ability.md",
+      "sha256": "871c69a66551ad01fef0d45e527a507251d19ffea8807c9e8f21e4e098bf63a6"
+    },
+    {
+      "path": "skills/y3-obj-edit/reference/item.md",
+      "sha256": "95bc9e2cb761ab82f9dae3f12a26caf8f353006ba5773569285c4f708f56b24c"
+    },
+    {
+      "path": "skills/y3-obj-edit/reference/modifier.md",
+      "sha256": "c699f53861112feac94927dd5d7bf0c0b65b54eb7f8726474b9c2d7e3da947a4"
+    },
+    {
+      "path": "skills/y3-obj-edit/reference/projectile.md",
+      "sha256": "747e7a992e4d436eef2f49a40c276ce06bdbb660dd3f6bcc074ec8d771d357f7"
+    },
+    {
+      "path": "skills/y3-obj-edit/reference/unit.md",
+      "sha256": "98c2bd770e0d4603e8d601f55ce8f88c72c62f91b2f03bf98dc519402c7146da"
+    },
+    {
+      "path": "skills/y3-obj-edit/scripts/y3_obj_edit.py",
+      "sha256": "872d04330e9bb672ef652326ed82b686f3bec57b1704ee60399f93ec7a598df9"
+    },
+    {
+      "path": "skills/y3-obj-edit/SKILL.md",
+      "sha256": "5af6a45729e5d2f1f8ad63eb9d9e3808a9485cef4675359075c70ab46fb641e3"
+    },
+    {
+      "path": "skills/y3-ui-pipeline/gen_ui_tree.py",
+      "sha256": "baf4432ab6d14ded44e78bc78584559e093246c78cc15a6e36af3f686d6ffa0c"
+    },
+    {
+      "path": "skills/y3-ui-pipeline/SKILL.md",
+      "sha256": "d1d121bd659adb9cec9ba73c4362da32c2340806226d781616dee62104d2cecb"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/ability.md",
+      "sha256": "9f9a0732e937afe4979f54418f2a89c157496139b9e44042e2ae38128a7c1f75"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/api_errors.md",
+      "sha256": "9afefa15b564972c2cd83ca1271875afc86795580e2042b4ef8b963004895175"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/buff.md",
+      "sha256": "54085d74cef6b8222576a84d6c038efce8e8863408bf16076af13be824562927"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/common_errors.md",
+      "sha256": "63e997b07f4a9662ed8fe299436149213e553c7ed4b35e076775d8b6fc8df766"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/item.md",
+      "sha256": "ebf08e7463dfe83185dae28bd56b917084fb9f60525d32bdcfea930f3d7f121e"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/layout.md",
+      "sha256": "88332c2a7dac6e6cddd470faeb150980891cfcf6114c48c8e6f766de48105996"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/mcp_safety.md",
+      "sha256": "1ec16deae24192300bdf1f8cdbf717e377b277ba74dbd619098c05bbfa0d62b1"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/obj_errors.md",
+      "sha256": "71d9968a8880aec62fa3254cf4d9c6a6dcaaf30c54563c7a5fb45b476b9fd927"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/particle.md",
+      "sha256": "dcca570f3cdbb12c326ca8e5cc6b248009ee409954f4841e07ab5e8cc74a9da3"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/player.md",
+      "sha256": "24e824208fb58e5abd0e89abbced5b0d3bfbc34a20d9230ba4a61f396df77880"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/point.md",
+      "sha256": "c7daabb75ae0f72f2004e40fa3fa3d8ea94f5b2731d38628f1bad3379f8d89b2"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/timer.md",
+      "sha256": "07413a770f40ddbb5028a4a2998c4f5c3c352dd0ffab5e60999fa9f1af256a65"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/ui-events.md",
+      "sha256": "2a7dc1abef1909fb5f61e7219cc39b8689b354c18d8890f1e0548156f58ac07b"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/ui_errors.md",
+      "sha256": "04ffea00f9062d1999652ec9be43191d80931fdb6dec33d538081793b4feeb8e"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/unit.md",
+      "sha256": "9a6beff7b7b5a22a1d1ffc8aee6f1e685fc3ca803a79f57068374c4106880936"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/y3-local-ui.md",
+      "sha256": "997e64fdb6e8ed4d1ed0c43ed0be365ca980f01fc074309d32ddae2fd1560144"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/y3-scene-ui.md",
+      "sha256": "42379d8acd4060c6b47397cb7af10c78d7d217cfd1493d7c0422a086028ae0a0"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/y3-ui-bindings.md",
+      "sha256": "3301e6c5792f912a9b4bc930fa589cc204cf4420010438117d22dd0c3ece383b"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/y3-ui-instance.md",
+      "sha256": "98560fc1dfb80db08ac3f55c6413c837aedb5b965a8c042f724d60b29dd5dcb6"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/references/y3-ui-static.md",
+      "sha256": "0b2764228a6284d0a77ea45ba0fafe958e4d113f4fdf6c9c144fd83411692e0a"
+    },
+    {
+      "path": "skills/y3-lua-pipeline/SKILL.md",
+      "sha256": "d216891968bfeaa37bfe994c76b9d40a61bf56d4d4551f76fbe83ac15496c0e8"
+    },
+    {
+      "path": "skills/y3-resource-import/scripts/check_header.py",
+      "sha256": "24a608f7152b0e670d7600f5419836f14cada06ba435e01ea167d80d442f2dd1"
+    },
+    {
+      "path": "skills/y3-resource-import/scripts/check_tga.py",
+      "sha256": "3d0a7080cfd677bec408e26b5298052101079c90657c062c9f8112c997c80155"
+    },
+    {
+      "path": "skills/y3-resource-import/SKILL.md",
+      "sha256": "12d7e96b2f0ba712655a0691379dc26135b30250cb2e7548dcc0fdf6d1f8a422"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/archer_resource_map.json",
+      "sha256": "4deed05dd068228268b2704437efb1ce8ca8d0466065c34977ecdf5f28192f6b"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/arthur_resource_map.json",
+      "sha256": "db3e72e951be785f4fd04c2c0c2b9a9d8bb6bc6be22ec927fa9e3b0b53efb37a"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/batrider_resource_map.json",
+      "sha256": "65efadd965b1022ce7dea6a7e5de2cd090d5f6f5a7745b67124689d646b21d50"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/feiyanzhouji_resource_map.json",
+      "sha256": "37ec36fa8e623f2e627659d52b3a8df203bd6e526bd6f3262f0f7ca6103b442a"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/marci_resource_map.json",
+      "sha256": "f6fa366ababf28d35e977013388569b2767a3c390e494bda648fd029361a9316"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/qinglinshouhuzhe_resource_map.json",
+      "sha256": "9c4db566053ece02494860427cf31c313a082c616290f2949a8abb819b04d8f7"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/testcase_20260731_resource_map.json",
+      "sha256": "54f15692b9c4357f9959f8900e02e1b203ef3c924d680c02392645e70a34ae0d"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/ursa_resource_map.json",
+      "sha256": "696920b5aaab3ac5c5cfe9389b22b4faee45946ed5fd27a9b33f6ceb22e5777e"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/yinhunshi_resource_map.json",
+      "sha256": "130a06adcba8ce5e475d5f237902bbddadde66766949500e8255bfee8e7e7d1f"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/男角色_resource_map.json",
+      "sha256": "f603a24b17f98281fd435dd984019a61bd7d5db124fd3d1e08ddf17741349c62"
+    },
+    {
+      "path": "skills/y3-ui-generator/icon_config.md",
+      "sha256": "f2fb96157312c684facd1b487a9cb472df8f52aa280ca2a1f551e1352236a428"
+    },
+    {
+      "path": "skills/y3-ui-generator/references/adapter-rules.md",
+      "sha256": "b2f5d834e659ecbea47345d4ab31276f666dff362f390879a97a8261b69abb9d"
+    },
+    {
+      "path": "skills/y3-ui-generator/scripts/html_to_y3_ui.py",
+      "sha256": "c1cd4e323b81f205221edee41b310fd30b66045c8ea4c10d2658204b8e274540"
+    },
+    {
+      "path": "skills/y3-ui-generator/scripts/test_scale.py",
+      "sha256": "1584566c22da40788c587d19637f3002eb7a19acc46159cd00b9f46b3bd32137"
+    },
+    {
+      "path": "skills/y3-ui-generator/SKILL.md",
+      "sha256": "d5b72f1560712a845ca6148d98102c3e5a75d9bb7825b8b4e99bd6eb93ed64ff"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/audio_bar.json",
+      "sha256": "90e547c7a1c499415a24d8ad3cbc24dc5cbabad7583fb441b5693cb1c3927711"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/btn.json",
+      "sha256": "9360910bf44b96954e43d222e0d9bf2456f6df19af410e0f4bd959a1045640ef"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/buff_list.json",
+      "sha256": "86152f04a5bcc8c1001b9b24bcfb86f25d653380a1a7b30526d80fb20c7627ba"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/card.json",
+      "sha256": "c527406ef1072540275a5ea991a778fc0d9f38c4589a53a54e85d1de7f8fb3c7"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/chat_box.json",
+      "sha256": "12d6e201046b454a27a43ce3a44e66e95a2623453d63b2bc163145d132be30ad"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/close_btn.json",
+      "sha256": "4581ef8b24db6e146089410978ed69942172288bb185781dce8bb4244737b70c"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/exit_btn.json",
+      "sha256": "bfca5ce439b60a78e2f49aa38d05c7614942afd8b725f1cbafc844c0168ea99f"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/exp_bar.json",
+      "sha256": "2637a37a0825913c3c2fec56a51598cdc8545748315f26c4c7883ba793478834"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/hero_bar.json",
+      "sha256": "bf02d3e66f080773a49bd006bdeb8a17bbfe658cb1b1f892e571c81561743ad2"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/hp_bar.json",
+      "sha256": "73a77e8af9e8dc4a4122a3816aef00216f8290a7bf50919ea095bf08bc67b201"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/item_slot.json",
+      "sha256": "f9ff2eacadb92c4fd6d8ffe9afa21f6d28d24c4a36f7cf998406805b313d3dbc"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/mp_bar.json",
+      "sha256": "98ea084c230b640451f3f7c64ff2af859e513bb1c477e72adf25997dc5a11ac8"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/skill.json",
+      "sha256": "fa4cd2d8449952d5d5259e7529f75f0e2cae2387a2c77f43789ea15df233d063"
+    },
+    {
+      "path": "skills/y3-ui-generator/widget_template_config.md",
+      "sha256": "ac81303fe0f8ad8e6927f230a2aa1178f001ec061585f1f8640212f91a658006"
+    },
+    {
+      "path": "skills/y3-lua-review/SKILL.md",
+      "sha256": "cd5dd0b475e549cef1ab136bb5fdc88c228a92ed4d9695cc58e515978a264a6b"
+    }
+  ]
+}

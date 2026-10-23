@@ -1,0 +1,4 @@
+interface:
+  display_name: "Y3 编辑器操作"
+  short_description: "连接官方 MCP，在 Codex 中操作 Y3 工程、热更新资源并核验结果"
+  default_prompt: "使用 $y3-editor-control 核对当前 Y3 工程连接，通过官方工具完成修改并报告验证结果。"

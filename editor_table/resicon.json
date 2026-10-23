@@ -1,0 +1,50 @@
+{
+    "ui/134229234": {
+        "default_editor_id": 134229234, 
+        "describe": "", 
+        "key": "ui/134229234", 
+        "name": "contract-chest", 
+        "path": "ui/134229234", 
+        "uid": "res_icon_ui/134229234"
+    }, 
+    "ui/134229470": {
+        "default_editor_id": 134229470, 
+        "describe": "", 
+        "key": "ui/134229470", 
+        "name": "element-fire", 
+        "path": "ui/134229470", 
+        "uid": "res_icon_ui/134229470"
+    }, 
+    "ui/134234492": {
+        "default_editor_id": 134234492, 
+        "describe": "", 
+        "key": "ui/134234492", 
+        "name": "element-wood", 
+        "path": "ui/134234492", 
+        "uid": "res_icon_ui/134234492"
+    }, 
+    "ui/134250350": {
+        "default_editor_id": 134250350, 
+        "describe": "", 
+        "key": "ui/134250350", 
+        "name": "element-earth", 
+        "path": "ui/134250350", 
+        "uid": "res_icon_ui/134250350"
+    }, 
+    "ui/134251252": {
+        "default_editor_id": 134251252, 
+        "describe": "", 
+        "key": "ui/134251252", 
+        "name": "element-water", 
+        "path": "ui/134251252", 
+        "uid": "res_icon_ui/134251252"
+    }, 
+    "ui/134271962": {
+        "default_editor_id": 134271962, 
+        "describe": "", 
+        "key": "ui/134271962", 
+        "name": "element-metal", 
+        "path": "ui/134271962", 
+        "uid": "res_icon_ui/134271962"
+    }
+}
