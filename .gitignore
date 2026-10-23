@@ -2,6 +2,8 @@
 /lock/
 /archive/
 **/.log/
+/global_script/log/
+/maps/*/script/log/
 **/__pycache__/
 *.pyc
 *.tmp
