@@ -195,16 +195,16 @@ Y3 Editor MCP 的 `import_eca` 只接受 `global_trigger/trigger/` 路径，因�
    文件数以及调用方使用的稳定 `func_id`。
 3. 函数写入后**不要再保存编辑器**。此时编辑器内存仍是旧函数表，调用 `save_editor` 会把
    刚写入的函数文件和索引覆盖掉。
-4. 调用 `y3editor.restart_editor(save_before_restart=false)`，等待原地图重新打开。重启前的
+4. 请用户不保存旧内存，手动关闭后用 `Editor.exe` 重新打开原地图，再重新连接。重启前的
    保存必须已经在步骤 1 完成；这里禁止再次保存旧内存。
 5. 地图打开后重新核对函数文件和索引。此时函数加载完成；不含 `sub_trigger` 的普通触发器
    再逐个、串行调用 `import_eca` 加载。
 6. 动态 `sub_trigger` 使用技能测试目录中的编辑器实际保存样本做整表回归比对，可以由
-   `gen_trigger.py` 写入。此类文件禁止用 `import_eca` 覆盖加载；写入后使用“不保存旧内存重启”，
+   `gen_trigger.py` 写入。此类文件禁止用 `import_eca` 覆盖加载；写入后请用户手动“不保存旧内存重开 Editor.exe”，
    重开后保存一次，并确认 `sub_trigger` 与裸整数注册 ID 仍完整。
 
 当前 MCP 没有独立的 `open_map` 工具。目标地图原本未打开时，不得臆造 MCP 调用；完成函数
-生成后，通过编辑器已有入口打开目标地图，然后从步骤 5 继续。
+生成后，请用户在 `Editor.exe` 中打开目标地图，然后从步骤 5 继续。
 
 ```text
 y3editor.import_eca(

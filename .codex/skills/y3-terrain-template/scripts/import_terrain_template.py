@@ -18,8 +18,9 @@ The Skill (NOT this script) is responsible for:
   - MCP ``import_object_editor`` with ``decoration_zip`` (BEFORE this script —
     its internal ``save_editor`` would otherwise overwrite the files this
     script just wrote). Skipped when ``decoration_zip`` is ``null``.
-  - MCP ``restart_editor`` (AFTER this script — to load new terrain), and it
-    MUST be called with ``save_before_restart=false``.
+  - Ask the user to reopen the target map in ``Editor.exe`` AFTER this script,
+    without saving the old editor memory. Reconnect and verify the map;
+    do not launch or restart the editor automatically.
 
 Usage:
     python import_terrain_template.py \\

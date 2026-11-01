@@ -545,14 +545,14 @@ send .rd（或 y3.reload.reload()）
 
 #### 命中后导入流程（5 步 MCP 串接）
 
-> 来自 `y3-terrain-template` SKILL.md §3.2。步骤 2~5 之间用户禁止操作编辑器。
+> 来自 `y3-terrain-template` SKILL.md §3.2。步骤 2~4 期间用户不操作编辑器，步骤 5 请用户手动重开。
 
 ```
 Step 1  读模板 template_meta.json → 取 (w, h)
 Step 2  MCP y3editor.save_editor                 # 保护未保存改动
 Step 3  MCP y3editor.resize_terrain(w, h)         # 尺寸匹配
 Step 4  python import_terrain_template.py --apply  # 备份 + 覆盖
-Step 5  MCP y3editor.restart_editor               # 重启加载
+Step 5  请用户不保存旧内存，手动重开 Editor.exe 和目标地图，再重新连接核对
 ```
 
 > ⚠️ 导入前必须跑一次 dry-run（不带 `--apply`），展示覆盖清单和备份路径，用户二次确认后才执行 `--apply`。
@@ -606,7 +606,7 @@ Step 5  MCP y3editor.restart_editor               # 重启加载
 
 ```
 1. python .codex/skills/y3-terrain-template/scripts/import_terrain_template.py <template-name> EntryMap
-2. MCP restart_editor 让模板生效
+2. 请用户不保存旧内存，手动重开 `Editor.exe` 和目标地图，让模板生效；重新连接并核对
 3. 直接进入 Phase 1 物编生成，不做任何地形/装饰物/路径调整
 ```
 

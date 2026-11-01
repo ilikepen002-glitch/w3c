@@ -8,7 +8,7 @@
 |---|---|---|
 | 目标 | 美术 A 全场景同步到逻辑 B（一次性、整工程对拷） | 把任意关卡的「地编」打包入库 + 模板可重复应用到任意关卡 |
 | 触发方式 | `MergeScene.bat` 双击 | Skill 编排（Agent 调用 Python + MCP） |
-| 编辑器联动 | 无 | `save_editor` → `resize_terrain` → 文件覆盖 → `restart_editor` → `import_object_editor` |
+| 编辑器联动 | 无 | `save_editor` → `resize_terrain` → `import_object_editor`（如有）→ 文件覆盖 → 请用户不保存旧内存重开 `Editor.exe` → 重新连接核对 |
 | 装饰物物编打包方式 | 文件夹整目录拷贝 | **MCP `export_object_editor` / `import_object_editor` 走 zip** |
 | 目录组织 | src/dst 两个 Y3 工程根 | 模板库 `library/<模板名>/` + 目标关卡 |
 

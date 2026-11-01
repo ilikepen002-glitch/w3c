@@ -16,7 +16,8 @@
     {
       "path": "skills/eca-json-builder/eca-json-builder.md",
       "upstream_sha256": "33122ba16a94c1a92a8662fccedd493b63a17dc0635b8e0e65e1f621cf2bb1aa",
-      "installed_sha256": "ea587cc9f48a67dd40933a5891370b15b5fd67b84646463f703bd14c18e56ebb"
+      "installed_sha256": "ea587cc9f48a67dd40933a5891370b15b5fd67b84646463f703bd14c18e56ebb",
+      "local_sha256": "d2e2ced26dad1dacf1fc8da42d3f95f25bcd895af491613ce13798601a9ec428"
     },
     {
       "path": "skills/eca-json-builder/eca_index.json",
@@ -71,7 +72,8 @@
     {
       "path": "skills/eca-json-builder/SKILL.md",
       "upstream_sha256": "3b710d657024228a71fec9dab8477f5cc84325d43bf3ad3532c9441a212339ec",
-      "installed_sha256": "4a927fe96435f52cf7938e73f68bc6518ee7da12176bd853e1e52f68b947c283"
+      "installed_sha256": "4a927fe96435f52cf7938e73f68bc6518ee7da12176bd853e1e52f68b947c283",
+      "local_sha256": "e6fd94b1a9536fb97f9925a6a4f5b2d2cec878ee32fdc307d8fa703a6788878d"
     },
     {
       "path": "skills/eca-json-builder/table_reader.py",
@@ -166,12 +168,14 @@
     {
       "path": "skills/y3-game-spec/phase-2-execution.md",
       "upstream_sha256": "f704184f69188691d9af86df4ac1f6560c03d1d626917f8bb710e76b361f51a6",
-      "installed_sha256": "12102aea597a4d21dafb72fad4a8546d74195b2a289bc8df110e1c4ab92e0889"
+      "installed_sha256": "12102aea597a4d21dafb72fad4a8546d74195b2a289bc8df110e1c4ab92e0889",
+      "local_sha256": "57d8f51abd243a56f1be6489ac1248c306a406320b6a1aad957a4ee4fda10112"
     },
     {
       "path": "skills/y3-game-spec/roadmaps/塔防执行案.md",
       "upstream_sha256": "4efef09cf06ee310e6e494b31bd3e8ed3dbbb5b908304bcbb1a1ce20277ef980",
-      "installed_sha256": "9b039158fef5bc83f0da55daad1e66e6776d86745b7747df27752616deaf0e8a"
+      "installed_sha256": "9b039158fef5bc83f0da55daad1e66e6776d86745b7747df27752616deaf0e8a",
+      "local_sha256": "bb6f04032b7673f29b8d70b19e753e88f8dd5c3734633b84e20c9dbd73ce907a"
     },
     {
       "path": "skills/y3-game-spec/roadmaps/塔防设计案.md",
@@ -191,7 +195,8 @@
     {
       "path": "skills/y3-game-spec/SKILL.md",
       "upstream_sha256": "450d098c6a0913b704d220dc179b0807b32e9a13c36a0597a77baec57566308a",
-      "installed_sha256": "b97fa2fdae848fc8cf835b0eb0047b5a0e71102089dca451b9736f8edb269191"
+      "installed_sha256": "b97fa2fdae848fc8cf835b0eb0047b5a0e71102089dca451b9736f8edb269191",
+      "local_sha256": "b8bc183b8862fc7137b4ad1e86257ee1cf59af2fd331865639546ba9b155a21b"
     },
     {
       "path": "skills/y3-gen-terrain-from-image/references/.gitkeep",
@@ -756,7 +761,8 @@
     {
       "path": "skills/y3-terrain-template/references/scene_merge_tool_diff.md",
       "upstream_sha256": "b8b9871d7321292b1942313a00b4177fcf1a09dc07ab02d7bc2b8dc08a33a793",
-      "installed_sha256": "b8b9871d7321292b1942313a00b4177fcf1a09dc07ab02d7bc2b8dc08a33a793"
+      "installed_sha256": "b8b9871d7321292b1942313a00b4177fcf1a09dc07ab02d7bc2b8dc08a33a793",
+      "local_sha256": "3e29b9ee415c4dbc11b054c2e586881ea5213359f4622c82689970ec6c9c69a6"
     },
     {
       "path": "skills/y3-terrain-template/scripts/_common.py",
@@ -771,12 +777,14 @@
     {
       "path": "skills/y3-terrain-template/scripts/import_terrain_template.py",
       "upstream_sha256": "72f41ddbf0ecb99ccd39fe51b8e5cfe2b34ddd0df39a73727e22ba030599c068",
-      "installed_sha256": "72f41ddbf0ecb99ccd39fe51b8e5cfe2b34ddd0df39a73727e22ba030599c068"
+      "installed_sha256": "72f41ddbf0ecb99ccd39fe51b8e5cfe2b34ddd0df39a73727e22ba030599c068",
+      "local_sha256": "247f87ac37074fd545a1c87384d14d863be6880bf6adc7c7a4b43277ca7fa265"
     },
     {
       "path": "skills/y3-terrain-template/SKILL.md",
       "upstream_sha256": "8a77132fd2151f9c52f96164fcb7ca556fc23e56d8b1429527f3560d92e51674",
-      "installed_sha256": "d263fb9b84b0de82691f3caf0ac66639d95318f97e5dbe6efea2e5d7453b499a"
+      "installed_sha256": "d263fb9b84b0de82691f3caf0ac66639d95318f97e5dbe6efea2e5d7453b499a",
+      "local_sha256": "1199b3d345932144ae0065732d4bca6201b63abf602609a7624bbfd149dd9d9c"
     },
     {
       "path": "skills/y3-ui-generator/icon_config.md",
@@ -1568,5 +1576,6 @@
       "upstream_sha256": "1860485ec9c33d48bca1bcdd0e6d4b26f152437bc289cccade62fc762dacec10",
       "installed_sha256": "1860485ec9c33d48bca1bcdd0e6d4b26f152437bc289cccade62fc762dacec10"
     }
-  ]
+  ],
+  "local_adaptation": "2026-11-01 user request: user opens Editor.exe and target map; agent reuses verified session; replace automatic editor restart instructions with manual reopen without saving stale memory."
 }

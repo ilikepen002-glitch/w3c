@@ -54,7 +54,7 @@ py -3 .codemaker\skills\eca-json-builder\gen_trigger.py --dry-run ...
 1. **生成前保存**：先调用一次 `y3editor.save_editor()`，保留用户当前编辑器修改。
 2. **写入函数**：生成并校验全部 `global_trigger/function/*.json` 与 `function/index.txt`，核对索引数、文件数和稳定 `func_id`。
 3. **禁止生成后保存**：函数写入后不得再调用 `save_editor`；旧编辑器内存会把新函数文件和索引覆盖掉。
-4. **加载函数**：调用 `y3editor.restart_editor(save_before_restart=false)`，等待原地图重新打开，再确认函数文件和索引未被改写。当前 MCP 没有独立的 `open_map` 工具；若目标地图原本未打开，不得臆造调用，需通过编辑器已有入口打开目标地图后再核对函数文件和索引。
+4. **加载函数**：请用户不保存旧编辑器内存，手动关闭后用 `Editor.exe` 重新打开原地图；等待用户完成并重新连接，再确认函数文件和索引未被改写。当前 MCP 没有独立的 `open_map` 工具；若目标地图原本未打开，不得臆造调用，需请用户在 `Editor.exe` 中打开目标地图后再核对函数文件和索引。
 5. **加载普通触发器**：函数已进入编辑器内存后，对不含 `sub_trigger` 的文件按顺序串行调用：
 
 ```text
@@ -65,7 +65,7 @@ y3editor.import_eca(trigger_json_path="<global_trigger/trigger/*.json 的绝对�
 - `hotfix_status=已推送` 表示运行时也已更新；`未连接（仅编辑器侧已更新）` 仍算编辑器加载成功，但要运行完整测试需重新启动游戏。
 - 当前 `import_eca` 只接受 `global_trigger/trigger/` 下的触发器，不能传入 `global_trigger/function/` 下的函数文件。
 - 不得用路径跳转、临时复制等方式把函数伪装成触发器导入。函数加载阶段必须通过地图重新打开完成。
-- **动态子触发使用重启加载**：生成结构使用独立保存的编辑器样本做整表回归比对。含 `sub_trigger` 的文件禁止用 `import_eca` 覆盖加载；写入后必须调用 `restart_editor(save_before_restart=false)`，重开后再保存并校验子触发与裸整数注册 ID 仍完整。
+- **动态子触发使用重启加载**：生成结构使用独立保存的编辑器样本做整表回归比对。含 `sub_trigger` 的文件禁止用 `import_eca` 覆盖加载；写入后必须请用户不保存旧内存，手动通过 `Editor.exe` 重开地图，重开后再保存并校验子触发与裸整数注册 ID 仍完整。
 
 ## ⚠️ 关键陷阱
 

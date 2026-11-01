@@ -7,8 +7,8 @@ description: |
   导入地编、应用地编模板、还原地编、套用地形模板、复制地形到其它关卡、地编复用。
 
   This skill packages and applies terrain art assets (terrain, texture, foliage, decorations, resource objects)
-  between Y3 maps via Python scripts + MCP calls (save_editor / resize_terrain / restart_editor /
-  export_object_editor / import_object_editor).
+  between Y3 maps via Python scripts + MCP calls (save_editor / resize_terrain /
+  export_object_editor / import_object_editor), with the user manually reopening Editor.exe to reload.
   It does NOT generate terrain (use y3-gen-terrain-from-image), and does NOT touch logic, Lua, UI, or non-decoration object data.
 ---
 
@@ -47,7 +47,7 @@ Y3 地编模板的「打包 / 还原」Skill。
 └──────────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────────┐
-│   导入（4 MCP + 1 Python，编辑器需开着目标关卡；terrain-only 为 3 MCP）│
+│   导入（3 MCP + 1 Python + 用户重开；terrain-only 为 2 MCP）│
 ├──────────────────────────────────────────────────────────────────────┤
 │   1. 读模板 template_meta.json → 取尺寸 (w, h)                       │
 │   2. MCP save_editor             ← 保护用户未保存改动                 │
@@ -57,12 +57,11 @@ Y3 地编模板的「打包 / 还原」Skill。
 │      ← 应用装饰物物编（含自动 save_editor + 物编视图刷新）            │
 │      ← 必须先于文件覆盖；否则其内部 save 会反向覆盖磁盘上的新 8 文件   │
 │   5. import_terrain_template.py --apply  ← 备份 + 覆盖 8 文件         │
-│   6. MCP restart_editor(save_before_restart=false)                    │
+│   6. 请用户不保存旧内存，手动重开 Editor.exe 和目标地图                    │
 │      ← 一次性重启：加载新地形 + 使已有装饰物实例按新物编重渲染        │
-│      ← ⚠️ 必须传 save_before_restart=false，否则 restart 默认会先     │
-│         save_editor，把内存里的旧 8 文件写回磁盘，反向覆盖 Step 5      │
+│      ← ⚠️ 重开前不得保存旧内存，以免反向覆盖 Step 5 的新文件          │
 │                                                                       │
-│   ⚠️ 步骤 2 ~ 步骤 6 之间，用户禁止操作编辑器                        │
+│   ⚠️ 步骤 2 ~ 步骤 5 期间用户不操作编辑器；步骤 6 由用户手动重开                        │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -142,7 +141,7 @@ python .codex/skills/y3-terrain-template/scripts/export_terrain_template.py \
 
 ### 3.2 强制 6 步顺序
 
-> ⚠️ **红字警告**：步骤 2 ~ 步骤 6 之间，**用户禁止操作编辑器**。
+> ⚠️ **红字警告**：步骤 2 ~ 步骤 5 期间，**用户不操作编辑器**；步骤 6 请用户手动重开。
 > 期间编辑器内的任何手动改动会被步骤 6 重启吞掉，或被步骤 4 内部 save 反向覆盖步骤 5 写入的文件。
 
 ```
@@ -152,9 +151,9 @@ Step 3  MCP y3editor.resize_terrain(w, h)            # 尺寸先匹配
 Step 4  MCP y3editor.import_object_editor(zip_path)  # 先导入装饰物物编（自动 save 物编视图）
                                                      # ⚠️ decoration_zip 为 null（terrain-only 模板）时跳过本步
 Step 5  python import_terrain_template.py --apply    # 备份 + 覆盖 8 个文件
-Step 6  MCP y3editor.restart_editor(save_before_restart=false)
+Step 6  请用户不保存旧内存，手动重开 Editor.exe 和目标地图；重新连接并核对身份
                                                       # 一次性重启：加载新地形并使已有装饰物实例按新物编重渲染
-                                                      # ⚠️ 必须传 save_before_restart=false（默认 true 会先 save，反向覆盖 Step 5 写盘的新 8 文件）
+                                                      # ⚠️ 重开前不得保存旧内存，否则会反向覆盖 Step 5 写盘的新 8 文件
 ```
 
 > `zip_path` 取自 dry-run stdout 的 `decoration_zip` 字段（也即模板目录下的 `editor_decoration.zip` 绝对路径）。该字段为 `null` 时表示 terrain-only 模板，跳过 Step 4。
@@ -163,7 +162,7 @@ Step 6  MCP y3editor.restart_editor(save_before_restart=false)
 >
 > 💡 **为什么先 import_object_editor 再覆盖文件**：`import_object_editor` 内部会自动 `save_editor`，把编辑器内存里的 8 文件写回磁盘。若先覆盖文件再调它，会**反向覆盖**磁盘上刚导入的新地形。把文件覆盖（Step 5）放到最后，可彻底规避这个反向覆盖陷阱，并把两次 restart 合并为一次。
 >
-> 💡 **为什么 Step 6 必须传 `save_before_restart=false`**：`restart_editor` 默认 `save_before_restart=true`，重启前会先调 `save_editor`，把编辑器内存里仍是旧地形的 8 文件写回磁盘，**反向覆盖** Step 5 才写入的新文件。传 `false` 让它直接结束进程、重启时从磁盘加载新文件。
+> 💡 **为什么 Step 6 必须请用户不保存旧内存重开**：旧编辑器内存保存会把旧地形的 8 文件写回磁盘，**反向覆盖** Step 5 才写入的新文件。请用户手动关闭时不保存，再用 `Editor.exe` 打开目标地图；Codex 重新连接并核对地图和新文件。
 >
 > 💡 **为什么 Step 6 restart 必要**：Step 5 只写盘没让编辑器加载；同时 Step 4 仅刷新「物编视图」，地图视图里已存在的装饰物实例不会立刻按新物编重新渲染（模型 / 图标 / 属性等）。最后这次 restart 一并解决两件事。
 
@@ -222,7 +221,7 @@ python .codex/skills/y3-terrain-template/scripts/import_terrain_template.py \
                  导入后引用将失效。建议导入前 git commit。」
 3. 询问用户：「确认导入？」
 4. 用户明确同意 → 进入第 3 节的 6 步顺序
-   用户未明确同意 → 停留在 dry-run，不调 resize_terrain，不调 restart_editor，不调 import_object_editor
+   用户未明确同意 → 停留在 dry-run，不调 resize_terrain，不要求用户重开编辑器，不调 import_object_editor
 ```
 
 > 💡 **例外**：用户明确说「不用确认 / 直接做 / yolo」可跳过询问，但 dry-run 仍要先跑（用于日志）。

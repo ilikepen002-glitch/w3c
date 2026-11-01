@@ -1,15 +1,16 @@
 # Machine/runtime data; keep original resources, metadata and native map data.
-/lock/
+**/lock/
 /archive/
+/ProjectName001/archive/
 **/.log/
-/global_script/log/
-/maps/*/script/log/
+**/global_script/log/
+**/maps/*/script/log/
 **/__pycache__/
 *.pyc
 *.tmp
 *.log
 *.lock
-custom/CustomImportRepo.local/
+**/custom/CustomImportRepo.local/
 # Obsolete loose copies; authored originals and native .package imports are tracked.
 custom/OriginalRes/icon/spirit/
 development/docs/official/
