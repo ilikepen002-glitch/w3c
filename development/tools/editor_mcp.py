@@ -28,7 +28,7 @@ def request(method, params=None, notification=False):
     if not notification:
         payload['id'] = serial
     req = urllib.request.Request(url, json.dumps(payload).encode(), {'Content-Type': 'application/json'})
-    with urllib.request.urlopen(req, timeout=20) as response:
+    with urllib.request.urlopen(req, timeout=90) as response:
         body = response.read()
     if notification:
         return
@@ -36,14 +36,14 @@ def request(method, params=None, notification=False):
         direct = json.loads(body)
         if direct.get('id') == serial:
             return direct
-    deadline = time.monotonic() + 45
+    deadline = time.monotonic() + 120
     while time.monotonic() < deadline:
         result = messages.get(timeout=max(1, deadline-time.monotonic()))
         if result.get('id') == serial:
             return result
     raise TimeoutError(method)
 
-request('initialize', {'protocolVersion': '2024-11-05', 'capabilities': {}, 'clientInfo': {'name': 'SpiritDefenseDevelopment', 'version': '1.0'}})
+request('initialize', {'protocolVersion': '2024-11-05', 'capabilities': {}, 'clientInfo': {'name': 'Y3MapDevelopment', 'version': '1.0'}})
 request('notifications/initialized', notification=True)
 if len(sys.argv)>1 and sys.argv[1]=='--batch':
     jobs=json.loads(Path(sys.argv[2]).read_text(encoding='utf-8-sig'))

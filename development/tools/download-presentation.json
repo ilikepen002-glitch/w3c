@@ -1,7 +1,0 @@
-[
-  {"name":"download_editor_model_resource","arguments":{"editor_model_id_list":[200780,200806,200797,200799,200809,200776,200792,200798,206850,201702,208145,103895,206511],"model_id_list":[200780,200806,200797,200799,200809,200776,200792,200798,206850,201702,208145,103895,206511]}},
-  {"name":"download_editor_effect_resource","arguments":{"editor_effect_id_list":[102643,102602,100229,101252,103353,101043,102674,101819,100115,101393,103354,101425,102730],"effect_id_list":[102643,102602,100229,101252,103353,101043,102674,101819,100115,101393,103354,101425,102730]}},
-  {"name":"download_editor_icon_resource","arguments":{"editor_icon_id_list":[131155],"icon_id_list":[131155]}},
-  {"name":"download_editor_sound_resource","arguments":{"editor_sound_id_list":[100004,103157,103162,100003],"sound_id_list":[100004,103157,103162,100003]}},
-  {"name":"ensure_terrain_textures","arguments":{"texture_ids":[]}}
-]

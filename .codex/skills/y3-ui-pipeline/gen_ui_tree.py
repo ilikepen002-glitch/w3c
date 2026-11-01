@@ -310,7 +310,7 @@ echo ========================================
 echo 目标地图: %1
 echo.
 
-python gen_ui_tree.py "%~1"
+python gen_ui_tree.py "%1%"
 
 if %errorlevel% neq 0 (
     echo.
@@ -336,12 +336,12 @@ if %errorlevel% neq 0 (
 
 def main():
     """主函数"""
-    import argparse
-    parser = argparse.ArgumentParser(description='Generate Y3 UI node trees')
-    parser.add_argument('project_root', help='Project containing maps/EntryMap/ui')
-    parser.add_argument('--write-batch', action='store_true', help='Also create legacy batch launcher')
-    args = parser.parse_args()
-    map_root = args.project_root
+    if len(sys.argv) < 2:
+        print("用法: python gen_ui_tree.py <map_root_path>")
+        print("示例: python gen_ui_tree.py .")
+        sys.exit(1)
+    
+    map_root = sys.argv[1]
     
     # 创建生成器
     generator = UITreeGenerator(map_root)
@@ -351,8 +351,7 @@ def main():
     
     # 创建批处理脚本
     script_dir = Path(map_root).resolve()
-    if args.write_batch:
-        create_batch_script(script_dir)
+    create_batch_script(script_dir)
     
     sys.exit(0 if success else 1)
 

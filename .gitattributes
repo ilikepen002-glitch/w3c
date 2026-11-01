@@ -14,3 +14,6 @@
 maps/*/terrain.json binary
 maps/*/texture.json binary
 maps/*/texturefoliage.json binary
+
+# Preserve official skill/template bytes so provenance hashes survive checkout.
+.codex/** -text

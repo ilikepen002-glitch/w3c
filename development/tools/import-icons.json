@@ -1,9 +1,0 @@
-[
-  {"name":"get_map_info","arguments":{}},
-  {"name":"import_editor_icon","arguments":{"image_path":"D:/Y3Projects/SpiritDefenseWork/assets/source/contract-chest.png"}},
-  {"name":"import_editor_icon","arguments":{"image_path":"D:/Y3Projects/SpiritDefenseWork/assets/source/element-metal.png"}},
-  {"name":"import_editor_icon","arguments":{"image_path":"D:/Y3Projects/SpiritDefenseWork/assets/source/element-wood.png"}},
-  {"name":"import_editor_icon","arguments":{"image_path":"D:/Y3Projects/SpiritDefenseWork/assets/source/element-water.png"}},
-  {"name":"import_editor_icon","arguments":{"image_path":"D:/Y3Projects/SpiritDefenseWork/assets/source/element-fire.png"}},
-  {"name":"import_editor_icon","arguments":{"image_path":"D:/Y3Projects/SpiritDefenseWork/assets/source/element-earth.png"}}
-]

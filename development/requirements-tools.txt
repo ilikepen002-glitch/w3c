@@ -1,0 +1,13 @@
+# Official Y3 tool dependencies; install in development/.venv.
+-r requirements.txt
+lupa==2.8
+Pillow==12.2.0
+mmh3==5.3.1
+numpy==2.2.6
+opencv-python==4.12.0.88
+scipy==1.16.3
+requests==2.34.2
+# Official report example, Codex skill validation, optional screenshot backend.
+Markdown>=3.7,<4
+PyYAML==6.0.3
+mss>=10,<11

@@ -1,31 +1,40 @@
-# 契灵守卫战 · Y3 / KK
+# 我的宝宝有点猛 · Y3 / KK
 
-四路独立防线的塔防地图：32 波战役、五类塔与终阶分支、精灵捕获和技能培养、装备升阶、契约选择，以及独立管理面板。图标为项目生成素材，来源与提示词在 `development/assets/`。
+新地图开发底座。分支 `codex/my-baby-is-fierce`，基于旧地图分支 `codex/y3-spirit-defense` 的 `eee895be882522f91ea876aa09724d191a9888c4`。
 
-当前版本 0.2.1 处于开发中。已在原生编辑器重载，UI 半透明底图、按钮染色、槽位文字与窗口适配问题已修正，并保存整屏截图。战场单位存在但模型仍不可见，这是未解决的阻塞问题；完整操作及战役尚未通过实机验收，不能视为可玩成品。证据与后续入口见 `development/docs/evidence/20261024-session-status.md`。
+旧玩法、场景、物编、UI、资源、专用测试和运行记录已移出工程。当前没有 `header.project` 或原生地图，不能直接启动游戏。下一阶段通过 Y3 官方工具创建新工程，再接入本仓库的资料；玩法尚未确定，不沿用旧地图塔防设定。
 
-## 打开与开发
+## 保留内容
 
-用 Y3 编辑器双击打开根目录 `header.project`，主地图为 `EntryMap`。不通过 `game.exe` 打开 KK 客户端。VS Code 打开同一根目录，安装官方 `sumneko.y3-helper`。
+- `.codex/skills/`：官方完整技能及代码示例，入口 `y3-game-spec/SKILL.md`。
+- `.codex/rules/`、`knowledge/`、`templates/`、`tools/`：规范、知识、模板、工具。
+- `AGENTS.md`：开发约束；`.codex/compatibility.md`：本项目接入说明。
+- `development/vendor/y3/`：官方 Lua 库及演示、文档、测试，子模块固定原版本。
+- `development/tools/`：通用 Lua 检查、部署、MCP 客户端与会话状态检查。
+- `development/src/`、`tests/`：新玩法源码、测试的空目录。
+- `development/requirements*.txt`：Python 依赖。本机虚拟环境保留但不提交。
 
-克隆时使用 `git clone --recurse-submodules`；已有检出先执行 `git submodule update --init`。官方 Lua 库作为子模块固定版本，保留原始源码与 Git 初始化状态。
+## Git
+
+仓库：https://github.com/ilikepen002-glitch/w3c
+
+SSH：`git@github.com:ilikepen002-glitch/w3c.git`
+
+本次创建本地分支，不自动推送。旧 Y3 分支及 `backup/wurst-before-y3-20261023` 标签保留。克隆时使用 `git clone --recurse-submodules`；已有检出使用 `git submodule update --init`。
+
+## 开发入口
+
+先读 `AGENTS.md`、`.codex/rules/rules.mdc` 和 `.codex/skills/y3-game-spec/SKILL.md`。项目名称已写入 `.codex/spec-config.json`。
 
 ```powershell
-python -m venv development/.venv
-development/.venv/Scripts/python -m pip install -r development/requirements.txt
-development/.venv/Scripts/python development/tools/check.py
-development/.venv/Scripts/python development/tools/check.py ui
-development/.venv/Scripts/python development/tools/deploy.py
+development/.venv/Scripts/python.exe development/tools/check.py
+development/.venv/Scripts/python.exe development/tools/y3_session.py
 ```
 
-维护 `development/src/`，部署写入 `maps/EntryMap/script/`。地图对象与生成脚本一起提交；编辑器热更新并确认完成后保存。源资产、导入包与元数据保留在仓库。新机器首次打开须在编辑器完成资源下载/修复并检查模型和图标显示；本机资源缓存不提交，纯 Lua 动态资源的依赖清单仍在核验。
+无 Lua 源文件时检查工具明确输出 SKIP，不代表地图测试通过。创建原生地图后，将固定版本官方库接入地图 `script/y3`，再运行 `development/tools/deploy.py`。部署只复制业务 Lua 并校验哈希，缺工程、库或源码时拒绝部署。
 
-## 历史与官方工具
+## 恢复旧版本
 
-- 新平台分支：`codex/y3-spirit-defense`。
-- Wurst 备份标签：`backup/wurst-before-y3-20261023`，指向原远程开发分支的 `50d227e754abecca3d14e07e9d76af35c6502359`。
-- 官方技能适配记录：`.codex/skills-installation.md`。
-- 官方仓库下载与复用记录：`development/docs/upstream-tools.md`。
-- 编辑器 MCP 与开发助手接入：`.codex/skills/y3-editor-control/references/codex-integration.md`。
+完整本机副本：`D:/Y3Projects/backups/SpiritDefense-before-my-baby-is-fierce-20261101/`。同级 `.sha256.json` 记录 2,541 个工程文件的哈希校验；虚拟环境和 Git 内部文件不在哈希审计范围。
 
-原 `D:/Y3Projects/SpiritDefenseWork` 仅保留为迁移前本机备份；后续修改统一在本工程 `development/`。
+旧内容另移入 `D:/Y3Projects/backups/SpiritDefense-retired-content-20261101/`，不放入新分支。原目录 `.git` 缺失，本轮从原仓库及远程恢复历史后建立新分支。历史提交不包含所有旧地图本机改动，完整恢复请使用上述副本。

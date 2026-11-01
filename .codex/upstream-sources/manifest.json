@@ -1,447 +1,1572 @@
 {
   "repository": "https://github.com/y3-editor/y3-maker-config",
   "commit": "b9253889d74f07145bb2bd56721f8dfc406c263c",
-  "adapted_for": "Codex / SpiritDefense",
-  "upstream_files": [
+  "adaptation": "UTF-8 without BOM; literal .codemaker/ and .y3maker/ prefixes -> .codex/; no skill body summarization",
+  "files": [
     {
-      "path": "knowledge/README.md",
-      "sha256": "a46240e8a3741a9894ab51b34b36d5ef205531ca42f2179d9ad7bf73a321d4c5"
+      "path": "skills/_health_check.py",
+      "upstream_sha256": "669243aa26b20987aa890cd0905e96122a1fc125aec13f2034e2beb4a726392d",
+      "installed_sha256": "d0e19a7fa951ed085894e39a530d0b7e7d4b2e9860f7601167f8cd03cb64e5d9"
     },
     {
-      "path": "knowledge/UI系统/01-字段规范.md",
-      "sha256": "780442be893eecae6b307572e18ae1c85f3a896a35e1e1301669ec06aedc520c"
+      "path": "skills/eca-json-builder/archive_reader.py",
+      "upstream_sha256": "83a5ff08d13eb6e5703a4eb51109c58c4618e50ca88a8310f126238bb5a59b41",
+      "installed_sha256": "83a5ff08d13eb6e5703a4eb51109c58c4618e50ca88a8310f126238bb5a59b41"
     },
     {
-      "path": "knowledge/UI系统/02-属性绑定.md",
-      "sha256": "64438e4b7e59201bce79995a068d87de25ed604fc6c0604ce0d37eba008ee4ca"
+      "path": "skills/eca-json-builder/eca-json-builder.md",
+      "upstream_sha256": "33122ba16a94c1a92a8662fccedd493b63a17dc0635b8e0e65e1f621cf2bb1aa",
+      "installed_sha256": "ea587cc9f48a67dd40933a5891370b15b5fd67b84646463f703bd14c18e56ebb"
     },
     {
-      "path": "knowledge/UI系统/03-官方组件.md",
-      "sha256": "b7a8a2acda24d111acd8c79e3a7d38f6fb6d27d43aa62f02c18e9efcde4d1b6a"
+      "path": "skills/eca-json-builder/eca_index.json",
+      "upstream_sha256": "c28812bd085af2f4aa9b0aa0d5be92ea4c9b4565a98be94b3fb6b5daaeaf4a5b",
+      "installed_sha256": "c28812bd085af2f4aa9b0aa0d5be92ea4c9b4565a98be94b3fb6b5daaeaf4a5b"
     },
     {
-      "path": "knowledge/UI系统/04-自定义UI元件.md",
-      "sha256": "f15e9080c654725154a1b0bd1f9324131baad7efa54d265ab2b025159ed7fb46"
+      "path": "skills/eca-json-builder/eca_index_slim.json",
+      "upstream_sha256": "9600400b201d3c1ab0be15370f74e9fa8d5d7a0e3d47db1ee2e40da82fe92907",
+      "installed_sha256": "9600400b201d3c1ab0be15370f74e9fa8d5d7a0e3d47db1ee2e40da82fe92907"
     },
     {
-      "path": "knowledge/UI系统/05-场景UI.md",
-      "sha256": "238683119c4449d66631c18b8b96e90e969b0ea76c9d2cbca545555e8f4506d6"
+      "path": "skills/eca-json-builder/eca_json_helper.py",
+      "upstream_sha256": "9b319bb0074f2788132c2f973e83986426234c9b406cb6517aea88a227daa8d1",
+      "installed_sha256": "9b319bb0074f2788132c2f973e83986426234c9b406cb6517aea88a227daa8d1"
     },
     {
-      "path": "knowledge/UI系统/06-时间轴动画.md",
-      "sha256": "90b50fcf933ea8a8cd3c7082b2aafefc1303c4074c8698dfadc89a55279924e8"
+      "path": "skills/eca-json-builder/edit_trigger.py",
+      "upstream_sha256": "804296fa8fe7d36c913e1d5e2f96b931056854cf6298dc280b89f1628eab59a8",
+      "installed_sha256": "804296fa8fe7d36c913e1d5e2f96b931056854cf6298dc280b89f1628eab59a8"
     },
     {
-      "path": "knowledge/UI系统/07-控件适配规则.md",
-      "sha256": "55ef4b08ed905ac5eade48622c18d776ed0f0c481f836de0e6b9d4d24d0575cd"
+      "path": "skills/eca-json-builder/gen_function.py",
+      "upstream_sha256": "a94863464954633843e3565062c065bda10014251b13ecb5a80204ada4fb5837",
+      "installed_sha256": "a94863464954633843e3565062c065bda10014251b13ecb5a80204ada4fb5837"
     },
     {
-      "path": "knowledge/UI系统/08-UI接入实战手册.md",
-      "sha256": "6519a83efa36ab0d17a5a705b0227099d7dbf26048f088878e1d8ba6e6a37dc9"
+      "path": "skills/eca-json-builder/gen_trigger.py",
+      "upstream_sha256": "ebe185c7c370b82241988c0891f4339c393c4b8ea5012c6cf4236b5e4c26ee00",
+      "installed_sha256": "ebe185c7c370b82241988c0891f4339c393c4b8ea5012c6cf4236b5e4c26ee00"
     },
     {
-      "path": "knowledge/其他/01-镜头动画.md",
-      "sha256": "361e83e61d09d4f08bd6f6f252d1d16041d0db13643ddcbfe10599009c27958a"
+      "path": "skills/eca-json-builder/lookup.py",
+      "upstream_sha256": "1f4847cfd5302fae2021592d276e261cd434d3686775801a0ece7828c5e1653f",
+      "installed_sha256": "1f4847cfd5302fae2021592d276e261cd434d3686775801a0ece7828c5e1653f"
     },
     {
-      "path": "knowledge/实战工程参考/塔防工程实战知识库.md",
-      "sha256": "a02076d0764ef4d3cc43df478301dc4aff8b5d006d38ee2414167f72803b7832"
+      "path": "skills/eca-json-builder/plugin_eca.py",
+      "upstream_sha256": "2e3473310ca18b3e64437ee6ea440841cd3dc0b00e0dea7ae12a8e27e7aed96f",
+      "installed_sha256": "2e3473310ca18b3e64437ee6ea440841cd3dc0b00e0dea7ae12a8e27e7aed96f"
     },
     {
-      "path": "knowledge/实战工程参考/存档系统架构设计指南.md",
-      "sha256": "163e1cab119f54ccef01803fc69d46df1560120aa9c744450718f2e7d8a62e27"
+      "path": "skills/eca-json-builder/project_event.py",
+      "upstream_sha256": "2ceb04f5198752a81675d4e2c2d6a36ee98955de825c0a00f12743a20d8d8b4f",
+      "installed_sha256": "2ceb04f5198752a81675d4e2c2d6a36ee98955de825c0a00f12743a20d8d8b4f"
     },
     {
-      "path": "knowledge/核心系统/01-属性系统.md",
-      "sha256": "b01e0ae1ed03a911d0de7ea7ac6f13b315bb94da7bccb38cecb6da8669b09ae1"
+      "path": "skills/eca-json-builder/read_trigger.py",
+      "upstream_sha256": "78a8090457acfae38d31fd1e396aeb995c963e3c06e341195088c265fc0e6961",
+      "installed_sha256": "78a8090457acfae38d31fd1e396aeb995c963e3c06e341195088c265fc0e6961"
     },
     {
-      "path": "knowledge/核心系统/02-属性计算公式.md",
-      "sha256": "fad8bf1d0879cc8d0afa3bbe9f5c651885cc6cdb9c39a121365edb3f0554527c"
+      "path": "skills/eca-json-builder/SKILL.md",
+      "upstream_sha256": "3b710d657024228a71fec9dab8477f5cc84325d43bf3ad3532c9441a212339ec",
+      "installed_sha256": "4a927fe96435f52cf7938e73f68bc6518ee7da12176bd853e1e52f68b947c283"
     },
     {
-      "path": "knowledge/核心系统/03-KV系统.md",
-      "sha256": "bf9b011a6b41cf1dadfb1016b48e3cb17f3d43df2f4c5f74b8ae5ad2b25de90c"
+      "path": "skills/eca-json-builder/table_reader.py",
+      "upstream_sha256": "e5381884a44fd156953a4bb2b077b8ccff168bc24e4d14a8a30e8f5e03f18d89",
+      "installed_sha256": "e5381884a44fd156953a4bb2b077b8ccff168bc24e4d14a8a30e8f5e03f18d89"
     },
     {
-      "path": "knowledge/核心系统/04-存档系统.md",
-      "sha256": "dd951f8c43785e832b97958789bc400044e933a2eb7d1e77c425ae62f722dfe7"
+      "path": "skills/eca-json-builder/tests/fixtures/editor_authored_dynamic_trigger.json",
+      "upstream_sha256": "9c81cffb54bbb6aa925164c6c2ccca064ad7f777527308943adcfe2ba5dbcc06",
+      "installed_sha256": "9c81cffb54bbb6aa925164c6c2ccca064ad7f777527308943adcfe2ba5dbcc06"
     },
     {
-      "path": "knowledge/核心系统/05-阵营系统.md",
-      "sha256": "e60c15193ee86c2dbad0d85caa2d2fbc80b95ed41f0dae1fa3695c80fd378cd3"
+      "path": "skills/eca-json-builder/tests/test_gen_function.py",
+      "upstream_sha256": "8c508d1bac3d66835b382c799578e24a9a1a2e370a80bbeaad45af6469cd5b2f",
+      "installed_sha256": "8c508d1bac3d66835b382c799578e24a9a1a2e370a80bbeaad45af6469cd5b2f"
     },
     {
-      "path": "knowledge/核心系统/06-事件系统.md",
-      "sha256": "daa79848e4d30ea9a422c437c919d97e7bdbbee1af89f5cd23c604537d772616"
+      "path": "skills/eca-json-builder/tests/test_gen_trigger_extensions.py",
+      "upstream_sha256": "e7f74e5d13f7b61c3f81cfa2eb87c2325ac472dc2df416fc001904b61a6da1f7",
+      "installed_sha256": "e7f74e5d13f7b61c3f81cfa2eb87c2325ac472dc2df416fc001904b61a6da1f7"
     },
     {
-      "path": "knowledge/核心系统/07-伤害类型.md",
-      "sha256": "1584ad049e783d0a81b42309a289253360f5ba4afd7f25e7466c16df18e43101"
+      "path": "skills/eca-json-builder/tests/test_trigger_validator_hardening.py",
+      "upstream_sha256": "8d4d722108511e296a0152aad12c08be1891db4e5dc32dbeeb2f86960f605605",
+      "installed_sha256": "8d4d722108511e296a0152aad12c08be1891db4e5dc32dbeeb2f86960f605605"
     },
     {
-      "path": "knowledge/核心系统/08-游戏运行模式.md",
-      "sha256": "9456e5fed0063a598733bf94035d60c6c26749195701300f3260c2b14136fb6b"
+      "path": "skills/eca-json-builder/var_manager.py",
+      "upstream_sha256": "22841cc67744c4239cd7a92925930a26eb6170d0bc2513e13d99149825272064",
+      "installed_sha256": "22841cc67744c4239cd7a92925930a26eb6170d0bc2513e13d99149825272064"
     },
     {
-      "path": "knowledge/核心系统/09-地形系统.md",
-      "sha256": "5211bce1c1d2eded662e6a67e31a173841e6a492b3d2f1b0ea4f0bee8d790eda"
+      "path": "skills/install_skills.bat",
+      "upstream_sha256": "c6b000bbcababbb11653f45d037ec7aa6ced402c0e5a187553616f490cc899e7",
+      "installed_sha256": "c6b000bbcababbb11653f45d037ec7aa6ced402c0e5a187553616f490cc899e7"
     },
     {
-      "path": "knowledge/核心系统/10-玩家操作.md",
-      "sha256": "1c389b9bb85c576db119ae980683d162013ad053f267b4fc0e429b9bd5775c27"
+      "path": "skills/README.md",
+      "upstream_sha256": "59ddd0ab1a0156da373db60cd6edc3882c88b3595200464a495c49a4d849b48b",
+      "installed_sha256": "9d59e50a4ec12604c03be00de811eba5137672622ff88b15e173310e44261cf0"
     },
     {
-      "path": "knowledge/核心系统/11-地图逻辑资源.md",
-      "sha256": "bda066afe1b87591851d7185493ff02ea4183912a1c9f37d4a9d6851ddff67cb"
+      "path": "skills/y3-auto-test/.queue/.ready",
+      "upstream_sha256": "ffd1b6ba2d08a6fd0969de2eb0321acad7c63da06940e421587cfd6a70f1c8f1",
+      "installed_sha256": "ffd1b6ba2d08a6fd0969de2eb0321acad7c63da06940e421587cfd6a70f1c8f1"
     },
     {
-      "path": "knowledge/核心系统/12-ECA系统.md",
-      "sha256": "34e966109b3e2033565042f2670ad530df1d702a9ddfc9eb8ffba692375bd6fb"
+      "path": "skills/y3-auto-test/gen-test-plan.md",
+      "upstream_sha256": "802b3b43c503d7aa41205572b6dee16d75e5e3e545c195f915135e80bc738f02",
+      "installed_sha256": "802b3b43c503d7aa41205572b6dee16d75e5e3e545c195f915135e80bc738f02"
     },
     {
-      "path": "knowledge/核心系统/13-编辑器表格系统.md",
-      "sha256": "57e7828419d81b7f7a55d6151bf2e651c8099031d074c225c22b1b9459cbf698"
+      "path": "skills/y3-auto-test/SKILL.md",
+      "upstream_sha256": "6b7be49ffd7fa89bdb2af150e82166c4b69120024b6cba1a8576ba5afa0544a1",
+      "installed_sha256": "6b7be49ffd7fa89bdb2af150e82166c4b69120024b6cba1a8576ba5afa0544a1"
     },
     {
-      "path": "knowledge/物编系统/01-概述.md",
-      "sha256": "68f59391bb987678563cc979ce35218cecdd3686ada3286b596da56cb1ed4fa5"
+      "path": "skills/y3-env-setup/SKILL.md",
+      "upstream_sha256": "4ada1a089d9625eba30335683db4c592f092b2954d7f6354bf384c3328f661cf",
+      "installed_sha256": "4ada1a089d9625eba30335683db4c592f092b2954d7f6354bf384c3328f661cf"
     },
     {
-      "path": "knowledge/物编系统/02-魔法效果.md",
-      "sha256": "ec67a6cde99e21e55c4103288390c07203be6c0532c5ae114393af0515602f16"
+      "path": "skills/y3-game-spec/examples/README.md",
+      "upstream_sha256": "fb5392a90d2283089ee474bdb4ef85e17e128b90f6173e9bdbd99d55428a9f86",
+      "installed_sha256": "fb5392a90d2283089ee474bdb4ef85e17e128b90f6173e9bdbd99d55428a9f86"
     },
     {
-      "path": "knowledge/物编系统/03-投射物.md",
-      "sha256": "859106a82da1c85a31b7538e2d7be5e1bd659fae0de2df902fad12b45eac7406"
+      "path": "skills/y3-game-spec/examples/tower_defense.md",
+      "upstream_sha256": "69560ddf74588f58bf8f548f12fc5d7a1e10836034ae29dd0399e2f1f73719cc",
+      "installed_sha256": "69560ddf74588f58bf8f548f12fc5d7a1e10836034ae29dd0399e2f1f73719cc"
     },
     {
-      "path": "knowledge/物编系统/04-可破坏物.md",
-      "sha256": "d91f7ad5b060f700c60775f65857dbcc56a11b8445c1717e16e4d1245b099d15"
+      "path": "skills/y3-game-spec/examples/ui/synergy_panel.md",
+      "upstream_sha256": "2caf31d277805426ffde1b20d1d4ef5e280f6ff842f32a540c74b6e56c74d0b8",
+      "installed_sha256": "2caf31d277805426ffde1b20d1d4ef5e280f6ff842f32a540c74b6e56c74d0b8"
     },
     {
-      "path": "knowledge/物编系统/05-声音.md",
-      "sha256": "a960ccf0a6141ba711fe973ee4dbb16b94a0c23df149e12bfe5573cb5e86305d"
+      "path": "skills/y3-game-spec/feasibility-redlines.md",
+      "upstream_sha256": "62ef8254316e394ad1643ba9a9ce1aeb1d393d6ef09ddd6deff6ac7c8be40b07",
+      "installed_sha256": "2b650427ee137b7eea88b9a70291703835027c53ede849381d6baf5965ebf208"
     },
     {
-      "path": "knowledge/物编系统/06-技能.md",
-      "sha256": "5bbe011ba638f53645d2cd37b600ed3a19460ea8d1fd2afca475765d600b9439"
+      "path": "skills/y3-game-spec/game-design-guide.md",
+      "upstream_sha256": "b44f381ea1638fabfebb1c96a32c0dd14739e5c5967affd68b6bb6ff620769cc",
+      "installed_sha256": "82e1bcc0cb4492c0c547d2f297f289c40f5c4943a1dfdff7910d07e10c108036"
     },
     {
-      "path": "knowledge/物编系统/07-物品.md",
-      "sha256": "9c35669615593fa16901386ba6daad1f270a1fefdd5cf258fec60590594598c3"
+      "path": "skills/y3-game-spec/patch-mode.md",
+      "upstream_sha256": "dfff710b7e6e141d3d3bd9acdacdb2f0d8f3853ec91f9fdc52f555c73dff839f",
+      "installed_sha256": "dfff710b7e6e141d3d3bd9acdacdb2f0d8f3853ec91f9fdc52f555c73dff839f"
     },
     {
-      "path": "knowledge/物编系统/08-单位.md",
-      "sha256": "afa1304e199e5b07e237dff0b1aa7d797d46b25252ec2a6b4fddd07613ab25e7"
+      "path": "skills/y3-game-spec/phase-2-execution.md",
+      "upstream_sha256": "f704184f69188691d9af86df4ac1f6560c03d1d626917f8bb710e76b361f51a6",
+      "installed_sha256": "12102aea597a4d21dafb72fad4a8546d74195b2a289bc8df110e1c4ab92e0889"
     },
     {
-      "path": "knowledge/物编系统/09-建造系统.md",
-      "sha256": "cf526a2e99d6b2f1c2c7ea2710a5d1c630b32c05358dd83b55c2e99a246fa202"
+      "path": "skills/y3-game-spec/roadmaps/塔防执行案.md",
+      "upstream_sha256": "4efef09cf06ee310e6e494b31bd3e8ed3dbbb5b908304bcbb1a1ce20277ef980",
+      "installed_sha256": "9b039158fef5bc83f0da55daad1e66e6776d86745b7747df27752616deaf0e8a"
     },
     {
-      "path": "knowledge/项目结构说明.md",
-      "sha256": "65e6120897823280cd73d6d9da8403eaaa8b2bde026060a87315fb127e0d9081"
+      "path": "skills/y3-game-spec/roadmaps/塔防设计案.md",
+      "upstream_sha256": "9f7fb37ada3666012b9175a7b25b9c244ae8543afd9372e41785cef051df9d06",
+      "installed_sha256": "9f7fb37ada3666012b9175a7b25b9c244ae8543afd9372e41785cef051df9d06"
     },
     {
-      "path": "skills/y3-obj-edit/data/jn.json",
-      "sha256": "9090d0fce7ea04590a57cce492258a99743d45b7cad68f5722d9d5a87432c702"
+      "path": "skills/y3-game-spec/roadmaps/生存执行案.md",
+      "upstream_sha256": "cad7662e5accee05156481e5da70e6db80f03714480ec4f192faec1ae39ed741",
+      "installed_sha256": "0a4eda3076377f7a310a218c2ea613a3c5138c7cafb9d4f3418ed45ac990354a"
     },
     {
-      "path": "skills/y3-obj-edit/data/jz.json",
-      "sha256": "3f8d14c6b6ef9124e01da89de5c806560301ecc81b0b4b32c78c441df8403ea6"
+      "path": "skills/y3-game-spec/roadmaps/生存设计案.md",
+      "upstream_sha256": "fcd499c170cbc8bb5bbfe44d8c12a17e72f5d0133a5e71315bacc13c49412271",
+      "installed_sha256": "05ba7ef5b5fbb171e4e47dc02387f718795f0cec45bb5486aa313b7eb9a1dad1"
     },
     {
-      "path": "skills/y3-obj-edit/data/jzboss.json",
-      "sha256": "7055e7869f22c3f28dd93dc8fb65ef6581007c6ecf00677f1253d7e3fe461f6d"
+      "path": "skills/y3-game-spec/SKILL.md",
+      "upstream_sha256": "450d098c6a0913b704d220dc179b0807b32e9a13c36a0597a77baec57566308a",
+      "installed_sha256": "b97fa2fdae848fc8cf835b0eb0047b5a0e71102089dca451b9736f8edb269191"
     },
     {
-      "path": "skills/y3-obj-edit/data/jzxg.json",
-      "sha256": "c3ef53b525b2d4c1f420fb1c38057ddd619bf9b224085aec8f9722a3903ed093"
+      "path": "skills/y3-gen-terrain-from-image/references/.gitkeep",
+      "upstream_sha256": "e1f0c060d32ac157960f88d38cfb456631f2392e27a6e3c081ba4faab50c61f2",
+      "installed_sha256": "e1f0c060d32ac157960f88d38cfb456631f2392e27a6e3c081ba4faab50c61f2"
     },
     {
-      "path": "skills/y3-obj-edit/data/jzyx.json",
-      "sha256": "5fbe9e2a5e04fadec80abfccfd65957ee916d9fbfce888c07dd93840e4139505"
+      "path": "skills/y3-gen-terrain-from-image/references/decoration-model-ids.md",
+      "upstream_sha256": "619ba562898d82fed498ba662d102e5337a50c4bfa01deff82d0d3670f21e596",
+      "installed_sha256": "619ba562898d82fed498ba662d102e5337a50c4bfa01deff82d0d3670f21e596"
     },
     {
-      "path": "skills/y3-obj-edit/data/mfxg.json",
-      "sha256": "9f8027ddd4b85391386061268c2ce46a37c5e7d3580e25f11f458a9ea492bd71"
+      "path": "skills/y3-gen-terrain-from-image/references/decoration_catalog.json",
+      "upstream_sha256": "0b571ab0409975f6d3ea6632fcc7c5885ad5b6e6d2e2742c96b68e92eb50aec2",
+      "installed_sha256": "0b571ab0409975f6d3ea6632fcc7c5885ad5b6e6d2e2742c96b68e92eb50aec2"
     },
     {
-      "path": "skills/y3-obj-edit/data/tsw.json",
-      "sha256": "8bd9b2513c672ad493de75628a1bcd8f87521f4404cbddfa347a38b98c22028c"
+      "path": "skills/y3-gen-terrain-from-image/references/terrain-adjacency-rules.md",
+      "upstream_sha256": "11f86ffca4905356fff8e2d4b6d7946bb86a839502248aa704b64868d5f77418",
+      "installed_sha256": "11f86ffca4905356fff8e2d4b6d7946bb86a839502248aa704b64868d5f77418"
     },
     {
-      "path": "skills/y3-obj-edit/data/wp.json",
-      "sha256": "fb9a050003c4777621a8b2bbca0e7b17d23a54efea82c0659f4031839f8c5e26"
+      "path": "skills/y3-gen-terrain-from-image/references/terrain-mcp-api.md",
+      "upstream_sha256": "99d800e6f153058d064f846aa269a615aab058d68f51a1bfcea5d54996d31c3f",
+      "installed_sha256": "99d800e6f153058d064f846aa269a615aab058d68f51a1bfcea5d54996d31c3f"
     },
     {
-      "path": "skills/y3-obj-edit/data/ycboss.json",
-      "sha256": "a421ccd328f730c571a47e3ff84530da6e403f810a3a050c07674d6db14937a2"
+      "path": "skills/y3-gen-terrain-from-image/references/texture-color-map.md",
+      "upstream_sha256": "5574020cf2478c8a8dcca61429fb1f9d6d6be675ce0bf19b058609ae2efa7b62",
+      "installed_sha256": "5574020cf2478c8a8dcca61429fb1f9d6d6be675ce0bf19b058609ae2efa7b62"
     },
     {
-      "path": "skills/y3-obj-edit/data/ycxg.json",
-      "sha256": "861c18a048380c64a9816f1eb97e435169402417e85f6ddff15a53161fdcf787"
+      "path": "skills/y3-gen-terrain-from-image/references/texture-ids.md",
+      "upstream_sha256": "65942af2e0de1be9c55c58b7c60bfde3162e7c1a7931c098524b9cbeaed60bf6",
+      "installed_sha256": "65942af2e0de1be9c55c58b7c60bfde3162e7c1a7931c098524b9cbeaed60bf6"
     },
     {
-      "path": "skills/y3-obj-edit/data/ycyx.json",
-      "sha256": "d3541095a95a44a53b6ab742a58df20366d8838eee0ddb1cdbb4214bcae4c631"
+      "path": "skills/y3-gen-terrain-from-image/references/texture_group_catalog.json",
+      "upstream_sha256": "d720edd57907ead0cc39705cffa56ebf9a47abb9cd47a9af44c04a48d63fcdaa",
+      "installed_sha256": "d720edd57907ead0cc39705cffa56ebf9a47abb9cd47a9af44c04a48d63fcdaa"
     },
     {
-      "path": "skills/y3-obj-edit/excels/resources.csv",
-      "sha256": "07c6a548831414f23201df9b81d241e7c1d54003de02020775b0f6e5d9aa13dd"
+      "path": "skills/y3-gen-terrain-from-image/references/y3-terrain-basics.md",
+      "upstream_sha256": "b6019b3a6dde0ffb1f8e9f776c0d745fc736c0586862ccca9c2f939d10327809",
+      "installed_sha256": "b6019b3a6dde0ffb1f8e9f776c0d745fc736c0586862ccca9c2f939d10327809"
     },
     {
-      "path": "skills/y3-obj-edit/reference/ability.md",
-      "sha256": "871c69a66551ad01fef0d45e527a507251d19ffea8807c9e8f21e4e098bf63a6"
+      "path": "skills/y3-gen-terrain-from-image/scripts/.gitkeep",
+      "upstream_sha256": "964ecd19f4fbd1506acaf41813ad33c3db33183130789d2c10428bcd1db8d6df",
+      "installed_sha256": "964ecd19f4fbd1506acaf41813ad33c3db33183130789d2c10428bcd1db8d6df"
     },
     {
-      "path": "skills/y3-obj-edit/reference/item.md",
-      "sha256": "95bc9e2cb761ab82f9dae3f12a26caf8f353006ba5773569285c4f708f56b24c"
+      "path": "skills/y3-gen-terrain-from-image/scripts/check_cv_deps.py",
+      "upstream_sha256": "be8099b63f0eaedd1b78f967f164148a7886b6697375975d5fcf34a7ceb9441c",
+      "installed_sha256": "be8099b63f0eaedd1b78f967f164148a7886b6697375975d5fcf34a7ceb9441c"
     },
     {
-      "path": "skills/y3-obj-edit/reference/modifier.md",
-      "sha256": "c699f53861112feac94927dd5d7bf0c0b65b54eb7f8726474b9c2d7e3da947a4"
+      "path": "skills/y3-gen-terrain-from-image/scripts/cv_cluster.py",
+      "upstream_sha256": "40ea778fb7f1ec7eb7944ea2a1ffcab3247448db9c2acd21aeb383003969ee2e",
+      "installed_sha256": "40ea778fb7f1ec7eb7944ea2a1ffcab3247448db9c2acd21aeb383003969ee2e"
     },
     {
-      "path": "skills/y3-obj-edit/reference/projectile.md",
-      "sha256": "747e7a992e4d436eef2f49a40c276ce06bdbb660dd3f6bcc074ec8d771d357f7"
+      "path": "skills/y3-gen-terrain-from-image/scripts/cv_cluster_analysis.py",
+      "upstream_sha256": "a3c3d01c58865b0448aadd26b6210ac7fc7770d293639fbe48f0de183e8cd890",
+      "installed_sha256": "a3c3d01c58865b0448aadd26b6210ac7fc7770d293639fbe48f0de183e8cd890"
     },
     {
-      "path": "skills/y3-obj-edit/reference/unit.md",
-      "sha256": "98c2bd770e0d4603e8d601f55ce8f88c72c62f91b2f03bf98dc519402c7146da"
+      "path": "skills/y3-gen-terrain-from-image/scripts/cv_continent_split.py",
+      "upstream_sha256": "857363cac493b140c3743cd8b4b8a77b5b5880a99004fa225cc76fe68109d3fc",
+      "installed_sha256": "857363cac493b140c3743cd8b4b8a77b5b5880a99004fa225cc76fe68109d3fc"
     },
     {
-      "path": "skills/y3-obj-edit/scripts/y3_obj_edit.py",
-      "sha256": "872d04330e9bb672ef652326ed82b686f3bec57b1704ee60399f93ec7a598df9"
+      "path": "skills/y3-gen-terrain-from-image/scripts/cv_downsample.py",
+      "upstream_sha256": "8b8e9a1edfb9b7b88154c12834cc87722790f87b2d9bde00900ec3c1b0255724",
+      "installed_sha256": "8b8e9a1edfb9b7b88154c12834cc87722790f87b2d9bde00900ec3c1b0255724"
     },
     {
-      "path": "skills/y3-obj-edit/SKILL.md",
-      "sha256": "5af6a45729e5d2f1f8ad63eb9d9e3808a9485cef4675359075c70ab46fb641e3"
+      "path": "skills/y3-gen-terrain-from-image/scripts/cv_subregion_analysis.py",
+      "upstream_sha256": "9159c651406a29a9b0e8b1dee04f286f992d904eae109d0a70f83d4487f4791c",
+      "installed_sha256": "9159c651406a29a9b0e8b1dee04f286f992d904eae109d0a70f83d4487f4791c"
     },
     {
-      "path": "skills/y3-ui-pipeline/gen_ui_tree.py",
-      "sha256": "baf4432ab6d14ded44e78bc78584559e093246c78cc15a6e36af3f686d6ffa0c"
+      "path": "skills/y3-gen-terrain-from-image/scripts/decoration_postprocess.py",
+      "upstream_sha256": "ae0dbf50b993721a79d520378a3009ef6b7b780e43fe86bd7e4b8894ed823403",
+      "installed_sha256": "ae0dbf50b993721a79d520378a3009ef6b7b780e43fe86bd7e4b8894ed823403"
     },
     {
-      "path": "skills/y3-ui-pipeline/SKILL.md",
-      "sha256": "d1d121bd659adb9cec9ba73c4362da32c2340806226d781616dee62104d2cecb"
+      "path": "skills/y3-gen-terrain-from-image/scripts/decoration_postprocess_legacy.py",
+      "upstream_sha256": "8edf30662a1e6d06b9ec69f7c64e428fd59ef9ca688b58019b17245c984b0a3d",
+      "installed_sha256": "8edf30662a1e6d06b9ec69f7c64e428fd59ef9ca688b58019b17245c984b0a3d"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/scripts/gen_round1_csv.py",
+      "upstream_sha256": "1204f09e01440d1b79573c700597621b8b6f1cacdf0e9c47518cefbea014204f",
+      "installed_sha256": "1204f09e01440d1b79573c700597621b8b6f1cacdf0e9c47518cefbea014204f"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/scripts/gen_round4_csv.py",
+      "upstream_sha256": "8be4327f6bb42741542039b41cdaa6a302ba5da834c07e99361d96da590f6232",
+      "installed_sha256": "8be4327f6bb42741542039b41cdaa6a302ba5da834c07e99361d96da590f6232"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/scripts/gen_water_map.py",
+      "upstream_sha256": "7abb7dd9a951064cfae601d2967d80bc481394fa729a22ddeabfabbd52a606f7",
+      "installed_sha256": "7abb7dd9a951064cfae601d2967d80bc481394fa729a22ddeabfabbd52a606f7"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/scripts/mcp_batch_writer.py",
+      "upstream_sha256": "039fbbcc0fd83db7319108cbda9831824358b3b9ee4f4c0c50b6b217e9d620dd",
+      "installed_sha256": "039fbbcc0fd83db7319108cbda9831824358b3b9ee4f4c0c50b6b217e9d620dd"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/scripts/mcp_entity_writer.py",
+      "upstream_sha256": "3d771dc32b8f86edf3c117c3dc4a07b09d629162d68a3665ae5e8f7829e6f9ea",
+      "installed_sha256": "3d771dc32b8f86edf3c117c3dc4a07b09d629162d68a3665ae5e8f7829e6f9ea"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/scripts/mcp_utils.py",
+      "upstream_sha256": "bb2400ef752f3fe68510936086c26808a9c2a30cf088893b1bc98a351d461ba5",
+      "installed_sha256": "bb2400ef752f3fe68510936086c26808a9c2a30cf088893b1bc98a351d461ba5"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/scripts/read_map_size.py",
+      "upstream_sha256": "b8ffee46686fbfb9ffabd37931d1c5a0f69fc9722a84dabf369eff48576d55bb",
+      "installed_sha256": "b8ffee46686fbfb9ffabd37931d1c5a0f69fc9722a84dabf369eff48576d55bb"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/scripts/water_postprocess.py",
+      "upstream_sha256": "a544175fcf1a9f8bf8ad268e9c18d4afd072f69394fa69a1005293301842c0e4",
+      "installed_sha256": "a544175fcf1a9f8bf8ad268e9c18d4afd072f69394fa69a1005293301842c0e4"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/SKILL.md",
+      "upstream_sha256": "7b47f8423ed3f70b54f8b7284deb37127bc53ec947e6a6f6569d07f2685d0cfb",
+      "installed_sha256": "b878c2078b200aa3beafd879c8daafe07a0cc56ab301dfa4357f56c4b7d11d5c"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/templates/.gitkeep",
+      "upstream_sha256": "e1f0c060d32ac157960f88d38cfb456631f2392e27a6e3c081ba4faab50c61f2",
+      "installed_sha256": "e1f0c060d32ac157960f88d38cfb456631f2392e27a6e3c081ba4faab50c61f2"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/templates/round1_water_continent_prompt.md",
+      "upstream_sha256": "e05020b060e5d952db434d68f3a763d8ad212f1675cebd248a73055738220451",
+      "installed_sha256": "e05020b060e5d952db434d68f3a763d8ad212f1675cebd248a73055738220451"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/templates/round2_decoration_prompt.md",
+      "upstream_sha256": "a76690e889a9c45b243cb0e5fb1ce1da2ac1913c5f32aba49dd04523a6a9591a",
+      "installed_sha256": "a76690e889a9c45b243cb0e5fb1ce1da2ac1913c5f32aba49dd04523a6a9591a"
+    },
+    {
+      "path": "skills/y3-gen-terrain-from-image/templates/round2_decoration_prompt_legacy.md",
+      "upstream_sha256": "ce340ae9e82811aff49201af7171e925a52ede1b4a3dba11e61d48c1b8581710",
+      "installed_sha256": "ce340ae9e82811aff49201af7171e925a52ede1b4a3dba11e61d48c1b8581710"
     },
     {
       "path": "skills/y3-lua-pipeline/references/ability.md",
-      "sha256": "9f9a0732e937afe4979f54418f2a89c157496139b9e44042e2ae38128a7c1f75"
+      "upstream_sha256": "9f9a0732e937afe4979f54418f2a89c157496139b9e44042e2ae38128a7c1f75",
+      "installed_sha256": "9f9a0732e937afe4979f54418f2a89c157496139b9e44042e2ae38128a7c1f75"
     },
     {
       "path": "skills/y3-lua-pipeline/references/api_errors.md",
-      "sha256": "9afefa15b564972c2cd83ca1271875afc86795580e2042b4ef8b963004895175"
+      "upstream_sha256": "9afefa15b564972c2cd83ca1271875afc86795580e2042b4ef8b963004895175",
+      "installed_sha256": "9afefa15b564972c2cd83ca1271875afc86795580e2042b4ef8b963004895175"
     },
     {
       "path": "skills/y3-lua-pipeline/references/buff.md",
-      "sha256": "54085d74cef6b8222576a84d6c038efce8e8863408bf16076af13be824562927"
+      "upstream_sha256": "54085d74cef6b8222576a84d6c038efce8e8863408bf16076af13be824562927",
+      "installed_sha256": "54085d74cef6b8222576a84d6c038efce8e8863408bf16076af13be824562927"
     },
     {
       "path": "skills/y3-lua-pipeline/references/common_errors.md",
-      "sha256": "63e997b07f4a9662ed8fe299436149213e553c7ed4b35e076775d8b6fc8df766"
+      "upstream_sha256": "63e997b07f4a9662ed8fe299436149213e553c7ed4b35e076775d8b6fc8df766",
+      "installed_sha256": "63e997b07f4a9662ed8fe299436149213e553c7ed4b35e076775d8b6fc8df766"
     },
     {
       "path": "skills/y3-lua-pipeline/references/item.md",
-      "sha256": "ebf08e7463dfe83185dae28bd56b917084fb9f60525d32bdcfea930f3d7f121e"
+      "upstream_sha256": "ebf08e7463dfe83185dae28bd56b917084fb9f60525d32bdcfea930f3d7f121e",
+      "installed_sha256": "ebf08e7463dfe83185dae28bd56b917084fb9f60525d32bdcfea930f3d7f121e"
     },
     {
       "path": "skills/y3-lua-pipeline/references/layout.md",
-      "sha256": "88332c2a7dac6e6cddd470faeb150980891cfcf6114c48c8e6f766de48105996"
+      "upstream_sha256": "88332c2a7dac6e6cddd470faeb150980891cfcf6114c48c8e6f766de48105996",
+      "installed_sha256": "88332c2a7dac6e6cddd470faeb150980891cfcf6114c48c8e6f766de48105996"
     },
     {
       "path": "skills/y3-lua-pipeline/references/mcp_safety.md",
-      "sha256": "1ec16deae24192300bdf1f8cdbf717e377b277ba74dbd619098c05bbfa0d62b1"
+      "upstream_sha256": "1ec16deae24192300bdf1f8cdbf717e377b277ba74dbd619098c05bbfa0d62b1",
+      "installed_sha256": "1ec16deae24192300bdf1f8cdbf717e377b277ba74dbd619098c05bbfa0d62b1"
     },
     {
       "path": "skills/y3-lua-pipeline/references/obj_errors.md",
-      "sha256": "71d9968a8880aec62fa3254cf4d9c6a6dcaaf30c54563c7a5fb45b476b9fd927"
+      "upstream_sha256": "71d9968a8880aec62fa3254cf4d9c6a6dcaaf30c54563c7a5fb45b476b9fd927",
+      "installed_sha256": "71d9968a8880aec62fa3254cf4d9c6a6dcaaf30c54563c7a5fb45b476b9fd927"
     },
     {
       "path": "skills/y3-lua-pipeline/references/particle.md",
-      "sha256": "dcca570f3cdbb12c326ca8e5cc6b248009ee409954f4841e07ab5e8cc74a9da3"
+      "upstream_sha256": "dcca570f3cdbb12c326ca8e5cc6b248009ee409954f4841e07ab5e8cc74a9da3",
+      "installed_sha256": "dcca570f3cdbb12c326ca8e5cc6b248009ee409954f4841e07ab5e8cc74a9da3"
     },
     {
       "path": "skills/y3-lua-pipeline/references/player.md",
-      "sha256": "24e824208fb58e5abd0e89abbced5b0d3bfbc34a20d9230ba4a61f396df77880"
+      "upstream_sha256": "24e824208fb58e5abd0e89abbced5b0d3bfbc34a20d9230ba4a61f396df77880",
+      "installed_sha256": "24e824208fb58e5abd0e89abbced5b0d3bfbc34a20d9230ba4a61f396df77880"
     },
     {
       "path": "skills/y3-lua-pipeline/references/point.md",
-      "sha256": "c7daabb75ae0f72f2004e40fa3fa3d8ea94f5b2731d38628f1bad3379f8d89b2"
+      "upstream_sha256": "c7daabb75ae0f72f2004e40fa3fa3d8ea94f5b2731d38628f1bad3379f8d89b2",
+      "installed_sha256": "c7daabb75ae0f72f2004e40fa3fa3d8ea94f5b2731d38628f1bad3379f8d89b2"
     },
     {
       "path": "skills/y3-lua-pipeline/references/timer.md",
-      "sha256": "07413a770f40ddbb5028a4a2998c4f5c3c352dd0ffab5e60999fa9f1af256a65"
+      "upstream_sha256": "07413a770f40ddbb5028a4a2998c4f5c3c352dd0ffab5e60999fa9f1af256a65",
+      "installed_sha256": "07413a770f40ddbb5028a4a2998c4f5c3c352dd0ffab5e60999fa9f1af256a65"
     },
     {
       "path": "skills/y3-lua-pipeline/references/ui-events.md",
-      "sha256": "2a7dc1abef1909fb5f61e7219cc39b8689b354c18d8890f1e0548156f58ac07b"
+      "upstream_sha256": "2a7dc1abef1909fb5f61e7219cc39b8689b354c18d8890f1e0548156f58ac07b",
+      "installed_sha256": "2a7dc1abef1909fb5f61e7219cc39b8689b354c18d8890f1e0548156f58ac07b"
     },
     {
       "path": "skills/y3-lua-pipeline/references/ui_errors.md",
-      "sha256": "04ffea00f9062d1999652ec9be43191d80931fdb6dec33d538081793b4feeb8e"
+      "upstream_sha256": "04ffea00f9062d1999652ec9be43191d80931fdb6dec33d538081793b4feeb8e",
+      "installed_sha256": "04ffea00f9062d1999652ec9be43191d80931fdb6dec33d538081793b4feeb8e"
     },
     {
       "path": "skills/y3-lua-pipeline/references/unit.md",
-      "sha256": "9a6beff7b7b5a22a1d1ffc8aee6f1e685fc3ca803a79f57068374c4106880936"
+      "upstream_sha256": "9a6beff7b7b5a22a1d1ffc8aee6f1e685fc3ca803a79f57068374c4106880936",
+      "installed_sha256": "9a6beff7b7b5a22a1d1ffc8aee6f1e685fc3ca803a79f57068374c4106880936"
     },
     {
       "path": "skills/y3-lua-pipeline/references/y3-local-ui.md",
-      "sha256": "997e64fdb6e8ed4d1ed0c43ed0be365ca980f01fc074309d32ddae2fd1560144"
+      "upstream_sha256": "997e64fdb6e8ed4d1ed0c43ed0be365ca980f01fc074309d32ddae2fd1560144",
+      "installed_sha256": "997e64fdb6e8ed4d1ed0c43ed0be365ca980f01fc074309d32ddae2fd1560144"
     },
     {
       "path": "skills/y3-lua-pipeline/references/y3-scene-ui.md",
-      "sha256": "42379d8acd4060c6b47397cb7af10c78d7d217cfd1493d7c0422a086028ae0a0"
+      "upstream_sha256": "42379d8acd4060c6b47397cb7af10c78d7d217cfd1493d7c0422a086028ae0a0",
+      "installed_sha256": "42379d8acd4060c6b47397cb7af10c78d7d217cfd1493d7c0422a086028ae0a0"
     },
     {
       "path": "skills/y3-lua-pipeline/references/y3-ui-bindings.md",
-      "sha256": "3301e6c5792f912a9b4bc930fa589cc204cf4420010438117d22dd0c3ece383b"
+      "upstream_sha256": "3301e6c5792f912a9b4bc930fa589cc204cf4420010438117d22dd0c3ece383b",
+      "installed_sha256": "3301e6c5792f912a9b4bc930fa589cc204cf4420010438117d22dd0c3ece383b"
     },
     {
       "path": "skills/y3-lua-pipeline/references/y3-ui-instance.md",
-      "sha256": "98560fc1dfb80db08ac3f55c6413c837aedb5b965a8c042f724d60b29dd5dcb6"
+      "upstream_sha256": "98560fc1dfb80db08ac3f55c6413c837aedb5b965a8c042f724d60b29dd5dcb6",
+      "installed_sha256": "98560fc1dfb80db08ac3f55c6413c837aedb5b965a8c042f724d60b29dd5dcb6"
     },
     {
       "path": "skills/y3-lua-pipeline/references/y3-ui-static.md",
-      "sha256": "0b2764228a6284d0a77ea45ba0fafe958e4d113f4fdf6c9c144fd83411692e0a"
+      "upstream_sha256": "0b2764228a6284d0a77ea45ba0fafe958e4d113f4fdf6c9c144fd83411692e0a",
+      "installed_sha256": "0b2764228a6284d0a77ea45ba0fafe958e4d113f4fdf6c9c144fd83411692e0a"
     },
     {
       "path": "skills/y3-lua-pipeline/SKILL.md",
-      "sha256": "d216891968bfeaa37bfe994c76b9d40a61bf56d4d4551f76fbe83ac15496c0e8"
-    },
-    {
-      "path": "skills/y3-resource-import/scripts/check_header.py",
-      "sha256": "24a608f7152b0e670d7600f5419836f14cada06ba435e01ea167d80d442f2dd1"
-    },
-    {
-      "path": "skills/y3-resource-import/scripts/check_tga.py",
-      "sha256": "3d0a7080cfd677bec408e26b5298052101079c90657c062c9f8112c997c80155"
-    },
-    {
-      "path": "skills/y3-resource-import/SKILL.md",
-      "sha256": "12d7e96b2f0ba712655a0691379dc26135b30250cb2e7548dcc0fdf6d1f8a422"
-    },
-    {
-      "path": "skills/y3-resource-import/temp/archer_resource_map.json",
-      "sha256": "4deed05dd068228268b2704437efb1ce8ca8d0466065c34977ecdf5f28192f6b"
-    },
-    {
-      "path": "skills/y3-resource-import/temp/arthur_resource_map.json",
-      "sha256": "db3e72e951be785f4fd04c2c0c2b9a9d8bb6bc6be22ec927fa9e3b0b53efb37a"
-    },
-    {
-      "path": "skills/y3-resource-import/temp/batrider_resource_map.json",
-      "sha256": "65efadd965b1022ce7dea6a7e5de2cd090d5f6f5a7745b67124689d646b21d50"
-    },
-    {
-      "path": "skills/y3-resource-import/temp/feiyanzhouji_resource_map.json",
-      "sha256": "37ec36fa8e623f2e627659d52b3a8df203bd6e526bd6f3262f0f7ca6103b442a"
-    },
-    {
-      "path": "skills/y3-resource-import/temp/marci_resource_map.json",
-      "sha256": "f6fa366ababf28d35e977013388569b2767a3c390e494bda648fd029361a9316"
-    },
-    {
-      "path": "skills/y3-resource-import/temp/qinglinshouhuzhe_resource_map.json",
-      "sha256": "9c4db566053ece02494860427cf31c313a082c616290f2949a8abb819b04d8f7"
-    },
-    {
-      "path": "skills/y3-resource-import/temp/testcase_20260731_resource_map.json",
-      "sha256": "54f15692b9c4357f9959f8900e02e1b203ef3c924d680c02392645e70a34ae0d"
-    },
-    {
-      "path": "skills/y3-resource-import/temp/ursa_resource_map.json",
-      "sha256": "696920b5aaab3ac5c5cfe9389b22b4faee45946ed5fd27a9b33f6ceb22e5777e"
-    },
-    {
-      "path": "skills/y3-resource-import/temp/yinhunshi_resource_map.json",
-      "sha256": "130a06adcba8ce5e475d5f237902bbddadde66766949500e8255bfee8e7e7d1f"
-    },
-    {
-      "path": "skills/y3-resource-import/temp/男角色_resource_map.json",
-      "sha256": "f603a24b17f98281fd435dd984019a61bd7d5db124fd3d1e08ddf17741349c62"
-    },
-    {
-      "path": "skills/y3-ui-generator/icon_config.md",
-      "sha256": "f2fb96157312c684facd1b487a9cb472df8f52aa280ca2a1f551e1352236a428"
-    },
-    {
-      "path": "skills/y3-ui-generator/references/adapter-rules.md",
-      "sha256": "b2f5d834e659ecbea47345d4ab31276f666dff362f390879a97a8261b69abb9d"
-    },
-    {
-      "path": "skills/y3-ui-generator/scripts/html_to_y3_ui.py",
-      "sha256": "c1cd4e323b81f205221edee41b310fd30b66045c8ea4c10d2658204b8e274540"
-    },
-    {
-      "path": "skills/y3-ui-generator/scripts/test_scale.py",
-      "sha256": "1584566c22da40788c587d19637f3002eb7a19acc46159cd00b9f46b3bd32137"
-    },
-    {
-      "path": "skills/y3-ui-generator/SKILL.md",
-      "sha256": "d5b72f1560712a845ca6148d98102c3e5a75d9bb7825b8b4e99bd6eb93ed64ff"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/audio_bar.json",
-      "sha256": "90e547c7a1c499415a24d8ad3cbc24dc5cbabad7583fb441b5693cb1c3927711"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/btn.json",
-      "sha256": "9360910bf44b96954e43d222e0d9bf2456f6df19af410e0f4bd959a1045640ef"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/buff_list.json",
-      "sha256": "86152f04a5bcc8c1001b9b24bcfb86f25d653380a1a7b30526d80fb20c7627ba"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/card.json",
-      "sha256": "c527406ef1072540275a5ea991a778fc0d9f38c4589a53a54e85d1de7f8fb3c7"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/chat_box.json",
-      "sha256": "12d6e201046b454a27a43ce3a44e66e95a2623453d63b2bc163145d132be30ad"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/close_btn.json",
-      "sha256": "4581ef8b24db6e146089410978ed69942172288bb185781dce8bb4244737b70c"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/exit_btn.json",
-      "sha256": "bfca5ce439b60a78e2f49aa38d05c7614942afd8b725f1cbafc844c0168ea99f"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/exp_bar.json",
-      "sha256": "2637a37a0825913c3c2fec56a51598cdc8545748315f26c4c7883ba793478834"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/hero_bar.json",
-      "sha256": "bf02d3e66f080773a49bd006bdeb8a17bbfe658cb1b1f892e571c81561743ad2"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/hp_bar.json",
-      "sha256": "73a77e8af9e8dc4a4122a3816aef00216f8290a7bf50919ea095bf08bc67b201"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/item_slot.json",
-      "sha256": "f9ff2eacadb92c4fd6d8ffe9afa21f6d28d24c4a36f7cf998406805b313d3dbc"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/mp_bar.json",
-      "sha256": "98ea084c230b640451f3f7c64ff2af859e513bb1c477e72adf25997dc5a11ac8"
-    },
-    {
-      "path": "skills/y3-ui-generator/templates/skill.json",
-      "sha256": "fa4cd2d8449952d5d5259e7529f75f0e2cae2387a2c77f43789ea15df233d063"
-    },
-    {
-      "path": "skills/y3-ui-generator/widget_template_config.md",
-      "sha256": "ac81303fe0f8ad8e6927f230a2aa1178f001ec061585f1f8640212f91a658006"
+      "upstream_sha256": "d216891968bfeaa37bfe994c76b9d40a61bf56d4d4551f76fbe83ac15496c0e8",
+      "installed_sha256": "d216891968bfeaa37bfe994c76b9d40a61bf56d4d4551f76fbe83ac15496c0e8"
     },
     {
       "path": "skills/y3-lua-review/SKILL.md",
-      "sha256": "cd5dd0b475e549cef1ab136bb5fdc88c228a92ed4d9695cc58e515978a264a6b"
+      "upstream_sha256": "cd5dd0b475e549cef1ab136bb5fdc88c228a92ed4d9695cc58e515978a264a6b",
+      "installed_sha256": "cd5dd0b475e549cef1ab136bb5fdc88c228a92ed4d9695cc58e515978a264a6b"
+    },
+    {
+      "path": "skills/y3-memory-distill/distill-spec.md",
+      "upstream_sha256": "e5bfdb0c1dcb698772d695e53d7128274fed2fc73a539da200052ec031ad0d28",
+      "installed_sha256": "e5bfdb0c1dcb698772d695e53d7128274fed2fc73a539da200052ec031ad0d28"
+    },
+    {
+      "path": "skills/y3-memory-distill/scripts/apply_distill.py",
+      "upstream_sha256": "36b91b26c350988196dc87023fd3ca6771782b1097070e440caa985dc5294a58",
+      "installed_sha256": "cd3e9b014f23b4d60eb16e1db607b86694a29b46689edec82550c68c1a5f30a4"
+    },
+    {
+      "path": "skills/y3-memory-distill/scripts/distill.py",
+      "upstream_sha256": "68c1b18449b9a68da6242c5ee49e5905015d221f3922ab9dea5b14edd96f3b2b",
+      "installed_sha256": "3632d1f69295d06d501c11d9e9b410069d08af8573d9f9e913a5bbfbe9f2ec58"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/jn.json",
+      "upstream_sha256": "9090d0fce7ea04590a57cce492258a99743d45b7cad68f5722d9d5a87432c702",
+      "installed_sha256": "9090d0fce7ea04590a57cce492258a99743d45b7cad68f5722d9d5a87432c702"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/jz.json",
+      "upstream_sha256": "3f8d14c6b6ef9124e01da89de5c806560301ecc81b0b4b32c78c441df8403ea6",
+      "installed_sha256": "3f8d14c6b6ef9124e01da89de5c806560301ecc81b0b4b32c78c441df8403ea6"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/jzboss.json",
+      "upstream_sha256": "7055e7869f22c3f28dd93dc8fb65ef6581007c6ecf00677f1253d7e3fe461f6d",
+      "installed_sha256": "7055e7869f22c3f28dd93dc8fb65ef6581007c6ecf00677f1253d7e3fe461f6d"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/jzxg.json",
+      "upstream_sha256": "c3ef53b525b2d4c1f420fb1c38057ddd619bf9b224085aec8f9722a3903ed093",
+      "installed_sha256": "c3ef53b525b2d4c1f420fb1c38057ddd619bf9b224085aec8f9722a3903ed093"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/jzyx.json",
+      "upstream_sha256": "5fbe9e2a5e04fadec80abfccfd65957ee916d9fbfce888c07dd93840e4139505",
+      "installed_sha256": "5fbe9e2a5e04fadec80abfccfd65957ee916d9fbfce888c07dd93840e4139505"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/mfxg.json",
+      "upstream_sha256": "9f8027ddd4b85391386061268c2ce46a37c5e7d3580e25f11f458a9ea492bd71",
+      "installed_sha256": "9f8027ddd4b85391386061268c2ce46a37c5e7d3580e25f11f458a9ea492bd71"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/tsw.json",
+      "upstream_sha256": "8bd9b2513c672ad493de75628a1bcd8f87521f4404cbddfa347a38b98c22028c",
+      "installed_sha256": "8bd9b2513c672ad493de75628a1bcd8f87521f4404cbddfa347a38b98c22028c"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/wp.json",
+      "upstream_sha256": "fb9a050003c4777621a8b2bbca0e7b17d23a54efea82c0659f4031839f8c5e26",
+      "installed_sha256": "fb9a050003c4777621a8b2bbca0e7b17d23a54efea82c0659f4031839f8c5e26"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/ycboss.json",
+      "upstream_sha256": "a421ccd328f730c571a47e3ff84530da6e403f810a3a050c07674d6db14937a2",
+      "installed_sha256": "a421ccd328f730c571a47e3ff84530da6e403f810a3a050c07674d6db14937a2"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/ycxg.json",
+      "upstream_sha256": "861c18a048380c64a9816f1eb97e435169402417e85f6ddff15a53161fdcf787",
+      "installed_sha256": "861c18a048380c64a9816f1eb97e435169402417e85f6ddff15a53161fdcf787"
+    },
+    {
+      "path": "skills/y3-obj-edit/data/ycyx.json",
+      "upstream_sha256": "d3541095a95a44a53b6ab742a58df20366d8838eee0ddb1cdbb4214bcae4c631",
+      "installed_sha256": "d3541095a95a44a53b6ab742a58df20366d8838eee0ddb1cdbb4214bcae4c631"
+    },
+    {
+      "path": "skills/y3-obj-edit/excels/resources.csv",
+      "upstream_sha256": "07c6a548831414f23201df9b81d241e7c1d54003de02020775b0f6e5d9aa13dd",
+      "installed_sha256": "07c6a548831414f23201df9b81d241e7c1d54003de02020775b0f6e5d9aa13dd"
+    },
+    {
+      "path": "skills/y3-obj-edit/reference/ability.md",
+      "upstream_sha256": "871c69a66551ad01fef0d45e527a507251d19ffea8807c9e8f21e4e098bf63a6",
+      "installed_sha256": "701dd288ee89844497ddebf137b523ae04051c5e6a732f9556c735c3a12f6e81"
+    },
+    {
+      "path": "skills/y3-obj-edit/reference/item.md",
+      "upstream_sha256": "95bc9e2cb761ab82f9dae3f12a26caf8f353006ba5773569285c4f708f56b24c",
+      "installed_sha256": "76fa5ac2524e3f2af4089b06b7ef7cc9d1f620318992d0eda9083b9baaf1df5c"
+    },
+    {
+      "path": "skills/y3-obj-edit/reference/modifier.md",
+      "upstream_sha256": "c699f53861112feac94927dd5d7bf0c0b65b54eb7f8726474b9c2d7e3da947a4",
+      "installed_sha256": "4ee218a0e1f02ece6e384bfa9afd62523b1759cdda334abb24285017cb78df44"
+    },
+    {
+      "path": "skills/y3-obj-edit/reference/projectile.md",
+      "upstream_sha256": "747e7a992e4d436eef2f49a40c276ce06bdbb660dd3f6bcc074ec8d771d357f7",
+      "installed_sha256": "4921670c502a998b24007e66b86cd7d1d73de1d1f81dfcafd60fb8a03f5ccc94"
+    },
+    {
+      "path": "skills/y3-obj-edit/reference/unit.md",
+      "upstream_sha256": "98c2bd770e0d4603e8d601f55ce8f88c72c62f91b2f03bf98dc519402c7146da",
+      "installed_sha256": "04cfccbef08256dca80a0c224b33247f90e09abc9185f4eee96d9e9e101336a1"
+    },
+    {
+      "path": "skills/y3-obj-edit/scripts/y3_obj_edit.py",
+      "upstream_sha256": "872d04330e9bb672ef652326ed82b686f3bec57b1704ee60399f93ec7a598df9",
+      "installed_sha256": "872d04330e9bb672ef652326ed82b686f3bec57b1704ee60399f93ec7a598df9"
+    },
+    {
+      "path": "skills/y3-obj-edit/SKILL.md",
+      "upstream_sha256": "5af6a45729e5d2f1f8ad63eb9d9e3808a9485cef4675359075c70ab46fb641e3",
+      "installed_sha256": "5af6a45729e5d2f1f8ad63eb9d9e3808a9485cef4675359075c70ab46fb641e3"
+    },
+    {
+      "path": "skills/y3-resource-import/scripts/check_header.py",
+      "upstream_sha256": "24a608f7152b0e670d7600f5419836f14cada06ba435e01ea167d80d442f2dd1",
+      "installed_sha256": "24a608f7152b0e670d7600f5419836f14cada06ba435e01ea167d80d442f2dd1"
+    },
+    {
+      "path": "skills/y3-resource-import/scripts/check_tga.py",
+      "upstream_sha256": "3d0a7080cfd677bec408e26b5298052101079c90657c062c9f8112c997c80155",
+      "installed_sha256": "3d0a7080cfd677bec408e26b5298052101079c90657c062c9f8112c997c80155"
+    },
+    {
+      "path": "skills/y3-resource-import/SKILL.md",
+      "upstream_sha256": "12d7e96b2f0ba712655a0691379dc26135b30250cb2e7548dcc0fdf6d1f8a422",
+      "installed_sha256": "64cba53fdc4885514f54e48bb7d1bb2996b6734bed801d04c47a23baeb04eecd"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/archer_resource_map.json",
+      "upstream_sha256": "4deed05dd068228268b2704437efb1ce8ca8d0466065c34977ecdf5f28192f6b",
+      "installed_sha256": "4deed05dd068228268b2704437efb1ce8ca8d0466065c34977ecdf5f28192f6b"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/arthur_resource_map.json",
+      "upstream_sha256": "db3e72e951be785f4fd04c2c0c2b9a9d8bb6bc6be22ec927fa9e3b0b53efb37a",
+      "installed_sha256": "db3e72e951be785f4fd04c2c0c2b9a9d8bb6bc6be22ec927fa9e3b0b53efb37a"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/batrider_resource_map.json",
+      "upstream_sha256": "65efadd965b1022ce7dea6a7e5de2cd090d5f6f5a7745b67124689d646b21d50",
+      "installed_sha256": "65efadd965b1022ce7dea6a7e5de2cd090d5f6f5a7745b67124689d646b21d50"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/feiyanzhouji_resource_map.json",
+      "upstream_sha256": "37ec36fa8e623f2e627659d52b3a8df203bd6e526bd6f3262f0f7ca6103b442a",
+      "installed_sha256": "37ec36fa8e623f2e627659d52b3a8df203bd6e526bd6f3262f0f7ca6103b442a"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/marci_resource_map.json",
+      "upstream_sha256": "f6fa366ababf28d35e977013388569b2767a3c390e494bda648fd029361a9316",
+      "installed_sha256": "f6fa366ababf28d35e977013388569b2767a3c390e494bda648fd029361a9316"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/qinglinshouhuzhe_resource_map.json",
+      "upstream_sha256": "9c4db566053ece02494860427cf31c313a082c616290f2949a8abb819b04d8f7",
+      "installed_sha256": "9c4db566053ece02494860427cf31c313a082c616290f2949a8abb819b04d8f7"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/testcase_20260731_resource_map.json",
+      "upstream_sha256": "54f15692b9c4357f9959f8900e02e1b203ef3c924d680c02392645e70a34ae0d",
+      "installed_sha256": "54f15692b9c4357f9959f8900e02e1b203ef3c924d680c02392645e70a34ae0d"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/ursa_resource_map.json",
+      "upstream_sha256": "696920b5aaab3ac5c5cfe9389b22b4faee45946ed5fd27a9b33f6ceb22e5777e",
+      "installed_sha256": "696920b5aaab3ac5c5cfe9389b22b4faee45946ed5fd27a9b33f6ceb22e5777e"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/yinhunshi_resource_map.json",
+      "upstream_sha256": "130a06adcba8ce5e475d5f237902bbddadde66766949500e8255bfee8e7e7d1f",
+      "installed_sha256": "130a06adcba8ce5e475d5f237902bbddadde66766949500e8255bfee8e7e7d1f"
+    },
+    {
+      "path": "skills/y3-resource-import/temp/男角色_resource_map.json",
+      "upstream_sha256": "f603a24b17f98281fd435dd984019a61bd7d5db124fd3d1e08ddf17741349c62",
+      "installed_sha256": "f603a24b17f98281fd435dd984019a61bd7d5db124fd3d1e08ddf17741349c62"
+    },
+    {
+      "path": "skills/y3-template-export/SKILL.md",
+      "upstream_sha256": "6b0c29ef533d6c161b4bad09810495da4941e83c97494d18f0e8c3c3ba8fd18a",
+      "installed_sha256": "7c9fa57837007eca5b81141659e2fcafe102dd8b46de7617d9f9c20b7bf737e3"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/.gitkeep",
+      "upstream_sha256": "7b129a7f154e3ee24062b13d761a30be09ecc65d3f6b38b07c17327c19ccc63f",
+      "installed_sha256": "7b129a7f154e3ee24062b13d761a30be09ecc65d3f6b38b07c17327c19ccc63f"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/easy-tower-defense-terrain/decorationdata.data",
+      "upstream_sha256": "4c1d8bc51d2d85d01bb1e43a4c366aedec76b20a0f301a6c0c0bb72c38843c1f",
+      "installed_sha256": "4c1d8bc51d2d85d01bb1e43a4c366aedec76b20a0f301a6c0c0bb72c38843c1f"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/easy-tower-defense-terrain/editor_decoration.zip",
+      "upstream_sha256": "2fac8d8caa56efc1bee0979f32a3867477ed7e286796bcbd52e0d544aee0d7c8",
+      "installed_sha256": "2fac8d8caa56efc1bee0979f32a3867477ed7e286796bcbd52e0d544aee0d7c8"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/easy-tower-defense-terrain/foliage.json",
+      "upstream_sha256": "951478b5a760bb7f33701bedbdb6a56d1c56c03f5c4025d00a4651b8762e7fe6",
+      "installed_sha256": "951478b5a760bb7f33701bedbdb6a56d1c56c03f5c4025d00a4651b8762e7fe6"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/easy-tower-defense-terrain/grid.data",
+      "upstream_sha256": "28a025c7f9cdcf8842021806251f6926e03bd999ba5dd9544f98ac14e17afda4",
+      "installed_sha256": "28a025c7f9cdcf8842021806251f6926e03bd999ba5dd9544f98ac14e17afda4"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/easy-tower-defense-terrain/readme.md",
+      "upstream_sha256": "c4971071749dbd7c54712fee67828c02f5300837e9efd7217d3de305772833e9",
+      "installed_sha256": "c4971071749dbd7c54712fee67828c02f5300837e9efd7217d3de305772833e9"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/easy-tower-defense-terrain/resourceobjectdata.data",
+      "upstream_sha256": "4e91d5ca7d39c2975b59782d6bb22813d9348ad1407d2a3cb0c08094fc066f52",
+      "installed_sha256": "4e91d5ca7d39c2975b59782d6bb22813d9348ad1407d2a3cb0c08094fc066f52"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/easy-tower-defense-terrain/template_meta.json",
+      "upstream_sha256": "b6c7ae45176ed522d3459aa5b6c2652e93eb665f794906d9c30ceae3d0b7e0f2",
+      "installed_sha256": "b6c7ae45176ed522d3459aa5b6c2652e93eb665f794906d9c30ceae3d0b7e0f2"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/easy-tower-defense-terrain/terrain.json",
+      "upstream_sha256": "9cbceb43622373c81aefa6c2215f41165d34d64206bddb7607ce633b5485fb6f",
+      "installed_sha256": "9cbceb43622373c81aefa6c2215f41165d34d64206bddb7607ce633b5485fb6f"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/easy-tower-defense-terrain/terrainedit.json",
+      "upstream_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "installed_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/easy-tower-defense-terrain/texture.json",
+      "upstream_sha256": "bbba0c43693b40a2fed4cd9680d8a982b7b2d6495ac8b3cf911762abdad42dd1",
+      "installed_sha256": "bbba0c43693b40a2fed4cd9680d8a982b7b2d6495ac8b3cf911762abdad42dd1"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/easy-tower-defense-terrain/texturefoliage.json",
+      "upstream_sha256": "970609ec137191e89ddcb9e7d9a928e65dd99905833a7b968e74f60a05c3180a",
+      "installed_sha256": "970609ec137191e89ddcb9e7d9a928e65dd99905833a7b968e74f60a05c3180a"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/roguelike-survival/decorationdata.data",
+      "upstream_sha256": "3125e512111b27c8bf10e1fe4444f3c165b323b041e7b5bfa0df997ca63d0e7e",
+      "installed_sha256": "3125e512111b27c8bf10e1fe4444f3c165b323b041e7b5bfa0df997ca63d0e7e"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/roguelike-survival/foliage.json",
+      "upstream_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "installed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/roguelike-survival/grid.data",
+      "upstream_sha256": "8ca37f489282e32799001b28c760e3098440a3b93bcf12f43879cd8e2fbc4e2e",
+      "installed_sha256": "8ca37f489282e32799001b28c760e3098440a3b93bcf12f43879cd8e2fbc4e2e"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/roguelike-survival/readme.md",
+      "upstream_sha256": "5df9824234600a8dbd97fe43a23dfb19d46f0cb56785195da95ac1afbfa99de8",
+      "installed_sha256": "5df9824234600a8dbd97fe43a23dfb19d46f0cb56785195da95ac1afbfa99de8"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/roguelike-survival/resourceobjectdata.data",
+      "upstream_sha256": "2b6cec5e13c4d6c7e844a2131e6a91d0a2926763d7ff6619193ed5961a972fbb",
+      "installed_sha256": "2b6cec5e13c4d6c7e844a2131e6a91d0a2926763d7ff6619193ed5961a972fbb"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/roguelike-survival/template_meta.json",
+      "upstream_sha256": "6eabedc103a8fce7109859fa0711238610d75dc08343b04faee62a200dea1225",
+      "installed_sha256": "6eabedc103a8fce7109859fa0711238610d75dc08343b04faee62a200dea1225"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/roguelike-survival/terrain.json",
+      "upstream_sha256": "3858c3cf54951ce2541ee1ebe2e76041be866c2beff9f99ee0623bbb1a950318",
+      "installed_sha256": "3858c3cf54951ce2541ee1ebe2e76041be866c2beff9f99ee0623bbb1a950318"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/roguelike-survival/terrainedit.json",
+      "upstream_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "installed_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/roguelike-survival/texture.json",
+      "upstream_sha256": "eaf3b9efff19404692d0fda084494d4cb9d9f08f4f3f62e77b00f72e80762890",
+      "installed_sha256": "eaf3b9efff19404692d0fda084494d4cb9d9f08f4f3f62e77b00f72e80762890"
+    },
+    {
+      "path": "skills/y3-terrain-template/library/roguelike-survival/texturefoliage.json",
+      "upstream_sha256": "5c5e37cd85ea7d4c3fd6094609f6c1b6151ee03afe6cc2e2c9004bb1d4522888",
+      "installed_sha256": "5c5e37cd85ea7d4c3fd6094609f6c1b6151ee03afe6cc2e2c9004bb1d4522888"
+    },
+    {
+      "path": "skills/y3-terrain-template/references/file_manifest.md",
+      "upstream_sha256": "a1cc94a1d99ba70fdfd48cd34e9c0455518cbaafa06012712306af5c41bbc23c",
+      "installed_sha256": "a1cc94a1d99ba70fdfd48cd34e9c0455518cbaafa06012712306af5c41bbc23c"
+    },
+    {
+      "path": "skills/y3-terrain-template/references/scene_merge_tool_diff.md",
+      "upstream_sha256": "b8b9871d7321292b1942313a00b4177fcf1a09dc07ab02d7bc2b8dc08a33a793",
+      "installed_sha256": "b8b9871d7321292b1942313a00b4177fcf1a09dc07ab02d7bc2b8dc08a33a793"
+    },
+    {
+      "path": "skills/y3-terrain-template/scripts/_common.py",
+      "upstream_sha256": "777c92d779d80e639cd64b5d6068478766208a6231ed2ac58ddf007a03a376eb",
+      "installed_sha256": "777c92d779d80e639cd64b5d6068478766208a6231ed2ac58ddf007a03a376eb"
+    },
+    {
+      "path": "skills/y3-terrain-template/scripts/export_terrain_template.py",
+      "upstream_sha256": "60d8fd5c8babc274daecccd85d7a86e9b8a89b89d0b2fc94ccb6836ed674219b",
+      "installed_sha256": "60d8fd5c8babc274daecccd85d7a86e9b8a89b89d0b2fc94ccb6836ed674219b"
+    },
+    {
+      "path": "skills/y3-terrain-template/scripts/import_terrain_template.py",
+      "upstream_sha256": "72f41ddbf0ecb99ccd39fe51b8e5cfe2b34ddd0df39a73727e22ba030599c068",
+      "installed_sha256": "72f41ddbf0ecb99ccd39fe51b8e5cfe2b34ddd0df39a73727e22ba030599c068"
+    },
+    {
+      "path": "skills/y3-terrain-template/SKILL.md",
+      "upstream_sha256": "8a77132fd2151f9c52f96164fcb7ca556fc23e56d8b1429527f3560d92e51674",
+      "installed_sha256": "d263fb9b84b0de82691f3caf0ac66639d95318f97e5dbe6efea2e5d7453b499a"
+    },
+    {
+      "path": "skills/y3-ui-generator/icon_config.md",
+      "upstream_sha256": "f2fb96157312c684facd1b487a9cb472df8f52aa280ca2a1f551e1352236a428",
+      "installed_sha256": "f2fb96157312c684facd1b487a9cb472df8f52aa280ca2a1f551e1352236a428"
+    },
+    {
+      "path": "skills/y3-ui-generator/references/adapter-rules.md",
+      "upstream_sha256": "b2f5d834e659ecbea47345d4ab31276f666dff362f390879a97a8261b69abb9d",
+      "installed_sha256": "b2f5d834e659ecbea47345d4ab31276f666dff362f390879a97a8261b69abb9d"
+    },
+    {
+      "path": "skills/y3-ui-generator/scripts/html_to_y3_ui.py",
+      "upstream_sha256": "c1cd4e323b81f205221edee41b310fd30b66045c8ea4c10d2658204b8e274540",
+      "installed_sha256": "c1cd4e323b81f205221edee41b310fd30b66045c8ea4c10d2658204b8e274540"
+    },
+    {
+      "path": "skills/y3-ui-generator/scripts/test_scale.py",
+      "upstream_sha256": "1584566c22da40788c587d19637f3002eb7a19acc46159cd00b9f46b3bd32137",
+      "installed_sha256": "1584566c22da40788c587d19637f3002eb7a19acc46159cd00b9f46b3bd32137"
+    },
+    {
+      "path": "skills/y3-ui-generator/SKILL.md",
+      "upstream_sha256": "d5b72f1560712a845ca6148d98102c3e5a75d9bb7825b8b4e99bd6eb93ed64ff",
+      "installed_sha256": "38f9d20ac5b988a6e24a6a41f7e0396d2ae1352c4f8ccf6c5401b632bfb1864c"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/audio_bar.json",
+      "upstream_sha256": "90e547c7a1c499415a24d8ad3cbc24dc5cbabad7583fb441b5693cb1c3927711",
+      "installed_sha256": "90e547c7a1c499415a24d8ad3cbc24dc5cbabad7583fb441b5693cb1c3927711"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/btn.json",
+      "upstream_sha256": "9360910bf44b96954e43d222e0d9bf2456f6df19af410e0f4bd959a1045640ef",
+      "installed_sha256": "9360910bf44b96954e43d222e0d9bf2456f6df19af410e0f4bd959a1045640ef"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/buff_list.json",
+      "upstream_sha256": "86152f04a5bcc8c1001b9b24bcfb86f25d653380a1a7b30526d80fb20c7627ba",
+      "installed_sha256": "86152f04a5bcc8c1001b9b24bcfb86f25d653380a1a7b30526d80fb20c7627ba"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/card.json",
+      "upstream_sha256": "c527406ef1072540275a5ea991a778fc0d9f38c4589a53a54e85d1de7f8fb3c7",
+      "installed_sha256": "c527406ef1072540275a5ea991a778fc0d9f38c4589a53a54e85d1de7f8fb3c7"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/chat_box.json",
+      "upstream_sha256": "12d6e201046b454a27a43ce3a44e66e95a2623453d63b2bc163145d132be30ad",
+      "installed_sha256": "12d6e201046b454a27a43ce3a44e66e95a2623453d63b2bc163145d132be30ad"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/close_btn.json",
+      "upstream_sha256": "4581ef8b24db6e146089410978ed69942172288bb185781dce8bb4244737b70c",
+      "installed_sha256": "4581ef8b24db6e146089410978ed69942172288bb185781dce8bb4244737b70c"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/exit_btn.json",
+      "upstream_sha256": "bfca5ce439b60a78e2f49aa38d05c7614942afd8b725f1cbafc844c0168ea99f",
+      "installed_sha256": "bfca5ce439b60a78e2f49aa38d05c7614942afd8b725f1cbafc844c0168ea99f"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/exp_bar.json",
+      "upstream_sha256": "2637a37a0825913c3c2fec56a51598cdc8545748315f26c4c7883ba793478834",
+      "installed_sha256": "2637a37a0825913c3c2fec56a51598cdc8545748315f26c4c7883ba793478834"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/hero_bar.json",
+      "upstream_sha256": "bf02d3e66f080773a49bd006bdeb8a17bbfe658cb1b1f892e571c81561743ad2",
+      "installed_sha256": "bf02d3e66f080773a49bd006bdeb8a17bbfe658cb1b1f892e571c81561743ad2"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/hp_bar.json",
+      "upstream_sha256": "73a77e8af9e8dc4a4122a3816aef00216f8290a7bf50919ea095bf08bc67b201",
+      "installed_sha256": "73a77e8af9e8dc4a4122a3816aef00216f8290a7bf50919ea095bf08bc67b201"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/item_slot.json",
+      "upstream_sha256": "f9ff2eacadb92c4fd6d8ffe9afa21f6d28d24c4a36f7cf998406805b313d3dbc",
+      "installed_sha256": "f9ff2eacadb92c4fd6d8ffe9afa21f6d28d24c4a36f7cf998406805b313d3dbc"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/mp_bar.json",
+      "upstream_sha256": "98ea084c230b640451f3f7c64ff2af859e513bb1c477e72adf25997dc5a11ac8",
+      "installed_sha256": "98ea084c230b640451f3f7c64ff2af859e513bb1c477e72adf25997dc5a11ac8"
+    },
+    {
+      "path": "skills/y3-ui-generator/templates/skill.json",
+      "upstream_sha256": "fa4cd2d8449952d5d5259e7529f75f0e2cae2387a2c77f43789ea15df233d063",
+      "installed_sha256": "fa4cd2d8449952d5d5259e7529f75f0e2cae2387a2c77f43789ea15df233d063"
+    },
+    {
+      "path": "skills/y3-ui-generator/widget_template_config.md",
+      "upstream_sha256": "ac81303fe0f8ad8e6927f230a2aa1178f001ec061585f1f8640212f91a658006",
+      "installed_sha256": "ac81303fe0f8ad8e6927f230a2aa1178f001ec061585f1f8640212f91a658006"
+    },
+    {
+      "path": "skills/y3-ui-pipeline/gen_ui_tree.py",
+      "upstream_sha256": "baf4432ab6d14ded44e78bc78584559e093246c78cc15a6e36af3f686d6ffa0c",
+      "installed_sha256": "baf4432ab6d14ded44e78bc78584559e093246c78cc15a6e36af3f686d6ffa0c"
+    },
+    {
+      "path": "skills/y3-ui-pipeline/SKILL.md",
+      "upstream_sha256": "d1d121bd659adb9cec9ba73c4362da32c2340806226d781616dee62104d2cecb",
+      "installed_sha256": "d1d121bd659adb9cec9ba73c4362da32c2340806226d781616dee62104d2cecb"
+    },
+    {
+      "path": "rules/api-safety.mdc",
+      "upstream_sha256": "fdf303bd84cec1c0fc50678c2ade0e49e86960d6ff2c9f988e5280d8d0fc255e",
+      "installed_sha256": "d2cccd8d5ddf735657767ada7f86244d1547e5850cb0d02184c29d75ff774a29"
+    },
+    {
+      "path": "rules/auto-test.mdc",
+      "upstream_sha256": "2d8a8cdb84c64f6218ef3775b63b745e6256d110a01cf89421d26970d3ccb839",
+      "installed_sha256": "2d8a8cdb84c64f6218ef3775b63b745e6256d110a01cf89421d26970d3ccb839"
+    },
+    {
+      "path": "rules/doc-consistency.mdc",
+      "upstream_sha256": "236306c9b4d91c41951ab6a891d261359f4c023994946f61e49d8c9081d5e2bb",
+      "installed_sha256": "236306c9b4d91c41951ab6a891d261359f4c023994946f61e49d8c9081d5e2bb"
+    },
+    {
+      "path": "rules/mcp-rules.mdc",
+      "upstream_sha256": "b7a8fa82c1c2b6173da1dbae007d1e63b10d959dbc0decf54f292589c3844ec4",
+      "installed_sha256": "b7a8fa82c1c2b6173da1dbae007d1e63b10d959dbc0decf54f292589c3844ec4"
+    },
+    {
+      "path": "rules/memory.mdc",
+      "upstream_sha256": "f798e5c38dda1ca33aa123f05a5911376dbe7e46e56ebcb579a252aff747ef21",
+      "installed_sha256": "f798e5c38dda1ca33aa123f05a5911376dbe7e46e56ebcb579a252aff747ef21"
+    },
+    {
+      "path": "rules/rules.mdc",
+      "upstream_sha256": "6b3a9872ea318a0cb273c33ac328620c9976776f1cb2231cc4ba86058f3e0281",
+      "installed_sha256": "b218d66e572e07779dfb2283cac309e3bd6402f2964d521160964b4ab8011f7b"
+    },
+    {
+      "path": "rules/ui-rules.mdc",
+      "upstream_sha256": "19c3673a223ac1785aca40c36f30cb6d2fef7fcef34a9fd912bad4c3296722a2",
+      "installed_sha256": "41a9aef3a874e380895d08064363bcd171be077056c1a1230044c1606c5fcf51"
+    },
+    {
+      "path": "knowledge/README.md",
+      "upstream_sha256": "a46240e8a3741a9894ab51b34b36d5ef205531ca42f2179d9ad7bf73a321d4c5",
+      "installed_sha256": "c89ac97ae3bc12f7f795b6f62589152928117b33625c6b285efe15e60d5c4b3a"
+    },
+    {
+      "path": "knowledge/UI系统/01-字段规范.md",
+      "upstream_sha256": "780442be893eecae6b307572e18ae1c85f3a896a35e1e1301669ec06aedc520c",
+      "installed_sha256": "780442be893eecae6b307572e18ae1c85f3a896a35e1e1301669ec06aedc520c"
+    },
+    {
+      "path": "knowledge/UI系统/02-属性绑定.md",
+      "upstream_sha256": "64438e4b7e59201bce79995a068d87de25ed604fc6c0604ce0d37eba008ee4ca",
+      "installed_sha256": "64438e4b7e59201bce79995a068d87de25ed604fc6c0604ce0d37eba008ee4ca"
+    },
+    {
+      "path": "knowledge/UI系统/03-官方组件.md",
+      "upstream_sha256": "b7a8a2acda24d111acd8c79e3a7d38f6fb6d27d43aa62f02c18e9efcde4d1b6a",
+      "installed_sha256": "b7a8a2acda24d111acd8c79e3a7d38f6fb6d27d43aa62f02c18e9efcde4d1b6a"
+    },
+    {
+      "path": "knowledge/UI系统/04-自定义UI元件.md",
+      "upstream_sha256": "f15e9080c654725154a1b0bd1f9324131baad7efa54d265ab2b025159ed7fb46",
+      "installed_sha256": "f15e9080c654725154a1b0bd1f9324131baad7efa54d265ab2b025159ed7fb46"
+    },
+    {
+      "path": "knowledge/UI系统/05-场景UI.md",
+      "upstream_sha256": "238683119c4449d66631c18b8b96e90e969b0ea76c9d2cbca545555e8f4506d6",
+      "installed_sha256": "238683119c4449d66631c18b8b96e90e969b0ea76c9d2cbca545555e8f4506d6"
+    },
+    {
+      "path": "knowledge/UI系统/06-时间轴动画.md",
+      "upstream_sha256": "90b50fcf933ea8a8cd3c7082b2aafefc1303c4074c8698dfadc89a55279924e8",
+      "installed_sha256": "90b50fcf933ea8a8cd3c7082b2aafefc1303c4074c8698dfadc89a55279924e8"
+    },
+    {
+      "path": "knowledge/UI系统/07-控件适配规则.md",
+      "upstream_sha256": "55ef4b08ed905ac5eade48622c18d776ed0f0c481f836de0e6b9d4d24d0575cd",
+      "installed_sha256": "55ef4b08ed905ac5eade48622c18d776ed0f0c481f836de0e6b9d4d24d0575cd"
+    },
+    {
+      "path": "knowledge/UI系统/08-UI接入实战手册.md",
+      "upstream_sha256": "6519a83efa36ab0d17a5a705b0227099d7dbf26048f088878e1d8ba6e6a37dc9",
+      "installed_sha256": "6519a83efa36ab0d17a5a705b0227099d7dbf26048f088878e1d8ba6e6a37dc9"
+    },
+    {
+      "path": "knowledge/其他/01-镜头动画.md",
+      "upstream_sha256": "361e83e61d09d4f08bd6f6f252d1d16041d0db13643ddcbfe10599009c27958a",
+      "installed_sha256": "361e83e61d09d4f08bd6f6f252d1d16041d0db13643ddcbfe10599009c27958a"
+    },
+    {
+      "path": "knowledge/实战工程参考/塔防工程实战知识库.md",
+      "upstream_sha256": "a02076d0764ef4d3cc43df478301dc4aff8b5d006d38ee2414167f72803b7832",
+      "installed_sha256": "a02076d0764ef4d3cc43df478301dc4aff8b5d006d38ee2414167f72803b7832"
+    },
+    {
+      "path": "knowledge/实战工程参考/存档系统架构设计指南.md",
+      "upstream_sha256": "163e1cab119f54ccef01803fc69d46df1560120aa9c744450718f2e7d8a62e27",
+      "installed_sha256": "163e1cab119f54ccef01803fc69d46df1560120aa9c744450718f2e7d8a62e27"
+    },
+    {
+      "path": "knowledge/核心系统/01-属性系统.md",
+      "upstream_sha256": "b01e0ae1ed03a911d0de7ea7ac6f13b315bb94da7bccb38cecb6da8669b09ae1",
+      "installed_sha256": "b01e0ae1ed03a911d0de7ea7ac6f13b315bb94da7bccb38cecb6da8669b09ae1"
+    },
+    {
+      "path": "knowledge/核心系统/02-属性计算公式.md",
+      "upstream_sha256": "fad8bf1d0879cc8d0afa3bbe9f5c651885cc6cdb9c39a121365edb3f0554527c",
+      "installed_sha256": "fad8bf1d0879cc8d0afa3bbe9f5c651885cc6cdb9c39a121365edb3f0554527c"
+    },
+    {
+      "path": "knowledge/核心系统/03-KV系统.md",
+      "upstream_sha256": "bf9b011a6b41cf1dadfb1016b48e3cb17f3d43df2f4c5f74b8ae5ad2b25de90c",
+      "installed_sha256": "bf9b011a6b41cf1dadfb1016b48e3cb17f3d43df2f4c5f74b8ae5ad2b25de90c"
+    },
+    {
+      "path": "knowledge/核心系统/04-存档系统.md",
+      "upstream_sha256": "dd951f8c43785e832b97958789bc400044e933a2eb7d1e77c425ae62f722dfe7",
+      "installed_sha256": "dd951f8c43785e832b97958789bc400044e933a2eb7d1e77c425ae62f722dfe7"
+    },
+    {
+      "path": "knowledge/核心系统/05-阵营系统.md",
+      "upstream_sha256": "e60c15193ee86c2dbad0d85caa2d2fbc80b95ed41f0dae1fa3695c80fd378cd3",
+      "installed_sha256": "e60c15193ee86c2dbad0d85caa2d2fbc80b95ed41f0dae1fa3695c80fd378cd3"
+    },
+    {
+      "path": "knowledge/核心系统/06-事件系统.md",
+      "upstream_sha256": "daa79848e4d30ea9a422c437c919d97e7bdbbee1af89f5cd23c604537d772616",
+      "installed_sha256": "daa79848e4d30ea9a422c437c919d97e7bdbbee1af89f5cd23c604537d772616"
+    },
+    {
+      "path": "knowledge/核心系统/07-伤害类型.md",
+      "upstream_sha256": "1584ad049e783d0a81b42309a289253360f5ba4afd7f25e7466c16df18e43101",
+      "installed_sha256": "1584ad049e783d0a81b42309a289253360f5ba4afd7f25e7466c16df18e43101"
+    },
+    {
+      "path": "knowledge/核心系统/08-游戏运行模式.md",
+      "upstream_sha256": "9456e5fed0063a598733bf94035d60c6c26749195701300f3260c2b14136fb6b",
+      "installed_sha256": "9456e5fed0063a598733bf94035d60c6c26749195701300f3260c2b14136fb6b"
+    },
+    {
+      "path": "knowledge/核心系统/09-地形系统.md",
+      "upstream_sha256": "5211bce1c1d2eded662e6a67e31a173841e6a492b3d2f1b0ea4f0bee8d790eda",
+      "installed_sha256": "5211bce1c1d2eded662e6a67e31a173841e6a492b3d2f1b0ea4f0bee8d790eda"
+    },
+    {
+      "path": "knowledge/核心系统/10-玩家操作.md",
+      "upstream_sha256": "1c389b9bb85c576db119ae980683d162013ad053f267b4fc0e429b9bd5775c27",
+      "installed_sha256": "1c389b9bb85c576db119ae980683d162013ad053f267b4fc0e429b9bd5775c27"
+    },
+    {
+      "path": "knowledge/核心系统/11-地图逻辑资源.md",
+      "upstream_sha256": "bda066afe1b87591851d7185493ff02ea4183912a1c9f37d4a9d6851ddff67cb",
+      "installed_sha256": "bda066afe1b87591851d7185493ff02ea4183912a1c9f37d4a9d6851ddff67cb"
+    },
+    {
+      "path": "knowledge/核心系统/12-ECA系统.md",
+      "upstream_sha256": "34e966109b3e2033565042f2670ad530df1d702a9ddfc9eb8ffba692375bd6fb",
+      "installed_sha256": "5ef3c708bbdbacbc68d9aa960df80ff49a0caca04681025407f4d334c915296a"
+    },
+    {
+      "path": "knowledge/核心系统/13-编辑器表格系统.md",
+      "upstream_sha256": "57e7828419d81b7f7a55d6151bf2e651c8099031d074c225c22b1b9459cbf698",
+      "installed_sha256": "943628d429bc6f41109a89dcd0c06b840ecece9e55dc11b1d3ea886c84cd2783"
+    },
+    {
+      "path": "knowledge/物编系统/01-概述.md",
+      "upstream_sha256": "68f59391bb987678563cc979ce35218cecdd3686ada3286b596da56cb1ed4fa5",
+      "installed_sha256": "68f59391bb987678563cc979ce35218cecdd3686ada3286b596da56cb1ed4fa5"
+    },
+    {
+      "path": "knowledge/物编系统/02-魔法效果.md",
+      "upstream_sha256": "ec67a6cde99e21e55c4103288390c07203be6c0532c5ae114393af0515602f16",
+      "installed_sha256": "ec67a6cde99e21e55c4103288390c07203be6c0532c5ae114393af0515602f16"
+    },
+    {
+      "path": "knowledge/物编系统/03-投射物.md",
+      "upstream_sha256": "859106a82da1c85a31b7538e2d7be5e1bd659fae0de2df902fad12b45eac7406",
+      "installed_sha256": "859106a82da1c85a31b7538e2d7be5e1bd659fae0de2df902fad12b45eac7406"
+    },
+    {
+      "path": "knowledge/物编系统/04-可破坏物.md",
+      "upstream_sha256": "d91f7ad5b060f700c60775f65857dbcc56a11b8445c1717e16e4d1245b099d15",
+      "installed_sha256": "d91f7ad5b060f700c60775f65857dbcc56a11b8445c1717e16e4d1245b099d15"
+    },
+    {
+      "path": "knowledge/物编系统/05-声音.md",
+      "upstream_sha256": "a960ccf0a6141ba711fe973ee4dbb16b94a0c23df149e12bfe5573cb5e86305d",
+      "installed_sha256": "a960ccf0a6141ba711fe973ee4dbb16b94a0c23df149e12bfe5573cb5e86305d"
+    },
+    {
+      "path": "knowledge/物编系统/06-技能.md",
+      "upstream_sha256": "5bbe011ba638f53645d2cd37b600ed3a19460ea8d1fd2afca475765d600b9439",
+      "installed_sha256": "5bbe011ba638f53645d2cd37b600ed3a19460ea8d1fd2afca475765d600b9439"
+    },
+    {
+      "path": "knowledge/物编系统/07-物品.md",
+      "upstream_sha256": "9c35669615593fa16901386ba6daad1f270a1fefdd5cf258fec60590594598c3",
+      "installed_sha256": "9c35669615593fa16901386ba6daad1f270a1fefdd5cf258fec60590594598c3"
+    },
+    {
+      "path": "knowledge/物编系统/08-单位.md",
+      "upstream_sha256": "afa1304e199e5b07e237dff0b1aa7d797d46b25252ec2a6b4fddd07613ab25e7",
+      "installed_sha256": "afa1304e199e5b07e237dff0b1aa7d797d46b25252ec2a6b4fddd07613ab25e7"
+    },
+    {
+      "path": "knowledge/物编系统/09-建造系统.md",
+      "upstream_sha256": "cf526a2e99d6b2f1c2c7ea2710a5d1c630b32c05358dd83b55c2e99a246fa202",
+      "installed_sha256": "cf526a2e99d6b2f1c2c7ea2710a5d1c630b32c05358dd83b55c2e99a246fa202"
+    },
+    {
+      "path": "knowledge/项目结构说明.md",
+      "upstream_sha256": "65e6120897823280cd73d6d9da8403eaaa8b2bde026060a87315fb127e0d9081",
+      "installed_sha256": "fc8ad21f5326c74794c186bb8e5f303dc54741f5cca020d8a993595fce99ebc3"
+    },
+    {
+      "path": "templates/a-aoe-point/logic.lua",
+      "upstream_sha256": "277d113224d5bc4d0e27951eb38f4a0c64b16da1b629362c686b5783a814d4db",
+      "installed_sha256": "277d113224d5bc4d0e27951eb38f4a0c64b16da1b629362c686b5783a814d4db"
+    },
+    {
+      "path": "templates/a-aoe-point/ReadMe.md",
+      "upstream_sha256": "71de4dd45e9b50aa8d1d3db6aa0b32aab3ba4f76981fb6f9fdad1ed3500a2381",
+      "installed_sha256": "71de4dd45e9b50aa8d1d3db6aa0b32aab3ba4f76981fb6f9fdad1ed3500a2381"
+    },
+    {
+      "path": "templates/a-bezier-trajectory/logic.lua",
+      "upstream_sha256": "f07ad2f777a0dba81467e9635f0a76bccf023b7579af7689f4e83d507248a05e",
+      "installed_sha256": "f07ad2f777a0dba81467e9635f0a76bccf023b7579af7689f4e83d507248a05e"
+    },
+    {
+      "path": "templates/a-bezier-trajectory/ReadMe.md",
+      "upstream_sha256": "68bf194df41412d31715cd36955cecd8e93f020290bd5c4a222d3e11dcded4ac",
+      "installed_sha256": "27df7af5e0db7f90396ae639df28f57e4c36dd76bf4583ba0182f8faa6eb361c"
+    },
+    {
+      "path": "templates/a-date-time/logic.lua",
+      "upstream_sha256": "a0f9ed4046b7f04c4c8f930f8b67fafbea9d4eb3b9213332c638dbcfd64c5008",
+      "installed_sha256": "a0f9ed4046b7f04c4c8f930f8b67fafbea9d4eb3b9213332c638dbcfd64c5008"
+    },
+    {
+      "path": "templates/a-date-time/ReadMe.md",
+      "upstream_sha256": "a4c0aa0a1e4e32af4f1d781a9e88069350ae2941d3aa48fafbd91ee5b9b36f0f",
+      "installed_sha256": "9454de356f5b89c8b711aa61aebeb17aa394049973a4b0c6192c220fcb276129"
+    },
+    {
+      "path": "templates/a-double-check-dialog/a-double-check-dialog.upui",
+      "upstream_sha256": "d28d0c66442d32a8afe5227a4ae5e71236ef451f90381bdeda53e8efe045e911",
+      "installed_sha256": "d28d0c66442d32a8afe5227a4ae5e71236ef451f90381bdeda53e8efe045e911"
+    },
+    {
+      "path": "templates/a-double-check-dialog/logic.lua",
+      "upstream_sha256": "fdc4c10710db5359217c2c7b59586afc6cf4861821cb4c5ffa8699077859d1ec",
+      "installed_sha256": "fdc4c10710db5359217c2c7b59586afc6cf4861821cb4c5ffa8699077859d1ec"
+    },
+    {
+      "path": "templates/a-double-check-dialog/ReadMe.md",
+      "upstream_sha256": "0059b510e8050067514b94a0467df4840bf9deb79b50abff226e19459c67f21d",
+      "installed_sha256": "0059b510e8050067514b94a0467df4840bf9deb79b50abff226e19459c67f21d"
+    },
+    {
+      "path": "templates/a-dync-component/logic.lua",
+      "upstream_sha256": "1d893f9429d5250c53126ef41f3457f224b10b51689ecae725e8dff17bce372c",
+      "installed_sha256": "1d893f9429d5250c53126ef41f3457f224b10b51689ecae725e8dff17bce372c"
+    },
+    {
+      "path": "templates/a-dync-component/ReadMe.md",
+      "upstream_sha256": "8a90c6ff557d89af06d6cb75ffe30d9bde5b3214938f69ab8402a5fae087e73d",
+      "installed_sha256": "69fa98675687567227076ab82455389810eec9f1f9d970cc15f3a7188c54abbf"
+    },
+    {
+      "path": "templates/a-event-bus/logic.lua",
+      "upstream_sha256": "0aa3f6d1c46bdd217df79f7df9e2b4a7e3eea31204017263cb67b03d1b1697cb",
+      "installed_sha256": "0aa3f6d1c46bdd217df79f7df9e2b4a7e3eea31204017263cb67b03d1b1697cb"
+    },
+    {
+      "path": "templates/a-event-bus/ReadMe.md",
+      "upstream_sha256": "b60d53f90d4b569740db0447e1fa91a2be51b8f431ccd554a5e8db6fd74e6703",
+      "installed_sha256": "6a1047656ea1fa4698ad3ce2b0d3aed21f5ca87ec9959b63a60db37190913fb2"
+    },
+    {
+      "path": "templates/a-float-tips/logic.lua",
+      "upstream_sha256": "f8d397255bd0d79cf99a22dc15d1a33d86fc4309ce12cc986bdc2afeeaa7b8c7",
+      "installed_sha256": "f8d397255bd0d79cf99a22dc15d1a33d86fc4309ce12cc986bdc2afeeaa7b8c7"
+    },
+    {
+      "path": "templates/a-float-tips/ReadMe.md",
+      "upstream_sha256": "fe0aebddbae9cdc8e9462f3d31fb74ff7f56901e843defbfb58a94202936bd49",
+      "installed_sha256": "7e2e0fbbf2b5d3d58649ee9689d6390120c625facf3f02451139e63e01a18666"
+    },
+    {
+      "path": "templates/a-game-fsm/logic.lua",
+      "upstream_sha256": "690f8225e8d47e59da3205f1096e69c1f18a51f9edb9c321e188c4ce39dd5b6c",
+      "installed_sha256": "690f8225e8d47e59da3205f1096e69c1f18a51f9edb9c321e188c4ce39dd5b6c"
+    },
+    {
+      "path": "templates/a-game-fsm/ReadMe.md",
+      "upstream_sha256": "518ac34fc0b5e4432e19375ff73c3f801d4cbf4093eaac1157536a48c40f15c4",
+      "installed_sha256": "34ee36407ea9b3d07f40238b4f02ad01d2a0a03622329b35f43bf103baade1cd"
+    },
+    {
+      "path": "templates/a-game-timer/logic.lua",
+      "upstream_sha256": "9658c26b8accf456fa5a3e68643d46b6d323a9ab3e81d9766992f7b2dc1ccd82",
+      "installed_sha256": "9658c26b8accf456fa5a3e68643d46b6d323a9ab3e81d9766992f7b2dc1ccd82"
+    },
+    {
+      "path": "templates/a-game-timer/ReadMe.md",
+      "upstream_sha256": "8d8efc12fa92f9d8c1c19247fe3315eab6c2fcd1830dde16c352d9b3a9753080",
+      "installed_sha256": "2c268674209f781a4514ed6c695574658eb2f0efadf80763162a05bc331d89a1"
+    },
+    {
+      "path": "templates/a-number-abbr/logic.lua",
+      "upstream_sha256": "a2e2e74b234d37cbb229284db84364fba2caddba8eebc667d4d32e0c031f61f8",
+      "installed_sha256": "a2e2e74b234d37cbb229284db84364fba2caddba8eebc667d4d32e0c031f61f8"
+    },
+    {
+      "path": "templates/a-number-abbr/ReadMe.md",
+      "upstream_sha256": "d54572d3e04534990aea2c8d3c7e14d7cb9b97d7005ee266318bcf788685d5bc",
+      "installed_sha256": "2edbe769d2160cc5c419dc327a2a0a1dd69f9227782a0ed2e01ed4a24e89c3e7"
+    },
+    {
+      "path": "templates/a-projectile-line/logic.lua",
+      "upstream_sha256": "07e03c6f4398cfae3a0540adedf9600a228ab41248720ec5b395d7716778ab00",
+      "installed_sha256": "07e03c6f4398cfae3a0540adedf9600a228ab41248720ec5b395d7716778ab00"
+    },
+    {
+      "path": "templates/a-projectile-line/ReadMe.md",
+      "upstream_sha256": "97c4f96b8114a5d89f055b9d51174aae0781828f00cf63a559e3c5f41386ad32",
+      "installed_sha256": "b86207e6e8004de6b4fd1d3d65b699e32363a5d1f26631d75e1d5c48dba2c828"
+    },
+    {
+      "path": "templates/a-random-pool/logic.lua",
+      "upstream_sha256": "0869ea33f59499a558d5084739bd05f3aa3e013039ee150531fa19ee14c50fb4",
+      "installed_sha256": "0869ea33f59499a558d5084739bd05f3aa3e013039ee150531fa19ee14c50fb4"
+    },
+    {
+      "path": "templates/a-random-pool/ReadMe.md",
+      "upstream_sha256": "f19ac1268aaa8bd0c5591f31bb76a0264777a73fc14e5396b9aebe33870cfb0a",
+      "installed_sha256": "059577aad778a09e65ae0b3ae9621c63d401f32acedb52df5b2801734de197b3"
+    },
+    {
+      "path": "templates/a-snowflake-id/logic.lua",
+      "upstream_sha256": "32497638fc55b4f1e29cf8a272899d835b90791b211cb97071e84b3cf65cd6ca",
+      "installed_sha256": "32497638fc55b4f1e29cf8a272899d835b90791b211cb97071e84b3cf65cd6ca"
+    },
+    {
+      "path": "templates/a-snowflake-id/ReadMe.md",
+      "upstream_sha256": "9ee973c5dfef5ce7d8912cd52d7a920daa85784bd9872714c399476b2310b828",
+      "installed_sha256": "da9e3be6c0366d6dc0ad4124a5770356dedf5c6b8f3cd7e708fe0379f0db04cf"
+    },
+    {
+      "path": "templates/a-trace-report/logic.lua",
+      "upstream_sha256": "f21d530494e199dbfcbae97dbd477f3d4571e569fd2d2de39a78e0fb8350b95a",
+      "installed_sha256": "f21d530494e199dbfcbae97dbd477f3d4571e569fd2d2de39a78e0fb8350b95a"
+    },
+    {
+      "path": "templates/a-trace-report/ReadMe.md",
+      "upstream_sha256": "87b4c483fd0a010fc1ac9fc80aad3d6f45d098fb03ce3d22bf5639f580de60cd",
+      "installed_sha256": "a52ab73aa4df738f973d80b0bf0287e9f8481374f191778a1b8ef62469760cc9"
+    },
+    {
+      "path": "templates/a-tween-timeline/logic.lua",
+      "upstream_sha256": "9c2deebddeb233839a07d037934219ad20a9d30093ec2708e26e85d2ae9a960e",
+      "installed_sha256": "9c2deebddeb233839a07d037934219ad20a9d30093ec2708e26e85d2ae9a960e"
+    },
+    {
+      "path": "templates/a-tween-timeline/ReadMe.md",
+      "upstream_sha256": "65ca663e20be1e8a0e1779851d37bfa60d1e557955b9c151c33d15854df5a6f7",
+      "installed_sha256": "91896e226b7cbd59016e407015e920aeff45de99a3740a741b0d6652fd959065"
+    },
+    {
+      "path": "templates/a-ui-pool/logic.lua",
+      "upstream_sha256": "b72d06e47903c6e2f813216d7ebfdff56daf5d347ddceff0da7cf201b5d27947",
+      "installed_sha256": "b72d06e47903c6e2f813216d7ebfdff56daf5d347ddceff0da7cf201b5d27947"
+    },
+    {
+      "path": "templates/a-ui-pool/ReadMe.md",
+      "upstream_sha256": "225ce2a463ec0acd703730e8fd3abab2ed0aa1bda18d4b6721728821e4fc922a",
+      "installed_sha256": "225ce2a463ec0acd703730e8fd3abab2ed0aa1bda18d4b6721728821e4fc922a"
+    },
+    {
+      "path": "templates/b-anim-helper/logic.lua",
+      "upstream_sha256": "90e957fe1929e7e535f66097c7114b4aab9cb4aaa28234a319a8ad8f97f5ec56",
+      "installed_sha256": "90e957fe1929e7e535f66097c7114b4aab9cb4aaa28234a319a8ad8f97f5ec56"
+    },
+    {
+      "path": "templates/b-anim-helper/ReadMe.md",
+      "upstream_sha256": "e60ca9624db4288fce78fdd74c71b21f91178abf5d1d668b3ce735354f6f4f33",
+      "installed_sha256": "f40927ae8db15c5e2aa460f7e2dabc1a078a98408160c3fd40f6fd229dc2d25e"
+    },
+    {
+      "path": "templates/b-attribute-system/logic.lua",
+      "upstream_sha256": "bc476c9a206bd16b2a1c76734a97138e09a47cafe89065c5cf76b35fbc39d5e9",
+      "installed_sha256": "bc476c9a206bd16b2a1c76734a97138e09a47cafe89065c5cf76b35fbc39d5e9"
+    },
+    {
+      "path": "templates/b-attribute-system/ReadMe.md",
+      "upstream_sha256": "ec5c55dda8f6f477b07408314cf461bb286170226710fb26087fb4491bfd23a8",
+      "installed_sha256": "3ba30f3ac8f2d18f4a7b8dd21faf4640fede8b1be40ae5ec466062e306cfb82a"
+    },
+    {
+      "path": "templates/b-base-panel/logic.lua",
+      "upstream_sha256": "25e8c57f3a075fe65becc9eea1688575b0808375b45f240db39b7396fcedf4cd",
+      "installed_sha256": "25e8c57f3a075fe65becc9eea1688575b0808375b45f240db39b7396fcedf4cd"
+    },
+    {
+      "path": "templates/b-base-panel/ReadMe.md",
+      "upstream_sha256": "bb31ed034b22a303e7d2233b5889c94afc990cdf95c2bd5ff82f3eedf6ce97d9",
+      "installed_sha256": "35b0617762bee9902494e9f61dcfffe32cb0be52f93704d99ef0ca42c23f1d91"
+    },
+    {
+      "path": "templates/b-base-view/logic.lua",
+      "upstream_sha256": "9044e6136334bc6ebf43a661ddee08c75958c460f8a7e3248dff52696fe127d8",
+      "installed_sha256": "9044e6136334bc6ebf43a661ddee08c75958c460f8a7e3248dff52696fe127d8"
+    },
+    {
+      "path": "templates/b-base-view/ReadMe.md",
+      "upstream_sha256": "1abdb35599c244d7d3a631e3ec2ec02686eb4619921d92d82be9c23dad0659ef",
+      "installed_sha256": "f5f2da46c9d344af2d803b94ff982e97de9354795224fceab1ad8862d0601252"
+    },
+    {
+      "path": "templates/b-gm-command/logic.lua",
+      "upstream_sha256": "c6abd71502035f6465f59b050111270f6f274ac62a542d0f8ada91f47adc79e9",
+      "installed_sha256": "c6abd71502035f6465f59b050111270f6f274ac62a542d0f8ada91f47adc79e9"
+    },
+    {
+      "path": "templates/b-gm-command/ReadMe.md",
+      "upstream_sha256": "746eb507f4446aa4cc4b21c83829e00e0784d21c972faacd56e2b0d78a048a39",
+      "installed_sha256": "b06dc5e194c20f160a0661d5c178cd1805d5c18bd309c14b7534b5332b359019"
+    },
+    {
+      "path": "templates/b-hud-main-console/b-hud-main-console.upui",
+      "upstream_sha256": "71dd744bedc09961b7b76e8c5c0896a878d8c3d8b3ef601bd70487c31081817e",
+      "installed_sha256": "71dd744bedc09961b7b76e8c5c0896a878d8c3d8b3ef601bd70487c31081817e"
+    },
+    {
+      "path": "templates/b-hud-main-console/logic.lua",
+      "upstream_sha256": "7493980dd7963f2b8d8cfdd0ff89da14e1fa7742a5ea80ea70590c75e382c42e",
+      "installed_sha256": "7493980dd7963f2b8d8cfdd0ff89da14e1fa7742a5ea80ea70590c75e382c42e"
+    },
+    {
+      "path": "templates/b-hud-main-console/ReadMe.md",
+      "upstream_sha256": "3d46f480462710f1efd8899fb28557205d8560bb6b62fe271ef252234a827f1a",
+      "installed_sha256": "e437e167a841ceef12b43445be7a0da6cf5242eca41bfba0e5d5b0f68bcce482"
+    },
+    {
+      "path": "templates/b-hud-main-console/红色_00000.package/meta.json",
+      "upstream_sha256": "75dfa843193051214c58f19137eb877040498e124916dc700ab1510bb6e85b62",
+      "installed_sha256": "75dfa843193051214c58f19137eb877040498e124916dc700ab1510bb6e85b62"
+    },
+    {
+      "path": "templates/b-hud-main-console/红色_00000.package/红色_00000.plist",
+      "upstream_sha256": "dd39d6100dcafb8096a31e6efc69272f3fc393970f41967876feae21b8ba10e4",
+      "installed_sha256": "dd39d6100dcafb8096a31e6efc69272f3fc393970f41967876feae21b8ba10e4"
+    },
+    {
+      "path": "templates/b-hud-main-console/红色_00000.package/红色_00000.png",
+      "upstream_sha256": "cd9f4b489cec76ba4dffbf0b7e1ee984d473870782e60ab8fc97ca7ac1460912",
+      "installed_sha256": "cd9f4b489cec76ba4dffbf0b7e1ee984d473870782e60ab8fc97ca7ac1460912"
+    },
+    {
+      "path": "templates/b-hud-main-console/绿色_00000.package/meta.json",
+      "upstream_sha256": "ad7000cc5da8a8fbe9d4f1c94e44cbbae9d96b0e0af21a6a98b38a0560075755",
+      "installed_sha256": "ad7000cc5da8a8fbe9d4f1c94e44cbbae9d96b0e0af21a6a98b38a0560075755"
+    },
+    {
+      "path": "templates/b-hud-main-console/绿色_00000.package/绿色_00000.plist",
+      "upstream_sha256": "d4ece30b4b95fc7be78a1031fdd0457daab116fc8371f0e9bae1a00f8991da9e",
+      "installed_sha256": "d4ece30b4b95fc7be78a1031fdd0457daab116fc8371f0e9bae1a00f8991da9e"
+    },
+    {
+      "path": "templates/b-hud-main-console/绿色_00000.package/绿色_00000.png",
+      "upstream_sha256": "29397649f2a6b62911ab38369e90449120ce33c04695cb26288b19d1b2931805",
+      "installed_sha256": "29397649f2a6b62911ab38369e90449120ce33c04695cb26288b19d1b2931805"
+    },
+    {
+      "path": "templates/b-hud-main-console/蓝色_00000.package/meta.json",
+      "upstream_sha256": "8157dff9f005949634b4b89c1563d9ea34675f6ae05e4c8b18a91e1ce4dd3903",
+      "installed_sha256": "8157dff9f005949634b4b89c1563d9ea34675f6ae05e4c8b18a91e1ce4dd3903"
+    },
+    {
+      "path": "templates/b-hud-main-console/蓝色_00000.package/蓝色_00000.plist",
+      "upstream_sha256": "72f7fe27ff31b5726d1799187a382bef056ff94fd793cc57a2d0cb164df36110",
+      "installed_sha256": "72f7fe27ff31b5726d1799187a382bef056ff94fd793cc57a2d0cb164df36110"
+    },
+    {
+      "path": "templates/b-hud-main-console/蓝色_00000.package/蓝色_00000.png",
+      "upstream_sha256": "2f4176d28336f2795dc0ca841bb1e5a97302cb5b77495a4820542d4665d875ee",
+      "installed_sha256": "2f4176d28336f2795dc0ca841bb1e5a97302cb5b77495a4820542d4665d875ee"
+    },
+    {
+      "path": "templates/b-hud-main-console/黄色_00000.package/meta.json",
+      "upstream_sha256": "dfa5c3cfcf9bd2363dd4ed1fb40e89309e69aa5addf306ebdca058e1ad61b70b",
+      "installed_sha256": "dfa5c3cfcf9bd2363dd4ed1fb40e89309e69aa5addf306ebdca058e1ad61b70b"
+    },
+    {
+      "path": "templates/b-hud-main-console/黄色_00000.package/黄色_00000.plist",
+      "upstream_sha256": "11f2a6c01811233f42e24c5a9c0faddc8a8052d0e4f9f2aa90725c290fd4f2a4",
+      "installed_sha256": "11f2a6c01811233f42e24c5a9c0faddc8a8052d0e4f9f2aa90725c290fd4f2a4"
+    },
+    {
+      "path": "templates/b-hud-main-console/黄色_00000.package/黄色_00000.png",
+      "upstream_sha256": "6e7dd6f232324ce2ca618e3c6c2f1a8e15e5b74f40d7446f912010f6248984e4",
+      "installed_sha256": "6e7dd6f232324ce2ca618e3c6c2f1a8e15e5b74f40d7446f912010f6248984e4"
+    },
+    {
+      "path": "templates/b-hud-statistic/b-hud-statistic.upui",
+      "upstream_sha256": "22ed0684a4e72f61c4db98ed2ee3a62b2b19b5745d96dfc41423856f99332d49",
+      "installed_sha256": "22ed0684a4e72f61c4db98ed2ee3a62b2b19b5745d96dfc41423856f99332d49"
+    },
+    {
+      "path": "templates/b-hud-statistic/logic.lua",
+      "upstream_sha256": "71ffea96a3294bd4b1de2d9371b61cd29b728dc03356fc78e0dfccd4a0f05687",
+      "installed_sha256": "71ffea96a3294bd4b1de2d9371b61cd29b728dc03356fc78e0dfccd4a0f05687"
+    },
+    {
+      "path": "templates/b-hud-statistic/ReadMe.md",
+      "upstream_sha256": "5e12cd366a3c737ce81b20eb6deca5a69de2ecb5ae0f88fa444a8e8e25924ccb",
+      "installed_sha256": "5d16648ad8b253047f38fa6a467f45b020f171c075ca1fe08cec3e19e1d15952"
+    },
+    {
+      "path": "templates/b-hud-top-info/b-hud-top-info.upui",
+      "upstream_sha256": "3dc85241ffe1726d35b948bb51678c0ae69ac275a773155315931f29c8ef6d3f",
+      "installed_sha256": "3dc85241ffe1726d35b948bb51678c0ae69ac275a773155315931f29c8ef6d3f"
+    },
+    {
+      "path": "templates/b-hud-top-info/logic.lua",
+      "upstream_sha256": "855ec964f164994dc2cd04a854703b106a392e67fc059d6ee1a90dde8996a327",
+      "installed_sha256": "855ec964f164994dc2cd04a854703b106a392e67fc059d6ee1a90dde8996a327"
+    },
+    {
+      "path": "templates/b-hud-top-info/ReadMe.md",
+      "upstream_sha256": "e8938775f340437f9963a51144de1be6bd6348d1f354063f1af8fb3da8f515fd",
+      "installed_sha256": "0b7781e03b15a3096d6e07cbef915df01f838a8c4a10dfc9ab4b8c784ec66b48"
+    },
+    {
+      "path": "templates/b-pause-popup/b-pause-popup.upui",
+      "upstream_sha256": "fa9781274d9ea67b438673dbc14d63a160288259294c41656adc74e16ab6423e",
+      "installed_sha256": "fa9781274d9ea67b438673dbc14d63a160288259294c41656adc74e16ab6423e"
+    },
+    {
+      "path": "templates/b-pause-popup/logic.lua",
+      "upstream_sha256": "2d1374260e598e265b0e2aef58052a6e8a499e0692a55eeecfeb3ec4fe9596b8",
+      "installed_sha256": "2d1374260e598e265b0e2aef58052a6e8a499e0692a55eeecfeb3ec4fe9596b8"
+    },
+    {
+      "path": "templates/b-pause-popup/ReadMe.md",
+      "upstream_sha256": "0938ea2999484e8a93ef6980abdd1548d830f4cc727aedf69aa615ae81b72a97",
+      "installed_sha256": "0938ea2999484e8a93ef6980abdd1548d830f4cc727aedf69aa615ae81b72a97"
+    },
+    {
+      "path": "templates/b-selector-cache/logic.lua",
+      "upstream_sha256": "daedca4d3bd7040ee376482b1d00aa6bd197496020e2dfeeb298413341934dad",
+      "installed_sha256": "daedca4d3bd7040ee376482b1d00aa6bd197496020e2dfeeb298413341934dad"
+    },
+    {
+      "path": "templates/b-selector-cache/ReadMe.md",
+      "upstream_sha256": "a2058b2af1180ab854e6bdd68aff25dcdcad1ce61854a512ed35b26ccabbc8fa",
+      "installed_sha256": "7d57bb7be07aa2d6224cf54dde8fbeca744b78d48eff091d3fe6413ab431d72f"
+    },
+    {
+      "path": "templates/b-shield-stack/logic.lua",
+      "upstream_sha256": "7afac5fc412f87aa5ed89bdd020c6ce91902bcd8b356fba07e560ecdc05e603b",
+      "installed_sha256": "7afac5fc412f87aa5ed89bdd020c6ce91902bcd8b356fba07e560ecdc05e603b"
+    },
+    {
+      "path": "templates/b-shield-stack/ReadMe.md",
+      "upstream_sha256": "452be884d19ecb0a819028deaf7e59ef3005df589f703ac9476f2b5bf7c09475",
+      "installed_sha256": "fcc7b0afed7cb31e204b53f475d4441bfdf3b0e11e872653ebd594bf96567e42"
+    },
+    {
+      "path": "templates/b-tag-counter/b-tag-counter.upui",
+      "upstream_sha256": "8450e4255d975d3e8c9abe4f75c7794d38b24eafd57bdb895ff1be2b2242d655",
+      "installed_sha256": "8450e4255d975d3e8c9abe4f75c7794d38b24eafd57bdb895ff1be2b2242d655"
+    },
+    {
+      "path": "templates/b-tag-counter/logic.lua",
+      "upstream_sha256": "dd2f0848c2d4308c1bc0f0285a03cd89adb9934a56a5f90297837d58b6e9b03b",
+      "installed_sha256": "dd2f0848c2d4308c1bc0f0285a03cd89adb9934a56a5f90297837d58b6e9b03b"
+    },
+    {
+      "path": "templates/b-tag-counter/ReadMe.md",
+      "upstream_sha256": "8000ddb276367499934cf55ddccbac1728dfa0e836a6c425eaafccf5fef50ff4",
+      "installed_sha256": "c6c5ddcbf70ddf92900265224a62940cd4f6afe3312ffca3fb64a5f204e4fec8"
+    },
+    {
+      "path": "templates/c-attr-display-panel/logic.lua",
+      "upstream_sha256": "4f63f9f69a6127c823ed1b53423a56493edcd697e7135d2404dcbddbbde900f6",
+      "installed_sha256": "4f63f9f69a6127c823ed1b53423a56493edcd697e7135d2404dcbddbbde900f6"
+    },
+    {
+      "path": "templates/c-attr-display-panel/ReadMe.md",
+      "upstream_sha256": "cf25f2974b4d36978fece2e27226630202c77d38eab757d2f3e7ae9861e944c2",
+      "installed_sha256": "1ad2d5bbb2cbd24b7f0bcceecbac4ec191a116c8a15f8b94ccf2b65c8b431bb6"
+    },
+    {
+      "path": "templates/c-bag-system/logic.lua",
+      "upstream_sha256": "9ee2a28e8a687a11df5d4692f4f33289adbfeb07cb68f1442a10fed363aa93b4",
+      "installed_sha256": "9ee2a28e8a687a11df5d4692f4f33289adbfeb07cb68f1442a10fed363aa93b4"
+    },
+    {
+      "path": "templates/c-bag-system/ReadMe.md",
+      "upstream_sha256": "bc69885a5ff14881413388520eafa01cdacfa9ae14c32a283414baf0cae1d5a2",
+      "installed_sha256": "99e88712ae64fb30d3d0c49034d726702e13fc240f43604a09646b60e1264a8e"
+    },
+    {
+      "path": "templates/c-game-settle/c-game-settle.upui",
+      "upstream_sha256": "ff858e0b1917c555f70c35ed952b7dad043534072b10f55c10e8cbbcd9a668e9",
+      "installed_sha256": "ff858e0b1917c555f70c35ed952b7dad043534072b10f55c10e8cbbcd9a668e9"
+    },
+    {
+      "path": "templates/c-game-settle/logic.lua",
+      "upstream_sha256": "6ca36be4169d527610d5b5420e5522ec1bd14f9d4dde351333c027626d8072a7",
+      "installed_sha256": "6ca36be4169d527610d5b5420e5522ec1bd14f9d4dde351333c027626d8072a7"
+    },
+    {
+      "path": "templates/c-game-settle/ReadMe.md",
+      "upstream_sha256": "226739caeb5327d83528cba5533e262033bca796f5ef46270c9a4689776675fe",
+      "installed_sha256": "c2f78d356992a6466b6e9d066e7b09545241c033a5f8f06febb32c60373980a3"
+    },
+    {
+      "path": "templates/c-pick-one-of-many/logic.lua",
+      "upstream_sha256": "1547d215a92e6ac58727cf3aeb8a8292e4de03f0d8f3aad8b2746e6fd314e1cd",
+      "installed_sha256": "1547d215a92e6ac58727cf3aeb8a8292e4de03f0d8f3aad8b2746e6fd314e1cd"
+    },
+    {
+      "path": "templates/c-pick-one-of-many/ReadMe.md",
+      "upstream_sha256": "fdf479abe766a65a2ae6c41053f9c3d3d8f6cd50860868eecc648134968e0522",
+      "installed_sha256": "fdf479abe766a65a2ae6c41053f9c3d3d8f6cd50860868eecc648134968e0522"
+    },
+    {
+      "path": "templates/c-progress-tracker/logic.lua",
+      "upstream_sha256": "8ac6e9c22e8b3ccd8f63ceed02a271e532d88a8e3c92366e63af00476d0ef818",
+      "installed_sha256": "8ac6e9c22e8b3ccd8f63ceed02a271e532d88a8e3c92366e63af00476d0ef818"
+    },
+    {
+      "path": "templates/c-progress-tracker/ReadMe.md",
+      "upstream_sha256": "c50e83881d67b0cedb0f26b80b2590ac3a0deee7d287c260797ecbd9509d0b19",
+      "installed_sha256": "7d574a96386fcb44c20c60dbf44188ec48f7140f226290aecbc63c3224e17550"
+    },
+    {
+      "path": "templates/c-shop-system/logic.lua",
+      "upstream_sha256": "bb6b0cf935c15ce5a8d68db7b61356da8a62aef500c29732089d32496dffaebd",
+      "installed_sha256": "bb6b0cf935c15ce5a8d68db7b61356da8a62aef500c29732089d32496dffaebd"
+    },
+    {
+      "path": "templates/c-shop-system/ReadMe.md",
+      "upstream_sha256": "e6dfa1a4fbeb981de0125f4516ebf13c27ef982e092b10c7b01d9bd9f75309d2",
+      "installed_sha256": "f0502d59018bc4cc95b3921fd5773f7763d91639b2c8aaf3f900dbbb1f36ac59"
+    },
+    {
+      "path": "templates/c-wave-scheduler/logic.lua",
+      "upstream_sha256": "011a95e5b97a9aa37243d0cd3f7cea0aeca9c476c3eda2c6e1eb20e22742109f",
+      "installed_sha256": "011a95e5b97a9aa37243d0cd3f7cea0aeca9c476c3eda2c6e1eb20e22742109f"
+    },
+    {
+      "path": "templates/c-wave-scheduler/ReadMe.md",
+      "upstream_sha256": "ccd80d9ed00962c3a31efa1b0330452a08c86900266ce1cca025c8eb0a524beb",
+      "installed_sha256": "601ece686b05bb9de7b4346b2f8566102023538716bfc4f3022e93559930e521"
+    },
+    {
+      "path": "templates/difficulty-select/difficulty-select.upui",
+      "upstream_sha256": "2f91f3f00de00f9e0a4b95ef31a0a0df5cbffbe2bc37f477afa8b7d4d9e81116",
+      "installed_sha256": "2f91f3f00de00f9e0a4b95ef31a0a0df5cbffbe2bc37f477afa8b7d4d9e81116"
+    },
+    {
+      "path": "templates/difficulty-select/logic.lua",
+      "upstream_sha256": "d6a4af76b0f806b2389c23231fcf00bd7251659668eaffb2751f72f9d6fb557b",
+      "installed_sha256": "d6a4af76b0f806b2389c23231fcf00bd7251659668eaffb2751f72f9d6fb557b"
+    },
+    {
+      "path": "templates/difficulty-select/ReadMe.md",
+      "upstream_sha256": "d75633a034bdf194663f98cdf4fb268d2858f8fad4129d6fbafe75ec2241ad6b",
+      "installed_sha256": "89e74d863ac0f6ae075ef8d1faf5b1a146be6b66b41da125b5c6a03060f4f917"
+    },
+    {
+      "path": "templates/ReadMe.md",
+      "upstream_sha256": "612dbe64695881bde56962a81eedca5197e59726bf4c206cc5e68987ab933bcb",
+      "installed_sha256": "4a7e634d38ae61d604fa27f4752b0615238a6f411efb17b1dc3bca90f4c3ffbb"
+    },
+    {
+      "path": "tools/draw_grid.py",
+      "upstream_sha256": "0eaf7327c609d86e1ef1fc6be3a691364b47d713d90cfffdb3022d2e21c2e96a",
+      "installed_sha256": "0eaf7327c609d86e1ef1fc6be3a691364b47d713d90cfffdb3022d2e21c2e96a"
+    },
+    {
+      "path": "tools/screenshot_with_cursor.py",
+      "upstream_sha256": "1860485ec9c33d48bca1bcdd0e6d4b26f152437bc289cccade62fc762dacec10",
+      "installed_sha256": "1860485ec9c33d48bca1bcdd0e6d4b26f152437bc289cccade62fc762dacec10"
     }
   ]
 }

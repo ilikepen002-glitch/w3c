@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-10-23T16:05:07.395767+00:00",
+  "recorded_at_utc": "2026-10-24T08:08:00Z",
   "organization": "https://github.com/y3-editor",
   "inventory_scope": "5 public repositories returned by cached organization API inventory; not a guarantee of all future/private repositories",
   "inventory_source_local_cache": "D:/Y3Projects/tooling/y3-repositories.json",
@@ -15,7 +15,7 @@
       "retrieval": "git_checkout",
       "source_downloaded": true,
       "role": "runtime_dependency",
-      "installation_status": "已复用为 maps/EntryMap/script/y3；不修改依赖拷贝",
+      "installation_status": "固定版本保留于 development/vendor/y3；尚未接入新原生地图",
       "inspected_source_files": [
         {
           "path": "README.md",
@@ -42,7 +42,7 @@
       "retrieval": "git_checkout",
       "source_downloaded": true,
       "role": "development_tool_and_template",
-      "installation_status": "VS Code 扩展 2.4.0 已安装；源码缓存 2.4.1；MCP 8766 检查时无监听；unit.json 已用于部署",
+      "installation_status": "VS Code扩展2.4.0；8766连接并验证自动启动、Lua、日志、截图、快速重启；源码缓存2.4.1未替代安装版本",
       "inspected_source_files": [
         {
           "path": "package.json",
@@ -60,8 +60,9 @@
       "verification": {
         "extension_list": "sumneko.y3-helper@2.4.0",
         "source_package_version": "2.4.1",
-        "mcp_listener_8766": "not_listening_at_inspection",
-        "end_to_end_mcp": "not_verified"
+        "mcp_listener_8766": "listening_and_client_connected",
+        "end_to_end_mcp": "launch_lua_logs_screenshot_quick_restart_verified_2026-10-24",
+        "status_caveat": "quick_restart后status曾为stopped但client_connected=true且Lua正常响应"
       }
     },
     {
@@ -72,8 +73,8 @@
       "cache_is_runtime_dependency": false,
       "retrieval": "git_checkout",
       "source_downloaded": true,
-      "role": "adapted_skills_and_knowledge",
-      "installation_status": "4 条官方 Codex 技能与 35 篇知识已适配；UI generator、Lua review 为内部资源",
+      "role": "official_skills_rules_knowledge_templates_tools",
+      "installation_status": "完整官方技能176文件、14目录、13入口；只做路径/frontmatter兼容；旧自编技能已移出项目",
       "inspected_source_files": [
         {
           "path": "skills/y3-obj-edit/scripts/y3_obj_edit.py",
@@ -85,14 +86,13 @@
         }
       ],
       "verification": {
-        "static_validation": "4 skill entrypoints passed",
-        "isolated_tests": [
-          "object create/edit/language linkage",
-          "simple UI canvas/prefab conversion",
-          "UI tree extraction"
-        ],
-        "known_limitation": "card template half-scale test reported 15 bounds violations; not engine verified",
-        "details": "../../.codex/skills-installation.md"
+        "static_validation": "13 official SKILL frontmatters passed; complete file provenance in manifest",
+        "eca_official_tests_passed": 40,
+        "ui_scale_test": "FAIL: test stack tuple length differs from parser; upstream code retained",
+        "details": "../../.codex/skills-installation.md",
+        "coverage": "../../.codex/upstream-sources/coverage.json",
+        "toolchain_plan": "../docs/toolchain-test-plan.md",
+        "engine_verification": "8765当前EntryMap；8766自动启动/Lua/日志/截图/重启；8767官方动态路径查询及UI事件选择1->2->1均实测通过；非全技能实机验收"
       }
     },
     {
@@ -160,5 +160,6 @@
         "engine_verified": false
       }
     }
-  ]
+  ],
+  "note_20261101": "Historical toolchain inventory; previous validation is not evidence for the new map. Fixed y3-lualib now resides at development/vendor/y3."
 }

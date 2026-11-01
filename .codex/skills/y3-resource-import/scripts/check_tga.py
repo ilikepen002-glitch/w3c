@@ -20,11 +20,7 @@ def check(path):
         bpp = h[16]
         print(f'{name:45s} {size//1024:5d}KB  type={tname}')
 
-if len(sys.argv) != 2:
-    raise SystemExit('Usage: python check_tga.py <asset-directory>')
-base = sys.argv[1]
-if not os.path.isdir(base):
-    raise SystemExit(f'Asset directory does not exist: {base}')
+base = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\zhuyinhao01\Documents\我的POPO\testcase_output'
 for root, _, files in os.walk(base):
     for f in sorted(files):
         if f.lower().endswith('.tga'):
